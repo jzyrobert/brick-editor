@@ -87,7 +87,20 @@ for (const viewport of [
         window.brickEditor!.play.snapshot(),
       );
       expect(driven.mechanism!.pose.vehicle!.position[2]).toBeLessThan(-10);
-      expect(driven.mechanism!.pose.vehicle!.headingDegrees).toBeLessThan(0);
+      expect(driven.mechanism!.pose.vehicle!.headingDegrees).toBeGreaterThan(0);
+      // Forward is LDraw −Z, up is −Y, so screen-right is −X: A must travel +X.
+      expect(driven.mechanism!.pose.vehicle!.position[0]).toBeGreaterThan(0);
+      await page.keyboard.down("w");
+      await page.keyboard.down("d");
+      await page.evaluate(() => window.brickEditor!.play.stepTicks(6));
+      await page.keyboard.up("w");
+      await page.keyboard.up("d");
+      const right = await page.evaluate(() =>
+        window.brickEditor!.play.snapshot(),
+      );
+      expect(right.mechanism!.pose.vehicle!.headingDegrees).toBeLessThan(
+        driven.mechanism!.pose.vehicle!.headingDegrees,
+      );
       expect(driven.position[0]).toBeCloseTo(start.position[0], 3);
       expect(driven.position[2]).toBeCloseTo(start.position[2], 3);
       if (viewport.width !== 1440) {
@@ -100,8 +113,8 @@ for (const viewport of [
           touchPoints: [
             {
               id: 1,
-              x: stick.x + stick.width / 2,
-              y: stick.y + stick.height * 0.1,
+              x: stick.x + stick.width * 0.3,
+              y: stick.y + stick.height * 0.2,
             },
           ],
         });
@@ -116,11 +129,35 @@ for (const viewport of [
         expect(touch.mechanism!.pose.vehicle!.position[2]).toBeLessThan(
           driven.mechanism!.pose.vehicle!.position[2] - 10,
         );
+        expect(touch.mechanism!.pose.vehicle!.headingDegrees).toBeGreaterThan(
+          right.mechanism!.pose.vehicle!.headingDegrees,
+        );
+        await client.send("Input.dispatchTouchEvent", {
+          type: "touchStart",
+          touchPoints: [
+            {
+              id: 2,
+              x: stick.x + stick.width * 0.7,
+              y: stick.y + stick.height * 0.2,
+            },
+          ],
+        });
+        await page.evaluate(() => window.brickEditor!.play.stepTicks(6));
+        await client.send("Input.dispatchTouchEvent", {
+          type: "touchEnd",
+          touchPoints: [],
+        });
+        const touchRight = await page.evaluate(() =>
+          window.brickEditor!.play.snapshot(),
+        );
+        expect(touchRight.mechanism!.pose.vehicle!.headingDegrees).toBeLessThan(
+          touch.mechanism!.pose.vehicle!.headingDegrees,
+        );
         await page.evaluate(() => window.brickEditor!.play.stepTicks(12));
         expect(
           (await page.evaluate(() => window.brickEditor!.play.snapshot()))
             .mechanism!.pose.vehicle!.position,
-        ).toEqual(touch.mechanism!.pose.vehicle!.position);
+        ).toEqual(touchRight.mechanism!.pose.vehicle!.position);
       }
       await page.screenshot({
         path: `test-results/interaction-driving-${viewport.width}.png`,

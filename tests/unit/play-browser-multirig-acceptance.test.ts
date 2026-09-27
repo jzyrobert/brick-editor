@@ -1,5 +1,6 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { Group } from "three";
+import { Group, PerspectiveCamera, Vector3 } from "three";
+import { conversion } from "../../src/core/math";
 import { BrowserPlay } from "../../src/play/browser";
 import { mechanismFixture } from "../../src/mechanisms/fixtures";
 import type { SceneAdapter } from "../../src/render/adapter";
@@ -143,4 +144,39 @@ it("source replacement and disposal invalidate a captured session without restor
   h.play.dispose();
   expect(() => other()).not.toThrow();
   expect(h.restores).toEqual({ pose: 2, view: 2 });
+});
+
+it("vehicle keyboard/joystick left and right steer toward the corresponding projected camera side", async () => {
+  for (const moveX of [-1, 1]) {
+    const h = setup();
+    await h.play.enter({
+      rigId: "vehicle",
+      position: [80, -0.3, -200],
+      yaw: 0,
+    });
+    h.play.interact();
+    expect(h.play.getState().vehicleControl).toBe("vehicle");
+    const spec = h.play.camera(),
+      camera = new PerspectiveCamera(spec.fovDeg, 1, spec.near, spec.far);
+    camera.position.fromArray(conversion(spec.position));
+    camera.up.fromArray(conversion(spec.up));
+    camera.lookAt(...conversion(spec.target));
+    camera.updateMatrixWorld(true);
+    h.play.setInput({ moveZ: 1, moveX });
+    const driven = h.play.stepTicks(12),
+      pose = driven.mechanism!.pose.vehicle!;
+    // Compare against the straight-ahead point at identical forward depth so
+    // perspective cannot confuse lateral steering with approaching the camera.
+    const centre = new Vector3(
+      ...conversion([0, -24, -200 + pose.position[2]]),
+    ).project(camera);
+    const steered = new Vector3(
+      ...conversion([pose.position[0], -24, -200 + pose.position[2]]),
+    ).project(camera);
+    expect(Math.sign(steered.x - centre.x)).toBe(moveX);
+    expect(Math.sign(pose.headingDegrees)).toBe(-moveX);
+    expect(driven.position[0]).toBeCloseTo(80);
+    expect(driven.position[2]).toBeCloseTo(-200);
+    h.play.dispose();
+  }
 });

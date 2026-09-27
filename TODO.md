@@ -2,9 +2,9 @@
 
 The detailed backlog and acceptance gaps are maintained in [docs/STATUS.md](docs/STATUS.md), against [spec.md](spec.md). The current implementation is a working development build, not a complete P0 release.
 
-Deployment follow-up: GitHub has validated `bricks.robertj.in` and Cloudflare DNS points to Pages, but TLS issuance was still pending on 2026-09-27.
+Deployment follow-up: GitHub HTTPS still failed certificate verification on 2026-09-27; the user requested migration to Cloudflare Pages. Cloudflare Pages is deployed, the domain is active, DNS points to Pages, and HTTPS returns HTTP 200 with a valid certificate.
 
-- [ ] Verify the custom-domain certificate, enable Pages HTTPS enforcement, then run the live keyboard/touch smoke checks. See [hosting configuration](docs/DEPLOYMENT.md).
+- [ ] Finish secure live keyboard/touch checks and verify automatic Cloudflare publication from the tested branch. See [hosting configuration](docs/DEPLOYMENT.md).
 
 Suggested order for the next implementation pass:
 

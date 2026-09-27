@@ -1,4 +1,4 @@
-name: Deploy GitHub Pages
+name: Validate and publish Cloudflare Pages
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: github-pages
+  group: cloudflare-pages
   cancel-in-progress: false
 
 jobs:
@@ -21,9 +21,6 @@ jobs:
         with:
           node-version: 22.14.0
           cache: npm
-      - name: Configure Pages
-        id: pages
-        uses: actions/configure-pages@v5
       - run: npm ci
       - name: Install browser test runtime
         run: npx playwright install --with-deps chromium
@@ -32,24 +29,18 @@ jobs:
       - run: npm run library:validate
       - name: Browser acceptance tests
         run: npm run test:browser
-      - name: Build static site
-        run: npm run build
-        env:
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}/
-      - uses: actions/upload-pages-artifact@v4
-        with:
-          path: dist
 
-  deploy:
+  publish:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      contents: write
     steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      # Cloudflare's installed GitHub integration watches only this branch.
+      # Advancing it after acceptance keeps credentials out of this repository.
+      - name: Publish tested commit to Cloudflare
+        run: git push origin HEAD:refs/heads/cloudflare-production

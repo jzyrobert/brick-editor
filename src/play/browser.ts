@@ -316,7 +316,8 @@ export class BrowserPlay {
       session.setMechanismVehicleInput(
         {
           throttle: input.moveZ ?? 0,
-          steering: input.moveX ?? 0,
+          // LDraw up is −Y: vehicle-right is −X at heading zero.
+          steering: -(input.moveX ?? 0),
         },
         this.state.vehicleControl,
       );
