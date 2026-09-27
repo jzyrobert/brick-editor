@@ -99,7 +99,7 @@ Inventory never launches Chromium. A blocked complete export exits nonzero, writ
 
 ## Static deployment
 
-Published site: [Brick Editor on GitHub Pages](https://jzyrobert.github.io/brick-editor/).
+Published site: [Brick Editor](https://bricks.robertj.in/), hosted on GitHub Pages with Cloudflare DNS. See [deployment configuration](docs/DEPLOYMENT.md).
 
 The [Pages workflow](.github/workflows/pages.yml) checks, builds and deploys `dist/` on pushes to `main`. Remaining implementation work is tracked in [TODO.md](TODO.md) and [the detailed status report](docs/STATUS.md).
 

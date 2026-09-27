@@ -132,7 +132,8 @@ describe("static triangle world collisions", () => {
     s.setInput({ moveZ: 1, moveX: 0.3, run: true });
     s.stepTicks(120);
     expect(s.snapshot().position[2]).toBeGreaterThan(-33);
-    expect(s.snapshot().position[0]).toBeGreaterThan(20);
+    // At yaw zero, camera-right is negative LDraw X.
+    expect(s.snapshot().position[0]).toBeLessThan(-20);
     s.dispose();
   });
   it("stops upward jumps at a ceiling and keeps door openings traversable", async () => {

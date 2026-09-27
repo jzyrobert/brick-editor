@@ -529,10 +529,11 @@ export class PlaySession {
         : P.flySpeed * (i.run ? 1.7 : 1);
     const cp = this.locomotion === "walk" ? 1 : Math.cos(this.pitch),
       sp = this.locomotion === "walk" ? 0 : Math.sin(this.pitch);
+    // LDraw up is -Y: camera-right = forward × up = [-cos(yaw), 0, -sin(yaw)].
     let delta: Vec3 = [
-      (x * Math.cos(this.yaw) + z * Math.sin(this.yaw) * cp) * speed * DT,
+      (-x * Math.cos(this.yaw) + z * Math.sin(this.yaw) * cp) * speed * DT,
       -(y + z * sp) * speed * DT,
-      (x * Math.sin(this.yaw) - z * Math.cos(this.yaw) * cp) * speed * DT,
+      (-x * Math.sin(this.yaw) - z * Math.cos(this.yaw) * cp) * speed * DT,
     ];
     if (this.locomotion === "fly-noclip") {
       const length = Math.hypot(...delta),
