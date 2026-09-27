@@ -178,6 +178,11 @@
             },
             "value": {
               "type": "number"
+            },
+            "rigId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
             }
           },
           "required": [
@@ -215,6 +220,11 @@
               "type": "number",
               "minimum": -1,
               "maximum": 1
+            },
+            "rigId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
             }
           },
           "required": [
@@ -603,6 +613,11 @@
               "type": "number",
               "minimum": -1,
               "maximum": 1
+            },
+            "rigId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
             }
           },
           "required": [

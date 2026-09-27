@@ -50,7 +50,7 @@ Autosave writes and verifies a new snapshot before changing the head pointer, re
 
 Project also provides bounded self-contained share links, temporary import previews, opt-in offline downloads, and saved-project management. Native bundles include separately checksummed source and asset files.
 
-The **Door & vehicle** template includes two original kinematic rigs. In Play, preview hinges or advance a vehicle by fixed ticks; **Apply current pose** is the explicit undoable authoring operation. Dynamics and suspension remain unimplemented.
+The **Door & vehicle** template includes two original kinematic rigs. In Play, choose **All mechanisms**, approach a joint or vehicle, and press **E** or tap the nearby action. Doors open/close; vehicle control uses movement keys or the joystick while your explorer stays in place. Remote controls can select any active rig. The separate mechanism preview offers **Apply current pose** as an explicit undoable authoring operation. Seated entry, riding, vehicle/world dynamics and suspension remain unimplemented.
 
 ## Browser automation
 

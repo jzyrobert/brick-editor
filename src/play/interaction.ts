@@ -4,6 +4,7 @@ import type { MotionRig } from "../mechanisms/types";
 import type { PlaySnapshotReport } from "./types";
 
 export type PlayInteraction = {
+  rigId: string;
   label: string;
   name: string;
   available: boolean;
@@ -15,7 +16,7 @@ export function nearbyInteraction(
   rig: MotionRig,
   report: PlaySnapshotReport,
 ): PlayInteraction | undefined {
-  const mechanism = report.mechanism;
+  const mechanism = report.mechanisms?.[rig.id] ?? report.mechanism;
   if (!mechanism || mechanism.rigId !== rig.id) return;
   const distance = (point: Vec3) =>
     Math.hypot(
@@ -30,6 +31,7 @@ export function nearbyInteraction(
       const d = distance(frame.position);
       targets.push({
         kind: "vehicle",
+        rigId: rig.id,
         label: "Control vehicle",
         name: rig.name,
         available: d <= 96,
@@ -51,6 +53,7 @@ export function nearbyInteraction(
     const close = Math.abs(current - opened) < Math.abs(current - closed);
     targets.push({
       kind: "joint",
+      rigId: rig.id,
       jointId: joint.id,
       target: close ? closed : opened,
       label: close ? "Close joint" : "Open joint",

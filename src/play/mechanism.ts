@@ -40,6 +40,13 @@ export function validatePlayMechanismSource(
   revision: number,
 ) {
   ensure(
+    source?.project &&
+      typeof source.rigId === "string" &&
+      Object.hasOwn(source.project.motionRigs ?? {}, source.rigId),
+    "INVALID_INPUT",
+    "Unknown authored Play rig",
+  );
+  ensure(
     source.project.revision === revision,
     "REVISION_CONFLICT",
     "Moving collision source revision differs from Play",
@@ -71,6 +78,47 @@ export function validatePlayMechanismSource(
       "LIMIT_EXCEEDED",
       "Moving collider budget is 200,000 triangles",
     );
+  }
+}
+/** Validate all moving geometry before allocating any Rapier resources. */
+export function validatePlayMechanismSources(
+  sources: PlayMechanismSource[],
+  revision: number,
+) {
+  ensure(
+    sources.length <= 32,
+    "LIMIT_EXCEEDED",
+    "Play supports at most 32 authored rigs",
+  );
+  const rigs = new Set<string>(),
+    members = new Set<string>();
+  let groups = 0,
+    triangles = 0;
+  for (const source of sources) {
+    ensure(
+      source && typeof source === "object" && !rigs.has(source.rigId),
+      "INVALID_INPUT",
+      "Play rig IDs must be distinct",
+    );
+    rigs.add(source.rigId);
+    validatePlayMechanismSource(source, revision);
+    for (const group of source.project.motionRigs[source.rigId].groups) {
+      groups++;
+      triangles += source.groups[group.id].indices.length / 3;
+      ensure(
+        groups <= 128 && triangles <= 200000,
+        "LIMIT_EXCEEDED",
+        "Combined Play rigs exceed 128 groups or 200,000 moving triangles",
+      );
+      for (const id of group.occurrenceIds) {
+        ensure(
+          !members.has(id),
+          "INVALID_INPUT",
+          "Play rigs cannot share occurrence members",
+        );
+        members.add(id);
+      }
+    }
   }
 }
 /** Kinematic surfaces collide with the actor; this is not vehicle/world dynamics. */

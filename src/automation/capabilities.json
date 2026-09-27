@@ -137,7 +137,13 @@
       "validatedSessionSpawns": true,
       "remappablePlayKeys": true,
       "explicitLayerInclusion": true,
-      "editorVisibilityIndependent": true
+      "editorVisibilityIndependent": true,
+      "multipleActiveRigs": {
+        "maxRigs": 32,
+        "maxGroups": 128,
+        "maxMovingTriangles": 200000
+      },
+      "nearbyInteraction": "E/touch authored joint toggle and remote vehicle control; no seated entry or riding"
     },
     "sharing": {
       "selfContainedMpdLinks": true,

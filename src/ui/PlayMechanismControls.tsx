@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { BrowserPlay } from "../play/browser";
 import type { MotionRig, MechanismSnapshot } from "../mechanisms/types";
 export function PlayMechanismControls({
@@ -5,12 +6,20 @@ export function PlayMechanismControls({
   rig,
   report,
   onError,
+  choices = [rig],
+  onRigChange,
+  onOpenChange,
 }: {
   play: BrowserPlay;
   rig: MotionRig;
   report: MechanismSnapshot & { blocked?: boolean; blockedReason?: string };
   onError: (message: string) => void;
+  choices?: MotionRig[];
+  onRigChange?: (rigId: string) => void;
+  onOpenChange?: (open: boolean) => void;
 }) {
+  const details = useRef<HTMLDetailsElement>(null);
+  useEffect(() => () => onOpenChange?.(false), [onOpenChange]);
   const attempt = (fn: () => unknown) => {
     try {
       fn();
@@ -22,22 +31,64 @@ export function PlayMechanismControls({
   const drive = (throttle: number) => {
     if (!play.getState().active) return;
     return attempt(() =>
-      play.setMechanismVehicleInput({
-        throttle,
-        steering:
-          (report.pose.vehicle?.steeringDegrees ?? 0) /
-          (rig.vehicle?.maxSteerDegrees || 1),
-      }),
+      play.setMechanismVehicleInput(
+        {
+          throttle,
+          steering:
+            (report.pose.vehicle?.steeringDegrees ?? 0) /
+            (rig.vehicle?.maxSteerDegrees || 1),
+        },
+        rig.id,
+      ),
     );
   };
   return (
     <details
       className="play-mechanism"
+      ref={details}
       onToggle={(e) => {
-        if (!e.currentTarget.open) play.clearInput();
+        play.clearInput();
+        onOpenChange?.(e.currentTarget.open);
+        if (e.currentTarget.open) onRigChange?.(rig.id);
       }}
     >
-      <summary>{rig.name} controls</summary>
+      <summary>
+        {choices.length > 1
+          ? "Remote mechanism controls"
+          : `${rig.name} controls`}
+      </summary>
+      <button
+        className="wide"
+        onClick={() => {
+          play.clearInput();
+          if (details.current) details.current.open = false;
+        }}
+      >
+        Back to nearby actions
+      </button>
+      {choices.length > 1 && (
+        <label>
+          Remote mechanism
+          <select
+            aria-label="Remote mechanism"
+            value={rig.id}
+            onChange={(event) => {
+              play.clearInput();
+              onRigChange?.(event.target.value);
+            }}
+          >
+            {choices.map((choice) => (
+              <option key={choice.id} value={choice.id}>
+                {choice.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <p className="play-remote-note">
+        Advanced controls can move this mechanism from anywhere. Nearby actions
+        remain available when you close this panel.
+      </p>
       <p>
         Moving parts stop before touching you. Vehicles can pass through the
         build; riding and pushing are not simulated. Your build stays unchanged.
@@ -57,7 +108,7 @@ export function PlayMechanismControls({
               value={report.pose.jointPositions[j.id] ?? 0}
               onChange={(e) =>
                 attempt(() =>
-                  play.setMechanismJoint(j.id, Number(e.target.value)),
+                  play.setMechanismJoint(j.id, Number(e.target.value), rig.id),
                 )
               }
             />
@@ -79,10 +130,13 @@ export function PlayMechanismControls({
               }
               onChange={(e) =>
                 attempt(() =>
-                  play.setMechanismVehicleInput({
-                    throttle: 0,
-                    steering: Number(e.target.value),
-                  }),
+                  play.setMechanismVehicleInput(
+                    {
+                      throttle: 0,
+                      steering: Number(e.target.value),
+                    },
+                    rig.id,
+                  ),
                 )
               }
             />

@@ -146,12 +146,18 @@ export function createAPI(
         validate("playInput", input);
         return player().setInput(input);
       },
-      setMechanismJoint: async (jointId: string, value: number) =>
-        player().setMechanismJoint(jointId, value),
-      setMechanismVehicleInput: async (input: {
-        throttle: number;
-        steering: number;
-      }) => player().setMechanismVehicleInput(input),
+      setMechanismJoint: async (
+        jointId: string,
+        value: number,
+        rigId?: string,
+      ) => player().setMechanismJoint(jointId, value, rigId),
+      setMechanismVehicleInput: async (
+        input: {
+          throttle: number;
+          steering: number;
+        },
+        rigId?: string,
+      ) => player().setMechanismVehicleInput(input, rigId),
       setCameraMode: async (mode: PlayCameraMode) =>
         player().setCameraMode(mode),
       setLocomotion: async (mode: PlayLocomotion) =>
@@ -312,6 +318,8 @@ export function createAPI(
         const playState = activePlay?.getState();
         const resumePlay = playState?.active && !playState.paused;
         if (resumePlay) activePlay!.pause(true);
+        const pauseRevision = activePlay?.pauseRevision;
+        const sessionEpoch = activePlay?.sessionEpoch;
         let result;
         let restorePlayCamera: (() => void) | undefined;
         try {
@@ -332,7 +340,12 @@ export function createAPI(
           };
         } finally {
           restorePlayCamera?.();
-          if (resumePlay && activePlay?.getState().active)
+          if (
+            resumePlay &&
+            activePlay?.getState().active &&
+            activePlay.pauseRevision === pauseRevision &&
+            activePlay.sessionEpoch === sessionEpoch
+          )
             activePlay.pause(false);
         }
         ensure(

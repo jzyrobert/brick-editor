@@ -26,17 +26,33 @@ export type PlayViewState = {
   loading: boolean;
   report?: PlaySnapshotReport;
   error?: string;
-  vehicleControl?: boolean;
+  vehicleControl?: string;
   interaction?: PlayInteraction;
 };
 /** Owns browser lifetime, never authoring state. API sessions are manual-tick by default. */
 export class BrowserPlay {
   private session?: PlaySession;
+  private captureSession?: PlaySession;
+  private captureInputClear = false;
+  private pauseVersion = 0;
+  get pauseRevision() {
+    return this.pauseVersion;
+  }
+  private assertMutable() {
+    ensure(
+      !this.captureSession,
+      "CAPTURE_BUSY",
+      "Wait for Play capture before changing the session",
+    );
+  }
   private avatar?: BrickAvatar;
   private restore?: () => void;
   private restorePose?: () => void;
   private raf = 0;
   private epoch = 0;
+  get sessionEpoch() {
+    return this.epoch;
+  }
   private realtime = false;
   private held: PlayInput = {};
   private last = 0;
@@ -79,6 +95,7 @@ export class BrowserPlay {
     return this.session;
   }
   async enter(request: PlayRequest = {}) {
+    this.assertMutable();
     this.beforeEnter();
     this.exit();
     const epoch = ++this.epoch;
@@ -92,18 +109,47 @@ export class BrowserPlay {
         "INVALID_INPUT",
         "Layer exclusions require an authored project snapshot",
       );
-      const worldProfile = project
-        ? resolvePlayWorldProfile(project, request.worldProfile, request.rigId)
-        : undefined;
-      const rig = request.rigId
-        ? project?.motionRigs?.[request.rigId]
-        : undefined;
       ensure(
-        !request.rigId || rig,
+        !(request.rigId !== undefined && request.rigIds !== undefined),
         "INVALID_INPUT",
-        "Unknown authored Play rig",
+        "Choose rigId or rigIds, not both",
       );
-      const ids = rig?.groups.flatMap((group) => group.occurrenceIds) ?? [];
+      const rigIds = request.rigIds ?? (request.rigId ? [request.rigId] : []);
+      ensure(
+        Array.isArray(rigIds) &&
+          rigIds.length <= 32 &&
+          rigIds.every(
+            (id) =>
+              typeof id === "string" && id.length > 0 && id.length <= 1024,
+          ) &&
+          new Set(rigIds).size === rigIds.length,
+        "INVALID_INPUT",
+        "Choose at most 32 unique authored rigs",
+      );
+      const worldProfile = project
+        ? resolvePlayWorldProfile(project, request.worldProfile, rigIds)
+        : undefined;
+      const rigs = rigIds.map((id) => {
+        const rig =
+          project?.motionRigs && Object.hasOwn(project.motionRigs, id)
+            ? project.motionRigs[id]
+            : undefined;
+        ensure(rig, "INVALID_INPUT", "Unknown authored Play rig");
+        return rig;
+      });
+      const ids = rigs.flatMap((rig) =>
+        rig.groups.flatMap((group) => group.occurrenceIds),
+      );
+      ensure(
+        new Set(ids).size === ids.length,
+        "INVALID_INPUT",
+        "Active rigs cannot share occurrence members",
+      );
+      ensure(
+        rigs.reduce((sum, rig) => sum + rig.groups.length, 0) <= 128,
+        "LIMIT_EXCEEDED",
+        "Play supports at most 128 moving groups across all rigs",
+      );
       const [{ PlaySession }, geometry] = await Promise.all([
         import("./session"),
         r.playGeometry({
@@ -111,23 +157,25 @@ export class BrowserPlay {
           exclude: ids,
         }),
       ]);
-      const mechanismSource: PlayMechanismSource | undefined =
-        rig && project
-          ? {
-              project,
-              rigId: rig.id,
-              groups: Object.fromEntries(
-                await Promise.all(
-                  rig.groups.map(async (group) => [
-                    group.id,
-                    await r.playGeometry({ include: group.occurrenceIds }),
-                  ]),
-                ),
-              ),
-            }
-          : undefined;
-      if (mechanismSource)
-        for (const mesh of Object.values(mechanismSource.groups)) {
+      const mechanismSources: PlayMechanismSource[] = [];
+      let triangles = 0;
+      for (const rig of rigs) {
+        const groups: PlayMechanismSource["groups"] = {};
+        for (const group of rig.groups) {
+          const mesh = await r.playGeometry({ include: group.occurrenceIds });
+          ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+          ensure(
+            geometry.revision === this.revision(),
+            "REVISION_CONFLICT",
+            "Project changed while preparing Play",
+          );
+          triangles += mesh.indices.length / 3;
+          ensure(
+            triangles <= 200000,
+            "LIMIT_EXCEEDED",
+            "Play supports at most 200,000 moving triangles across all rigs",
+          );
+          groups[group.id] = mesh;
           for (let axis = 0; axis < 3; axis++) {
             geometry.bounds.min[axis] = Math.min(
               geometry.bounds.min[axis],
@@ -139,6 +187,8 @@ export class BrowserPlay {
             );
           }
         }
+        mechanismSources.push({ project: project!, rigId: rig.id, groups });
+      }
       ensure(
         geometry.revision === this.revision(),
         "REVISION_CONFLICT",
@@ -151,7 +201,7 @@ export class BrowserPlay {
       const session = await PlaySession.create(
         collisionSnapshot,
         request,
-        mechanismSource,
+        mechanismSources,
       );
       if (epoch !== this.epoch) {
         session.dispose();
@@ -163,7 +213,7 @@ export class BrowserPlay {
       }
       this.session = session;
       this.held = {};
-      if (rig) this.restorePose = r.beginTransientPose();
+      if (rigs.length) this.restorePose = r.beginTransientPose();
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
       r.scene.add(this.avatar.group);
@@ -191,24 +241,54 @@ export class BrowserPlay {
       Math.max(1, canvas.clientWidth) / Math.max(1, canvas.clientHeight),
     );
     const report = this.session.snapshot();
-    if (report.mechanism) r.applyTransientPose(report.mechanism.transforms);
+    const mechanisms = Object.values(
+      report.mechanisms ??
+        (report.mechanism
+          ? { [report.mechanism.rigId]: report.mechanism }
+          : {}),
+    );
+    if (mechanisms.length)
+      r.applyTransientPose(
+        Object.assign({}, ...mechanisms.map((m) => m.transforms)),
+      );
     r.playCamera(this.session.camera(this.realtime && !this.state.paused));
     this.avatar?.update(this.session.snapshot());
     r.invalidate();
-    const rig =
-      report.mechanism && this.project?.().motionRigs?.[report.mechanism.rigId];
     this.state = {
       ...this.state,
       report: this.session.snapshot(),
-      interaction: rig ? nearbyInteraction(rig, report) : undefined,
+      interaction: this.nearby(report),
     };
   }
+  private nearby(report: PlaySnapshotReport) {
+    const rigs = this.project?.().motionRigs ?? {};
+    return Object.keys(
+      report.mechanisms ??
+        (report.mechanism
+          ? { [report.mechanism.rigId]: report.mechanism }
+          : {}),
+    )
+      .flatMap((id) =>
+        rigs[id]
+          ? [nearbyInteraction(rigs[id], report)].filter(
+              (target): target is PlayInteraction => !!target,
+            )
+          : [],
+      )
+      .sort((a, b) => a.distance - b.distance)[0];
+  }
+
   private schedule() {
     cancelAnimationFrame(this.raf);
     this.last = performance.now();
     if (!this.realtime || this.state.paused || !this.session) return;
     const frame = (now: number) => {
       if (!this.session || this.state.paused) return;
+      if (this.captureSession) {
+        this.last = now;
+        this.raf = requestAnimationFrame(frame);
+        return;
+      }
       if (this.session.snapshot().sourceRevision !== this.revision()) {
         this.exit();
         return;
@@ -227,23 +307,37 @@ export class BrowserPlay {
     this.raf = requestAnimationFrame(frame);
   }
   setInput(input: PlayInput) {
+    this.assertMutable();
     const session = this.current();
     if (this.state.vehicleControl) {
       // Let the normal validator reject malformed input before changing the vehicle.
       session.setInput(input);
       session.setInput({ yaw: input.yaw, pitch: input.pitch });
-      session.setMechanismVehicleInput({
-        throttle: input.moveZ ?? 0,
-        steering: input.moveX ?? 0,
-      });
+      session.setMechanismVehicleInput(
+        {
+          throttle: input.moveZ ?? 0,
+          steering: input.moveX ?? 0,
+        },
+        this.state.vehicleControl,
+      );
     } else session.setInput(input);
     this.held = { ...input };
   }
   clearInput() {
+    if (this.captureSession) {
+      this.captureInputClear = true;
+      return;
+    }
     this.held = {};
     this.session?.clearInput();
   }
   pause(paused = true) {
+    this.pauseVersion++;
+    if (this.captureSession) {
+      this.captureInputClear = true;
+      if (paused) this.emit({ paused: true });
+      return;
+    }
     this.clearInput();
     this.emit({ paused });
     if (this.session) this.draw();
@@ -251,7 +345,7 @@ export class BrowserPlay {
     this.schedule();
   }
   look(dx: number, dy: number) {
-    if (!this.session || this.state.paused) return;
+    if (!this.session || this.state.paused || this.captureSession) return;
     const s = this.session.snapshot();
     this.setInput({
       ...this.held,
@@ -261,12 +355,14 @@ export class BrowserPlay {
     this.draw();
   }
   setCameraMode(mode: PlayCameraMode) {
+    this.assertMutable();
     this.current().setCameraMode(mode);
     this.draw();
     this.emit();
     return this.current().snapshot();
   }
   setLocomotion(mode: PlayLocomotion) {
+    this.assertMutable();
     this.releaseVehicle();
     const report = this.current().setLocomotion(mode);
     this.held = {};
@@ -275,6 +371,7 @@ export class BrowserPlay {
     return report;
   }
   respawn() {
+    this.assertMutable();
     this.releaseVehicle();
     const report = this.current().respawn();
     this.held = {};
@@ -283,6 +380,7 @@ export class BrowserPlay {
     return report;
   }
   teleport(input: PlayTeleportRequest) {
+    this.assertMutable();
     this.releaseVehicle();
     const report = this.current().teleport(input);
     this.held = {};
@@ -291,6 +389,7 @@ export class BrowserPlay {
     return report;
   }
   stepTicks(count: number) {
+    this.assertMutable();
     const session = this.current();
     session.stepTicks(count);
     this.draw();
@@ -298,17 +397,20 @@ export class BrowserPlay {
     return session.snapshot();
   }
   configureCamera(settings: Partial<PlayCameraSettings>) {
+    this.assertMutable();
     this.current().configureCamera(settings);
     this.draw();
     this.emit();
     return this.current().snapshot();
   }
   chooseSpawn(input: PlaySpawnRequest) {
+    this.assertMutable();
     const report = this.current().chooseSpawn(input);
     this.emit({ report });
     return report;
   }
   useSpawn() {
+    this.assertMutable();
     this.releaseVehicle();
     const report = this.current().useSpawn();
     this.held = {};
@@ -317,49 +419,79 @@ export class BrowserPlay {
     return report;
   }
   prepareCapture(aspectRatio: number) {
-    const session = this.current(),
+    this.assertMutable();
+    const session = this.current();
+    this.captureSession = session;
+    this.captureInputClear = false;
+    let restore: (() => void) | undefined;
+    try {
       restore = session.beginCameraCapture(aspectRatio);
-    this.renderer().playCamera(session.camera());
-    this.avatar?.update(session.snapshot());
-    return () => {
-      if (this.session === session) {
-        restore();
-        this.draw();
+      this.renderer().playCamera(session.camera());
+      this.avatar?.update(session.snapshot());
+    } catch (error) {
+      restore?.();
+      this.captureSession = undefined;
+      try {
+        this.renderer().playCamera(session.camera());
+      } catch {
+        /* Preserve the original camera preparation failure. */
       }
+      throw error;
+    }
+    let finished = false;
+    return () => {
+      if (finished) return;
+      finished = true;
+      if (this.session !== session) return;
+      try {
+        restore!();
+      } finally {
+        if (this.captureSession === session) this.captureSession = undefined;
+      }
+      if (this.captureInputClear) {
+        this.captureInputClear = false;
+        this.clearInput();
+      }
+      this.draw();
     };
   }
   releaseVehicle() {
+    this.assertMutable();
     if (!this.state.vehicleControl) return;
     this.clearInput();
-    this.emit({ vehicleControl: false });
+    this.emit({ vehicleControl: undefined });
   }
   interact() {
+    this.assertMutable();
     ensure(!this.state.paused, "INVALID_INPUT", "Resume Play to interact");
     const report = this.current().snapshot();
     if (this.state.vehicleControl) {
       this.releaseVehicle();
       return;
     }
-    const rig =
-      report.mechanism && this.project?.().motionRigs?.[report.mechanism.rigId];
-    const target = rig && nearbyInteraction(rig, report);
+    const target = this.nearby(report);
     ensure(
       target?.available,
       "INVALID_INPUT",
       "Move closer to the authored joint or vehicle",
     );
     this.clearInput();
-    if (target.kind === "vehicle") this.emit({ vehicleControl: true });
-    else this.setMechanismJoint(target.jointId, target.target);
+    if (target.kind === "vehicle") this.emit({ vehicleControl: target.rigId });
+    else this.setMechanismJoint(target.jointId, target.target, target.rigId);
   }
-  setMechanismJoint(id: string, value: number) {
-    const report = this.current().setMechanismJoint(id, value);
+  setMechanismJoint(id: string, value: number, rigId?: string) {
+    this.assertMutable();
+    const report = this.current().setMechanismJoint(id, value, rigId);
     this.draw();
     this.emit();
     return report;
   }
-  setMechanismVehicleInput(input: { throttle: number; steering: number }) {
-    const report = this.current().setMechanismVehicleInput(input);
+  setMechanismVehicleInput(
+    input: { throttle: number; steering: number },
+    rigId?: string,
+  ) {
+    this.assertMutable();
+    const report = this.current().setMechanismVehicleInput(input, rigId);
     this.draw();
     this.emit();
     return report;
@@ -372,13 +504,16 @@ export class BrowserPlay {
   }
   sourceChanged() {
     if (this.state.active || this.state.loading) {
-      this.exit();
+      this.exit(true);
       this.emit({
         error: "The build changed. Enter Play again to refresh the world.",
       });
     }
   }
-  exit() {
+  exit(force = false) {
+    if (!force) this.assertMutable();
+    this.captureSession = undefined;
+    this.captureInputClear = false;
     ++this.epoch;
     cancelAnimationFrame(this.raf);
     this.clearInput();
@@ -396,12 +531,12 @@ export class BrowserPlay {
       paused: true,
       loading: false,
       report: undefined,
-      vehicleControl: false,
+      vehicleControl: undefined,
       interaction: undefined,
     });
   }
   dispose() {
-    this.exit();
+    this.exit(true);
     this.listeners.clear();
   }
 }

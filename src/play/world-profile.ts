@@ -33,7 +33,7 @@ export function validatePlayWorldProfile(
 export function resolvePlayWorldProfile(
   project: Project,
   input?: PlayWorldProfile,
-  rigId?: string,
+  rigId?: string | string[],
 ): ResolvedPlayWorldProfile {
   const requested = validatePlayWorldProfile(input),
     excluded = new Set(requested.excludedLayerIds);
@@ -45,10 +45,22 @@ export function resolvePlayWorldProfile(
   const includedOccurrenceIds = occurrences(project)
     .filter((o) => !excluded.has(o.layerId))
     .map((o) => o.id);
-  if (rigId) {
-    const rig = project.motionRigs?.[rigId],
-      included = new Set(includedOccurrenceIds);
-    ensure(rig, "INVALID_INPUT", "Unknown authored Play rig");
+  const rigIds = typeof rigId === "string" ? [rigId] : (rigId ?? []);
+  ensure(
+    Array.isArray(rigIds) &&
+      rigIds.length <= 32 &&
+      new Set(rigIds).size === rigIds.length,
+    "INVALID_INPUT",
+    "Play requires at most 32 distinct rig IDs",
+  );
+  const included = new Set(includedOccurrenceIds);
+  for (const id of rigIds) {
+    ensure(
+      typeof id === "string" && Object.hasOwn(project.motionRigs ?? {}, id),
+      "INVALID_INPUT",
+      "Unknown authored Play rig",
+    );
+    const rig = project.motionRigs[id];
     ensure(
       rig.groups.every((group) =>
         group.occurrenceIds.every((id) => included.has(id)),

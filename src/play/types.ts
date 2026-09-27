@@ -41,6 +41,7 @@ export type PlayRequest = {
   worldProfile?: PlayWorldProfile;
   cameraSettings?: Partial<PlayCameraSettings>;
   rigId?: string;
+  rigIds?: string[];
   locomotion?: PlayLocomotion;
   cameraMode?: PlayCameraMode;
   position?: Vec3;
@@ -93,6 +94,10 @@ export type AvatarPose = {
 };
 export type PlaySnapshotReport = {
   mechanism?: MechanismSnapshot & { blocked: boolean; blockedReason?: string };
+  mechanisms?: Record<
+    string,
+    MechanismSnapshot & { blocked: boolean; blockedReason?: string }
+  >;
   worldProfile: ResolvedPlayWorldProfile;
   cameraSettings: PlayCameraSettings;
   cameraSafety: {

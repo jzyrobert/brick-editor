@@ -64,6 +64,16 @@
       "minLength": 1,
       "maxLength": 1024
     },
+    "rigIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 32,
+      "uniqueItems": true
+    },
     "locomotion": {
       "enum": [
         "walk",
@@ -98,5 +108,11 @@
     }
   },
   "required": [],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "not": {
+    "required": [
+      "rigId",
+      "rigIds"
+    ]
+  }
 }

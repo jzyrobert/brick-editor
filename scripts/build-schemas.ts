@@ -665,6 +665,7 @@ const playRequest = obj(
     worldProfile: playWorldProfile,
     cameraSettings: { ...playCameraSettings, required: [] },
     rigId: id,
+    rigIds: { ...arr(id, 32), uniqueItems: true },
     locomotion: { enum: ["walk", "fly-noclip"] },
     cameraMode: { enum: ["first-person", "third-person"] },
     position: vec,
@@ -675,6 +676,7 @@ const playRequest = obj(
   },
   [],
 );
+Object.assign(playRequest, { not: { required: ["rigId", "rigIds"] } });
 const playInput = obj(
   {
     moveX: { type: "number", minimum: -1, maximum: 1 },
@@ -783,6 +785,10 @@ playSnapshot.properties.mechanism = obj(
     "blocked",
   ],
 );
+playSnapshot.properties.mechanisms = {
+  ...dictionary(playSnapshot.properties.mechanism),
+  maxProperties: 32,
+};
 const exportProfileRequest = obj(
   {
     profile: { enum: ["standard", "portable", "layers", "native"] },
@@ -801,11 +807,18 @@ const api = {
     "play.chooseSpawn": playSpawn,
     "play.useSpawn": obj({}),
     "play.setInput": { $ref: "playInput" },
-    "play.setMechanismJoint": obj({ jointId: id, value: num }),
-    "play.setMechanismVehicleInput": obj({
-      throttle: { type: "number", minimum: -1, maximum: 1 },
-      steering: { type: "number", minimum: -1, maximum: 1 },
-    }),
+    "play.setMechanismJoint": obj({ jointId: id, value: num, rigId: id }, [
+      "jointId",
+      "value",
+    ]),
+    "play.setMechanismVehicleInput": obj(
+      {
+        throttle: { type: "number", minimum: -1, maximum: 1 },
+        steering: { type: "number", minimum: -1, maximum: 1 },
+        rigId: id,
+      },
+      ["throttle", "steering"],
+    ),
     "play.teleport": { $ref: "playTeleport" },
     "play.stepTicks": { type: "integer", minimum: 0, maximum: 3600 },
     "play.setCameraMode": { enum: ["first-person", "third-person"] },
@@ -838,10 +851,14 @@ const api = {
     ),
     "mechanisms.enter": id,
     "mechanisms.setJointPosition": obj({ jointId: id, value: num }),
-    "mechanisms.setVehicleInput": obj({
-      throttle: { type: "number", minimum: -1, maximum: 1 },
-      steering: { type: "number", minimum: -1, maximum: 1 },
-    }),
+    "mechanisms.setVehicleInput": obj(
+      {
+        throttle: { type: "number", minimum: -1, maximum: 1 },
+        steering: { type: "number", minimum: -1, maximum: 1 },
+        rigId: id,
+      },
+      ["throttle", "steering"],
+    ),
     "mechanisms.stepTicks": { type: "integer", minimum: 0, maximum: 3600 },
     "mechanisms.snapshot": obj({}),
     "mechanisms.applyPose": obj({}),

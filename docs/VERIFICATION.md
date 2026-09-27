@@ -95,3 +95,9 @@ General joint tests cover fixed/spherical rest-only behavior, revolute degrees, 
 ## Nearby interaction checkpoint
 
 The existing 206-test unit/integration/CLI suite passes, with three additional passing tests for asymmetric joint limits, reach boundaries, unsupported targets and key-preference migration. Nine targeted Chromium tests pass for interaction, remapped keys, moving colliders and camera-relative strafing. The three interaction tests also pass after adding actual CDP touch driving/release checks at 360×800 and 1080×1800. They verify E/tap open-close, out-of-range refusal, on-foot vehicle steering, paused drive input and unchanged exports. TypeScript/build and formatting pass. These are headless browser checks; seated access, multi-rig interactions and physical-device behavior remain unverified.
+
+## Multiple rigs and capture isolation
+
+The integrated checkpoint passes **216 unit/integration/CLI tests across 48 files** and all **32 Play Chromium browser tests**. TypeScript/build and formatting pass. New engine tests cover multiple moving collider sets, synchronized ticks, explicit targeting, aggregate budgets, duplicate/overlapping membership and layer exclusion. Browser tests keep a door pose while driving a different rig, inspect both poses in capture metadata, and preserve the authored export.
+
+Independent review reproduced a mutation race during image capture. Play now rejects mutating operations before touching simulation state, refuses overlapping capture preparation, rolls back camera preparation failures and prevents an old callback from restoring a successor session. Actual Chromium regressions verify atomic rejection and preservation of an explicit pause during capture. The independent mobile critic initially scored an overlapping control layout 8.3; after the worker's correction, the integrated 360×800 and 1080×1800 interface scored **8.7/10**. See UX-AUDIT for the before/after evidence and limits.

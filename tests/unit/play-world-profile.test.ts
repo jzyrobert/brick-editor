@@ -110,3 +110,37 @@ it("requires collision extraction to match the requested profile and freezes rep
     PlaySession.create(mesh, { worldProfile: { excludedLayerIds: ["roof"] } }),
   ).rejects.toThrow("occurrence profile");
 });
+it("checks every selected rig layer and rejects inherited, duplicate and oversized rig selections", () => {
+  const p = mechanismFixture(),
+    vehicle = p.motionRigs.vehicle;
+  p.layers.hidden = {
+    id: "hidden",
+    name: "Hidden",
+    order: 2,
+    visible: false,
+    locked: false,
+  };
+  p.layerAssignments[vehicle.groups[0].occurrenceIds[0]] = "hidden";
+  expect(() =>
+    resolvePlayWorldProfile(p, undefined, ["door", "vehicle"]),
+  ).not.toThrow();
+  expect(() =>
+    resolvePlayWorldProfile(p, { excludedLayerIds: ["hidden"] }, [
+      "door",
+      "vehicle",
+    ]),
+  ).toThrow("selected rig");
+  expect(() => resolvePlayWorldProfile(p, undefined, ["door", "door"])).toThrow(
+    "distinct",
+  );
+  expect(() => resolvePlayWorldProfile(p, undefined, ["__proto__"])).toThrow(
+    "Unknown authored",
+  );
+  expect(() =>
+    resolvePlayWorldProfile(
+      p,
+      undefined,
+      Array.from({ length: 33 }, (_, i) => `r${i}`),
+    ),
+  ).toThrow("32");
+});

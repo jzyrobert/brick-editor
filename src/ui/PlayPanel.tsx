@@ -33,6 +33,13 @@ export function PlayPanel({
   const state = useSyncExternalStore(play.subscribe, play.getState);
   const [message, setMessage] = useState("");
   const [rigId, setRigId] = useState("");
+  const [mechanismMode, setMechanismMode] = useState<
+    "all" | "single" | "static"
+  >("all");
+  const [remoteRigId, setRemoteRigId] = useState("");
+  const [remoteOpen, setRemoteOpen] = useState(false);
+  let allOption = "__all_mechanisms__";
+  while (rigs[allOption]) allOption += "_";
   const [excludedLayerIds, setExcludedLayerIds] = useState<string[]>([]);
   const [ground, setGround] = useState(true);
   const [bindings, setBindings] = useState(loadPlayKeys);
@@ -249,9 +256,28 @@ export function PlayPanel({
             Explore with mechanism
             <select
               aria-label="Explore with mechanism"
-              value={rigs[rigId] ? rigId : ""}
-              onChange={(e) => setRigId(e.target.value)}
+              value={
+                mechanismMode === "all"
+                  ? allOption
+                  : mechanismMode === "single" && rigs[rigId]
+                    ? rigId
+                    : ""
+              }
+              onChange={(e) => {
+                setMechanismMode(
+                  e.target.value === allOption
+                    ? "all"
+                    : e.target.value
+                      ? "single"
+                      : "static",
+                );
+                if (e.target.value && e.target.value !== allOption)
+                  setRigId(e.target.value);
+              }}
             >
+              <option value={allOption}>
+                All mechanisms ({Object.keys(rigs).length})
+              </option>
               <option value="">Static build</option>
               {Object.values(rigs).map((rig) => (
                 <option key={rig.id} value={rig.id}>
@@ -263,9 +289,10 @@ export function PlayPanel({
         )}
         {Object.keys(rigs).length > 0 && (
           <p className="muted">
-            Choose a mechanism above, then move near its joint or vehicle and
-            press {bindings.interact || "the on-screen action"}. One rig is
-            active per session.
+            Move near a joint or vehicle, then press{" "}
+            {bindings.interact || "the on-screen action"} or tap its action. All
+            mechanisms lets you interact with the whole build in one session.
+            Static build keeps every part still.
           </p>
         )}
         <PlayWorldSettings
@@ -288,7 +315,11 @@ export function PlayPanel({
                     (id) => !!layers[id],
                   ),
                 },
-                ...(rigs[rigId] ? { rigId } : {}),
+                ...(mechanismMode === "all" && Object.keys(rigs).length
+                  ? { rigIds: Object.keys(rigs) }
+                  : mechanismMode === "single" && rigs[rigId]
+                    ? { rigId }
+                    : {}),
               }),
             )
           }
@@ -302,6 +333,22 @@ export function PlayPanel({
       </div>
     );
   const report = state.report!;
+  const mechanisms =
+    report.mechanisms ??
+    (report.mechanism ? { [report.mechanism.rigId]: report.mechanism } : {});
+  const activeRigs = Object.values(rigs).filter((rig) => !!mechanisms[rig.id]);
+  const nearbyRigId = state.interaction?.rigId;
+  const activeRigId = mechanisms[remoteRigId]
+    ? remoteRigId
+    : nearbyRigId && mechanisms[nearbyRigId]
+      ? nearbyRigId
+      : activeRigs[0]?.id;
+  const nearbyReport = state.vehicleControl
+    ? mechanisms[state.vehicleControl]
+    : nearbyRigId
+      ? mechanisms[nearbyRigId]
+      : report.mechanism;
+
   return (
     <div className={"play-overlay" + (state.paused ? " is-paused" : "")}>
       <div className="play-top">
@@ -537,40 +584,49 @@ export function PlayPanel({
           Lock mouse
         </button>
       </div>
-      {!state.paused && (state.interaction || state.vehicleControl) && (
-        <div className="play-interaction">
-          <button
-            disabled={!state.vehicleControl && !state.interaction?.available}
-            onClick={() => {
-              clear();
-              attempt(() => play.interact());
-            }}
-          >
-            {state.vehicleControl
-              ? "Release vehicle"
-              : state.interaction?.available
-                ? state.interaction.label
-                : "Move closer to interact"}
-            {bindings.interact && <kbd>{bindings.interact}</kbd>}
-          </button>
-          <small>
-            {state.vehicleControl
-              ? "Joystick or movement keys drive and steer. You stay on foot; vehicles can pass through the build."
-              : state.interaction?.name}
-          </small>
-          {report.mechanism?.blocked && (
-            <small role="status">{report.mechanism.blockedReason}</small>
-          )}
-        </div>
-      )}
+      {!state.paused &&
+        (!remoteOpen || state.vehicleControl) &&
+        (state.interaction || state.vehicleControl) && (
+          <div className="play-interaction">
+            <button
+              disabled={!state.vehicleControl && !state.interaction?.available}
+              onClick={() => {
+                clear();
+                attempt(() => play.interact());
+              }}
+            >
+              {state.vehicleControl
+                ? "Release vehicle"
+                : state.interaction?.available
+                  ? state.interaction.label
+                  : "Move closer to interact"}
+              {bindings.interact && <kbd>{bindings.interact}</kbd>}
+            </button>
+            <small>
+              {state.vehicleControl
+                ? "Joystick or movement keys drive and steer. You stay on foot; vehicles can pass through the build."
+                : state.interaction?.name}
+            </small>
+            {nearbyReport?.blocked && (
+              <small role="status">{nearbyReport.blockedReason}</small>
+            )}
+          </div>
+        )}
       {!state.paused &&
         !state.vehicleControl &&
-        report.mechanism &&
-        rigs[report.mechanism.rigId] && (
+        activeRigId &&
+        rigs[activeRigId] &&
+        mechanisms[activeRigId] && (
           <PlayMechanismControls
             play={play}
-            rig={rigs[report.mechanism.rigId]}
-            report={report.mechanism}
+            rig={rigs[activeRigId]}
+            report={mechanisms[activeRigId]}
+            choices={activeRigs}
+            onOpenChange={setRemoteOpen}
+            onRigChange={(id) => {
+              clear();
+              setRemoteRigId(id);
+            }}
             onError={setMessage}
           />
         )}

@@ -2,7 +2,7 @@ import { validatePlayWorldProfile } from "./world-profile";
 import { resolvePlayCameraSettings, playCameraSafety } from "./camera-settings";
 import {
   PlayMechanism,
-  validatePlayMechanismSource,
+  validatePlayMechanismSources,
   type PlayMechanismSource,
 } from "./mechanism";
 import RAPIER from "@dimforge/rapier3d-compat";
@@ -52,7 +52,7 @@ function keys(o: object, allowed: string[]) {
 }
 /** Fixed-step isolated session. No authored project references or mutations. */
 export class PlaySession {
-  private mechanism?: PlayMechanism;
+  private mechanisms = new Map<string, PlayMechanism>();
   private world: RAPIER.World;
   private collider: RAPIER.Collider;
   private controller: RAPIER.KinematicCharacterController;
@@ -93,7 +93,7 @@ export class PlaySession {
     private revision: number,
     snapshot: CollisionSnapshot,
     request: PlayRequest,
-    mechanismSource?: PlayMechanismSource,
+    mechanismSource?: PlayMechanismSource | PlayMechanismSource[],
   ) {
     this.worldProfile = {
       ...validatePlayWorldProfile(
@@ -152,11 +152,23 @@ export class PlaySession {
         P.radius * S,
       ).setSensor(true),
     );
-    if (mechanismSource)
-      this.mechanism = new PlayMechanism(this.world, mechanismSource, () => ({
-        position: this.feet,
-        walk: this.locomotion === "walk",
-      }));
+    try {
+      for (const source of Array.isArray(mechanismSource)
+        ? mechanismSource
+        : mechanismSource
+          ? [mechanismSource]
+          : [])
+        this.mechanisms.set(
+          source.rigId,
+          new PlayMechanism(this.world, source, () => ({
+            position: this.feet,
+            walk: this.locomotion === "walk",
+          })),
+        );
+    } catch (error) {
+      this.world.free();
+      throw error;
+    }
     this.controller = this.world.createCharacterController(0.15 * S);
     this.controller.enableAutostep(P.stepHeight * S, 4 * S, false);
     this.controller.enableSnapToGround(3 * S);
@@ -188,7 +200,7 @@ export class PlaySession {
   static async create(
     snapshot: CollisionSnapshot,
     request: PlayRequest = {},
-    mechanismSource?: PlayMechanismSource,
+    mechanismSource?: PlayMechanismSource | PlayMechanismSource[],
   ): Promise<PlaySession> {
     ensure(
       request && typeof request === "object",
@@ -204,6 +216,7 @@ export class PlaySession {
       "ground",
       "realtime",
       "rigId",
+      "rigIds",
       "cameraSettings",
       "worldProfile",
     ]);
@@ -275,14 +288,39 @@ export class PlaySession {
       "Invalid snapshot revision.",
     );
     ensure(
-      !request.rigId ||
-        (mechanismSource?.rigId === request.rigId &&
-          mechanismSource.project.revision === snapshot.revision),
+      request.rigId === undefined || request.rigIds === undefined,
       "INVALID_INPUT",
-      "Requested Play rig requires geometry from the same source revision",
+      "Choose rigId or rigIds, not both",
     );
-    if (mechanismSource)
-      validatePlayMechanismSource(mechanismSource, snapshot.revision);
+    if (request.rigIds !== undefined)
+      ensure(
+        Array.isArray(request.rigIds) &&
+          request.rigIds.length <= 32 &&
+          request.rigIds.every(
+            (id) => typeof id === "string" && id.length > 0 && id.length <= 128,
+          ) &&
+          new Set(request.rigIds).size === request.rigIds.length,
+        "INVALID_INPUT",
+        "Play rigIds must contain at most 32 distinct rig IDs",
+      );
+    const sources = Array.isArray(mechanismSource)
+      ? mechanismSource
+      : mechanismSource
+        ? [mechanismSource]
+        : [];
+    const requested =
+      request.rigIds ??
+      (request.rigId === undefined ? undefined : [request.rigId]);
+    ensure(
+      requested === undefined ||
+        (requested.length === sources.length &&
+          requested.every((id) =>
+            sources.some((source) => source.rigId === id),
+          )),
+      "INVALID_INPUT",
+      "Requested Play rigs require matching geometry from the same source revision",
+    );
+    validatePlayMechanismSources(sources, snapshot.revision);
     await (initialization ??= RAPIER.init());
     return new PlaySession(
       snapshot.revision,
@@ -396,7 +434,7 @@ export class PlaySession {
     if (input.pitch !== undefined) this.pitch = this.clampPitch(input.pitch);
   }
   clearInput() {
-    this.mechanism?.clearInput();
+    for (const mechanism of this.mechanisms.values()) mechanism.clearInput();
     this.setInput({});
     this.accumulator = 0;
     this.jumpHeld = false;
@@ -510,8 +548,8 @@ export class PlaySession {
     return this.snapshot();
   }
   private step() {
-    this.mechanism?.step();
-    if (this.mechanism) this.world.step();
+    for (const mechanism of this.mechanisms.values()) mechanism.step();
+    if (this.mechanisms.size) this.world.step();
     this.previous = [...this.feet];
     const i = this.input;
     let x = i.moveX,
@@ -794,32 +832,49 @@ export class PlaySession {
       far: 100000,
     };
   }
-  setMechanismJoint(id: string, value: number) {
-    this.alive();
+  private mechanismTarget(rigId?: string) {
     ensure(
-      this.mechanism,
+      this.mechanisms.size > 0,
       "INVALID_INPUT",
       "Enter Play with an authored rig first",
     );
-    this.mechanism.setJointPosition(id, value);
+    ensure(
+      rigId !== undefined || this.mechanisms.size === 1,
+      "INVALID_INPUT",
+      "Specify rigId when multiple Play rigs are active",
+    );
+    const mechanism =
+      rigId === undefined
+        ? this.mechanisms.values().next().value
+        : this.mechanisms.get(rigId);
+    ensure(mechanism, "INVALID_INPUT", "Unknown active Play rig");
+    return mechanism;
+  }
+  setMechanismJoint(id: string, value: number, rigId?: string) {
+    this.alive();
+    this.mechanismTarget(rigId).setJointPosition(id, value);
     this.world.step();
     return this.snapshot();
   }
-  setMechanismVehicleInput(input: { throttle: number; steering: number }) {
+  setMechanismVehicleInput(
+    input: { throttle: number; steering: number },
+    rigId?: string,
+  ) {
     this.alive();
-    ensure(
-      this.mechanism,
-      "INVALID_INPUT",
-      "Enter Play with an authored vehicle rig first",
-    );
-    this.mechanism.setVehicleInput(input);
+    this.mechanismTarget(rigId).setVehicleInput(input);
     this.world.step();
     return this.snapshot();
   }
   snapshot(): PlaySnapshotReport {
     this.alive();
+    const mechanisms = Object.fromEntries(
+      [...this.mechanisms].map(([id, mechanism]) => [id, mechanism.snapshot()]),
+    );
     return {
-      ...(this.mechanism ? { mechanism: this.mechanism.snapshot() } : {}),
+      ...(this.mechanisms.size ? { mechanisms } : {}),
+      ...(this.mechanisms.size === 1
+        ? { mechanism: Object.values(mechanisms)[0] }
+        : {}),
       worldProfile: this.worldProfile,
       cameraSettings: { ...this.cameraSettings },
       cameraSafety: this.cameraSafety(),
@@ -848,7 +903,8 @@ export class PlaySession {
   }
   dispose() {
     if (this.disposed) return;
-    this.mechanism?.dispose();
+    for (const mechanism of this.mechanisms.values()) mechanism.dispose();
+    this.mechanisms.clear();
     this.world.free();
     this.disposed = true;
   }

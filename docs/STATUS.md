@@ -105,3 +105,9 @@ A contract audit also reproduced an open M0 gap: valid deeply nested UUID occurr
 The selected Play rig now exposes a contextual button and remappable E action within 96 LDU of its authored joint anchor or vehicle chassis, measured from the explorer's body center. Revolute and prismatic joints toggle between the allowed position nearest zero and the farthest limit (defaults: 90 degrees or 40 LDU). Motion still uses the swept actor-clearance checks and reports a blocked attempt visibly. This is proximity access, not a line-of-sight picking system or automatic door detection.
 
 Vehicle access switches movement keys and the touch joystick to throttle/steering, with an explicit Release vehicle action. The explorer remains on foot; pause, focus loss and released inputs stop driving. Look controls remain available. The authored build is unchanged. Only the selected rig is active; simultaneous nearby rigs, animated door travel, seated entry/exit, riding and vehicle/world collision response remain open.
+
+## Multiple active Play rigs
+
+Play can now activate all authored mechanisms or an explicit subset in one session. The nearest authored joint/chassis supplies the contextual action, and remote controls can select a specific active rig. Door poses persist while a different vehicle moves; all moving colliders and actor navigation share the fixed-tick world. Explicit per-rig API targeting avoids ambiguity. Combined limits are 32 rigs, 128 groups and 200,000 moving triangles; repeated IDs, overlapping members and excluded member layers are refused before simulation.
+
+The legacy single-rig request/report remains supported. Vehicles are still kinematic and remotely controlled from the explorer's position, without seated entry, riding or vehicle/world response. Multi-rig support does not infer joints or controllers from arbitrary imported geometry.

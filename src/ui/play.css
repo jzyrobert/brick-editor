@@ -245,7 +245,7 @@
   top: 92px;
   left: 16px;
   width: min(300px, calc(100% - 32px));
-  max-height: calc(100% - 310px);
+  max-height: calc(100% - 330px);
   overflow: auto;
   padding: 0 12px;
   border-radius: 12px;
@@ -286,7 +286,7 @@
     top: 132px;
     left: 10px;
     width: calc(100% - 20px);
-    max-height: calc(100% - 340px);
+    max-height: calc(100% - 360px);
   }
 }
 
@@ -445,4 +445,29 @@
   border: 1px solid #a9b8c0;
   border-radius: 4px;
   padding: 2px 6px;
+}
+
+.play-mechanism select {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 6px;
+}
+.play-mechanism summary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+  gap: 10px;
+}
+.play-mechanism summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 20px;
+}
+.play-mechanism[open] summary::after {
+  content: "−";
+}
+.play-mechanism .play-remote-note {
+  font-size: 13px;
+  color: var(--ink);
 }
