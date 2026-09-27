@@ -303,6 +303,25 @@ export function pasteFragment(
       );
     target.models[clone.id] = clone;
   }
+  const folderCopies = new Map<string, string>();
+  const copyFolder = (id: string): string => {
+    if (folderCopies.has(id)) return folderCopies.get(id)!;
+    const original = source.layerFolders?.[id];
+    ensure(original, "INVALID_INPUT", "Clipboard layer folder is missing.");
+    const key = uid();
+    folderCopies.set(id, key);
+    target.layerFolders ??= {};
+    target.layerFolders[key] = {
+      ...structuredClone(original),
+      id: key,
+      order: Object.keys(target.layerFolders).length,
+    };
+    if (original.parentFolderId)
+      target.layerFolders[key].parentFolderId = copyFolder(
+        original.parentFolderId,
+      );
+    return key;
+  };
   const layers = new Map<string, string>();
   for (const o of sourceOccurrences) {
     if (layers.has(o.layerId)) continue;
@@ -327,6 +346,8 @@ export function pasteFragment(
         locked: false,
         order: Object.keys(target.layers).length,
       };
+      if (old.parentFolderId)
+        target.layers[id].parentFolderId = copyFolder(old.parentFolderId);
       layers.set(o.layerId, id);
     }
   }

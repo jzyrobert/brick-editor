@@ -87,3 +87,13 @@ The critic independently changed the quality preset through the mobile UI and co
 Final rubric scores remain task clarity 9.0, canvas/layout 8.5, touch/readability 8.5, state/navigation 9.0, export/recovery 8.5 and visual consistency 9.0. Weighted **8.725 → 8.7/10**, again strictly greater than 8.5.
 
 Updated evidence: [Photo](screenshots/ux/integrated-photo-360.png), [Project](screenshots/ux/integrated-project-360.png), [Layers](screenshots/ux/integrated-layers-360.png), [Play at 1080 × 1800](screenshots/ux/integrated-play-1080.png). Residual polish: Photo controls occupy most of a narrow viewport, so a collapsible preview-first layout would help precise framing; some secondary layer status icons remain visually subtle. These are opportunities for further refinement, not hidden completion claims about the full specification.
+
+## Selection, transforms and layer organisation — 8.7/10, retained
+
+The critic inspected the newly integrated SelectionTools, TransformPanel and layer folder/duplication/ghost controls in the current development app at 360 × 800 and 1080 × 1800. The controls remain legible and reachable in scrolling sheets, with explicit selection operation/depth choices and numeric alternatives to dragging handles. No horizontal overflow or page errors occurred during the reviewed flows.
+
+The critic selected all 40 wall parts through the UI, enabled and visually inspected move handles after fitting the model, created a “Walls” folder and assigned the active layer to it. On the compact touch viewport, an exact +20 LDU X move changed every selected occurrence through one authored revision; a touch-dragged Through box then selected the 40 wall parts. These checks establish usable bindings for the inspected controls, not exhaustive geometric selection correctness. The separate conformance tests cover the latter.
+
+Score remains **8.7/10** using the prior rubric. Expanded inspector content requires scrolling, but essential actions have comfortable targets and the sticky Close control keeps the canvas reachable. Optional future refinement: a compact contextual transform toolbar could reduce sheet switching during repeated adjustments.
+
+Evidence: [Selection controls](screenshots/ux/selection-tools-360.png), [Move handles](screenshots/ux/transform-handles-360.png), [Layer folders](screenshots/ux/layer-folders-360.png), [Transform panel at 1080 × 1800](screenshots/ux/transform-panel-1080.png).

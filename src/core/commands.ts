@@ -1,3 +1,4 @@
+import { duplicateLayer, mutateFolder } from "./layers";
 import {
   KinematicSession,
   rebaseRig,
@@ -362,6 +363,41 @@ function mutate(
       }
       break;
     }
+    case "layers.duplicate": {
+      fields(v, ["layerId", "name", "includeHidden", "maxAdditions"]);
+      Object.assign(copyMappings, duplicateLayer(p, v as { layerId: string }));
+      break;
+    }
+    case "layers.folder": {
+      fields(v, ["layerId", "parentFolderId"]);
+      const layer = p.layers[v.layerId];
+      ensure(layer, "INVALID_INPUT", "Unknown layer");
+      if (v.parentFolderId) {
+        ensure(
+          p.layerFolders?.[v.parentFolderId],
+          "INVALID_INPUT",
+          "Unknown folder",
+        );
+        layer.parentFolderId = v.parentFolderId;
+      } else delete layer.parentFolderId;
+      break;
+    }
+    case "folders.add":
+      fields(v, ["name", "parentFolderId"]);
+      mutateFolder(p, c.type, v);
+      break;
+    case "folders.rename":
+      fields(v, ["folderId", "name"]);
+      mutateFolder(p, c.type, v);
+      break;
+    case "folders.move":
+      fields(v, ["folderId", "parentFolderId"]);
+      mutateFolder(p, c.type, v);
+      break;
+    case "folders.remove":
+      fields(v, ["folderId", "mode"]);
+      mutateFolder(p, c.type, v);
+      break;
     case "layers.add":
       fields(v, ["name"]);
       ensure(
@@ -707,6 +743,12 @@ export class Editor {
       affectedIds: occurrences(p).map((o) => o.id),
       idRemappings: {},
       copyMappings,
+      addedLayerIds: Object.keys(p.layers).filter(
+        (id) => !this.state.layers[id],
+      ),
+      addedFolderIds: Object.keys(p.layerFolders ?? {}).filter(
+        (id) => !this.state.layerFolders?.[id],
+      ),
       addedIds: occurrences(p)
         .filter((o) => !beforeIds.has(o.id))
         .map((o) => o.id),

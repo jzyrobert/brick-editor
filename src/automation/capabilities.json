@@ -51,7 +51,17 @@
       "projectReplacementUndo": false,
       "clipboardFragments": true,
       "linearCircularArrays": true,
-      "layerReorderDeleteUI": true
+      "layerReorderDeleteUI": true,
+      "transformHandles": true,
+      "transientTransformPreview": true,
+      "boxLassoSelection": true,
+      "visibleSurfaceSelection": "Depth-tested ID pass at one sample per CSS pixel",
+      "throughSelection": "Clipped triangle intersection; bounded workload",
+      "selectionAddRemoveToggle": true,
+      "matchingSelection": true,
+      "layerDuplication": true,
+      "layerFolders": true,
+      "ghostOtherLayers": true
     },
     "inventory": {
       "format": "bricklink-wanted-xml",
@@ -127,7 +137,12 @@
     "imagePixels": 16000000,
     "renderOccurrences": 5000,
     "renderPrototypeVariants": 128,
-    "customCompilationSourceBytes": 52428800
+    "customCompilationSourceBytes": 52428800,
+    "selectionPixels": 4000000,
+    "selectionPolygonPoints": 2048,
+    "selectionTriangleTests": 5000000,
+    "selectionIntersectionWork": 20000000,
+    "transformHandleSelection": 1000
   },
   "deduplication": {
     "entries": 500,
@@ -139,16 +154,17 @@
   },
   "unimplemented": [
     "connector snapping",
-    "lasso and occlusion selection",
     "path tracing",
     "collaboration",
-    "layer folders",
     "geometry sharing across colour variants",
     "composite purchasing decomposition",
     "full native migrations",
     "full physical-device acceptance",
     "dynamic mechanisms and suspension",
     "instruction annotations and callouts",
-    "advanced material/texture fidelity"
+    "advanced material/texture fidelity",
+    "connected-assembly selection without connector coverage",
+    "arbitrary workplanes and shared-definition editing",
+    "complete ancestor BFC rendering conformance"
   ]
 }

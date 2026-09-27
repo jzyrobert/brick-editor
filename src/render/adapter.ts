@@ -1,3 +1,13 @@
+import {
+  selectRegion as selectRenderedRegion,
+  type Point2,
+  type RegionMode,
+} from "./region-selection";
+import {
+  TransformHandles,
+  type TransformHandleOptions,
+} from "../edit/transform-handles";
+import { LayerGhost } from "./layerGhost";
 import { occurrenceSourceContext } from "./source-context";
 import {
   resolveQuality,
@@ -72,12 +82,16 @@ export class SceneAdapter {
   private load: Promise<void>;
   private raf = 0;
   private resizeObserver: ResizeObserver;
+  private transformHandles?: TransformHandles;
   private selection = new THREE.Group();
   private ghost = new THREE.Group();
   private ghostToken = 0;
   private disposed = false;
   private captureActive = false;
   private batches = new RenderBatches();
+  private layerGhost = new LayerGhost();
+  private playViewActive = false;
+  private ghostLayerId: string | null = null;
   private batchingEnabled =
     new URLSearchParams(location.search).get("referenceRenderer") !== "1";
   private lost = false;
@@ -380,6 +394,7 @@ export class SceneAdapter {
           })),
         );
         if (this.disposed) return;
+        this.layerGhost.restore();
         for (const [id, g] of this.handles)
           if (!keep.has(id)) {
             this.root.remove(g);
@@ -439,9 +454,10 @@ export class SceneAdapter {
           this.cache.delete(key);
           this.allPrototypes.delete(proto);
         }
+        this.project = snapshot;
+        this.applyLayerGhost();
         this.applyQuality(this.qualityProfile, true);
         this.root.visible = true;
-        this.project = snapshot;
         this.revision = snapshot.revision;
         this.error = undefined;
         this.select([]);
@@ -688,6 +704,11 @@ export class SceneAdapter {
   }
   /** A bounded, opening-preserving collision snapshot in public LDraw coordinates. */
   async playGeometry() {
+    ensure(
+      !this.transformDragging,
+      "INVALID_INPUT",
+      "Finish or cancel the transform gesture before entering Play",
+    );
     await this.ready();
     this.root.updateMatrixWorld(true);
     const vertices: number[] = [],
@@ -756,7 +777,75 @@ export class SceneAdapter {
       warnings,
     };
   }
+  selectRegion(polygon: Point2[], mode: RegionMode) {
+    ensure(
+      !this.captureActive,
+      "CAPTURE_BUSY",
+      "Wait for capture before selecting a region",
+    );
+    this.scene.updateMatrixWorld(true);
+    return selectRenderedRegion(
+      this.renderer,
+      this.camera,
+      this.handles,
+      polygon,
+      mode,
+    );
+  }
+  get transformDragging() {
+    return this.transformHandles?.dragging ?? false;
+  }
+  transformHitTest(clientX: number, clientY: number) {
+    return this.transformHandles?.hitTest(clientX, clientY) ?? false;
+  }
+  bindTransformHandles(options: TransformHandleOptions) {
+    ensure(
+      !this.captureActive,
+      "CAPTURE_BUSY",
+      "Wait for capture before transforming",
+    );
+    this.transformHandles?.dispose();
+    this.transformHandles = undefined;
+    ensure(
+      options.occurrenceIds.length > 0,
+      "INVALID_INPUT",
+      "Select a part to show transform handles",
+    );
+    this.scene.updateMatrixWorld(true);
+    const bounds = new THREE.Box3();
+    for (const id of options.occurrenceIds) {
+      const group = this.handles.get(id);
+      ensure(group, "INVALID_INPUT", "Selection is not ready in the renderer");
+      bounds.union(new THREE.Box3().setFromObject(group));
+    }
+    const pivot = conversion(
+      bounds.getCenter(new THREE.Vector3()).toArray() as Vec3,
+    );
+    const handles = new TransformHandles(
+      this.renderer.domElement,
+      this.scene,
+      () => this.camera,
+      this.controls,
+      pivot,
+      options,
+      () => this.invalidate(),
+    );
+    this.transformHandles = handles;
+    return {
+      cancel: () => handles.cancel(),
+      dispose: () => {
+        handles.dispose();
+        if (this.transformHandles === handles)
+          this.transformHandles = undefined;
+      },
+    };
+  }
   beginTransientPose() {
+    ensure(
+      !this.captureActive,
+      "CAPTURE_BUSY",
+      "Wait for capture before starting a transform preview",
+    );
     const matrices = new Map(
       [...this.handles].map(([id, group]) => [id, group.matrix.clone()]),
     );
@@ -811,15 +900,20 @@ export class SceneAdapter {
     this.invalidate();
   }
   beginPlayView() {
+    this.playViewActive = true;
+    this.layerGhost.restore();
+    this.batches.rebuild(this.handles);
     const camera = this.currentCamera();
     const visible = new Map(
       [...this.handles].map(([id, g]) => [id, g.visible]),
     );
     const grid = this.grid.visible,
-      selection = this.selection.visible;
+      selection = this.selection.visible,
+      transformVisible = this.transformHandles?.helper.visible;
     this.controls.enabled = false;
     this.grid.visible = false;
     this.selection.visible = false;
+    if (this.transformHandles) this.transformHandles.helper.visible = false;
     this.clearGhost();
     for (const group of this.handles.values()) group.visible = true;
     return () => {
@@ -829,6 +923,11 @@ export class SceneAdapter {
       }
       this.grid.visible = grid;
       this.selection.visible = selection;
+      if (this.transformHandles && transformVisible !== undefined)
+        this.transformHandles.helper.visible = transformVisible;
+      this.playViewActive = false;
+      this.applyLayerGhost();
+      this.batches.rebuild(this.handles);
       this.controls.enabled = true;
       this.setCamera(camera);
     };
@@ -932,6 +1031,28 @@ export class SceneAdapter {
     );
     return point ? conversion(point.toArray() as Vec3) : null;
   }
+  private applyLayerGhost() {
+    const ids = new Set(
+      !this.playViewActive &&
+      this.project &&
+      this.ghostLayerId &&
+      this.project.layers[this.ghostLayerId]
+        ? occurrences(this.project)
+            .filter((o) => o.layerId !== this.ghostLayerId)
+            .map((o) => o.id)
+        : [],
+    );
+    this.layerGhost.apply(this.handles, ids);
+  }
+  ghostOtherLayers(activeLayerId: string | null) {
+    this.ghostLayerId = activeLayerId;
+    // React may publish a view preference while compileAsync is pending.
+    // Keep capture materials frozen; its finally block applies the latest value.
+    if (this.captureActive) return;
+    this.applyLayerGhost();
+    this.batches.rebuild(this.handles);
+    this.invalidate();
+  }
   showStep(ids: string[] | null) {
     const visible = new Set(
       ids ??
@@ -1029,6 +1150,11 @@ export class SceneAdapter {
     this.invalidate();
   }
   async image(request: RenderRequest) {
+    ensure(
+      !this.transformDragging,
+      "INVALID_INPUT",
+      "Finish or cancel the transform gesture before capture",
+    );
     validate("render", request);
     ensure(
       !this.captureActive,
@@ -1072,6 +1198,7 @@ export class SceneAdapter {
       background = this.scene.background,
       grid = this.grid.visible,
       selection = this.selection.visible,
+      transformVisible = this.transformHandles?.helper.visible,
       target = this.renderer.getRenderTarget(),
       controlsEnabled = this.controls.enabled,
       savedQuality = this.currentQuality();
@@ -1096,6 +1223,7 @@ export class SceneAdapter {
     this.captureActive = true;
     this.controls.enabled = false;
     try {
+      this.layerGhost.restore();
       this.applyQuality(captureProfile);
       captureLighting = this.lightingManifest();
       const selectedOccurrences = new Set(
@@ -1119,6 +1247,7 @@ export class SceneAdapter {
       }
       this.grid.visible = false;
       this.selection.visible = false;
+      if (this.transformHandles) this.transformHandles.helper.visible = false;
       this.ghost.visible = false;
       this.scene.background =
         request.background.type === "transparent"
@@ -1144,6 +1273,7 @@ export class SceneAdapter {
       );
     } finally {
       this.captureActive = false;
+      this.applyLayerGhost();
       this.applyQuality(savedQuality);
       this.controls.enabled = controlsEnabled;
       this.renderer.setRenderTarget(target);
@@ -1155,6 +1285,8 @@ export class SceneAdapter {
       this.scene.background = background;
       this.grid.visible = grid;
       this.selection.visible = selection;
+      if (this.transformHandles && transformVisible !== undefined)
+        this.transformHandles.helper.visible = transformVisible;
       this.ghost.visible = true;
       this.resize();
     }
@@ -1230,6 +1362,9 @@ export class SceneAdapter {
   }
   dispose() {
     this.disposed = true;
+    this.transformHandles?.dispose();
+    this.transformHandles = undefined;
+    this.layerGhost.restore();
     this.clearGhost();
     cancelAnimationFrame(this.raf);
     this.resizeObserver.disconnect();

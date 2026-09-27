@@ -6,8 +6,8 @@ The final production build, clean install and test suites pass. These results es
 | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `npm ci`                   | Clean lockfile install passes                                                                              |
 | `npm run build`            | TypeScript and Vite 6.4.3 pass                                                                             |
-| `npm test`                 | **87 tests pass**, 16 files, 0 failures                                                                    |
-| `npm run test:browser`     | **29 tests pass**, 0 failures, against the production bundle                                               |
+| `npm test`                 | **107 tests pass**, 21 files, 0 failures                                                                   |
+| `npm run test:browser`     | **35 tests pass**, 0 failures, against the production bundle                                               |
 | Browser engine             | Playwright 1.63.0, Chromium 153.0.8010.12, SwiftShader software WebGL2                                     |
 | Layouts                    | 1440×1000 desktop, 1080×1800 touch, 360×800 touch                                                          |
 | `npm run library:validate` | 23 files and six physical parts; dependency closure, licence metadata and library/mapping hashes pass      |
@@ -38,7 +38,7 @@ Linux ARM64 VM, Neoverse-N1, four available CPUs, software WebGL2, 1440×1000 vi
 | 200 real parts   |     31.5 ms |                       79.7 ms |                  14.4 ms |     4,249 ms |
 | 1,000 real parts |     68.7 ms |                       66.5 ms |                  38.9 ms |     1,979 ms |
 
-Initial shell/library readiness was approximately 579 ms. The first capture includes shader warmup; the later case benefits from cached prototypes/shaders. The single 1,000-part command-plus-scene result does not establish the specification's sub-100ms p95 target. Frustum culling remains enabled. Hardware FPS targets remain unverified. A later 5,000-part comparison reduced draw calls from 15,001 to seven, with matching geometry counts; cold software PNG capture increased from 9,156.8 ms to 12,702.5 ms. This establishes draw-call reduction, not an FPS improvement. The production application JavaScript is approximately **334 kB gzip**, with separately loaded Rapier (about 1.65 MB gzip) and PDF (about 182 kB gzip) chunks, excluding worker scripts/library. Vite still reports its advisory about the uncompressed main chunk exceeding 500 kB; further splitting is deferred.
+Initial shell/library readiness was approximately 579 ms. The first capture includes shader warmup; the later case benefits from cached prototypes/shaders. The single 1,000-part command-plus-scene result does not establish the specification's sub-100ms p95 target. Frustum culling remains enabled. Hardware FPS targets remain unverified. A later 5,000-part comparison reduced draw calls from 15,001 to seven, with matching geometry counts; cold software PNG capture increased from 9,156.8 ms to 12,702.5 ms. This establishes draw-call reduction, not an FPS improvement. The production application JavaScript is approximately **356 kB gzip**, with separately loaded Rapier (about 1.65 MB gzip) and PDF (about 182 kB gzip) chunks, excluding worker scripts/library. Vite still reports its advisory about the uncompressed main chunk exceeding 500 kB; further splitting is deferred.
 
 ## Evidence and limits
 
@@ -53,3 +53,9 @@ Initial shell/library readiness was approximately 579 ms. The first capture incl
 - [Desktop](screenshots/desktop.png), [1080×1800 touch](screenshots/mobile-1080.png), [360px touch](screenshots/mobile-360.png)
 
 There was no authenticated BrickLink upload, purchase, physical-device run, full-library compatibility test, universal connectivity/buildability proof or dynamic mechanism physics test. Capsule exploration and kinematic mechanisms have automated coverage. Conditional-line and BFC coverage includes shipped starter, scoped custom geometry and batched/reference image comparisons; broader library compatibility remains outstanding. See [STATUS.md](STATUS.md) for the remaining release gates.
+
+## Editing and source-preservation follow-up
+
+The production suite now covers transform-handle previews/cancellation/one-step undo on desktop and 1080×1800 touch; actual visible/through box and lasso selection; explicit add/remove/toggle selection; two-finger cancellation followed by real camera navigation at 360 and 1080 pixels; folder membership, layer duplication and ghosting with unchanged authored state and full-opacity image exports. The new domain fixtures cover hidden-material selection, near-plane clipping, affine/source-aware duplication, folder ancestry persistence, source-scope preservation, orphaned BFC directives and reflected raw polygon winding. Mobile UX remains **8.7/10** after the added controls. A deterministic asynchronous-capture regression proves ghost changes leave capture materials frozen and restore the latest view preference even after readback failure.
+
+These checks do not establish connected-assembly selection, arbitrary workplanes, complete ancestor-BFC rendering, a full material library or physical-device performance. Selection is bounded and visible-surface evidence is at CSS-pixel resolution. See STATUS and TODO for the remaining work.

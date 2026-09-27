@@ -98,13 +98,24 @@ const project = obj({
     }),
   ),
   layers: dictionary(
-    obj({
-      id,
-      name: str,
-      visible: { type: "boolean" },
-      locked: { type: "boolean" },
-      order: integer,
-    }),
+    obj(
+      {
+        id,
+        name: str,
+        visible: { type: "boolean" },
+        locked: { type: "boolean" },
+        order: integer,
+        parentFolderId: id,
+      },
+      ["id", "name", "visible", "locked", "order"],
+    ),
+  ),
+  layerFolders: dictionary(
+    obj({ id, name: str, order: integer, parentFolderId: id }, [
+      "id",
+      "name",
+      "order",
+    ]),
   ),
   defaultLayerId: id,
   layerAssignments: dictionary(id),
@@ -116,6 +127,9 @@ const project = obj({
   assets: dictionary(str),
   diagnostics: arr(diagnostic),
 });
+project.required = project.required.filter(
+  (key: string) => key !== "layerFolders",
+);
 const scoped = {
   occurrenceIds: { ...arr(id), minItems: 1, uniqueItems: true },
   includeHidden: { type: "boolean" },
@@ -288,6 +302,26 @@ const payloads: Record<string, any> = {
       ),
     ],
   },
+  "layers.duplicate": obj(
+    {
+      layerId: id,
+      name: str,
+      includeHidden: { type: "boolean" },
+      maxAdditions: { type: "integer", minimum: 0, maximum: 10000 },
+    },
+    ["layerId"],
+  ),
+  "layers.folder": obj({
+    layerId: id,
+    parentFolderId: { anyOf: [id, { type: "null" }] },
+  }),
+  "folders.add": obj({ name: str, parentFolderId: id }, ["name"]),
+  "folders.rename": obj({ folderId: id, name: str }),
+  "folders.move": obj({
+    folderId: id,
+    parentFolderId: { anyOf: [id, { type: "null" }] },
+  }),
+  "folders.remove": obj({ folderId: id, mode: { const: "promote-children" } }),
   "layers.add": obj({ name: str }),
   "layers.update": obj(
     {

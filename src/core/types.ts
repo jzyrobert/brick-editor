@@ -28,7 +28,14 @@ export type Model = {
   records: RecordLine[];
   classification: "model" | "custom";
 };
+export type LayerFolder = {
+  id: string;
+  name: string;
+  order: number;
+  parentFolderId?: string;
+};
 export type Layer = {
+  parentFolderId?: string;
   id: string;
   name: string;
   visible: boolean;
@@ -67,6 +74,7 @@ export type Project = {
   };
   models: Record<string, Model>;
   layers: Record<string, Layer>;
+  layerFolders?: Record<string, LayerFolder>;
   defaultLayerId: string;
   layerAssignments: Record<string, string>;
   groups: Record<string, string[]>;

@@ -1881,3 +1881,79 @@ summary:focus-visible {
     padding: 8px 12px;
   }
 }
+
+.selection-region {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+.selection-region polygon {
+  fill: #df7c3830;
+  stroke: #a34718;
+  stroke-width: 2;
+  stroke-dasharray: 5 3;
+}
+.selection-tools {
+  margin: 12px 0;
+}
+.selection-tools summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+.selection-tools label {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+}
+.selection-tools select {
+  width: 100%;
+  min-height: 44px;
+}
+.selection-match {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.selection-match button {
+  min-height: 44px;
+  flex: 1 1 110px;
+}
+.layer-folders > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #425c6c;
+}
+.layer-folders > summary::before {
+  content: "▸";
+  margin-right: 8px;
+}
+.layer-folders[open] > summary::before {
+  content: "▾";
+}
+.layer-folders .number-field,
+.layer-folders .layer-removal {
+  margin: 10px 0;
+}
+.layer-folder-path {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selection-tools > summary::before {
+  content: "▸";
+  margin-right: 8px;
+}
+.selection-tools[open] > summary::before {
+  content: "▾";
+}

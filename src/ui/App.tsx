@@ -1,3 +1,13 @@
+import { TransformPanel } from "./TransformPanel";
+import { folderPath } from "./LayerFolders";
+import { SelectionTools, type SelectionShape } from "./SelectionTools";
+import { attachRegionGesture } from "../edit/region-gesture";
+import {
+  combineSelection,
+  eligibleSelection,
+  type SelectionOperation,
+} from "../edit/selection";
+import type { RegionMode } from "../render/region-selection";
 import { QualityPanel } from "./QualityPanel";
 import { MechanismBrowser } from "../mechanisms/browser";
 import { MechanismPanel } from "./MechanismPanel";
@@ -134,8 +144,13 @@ export default function App() {
     [color, setColor] = useState("4"),
     [search, setSearch] = useState(""),
     [selection, setSelection] = useState<string[]>([]),
+    [selectionShape, setSelectionShape] = useState<SelectionShape>("click"),
+    [selectionOperation, setSelectionOperation] =
+      useState<SelectionOperation>("replace"),
+    [selectionDepth, setSelectionDepth] = useState<RegionMode>("visible"),
     [activeLayer, setActiveLayer] = useState("base"),
     [crossLayer, setCrossLayer] = useState(false),
+    [ghostOtherLayers, setGhostOtherLayers] = useState(false),
     [position, setPosition] = useState<Vec3>([0, -24, 0]),
     [angle, setAngle] = useState(0),
     [elevation, setElevation] = useState(0),
@@ -185,6 +200,9 @@ export default function App() {
     selectionRef = useRef(selection),
     interact = useRef({
       tool,
+      selectionShape,
+      selectionOperation,
+      selectionDepth,
       part,
       color,
       activeLayer,
@@ -201,6 +219,9 @@ export default function App() {
   selectionRef.current = selection;
   interact.current = {
     tool,
+    selectionShape,
+    selectionOperation,
+    selectionDepth,
     part,
     color,
     activeLayer,
@@ -233,6 +254,46 @@ export default function App() {
     setSelection(ids);
     renderer.current?.select(ids);
   };
+  const receiveSelection = (ids: string[], operation?: SelectionOperation) => {
+    const p = editor.project,
+      s = interact.current,
+      all = occurrences(p);
+    const eligible = eligibleSelection(
+      p,
+      all,
+      ids,
+      s.activeLayer,
+      s.crossLayer,
+    );
+    const next = combineSelection(
+      selectionRef.current,
+      eligible,
+      operation ?? s.selectionOperation,
+    );
+    setSelectionSafe(
+      eligibleSelection(p, all, next, s.activeLayer, s.crossLayer),
+    );
+    setStatus(
+      `${eligible.length} matching editable parts${ids.length > eligible.length ? `; ${ids.length - eligible.length} excluded by scope` : ""}`,
+    );
+  };
+  useEffect(
+    () =>
+      attachRegionGesture(
+        viewport.current!,
+        () => ({
+          enabled:
+            modeRef.current === "Build" && interact.current.tool === "Select",
+          shape: interact.current.selectionShape,
+          depth: interact.current.selectionDepth,
+          renderer: renderer.current,
+          revision: editor.project.revision,
+        }),
+        (ids) => receiveSelection(ids),
+        setStatus,
+      ),
+    [mode, tool, selectionShape, selectionDepth, activeLayer, crossLayer],
+  );
   useEffect(() => {
     const openSharedPreview = () => {
       if (location.hash.startsWith("#v=")) setMode("Project");
@@ -356,6 +417,11 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
+    renderer.current?.ghostOtherLayers(
+      mode === "Build" && ghostOtherLayers ? activeLayer : null,
+    );
+  }, [mode, ghostOtherLayers, activeLayer]);
+  useEffect(() => {
     const r = renderer.current;
     if (!r) return;
     r.controls.enableRotate = mode === "Build" || mode === "Photo";
@@ -421,6 +487,9 @@ export default function App() {
     const pointers = new Map<number, { x: number; y: number }>();
     let navigated = false;
     const down = (e: PointerEvent) => {
+      const r = renderer.current;
+      if (r?.transformDragging || r?.transformHitTest(e.clientX, e.clientY))
+        return;
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pointers.size > 1) navigated = true;
     };
@@ -456,7 +525,7 @@ export default function App() {
       }
       const id = r.pick(e.clientX, e.clientY);
       if (!id) {
-        setSelectionSafe([]);
+        if (s.selectionOperation === "replace") setSelectionSafe([]);
         return;
       }
       const o = occurrences(p).find((o) => o.id === id);
@@ -480,9 +549,7 @@ export default function App() {
           }),
         );
       else {
-        setSelectionSafe(
-          e.shiftKey ? [...new Set([...selectionRef.current, id])] : [id],
-        );
+        receiveSelection([id], e.shiftKey ? "toggle" : s.selectionOperation);
         setPanel("Inspector");
       }
     };
@@ -1026,6 +1093,34 @@ export default function App() {
         <h2>Inspector</h2>
         <span>{selection.length} selected</span>
       </div>
+      <SelectionTools
+        shape={selectionShape}
+        operation={selectionOperation}
+        depth={selectionDepth}
+        onShape={(v) => {
+          setSelectionShape(v);
+          setTool("Select");
+        }}
+        onOperation={setSelectionOperation}
+        onDepth={setSelectionDepth}
+        hasSelection={selected.length > 0}
+        onClear={() => setSelectionSafe([])}
+        onMatch={(kind) => {
+          const matches = all.filter(
+            (o) =>
+              kind === "all" ||
+              selected.some((chosen) =>
+                kind === "part"
+                  ? chosen.node.ref === o.node.ref &&
+                    chosen.namespace === o.namespace
+                  : kind === "color"
+                    ? chosen.colorCode === o.colorCode
+                    : chosen.layerId === o.layerId,
+              ),
+          );
+          receiveSelection(matches.map((o) => o.id));
+        }}
+      />
       {selected.length ? (
         <>
           <div className="selection-summary">
@@ -1697,7 +1792,11 @@ export default function App() {
             >
               ⊞ Rectangular fill
             </button>
-            <span>Grid · 20 LDU</span>
+            <span>
+              {tool === "Select" && selectionShape !== "click"
+                ? `${selectionShape === "box" ? "Box" : "Lasso"} · ${selectionDepth === "visible" ? "Visible surfaces" : "Through"}`
+                : "Grid · 20 LDU"}
+            </span>
           </div>
         </section>
         <aside
@@ -1724,6 +1823,21 @@ export default function App() {
               Inspector
             </button>
           </div>
+          <div hidden={panel !== "Inspector"}>
+            <TransformPanel
+              editor={editor}
+              renderer={() => renderer.current}
+              selection={selection}
+              revision={project.revision}
+              enabled={
+                mode === "Build" &&
+                tool === "Select" &&
+                selectionShape === "click"
+              }
+              activeLayerId={crossLayer ? undefined : activeLayer}
+              report={setStatus}
+            />
+          </div>
           {panel === "Inspector" ? (
             <>
               {inspectorPanel}
@@ -1744,6 +1858,9 @@ export default function App() {
                 layerId={activeLayer}
                 dispatch={(type, payload) => command(type, payload)}
                 onRemoved={setActiveLayer}
+                onCreated={setActiveLayer}
+                ghostOtherLayers={ghostOtherLayers}
+                onGhostChange={setGhostOtherLayers}
               />
             </>
           )}

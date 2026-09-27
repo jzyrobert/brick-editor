@@ -1,3 +1,4 @@
+import { LayerFolders } from "./LayerFolders";
 import { useEffect, useId, useMemo, useState } from "react";
 import { occurrences } from "../core/document";
 import type { Project } from "../core/types";
@@ -7,6 +8,9 @@ export function LayerActions({
   layerId,
   dispatch,
   onRemoved,
+  onCreated,
+  ghostOtherLayers = false,
+  onGhostChange,
 }: {
   project: Project;
   layerId: string;
@@ -15,6 +19,9 @@ export function LayerActions({
     payload: Record<string, unknown>,
   ) => unknown | Promise<unknown>;
   onRemoved?: (destinationLayerId: string) => void;
+  onCreated?: (layerId: string) => void;
+  ghostOtherLayers?: boolean;
+  onGhostChange?: (enabled: boolean) => void;
 }) {
   const [confirm, setConfirm] = useState(false),
     [mode, setMode] = useState("reassign"),
@@ -61,6 +68,38 @@ export function LayerActions({
   }
   return (
     <section aria-label="Layer order and removal">
+      <button
+        className="wide"
+        disabled={busy}
+        onClick={() =>
+          void act(async () => {
+            const result = (await dispatch("layers.duplicate", {
+              layerId,
+              includeHidden: true,
+              maxAdditions: 10000,
+            })) as { addedLayerIds?: string[] };
+            if (result?.addedLayerIds?.[0])
+              onCreated?.(result.addedLayerIds[0]);
+          })
+        }
+      >
+        Duplicate layer ({count} parts)
+      </button>
+      <p className="muted">
+        Creates an unlocked copy, including hidden contents, at the same
+        positions. The original stays unchanged.
+      </p>
+      {onGhostChange && (
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={ghostOtherLayers}
+            onChange={(e) => onGhostChange(e.target.checked)}
+          />
+          Ghost other layers
+        </label>
+      )}
+      <LayerFolders project={project} layerId={layerId} dispatch={dispatch} />
       <h3>Layer order</h3>
       <div className="button-row">
         <button disabled={busy || index <= 0} onClick={() => void reorder(-1)}>

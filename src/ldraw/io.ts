@@ -5,9 +5,8 @@ import {
   type Basis,
   type Vec3,
   ensure,
-  uid,
 } from "../core/types";
-import { identity, mv, add } from "../core/math";
+import { identity, mv, add, determinant } from "../core/math";
 import { createProject, validateDocument, occurrences } from "../core/document";
 import { canonical } from "./path";
 import { catalog } from "../catalog/catalog";
@@ -56,15 +55,16 @@ export function importLDraw(text: string, name = "main.ldr"): Project {
     return current;
   };
   const lines = text.replace(/\r\n?/g, "\n").split("\n");
-  const mpd = lines.some((l) => /^0\s+FILE\s+/i.test(l));
+  const mpd = lines.some((l) => /^0\s+FILE\s+/i.test(l.trim()));
   const preamble: string[] = [];
   for (const raw of lines) {
-    const file = raw.match(/^0\s+FILE\s+(.+)$/i);
+    const line = raw.trim();
+    const file = line.match(/^0\s+FILE\s+(.+)$/i);
     if (file) {
       start(file[1]);
       continue;
     }
-    if (/^0\s+NOFILE\s*$/i.test(raw)) {
+    if (/^0\s+NOFILE\s*$/i.test(line)) {
       current = undefined;
       continue;
     }
@@ -83,10 +83,10 @@ export function importLDraw(text: string, name = "main.ldr"): Project {
     };
     m.records.push(record);
     if (
-      /^0\s+!LDRAW_ORG\s+(?:Unofficial_)?(?:Part|Subpart|Primitive)/i.test(raw)
+      /^0\s+!LDRAW_ORG\s+(?:Unofficial_)?(?:Part|Subpart|Primitive)/i.test(line)
     )
       m.classification = "custom";
-    if (/^0\s+!TEXMAP|^0\s+!DATA/i.test(raw))
+    if (/^0\s+!TEXMAP|^0\s+!DATA/i.test(line))
       p.diagnostics.push({
         code: "UNSUPPORTED_RENDER_FEATURE",
         severity: "warning",
@@ -94,7 +94,7 @@ export function importLDraw(text: string, name = "main.ldr"): Project {
           "Texture source retained; texture projection is not supported.",
         occurrenceIds: [],
       });
-    if (/^0\s+!COLOUR.*\b(?:GLITTER|SPECKLE)\b/i.test(raw))
+    if (/^0\s+!COLOUR.*\b(?:GLITTER|SPECKLE)\b/i.test(line))
       p.diagnostics.push({
         code: "UNSUPPORTED_RENDER_FEATURE",
         severity: "warning",
@@ -224,7 +224,22 @@ export function exportLDraw(p: Project): string {
     const nodes = new Map(m.nodes.map((n) => [n.id, n]));
     const emitted = new Set<string>();
     const lines: string[] = [];
-    for (const r of m.records) {
+    for (let recordIndex = 0; recordIndex < m.records.length; recordIndex++) {
+      const r = m.records[recordIndex];
+      if (/^0\s+BFC\s+INVERTNEXT\s*$/.test(r.raw.trim())) {
+        // INVERTNEXT binds only to its next nonblank source line. A deleted
+        // reference must not transfer its inversion to the next surviving one.
+        let nextIndex = recordIndex + 1;
+        while (nextIndex < m.records.length && !m.records[nextIndex].raw.trim())
+          nextIndex++;
+        const next = m.records[nextIndex];
+        if (
+          next?.nodeId &&
+          /^1\s/.test(next.raw.trim()) &&
+          !nodes.has(next.nodeId)
+        )
+          continue;
+      }
       if (!r.nodeId) {
         lines.push(r.raw);
         continue;
@@ -264,22 +279,76 @@ export function scopedLDraw(
   ids: string[],
   acknowledgeMetadataLoss = false,
 ) {
-  const selected = new Set(ids),
-    copy = structuredClone(p);
-  const root = {
-    id: copy.rootModelId,
-    name: "scoped.ldr",
-    classification: "model" as const,
-    records: [] as Model["records"],
-    nodes: [] as Node[],
+  const copy = structuredClone(p);
+  const all = occurrences(p),
+    byId = new Map(all.map((o) => [o.id, o]));
+  type Branch = Map<string, Branch>;
+  const selection: Branch = new Map();
+  for (const id of new Set(ids)) {
+    const occurrence = byId.get(id);
+    ensure(
+      occurrence,
+      "INVALID_INPUT",
+      "Scoped export contains an unknown occurrence",
+    );
+    let branch = selection;
+    for (const nodeId of occurrence.path) {
+      if (!branch.has(nodeId)) branch.set(nodeId, new Map());
+      branch = branch.get(nodeId)!;
+    }
+  }
+  // Keep the original ancestor structure: flattening loses inherited local
+  // colour declarations, BFC culling/inversion, and other source scope.
+  let counter = 0,
+    prunedCount = 0;
+  const pruned: Record<string, Model> = {};
+  const prune = (modelId: string, branch: Branch, root = false): string => {
+    let key = p.rootModelId;
+    if (!root) {
+      do {
+        key = `__scoped__/model-${counter++}.ldr`;
+      } while (copy.models[key] || pruned[key]);
+    }
+    ensure(
+      prunedCount++ < 10000,
+      "LIMIT_EXCEEDED",
+      "Scoped export exceeds definition budget",
+    );
+    const model = structuredClone(p.models[modelId]);
+    model.id = key;
+    if (!root) model.name = key;
+    pruned[key] = model;
+    model.nodes = model.nodes
+      .filter((node) => branch.has(node.id))
+      .map((node) => {
+        if (node.kind === "submodel")
+          node.ref = prune(node.ref, branch.get(node.id)!);
+        else if (node.kind === "geometry") node.ref = key;
+        return node;
+      });
+    return key;
   };
-  const metadata = Object.values(p.models)
-    .flatMap((m) => m.records)
+  prune(p.rootModelId, selection, true);
+  Object.assign(copy.models, pruned);
+  // Include only the selected hierarchy and its complete embedded part closure.
+  const reachable = new Set<string>();
+  const visit = (key: string) => {
+    if (reachable.has(key)) return;
+    reachable.add(key);
+    for (const node of copy.models[key].nodes)
+      if (node.kind !== "geometry" && copy.models[node.ref]) visit(node.ref);
+  };
+  visit(copy.rootModelId);
+  copy.models = Object.fromEntries(
+    [...reachable].map((key) => [key, copy.models[key]]),
+  );
+  const metadata = Object.values(copy.models)
+    .flatMap((model) => model.records)
     .some(
-      (r) =>
-        /^0\s+!/.test(r.raw) &&
+      (record) =>
+        /^0\s+!/.test(record.raw.trim()) &&
         !/^0\s+!(?:LDRAW_ORG|LICENSE|HISTORY|COLOUR|CATEGORY|KEYWORDS)\b/.test(
-          r.raw,
+          record.raw.trim(),
         ),
     );
   ensure(
@@ -287,30 +356,6 @@ export function scopedLDraw(
     "INVALID_INPUT",
     "Scoped export may invalidate custom metadata; explicit acknowledgement is required",
   );
-  for (const o of occurrences(p).filter((o) => selected.has(o.id))) {
-    const n = {
-      ...structuredClone(o.node),
-      id: uid(),
-      transform: o.transform,
-      colorCode: o.colorCode,
-    };
-    if (n.kind === "geometry") {
-      const source = p.models[o.modelId].records.find(
-        (r) => r.id === o.node.sourceRecordId,
-      )!;
-      const recordId = uid();
-      root.records.push({
-        id: recordId,
-        raw: geometryLine(n, source.raw),
-        nodeId: n.id,
-      });
-      n.sourceRecordId = recordId;
-      n.transform = identity();
-      n.ref = copy.rootModelId;
-    } else delete n.sourceRecordId;
-    root.nodes.push(n);
-  }
-  copy.models[copy.rootModelId] = root;
   return exportLDraw(copy);
 }
 
@@ -330,6 +375,23 @@ export function geometryLine(n: Node, raw: string) {
         mv(n.transform.basis, numbers.slice(i, i + 3) as Vec3),
       ),
     );
+  // A reflected type-1 instance reverses the renderer's winding convention.
+  // Once its transform is baked into polygon coordinates, encode that reversal
+  // explicitly so BFC-facing semantics do not change on export/reimport.
+  if (
+    (tok[0] === "3" || tok[0] === "4") &&
+    determinant(n.transform.basis) < 0
+  ) {
+    const vertices: number[][] = [];
+    for (let i = 0; i < points.length; i += 3)
+      vertices.push(points.slice(i, i + 3));
+    points.splice(
+      0,
+      points.length,
+      ...vertices[0],
+      ...vertices.slice(1).reverse().flat(),
+    );
+  }
   return (
     tok[0] +
     " " +

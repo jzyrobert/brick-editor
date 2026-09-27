@@ -138,6 +138,44 @@ export function validateDocument(p: Project) {
     "Too many definitions",
   );
   ensure(p.layers[p.defaultLayerId], "INVALID_INPUT", "Missing default layer");
+  const folders = p.layerFolders ?? {};
+  for (const [id, folder] of Object.entries(folders)) {
+    ensure(
+      folder.id === id,
+      "INVALID_INPUT",
+      "Folder ID does not match its key",
+    );
+    const ancestors = new Set<string>();
+    let current: typeof folder | undefined = folder;
+    while (current) {
+      ensure(
+        !ancestors.has(current.id),
+        "INVALID_INPUT",
+        "Folder hierarchy contains a cycle",
+      );
+      ensure(
+        ancestors.size < 32,
+        "LIMIT_EXCEEDED",
+        "Folder nesting exceeds 32 levels",
+      );
+      ancestors.add(current.id);
+      if (!current.parentFolderId) break;
+      ensure(
+        folders[current.parentFolderId],
+        "INVALID_INPUT",
+        "Unknown parent folder",
+      );
+      current = folders[current.parentFolderId];
+    }
+  }
+  for (const [id, layer] of Object.entries(p.layers)) {
+    ensure(layer.id === id, "INVALID_INPUT", "Layer ID does not match its key");
+    ensure(
+      !layer.parentFolderId || folders[layer.parentFolderId],
+      "INVALID_INPUT",
+      "Layer references an unknown folder",
+    );
+  }
   const names = new Set<string>();
   for (const m of Object.values(p.models)) {
     const name = canonical(m.name);
@@ -154,7 +192,7 @@ export function validateDocument(p: Project) {
       recordIds.add(record.id);
       ensure(
         !/[\r\n]/.test(record.raw) &&
-          !/^0\s+(?:FILE|NOFILE)(?:\s|$)/i.test(record.raw),
+          !/^0\s+(?:FILE|NOFILE)(?:\s|$)/i.test(record.raw.trim()),
         "INVALID_INPUT",
         "Source records must be individual non-boundary lines",
       );
