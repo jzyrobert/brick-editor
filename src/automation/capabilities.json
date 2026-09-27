@@ -84,7 +84,9 @@
       "idleOnDemand": true,
       "instanced": true,
       "qualityProfilesDistinct": true,
-      "coverage": "Opaque non-reflected non-sheared mesh instancing; merged ordinary/conditional lines; transparent/reflected/sheared fallback; image parity fixtures"
+      "coverage": "Opaque non-reflected non-sheared mesh instancing; merged ordinary/conditional lines; transparent/reflected/sheared fallback; image parity fixtures",
+      "contextRestoration": true,
+      "interruptedCaptureRefusal": true
     },
     "instructions": {
       "layerPlans": true,
@@ -94,7 +96,11 @@
       "rotstepCameraSemantics": false,
       "pngArchive": true,
       "htmlArchive": true,
-      "coverageValidated": true
+      "coverageValidated": true,
+      "editablePlans": true,
+      "stepReorderSplitMerge": true,
+      "stepNotes": true,
+      "stepCameras": true
     },
     "play": {
       "available": true,
@@ -111,7 +117,9 @@
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
       "profile": "original-brick-figure-v1",
       "coverage": "See docs/STATUS.md and Play acceptance tests; not universal model traversability",
-      "kinematicMechanisms": true
+      "kinematicMechanisms": true,
+      "movingKinematicColliders": true,
+      "movingColliderPolicy": "Authored rigid-group triangle surfaces; conservatively stop before touching walking actor; no riding, pushing or vehicle/world dynamics"
     },
     "sharing": {
       "selfContainedMpdLinks": true,

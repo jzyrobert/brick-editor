@@ -1,21 +1,28 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { BrowserPlay } from "../play/browser";
 import "./play.css";
+import type { MotionRig } from "../mechanisms/types";
+import { PlayMechanismControls } from "./PlayMechanismControls";
 
 export function PlayPanel({
   play,
   bookmark,
   exit,
   children,
+  rigs = {},
 }: {
   play: BrowserPlay;
   bookmark: () => void;
   exit: () => void;
   children?: React.ReactNode;
+  rigs?: Record<string, MotionRig>;
 }) {
   const state = useSyncExternalStore(play.subscribe, play.getState);
   const [message, setMessage] = useState("");
+  const [rigId, setRigId] = useState("");
   const [run, setRun] = useState(false);
+  const runRef = useRef(run);
+  runRef.current = run;
   const [stick, setStick] = useState([0, 0]);
   const keys = useRef(new Set<string>()),
     move = useRef({ x: 0, z: 0 }),
@@ -58,7 +65,7 @@ export function PlayPanel({
         (jump.current || keys.current.has(" ") ? 1 : 0) -
         (down.current || keys.current.has("control") ? 1 : 0),
       jump: jump.current || keys.current.has(" "),
-      run: run || keys.current.has("shift"),
+      run: runRef.current || keys.current.has("shift"),
     });
   };
   const clear = () => {
@@ -78,12 +85,17 @@ export function PlayPanel({
     const keydown = (e: KeyboardEvent) => {
       if (
         (e.target as HTMLElement).closest(
-          "input,textarea,select,[contenteditable=true]",
+          "input,textarea,select,[contenteditable]:not([contenteditable=false]),[role=textbox]",
         )
       ) {
         clear();
         return;
       }
+      if (
+        (e.key === " " || e.key === "Enter") &&
+        (e.target as HTMLElement).closest("button,summary,a")
+      )
+        return;
       if (!play.getState().active) return;
       const key = e.key.toLowerCase();
       if (
@@ -145,7 +157,12 @@ export function PlayPanel({
       if (document.pointerLockElement) play.look(e.movementX, e.movementY);
     };
     const focus = (e: FocusEvent) => {
-      if ((e.target as HTMLElement).matches("input,textarea,select")) clear();
+      if (
+        (e.target as HTMLElement).closest(
+          "input,textarea,select,[contenteditable]:not([contenteditable=false]),[role=textbox]",
+        )
+      )
+        clear();
     };
     window.addEventListener("keydown", keydown);
     window.addEventListener("keyup", keyup);
@@ -164,7 +181,7 @@ export function PlayPanel({
       document.removeEventListener("mousemove", mouse);
       document.removeEventListener("focusin", focus);
     };
-  }, [play, run]);
+  }, [play]);
   useEffect(() => {
     if (state.paused) clear();
   }, [state.paused]);
@@ -200,10 +217,31 @@ export function PlayPanel({
           Your build stays unchanged. A temporary ground plane supports
           exploration. Character height: 72 LDU.
         </p>
+        {Object.keys(rigs).length > 0 && (
+          <label>
+            Explore with mechanism
+            <select
+              aria-label="Explore with mechanism"
+              value={rigs[rigId] ? rigId : ""}
+              onChange={(e) => setRigId(e.target.value)}
+            >
+              <option value="">Static build</option>
+              {Object.values(rigs).map((rig) => (
+                <option key={rig.id} value={rig.id}>
+                  {rig.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <button
           className="primary wide"
           disabled={state.loading}
-          onClick={() => attempt(() => play.enter({ realtime: true }))}
+          onClick={() =>
+            attempt(() =>
+              play.enter({ realtime: true, ...(rigs[rigId] ? { rigId } : {}) }),
+            )
+          }
         >
           {state.loading ? "Preparing your world…" : "Enter Play"}
         </button>
@@ -269,6 +307,10 @@ export function PlayPanel({
           lookPointer.current = null;
           play.clearInput();
         }}
+        onLostPointerCapture={(e) => {
+          if (lookPointer.current?.id === e.pointerId)
+            lookPointer.current = null;
+        }}
       />
       <span className="play-crosshair" aria-hidden="true">
         +
@@ -333,7 +375,16 @@ export function PlayPanel({
             </span>
           </div>
           <div className="play-actions">
-            <button aria-pressed={run} onClick={() => setRun(!run)}>
+            <button
+              aria-pressed={run}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                setRun((value) => !value);
+              }}
+              onClick={(e) => {
+                if (e.detail === 0) setRun((value) => !value);
+              }}
+            >
               Run
             </button>
             <button
@@ -369,6 +420,10 @@ export function PlayPanel({
                   input();
                 }}
                 onPointerCancel={() => {
+                  down.current = false;
+                  input();
+                }}
+                onLostPointerCapture={() => {
                   down.current = false;
                   input();
                 }}
@@ -421,6 +476,14 @@ export function PlayPanel({
           Lock mouse
         </button>
       </div>
+      {!state.paused && report.mechanism && rigs[report.mechanism.rigId] && (
+        <PlayMechanismControls
+          play={play}
+          rig={rigs[report.mechanism.rigId]}
+          report={report.mechanism}
+          onError={setMessage}
+        />
+      )}
       {message && (
         <div className="play-message" role="status">
           {message}

@@ -55,6 +55,12 @@ export type InventoryOverride = {
   acknowledged: boolean;
   substitution: boolean;
 };
+export type InstructionStepMetadata = { notes?: string; camera?: CameraSpec };
+export type InstructionPlan = {
+  name: string;
+  steps: string[][];
+  stepMetadata?: InstructionStepMetadata[];
+};
 export type Project = {
   schemaVersion: 1;
   id: string;
@@ -78,7 +84,7 @@ export type Project = {
   defaultLayerId: string;
   layerAssignments: Record<string, string>;
   groups: Record<string, string[]>;
-  instructionPlans: Record<string, { name: string; steps: string[][] }>;
+  instructionPlans: Record<string, InstructionPlan>;
   cameraBookmarks: Record<string, CameraSpec>;
   motionRigs: Record<string, MotionRig>;
   metadata: Record<string, unknown>;

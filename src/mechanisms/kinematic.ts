@@ -360,6 +360,9 @@ export class KinematicSession {
     this.pose.jointPositions[id] = value;
     return this.snapshot();
   }
+  clearInput() {
+    this.throttle = 0;
+  }
   setVehicleInput(input: { throttle: number; steering: number }) {
     fields(input, ["throttle", "steering"]);
     ensure(

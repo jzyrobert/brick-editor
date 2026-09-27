@@ -49,6 +49,78 @@
           "const": "1.0"
         },
         "method": {
+          "const": "play.setMechanismJoint"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "jointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "jointId",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "play.setMechanismVehicleInput"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "throttle": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "steering": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "throttle",
+            "steering"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "play.teleport"
         },
         "input": {

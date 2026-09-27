@@ -92,6 +92,7 @@ export class SceneAdapter {
   private resizeObserver: ResizeObserver;
   private transformHandles?: TransformHandles;
   private selection = new THREE.Group();
+  private instructionVisibility: Set<string> | null = null;
   private ghost = new THREE.Group();
   private ghostToken = 0;
   private disposed = false;
@@ -103,6 +104,8 @@ export class SceneAdapter {
   private batchingEnabled =
     new URLSearchParams(location.search).get("referenceRenderer") !== "1";
   private lost = false;
+  private contextEpoch = 0;
+  private contextWork = new AbortController();
   private qualityProfile = resolveQuality("balanced");
   private keyLight!: THREE.DirectionalLight;
   constructor(
@@ -168,15 +171,106 @@ export class SceneAdapter {
   private contextLost = (e: Event) => {
     e.preventDefault();
     this.lost = true;
+    this.contextEpoch++;
+    this.contextWork.abort();
+    cancelAnimationFrame(this.raf);
+    this.raf = 0;
     this.report(
       "Graphics context lost. Your document remains available for native export.",
     );
   };
   private contextRestored = () => {
+    if (this.disposed) return;
     this.lost = false;
+    this.contextWork = new AbortController();
+    // Three rebuilds its GPU caches before this listener; retained scene
+    // geometry and materials upload again on the next draw.
+    this.renderer.setRenderTarget(null);
+    this.resize();
     this.report("Graphics restored.");
     this.invalidate();
   };
+  private async withContext<T>(work: Promise<T>): Promise<T> {
+    const signal = this.contextWork.signal;
+    ensure(
+      !this.lost && !this.disposed,
+      "WEBGL_UNAVAILABLE",
+      "Graphics context is unavailable",
+    );
+    let interrupt: () => void = () => {};
+    const interrupted = new Promise<never>((_, reject) => {
+      interrupt = () =>
+        reject(
+          new AppError(
+            "WEBGL_UNAVAILABLE",
+            "Graphics context was interrupted; retry the capture after restoration",
+          ),
+        );
+      signal.addEventListener("abort", interrupt, { once: true });
+    });
+    try {
+      return await Promise.race([work, interrupted]);
+    } finally {
+      signal.removeEventListener("abort", interrupt);
+    }
+  }
+  private compileForCapture() {
+    const signal = this.contextWork.signal;
+    const materials = this.renderer.compile(this.scene, this.camera);
+    // The pinned Three release's compileAsync owns an uncancellable polling
+    // timer. Own that polling here so a lost context cannot leave it running.
+    return new Promise<void>((resolve, reject) => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const start = performance.now();
+      const finish = (error?: unknown) => {
+        clearTimeout(timer);
+        signal.removeEventListener("abort", abort);
+        if (error) reject(error);
+        else resolve();
+      };
+      const abort = () =>
+        finish(
+          new AppError(
+            "WEBGL_UNAVAILABLE",
+            "Shader compilation interrupted by graphics loss",
+          ),
+        );
+      const check = () => {
+        if (signal.aborted) {
+          abort();
+          return;
+        }
+        try {
+          for (const material of materials) {
+            const program = (
+              this.renderer.properties.get(material) as {
+                currentProgram?: { isReady(): boolean };
+              }
+            ).currentProgram;
+            if (program?.isReady()) materials.delete(material);
+          }
+          if (!materials.size) {
+            finish();
+            return;
+          }
+          if (performance.now() - start > 30000) {
+            finish(
+              new AppError(
+                "WEBGL_UNAVAILABLE",
+                "Shader compilation timed out; retry capture",
+              ),
+            );
+            return;
+          }
+          timer = setTimeout(check, 10);
+        } catch (error) {
+          finish(error);
+        }
+      };
+      signal.addEventListener("abort", abort, { once: true });
+      check();
+    });
+  }
   private async loadLibrary() {
     const base =
       import.meta.env.BASE_URL + "libraries/" + libraryLock.releaseId + "/";
@@ -449,7 +543,9 @@ export class SceneAdapter {
             0,
             1,
           );
-          group.visible = o.visible;
+          group.visible = this.instructionVisibility
+            ? this.instructionVisibility.has(o.id)
+            : o.visible;
           group.updateMatrixWorld(true);
         }
         const inUse = new Set(
@@ -493,7 +589,7 @@ export class SceneAdapter {
     return this.pending;
   }
   async ready(minRevision?: number, strict = false) {
-    await this.pending;
+    await this.withContext(this.pending);
     ensure(!this.lost, "WEBGL_UNAVAILABLE", "Graphics context is lost");
     ensure(
       minRevision === undefined || this.revision >= minRevision,
@@ -645,7 +741,7 @@ export class SceneAdapter {
     if (this.raf || this.disposed || this.lost) return;
     this.raf = requestAnimationFrame(() => {
       this.raf = 0;
-      this.drawScene();
+      if (!this.lost && !this.disposed) this.drawScene();
     });
   }
   resize() {
@@ -722,7 +818,7 @@ export class SceneAdapter {
     };
   }
   /** A bounded, opening-preserving collision snapshot in public LDraw coordinates. */
-  async playGeometry() {
+  async playGeometry(selection?: { include?: string[]; exclude?: string[] }) {
     ensure(
       !this.transformDragging,
       "INVALID_INPUT",
@@ -736,7 +832,16 @@ export class SceneAdapter {
     const point = new THREE.Vector3();
     const warnings: string[] = [];
     let overBudget = false;
-    for (const group of this.handles.values()) {
+    const include = selection?.include ? new Set(selection.include) : undefined;
+    const exclude = new Set(selection?.exclude ?? []);
+    if (include)
+      ensure(
+        [...include].every((id) => this.handles.has(id)),
+        "INVALID_INPUT",
+        "Unknown moving collider occurrence",
+      );
+    for (const [id, group] of this.handles) {
+      if ((include && !include.has(id)) || exclude.has(id)) continue;
       group.traverse((object) => {
         const mesh = object as THREE.Mesh;
         if (!mesh.isMesh || overBudget) return;
@@ -777,7 +882,12 @@ export class SceneAdapter {
     }
     if (
       this.project &&
-      occurrences(this.project).some((o) => o.namespace === "missing")
+      occurrences(this.project).some(
+        (o) =>
+          (!include || include.has(o.id)) &&
+          !exclude.has(o.id) &&
+          o.namespace === "missing",
+      )
     ) {
       warnings.push(
         "Missing parts have no collision geometry. Use Fly to inspect this incomplete world.",
@@ -1160,7 +1270,7 @@ export class SceneAdapter {
   }
   ghostOtherLayers(activeLayerId: string | null) {
     this.ghostLayerId = activeLayerId;
-    // React may publish a view preference while compileAsync is pending.
+    // React may publish a view preference while shader compilation is pending.
     // Keep capture materials frozen; its finally block applies the latest value.
     if (this.captureActive) return;
     this.applyLayerGhost();
@@ -1168,6 +1278,7 @@ export class SceneAdapter {
     this.invalidate();
   }
   showStep(ids: string[] | null) {
+    this.instructionVisibility = ids ? new Set(ids) : null;
     const visible = new Set(
       ids ??
         (this.project
@@ -1328,7 +1439,8 @@ export class SceneAdapter {
       colorSpace: THREE.SRGBColorSpace,
     });
     const pixels = new Uint8Array(request.width * request.height * 4);
-    const capturedRevision = this.revision;
+    const capturedRevision = this.revision,
+      capturedContext = this.contextEpoch;
     ensure(
       !this.captureActive,
       "INVALID_INPUT",
@@ -1368,7 +1480,14 @@ export class SceneAdapter {
           ? null
           : new THREE.Color(request.background.color || "#ffffff");
       this.aspect(request.width / request.height);
-      await this.renderer.compileAsync(this.scene, this.camera);
+      await this.withContext(this.compileForCapture());
+      ensure(
+        !this.lost &&
+          !this.renderer.getContext().isContextLost() &&
+          capturedContext === this.contextEpoch,
+        "WEBGL_UNAVAILABLE",
+        "Graphics context changed during capture",
+      );
       ensure(
         this.revision === capturedRevision,
         "REVISION_CONFLICT",
@@ -1384,6 +1503,11 @@ export class SceneAdapter {
         request.width,
         request.height,
         pixels,
+      );
+      ensure(
+        !this.renderer.getContext().isContextLost(),
+        "WEBGL_UNAVAILABLE",
+        "Graphics context was lost during readback",
       );
     } finally {
       this.captureActive = false;
@@ -1476,6 +1600,7 @@ export class SceneAdapter {
   }
   dispose() {
     this.disposed = true;
+    this.contextWork.abort();
     this.transformHandles?.dispose();
     this.transformHandles = undefined;
     this.layerGhost.restore();

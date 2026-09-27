@@ -1,3 +1,4 @@
+import type { MechanismSnapshot } from "../mechanisms/types";
 import type { Vec3 } from "../core/types";
 /** Public coordinates are LDraw LDU: up is -Y. Angles are radians. */
 export type PlayLocomotion = "walk" | "fly-noclip";
@@ -11,6 +12,7 @@ export type CollisionSnapshot = {
   unsupported?: boolean;
 };
 export type PlayRequest = {
+  rigId?: string;
   locomotion?: PlayLocomotion;
   cameraMode?: PlayCameraMode;
   position?: Vec3;
@@ -62,6 +64,7 @@ export type AvatarPose = {
   rightShoulder: number;
 };
 export type PlaySnapshotReport = {
+  mechanism?: MechanismSnapshot & { blocked: boolean; blockedReason?: string };
   sourceRevision: number;
   tick: number;
   position: Vec3;

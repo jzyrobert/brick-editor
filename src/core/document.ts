@@ -1,3 +1,4 @@
+import { validateInstructionCamera } from "../instructions/edit";
 import {
   type Project,
   type Occurrence,
@@ -263,5 +264,26 @@ export function validateDocument(p: Project) {
     done.add(id);
   };
   for (const id of Object.keys(p.models)) check(id, new Set());
-  return occurrences(p);
+  const expanded = occurrences(p),
+    occurrenceIds = new Set(expanded.map((o) => o.id));
+  for (const plan of Object.values(p.instructionPlans)) {
+    ensure(
+      !plan.stepMetadata || plan.stepMetadata.length === plan.steps.length,
+      "INVALID_INPUT",
+      "Instruction step metadata is misaligned.",
+    );
+    const introduced = new Set<string>();
+    for (const step of plan.steps)
+      for (const id of step) {
+        ensure(
+          occurrenceIds.has(id) && !introduced.has(id),
+          "INVALID_INPUT",
+          "Instruction plan contains a missing or repeated occurrence.",
+        );
+        introduced.add(id);
+      }
+    for (const metadata of plan.stepMetadata ?? [])
+      if (metadata.camera) validateInstructionCamera(metadata.camera);
+  }
+  return expanded;
 }

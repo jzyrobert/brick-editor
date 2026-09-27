@@ -127,3 +127,5 @@ It is intentionally a starter-subset pipeline, not a whole-library importer. A n
 Architecture decisions, source limitations and unimplemented milestones are detailed in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/STATUS.md](docs/STATUS.md). Machine-readable feature support is in [src/automation/capabilities.json](src/automation/capabilities.json).
 
 The latest editing checkpoint includes world/face/numerical workplanes, oriented fills, submodel grouping and isolation, explicit shared recolour/local translation, configurable keyboard shortcuts, and export profiles. Portable geometry ZIPs preserve official part identity and require extraction plus recipient colour configuration. See [remaining work](TODO.md), [status](docs/STATUS.md), and [verification](docs/VERIFICATION.md).
+
+Play can now explore authored moving doors and vehicles with conservative actor collision guards. Instruction plans support editable steps, notes and saved cameras. Graphics-loss tests cover retained edits, native backups and restored captures. See [Play acceptance coverage](docs/PLAY-ACCEPTANCE-AUDIT.md) for tested behavior and remaining gaps.

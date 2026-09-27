@@ -417,6 +417,87 @@
               "maxItems": 100000
             },
             "maxItems": 100000
+          },
+          "stepMetadata": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "notes": {
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "camera": {
+                  "type": "object",
+                  "properties": {
+                    "space": {
+                      "const": "ldraw"
+                    },
+                    "projection": {
+                      "enum": [
+                        "perspective",
+                        "orthographic"
+                      ]
+                    },
+                    "position": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "target": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "up": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "fovDeg": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "exclusiveMaximum": 180
+                    },
+                    "near": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "far": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "span": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  },
+                  "required": [
+                    "space",
+                    "projection",
+                    "position",
+                    "target",
+                    "up",
+                    "fovDeg",
+                    "near",
+                    "far"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            },
+            "maxItems": 100000
           }
         },
         "required": [

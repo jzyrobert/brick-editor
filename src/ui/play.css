@@ -239,3 +239,53 @@
 .mode-play .mobile-panel {
   display: none !important;
 }
+
+.play-mechanism {
+  position: absolute;
+  top: 92px;
+  left: 16px;
+  width: min(300px, calc(100% - 32px));
+  max-height: calc(100% - 310px);
+  overflow: auto;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: #fffffff2;
+  box-shadow: 0 3px 20px #26333f20;
+  pointer-events: auto;
+  z-index: 2;
+}
+.play-mechanism summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+.play-mechanism label {
+  display: block;
+  margin: 10px 0;
+}
+.play-mechanism input {
+  width: 100%;
+  min-height: 44px;
+}
+.play-mechanism p {
+  font-size: 12px;
+}
+.play-drive-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.play-drive-buttons button {
+  flex: 1;
+  touch-action: none;
+}
+@media (max-width: 480px) {
+  .play-mechanism {
+    top: 132px;
+    left: 10px;
+    width: calc(100% - 20px);
+    max-height: calc(100% - 340px);
+  }
+}

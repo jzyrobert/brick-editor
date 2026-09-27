@@ -1,3 +1,8 @@
+import {
+  PlayMechanism,
+  validatePlayMechanismSource,
+  type PlayMechanismSource,
+} from "./mechanism";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { ensure, type CameraSpec, type Vec3 } from "../core/types";
 import {
@@ -41,6 +46,7 @@ function keys(o: object, allowed: string[]) {
 }
 /** Fixed-step isolated session. No authored project references or mutations. */
 export class PlaySession {
+  private mechanism?: PlayMechanism;
   private world: RAPIER.World;
   private collider: RAPIER.Collider;
   private controller: RAPIER.KinematicCharacterController;
@@ -77,6 +83,7 @@ export class PlaySession {
     private revision: number,
     snapshot: CollisionSnapshot,
     request: PlayRequest,
+    mechanismSource?: PlayMechanismSource,
   ) {
     this.world = new RAPIER.World({ x: 0, y: 0, z: 0 });
     this.world.timestep = DT;
@@ -118,6 +125,11 @@ export class PlaySession {
         P.radius * S,
       ).setSensor(true),
     );
+    if (mechanismSource)
+      this.mechanism = new PlayMechanism(this.world, mechanismSource, () => ({
+        position: this.feet,
+        walk: this.locomotion === "walk",
+      }));
     this.controller = this.world.createCharacterController(0.15 * S);
     this.controller.enableAutostep(P.stepHeight * S, 4 * S, false);
     this.controller.enableSnapToGround(3 * S);
@@ -149,6 +161,7 @@ export class PlaySession {
   static async create(
     snapshot: CollisionSnapshot,
     request: PlayRequest = {},
+    mechanismSource?: PlayMechanismSource,
   ): Promise<PlaySession> {
     ensure(
       request && typeof request === "object",
@@ -163,6 +176,7 @@ export class PlaySession {
       "cameraMode",
       "ground",
       "realtime",
+      "rigId",
     ]);
     if (request.position) point(request.position);
     for (const k of ["yaw", "pitch"] as const)
@@ -206,8 +220,22 @@ export class PlaySession {
       "INVALID_INPUT",
       "Invalid snapshot revision.",
     );
+    ensure(
+      !request.rigId ||
+        (mechanismSource?.rigId === request.rigId &&
+          mechanismSource.project.revision === snapshot.revision),
+      "INVALID_INPUT",
+      "Requested Play rig requires geometry from the same source revision",
+    );
+    if (mechanismSource)
+      validatePlayMechanismSource(mechanismSource, snapshot.revision);
     await (initialization ??= RAPIER.init());
-    return new PlaySession(snapshot.revision, snapshot, request);
+    return new PlaySession(
+      snapshot.revision,
+      snapshot,
+      request,
+      mechanismSource,
+    );
   }
   private alive() {
     ensure(!this.disposed, "INVALID_INPUT", "Play session has ended.");
@@ -315,6 +343,7 @@ export class PlaySession {
       this.pitch = Math.max(-1.48, Math.min(1.48, input.pitch));
   }
   clearInput() {
+    this.mechanism?.clearInput();
     this.setInput({});
     this.accumulator = 0;
     this.jumpHeld = false;
@@ -428,6 +457,8 @@ export class PlaySession {
     return this.snapshot();
   }
   private step() {
+    this.mechanism?.step();
+    if (this.mechanism) this.world.step();
     this.previous = [...this.feet];
     const i = this.input;
     let x = i.moveX,
@@ -610,9 +641,32 @@ export class PlaySession {
       far: 100000,
     };
   }
+  setMechanismJoint(id: string, value: number) {
+    this.alive();
+    ensure(
+      this.mechanism,
+      "INVALID_INPUT",
+      "Enter Play with an authored rig first",
+    );
+    this.mechanism.setJointPosition(id, value);
+    this.world.step();
+    return this.snapshot();
+  }
+  setMechanismVehicleInput(input: { throttle: number; steering: number }) {
+    this.alive();
+    ensure(
+      this.mechanism,
+      "INVALID_INPUT",
+      "Enter Play with an authored vehicle rig first",
+    );
+    this.mechanism.setVehicleInput(input);
+    this.world.step();
+    return this.snapshot();
+  }
   snapshot(): PlaySnapshotReport {
     this.alive();
     return {
+      ...(this.mechanism ? { mechanism: this.mechanism.snapshot() } : {}),
       sourceRevision: this.revision,
       tick: this.tick,
       position: [...this.feet],
@@ -635,6 +689,7 @@ export class PlaySession {
   }
   dispose() {
     if (this.disposed) return;
+    this.mechanism?.dispose();
     this.world.free();
     this.disposed = true;
   }

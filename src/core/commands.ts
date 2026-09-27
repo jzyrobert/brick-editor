@@ -1,3 +1,4 @@
+import { editInstructions } from "../instructions/edit";
 import { makeSubmodel, sharedDefinitionTargets } from "./models";
 import { duplicateLayer, mutateFolder } from "./layers";
 import {
@@ -603,6 +604,18 @@ function mutate(
         p.marketplace.overrides[v.occurrenceId] = v.mapping;
       }
       break;
+    case "instructions.create":
+    case "instructions.rename":
+    case "instructions.remove":
+    case "instructions.step.add":
+    case "instructions.step.remove":
+    case "instructions.step.reorder":
+    case "instructions.step.assign":
+    case "instructions.step.split":
+    case "instructions.step.merge":
+    case "instructions.step.update":
+      editInstructions(p, c.type, v);
+      break;
     case "instructions.layers":
       fields(v, ["name", "maxPerStep"]);
       {
@@ -808,6 +821,9 @@ export class Editor {
       affectedIds: occurrences(p).map((o) => o.id),
       idRemappings,
       copyMappings,
+      addedPlanIds: Object.keys(p.instructionPlans).filter(
+        (id) => !this.state.instructionPlans[id],
+      ),
       addedLayerIds: Object.keys(p.layers).filter(
         (id) => !this.state.layers[id],
       ),

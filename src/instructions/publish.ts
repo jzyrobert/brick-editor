@@ -1,6 +1,6 @@
 import { strToU8, zipSync } from "fflate";
 import { occurrences } from "../core/document";
-import { ensure, type Project } from "../core/types";
+import { ensure, type Project, type CameraSpec } from "../core/types";
 import type { SceneAdapter } from "../render/adapter";
 
 export type PublishFormat = "png-zip" | "html-zip" | "pdf";
@@ -24,6 +24,8 @@ export type PreparedPlan = {
     cumulativeIds: string[];
     partCount: number;
     lots: InstructionLot[];
+    notes?: string;
+    camera?: CameraSpec;
   }[];
   inventory: InstructionLot[];
   warnings: string[];
@@ -105,6 +107,7 @@ export function prepareInstructionPlan(
       cumulativeIds: [...cumulative],
       partCount: stepLots.reduce((n, l) => n + l.quantity, 0),
       lots: stepLots,
+      ...structuredClone(plan.stepMetadata?.[index] ?? {}),
     };
   });
   ensure(
@@ -157,7 +160,7 @@ const pdfText = (s: string) =>
   s.replace(/×/g, "x").replace(/[^\x20-\x7e]/g, "?");
 const MAX_BYTES = 100 * 1024 * 1024;
 
-/** Sequential captures use an immutable explicit plan and one camera, never authoring changes. */
+/** Sequential captures honor saved step cameras and restore the original view. */
 export async function publishInstructions(
   project: Project,
   planId: string,
@@ -217,6 +220,11 @@ export async function publishInstructions(
     accent = pdfModule?.rgb(0.73, 0.32, 0.12);
   let pages = 0;
   const page = (title: string) => {
+    ensure(
+      pages < 1000,
+      "LIMIT_EXCEEDED",
+      "Instruction PDF exceeds the 1,000-page budget.",
+    );
     const p = pdf!.addPage([595.28, 841.89]);
     pages++;
     p.drawText(pdfText(title).slice(0, 72), {
@@ -279,7 +287,7 @@ export async function publishInstructions(
         "REVISION_CONFLICT",
         "The build changed while publishing.",
       );
-      renderer.setCamera(camera);
+      renderer.setCamera(step.camera ?? camera);
       const image = await renderer.image({
         revision: project.revision,
         width,
@@ -329,6 +337,36 @@ export async function publishInstructions(
             { x: 40, y, size: 11, font, color: ink },
           );
           y -= 18;
+        }
+        if (step.notes) {
+          const wrap = (raw: string) => {
+            const lines: string[] = [];
+            let line = "";
+            for (const character of pdfText(raw)) {
+              if (line && font!.widthOfTextAtSize(line + character, 11) > 515) {
+                lines.push(line);
+                line = "";
+              }
+              line += character;
+            }
+            lines.push(line);
+            return lines;
+          };
+          for (const raw of step.notes.split("\n"))
+            for (const line of wrap(raw)) {
+              if (y < 55) {
+                listPage = page(`Step ${step.number} - notes continued`);
+                y = 750;
+              }
+              listPage.drawText(pdfText(line), {
+                x: 40,
+                y,
+                size: 11,
+                font,
+                color: ink,
+              });
+              y -= 16;
+            }
         }
       } else files[name] = bytes;
       options.onProgress?.(step.number, plan.steps.length);
@@ -390,7 +428,7 @@ export async function publishInstructions(
       const sections = plan.steps
         .map(
           (s) =>
-            `<section id="step-${s.number}"><h2>Step ${s.number} of ${plan.steps.length}</h2><p>${s.partCount} new parts</p><img src="step-${String(s.number).padStart(3, "0")}.png" alt="Cumulative model at step ${s.number}"><details><summary>Parts needed (${s.partCount})</summary><ul>${s.lots.map((l) => `<li>${l.quantity} × ${escape(l.ref)} · colour ${escape(l.colorCode)}</li>`).join("")}</ul></details><nav>${s.number > 1 ? `<a href="#step-${s.number - 1}">Previous step</a>` : ""} ${s.number < plan.steps.length ? `<a href="#step-${s.number + 1}">Next step</a>` : ""}</nav></section>`,
+            `<section id="step-${s.number}"><h2>Step ${s.number} of ${plan.steps.length}</h2><p>${s.partCount} new parts</p>${s.notes ? `<p style="white-space:pre-wrap">${escape(s.notes)}</p>` : ""}<img src="step-${String(s.number).padStart(3, "0")}.png" alt="Cumulative model at step ${s.number}"><details><summary>Parts needed (${s.partCount})</summary><ul>${s.lots.map((l) => `<li>${l.quantity} × ${escape(l.ref)} · colour ${escape(l.colorCode)}</li>`).join("")}</ul></details><nav>${s.number > 1 ? `<a href="#step-${s.number - 1}">Previous step</a>` : ""} ${s.number < plan.steps.length ? `<a href="#step-${s.number + 1}">Next step</a>` : ""}</nav></section>`,
         )
         .join("");
       files["index.html"] = strToU8(

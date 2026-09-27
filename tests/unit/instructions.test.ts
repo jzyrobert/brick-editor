@@ -147,3 +147,35 @@ describe("instruction publication", () => {
     expect(r.setCamera).toHaveBeenCalledTimes(2);
   });
 });
+it("publishes per-step cameras and escaped notes while restoring the original view", async () => {
+  const p = fixture(),
+    view = {
+      ...camera,
+      position: [-300, -180, 100] as [number, number, number],
+    },
+    r = renderer(p.revision);
+  p.instructionPlans.test.stepMetadata = [
+    {
+      camera: view,
+      notes: "Turn the build <carefully>\nKeep this exact note.",
+    },
+    { notes: "Next step" },
+  ];
+  const artifact = await publishInstructions(p, "test", r, {
+      format: "html-zip",
+    }),
+    files = unzipSync(artifact.bytes),
+    report = JSON.parse(strFromU8(files["instructions.json"]));
+  expect(r.setCamera).toHaveBeenNthCalledWith(1, view);
+  expect(r.setCamera).toHaveBeenNthCalledWith(2, camera);
+  expect(r.setCamera).toHaveBeenLastCalledWith(camera);
+  expect(report.steps[0].camera).toEqual(view);
+  expect(report.steps[0].notes).toBe(
+    p.instructionPlans.test.stepMetadata[0].notes,
+  );
+  expect(strFromU8(files["index.html"])).toContain("&lt;carefully&gt;");
+  const pdf = await publishInstructions(p, "test", renderer(p.revision), {
+    format: "pdf",
+  });
+  expect((await PDFDocument.load(pdf.bytes)).getPageCount()).toBe(4);
+});

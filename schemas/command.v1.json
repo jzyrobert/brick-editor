@@ -2104,6 +2104,633 @@
           "maximum": 9007199254740991
         },
         "type": {
+          "const": "instructions.create"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "occurrenceIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.rename"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          },
+          "required": [
+            "planId",
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.remove"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "planId"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.step.add"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "planId"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.step.remove"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "disposition": {
+              "enum": [
+                "unassign",
+                "move"
+              ]
+            },
+            "targetIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "planId",
+            "index",
+            "disposition"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.step.reorder"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "indices": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "planId",
+            "indices"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.step.assign"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "occurrenceIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "planId",
+            "index",
+            "occurrenceIds"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.step.split"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "occurrenceIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "planId",
+            "index",
+            "occurrenceIds"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.step.merge"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "planId",
+            "index"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "instructions.step.update"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "camera": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "space": {
+                      "const": "ldraw"
+                    },
+                    "projection": {
+                      "enum": [
+                        "perspective",
+                        "orthographic"
+                      ]
+                    },
+                    "position": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "target": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "up": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "fovDeg": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "exclusiveMaximum": 180
+                    },
+                    "near": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "far": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "span": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  },
+                  "required": [
+                    "space",
+                    "projection",
+                    "position",
+                    "target",
+                    "up",
+                    "fovDeg",
+                    "near",
+                    "far"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "planId",
+            "index"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
           "const": "instructions.layers"
         },
         "payload": {

@@ -1,4 +1,6 @@
 import type { SceneAdapter } from "../render/adapter";
+import type { Project } from "../core/types";
+import type { PlayMechanismSource } from "./mechanism";
 import { ensure } from "../core/types";
 import type {
   PlayInput,
@@ -23,6 +25,7 @@ export class BrowserPlay {
   private session?: PlaySession;
   private avatar?: BrickAvatar;
   private restore?: () => void;
+  private restorePose?: () => void;
   private raf = 0;
   private epoch = 0;
   private realtime = false;
@@ -39,6 +42,7 @@ export class BrowserPlay {
     private render: () => SceneAdapter | undefined,
     private revision: () => number,
     private beforeEnter: () => void = () => {},
+    private project?: () => Project,
   ) {}
   getState = () => this.state;
   subscribe = (listener: () => void) => {
@@ -72,16 +76,58 @@ export class BrowserPlay {
     this.emit({ loading: true, error: undefined });
     try {
       const r = this.renderer();
+      const project = request.rigId ? this.project?.() : undefined;
+      const rig = request.rigId
+        ? project?.motionRigs?.[request.rigId]
+        : undefined;
+      ensure(
+        !request.rigId || rig,
+        "INVALID_INPUT",
+        "Unknown authored Play rig",
+      );
+      const ids = rig?.groups.flatMap((group) => group.occurrenceIds) ?? [];
       const [{ PlaySession }, geometry] = await Promise.all([
         import("./session"),
-        r.playGeometry(),
+        r.playGeometry({ exclude: ids }),
       ]);
+      const mechanismSource: PlayMechanismSource | undefined =
+        rig && project
+          ? {
+              project,
+              rigId: rig.id,
+              groups: Object.fromEntries(
+                await Promise.all(
+                  rig.groups.map(async (group) => [
+                    group.id,
+                    await r.playGeometry({ include: group.occurrenceIds }),
+                  ]),
+                ),
+              ),
+            }
+          : undefined;
+      if (mechanismSource)
+        for (const mesh of Object.values(mechanismSource.groups)) {
+          for (let axis = 0; axis < 3; axis++) {
+            geometry.bounds.min[axis] = Math.min(
+              geometry.bounds.min[axis],
+              mesh.bounds.min[axis],
+            );
+            geometry.bounds.max[axis] = Math.max(
+              geometry.bounds.max[axis],
+              mesh.bounds.max[axis],
+            );
+          }
+        }
       ensure(
         geometry.revision === this.revision(),
         "REVISION_CONFLICT",
         "Project changed while preparing Play",
       );
-      const session = await PlaySession.create(geometry, request);
+      const session = await PlaySession.create(
+        geometry,
+        request,
+        mechanismSource,
+      );
       if (epoch !== this.epoch) {
         session.dispose();
         throw new Error("Play entry cancelled");
@@ -92,6 +138,7 @@ export class BrowserPlay {
       }
       this.session = session;
       this.held = {};
+      if (rig) this.restorePose = r.beginTransientPose();
       this.restore = r.beginPlayView();
       this.avatar = new BrickAvatar();
       r.scene.add(this.avatar.group);
@@ -101,17 +148,21 @@ export class BrowserPlay {
       this.schedule();
       return session.snapshot();
     } catch (e) {
-      if (epoch === this.epoch)
+      if (epoch === this.epoch) {
+        this.exit();
         this.emit({
           loading: false,
           error: e instanceof Error ? e.message : String(e),
         });
+      }
       throw e;
     }
   }
   private draw() {
     if (!this.session) return;
     const r = this.renderer();
+    const report = this.session.snapshot();
+    if (report.mechanism) r.applyTransientPose(report.mechanism.transforms);
     r.playCamera(this.session.camera(this.realtime && !this.state.paused));
     this.avatar?.update(this.session.snapshot());
     r.invalidate();
@@ -199,6 +250,18 @@ export class BrowserPlay {
     this.emit();
     return session.snapshot();
   }
+  setMechanismJoint(id: string, value: number) {
+    const report = this.current().setMechanismJoint(id, value);
+    this.draw();
+    this.emit();
+    return report;
+  }
+  setMechanismVehicleInput(input: { throttle: number; steering: number }) {
+    const report = this.current().setMechanismVehicleInput(input);
+    this.draw();
+    this.emit();
+    return report;
+  }
   snapshot() {
     return this.current().snapshot();
   }
@@ -222,6 +285,8 @@ export class BrowserPlay {
     this.session = undefined;
     this.avatar?.dispose();
     this.avatar = undefined;
+    this.restorePose?.();
+    this.restorePose = undefined;
     this.restore?.();
     this.restore = undefined;
     this.emit({

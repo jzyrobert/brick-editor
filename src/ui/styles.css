@@ -2018,3 +2018,32 @@ summary:focus-visible {
   box-shadow: inset 0 -3px 0 var(--accent, #ba542d);
   font-weight: 700;
 }
+.instruction-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 10px 0;
+}
+.instruction-actions button {
+  min-height: 44px;
+  white-space: normal;
+}
+.instruction-notes {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.instruction-notes textarea {
+  min-height: 100px;
+  width: 100%;
+  resize: vertical;
+}
+.instruction-parts {
+  max-height: 250px;
+  overflow: auto;
+  border: 1px solid #b8c7cd;
+  padding: 8px;
+}
+.instruction-parts .check {
+  min-height: 44px;
+}

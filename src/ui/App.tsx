@@ -32,6 +32,7 @@ import { ProjectLibrary } from "./ProjectLibrary";
 import { OfflinePanel } from "./OfflinePanel";
 import { LayerActions } from "./LayerActions";
 import { ClipboardTools } from "./ClipboardTools";
+import { InstructionEditor } from "./InstructionEditor";
 import { InstructionsPublish } from "./InstructionsPublish";
 import { SharePanel } from "./SharePanel";
 import { AutosaveQueue } from "../persistence/autosave";
@@ -193,6 +194,7 @@ export default function App() {
     [rows, setRows] = useState(4),
     [fill, setFill] = useState<ReturnType<typeof fillPreview> | null>(null),
     [step, setStep] = useState(0),
+    [activePlanId, setActivePlanId] = useState(""),
     [photoSize, setPhotoSize] = useState([1600, 1200]),
     [transparent, setTransparent] = useState(false),
     [camera, setCamera] = useState<CameraSpec>({
@@ -239,7 +241,10 @@ export default function App() {
   const all = occurrences(project),
     selected = all.filter((o) => selection.includes(o.id)),
     currentPart = catalog[part],
-    plan = Object.values(project.instructionPlans)[0];
+    currentPlanId = project.instructionPlans[activePlanId]
+      ? activePlanId
+      : (Object.keys(project.instructionPlans)[0] ?? ""),
+    plan = project.instructionPlans[currentPlanId];
   modeRef.current = mode;
   projectRef.current = project;
   selectionRef.current = selection;
@@ -439,6 +444,7 @@ export default function App() {
       () => renderer.current,
       () => editor.project.revision,
       () => mechanisms.current?.exit(),
+      () => editor.project,
     );
     api.current = createAPI(
       editor,
@@ -516,6 +522,27 @@ export default function App() {
     }
     if (mode !== "Build") setPanel("Canvas");
   }, [tool, mode, step, plan]);
+  useEffect(() => {
+    setStep((index) =>
+      Math.max(0, Math.min(index, (plan?.steps.length ?? 1) - 1)),
+    );
+  }, [plan]);
+  useEffect(() => {
+    const camera = plan?.stepMetadata?.[step]?.camera,
+      r = renderer.current;
+    if (mode !== "Instructions" || !camera || !r) return;
+    let cancelled = false;
+    void r
+      .ready()
+      .then(() => {
+        if (!cancelled) r.setCamera(camera);
+      })
+      .catch((e) => setStatus(e.message));
+    return () => {
+      cancelled = true;
+    };
+  }, [mode, currentPlanId, step, plan?.stepMetadata]);
+
   useEffect(() => {
     renderer.current?.setWorkplaneGuide(workplane);
   }, [workplane]);
@@ -1865,25 +1892,43 @@ export default function App() {
                 className="wide"
                 onClick={() =>
                   void run(() => {
-                    command("instructions.layers", {
+                    const result = command("instructions.layers", {
                       name: "Layer sequence",
                       maxPerStep: 10,
                     });
+                    setActivePlanId(result.addedPlanIds[0]);
                     setStep(0);
                   })
                 }
               >
                 Generate layer steps
               </button>
+              <InstructionEditor
+                canUndo={editor.canUndo}
+                canRedo={editor.canRedo}
+                project={project}
+                planId={currentPlanId}
+                onPlanChange={setActivePlanId}
+                step={step}
+                onStepChange={setStep}
+                selection={selection}
+                dispatch={(type, payload) => command(type, payload)}
+                currentCamera={() => renderer.current?.currentCamera()}
+                applyCamera={(camera) => {
+                  void run(() => renderer.current?.setCamera(camera));
+                }}
+              />
               {plan && (
                 <>
                   <h3>{plan.name}</h3>
                   <p>
-                    Step {step + 1} of {plan.steps.length} ·{" "}
-                    {plan.steps[step]?.length || 0} new parts
+                    Step {plan.steps.length ? step + 1 : 0} of{" "}
+                    {plan.steps.length} · {plan.steps[step]?.length || 0} new
+                    parts
                   </p>
                   <input
                     aria-label="Instruction step"
+                    disabled={!plan.steps.length}
                     type="range"
                     min="0"
                     max={Math.max(0, plan.steps.length - 1)}
@@ -1904,7 +1949,7 @@ export default function App() {
                   </button>
                   <InstructionsPublish
                     project={project}
-                    planId={Object.keys(project.instructionPlans)[0]}
+                    planId={currentPlanId}
                     renderer={renderer.current}
                   />
                 </>
@@ -1914,6 +1959,7 @@ export default function App() {
           {mode === "Play" && play.current && (
             <PlayPanel
               play={play.current}
+              rigs={project.motionRigs}
               exit={() => setMode("Build")}
               bookmark={() => {
                 const view = play.current!.camera();

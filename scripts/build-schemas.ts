@@ -120,7 +120,16 @@ const project = obj({
   defaultLayerId: id,
   layerAssignments: dictionary(id),
   groups: dictionary(arr(id)),
-  instructionPlans: dictionary(obj({ name: str, steps: arr(arr(id)) })),
+  instructionPlans: dictionary(
+    obj(
+      {
+        name: str,
+        steps: arr(arr(id)),
+        stepMetadata: arr(obj({ notes: str, camera }, [])),
+      },
+      ["name", "steps"],
+    ),
+  ),
   cameraBookmarks: dictionary(camera),
   motionRigs: dictionary({}),
   metadata: dictionary({}),
@@ -402,6 +411,40 @@ const payloads: Record<string, any> = {
       ],
     },
   }),
+  "instructions.create": obj({ name: str, occurrenceIds: arr(id) }, ["name"]),
+  "instructions.rename": obj({ planId: id, name: str }),
+  "instructions.remove": obj({ planId: id }),
+  "instructions.step.add": obj({ planId: id, index: integer }, ["planId"]),
+  "instructions.step.remove": obj(
+    {
+      planId: id,
+      index: integer,
+      disposition: { enum: ["unassign", "move"] },
+      targetIndex: integer,
+    },
+    ["planId", "index", "disposition"],
+  ),
+  "instructions.step.reorder": obj({ planId: id, indices: arr(integer) }),
+  "instructions.step.assign": obj({
+    planId: id,
+    index: integer,
+    occurrenceIds: arr(id),
+  }),
+  "instructions.step.split": obj({
+    planId: id,
+    index: integer,
+    occurrenceIds: arr(id),
+  }),
+  "instructions.step.merge": obj({ planId: id, index: integer }),
+  "instructions.step.update": obj(
+    {
+      planId: id,
+      index: integer,
+      notes: str,
+      camera: { anyOf: [camera, { type: "null" }] },
+    },
+    ["planId", "index"],
+  ),
   "instructions.layers": obj(
     { name: str, maxPerStep: { type: "integer", minimum: 1, maximum: 1000 } },
     [],
@@ -562,6 +605,7 @@ const inventoryPreview = obj({
 });
 const playRequest = obj(
   {
+    rigId: id,
     locomotion: { enum: ["walk", "fly-noclip"] },
     cameraMode: { enum: ["first-person", "third-person"] },
     position: vec,
@@ -635,6 +679,37 @@ const playSnapshot = obj({
     rightShoulder: num,
   }),
 });
+playSnapshot.properties.mechanism = obj(
+  {
+    sourceRevision: integer,
+    rigId: id,
+    tick: integer,
+    simulationHz: { const: 60 },
+    mode: { const: "kinematic" },
+    units: { const: "LDU" },
+    scaleMetresPerLdu: num,
+    pose: mechanismPose,
+    groupFrames: dictionary(transform),
+    transforms: dictionary(transform),
+    warnings: arr(str),
+    blocked: { type: "boolean" },
+    blockedReason: str,
+  },
+  [
+    "sourceRevision",
+    "rigId",
+    "tick",
+    "simulationHz",
+    "mode",
+    "units",
+    "scaleMetresPerLdu",
+    "pose",
+    "groupFrames",
+    "transforms",
+    "warnings",
+    "blocked",
+  ],
+);
 const exportProfileRequest = obj(
   {
     profile: { enum: ["standard", "portable", "layers", "native"] },
@@ -650,6 +725,11 @@ const api = {
   oneOf: Object.entries({
     "play.enter": { $ref: "playRequest" },
     "play.setInput": { $ref: "playInput" },
+    "play.setMechanismJoint": obj({ jointId: id, value: num }),
+    "play.setMechanismVehicleInput": obj({
+      throttle: { type: "number", minimum: -1, maximum: 1 },
+      steering: { type: "number", minimum: -1, maximum: 1 },
+    }),
     "play.teleport": { $ref: "playTeleport" },
     "play.stepTicks": { type: "integer", minimum: 0, maximum: 3600 },
     "play.setCameraMode": { enum: ["first-person", "third-person"] },

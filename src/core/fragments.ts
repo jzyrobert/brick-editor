@@ -168,10 +168,17 @@ export function copyFragment(
       .map(([name, ids]) => [name, ids.filter((id) => selected.has(id))])
       .filter(([, ids]) => ids.length),
   );
-  for (const plan of Object.values(p.instructionPlans))
-    plan.steps = plan.steps
-      .map((step) => step.filter((id) => selected.has(id)))
-      .filter((step) => step.length);
+  for (const plan of Object.values(p.instructionPlans)) {
+    const retained = plan.steps
+      .map((step, index) => ({
+        ids: step.filter((id) => selected.has(id)),
+        metadata: plan.stepMetadata?.[index],
+      }))
+      .filter((step) => step.ids.length);
+    plan.steps = retained.map((step) => step.ids);
+    if (plan.stepMetadata)
+      plan.stepMetadata = retained.map((step) => step.metadata ?? {});
+  }
   p.cameraBookmarks = {};
   p.diagnostics = p.diagnostics.filter(
     (d) =>
@@ -375,6 +382,7 @@ export function pasteFragment(
       target.groups[`${name} copy ${wrapper.slice(0, 8)}`] = ids.map(map);
     for (const plan of Object.values(source.instructionPlans))
       target.instructionPlans[uid()] = {
+        ...structuredClone(plan),
         name: `${plan.name} (pasted)`,
         steps: plan.steps.map((step) => step.map(map)),
       };

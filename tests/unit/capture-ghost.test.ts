@@ -42,6 +42,12 @@ it("defers ghost changes during shader compilation and restores the latest view 
     layerGhost: new LayerGhost(),
     ghostLayerId: null,
     captureActive: false,
+    contextEpoch: 0,
+    contextWork: new AbortController(),
+    compileForCapture: async () => {
+      started();
+      await gate;
+    },
     scene: new THREE.Scene(),
     grid: new THREE.Group(),
     selection: new THREE.Group(),
@@ -50,6 +56,7 @@ it("defers ghost changes during shader compilation and restores the latest view 
     renderer: {
       capabilities: { maxTextureSize: 4096 },
       getRenderTarget: () => null,
+      getContext: () => ({ isContextLost: () => false }),
       setRenderTarget: vi.fn(),
       compileAsync: async () => {
         started();

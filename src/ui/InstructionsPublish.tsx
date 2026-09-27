@@ -66,8 +66,8 @@ export function InstructionsPublish({
     <section aria-label="Publish instructions">
       <h3>Publish your sequence</h3>
       <p>
-        Uses the current camera for every cumulative step. Adjust the view
-        before exporting. Parts lists and a coverage report are included.
+        Uses each saved step camera, or the current view when none is saved.
+        Step notes, parts lists and a coverage report are included.
       </p>
       <div className="form-row">
         <label>

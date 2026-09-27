@@ -109,6 +109,12 @@ export function createAPI(
         validate("playInput", input);
         return player().setInput(input);
       },
+      setMechanismJoint: async (jointId: string, value: number) =>
+        player().setMechanismJoint(jointId, value),
+      setMechanismVehicleInput: async (input: {
+        throttle: number;
+        steering: number;
+      }) => player().setMechanismVehicleInput(input),
       setCameraMode: async (mode: PlayCameraMode) =>
         player().setCameraMode(mode),
       setLocomotion: async (mode: PlayLocomotion) =>
