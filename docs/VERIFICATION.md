@@ -7,7 +7,7 @@ The final production build, clean install and test suites pass. These results es
 | `npm ci`                   | Clean lockfile install passes                                                                              |
 | `npm run build`            | TypeScript and Vite 6.4.3 pass                                                                             |
 | `npm test`                 | **142 tests pass**, 32 files, 0 failures                                                                   |
-| `npm run test:browser`     | **61 tests pass**, 0 failures, against the production bundle                                               |
+| `npm run test:browser`     | **62 tests pass**, 0 failures, against the production bundle                                               |
 | Browser engine             | Playwright 1.63.0, Chromium 153.0.8010.12, SwiftShader software WebGL2                                     |
 | Layouts                    | 1440×1000 desktop, 1080×1800 touch, 360×800 touch                                                          |
 | `npm run library:validate` | 23 files and six physical parts; dependency closure, licence metadata and library/mapping hashes pass      |
@@ -64,8 +64,10 @@ The latest production run adds independent front/back BFC comparisons, submodel/
 
 ## Moving Play, instruction editing and recovery
 
-The final combined production run passes **61 browser tests**, with **142 unit/integration/CLI tests** across 32 files. Added coverage includes moving door colliders, blocked closing sweeps, fixed-tick vehicle motion and throttle release, actual touch rig controls, secondary-touch Run, pointer-capture and editable-focus loss, keyboard focus after camera clicks, fixed-view capture/bookmarks and project replacement. Eight UI-mounted third-person entry/exit cycles track live GL objects and global listeners after warmup; this is bounded lifecycle evidence rather than a universal leak proof.
+The final combined production run passes **62 browser tests**, with **142 unit/integration/CLI tests** across 32 files. Added coverage includes moving door colliders, blocked closing sweeps, fixed-tick vehicle motion and throttle release, actual touch rig controls, secondary-touch Run, pointer-capture and editable-focus loss, keyboard focus after camera clicks, fixed-view capture/bookmarks and project replacement. Eight UI-mounted third-person entry/exit cycles track live GL objects and global listeners after warmup; this is bounded lifecycle evidence rather than a universal leak proof.
 
 Instruction browser tests edit and publish step notes/cameras and compare actual canvas pixels: the first ten parts differ from the full forty-part wall, and the first-step image survives note edits, slider round trips and reorder/undo. Three real WebGL loss/restore cycles preserve in-memory edits and native backups and produce identical restored captures. A controlled shader-completion delay confirms that graphics loss interrupts capture and stops polling rather than returning empty pixels or leaving a timer running.
 
 The independent mobile re-review is **8.7/10** at 360×800 and 1080×1800. See [Play acceptance audit](PLAY-ACCEPTANCE-AUDIT.md) and [UX audit](UX-AUDIT.md) for evidence and remaining scope. No riding, pushing, vehicle/world dynamics, universal traversability or physical-device performance is claimed.
+
+A deployment smoke test additionally exposed a warm-import race: a delayed instruction-plan effect could cancel a freshly entered API Play session. Mode lifecycle and plan preview effects are now separated. The new regression reproduces the prior failure and passes after the fix, including cached imports, layer duplication/undo, immediate rig entry and unchanged authored revisions. The final full production suite passes all 62 tests.

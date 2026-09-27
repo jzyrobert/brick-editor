@@ -511,17 +511,23 @@ export default function App() {
     r.controls.mouseButtons.LEFT = tool === "Navigate" ? 0 : (null as any);
     r.controls.touches.ONE = tool === "Navigate" ? 0 : (null as any);
     r.controls.enabled = mode !== "Play";
-    r.showStep(
-      mode === "Instructions" && plan
-        ? plan.steps.slice(0, step + 1).flat()
-        : null,
-    );
+  }, [tool, mode]);
+  useEffect(() => {
+    if (mode === "Instructions")
+      renderer.current?.showStep(
+        plan ? plan.steps.slice(0, step + 1).flat() : null,
+      );
+  }, [mode, step, plan]);
+  useEffect(() => {
+    if (mode !== "Instructions") renderer.current?.showStep(null);
+    // Document replacement cancels the old session synchronously through
+    // sourceChanged. A delayed plan render must not cancel a new API session.
     if (mode !== "Play") {
       play.current?.exit();
       mechanisms.current?.exit();
     }
     if (mode !== "Build") setPanel("Canvas");
-  }, [tool, mode, step, plan]);
+  }, [mode]);
   useEffect(() => {
     setStep((index) =>
       Math.max(0, Math.min(index, (plan?.steps.length ?? 1) - 1)),
