@@ -70,7 +70,7 @@ Ancestor and internal-dependency BFC contexts now have an original seven-case fi
 
 ## Exploration, instructions and graphics recovery
 
-Play can include one authored kinematic rig. Its rigid groups use transformed triangle colliders and fixed-tick poses, allowing an opened door to become traversable. Swept movement is conservatively refused before a moving surface touches the walking explorer. This is not vehicle/world dynamics, riding or pushing. Moving geometry is bounded to 128 groups and 200,000 triangles; commands exceeding 1,024 swept segments must use smaller targets. Runtime joint/vehicle controls preserve the authored document.
+Play can include one or several authored kinematic rigs. Its rigid groups use transformed triangle colliders and fixed-tick poses, allowing an opened door to become traversable. Swept movement is conservatively refused before a moving surface touches the walking explorer. This is not vehicle/world dynamics, riding or pushing. Moving geometry is bounded to 128 groups and 200,000 triangles; commands exceeding 1,024 swept segments must use smaller targets. Runtime joint/vehicle controls preserve the authored document.
 
 Instruction plans now support create/rename/delete, step add/remove/reorder/split/merge, occurrence reassignment, notes and saved cameras through undoable commands. Camera presets remain accessible in Instructions. Optional aligned metadata preserves older plans, survives clipboard filtering and native saves, and is honored by JSON/HTML/PDF publication. Publication still requires exact coverage and restores the original camera. Callouts, arrows, exploded offsets, assembly planning remain unfinished.
 
@@ -102,12 +102,18 @@ The reproduced deep-occurrence input gap is fixed: canonical JSON paths now have
 
 ## Nearby Play interaction
 
-The selected Play rig now exposes a contextual button and remappable E action within 96 LDU of its authored joint anchor or vehicle chassis, measured from the explorer's body center. Revolute and prismatic joints toggle between the allowed position nearest zero and the farthest limit (defaults: 90 degrees or 40 LDU). Motion still uses the swept actor-clearance checks and reports a blocked attempt visibly. This is proximity access, not a line-of-sight picking system or automatic door detection.
+The nearest joint or vehicle among the active Play rigs exposes a contextual button and remappable E action within 96 LDU of its authored joint anchor or vehicle chassis, measured from the explorer's body center. Revolute and prismatic joints toggle between the allowed position nearest zero and the farthest limit (defaults: 90 degrees or 40 LDU). Motion still uses the swept actor-clearance checks and reports a blocked attempt visibly. This is proximity access, not a line-of-sight picking system or automatic door detection.
 
-Vehicle access switches movement keys and the touch joystick to throttle/steering, with an explicit Release vehicle action. The explorer remains on foot; pause, focus loss and released inputs stop driving. Look controls remain available. The authored build is unchanged. Only the selected rig is active; simultaneous nearby rigs, animated door travel, seated entry/exit, riding and vehicle/world collision response remain open.
+Vehicle access switches movement keys and the touch joystick to throttle/steering, with an explicit Release vehicle action. The explorer remains on foot; pause, focus loss and released inputs stop driving. Look controls remain available. The authored build is unchanged. Seated entry/exit, riding and vehicle/world collision response remain open.
 
 ## Multiple active Play rigs
 
 Play can now activate all authored mechanisms or an explicit subset in one session. The nearest authored joint/chassis supplies the contextual action, and remote controls can select a specific active rig. Door poses persist while a different vehicle moves; all moving colliders and actor navigation share the fixed-tick world. Explicit per-rig API targeting avoids ambiguity. Combined limits are 32 rigs, 128 groups and 200,000 moving triangles; repeated IDs, overlapping members and excluded member layers are refused before simulation.
 
 The legacy single-rig request/report remains supported. Vehicles are still kinematic and remotely controlled from the explorer's position, without seated entry, riding or vehicle/world response. Multi-rig support does not infer joints or controllers from arbitrary imported geometry.
+
+## Animated contextual doors and sliders
+
+Contextual revolute/prismatic actions now travel over fixed ticks at 90 degrees/second or 40 LDU/second, with visible progress, reversal before the midpoint, and an explicit retry after an obstruction. Each accepted increment updates real colliders; blocking retains the last safe pose. Multiple joints/rigs retain independent targets. Remote numeric positioning remains immediate and cancels only that joint's target.
+
+The target API exposes bounded rates, units and moving/blocked/complete status. Pause retains targets while stopping realtime advancement; explicit automation ticks still advance, while image capture locks out mutations. Targets belong to the current Play session and do not modify authored rest data. Line-of-sight targeting, authored seats, riding and vehicle/world collision response remain unfinished.

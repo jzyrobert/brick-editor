@@ -478,7 +478,25 @@ export class BrowserPlay {
     );
     this.clearInput();
     if (target.kind === "vehicle") this.emit({ vehicleControl: target.rigId });
-    else this.setMechanismJoint(target.jointId, target.target, target.rigId);
+    else
+      this.setJointTarget({
+        rigId: target.rigId,
+        jointId: target.jointId,
+        target: target.target,
+        speed: target.speed,
+      });
+  }
+  setJointTarget(request: {
+    rigId?: string;
+    jointId: string;
+    target: number;
+    speed: number;
+  }) {
+    this.assertMutable();
+    const report = this.current().setJointTarget(request);
+    this.draw();
+    this.emit();
+    return report;
   }
   setMechanismJoint(id: string, value: number, rigId?: string) {
     this.assertMutable();

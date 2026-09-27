@@ -487,6 +487,65 @@
         "blocked": {
           "type": "boolean"
         },
+        "jointTargets": {
+          "type": "object",
+          "maxProperties": 10000,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "current": {
+                "type": "number"
+              },
+              "target": {
+                "type": "number"
+              },
+              "speed": {
+                "type": "number"
+              },
+              "status": {
+                "enum": [
+                  "moving",
+                  "blocked",
+                  "complete"
+                ]
+              },
+              "units": {
+                "enum": [
+                  "degrees",
+                  "LDU"
+                ]
+              },
+              "speedUnits": {
+                "enum": [
+                  "degrees/s",
+                  "LDU/s"
+                ]
+              },
+              "blockedReason": {
+                "type": "string",
+                "maxLength": 4096
+              }
+            },
+            "required": [
+              "current",
+              "target",
+              "speed",
+              "status",
+              "units",
+              "speedUnits"
+            ],
+            "additionalProperties": false
+          },
+          "propertyNames": {
+            "not": {
+              "enum": [
+                "__proto__",
+                "constructor",
+                "prototype"
+              ]
+            }
+          }
+        },
         "blockedReason": {
           "type": "string",
           "maxLength": 4096
@@ -696,6 +755,65 @@
           },
           "blocked": {
             "type": "boolean"
+          },
+          "jointTargets": {
+            "type": "object",
+            "maxProperties": 10000,
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "current": {
+                  "type": "number"
+                },
+                "target": {
+                  "type": "number"
+                },
+                "speed": {
+                  "type": "number"
+                },
+                "status": {
+                  "enum": [
+                    "moving",
+                    "blocked",
+                    "complete"
+                  ]
+                },
+                "units": {
+                  "enum": [
+                    "degrees",
+                    "LDU"
+                  ]
+                },
+                "speedUnits": {
+                  "enum": [
+                    "degrees/s",
+                    "LDU/s"
+                  ]
+                },
+                "blockedReason": {
+                  "type": "string",
+                  "maxLength": 4096
+                }
+              },
+              "required": [
+                "current",
+                "target",
+                "speed",
+                "status",
+                "units",
+                "speedUnits"
+              ],
+              "additionalProperties": false
+            },
+            "propertyNames": {
+              "not": {
+                "enum": [
+                  "__proto__",
+                  "constructor",
+                  "prototype"
+                ]
+              }
+            }
           },
           "blockedReason": {
             "type": "string",

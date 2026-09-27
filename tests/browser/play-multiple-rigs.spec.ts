@@ -33,7 +33,7 @@ test("door and vehicle keep independent live poses in one frozen Play world", as
   await page.evaluate(() => window.brickEditor!.play.stepTicks(12));
   await page.keyboard.up("w");
   const driven = await page.evaluate(() => window.brickEditor!.play.snapshot());
-  expect(driven.mechanisms!.door.pose.jointPositions.hinge).toBe(110);
+  expect(driven.mechanisms!.door.pose.jointPositions.hinge).toBe(18);
   expect(driven.mechanisms!.vehicle.pose.vehicle!.position[2]).toBeLessThan(
     -19,
   );

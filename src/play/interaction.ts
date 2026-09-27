@@ -9,7 +9,12 @@ export type PlayInteraction = {
   name: string;
   available: boolean;
   distance: number;
-} & ({ kind: "vehicle" } | { kind: "joint"; jointId: string; target: number });
+  progress?: string;
+  blockedReason?: string;
+} & (
+  | { kind: "vehicle" }
+  | { kind: "joint"; jointId: string; target: number; speed: number }
+);
 
 /** Nearby authored anchors, measured from the middle of the explorer's body. */
 export function nearbyInteraction(
@@ -50,13 +55,39 @@ export function nearbyInteraction(
     const opened = Math.abs(max - closed) >= Math.abs(min - closed) ? max : min;
     if (Math.abs(opened - closed) < 1e-6) continue;
     const current = mechanism.pose.jointPositions[joint.id] ?? 0;
-    const close = Math.abs(current - opened) < Math.abs(current - closed);
+    const travel = mechanism.jointTargets?.[joint.id];
+    const intendedOpen =
+      travel &&
+      Math.abs(travel.target - opened) < Math.abs(travel.target - closed);
+    const retry = travel?.status === "blocked";
+    const close =
+      travel && travel.status !== "complete"
+        ? retry
+          ? !intendedOpen
+          : !!intendedOpen
+        : Math.abs(current - opened) < Math.abs(current - closed);
+    const unit = joint.kind === "revolute" ? "°" : " LDU";
+    const progress =
+      travel?.status === "moving"
+        ? `${intendedOpen ? "Opening" : "Closing"} · ${current.toFixed(1)}${unit} / ${travel.target.toFixed(1)}${unit}`
+        : retry
+          ? `Blocked at ${current.toFixed(1)}${unit}. Move clear, then retry.`
+          : undefined;
     targets.push({
       kind: "joint",
       rigId: rig.id,
       jointId: joint.id,
       target: close ? closed : opened,
-      label: close ? "Close joint" : "Open joint",
+      speed: joint.kind === "revolute" ? 90 : 40,
+      label: retry
+        ? close
+          ? "Retry closing"
+          : "Retry opening"
+        : close
+          ? "Close joint"
+          : "Open joint",
+      progress,
+      blockedReason: retry ? travel.blockedReason : undefined,
       name: `${rig.name} · ${joint.id}`,
       available: d <= 96,
       distance: d,

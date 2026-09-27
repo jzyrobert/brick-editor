@@ -4,7 +4,12 @@ import { ensure, type Project, type Transform, type Vec3 } from "../core/types";
 import { add, inverse, mv } from "../core/math";
 import { KinematicSession } from "../mechanisms/kinematic";
 import type { KinematicPose, MechanismSnapshot } from "../mechanisms/types";
-import { CHARACTER_PROFILE as P, type CollisionSnapshot } from "./types";
+import {
+  CHARACTER_PROFILE as P,
+  JOINT_TARGET_SPEED_LIMITS,
+  type CollisionSnapshot,
+  type PlayJointTargetReport,
+} from "./types";
 const S = P.scaleMetresPerLdu;
 const physics = ([x, y, z]: Vec3) => ({ x: x * S, y: -y * S, z: -z * S });
 const rotation = (frame: Transform) => {
@@ -124,6 +129,8 @@ export function validatePlayMechanismSources(
 /** Kinematic surfaces collide with the actor; this is not vehicle/world dynamics. */
 export class PlayMechanism {
   private session: KinematicSession;
+  private jointKinds = new Map<string, string>();
+  private targets = new Map<string, Omit<PlayJointTargetReport, "current">>();
   private proxies: Array<{
     id: string;
     collider: RAPIER.Collider;
@@ -141,6 +148,7 @@ export class PlayMechanism {
   ) {
     this.session = new KinematicSession(source.project, source.rigId);
     const rig = source.project.motionRigs![source.rigId];
+    this.jointKinds = new Map(rig.joints.map((j) => [j.id, j.kind]));
     if (rig.vehicle) {
       this.vehicleChassis = rig.vehicle.chassisGroup;
       const roots = new Set([
@@ -353,7 +361,9 @@ export class PlayMechanism {
     this.reason = undefined;
     for (let n = 1; n <= steps; n++) {
       const next = this.session.setPose(
-        this.interpolate(before.pose, target.pose, n / steps),
+        n === steps
+          ? target.pose
+          : this.interpolate(before.pose, target.pose, n / steps),
       );
       if (!this.move(last, next)) {
         this.session.setPose(before.pose);
@@ -370,7 +380,39 @@ export class PlayMechanism {
   setJointPosition(id: string, value: number) {
     const before = this.session.snapshot(),
       target = this.session.setJointPosition(id, value);
+    this.targets.delete(id);
     this.accept(before, target);
+    return this.snapshot();
+  }
+  setJointTarget(id: string, target: number, speed: number) {
+    const kind = this.jointKinds.get(id);
+    ensure(
+      kind === "revolute" || kind === "prismatic",
+      "INVALID_INPUT",
+      "Only revolute and prismatic joints accept scalar travel targets",
+    );
+    const limits = JOINT_TARGET_SPEED_LIMITS[kind];
+    ensure(
+      Number.isFinite(speed) && speed >= limits.min && speed <= limits.max,
+      "INVALID_INPUT",
+      `Joint speed must be ${limits.min}–${limits.max} ${kind === "revolute" ? "degrees/s" : "LDU/s"}`,
+    );
+    const before = this.session.snapshot();
+    // Reuse authoritative scalar/limit validation, then restore without touching proxies.
+    try {
+      this.session.setJointPosition(id, target);
+    } finally {
+      this.session.setPose(before.pose);
+    }
+    this.targets.set(id, {
+      target,
+      speed,
+      status: before.pose.jointPositions[id] === target ? "complete" : "moving",
+      units: kind === "revolute" ? "degrees" : "LDU",
+      speedUnits: kind === "revolute" ? "degrees/s" : "LDU/s",
+    });
+    this.blocked = false;
+    this.reason = undefined;
     return this.snapshot();
   }
   setVehicleInput(input: { throttle: number; steering: number }) {
@@ -383,17 +425,48 @@ export class PlayMechanism {
     const before = this.session.snapshot(),
       after = this.session.stepTicks(1);
     this.accept(before, after);
+    for (const id of [...this.targets.keys()].sort()) {
+      const motion = this.targets.get(id)!;
+      if (motion.status !== "moving") continue;
+      const rest = this.session.snapshot(),
+        current = rest.pose.jointPositions[id],
+        distance = motion.target - current;
+      const next =
+        Math.abs(distance) <= motion.speed / 60
+          ? motion.target
+          : current + (Math.sign(distance) * motion.speed) / 60;
+      const accepted = this.accept(
+        rest,
+        this.session.setJointPosition(id, next),
+      );
+      if (!accepted) {
+        motion.status = "blocked";
+        motion.blockedReason = this.reason;
+      } else if (next === motion.target) motion.status = "complete";
+    }
   }
   clearInput() {
     this.session.clearInput();
   }
   snapshot() {
+    const state = this.session.snapshot();
+    const jointTargets = Object.fromEntries(
+      [...this.targets].map(([id, target]) => [
+        id,
+        { ...target, current: state.pose.jointPositions[id] },
+      ]),
+    );
+    const stopped = Object.values(jointTargets).find(
+      (t) => t.status === "blocked",
+    );
+    const reason = stopped?.blockedReason ?? this.reason;
     return {
-      ...this.session.snapshot(),
-      blocked: this.blocked,
-      ...(this.reason ? { blockedReason: this.reason } : {}),
+      ...state,
+      jointTargets,
+      blocked: this.blocked || !!stopped,
+      ...(reason ? { blockedReason: reason } : {}),
       warnings: [
-        ...this.session.snapshot().warnings,
+        ...state.warnings,
         "Moving surfaces stop conservatively before touching the player. Riding, pushing and vehicle/world collision response are not simulated.",
       ],
     };
@@ -402,5 +475,6 @@ export class PlayMechanism {
     for (const proxy of this.proxies)
       this.world.removeCollider(proxy.collider, true);
     this.proxies = [];
+    this.targets.clear();
   }
 }

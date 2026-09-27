@@ -6,8 +6,8 @@ The final production build, clean install and test suites pass. These results es
 | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `npm ci`                   | Clean lockfile install passes                                                                              |
 | `npm run build`            | TypeScript and Vite 6.4.3 pass                                                                             |
-| `npm test`                 | **165 tests pass**, 38 files, 0 failures                                                                   |
-| `npm run test:browser`     | **71 tests pass**, 0 failures, against the production bundle                                               |
+| `npm test`                 | **237 tests pass**, 52 files, 0 failures                                                                   |
+| `npm run test:browser`     | **98 tests pass**, 0 failures, against the production bundle                                               |
 | Browser engine             | Playwright 1.63.0, Chromium 153.0.8010.12, SwiftShader software WebGL2                                     |
 | Layouts                    | 1440×1000 desktop, 1080×1800 touch, 360×800 touch                                                          |
 | `npm run library:validate` | 23 files and six physical parts; dependency closure, licence metadata and library/mapping hashes pass      |
@@ -38,7 +38,7 @@ Linux ARM64 VM, Neoverse-N1, four available CPUs, software WebGL2, 1440×1000 vi
 | 200 real parts   |     31.5 ms |                       79.7 ms |                  14.4 ms |     4,249 ms |
 | 1,000 real parts |     68.7 ms |                       66.5 ms |                  38.9 ms |     1,979 ms |
 
-Initial shell/library readiness was approximately 579 ms. The first capture includes shader warmup; the later case benefits from cached prototypes/shaders. The single 1,000-part command-plus-scene result does not establish the specification's sub-100ms p95 target. Frustum culling remains enabled. Hardware FPS targets remain unverified. A later 5,000-part comparison reduced draw calls from 15,001 to seven, with matching geometry counts; cold software PNG capture increased from 9,156.8 ms to 12,702.5 ms. This establishes draw-call reduction, not an FPS improvement. The production application JavaScript is approximately **391 kB gzip**, with separately loaded Rapier (about 1.65 MB gzip) and PDF (about 182 kB gzip) chunks, excluding worker scripts/library. Vite still reports its advisory about the uncompressed main chunk exceeding 500 kB; further splitting is deferred.
+Initial shell/library readiness was approximately 579 ms. The first capture includes shader warmup; the later case benefits from cached prototypes/shaders. The single 1,000-part command-plus-scene result does not establish the specification's sub-100ms p95 target. Frustum culling remains enabled. Hardware FPS targets remain unverified. A later 5,000-part comparison reduced draw calls from 15,001 to seven, with matching geometry counts; cold software PNG capture increased from 9,156.8 ms to 12,702.5 ms. This establishes draw-call reduction, not an FPS improvement. The production application JavaScript is approximately **430 kB gzip**, with separately loaded Rapier (about 1.65 MB gzip) and PDF (about 182 kB gzip) chunks, excluding worker scripts/library. Vite still reports its advisory about the uncompressed main chunk exceeding 500 kB; further splitting is deferred.
 
 ## Evidence and limits
 
@@ -104,10 +104,18 @@ Independent review reproduced a mutation race during image capture. Play now rej
 
 ## Deep occurrence paths and request budgets
 
-The occurrence-ID checkpoint passes 231 unit/integration/CLI tests across 51 files, TypeScript/Vite build, formatting and pinned-library validation. The production browser run passed 95 checks; its two fixture failures were corrected and passed focused reruns, covering 97 distinct checks. The fixtures now use actual long native IDs and a syntactically valid unknown path for the capture-restoration failure case.
+The occurrence-ID checkpoint passes 231 unit/integration/CLI tests across 51 files, TypeScript/Vite build, formatting and pinned-library validation. The [clean GitHub CI run](https://github.com/jzyrobert/brick-editor/actions/runs/36327367099) passed all 97 production browser checks in one run. The fixtures use actual long native IDs and a syntactically valid unknown path for the capture-restoration failure case.
 
 This checkpoint separates canonical occurrence paths from ordinary IDs. Targeted tests accept the exact 393,409-character escaped boundary and 1,024-code-point Unicode node IDs, reject empty/noncanonical/deeper paths, and preserve the ordinary ID limit. A 32-level UUID fixture exercises exact-ID queries, recolour/undo, clipboard paste, instruction assignment, inventory, native round trips and Play reporting. The browser fixture imports a checksummed native archive with long IDs, then queries, recolours, captures the selected part and enters Play.
 
 Request regressions cover encoded UTF-8 accounting, shared values, cycles, inherited/accessor rejection, nesting/work limits, aggregate transaction refusal before mutation, Unicode-heavy cut atomicity, and CLI command-file limits before parsing or output. The independent review found and verified fixes for the clipboard UTF-16/UTF-8 mismatch and inherited array getters. The scope regression checks 100,000 selections with a bound on path visits instead of a timing threshold. Empty paths and unknown selected descendants cannot widen a scope silently.
 
 Native archive limits remain separate. These tests do not prove a global bound on all expanded occurrence-path memory, compiler work or every valid project graph. No UI presentation changed; the prior mobile UX score remains 8.7/10.
+
+## Animated Play joints
+
+The integrated checkpoint passes all **237 unit/integration/CLI tests** across 52 files and all **98 production browser tests** in one run. Build, formatting and pinned-library checks pass. Targeted domain checks establish exact 60 Hz travel, fractional endpoints, negative prismatic limits and units, equivalent batched/single-tick replay, atomic invalid targets, independent targets and cancellation, and last-accepted-pose retention with real door triangle colliders.
+
+Browser tests show intermediate rendered poses, reversal before the midpoint, persistent blocked retry, pause/capture isolation, simultaneous vehicle/door movement, and unchanged authored exports. The independent critic rechecked 360×800, 1080×1800 and desktop, including real-time pause/resume, and scored the new flows **8.7/10**. See the UX and Play acceptance audits for screenshots and limits. Proximity targeting, on-foot vehicle control and kinematic physics remain the scope; line of sight, seats/riding and vehicle/world response are still open.
+
+The preceding deep-occurrence checkpoint also passed its live HTTPS browser test after deployment to Cloudflare. The machine-readable report identifies that deployed commit separately from this animation checkpoint's local verification.

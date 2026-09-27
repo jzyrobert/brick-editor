@@ -1,0 +1,31 @@
+{
+  "$id": "playJointTarget",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "rigId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "jointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "target": {
+      "type": "number"
+    },
+    "speed": {
+      "type": "number",
+      "minimum": 0.001,
+      "maximum": 10000
+    }
+  },
+  "required": [
+    "jointId",
+    "target",
+    "speed"
+  ],
+  "additionalProperties": false
+}

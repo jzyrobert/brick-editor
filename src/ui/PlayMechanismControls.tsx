@@ -87,7 +87,8 @@ export function PlayMechanismControls({
       )}
       <p className="play-remote-note">
         Advanced controls can move this mechanism from anywhere. Nearby actions
-        remain available when you close this panel.
+        remain available when you close this panel. Setting a joint here
+        immediately positions it and cancels only that joint’s animated travel.
       </p>
       <p>
         Moving parts stop before touching you. Vehicles can pass through the

@@ -721,6 +721,27 @@ const playTeleport = obj(
   },
   ["position"],
 );
+const playJointTarget = obj(
+  {
+    rigId: id,
+    jointId: id,
+    target: num,
+    speed: { type: "number", minimum: 0.001, maximum: 10000 },
+  },
+  ["jointId", "target", "speed"],
+);
+const playJointTargetReport = obj(
+  {
+    current: num,
+    target: num,
+    speed: num,
+    status: { enum: ["moving", "blocked", "complete"] },
+    units: { enum: ["degrees", "LDU"] },
+    speedUnits: { enum: ["degrees/s", "LDU/s"] },
+    blockedReason: str,
+  },
+  ["current", "target", "speed", "status", "units", "speedUnits"],
+);
 const playSnapshot = obj({
   worldProfile: obj({
     ...playWorldProfile.properties,
@@ -791,6 +812,7 @@ playSnapshot.properties.mechanism = obj(
     transforms: dictionary(transform),
     warnings: arr(str),
     blocked: { type: "boolean" },
+    jointTargets: dictionary(playJointTargetReport),
     blockedReason: str,
   },
   [
@@ -830,6 +852,7 @@ const api = {
     "play.chooseSpawn": playSpawn,
     "play.useSpawn": obj({}),
     "play.setInput": { $ref: "playInput" },
+    "play.setJointTarget": { $ref: "playJointTarget" },
     "play.setMechanismJoint": obj({ jointId: id, value: num, rigId: id }, [
       "jointId",
       "value",
@@ -957,6 +980,7 @@ const schemas = {
   mechanismPose,
   playRequest,
   playInput,
+  playJointTarget,
   playTeleport,
   playSnapshot,
   api,

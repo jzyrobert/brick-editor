@@ -92,12 +92,33 @@ export type AvatarPose = {
   leftShoulder: number;
   rightShoulder: number;
 };
+export const JOINT_TARGET_SPEED_LIMITS = Object.freeze({
+  revolute: { min: 0.001, max: 3600 },
+  prismatic: { min: 0.001, max: 10000 },
+});
+export type PlayJointTargetRequest = {
+  rigId?: string;
+  jointId: string;
+  target: number;
+  speed: number;
+};
+export type PlayJointTargetReport = {
+  current: number;
+  target: number;
+  speed: number;
+  status: "moving" | "blocked" | "complete";
+  units: "degrees" | "LDU";
+  speedUnits: "degrees/s" | "LDU/s";
+  blockedReason?: string;
+};
+export type PlayMechanismReport = MechanismSnapshot & {
+  blocked: boolean;
+  blockedReason?: string;
+  jointTargets: Record<string, PlayJointTargetReport>;
+};
 export type PlaySnapshotReport = {
-  mechanism?: MechanismSnapshot & { blocked: boolean; blockedReason?: string };
-  mechanisms?: Record<
-    string,
-    MechanismSnapshot & { blocked: boolean; blockedReason?: string }
-  >;
+  mechanism?: PlayMechanismReport;
+  mechanisms?: Record<string, PlayMechanismReport>;
   worldProfile: ResolvedPlayWorldProfile;
   cameraSettings: PlayCameraSettings;
   cameraSafety: {

@@ -12,6 +12,7 @@ import type {
   PlayCameraSettings,
   PlaySpawnRequest,
   PlayInput,
+  PlayJointTargetRequest,
   PlayCameraMode,
   PlayLocomotion,
   PlayTeleportRequest,
@@ -146,6 +147,10 @@ export function createAPI(
       setInput: async (input: PlayInput) => {
         validateRequest("playInput", input);
         return player().setInput(input);
+      },
+      setJointTarget: async (input: PlayJointTargetRequest) => {
+        validateRequest("playJointTarget", input);
+        return player().setJointTarget(input);
       },
       setMechanismJoint: async (
         jointId: string,

@@ -14,7 +14,7 @@ it("toggles asymmetric negative joint limits and measures reach in world coordin
     mechanism: { ...session.snapshot(), blocked: false },
     position: [0, -12, 96],
     profile: CHARACTER_PROFILE,
-  } as PlaySnapshotReport;
+  } as unknown as PlaySnapshotReport;
   expect(nearbyInteraction(rig, report)).toMatchObject({
     available: true,
     target: -110,
@@ -24,6 +24,7 @@ it("toggles asymmetric negative joint limits and measures reach in world coordin
   report.mechanism = {
     ...session.setJointPosition("hinge", -110),
     blocked: false,
+    jointTargets: {},
   };
   expect(nearbyInteraction(rig, report)).toMatchObject({
     target: 0,
@@ -37,13 +38,88 @@ it("does not offer interaction for another rig or a zero-travel joint", () => {
     mechanism: {
       ...new KinematicSession(project, rig.id).snapshot(),
       blocked: false,
+      jointTargets: {},
     },
     position: [0, 0, 0],
     profile: CHARACTER_PROFILE,
-  } as PlaySnapshotReport;
+  } as unknown as PlaySnapshotReport;
   expect(
     nearbyInteraction(project.motionRigs!.vehicle, report),
   ).toBeUndefined();
   rig.joints[0].limits = [0, 0];
   expect(nearbyInteraction(rig, report)).toBeUndefined();
+});
+it("reverses pending intent before midpoint and retains blocked retry direction", () => {
+  const p = mechanismFixture(),
+    rig = p.motionRigs!.door;
+  const report = {
+    mechanism: {
+      ...new KinematicSession(p, rig.id).snapshot(),
+      blocked: false,
+      jointTargets: {
+        hinge: {
+          current: 15,
+          target: 110,
+          speed: 90,
+          status: "moving",
+          units: "degrees",
+          speedUnits: "degrees/s",
+        },
+      },
+    },
+    position: [20, -0.3, 45],
+    profile: CHARACTER_PROFILE,
+  } as unknown as PlaySnapshotReport;
+  report.mechanism!.pose.jointPositions.hinge = 15;
+  expect(nearbyInteraction(rig, report)).toMatchObject({
+    target: 0,
+    label: "Close joint",
+    progress: "Opening · 15.0° / 110.0°",
+  });
+  report.mechanism!.jointTargets.hinge = {
+    current: 75,
+    target: 0,
+    speed: 90,
+    status: "blocked",
+    units: "degrees",
+    speedUnits: "degrees/s",
+    blockedReason: "Player blocks travel",
+  };
+  report.mechanism!.pose.jointPositions.hinge = 75;
+  expect(nearbyInteraction(rig, report)).toMatchObject({
+    target: 0,
+    label: "Retry closing",
+    blockedReason: "Player blocks travel",
+  });
+});
+it("labels prismatic travel in LDU with a 40 LDU/s contextual default", () => {
+  const p = mechanismFixture(),
+    rig = p.motionRigs!.door;
+  rig.joints[0].kind = "prismatic";
+  rig.joints[0].limits = [0, 20];
+  const report = {
+    mechanism: {
+      ...new KinematicSession(p, rig.id).snapshot(),
+      blocked: false,
+      jointTargets: {
+        hinge: {
+          current: 4,
+          target: 20,
+          speed: 40,
+          status: "moving",
+          units: "LDU",
+          speedUnits: "LDU/s",
+        },
+      },
+    },
+    position: [20, -0.3, 45],
+    profile: CHARACTER_PROFILE,
+  } as unknown as PlaySnapshotReport;
+  report.mechanism!.pose.jointPositions.hinge = 4;
+  expect(nearbyInteraction(rig, report)).toMatchObject({
+    target: 0,
+    speed: 40,
+    label: "Close joint",
+    progress: "Opening · 4.0 LDU / 20.0 LDU",
+  });
 });

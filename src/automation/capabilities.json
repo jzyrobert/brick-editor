@@ -143,7 +143,23 @@
         "maxGroups": 128,
         "maxMovingTriangles": 200000
       },
-      "nearbyInteraction": "E/touch authored joint toggle and remote vehicle control; no seated entry or riding"
+      "nearbyInteraction": "E/touch authored joint toggle and remote vehicle control; no seated entry or riding",
+      "jointTargetAnimation": {
+        "fixedTickHz": 60,
+        "kinds": ["revolute", "prismatic"],
+        "units": {
+          "revolute": "degrees; degrees/s",
+          "prismatic": "LDU; LDU/s"
+        },
+        "speedBounds": {
+          "minimum": 0.001,
+          "revoluteMaximum": 3600,
+          "prismaticMaximum": 10000
+        },
+        "blockedPolicy": "Keep last accepted tick pose; stop target until explicit retry",
+        "pausePolicy": "Pause stops realtime; explicit manual ticks still advance; capture refuses mutations",
+        "authoredChanges": false
+      }
     },
     "sharing": {
       "selfContainedMpdLinks": true,

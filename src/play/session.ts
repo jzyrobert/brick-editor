@@ -13,6 +13,7 @@ import {
   type CollisionSnapshot,
   type PlayCameraMode,
   type PlayInput,
+  type PlayJointTargetRequest,
   type PlayLocomotion,
   type PlayRequest,
   type PlaySnapshotReport,
@@ -847,6 +848,16 @@ export class PlaySession {
         : this.mechanisms.get(rigId);
     ensure(mechanism, "INVALID_INPUT", "Unknown active Play rig");
     return mechanism;
+  }
+  setJointTarget(input: PlayJointTargetRequest) {
+    this.alive();
+    keys(input, ["rigId", "jointId", "target", "speed"]);
+    this.mechanismTarget(input.rigId).setJointTarget(
+      input.jointId,
+      input.target,
+      input.speed,
+    );
+    return this.snapshot();
   }
   setMechanismJoint(id: string, value: number, rigId?: string) {
     this.alive();

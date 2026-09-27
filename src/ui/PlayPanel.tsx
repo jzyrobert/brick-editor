@@ -607,8 +607,15 @@ export function PlayPanel({
                 ? "Joystick or movement keys drive and steer. You stay on foot; vehicles can pass through the build."
                 : state.interaction?.name}
             </small>
-            {nearbyReport?.blocked && (
-              <small role="status">{nearbyReport.blockedReason}</small>
+            {!state.vehicleControl && state.interaction?.progress && (
+              <small>{state.interaction.progress}</small>
+            )}
+            {!state.vehicleControl && state.interaction?.blockedReason ? (
+              <small role="status">{state.interaction.blockedReason}</small>
+            ) : (
+              nearbyReport?.blocked && (
+                <small role="status">{nearbyReport.blockedReason}</small>
+              )
             )}
           </div>
         )}
