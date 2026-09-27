@@ -1,7 +1,16 @@
+import { PlaySettings } from "./PlaySettings";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { BrowserPlay } from "../play/browser";
 import "./play.css";
 import type { MotionRig } from "../mechanisms/types";
+import {
+  loadPlayKeys,
+  savePlayKeys,
+  playKeyAction,
+  type PlayKeyAction,
+  type PlayKeys,
+} from "../play/keys";
+import { PlayKeySettings } from "./PlayKeySettings";
 import { PlayMechanismControls } from "./PlayMechanismControls";
 
 export function PlayPanel({
@@ -20,11 +29,14 @@ export function PlayPanel({
   const state = useSyncExternalStore(play.subscribe, play.getState);
   const [message, setMessage] = useState("");
   const [rigId, setRigId] = useState("");
+  const [bindings, setBindings] = useState(loadPlayKeys);
+  const bindingRef = useRef(bindings);
+  bindingRef.current = bindings;
   const [run, setRun] = useState(false);
   const runRef = useRef(run);
   runRef.current = run;
   const [stick, setStick] = useState([0, 0]);
-  const keys = useRef(new Set<string>()),
+  const keys = useRef(new Set<PlayKeyAction>()),
     move = useRef({ x: 0, z: 0 }),
     jump = useRef(false),
     down = useRef(false);
@@ -48,8 +60,8 @@ export function PlayPanel({
         Math.min(
           1,
           move.current.x +
-            (keys.current.has("d") ? 1 : 0) -
-            (keys.current.has("a") ? 1 : 0),
+            (keys.current.has("right") ? 1 : 0) -
+            (keys.current.has("left") ? 1 : 0),
         ),
       ),
       moveZ: Math.max(
@@ -57,15 +69,15 @@ export function PlayPanel({
         Math.min(
           1,
           move.current.z +
-            (keys.current.has("w") ? 1 : 0) -
-            (keys.current.has("s") ? 1 : 0),
+            (keys.current.has("forward") ? 1 : 0) -
+            (keys.current.has("backward") ? 1 : 0),
         ),
       ),
       vertical:
-        (jump.current || keys.current.has(" ") ? 1 : 0) -
-        (down.current || keys.current.has("control") ? 1 : 0),
-      jump: jump.current || keys.current.has(" "),
-      run: runRef.current || keys.current.has("shift"),
+        (jump.current || keys.current.has("jump") ? 1 : 0) -
+        (down.current || keys.current.has("down") ? 1 : 0),
+      jump: jump.current || keys.current.has("jump"),
+      run: runRef.current || keys.current.has("run"),
     });
   };
   const clear = () => {
@@ -78,11 +90,23 @@ export function PlayPanel({
     setStick([0, 0]);
     play.clearInput();
   };
+  const changeBindings = (next: PlayKeys) => {
+    clear();
+    bindingRef.current = next;
+    setBindings(next);
+    return savePlayKeys(next);
+  };
   useEffect(() => {
     input();
   }, [run]);
   useEffect(() => {
     const keydown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && play.getState().active) {
+        e.preventDefault();
+        clear();
+        play.pause(true);
+        return;
+      }
       if (
         (e.target as HTMLElement).closest(
           "input,textarea,select,[contenteditable]:not([contenteditable=false]),[role=textbox]",
@@ -97,36 +121,24 @@ export function PlayPanel({
       )
         return;
       if (!play.getState().active) return;
-      const key = e.key.toLowerCase();
-      if (
-        [
-          "w",
-          "a",
-          "s",
-          "d",
-          " ",
-          "shift",
-          "control",
-          "f",
-          "v",
-          "escape",
-        ].includes(key)
-      )
-        e.preventDefault();
-      else return;
+      if (e.isComposing || e.metaKey || e.altKey) return;
+      const key = e.key.toLowerCase(),
+        action = playKeyAction(e.key, bindingRef.current);
+      if (key !== "escape" && !action) return;
+      e.preventDefault();
       if (key === "escape") {
         clear();
         play.pause(true);
         return;
       }
       if (play.getState().paused) return;
-      if (!e.repeat && key === "f")
+      if (!e.repeat && action === "fly")
         attempt(() =>
           play.setLocomotion(
             play.snapshot().locomotion === "walk" ? "fly-noclip" : "walk",
           ),
         );
-      else if (!e.repeat && key === "v")
+      else if (!e.repeat && action === "camera")
         attempt(() =>
           play.setCameraMode(
             play.snapshot().cameraMode === "first-person"
@@ -134,13 +146,14 @@ export function PlayPanel({
               : "first-person",
           ),
         );
-      else {
-        keys.current.add(key);
+      else if (action && action !== "fly" && action !== "camera") {
+        keys.current.add(action);
         input();
       }
     };
     const keyup = (e: KeyboardEvent) => {
-      keys.current.delete(e.key.toLowerCase());
+      const action = playKeyAction(e.key, bindingRef.current);
+      if (action) keys.current.delete(action);
       input();
     };
     const pause = () => {
@@ -247,6 +260,7 @@ export function PlayPanel({
         </button>
         {state.loading && <button onClick={() => play.exit()}>Cancel</button>}
         <p role="status">{message || state.error}</p>
+        <PlayKeySettings value={bindings} onChange={changeBindings} />
         {children}
       </div>
     );
@@ -330,11 +344,13 @@ export function PlayPanel({
               })
             }
           >
-            Respawn safely
+            Recover last safe position
           </button>
           <button onClick={() => attempt(bookmark)}>
             Save this view to Photo
           </button>
+          <PlaySettings play={play} report={report} />
+          <PlayKeySettings value={bindings} onChange={changeBindings} />
           <p role="status">
             {message ||
               report.warnings
@@ -349,7 +365,10 @@ export function PlayPanel({
       ) : (
         <>
           <div className="play-hint">
-            WASD move · drag to look · Space jump · F fly · V camera
+            {bindings.forward || "—"}/{bindings.left || "—"}/
+            {bindings.backward || "—"}/{bindings.right || "—"} move · drag to
+            look · {bindings.jump || "—"} jump · {bindings.fly || "—"} fly ·{" "}
+            {bindings.camera || "—"} camera
           </div>
           <div
             className="play-stick"

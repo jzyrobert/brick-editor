@@ -6,8 +6,8 @@ The final production build, clean install and test suites pass. These results es
 | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `npm ci`                   | Clean lockfile install passes                                                                              |
 | `npm run build`            | TypeScript and Vite 6.4.3 pass                                                                             |
-| `npm test`                 | **142 tests pass**, 32 files, 0 failures                                                                   |
-| `npm run test:browser`     | **62 tests pass**, 0 failures, against the production bundle                                               |
+| `npm test`                 | **152 tests pass**, 35 files, 0 failures                                                                   |
+| `npm run test:browser`     | **66 tests pass**, 0 failures, against the production bundle                                               |
 | Browser engine             | Playwright 1.63.0, Chromium 153.0.8010.12, SwiftShader software WebGL2                                     |
 | Layouts                    | 1440×1000 desktop, 1080×1800 touch, 360×800 touch                                                          |
 | `npm run library:validate` | 23 files and six physical parts; dependency closure, licence metadata and library/mapping hashes pass      |
@@ -71,3 +71,5 @@ Instruction browser tests edit and publish step notes/cameras and compare actual
 The independent mobile re-review is **8.7/10** at 360×800 and 1080×1800. See [Play acceptance audit](PLAY-ACCEPTANCE-AUDIT.md) and [UX audit](UX-AUDIT.md) for evidence and remaining scope. No riding, pushing, vehicle/world dynamics, universal traversability or physical-device performance is claimed.
 
 A deployment smoke test additionally exposed a warm-import race: a delayed instruction-plan effect could cancel a freshly entered API Play session. Mode lifecycle and plan preview effects are now separated. The new regression reproduces the prior failure and passes after the fix, including cached imports, layer duplication/undo, immediate rig entry and unchanged authored revisions. The final full production suite passes all 62 tests.
+
+The latest settings checkpoint adds browser checks for validated session spawns and bounded camera controls at both touch sizes, persistent Play key remapping and Escape from focused inputs, and instruction-view isolation during API Play. Unit checks directly inspect avatar joints and gait, camera near-plane footprint/capture restoration, and saved-spawn revalidation after a mechanism moves. Generated AJV validators now expose a small declaration boundary to TypeScript; their runtime schemas and validation remain in the production build.

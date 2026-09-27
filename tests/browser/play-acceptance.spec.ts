@@ -256,7 +256,15 @@ test("PL02/04 a frozen Play view captures and bookmarks without pointer lock, an
     };
   });
   expect(before.locked).toBe(false);
-  expect(before.manifest.play).toEqual(before.play);
+  // A square capture reports its own near-plane footprint, while restoring
+  // the interactive aspect and leaving the actor and simulation untouched.
+  expect(before.manifest.play).toEqual({
+    ...before.play,
+    cameraSafety: { ...before.play.cameraSafety, aspectRatio: 1 },
+  });
+  expect(
+    await page.evaluate(() => window.brickEditor!.play.snapshot()),
+  ).toEqual(before.play);
   expect(await page.evaluate(() => window.brickEditor!.query())).toEqual(
     before.q,
   );

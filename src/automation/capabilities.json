@@ -119,7 +119,10 @@
       "coverage": "See docs/STATUS.md and Play acceptance tests; not universal model traversability",
       "kinematicMechanisms": true,
       "movingKinematicColliders": true,
-      "movingColliderPolicy": "Authored rigid-group triangle surfaces; conservatively stop before touching walking actor; no riding, pushing or vehicle/world dynamics"
+      "movingColliderPolicy": "Authored rigid-group triangle surfaces; conservatively stop before touching walking actor; no riding, pushing or vehicle/world dynamics",
+      "cameraSettings": true,
+      "validatedSessionSpawns": true,
+      "remappablePlayKeys": true
     },
     "sharing": {
       "selfContainedMpdLinks": true,

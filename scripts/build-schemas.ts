@@ -603,8 +603,18 @@ const inventoryPreview = obj({
   substitutions: arr(id),
   request: { $ref: "inventory" },
 });
+const playCameraSettings = obj({
+  eyeHeight: { type: "number", minimum: 16, maximum: 64 },
+  fovDeg: { type: "number", minimum: 30, maximum: 100 },
+  near: { type: "number", minimum: 0.05, maximum: 2 },
+  followDistance: { type: "number", minimum: 24, maximum: 400 },
+  minPitch: { type: "number", minimum: -1.48, maximum: 0 },
+  maxPitch: { type: "number", minimum: 0, maximum: 1.48 },
+});
+const playSpawn = obj({ position: vec, yaw: num, pitch: num }, ["position"]);
 const playRequest = obj(
   {
+    cameraSettings: { ...playCameraSettings, required: [] },
     rigId: id,
     locomotion: { enum: ["walk", "fly-noclip"] },
     cameraMode: { enum: ["first-person", "third-person"] },
@@ -638,6 +648,12 @@ const playTeleport = obj(
   ["position"],
 );
 const playSnapshot = obj({
+  cameraSettings: playCameraSettings,
+  cameraSafety: obj({
+    aspectRatio: num,
+    effectiveNear: num,
+    collisionRadius: num,
+  }),
   sourceRevision: integer,
   tick: integer,
   position: vec,
@@ -679,6 +695,10 @@ const playSnapshot = obj({
     rightShoulder: num,
   }),
 });
+playSnapshot.properties.spawn = {
+  ...playSpawn,
+  required: ["position", "yaw", "pitch"],
+};
 playSnapshot.properties.mechanism = obj(
   {
     sourceRevision: integer,
@@ -724,6 +744,9 @@ const exportProfileRequest = obj(
 const api = {
   oneOf: Object.entries({
     "play.enter": { $ref: "playRequest" },
+    "play.configureCamera": { ...playCameraSettings, required: [] },
+    "play.chooseSpawn": playSpawn,
+    "play.useSpawn": obj({}),
     "play.setInput": { $ref: "playInput" },
     "play.setMechanismJoint": obj({ jointId: id, value: num }),
     "play.setMechanismVehicleInput": obj({
@@ -845,4 +868,15 @@ writeFileSync(
     /const (func\d+) = require\("ajv\/dist\/runtime\/ucs2length"\).default;/g,
     "const $1 = (s) => [...s].length;",
   ),
+);
+// Keep the compiler on a small typed boundary. Inferring the generated AJV
+// implementation can exhaust contextual typing across an otherwise valid TS
+// program once this standalone module grows beyond a megabyte.
+writeFileSync(
+  "src/core/validators.d.ts",
+  "export type Validator = ((data: unknown) => boolean) & { errors?: unknown };\n" +
+    Object.keys(schemas)
+      .map((name) => `export declare const ${name}: Validator;`)
+      .join("\n") +
+    "\n",
 );

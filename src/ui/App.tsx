@@ -153,6 +153,7 @@ function NumberInput({
 }
 export default function App() {
   const [project, setProject] = useState(editor.project),
+    [transientView, setTransientView] = useState(false),
     [saveConflict, setSaveConflict] = useState(false),
     [saveCoordinationUnavailable, setSaveCoordinationUnavailable] =
       useState(false),
@@ -238,6 +239,16 @@ export default function App() {
       pickingFace,
       angle,
     });
+  const ownsTransientView = () => {
+    const playing = play.current?.getState(),
+      moving = mechanisms.current?.getState();
+    return !!(
+      playing?.active ||
+      playing?.loading ||
+      moving?.active ||
+      moving?.loading
+    );
+  };
   const all = occurrences(project),
     selected = all.filter((o) => selection.includes(o.id)),
     currentPart = catalog[part],
@@ -446,6 +457,10 @@ export default function App() {
       () => mechanisms.current?.exit(),
       () => editor.project,
     );
+    const syncTransientView = () => setTransientView(ownsTransientView());
+    const unsubscribePlayView = play.current.subscribe(syncTransientView);
+    const unsubscribeMechanismView =
+      mechanisms.current.subscribe(syncTransientView);
     api.current = createAPI(
       editor,
       () => renderer.current,
@@ -489,6 +504,8 @@ export default function App() {
     void init();
     return () => {
       unsubscribe();
+      unsubscribePlayView();
+      unsubscribeMechanismView();
       play.current?.dispose();
       mechanisms.current?.dispose();
       renderer.current?.dispose();
@@ -506,18 +523,18 @@ export default function App() {
   }, [mode, ghostOtherLayers, activeLayer]);
   useEffect(() => {
     const r = renderer.current;
-    if (!r) return;
+    if (!r || ownsTransientView()) return;
     r.controls.enableRotate = mode === "Build" || mode === "Photo";
     r.controls.mouseButtons.LEFT = tool === "Navigate" ? 0 : (null as any);
     r.controls.touches.ONE = tool === "Navigate" ? 0 : (null as any);
     r.controls.enabled = mode !== "Play";
-  }, [tool, mode]);
+  }, [tool, mode, transientView]);
   useEffect(() => {
-    if (mode === "Instructions")
+    if (mode === "Instructions" && !ownsTransientView())
       renderer.current?.showStep(
         plan ? plan.steps.slice(0, step + 1).flat() : null,
       );
-  }, [mode, step, plan]);
+  }, [mode, step, plan, transientView]);
   useEffect(() => {
     if (mode !== "Instructions") renderer.current?.showStep(null);
     // Document replacement cancels the old session synchronously through
@@ -536,18 +553,18 @@ export default function App() {
   useEffect(() => {
     const camera = plan?.stepMetadata?.[step]?.camera,
       r = renderer.current;
-    if (mode !== "Instructions" || !camera || !r) return;
+    if (mode !== "Instructions" || !camera || !r || ownsTransientView()) return;
     let cancelled = false;
     void r
       .ready()
       .then(() => {
-        if (!cancelled) r.setCamera(camera);
+        if (!cancelled && !ownsTransientView()) r.setCamera(camera);
       })
       .catch((e) => setStatus(e.message));
     return () => {
       cancelled = true;
     };
-  }, [mode, currentPlanId, step, plan?.stepMetadata]);
+  }, [mode, currentPlanId, step, plan?.stepMetadata, transientView]);
 
   useEffect(() => {
     renderer.current?.setWorkplaneGuide(workplane);

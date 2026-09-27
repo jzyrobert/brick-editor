@@ -9,6 +9,8 @@ import type {
   PlayLocomotion,
   PlayTeleportRequest,
   PlaySnapshotReport,
+  PlayCameraSettings,
+  PlaySpawnRequest,
 } from "./types";
 import type { PlaySession } from "./session";
 import { BrickAvatar } from "./avatar";
@@ -161,6 +163,10 @@ export class BrowserPlay {
   private draw() {
     if (!this.session) return;
     const r = this.renderer();
+    const canvas = r.renderer.domElement;
+    this.session.setViewportAspect(
+      Math.max(1, canvas.clientWidth) / Math.max(1, canvas.clientHeight),
+    );
     const report = this.session.snapshot();
     if (report.mechanism) r.applyTransientPose(report.mechanism.transforms);
     r.playCamera(this.session.camera(this.realtime && !this.state.paused));
@@ -249,6 +255,36 @@ export class BrowserPlay {
     this.draw();
     this.emit();
     return session.snapshot();
+  }
+  configureCamera(settings: Partial<PlayCameraSettings>) {
+    this.current().configureCamera(settings);
+    this.draw();
+    this.emit();
+    return this.current().snapshot();
+  }
+  chooseSpawn(input: PlaySpawnRequest) {
+    const report = this.current().chooseSpawn(input);
+    this.emit({ report });
+    return report;
+  }
+  useSpawn() {
+    const report = this.current().useSpawn();
+    this.held = {};
+    this.draw();
+    this.emit();
+    return report;
+  }
+  prepareCapture(aspectRatio: number) {
+    const session = this.current(),
+      restore = session.beginCameraCapture(aspectRatio);
+    this.renderer().playCamera(session.camera());
+    this.avatar?.update(session.snapshot());
+    return () => {
+      if (this.session === session) {
+        restore();
+        this.draw();
+      }
+    };
   }
   setMechanismJoint(id: string, value: number) {
     const report = this.current().setMechanismJoint(id, value);

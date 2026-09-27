@@ -29,6 +29,123 @@
           "const": "1.0"
         },
         "method": {
+          "const": "play.configureCamera"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "eyeHeight": {
+              "type": "number",
+              "minimum": 16,
+              "maximum": 64
+            },
+            "fovDeg": {
+              "type": "number",
+              "minimum": 30,
+              "maximum": 100
+            },
+            "near": {
+              "type": "number",
+              "minimum": 0.05,
+              "maximum": 2
+            },
+            "followDistance": {
+              "type": "number",
+              "minimum": 24,
+              "maximum": 400
+            },
+            "minPitch": {
+              "type": "number",
+              "minimum": -1.48,
+              "maximum": 0
+            },
+            "maxPitch": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.48
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "play.chooseSpawn"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "position": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "yaw": {
+              "type": "number"
+            },
+            "pitch": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "position"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "play.useSpawn"
+        },
+        "input": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "play.setInput"
         },
         "input": {

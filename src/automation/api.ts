@@ -6,6 +6,8 @@ import type { CopyRequest } from "../core/fragments";
 import type { BrowserPlay } from "../play/browser";
 import type {
   PlayRequest,
+  PlayCameraSettings,
+  PlaySpawnRequest,
   PlayInput,
   PlayCameraMode,
   PlayLocomotion,
@@ -104,6 +106,11 @@ export function createAPI(
         validate("playSnapshot", report);
         return report;
       },
+      configureCamera: async (settings: Partial<PlayCameraSettings>) =>
+        player().configureCamera(settings),
+      chooseSpawn: async (input: PlaySpawnRequest) =>
+        player().chooseSpawn(input),
+      useSpawn: async () => player().useSpawn(),
       exit: async () => player().exit(),
       setInput: async (input: PlayInput) => {
         validate("playInput", input);
@@ -295,7 +302,12 @@ export function createAPI(
         const resumePlay = playState?.active && !playState.paused;
         if (resumePlay) activePlay!.pause(true);
         let result;
+        let restorePlayCamera: (() => void) | undefined;
         try {
+          if (playState?.active)
+            restorePlayCamera = activePlay!.prepareCapture(
+              input.width / input.height,
+            );
           const image = await renderer().image(input);
           result = {
             ...image,
@@ -308,6 +320,7 @@ export function createAPI(
             },
           };
         } finally {
+          restorePlayCamera?.();
           if (resumePlay && activePlay?.getState().active)
             activePlay.pause(false);
         }

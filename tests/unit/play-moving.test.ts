@@ -160,3 +160,24 @@ it("refuses invalid moving geometry and stops excessive sweep work without abort
     PlaySession.create(s.geometry, { rigId: "vehicle" }, s.mechanism),
   ).rejects.toThrow("valid complete geometry");
 });
+
+it("revalidates a saved session spawn against a door that subsequently closed", async () => {
+  const sourceData = await source("door");
+  const session = await PlaySession.create(
+    sourceData.geometry,
+    { rigId: "door", position: [20, -0.3, 45] },
+    sourceData.mechanism,
+  );
+  session.setMechanismJoint("hinge", 90);
+  const saved = session.chooseSpawn({
+    position: [20, -0.3, 0],
+    yaw: 0,
+    pitch: 0,
+  }).spawn;
+  expect(session.setMechanismJoint("hinge", 0).mechanism!.blocked).toBe(false);
+  const before = session.snapshot();
+  expect(() => session.useSpawn()).toThrow("intersects geometry");
+  expect(session.snapshot()).toEqual(before);
+  expect(session.snapshot().spawn).toEqual(saved);
+  session.dispose();
+});

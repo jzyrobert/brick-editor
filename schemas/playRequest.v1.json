@@ -3,6 +3,43 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "cameraSettings": {
+      "type": "object",
+      "properties": {
+        "eyeHeight": {
+          "type": "number",
+          "minimum": 16,
+          "maximum": 64
+        },
+        "fovDeg": {
+          "type": "number",
+          "minimum": 30,
+          "maximum": 100
+        },
+        "near": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 2
+        },
+        "followDistance": {
+          "type": "number",
+          "minimum": 24,
+          "maximum": 400
+        },
+        "minPitch": {
+          "type": "number",
+          "minimum": -1.48,
+          "maximum": 0
+        },
+        "maxPitch": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.48
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
     "rigId": {
       "type": "string",
       "minLength": 1,

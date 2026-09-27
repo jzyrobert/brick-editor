@@ -1,3 +1,4 @@
+import { resolvePlayCameraSettings, playCameraSafety } from "./camera-settings";
 import {
   PlayMechanism,
   validatePlayMechanismSource,
@@ -15,6 +16,9 @@ import {
   type PlaySnapshotReport,
   type PlayTeleportRequest,
   type AvatarPose,
+  type PlayCameraSettings,
+  type PlaySpawnRequest,
+  type PlaySpawn,
 } from "./types";
 const S = P.scaleMetresPerLdu,
   DT = 1 / 60;
@@ -72,6 +76,9 @@ export class PlaySession {
   private cameraMode: PlayCameraMode = "first-person";
   private safe: Vec3 | undefined;
   private spawn: Vec3;
+  private selectedSpawn?: PlaySpawn;
+  private cameraSettings: PlayCameraSettings;
+  private aspectRatio = 1;
   private arm = 120;
   private phase = 0;
   private heading = 0;
@@ -85,6 +92,8 @@ export class PlaySession {
     request: PlayRequest,
     mechanismSource?: PlayMechanismSource,
   ) {
+    this.cameraSettings = resolvePlayCameraSettings(request.cameraSettings);
+    this.arm = this.cameraSettings.followDistance;
     this.world = new RAPIER.World({ x: 0, y: 0, z: 0 });
     this.world.timestep = DT;
     this.bounds = structuredClone(snapshot.bounds);
@@ -137,7 +146,7 @@ export class PlaySession {
     this.controller.setMinSlopeSlideAngle((P.maxSlopeDegrees * Math.PI) / 180);
     this.world.step();
     this.yaw = request.yaw ?? 0;
-    this.pitch = Math.max(-1.48, Math.min(1.48, request.pitch ?? 0));
+    this.pitch = this.clampPitch(request.pitch ?? 0);
     this.cameraMode = request.cameraMode ?? "first-person";
     const candidate = request.position ?? [
       (snapshot.bounds.min[0] + snapshot.bounds.max[0]) / 2,
@@ -177,7 +186,9 @@ export class PlaySession {
       "ground",
       "realtime",
       "rigId",
+      "cameraSettings",
     ]);
+    resolvePlayCameraSettings(request.cameraSettings);
     if (request.position) point(request.position);
     for (const k of ["yaw", "pitch"] as const)
       if (request[k] !== undefined)
@@ -339,8 +350,7 @@ export class PlaySession {
     };
     if (input.yaw !== undefined)
       this.yaw = ((input.yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-    if (input.pitch !== undefined)
-      this.pitch = Math.max(-1.48, Math.min(1.48, input.pitch));
+    if (input.pitch !== undefined) this.pitch = this.clampPitch(input.pitch);
   }
   clearInput() {
     this.mechanism?.clearInput();
@@ -559,12 +569,107 @@ export class PlaySession {
       rightShoulder: swing,
     };
   }
+  private clampPitch(pitch: number) {
+    return Math.max(
+      this.cameraSettings.minPitch,
+      Math.min(this.cameraSettings.maxPitch, pitch),
+    );
+  }
+  private cameraSafety() {
+    return playCameraSafety(this.cameraSettings, this.aspectRatio);
+  }
+  configureCamera(input: Partial<PlayCameraSettings>) {
+    this.alive();
+    const settings = resolvePlayCameraSettings(input, this.cameraSettings);
+    this.cameraSettings = settings;
+    this.pitch = this.clampPitch(this.pitch);
+    this.updateArm(true);
+    return this.snapshot();
+  }
+  setViewportAspect(aspectRatio: number) {
+    this.alive();
+    playCameraSafety(this.cameraSettings, aspectRatio);
+    if (this.aspectRatio !== aspectRatio) {
+      this.aspectRatio = aspectRatio;
+      this.updateArm();
+    }
+  }
+  beginCameraCapture(aspectRatio: number) {
+    this.alive();
+    const previousAspect = this.aspectRatio,
+      previousArm = this.arm;
+    this.setViewportAspect(aspectRatio);
+    return () => {
+      this.aspectRatio = previousAspect;
+      this.arm = previousArm;
+    };
+  }
+  private validateSpawn(input: PlaySpawnRequest): PlaySpawn {
+    ensure(
+      input && typeof input === "object",
+      "INVALID_INPUT",
+      "Spawn must be an object",
+    );
+    keys(input, ["position", "yaw", "pitch"]);
+    point(input.position);
+    const yaw = input.yaw ?? this.yaw,
+      pitch = input.pitch ?? this.pitch;
+    ensure(
+      finite(yaw) &&
+        finite(pitch) &&
+        pitch >= this.cameraSettings.minPitch &&
+        pitch <= this.cameraSettings.maxPitch,
+      "INVALID_INPUT",
+      "Spawn look must be finite and within the configured pitch limits",
+    );
+    ensure(
+      this.ready && this.clear(input.position),
+      "INVALID_INPUT",
+      "Spawn intersects geometry or collision is unavailable",
+    );
+    const hit = this.world.castShape(
+      this.center(input.position),
+      rot,
+      { x: 0, y: -S, z: 0 },
+      this.capsule,
+      0,
+      3,
+      true,
+      undefined,
+      undefined,
+      this.collider,
+    );
+    ensure(
+      hit && hit.normal1.y >= Math.cos((P.maxSlopeDegrees * Math.PI) / 180),
+      "INVALID_INPUT",
+      "Spawn needs a walkable supporting surface within 3 LDU below its feet",
+    );
+    return { position: [...input.position], yaw, pitch };
+  }
+  chooseSpawn(input: PlaySpawnRequest) {
+    this.alive();
+    const spawn = this.validateSpawn(input);
+    this.selectedSpawn = spawn;
+    return this.snapshot();
+  }
+  useSpawn() {
+    this.alive();
+    ensure(
+      this.selectedSpawn,
+      "INVALID_INPUT",
+      "Choose a validated session spawn first",
+    );
+    const spawn = this.validateSpawn(this.selectedSpawn);
+    this.clearInput();
+    this.locomotion = "walk";
+    return this.teleport(spawn);
+  }
   private desiredArm(target: Vec3, look: Vec3) {
     const hit = this.world.castShape(
       physics(target),
       rot,
-      physics(look.map((v) => -v * 120) as Vec3),
-      new RAPIER.Ball(4 * S),
+      physics(look.map((v) => -v * this.cameraSettings.followDistance) as Vec3),
+      new RAPIER.Ball(this.cameraSafety().collisionRadius * S),
       0.1 * S,
       1,
       true,
@@ -572,7 +677,9 @@ export class PlaySession {
       undefined,
       this.collider,
     );
-    return hit ? Math.max(0, 120 * hit.time_of_impact - 1) : 120;
+    return hit
+      ? Math.max(0, this.cameraSettings.followDistance * hit.time_of_impact - 1)
+      : this.cameraSettings.followDistance;
   }
   private currentArm() {
     const target: Vec3 = [
@@ -618,7 +725,9 @@ export class PlaySession {
     const target: Vec3 = [
       feet[0],
       feet[1] -
-        (this.cameraMode === "first-person" ? P.eyeHeight : P.height * 0.7),
+        (this.cameraMode === "first-person"
+          ? this.cameraSettings.eyeHeight
+          : P.height * 0.7),
       feet[2],
     ];
     let pos: Vec3 = [...target];
@@ -636,8 +745,8 @@ export class PlaySession {
           ? (pos.map((v, k) => v + look[k] * 100) as Vec3)
           : target,
       up: [0, -1, 0],
-      fovDeg: 65,
-      near: 0.5,
+      fovDeg: this.cameraSettings.fovDeg,
+      near: this.cameraSafety().effectiveNear,
       far: 100000,
     };
   }
@@ -667,6 +776,11 @@ export class PlaySession {
     this.alive();
     return {
       ...(this.mechanism ? { mechanism: this.mechanism.snapshot() } : {}),
+      cameraSettings: { ...this.cameraSettings },
+      cameraSafety: this.cameraSafety(),
+      ...(this.selectedSpawn
+        ? { spawn: structuredClone(this.selectedSpawn) }
+        : {}),
       sourceRevision: this.revision,
       tick: this.tick,
       position: [...this.feet],

@@ -11,7 +11,29 @@ export type CollisionSnapshot = {
   warnings?: string[];
   unsupported?: boolean;
 };
+export const PLAY_CAMERA_DEFAULTS = Object.freeze({
+  eyeHeight: 64,
+  fovDeg: 65,
+  near: 0.5,
+  followDistance: 120,
+  minPitch: -1.48,
+  maxPitch: 1.48,
+});
+export type PlayCameraSettings = {
+  [K in keyof typeof PLAY_CAMERA_DEFAULTS]: number;
+};
+export const PLAY_CAMERA_LIMITS = Object.freeze({
+  eyeHeight: { min: 16, max: 64 },
+  fovDeg: { min: 30, max: 100 },
+  near: { min: 0.05, max: 2 },
+  followDistance: { min: 24, max: 400 },
+  minPitch: { min: -1.48, max: 0 },
+  maxPitch: { min: 0, max: 1.48 },
+});
+export type PlaySpawnRequest = { position: Vec3; yaw?: number; pitch?: number };
+export type PlaySpawn = { position: Vec3; yaw: number; pitch: number };
 export type PlayRequest = {
+  cameraSettings?: Partial<PlayCameraSettings>;
   rigId?: string;
   locomotion?: PlayLocomotion;
   cameraMode?: PlayCameraMode;
@@ -65,6 +87,13 @@ export type AvatarPose = {
 };
 export type PlaySnapshotReport = {
   mechanism?: MechanismSnapshot & { blocked: boolean; blockedReason?: string };
+  cameraSettings: PlayCameraSettings;
+  cameraSafety: {
+    aspectRatio: number;
+    effectiveNear: number;
+    collisionRadius: number;
+  };
+  spawn?: PlaySpawn;
   sourceRevision: number;
   tick: number;
   position: Vec3;
