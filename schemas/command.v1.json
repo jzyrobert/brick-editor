@@ -29,6 +29,11 @@
             },
             "includeHidden": {
               "type": "boolean"
+            },
+            "activeLayerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
             }
           },
           "required": [
@@ -72,6 +77,14 @@
           "type": "object",
           "properties": {
             "rigId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "includeHidden": {
+              "type": "boolean"
+            },
+            "activeLayerId": {
               "type": "string",
               "minLength": 1,
               "maxLength": 1024

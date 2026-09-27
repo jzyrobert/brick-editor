@@ -717,6 +717,46 @@
           "const": "1.0"
         },
         "method": {
+          "const": "fill.preview"
+        },
+        "input": {
+          "$ref": "fillRequest"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "fill.startPreview"
+        },
+        "input": {
+          "$ref": "fillRequest"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "camera.fit"
         },
         "input": {

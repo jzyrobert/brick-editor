@@ -1,0 +1,130 @@
+{
+  "$id": "fillRequest",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "allowedRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "orientations": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "enum": [
+          0,
+          90,
+          180,
+          270
+        ]
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "mask": {
+      "type": "array",
+      "items": {
+        "type": "boolean"
+      },
+      "maxItems": 10000
+    },
+    "colorCode": {
+      "type": "string",
+      "pattern": "^(?:[0-9]+|0x2[0-9a-fA-F]{6})$"
+    },
+    "columns": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "rows": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "origin": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 3
+    },
+    "basis": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 9,
+      "minItems": 9
+    },
+    "layerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "maxAdditions": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    }
+  },
+  "required": [
+    "colorCode",
+    "columns",
+    "rows",
+    "origin",
+    "layerId",
+    "maxAdditions"
+  ],
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "required": [
+        "ref"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "allowedRefs"
+            ]
+          },
+          {
+            "required": [
+              "orientations"
+            ]
+          },
+          {
+            "required": [
+              "mask"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "required": [
+        "allowedRefs"
+      ],
+      "not": {
+        "required": [
+          "ref"
+        ]
+      }
+    }
+  ]
+}

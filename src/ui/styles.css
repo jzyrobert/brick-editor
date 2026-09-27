@@ -2075,3 +2075,128 @@ summary:focus-visible {
     align-items: center;
   }
 }
+.rig-authoring {
+  margin: 16px 0;
+  min-width: 0;
+}
+.rig-authoring summary {
+  min-height: 44px;
+  cursor: pointer;
+  align-content: center;
+  font-weight: 600;
+}
+.rig-authoring label {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+  min-width: 0;
+}
+.rig-authoring input,
+.rig-authoring select,
+.rig-authoring button {
+  min-height: 44px;
+  min-width: 0;
+}
+.rig-authoring input,
+.rig-authoring select {
+  width: 100%;
+}
+.rig-authoring fieldset {
+  min-width: 0;
+  border: 1px solid var(--line);
+  padding: 10px;
+  margin: 12px 0;
+}
+.rig-authoring legend {
+  max-width: 100%;
+  font-size: 13px;
+}
+.rig-vector {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.rig-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.rig-actions {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+.rig-group,
+.rig-preview {
+  padding: 10px;
+  margin: 12px 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.rig-authoring .rig-check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+}
+.rig-authoring .rig-check input {
+  width: 22px;
+  min-height: 22px;
+  flex-shrink: 0;
+}
+.rig-parts {
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  padding: 8px;
+  margin: 8px 0;
+}
+.rig-parts label {
+  overflow-wrap: anywhere;
+}
+
+.fill-options {
+  margin: 12px 0;
+}
+.fill-options .check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+.fill-options input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.fill-options fieldset {
+  margin: 12px 0;
+  border: 1px solid #ccd6db;
+  border-radius: 8px;
+}
+.fill-options label:not(.check-row) {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+}
+.fill-options select,
+.fill-options textarea {
+  width: 100%;
+  min-height: 44px;
+}
+.fill-options summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.rig-part-description {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.rig-part-detail {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink);
+}

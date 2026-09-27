@@ -1,4 +1,5 @@
 export type Validator = ((data: unknown) => boolean) & { errors?: unknown };
+export declare const fillRequest: Validator;
 export declare const motionRig: Validator;
 export declare const mechanismPose: Validator;
 export declare const playRequest: Validator;

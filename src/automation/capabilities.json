@@ -1,7 +1,7 @@
 {
   "apiVersion": "1.0",
   "release": "development",
-  "milestone": "Core editor with selected M2–M5 features; remaining acceptance gates documented",
+  "milestone": "Core editor with selected M2\u2013M5 features; remaining acceptance gates documented",
   "features": {
     "ldraw": {
       "parsed": [
@@ -71,7 +71,15 @@
         "recolour",
         "local translation",
         "local pivot rotation"
-      ]
+      ],
+      "allowedPartFill": {
+        "algorithm": "deterministic largest-first greedy",
+        "quarterTurns": true,
+        "cellMask": true,
+        "sameHeightOnly": true,
+        "workerCancellation": true
+      },
+      "rigAuthoringUI": "hinge and planar vehicle creation with explicit groups, axes, preview and undo"
     },
     "inventory": {
       "format": "bricklink-wanted-xml",

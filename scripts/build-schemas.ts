@@ -229,10 +229,17 @@ const mechanismPose = obj(
 );
 const payloads: Record<string, any> = {
   "rigs.upsert": obj(
-    { rig: { $ref: "motionRig" }, includeHidden: { type: "boolean" } },
+    {
+      rig: { $ref: "motionRig" },
+      includeHidden: { type: "boolean" },
+      activeLayerId: id,
+    },
     ["rig"],
   ),
-  "rigs.remove": obj({ rigId: id }),
+  "rigs.remove": obj(
+    { rigId: id, includeHidden: { type: "boolean" }, activeLayerId: id },
+    ["rigId"],
+  ),
   "rigs.applyPose": obj(
     {
       rigId: id,
@@ -824,6 +831,8 @@ const api = {
     "mechanisms.snapshot": obj({}),
     "mechanisms.applyPose": obj({}),
     "mechanisms.exit": obj({}),
+    "fill.preview": { $ref: "fillRequest" },
+    "fill.startPreview": { $ref: "fillRequest" },
     "camera.fit": obj({}),
     "render.quality.get": obj({}),
     "render.quality.set": obj(
@@ -852,7 +861,43 @@ const api = {
     obj({ apiVersion: { const: "1.0" }, method: { const: method }, input }),
   ),
 };
+const fillRequest = {
+  ...obj(
+    {
+      ref: id,
+      allowedRefs: { ...arr(id, 32), minItems: 1, uniqueItems: true },
+      orientations: {
+        ...arr({ type: "integer", enum: [0, 90, 180, 270] }, 4),
+        minItems: 1,
+        uniqueItems: true,
+      },
+      mask: arr({ type: "boolean" }, 10000),
+      colorCode: { type: "string", pattern: "^(?:[0-9]+|0x2[0-9a-fA-F]{6})$" },
+      columns: { type: "integer", minimum: 1, maximum: 10000 },
+      rows: { type: "integer", minimum: 1, maximum: 10000 },
+      origin: vec,
+      basis,
+      layerId: id,
+      maxAdditions: { type: "integer", minimum: 1, maximum: 10000 },
+    },
+    ["colorCode", "columns", "rows", "origin", "layerId", "maxAdditions"],
+  ),
+  oneOf: [
+    {
+      required: ["ref"],
+      not: {
+        anyOf: [
+          { required: ["allowedRefs"] },
+          { required: ["orientations"] },
+          { required: ["mask"] },
+        ],
+      },
+    },
+    { required: ["allowedRefs"], not: { required: ["ref"] } },
+  ],
+};
 const schemas = {
+  fillRequest,
   motionRig,
   mechanismPose,
   playRequest,

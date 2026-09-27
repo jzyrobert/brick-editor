@@ -1,5 +1,6 @@
 import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
+import { RigAuthoring } from "./RigAuthoring";
 import { ShortcutSettings } from "./ShortcutSettings";
 import {
   loadShortcuts,
@@ -55,6 +56,7 @@ import { SceneAdapter } from "../render/adapter";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
 import { LocalProjects } from "../persistence/storage";
 import { type Preview } from "../inventory/service";
+import { FillOptions, defaultFillOptions } from "./FillOptions";
 import { type FillRequest, fillPreview } from "../edit/fill";
 import { zipSync, strToU8 } from "fflate";
 import "./styles.css";
@@ -191,6 +193,7 @@ export default function App() {
     [preview, setPreview] = useState<Preview | null>(null),
     [busy, setBusy] = useState(false),
     [fillOpen, setFillOpen] = useState(false),
+    [fillOptions, setFillOptions] = useState(defaultFillOptions),
     [columns, setColumns] = useState(5),
     [rows, setRows] = useState(4),
     [fill, setFill] = useState<ReturnType<typeof fillPreview> | null>(null),
@@ -940,12 +943,51 @@ export default function App() {
       download("layer-wanted-lists.zip", zipSync(files), "application/zip");
     });
   }
+  useEffect(() => {
+    if (worker.current) {
+      worker.current.terminate();
+      worker.current = undefined;
+      setBusy(false);
+    }
+    setFill(null);
+  }, [
+    fillOptions,
+    columns,
+    rows,
+    position,
+    part,
+    color,
+    activeLayer,
+    angle,
+    workplane,
+  ]);
   function startFill() {
     void run(() => {
       worker.current?.terminate();
-      setBusy(true);
+      let mask: boolean[] | undefined;
+      if (fillOptions.enabled && fillOptions.maskText.trim()) {
+        const lines = fillOptions.maskText
+          .trim()
+          .split(/\r?\n/)
+          .map((line) => line.trim());
+        ensure(
+          lines.length === rows &&
+            lines.every(
+              (line) => line.length === columns && /^[01]+$/.test(line),
+            ),
+          "INVALID_INPUT",
+          "Cell mask must match the row/column counts and contain only 1 or 0.",
+        );
+        mask = lines.flatMap((line) => [...line].map((cell) => cell === "1"));
+      }
       const r: FillRequest = {
-        ref: part,
+        ...(fillOptions.enabled
+          ? {
+              allowedRefs: fillOptions.allowedRefs,
+              orientations: fillOptions.orientations,
+              ...(mask ? { mask } : {}),
+            }
+          : { ref: part }),
         colorCode: color,
         columns,
         rows,
@@ -954,25 +996,32 @@ export default function App() {
         layerId: activeLayer,
         maxAdditions: 10000,
       };
-      worker.current = new Worker(
+      setFill(null);
+      setBusy(true);
+      const fillWorker = new Worker(
         new URL("../workers/fill.worker.ts", import.meta.url),
         { type: "module" },
       );
-      worker.current.onmessage = (e) => {
+      worker.current = fillWorker;
+      fillWorker.onmessage = (e) => {
+        if (worker.current !== fillWorker) return;
+        worker.current = undefined;
         setBusy(false);
-        if (e.data.error) setStatus(e.data.error);
+        if (e.data.error) setStatus(e.data.error.message ?? e.data.error);
         else {
           setFill(e.data.result);
           setStatus("Fill preview ready");
         }
-        worker.current?.terminate();
+        fillWorker.terminate();
       };
-      worker.current.onerror = () => {
+      fillWorker.onerror = () => {
+        if (worker.current !== fillWorker) return;
+        worker.current = undefined;
         setBusy(false);
         setStatus("Fill worker failed");
-        worker.current?.terminate();
+        fillWorker.terminate();
       };
-      worker.current.postMessage({ project: editor.project, request: r });
+      fillWorker.postMessage({ project: editor.project, request: r });
     });
   }
   async function capture() {
@@ -2178,6 +2227,14 @@ export default function App() {
               modeRequest={transformModeRequest}
             />
           </div>
+          <div hidden={panel !== "Inspector"}>
+            <RigAuthoring
+              editor={editor}
+              selection={selection}
+              activeLayerId={crossLayer ? undefined : activeLayer}
+              onSelect={setSelectionSafe}
+            />
+          </div>
           {panel === "Inspector" ? (
             <>
               {inspectorPanel}
@@ -2534,6 +2591,7 @@ export default function App() {
               {currentPart.name} · {colors.find((c) => c.code === color)?.name}{" "}
               · {project.layers[activeLayer]?.name}
             </p>
+            <FillOptions value={fillOptions} onChange={setFillOptions} />
             <div className="numeric-row">
               <NumberInput
                 label="Columns"
@@ -2580,6 +2638,15 @@ export default function App() {
                   {fill.parts.length} additions · {fill.unresolvedCells.length}{" "}
                   unresolved cells
                 </p>
+                <p>
+                  {fill.coveredCells} of {fill.eligibleCells} eligible cells
+                  covered.
+                </p>
+                {fill.diagnostics.map((message, i) => (
+                  <p className="muted" key={i}>
+                    {message}
+                  </p>
+                ))}
                 <button
                   className="primary wide"
                   disabled={!fill.parts.length}
@@ -2591,7 +2658,7 @@ export default function App() {
                         "Fill preview is stale",
                       );
                       command("parts.add", {
-                        layerId: activeLayer,
+                        layerId: fill.layerId,
                         parts: fill.parts,
                         maxAdditions: 10000,
                       });

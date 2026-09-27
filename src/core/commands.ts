@@ -227,10 +227,14 @@ function mutate(
       p.title = v.title;
       break;
     case "rigs.upsert": {
-      fields(v, ["rig", "includeHidden"]);
+      fields(v, ["rig", "includeHidden", "activeLayerId"]);
       validateRig(p, v.rig);
       editable(p, {
-        occurrenceIds: v.rig.groups.flatMap((g: any) => g.occurrenceIds),
+        occurrenceIds: [
+          ...v.rig.groups,
+          ...(p.motionRigs[v.rig.id]?.groups ?? []),
+        ].flatMap((g: any) => g.occurrenceIds),
+        activeLayerId: v.activeLayerId,
         includeHidden: v.includeHidden,
       });
       for (const existing of Object.values(p.motionRigs)) {
@@ -250,8 +254,15 @@ function mutate(
       break;
     }
     case "rigs.remove": {
-      fields(v, ["rigId"]);
+      fields(v, ["rigId", "includeHidden", "activeLayerId"]);
       ensure(p.motionRigs[v.rigId], "INVALID_INPUT", "Unknown motion rig.");
+      editable(p, {
+        occurrenceIds: p.motionRigs[v.rigId].groups.flatMap(
+          (g) => g.occurrenceIds,
+        ),
+        includeHidden: v.includeHidden,
+        activeLayerId: v.activeLayerId,
+      });
       delete p.motionRigs[v.rigId];
       break;
     }

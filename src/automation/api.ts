@@ -1,3 +1,4 @@
+import type { FillRequest, fillPreview } from "../edit/fill";
 import type { ExportRequest as ProfileRequest } from "../ldraw/export-profiles";
 import type { MechanismBrowser } from "../mechanisms/browser";
 import type { QualityName, QualityControls } from "../render/quality";
@@ -52,7 +53,34 @@ export function createAPI(
     ensure(m, "INVALID_INPUT", "Mechanism controller unavailable");
     return m;
   };
+  const startFillPreview = (request: FillRequest) => {
+    validate("fillRequest", request);
+    const source = structuredClone(editor.project);
+    return jobs.start("fill-preview", async (signal) => {
+      const result = await runWorker<ReturnType<typeof fillPreview>>(
+        new Worker(new URL("../workers/fill.worker.ts", import.meta.url), {
+          type: "module",
+        }),
+        { project: source, request },
+        signal,
+      );
+      ensure(
+        editor.project.id === source.id &&
+          editor.project.revision === source.revision,
+        "REVISION_CONFLICT",
+        "Fill preview is stale; request a new preview",
+      );
+      return result;
+    });
+  };
   return {
+    fill: {
+      startPreview: async (request: FillRequest) => ({
+        jobId: startFillPreview(request),
+      }),
+      preview: async (request: FillRequest) =>
+        jobs.wait<ReturnType<typeof fillPreview>>(startFillPreview(request)),
+    },
     mechanisms: {
       enter: async (rigId: string) => {
         player().exit();
