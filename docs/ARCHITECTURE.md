@@ -1,0 +1,51 @@
+# Architecture decisions
+
+## ADR 001 — Authoritative document and occurrence identity
+
+The domain core imports neither React nor three.js. A versioned project owns definitions, reference nodes, source records, layer assignments, groups, plans, bookmarks, mapping overrides and reserved rig/assets metadata. `Editor.project` returns a clone, so callers cannot bypass commands by mutating a returned object. Schema validators are generated at build time; imported projects cannot provide executable validators.
+
+An occurrence ID is `JSON.stringify(nodeIdPath)`. Node IDs are unique **within their definition**, not globally. Copy-on-write copies definitions and local node IDs while changing the parent definition reference. Consequently the affected occurrence paths remain exactly the same, and layer memberships, groups, plans and overrides do not need identity remapping. Undo restores sharing. This is an intentional simplification of the spec's remapping sketch, with dedicated repeated-instance tests.
+
+A command clones/stages the document, validates the complete result and commits once. Bounded structural patches store semantic JSON differences, not mesh objects or full render snapshots. Array changes currently replace their semantic arrays. History is capped at 100 entries and approximately 8 MiB of JSON text; oldest history is visibly flagged when discarded. A 500-entry session-only deduplication ledger rejects command ID reuse with changed content. Revisions advance monotonically through undo/redo. Replacement/import resets history after atomic staging; **undoing project replacement is not yet implemented**. The template UI exports the previous nonempty project first.
+
+## ADR 002 — Starter subset, rendering and namespaces
+
+Use six physical starter parts and their official dependency closure. A project-local `3001.dat` cannot inherit official purchasing identity. Geometry library and curated marketplace mapping pack are independently hashed and locked. Actual source headers and notices are retained. No connector pack is distributed; snapping/collision compatibility remains unverified.
+
+The reference renderer owns one group per occurrence and shares compiled prototypes across occurrences with the same part/body colour. Source geometry and editable transforms never come from merged scene meshes. Prototype compilation uses an in-memory MPD and an explicit file map. This is necessary because the pinned loader rewrites `s/` references unless a mapping is supplied. The adapter rejects missing dependency attempts and empty official prototypes: the stock loader can otherwise swallow a subobject failure and return an empty group.
+
+The colour configuration is read and hash-checked once, then its material directives are compiled inside each isolated loader scope. Passing material objects between loader instances is unsafe because edge and conditional-line caches belong to their originating loader. In-memory colour directives also allow uncached colour variants after the network goes offline.
+
+Each prototype currently recompiles geometry for a distinct body colour; immutable geometry sharing **across colour variants**, change-set-only traversal and instancing remain optimisation work. Cache retention is bounded, resources are disposed at teardown, and the renderer refuses workloads above its explicit 5,000-occurrence / 128-variant / 50 MiB multiplied custom-source budget instead of dropping authored parts. Domain validation/export has a separate 100,000-occurrence limit. These are declared development budgets, not a performance claim.
+
+Render space is a single π rotation about X. Occurrence transforms use full affine matrices. The renderer delegates internal custom-part compilation to pinned three.js; internal sheared references and broader BFC/material coverage are not yet certified. Ordinary lines and conditional lines use the loader's dedicated paths, not wireframe polygon edges. Diagnostic pink wireframe boxes represent unresolved references only. Catalogue thumbnails are original schematic SVGs; they are not replacements for model geometry.
+
+## ADR 003 — Source preservation and native packaging
+
+LDraw records retain raw text, ordering and node anchors. Unchanged reference records retain original tokens; edited transforms use JavaScript double-precision serialization and normalize negative zero. Source custom geometry retains records and exports transformed coordinates. Unknown records remain in place. Root imported step boundaries are mapped into a native instruction plan; nested subassembly instruction expansion and ROTSTEP camera semantics are deferred.
+
+Native ZIP stores `project.json`, a checksum manifest and notices. Source files, raw records and assets are embedded in the versioned project object rather than duplicated as independent ZIP entries. This is a packaging deviation from the proposed layout, not a claim that images are rendered. Unknown project versions, graph cycles, non-finite transforms, unsafe paths and duplicate model names fail validation. Archive decompression is incremental and bounded. Lower physical-device budgets and full geometry/texture decoded-memory accounting remain future work.
+
+Default MPD includes all authored occurrences and all retained embedded definitions. Filtered/scoped MPD flattens leaf placements in world coordinates; custom stateful metadata triggers an acknowledgement requirement. This implementation does not certify preservation of third-party metadata semantics after structural edits.
+
+## ADR 004 — Offline inventory
+
+The pack is an original small table of factual part/colour correspondences, not a copied bulk catalogue. Public source pages and verification date are recorded per pack. The six part identities and red/blue/yellow/white/black combinations were reviewed; stock is not queried. Other mapped colour combinations are explicitly unknown until acknowledged. No inferred suffix stripping, nearest-RGB matching or marketplace login occurs.
+
+Inventory walks semantic leaf occurrences and stops at physical part boundaries. User submodels expand, while primitive geometry inside a catalogue part does not become extra lots. Preview tokens bind the entire project hash, source scope, visibility, overrides, pack hash and options. This is deliberately stricter than revision-only validation. Locked layers remain readable. Unresolved/nonphysical/non-orderable occurrences block complete output; partial results carry XML plus a separate report. Authored-figure exclusion uses explicit `metadata.authoredFigureIds`, not filename heuristics.
+
+Generic composite decomposition packs, ambiguous candidate resolution, purchased-stock allocation and all optional Wanted List pricing/preferences are not implemented. Such imports remain unresolved and cannot silently enter complete XML. Destination validation requires a separate human-authorized BrickLink session and has not been attempted.
+
+## ADR 005 — Persistence, automation and deployment
+
+LocalStorage saves a checked new envelope, then advances the head, retaining recoverable snapshots. Same-origin Web Locks serialize writers when supported, and stored revision comparisons refuse conflicts. Without Web Locks, a simultaneous read/write race is not fully solved; the broader single-writer/read-only/fork UX is unfinished. No automatic IndexedDB migration occurs. The default UI uses a debounce but has no guaranteed 3-second maximum save latency during continuous edits yet.
+
+Browser automation is opt-in (`?automation=1`) and shares the command/inventory services with the UI and CLI. Workers handle LDraw parsing and rectangular fills; jobs expose running/success/failure/cancellation. Native decompression remains on the main thread with bounded streaming. Image capture uses a fixed revision and offscreen target, restores renderer state in `finally`, validates dimensions and returns a manifest. GPU pixels are not promised identical across platforms. Fast/Balanced/Photo request names currently use the same correctness renderer; separate quality policies are unfinished.
+
+The production bundle is static and works under a Vite base path. No third-party runtime fonts, scripts, model uploads, secrets or rendering service are required. The CLI's temporary localhost server is a local development/testing adapter.
+
+## ADR 006 — Milestone order and scope boundary
+
+The user authorized proceeding as far as practical through the roadmap, with desktop and 1080×1800 headless testing. Implement the core vertical slice first and keep incomplete modes explicit. No Play, physics, PDF layout, automated assembly planner, path tracer or collaboration service is presented as working. P0 gaps in the status report mean the spec's gate for starting exploration has not been claimed as passed. Rapier was removed from the initial scaffold because this build does not execute physics.
+
+The scaffold's vulnerable dependency versions were replaced with exact patched pins and a regenerated lockfile. See the dependency audit and final verification report. The three.js r174 loader is deliberately pinned behind its adapter; the matching type package has a parse signature mismatch, isolated with one documented structural cast at the adapter boundary.

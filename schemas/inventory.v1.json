@@ -1,0 +1,143 @@
+{
+  "$id": "inventory",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "format": {
+      "const": "bricklink-wanted-xml"
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "all"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "visible"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "layers"
+            },
+            "layerIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "kind",
+            "layerIds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "selection"
+            },
+            "occurrenceIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "kind",
+            "occurrenceIds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "submodel"
+            },
+            "occurrenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "kind",
+            "occurrenceId"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "buildMultiplier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "condition": {
+      "enum": [
+        "any",
+        "new",
+        "used"
+      ]
+    },
+    "wantedListId": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "remarks": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "excludeAuthoredFigures": {
+      "type": "boolean"
+    },
+    "errorPolicy": {
+      "enum": [
+        "block",
+        "export-resolved"
+      ]
+    },
+    "acceptUnknownColors": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "expectedRevision",
+    "format",
+    "scope"
+  ],
+  "additionalProperties": false
+}

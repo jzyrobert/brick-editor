@@ -1,0 +1,77 @@
+{
+  "$id": "importRequest",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "ldraw"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 26214400
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "strict": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "format",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "native"
+        },
+        "bytes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "maxItems": 26214400
+        },
+        "strict": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "format",
+        "bytes"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "template"
+        },
+        "template": {
+          "enum": [
+            "blank",
+            "room",
+            "wall",
+            "200"
+          ]
+        }
+      },
+      "required": [
+        "format",
+        "template"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

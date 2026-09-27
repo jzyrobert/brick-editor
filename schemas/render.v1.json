@@ -1,0 +1,128 @@
+{
+  "$id": "render",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16384
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16384
+    },
+    "format": {
+      "const": "png"
+    },
+    "visibility": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "all"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "current"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "layers"
+            },
+            "layerIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "mode",
+            "layerIds"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "background": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "transparent"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "solid"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            }
+          },
+          "required": [
+            "type",
+            "color"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "quality": {
+      "enum": [
+        "fast",
+        "balanced",
+        "photo"
+      ]
+    },
+    "strict": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "revision",
+    "width",
+    "height",
+    "format",
+    "visibility",
+    "background",
+    "quality"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,44 @@
+{
+  "name": "brick-editor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run schemas && tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "schemas": "tsx scripts/build-schemas.ts",
+    "test": "vitest run",
+    "test:browser": "npm run build && playwright test",
+    "cli": "tsx scripts/brick-cli.ts",
+    "library:validate": "tsx scripts/validate-library.ts",
+    "format": "prettier --write src scripts tests schemas docs/*.md README.md *.ts *.json index.html",
+    "format:check": "prettier --check src scripts tests schemas docs/*.md README.md *.ts *.json index.html",
+    "test:performance": "tsx scripts/benchmark.ts",
+    "notices": "tsx scripts/dependency-notices.ts",
+    "fixtures": "tsx scripts/generate-fixtures.ts"
+  },
+  "dependencies": {
+    "fflate": "0.8.3",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "three": "0.174.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.13.10",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
+    "@types/three": "0.174.0",
+    "@vitejs/plugin-react": "4.3.4",
+    "ajv": "8.20.0",
+    "prettier": "3.5.3",
+    "tsx": "4.19.3",
+    "typescript": "5.8.2",
+    "vite": "6.4.3",
+    "vitest": "4.1.11"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  }
+}

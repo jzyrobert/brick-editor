@@ -1,0 +1,69 @@
+import { createProject } from "../core/document";
+import { identity, rotationY } from "../core/math";
+import { uid, type Vec3 } from "../core/types";
+export function template(name: "blank" | "room" | "wall" | "200") {
+  const p = createProject(
+    name === "blank"
+      ? "Untitled build"
+      : name === "room"
+        ? "Courtyard studio"
+        : name === "200"
+          ? "200-part conformance build"
+          : "Brick wall",
+  );
+  const nodes = p.models.root.nodes;
+  const place = (ref: string, colorCode: string, position: Vec3, angle = 0) =>
+    nodes.push({
+      id: uid(),
+      kind: "part",
+      ref,
+      colorCode,
+      transform: { position, basis: rotationY(angle) },
+    });
+  if (name === "200") {
+    for (let i = 0; i < 200; i++)
+      place("3001.dat", i % 2 ? "4" : "15", [
+        (i % 20) * 80,
+        -24,
+        Math.floor(i / 20) * 40,
+      ]);
+    return p;
+  }
+  if (name === "wall") {
+    for (let y = 0; y < 5; y++)
+      for (let x = 0; x < 8; x++)
+        place("3001.dat", y === 4 ? "0" : "4", [x * 80, -24 * (y + 1), 0]);
+    return p;
+  }
+  if (name === "room") {
+    for (let z = 0; z < 6; z++)
+      for (let x = 0; x < 5; x++)
+        place("3020.dat", "15", [(x - 2) * 80, -8, (z - 2.5) * 40]);
+    for (let y = 0; y < 4; y++) {
+      for (let x = 0; x < 5; x++)
+        place("3001.dat", y === 3 ? "1" : "15", [
+          (x - 2) * 80,
+          -32 - y * 24,
+          -140,
+        ]);
+      for (let z = 0; z < 3; z++)
+        place(
+          "3001.dat",
+          y === 3 ? "1" : "15",
+          [-220, -32 - y * 24, (z - 1) * 80],
+          90,
+        );
+      for (let z = 0; z < 3; z++)
+        if (z !== 1 || y >= 3)
+          place(
+            "3001.dat",
+            y === 3 ? "1" : "15",
+            [220, -32 - y * 24, (z - 1) * 80],
+            90,
+          );
+    }
+    for (let x = 0; x < 2; x++) place("3003.dat", "14", [x * 40 - 20, -32, 40]);
+    place("3020.dat", "4", [0, -40, 40]);
+  }
+  return p;
+}

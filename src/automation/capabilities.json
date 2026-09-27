@@ -1,0 +1,118 @@
+{
+  "apiVersion": "1.0",
+  "release": "development",
+  "milestone": "M1 plus selected M2/M3 workflows",
+  "features": {
+    "ldraw": {
+      "parsed": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "FILE",
+        "NOFILE",
+        "STEP",
+        "ROTSTEP",
+        "BFC",
+        "!COLOUR"
+      ],
+      "rendered": [
+        "references",
+        "polygons",
+        "ordinary lines",
+        "conditional lines",
+        "BFC",
+        "current/fixed colours"
+      ],
+      "roundTripPreserved": [
+        "source records",
+        "unknown metadata",
+        "texture records",
+        "affine transforms",
+        "embedded definitions"
+      ],
+      "unsupported": [
+        "texture projection",
+        "glitter/speckle fidelity",
+        "whole-library geometry",
+        "automatic dependency fetch"
+      ]
+    },
+    "editing": {
+      "commands": true,
+      "transactions": true,
+      "undoRedo": true,
+      "occurrenceCopyOnWrite": true,
+      "gridPlacement": true,
+      "snapVerified": false,
+      "physicsSupported": false,
+      "sourcePrimitiveDuplication": false,
+      "projectReplacementUndo": false
+    },
+    "inventory": {
+      "format": "bricklink-wanted-xml",
+      "offline": true,
+      "starterParts": 6,
+      "completeExportBlocksUnresolved": true,
+      "partialReportArchive": true,
+      "liveDestinationTest": false
+    },
+    "render": {
+      "webgl2": true,
+      "png": true,
+      "offscreenCapture": true,
+      "idleOnDemand": true,
+      "instanced": false,
+      "qualityProfilesDistinct": false,
+      "coverage": "Audited starter parts and synthetic custom fixtures; see docs/STATUS.md"
+    },
+    "instructions": {
+      "layerPlans": true,
+      "assemblyValidation": false,
+      "pdf": false,
+      "rootImportedSteps": true,
+      "rotstepCameraSemantics": false
+    },
+    "play": {
+      "available": false,
+      "reason": "P0 acceptance gates must pass before exploration"
+    }
+  },
+  "limits": {
+    "importBytes": 26214400,
+    "decompressedBytes": 104857600,
+    "referenceDepth": 64,
+    "occurrences": 100000,
+    "additions": 10000,
+    "imagePixels": 16000000,
+    "renderOccurrences": 5000,
+    "renderPrototypeVariants": 128,
+    "customCompilationSourceBytes": 52428800
+  },
+  "deduplication": {
+    "entries": 500,
+    "persistence": "session only"
+  },
+  "history": {
+    "entries": 100,
+    "bytes": 8388608
+  },
+  "unimplemented": [
+    "connector snapping",
+    "lasso and occlusion selection",
+    "full clipboard fragments",
+    "offline service-worker packs",
+    "instruction PDF layout",
+    "share fragments",
+    "Play and mechanisms",
+    "path tracing",
+    "collaboration",
+    "linear/circular arrays",
+    "layer folders",
+    "geometry sharing across colour variants",
+    "composite purchasing decomposition",
+    "full native migrations",
+    "full physical-device acceptance"
+  ]
+}

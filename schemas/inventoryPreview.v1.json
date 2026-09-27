@@ -1,0 +1,189 @@
+{
+  "$id": "inventoryPreview",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "previewId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "documentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "mappingPackSha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "projectHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "sourceOccurrenceCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "resolvedPhysicalUnitCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "lotCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "canExportComplete": {
+      "type": "boolean"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "colorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "occurrenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "maxItems": 100000
+          },
+          "layers": {
+            "type": "object",
+            "maxProperties": 10000,
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "propertyNames": {
+              "not": {
+                "enum": [
+                  "__proto__",
+                  "constructor",
+                  "prototype"
+                ]
+              }
+            }
+          },
+          "verification": {
+            "enum": [
+              "verified",
+              "acknowledged"
+            ]
+          }
+        },
+        "required": [
+          "itemId",
+          "colorId",
+          "quantity",
+          "occurrenceIds",
+          "layers",
+          "verification"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 100000
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "error"
+            ]
+          },
+          "occurrenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "maxItems": 100000
+          },
+          "details": {}
+        },
+        "required": [
+          "code",
+          "message",
+          "severity",
+          "occurrenceIds"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 100000
+    },
+    "excludedOccurrenceIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 100000
+    },
+    "substitutions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 100000
+    },
+    "request": {
+      "$ref": "inventory"
+    }
+  },
+  "required": [
+    "previewId",
+    "documentRevision",
+    "mappingPackSha256",
+    "projectHash",
+    "sourceOccurrenceCount",
+    "resolvedPhysicalUnitCount",
+    "lotCount",
+    "canExportComplete",
+    "rows",
+    "diagnostics",
+    "excludedOccurrenceIds",
+    "substitutions",
+    "request"
+  ],
+  "additionalProperties": false
+}

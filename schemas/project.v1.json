@@ -1,0 +1,578 @@
+{
+  "$id": "project",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "units": {
+      "const": "LDU"
+    },
+    "rootModelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "library": {
+      "type": "object",
+      "properties": {
+        "releaseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "manifestSha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "colorConfigSha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "releaseId",
+        "manifestSha256",
+        "colorConfigSha256"
+      ],
+      "additionalProperties": false
+    },
+    "marketplace": {
+      "type": "object",
+      "properties": {
+        "mappingPackId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "mappingPackSha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "overrides": {
+          "type": "object",
+          "maxProperties": 10000,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "colorId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "acknowledged": {
+                "type": "boolean"
+              },
+              "substitution": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "itemId",
+              "colorId",
+              "acknowledged",
+              "substitution"
+            ],
+            "additionalProperties": false
+          },
+          "propertyNames": {
+            "not": {
+              "enum": [
+                "__proto__",
+                "constructor",
+                "prototype"
+              ]
+            }
+          }
+        }
+      },
+      "required": [
+        "mappingPackId",
+        "mappingPackSha256",
+        "overrides"
+      ],
+      "additionalProperties": false
+    },
+    "models": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "kind": {
+                  "enum": [
+                    "part",
+                    "submodel",
+                    "geometry"
+                  ]
+                },
+                "ref": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "colorCode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "transform": {
+                  "type": "object",
+                  "properties": {
+                    "position": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "basis": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 9,
+                      "minItems": 9
+                    }
+                  },
+                  "required": [
+                    "position",
+                    "basis"
+                  ],
+                  "additionalProperties": false
+                },
+                "sourceRecordId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "ref",
+                "colorCode",
+                "transform"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 100000
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "raw": {
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "nodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                }
+              },
+              "required": [
+                "id",
+                "raw"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 1000000
+          },
+          "classification": {
+            "enum": [
+              "model",
+              "custom"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "nodes",
+          "records",
+          "classification"
+        ],
+        "additionalProperties": false
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "layers": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "visible",
+          "locked",
+          "order"
+        ],
+        "additionalProperties": false
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "defaultLayerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "layerAssignments": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "groups": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "maxItems": 100000
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "instructionPlans": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            },
+            "maxItems": 100000
+          }
+        },
+        "required": [
+          "name",
+          "steps"
+        ],
+        "additionalProperties": false
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "cameraBookmarks": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "space": {
+            "const": "ldraw"
+          },
+          "projection": {
+            "enum": [
+              "perspective",
+              "orthographic"
+            ]
+          },
+          "position": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "target": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "up": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "fovDeg": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 180
+          },
+          "near": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "far": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "span": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "space",
+          "projection",
+          "position",
+          "target",
+          "up",
+          "fovDeg",
+          "near",
+          "far"
+        ],
+        "additionalProperties": false
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "motionRigs": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {},
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {},
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4096
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "error"
+            ]
+          },
+          "occurrenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "maxItems": 100000
+          },
+          "details": {}
+        },
+        "required": [
+          "code",
+          "message",
+          "severity",
+          "occurrenceIds"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 100000
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "revision",
+    "title",
+    "units",
+    "rootModelId",
+    "library",
+    "marketplace",
+    "models",
+    "layers",
+    "defaultLayerId",
+    "layerAssignments",
+    "groups",
+    "instructionPlans",
+    "cameraBookmarks",
+    "motionRigs",
+    "metadata",
+    "assets",
+    "diagnostics"
+  ],
+  "additionalProperties": false
+}

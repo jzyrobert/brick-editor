@@ -1,0 +1,84 @@
+{
+  "date": "2026-09-27",
+  "build": "npm run build: passed (TypeScript and Vite 6.4.3)",
+  "cleanInstall": "npm ci: passed",
+  "domainTests": {
+    "files": 2,
+    "passed": 32,
+    "failed": 0
+  },
+  "browserTests": {
+    "passed": 9,
+    "failed": 0,
+    "runner": "Playwright 1.63.0 / Chromium 153.0.8010.12 / SwiftShader",
+    "tests": [
+      {
+        "title": "200-part UI fill, edit/undo, native round trip, offline inventory and exact PNG",
+        "status": "passed",
+        "durationMs": 9237
+      },
+      {
+        "title": "desktop template renders real geometry and exports inventory in the UI",
+        "status": "passed",
+        "durationMs": 1977
+      },
+      {
+        "title": "touch layout 1080x1800: place, save and export",
+        "status": "passed",
+        "durationMs": 8604
+      },
+      {
+        "title": "touch layout 360x800: place, save and export",
+        "status": "passed",
+        "durationMs": 3890
+      },
+      {
+        "title": "strict render rejects unsupported texture metadata and API is opt in",
+        "status": "passed",
+        "durationMs": 943
+      },
+      {
+        "title": "custom fixed-colour decoration survives body repaint; mirrored and conditional lines render",
+        "status": "passed",
+        "durationMs": 2959
+      },
+      {
+        "title": "pinch gesture never places a part; rejected locked mutation is atomic; offline inventory stays available",
+        "status": "passed",
+        "durationMs": 1000
+      },
+      {
+        "title": "Photo UI exports a transparent PNG with the selected dimensions",
+        "status": "passed",
+        "durationMs": 5860
+      },
+      {
+        "title": "cancelled import leaves the authored document unchanged",
+        "status": "passed",
+        "durationMs": 595
+      }
+    ]
+  },
+  "viewports": [
+    [
+      1440,
+      1000
+    ],
+    [
+      1080,
+      1800
+    ],
+    [
+      360,
+      800
+    ]
+  ],
+  "libraryValidation": {
+    "files": 23,
+    "parts": 6,
+    "passed": true
+  },
+  "knownNpmVulnerabilities": 0,
+  "liveBrickLinkUpload": "not performed",
+  "physicalPhoneMeasurements": "not performed"
+}

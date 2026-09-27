@@ -1,0 +1,33 @@
+{
+  "$id": "query",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "colorCode": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "layerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "occurrenceIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 100000
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}
