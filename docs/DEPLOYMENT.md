@@ -1,6 +1,8 @@
 # Static hosting
 
-Production: **https://bricks.robertj.in/**.
+Configured production address: **https://bricks.robertj.in/**.
+
+As of the 2026-09-27 deployment, GitHub confirms the domain is valid and HTTPS-eligible, but certificate issuance is still pending. HTTPS enforcement and secure live-browser verification remain open in TODO.md.
 
 The site remains hosted on GitHub Pages. The existing `.github/workflows/pages.yml` validates the app and deploys the static Vite output after pushes to `main`. GitHub Pages supports the requested subdomain, so no additional Cloudflare hosting service or deployment token is required.
 
