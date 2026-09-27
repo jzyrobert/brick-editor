@@ -99,3 +99,9 @@ Representable single-joint and pure planar vehicle rigs now support guarded load
 Browser and CLI queries now include submodel/selection scopes, counts, source-derived conservative bounds, unknown-geometry IDs, nested unresolved dependencies, physical-transform diagnostics and bounded overlap candidates without WebGL. Connectivity is explicitly unverified until a verified connector pack exists. Source boxes are checked against the pinned library closure in CI; overlap candidates do not establish physical collisions or buildability.
 
 A contract audit also reproduced an open M0 gap: valid deeply nested UUID occurrence paths can exceed the generic 1,024-character schema limit. A 32-level fixture produces a 1,249-character path that queries cannot accept by ID. This requires a coordinated occurrence-ID and aggregate-request budget fix across query, scope and command schemas; it is tracked in TODO.
+
+## Nearby Play interaction
+
+The selected Play rig now exposes a contextual button and remappable E action within 96 LDU of its authored joint anchor or vehicle chassis, measured from the explorer's body center. Revolute and prismatic joints toggle between the allowed position nearest zero and the farthest limit (defaults: 90 degrees or 40 LDU). Motion still uses the swept actor-clearance checks and reports a blocked attempt visibly. This is proximity access, not a line-of-sight picking system or automatic door detection.
+
+Vehicle access switches movement keys and the touch joystick to throttle/steering, with an explicit Release vehicle action. The explorer remains on foot; pause, focus loss and released inputs stop driving. Look controls remain available. The authored build is unchanged. Only the selected rig is active; simultaneous nearby rigs, animated door travel, seated entry/exit, riding and vehicle/world collision response remain open.

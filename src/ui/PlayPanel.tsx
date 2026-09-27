@@ -138,7 +138,10 @@ export function PlayPanel({
         return;
       }
       if (play.getState().paused) return;
-      if (!e.repeat && action === "fly")
+      if (!e.repeat && action === "interact") {
+        clear();
+        attempt(() => play.interact());
+      } else if (!e.repeat && action === "fly")
         attempt(() =>
           play.setLocomotion(
             play.snapshot().locomotion === "walk" ? "fly-noclip" : "walk",
@@ -152,7 +155,12 @@ export function PlayPanel({
               : "first-person",
           ),
         );
-      else if (action && action !== "fly" && action !== "camera") {
+      else if (
+        action &&
+        action !== "fly" &&
+        action !== "camera" &&
+        action !== "interact"
+      ) {
         keys.current.add(action);
         input();
       }
@@ -253,6 +261,13 @@ export function PlayPanel({
             </select>
           </label>
         )}
+        {Object.keys(rigs).length > 0 && (
+          <p className="muted">
+            Choose a mechanism above, then move near its joint or vehicle and
+            press {bindings.interact || "the on-screen action"}. One rig is
+            active per session.
+          </p>
+        )}
         <PlayWorldSettings
           layers={layers}
           excluded={excludedLayerIds}
@@ -292,9 +307,11 @@ export function PlayPanel({
       <div className="play-top">
         <div>
           <strong>
-            {report.locomotion === "walk"
-              ? "Walking"
-              : "Flying · pass through walls"}
+            {state.vehicleControl
+              ? "Controlling vehicle · on foot"
+              : report.locomotion === "walk"
+                ? "Walking"
+                : "Flying · pass through walls"}
           </strong>
           <small>
             {report.cameraMode === "first-person"
@@ -390,7 +407,8 @@ export function PlayPanel({
             {bindings.forward || "—"}/{bindings.left || "—"}/
             {bindings.backward || "—"}/{bindings.right || "—"} move · drag to
             look · {bindings.jump || "—"} jump · {bindings.fly || "—"} fly ·{" "}
-            {bindings.camera || "—"} camera
+            {bindings.camera || "—"} camera · {bindings.interact || "—"}{" "}
+            interact
           </div>
           <div
             className="play-stick"
@@ -412,67 +430,69 @@ export function PlayPanel({
                 transform: `translate(${stick[0] * 30}px,${-stick[1] * 30}px)`,
               }}
             >
-              Move
+              {state.vehicleControl ? "Drive" : "Move"}
             </span>
           </div>
-          <div className="play-actions">
-            <button
-              aria-pressed={run}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                setRun((value) => !value);
-              }}
-              onClick={(e) => {
-                if (e.detail === 0) setRun((value) => !value);
-              }}
-            >
-              Run
-            </button>
-            <button
-              onPointerDown={(e) => {
-                e.currentTarget.setPointerCapture(e.pointerId);
-                jump.current = true;
-                input();
-              }}
-              onPointerUp={() => {
-                jump.current = false;
-                input();
-              }}
-              onPointerCancel={() => {
-                jump.current = false;
-                input();
-              }}
-              onLostPointerCapture={() => {
-                jump.current = false;
-                input();
-              }}
-            >
-              {report.locomotion === "walk" ? "Jump" : "Up"}
-            </button>
-            {report.locomotion === "fly-noclip" && (
+          {!state.vehicleControl && (
+            <div className="play-actions">
+              <button
+                aria-pressed={run}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  setRun((value) => !value);
+                }}
+                onClick={(e) => {
+                  if (e.detail === 0) setRun((value) => !value);
+                }}
+              >
+                Run
+              </button>
               <button
                 onPointerDown={(e) => {
                   e.currentTarget.setPointerCapture(e.pointerId);
-                  down.current = true;
+                  jump.current = true;
                   input();
                 }}
                 onPointerUp={() => {
-                  down.current = false;
+                  jump.current = false;
                   input();
                 }}
                 onPointerCancel={() => {
-                  down.current = false;
+                  jump.current = false;
                   input();
                 }}
                 onLostPointerCapture={() => {
-                  down.current = false;
+                  jump.current = false;
                   input();
                 }}
               >
-                Down
+                {report.locomotion === "walk" ? "Jump" : "Up"}
               </button>
-            )}
-          </div>
+              {report.locomotion === "fly-noclip" && (
+                <button
+                  onPointerDown={(e) => {
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                    down.current = true;
+                    input();
+                  }}
+                  onPointerUp={() => {
+                    down.current = false;
+                    input();
+                  }}
+                  onPointerCancel={() => {
+                    down.current = false;
+                    input();
+                  }}
+                  onLostPointerCapture={() => {
+                    down.current = false;
+                    input();
+                  }}
+                >
+                  Down
+                </button>
+              )}
+            </div>
+          )}
         </>
       )}
       <div className="play-bottom">
@@ -517,14 +537,43 @@ export function PlayPanel({
           Lock mouse
         </button>
       </div>
-      {!state.paused && report.mechanism && rigs[report.mechanism.rigId] && (
-        <PlayMechanismControls
-          play={play}
-          rig={rigs[report.mechanism.rigId]}
-          report={report.mechanism}
-          onError={setMessage}
-        />
+      {!state.paused && (state.interaction || state.vehicleControl) && (
+        <div className="play-interaction">
+          <button
+            disabled={!state.vehicleControl && !state.interaction?.available}
+            onClick={() => {
+              clear();
+              attempt(() => play.interact());
+            }}
+          >
+            {state.vehicleControl
+              ? "Release vehicle"
+              : state.interaction?.available
+                ? state.interaction.label
+                : "Move closer to interact"}
+            {bindings.interact && <kbd>{bindings.interact}</kbd>}
+          </button>
+          <small>
+            {state.vehicleControl
+              ? "Joystick or movement keys drive and steer. You stay on foot; vehicles can pass through the build."
+              : state.interaction?.name}
+          </small>
+          {report.mechanism?.blocked && (
+            <small role="status">{report.mechanism.blockedReason}</small>
+          )}
+        </div>
       )}
+      {!state.paused &&
+        !state.vehicleControl &&
+        report.mechanism &&
+        rigs[report.mechanism.rigId] && (
+          <PlayMechanismControls
+            play={play}
+            rig={rigs[report.mechanism.rigId]}
+            report={report.mechanism}
+            onError={setMessage}
+          />
+        )}
       {message && (
         <div className="play-message" role="status">
           {message}

@@ -9,6 +9,7 @@ export const defaultPlayKeys = {
   down: "Control",
   fly: "F",
   camera: "V",
+  interact: "E",
 } as const;
 export type PlayKeyAction = keyof typeof defaultPlayKeys;
 export type PlayKeys = Record<PlayKeyAction, string>;
@@ -22,6 +23,7 @@ export const playKeyLabels: Record<PlayKeyAction, string> = {
   down: "Fly down",
   fly: "Switch walk / fly",
   camera: "Switch camera",
+  interact: "Use nearby object / release vehicle",
 };
 const named = [
   "Space",
@@ -94,9 +96,15 @@ export function playKeyAction(
 const storageKey = "brick-editor-play-keys-v1";
 export function loadPlayKeys(): PlayKeys {
   try {
-    return validatePlayKeys(
-      JSON.parse(localStorage.getItem(storageKey) || "null"),
-    );
+    const stored = JSON.parse(localStorage.getItem(storageKey) || "null");
+    // Preserve existing remaps. If E was taken, leave the new action unbound.
+    if (stored && typeof stored === "object" && !("interact" in stored))
+      stored.interact = Object.values(stored).some(
+        (key) => typeof key === "string" && key.toUpperCase() === "E",
+      )
+        ? ""
+        : "E";
+    return validatePlayKeys(stored);
   } catch {
     return { ...defaultPlayKeys };
   }

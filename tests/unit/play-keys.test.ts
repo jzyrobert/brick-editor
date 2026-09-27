@@ -48,3 +48,15 @@ it("keeps malformed local preferences from breaking Play and reports unavailable
     vi.unstubAllGlobals();
   }
 });
+it("migrates existing remaps without stealing an assigned interaction key", () => {
+  const { interact: _, ...old } = defaultPlayKeys;
+  vi.stubGlobal("localStorage", {
+    getItem: () => JSON.stringify({ ...old, forward: "E" }),
+  });
+  try {
+    expect(loadPlayKeys().forward).toBe("E");
+    expect(loadPlayKeys().interact).toBe("");
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});

@@ -17,6 +17,7 @@ import type {
   PlaySpawnRequest,
 } from "./types";
 import type { PlaySession } from "./session";
+import { nearbyInteraction, type PlayInteraction } from "./interaction";
 import { BrickAvatar } from "./avatar";
 
 export type PlayViewState = {
@@ -25,6 +26,8 @@ export type PlayViewState = {
   loading: boolean;
   report?: PlaySnapshotReport;
   error?: string;
+  vehicleControl?: boolean;
+  interaction?: PlayInteraction;
 };
 /** Owns browser lifetime, never authoring state. API sessions are manual-tick by default. */
 export class BrowserPlay {
@@ -192,7 +195,13 @@ export class BrowserPlay {
     r.playCamera(this.session.camera(this.realtime && !this.state.paused));
     this.avatar?.update(this.session.snapshot());
     r.invalidate();
-    this.state = { ...this.state, report: this.session.snapshot() };
+    const rig =
+      report.mechanism && this.project?.().motionRigs?.[report.mechanism.rigId];
+    this.state = {
+      ...this.state,
+      report: this.session.snapshot(),
+      interaction: rig ? nearbyInteraction(rig, report) : undefined,
+    };
   }
   private schedule() {
     cancelAnimationFrame(this.raf);
@@ -218,7 +227,16 @@ export class BrowserPlay {
     this.raf = requestAnimationFrame(frame);
   }
   setInput(input: PlayInput) {
-    this.current().setInput(input);
+    const session = this.current();
+    if (this.state.vehicleControl) {
+      // Let the normal validator reject malformed input before changing the vehicle.
+      session.setInput(input);
+      session.setInput({ yaw: input.yaw, pitch: input.pitch });
+      session.setMechanismVehicleInput({
+        throttle: input.moveZ ?? 0,
+        steering: input.moveX ?? 0,
+      });
+    } else session.setInput(input);
     this.held = { ...input };
   }
   clearInput() {
@@ -235,7 +253,7 @@ export class BrowserPlay {
   look(dx: number, dy: number) {
     if (!this.session || this.state.paused) return;
     const s = this.session.snapshot();
-    this.session.setInput({
+    this.setInput({
       ...this.held,
       yaw: s.yaw - dx * 0.004,
       pitch: s.pitch - dy * 0.004,
@@ -249,6 +267,7 @@ export class BrowserPlay {
     return this.current().snapshot();
   }
   setLocomotion(mode: PlayLocomotion) {
+    this.releaseVehicle();
     const report = this.current().setLocomotion(mode);
     this.held = {};
     this.draw();
@@ -256,6 +275,7 @@ export class BrowserPlay {
     return report;
   }
   respawn() {
+    this.releaseVehicle();
     const report = this.current().respawn();
     this.held = {};
     this.draw();
@@ -263,6 +283,7 @@ export class BrowserPlay {
     return report;
   }
   teleport(input: PlayTeleportRequest) {
+    this.releaseVehicle();
     const report = this.current().teleport(input);
     this.held = {};
     this.draw();
@@ -288,6 +309,7 @@ export class BrowserPlay {
     return report;
   }
   useSpawn() {
+    this.releaseVehicle();
     const report = this.current().useSpawn();
     this.held = {};
     this.draw();
@@ -305,6 +327,30 @@ export class BrowserPlay {
         this.draw();
       }
     };
+  }
+  releaseVehicle() {
+    if (!this.state.vehicleControl) return;
+    this.clearInput();
+    this.emit({ vehicleControl: false });
+  }
+  interact() {
+    ensure(!this.state.paused, "INVALID_INPUT", "Resume Play to interact");
+    const report = this.current().snapshot();
+    if (this.state.vehicleControl) {
+      this.releaseVehicle();
+      return;
+    }
+    const rig =
+      report.mechanism && this.project?.().motionRigs?.[report.mechanism.rigId];
+    const target = rig && nearbyInteraction(rig, report);
+    ensure(
+      target?.available,
+      "INVALID_INPUT",
+      "Move closer to the authored joint or vehicle",
+    );
+    this.clearInput();
+    if (target.kind === "vehicle") this.emit({ vehicleControl: true });
+    else this.setMechanismJoint(target.jointId, target.target);
   }
   setMechanismJoint(id: string, value: number) {
     const report = this.current().setMechanismJoint(id, value);
@@ -350,6 +396,8 @@ export class BrowserPlay {
       paused: true,
       loading: false,
       report: undefined,
+      vehicleControl: false,
+      interaction: undefined,
     });
   }
   dispose() {
