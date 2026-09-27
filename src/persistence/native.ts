@@ -5,6 +5,7 @@ import { validate } from "../core/validate";
 import { validateSourceDocument } from "../core/document";
 import { sha256, stable } from "../core/hash";
 import { exportLDraw } from "../ldraw/io";
+import { resourceLimits, type ResourceLimits } from "../core/resource-profile";
 export async function encodeNative(p: Project) {
   p = structuredClone(p);
   validate("project", p);
@@ -50,11 +51,15 @@ export async function encodeNative(p: Project) {
   );
   return archive;
 }
-export function boundedUnzip(bytes: Uint8Array) {
+export function boundedUnzip(
+  bytes: Uint8Array,
+  limits: ResourceLimits = resourceLimits(),
+) {
   ensure(
-    bytes.length <= 25 * 1024 * 1024,
+    bytes.length <= limits.importBytes,
     "LIMIT_EXCEEDED",
-    "Archive exceeds 25 MiB",
+    `Archive exceeds ${limits.importBytes / 1024 / 1024} MiB`,
+    { resource: "importBytes", limit: limits.importBytes },
   );
   const files: Record<string, Uint8Array> = Object.create(null);
   const names = new Set<string>();
@@ -70,7 +75,11 @@ export function boundedUnzip(bytes: Uint8Array) {
         "Unsafe or duplicate archive path",
       );
       names.add(name);
-      ensure(++count <= 10000, "LIMIT_EXCEEDED", "Too many archive entries");
+      ensure(
+        ++count <= limits.embeddedFiles,
+        "LIMIT_EXCEEDED",
+        "Too many archive entries",
+      );
       const chunks: Uint8Array[] = [];
       let size = 0;
       file.ondata = (err, data, final) => {
@@ -79,9 +88,10 @@ export function boundedUnzip(bytes: Uint8Array) {
           total += data.length;
           size += data.length;
           ensure(
-            total <= 100 * 1024 * 1024,
+            total <= limits.decompressedBytes,
             "LIMIT_EXCEEDED",
-            "Decompressed archive exceeds 100 MiB",
+            `Decompressed archive exceeds ${limits.decompressedBytes / 1024 / 1024} MiB`,
+            { resource: "decompressedBytes", limit: limits.decompressedBytes },
           );
           chunks.push(data);
           if (final) {
@@ -110,8 +120,11 @@ export function boundedUnzip(bytes: Uint8Array) {
   }
   return files;
 }
-export async function decodeNative(bytes: Uint8Array) {
-  const files = boundedUnzip(bytes);
+export async function decodeNative(
+  bytes: Uint8Array,
+  limits: ResourceLimits = resourceLimits(),
+) {
+  const files = boundedUnzip(bytes, limits);
   ensure(
     files["project.json"] && files["manifest.json"],
     "INVALID_INPUT",

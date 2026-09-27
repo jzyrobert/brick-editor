@@ -32,6 +32,20 @@ import { QualityPanel } from "./QualityPanel";
 import { MechanismBrowser } from "../mechanisms/browser";
 import { MechanismPanel } from "./MechanismPanel";
 import { ProjectLibrary } from "./ProjectLibrary";
+import { ResourceProfilePanel } from "./ResourceProfilePanel";
+import { ReplacePanel } from "./ReplacePanel";
+import { inspectSelection, sourceLabels } from "../edit/inspect";
+import {
+  catalogCategories,
+  relatedParts,
+  searchCatalog,
+} from "../catalog/search";
+import {
+  loadFavourites,
+  loadRecent,
+  pushRecent,
+  saveFavourites,
+} from "../persistence/catalog-preferences";
 import { OfflinePanel } from "./OfflinePanel";
 import { LayerActions } from "./LayerActions";
 import { ClipboardTools } from "./ClipboardTools";
@@ -41,7 +55,7 @@ import { SharePanel } from "./SharePanel";
 import { AutosaveQueue } from "../persistence/autosave";
 import { BrowserPlay } from "../play/browser";
 import { PlayPanel } from "./PlayPanel";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Editor } from "../core/commands";
 import { occurrences } from "../core/document";
 import {
@@ -57,12 +71,26 @@ import { template } from "../catalog/templates";
 import { SceneAdapter } from "../render/adapter";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
 import { BrowserProjects } from "../persistence/browser-projects";
+import {
+  applyResourcePreference,
+  loadResourcePreference,
+} from "../persistence/resource-preference";
+import { resourceLimits } from "../core/resource-profile";
 import { type Preview } from "../inventory/service";
 import { FillOptions, defaultFillOptions } from "./FillOptions";
 import { type FillRequest, fillPreview } from "../edit/fill";
 import { zipSync, strToU8 } from "fflate";
 import "./styles.css";
 const editor = new Editor();
+// A stored preference was acknowledged when chosen; otherwise the device decides.
+try {
+  applyResourcePreference(editor, loadResourcePreference(), {
+    acknowledgeImpact: true,
+    persist: false,
+  });
+} catch {
+  // Unavailable device hints leave the desktop default.
+}
 const knownSaveRevisions = new Map<string, number>();
 let sourceSaveTail: Promise<unknown> = Promise.resolve();
 function enqueueSourceSave<T>(action: () => Promise<T>): Promise<T> {
@@ -171,7 +199,8 @@ function NumberInput({
   step = 1,
 }: {
   label: string;
-  value: number;
+  /** Undefined shows "Mixed" for a batch whose members differ. */
+  value: number | undefined;
   onChange: (n: number) => void;
   step?: number;
 }) {
@@ -181,7 +210,14 @@ function NumberInput({
       <input
         type="number"
         aria-label={label}
-        value={Number.isFinite(value) ? Number(value.toFixed(4)) : 0}
+        placeholder={value === undefined ? "Mixed" : undefined}
+        value={
+          value === undefined
+            ? ""
+            : Number.isFinite(value)
+              ? Number(value.toFixed(4))
+              : 0
+        }
         step={step}
         onChange={(e) => {
           const n = Number(e.target.value);
@@ -232,6 +268,14 @@ function Workspace() {
     [part, setPart] = useState("3001.dat"),
     [color, setColor] = useState("4"),
     [search, setSearch] = useState(""),
+    [partCategory, setPartCategory] = useState<string>(),
+    [favouritesOnly, setFavouritesOnly] = useState(false),
+    [favourites, setFavourites] = useState(() =>
+      loadFavourites((id) => !!catalog[id]),
+    ),
+    [recentParts, setRecentParts] = useState(() =>
+      loadRecent((id) => !!catalog[id]),
+    ),
     [selection, setSelection] = useState<string[]>([]),
     [selectionShape, setSelectionShape] = useState<SelectionShape>("click"),
     [selectionOperation, setSelectionOperation] =
@@ -361,6 +405,43 @@ function Workspace() {
     includeHidden: false,
     ...(!crossLayer ? { activeLayerId: activeLayer } : {}),
   });
+  const colorHex = (code: string) => colors.find((c) => c.code === code)?.hex;
+  const inspection = useMemo(
+    () => inspectSelection(project, selected),
+    // `selected` derives from these two.
+    [project, selection],
+  );
+  /** Set one world axis on every selected part: one undoable transaction, one
+   * command per distinct current value. */
+  const setAxis = (axis: number, value: number) => {
+    const groups = new Map<number, string[]>();
+    for (const o of selected) {
+      const current = o.transform.position[axis];
+      groups.set(current, [...(groups.get(current) ?? []), o.id]);
+    }
+    const p = editor.project;
+    const commands = [...groups]
+      .filter(([current]) => current !== value)
+      .map(([current, occurrenceIds]) => {
+        const delta: Vec3 = [0, 0, 0];
+        delta[axis] = value - current;
+        return {
+          schemaVersion: 1 as const,
+          commandId: uid(),
+          expectedRevision: p.revision,
+          type: "parts.transform",
+          payload: { ...scoped(), occurrenceIds, delta, space: "ldraw" },
+        };
+      });
+    if (!commands.length) return;
+    if (commands.length === 1) command(commands[0].type, commands[0].payload);
+    else
+      editor.transaction({
+        commandId: uid(),
+        expectedRevision: p.revision,
+        commands,
+      });
+  };
   const updateWorkplane = (next: Workplane) => {
     setWorkplane(next);
     setPosition(
@@ -906,10 +987,11 @@ function Workspace() {
   }, [selection, activeLayer, crossLayer, inventoryOpen, fillOpen, shortcuts]);
   async function openFile(file: File) {
     await run(async () => {
+      const importBytes = resourceLimits(editor.resourceProfile).importBytes;
       ensure(
-        file.size <= 25 * 1024 * 1024,
+        file.size <= importBytes,
         "LIMIT_EXCEEDED",
-        "File exceeds 25 MiB",
+        `File exceeds ${importBytes / 1024 / 1024} MiB (${editor.resourceProfile} profile)`,
       );
       const epoch = ++operationEpoch.current;
       setBusy(true);
@@ -1085,7 +1167,8 @@ function Workspace() {
         origin: position,
         basis: placeBasis(workplane, angle),
         layerId: activeLayer,
-        maxAdditions: 10000,
+        maxAdditions: resourceLimits(editor.resourceProfile)
+          .additionsPerCommand,
       };
       setFill(null);
       setBusy(true);
@@ -1220,53 +1303,164 @@ function Workspace() {
       </button>
     </>
   );
+  const catalogParts = Object.values(catalog);
+  const visibleParts = searchCatalog(catalogParts, {
+    query: search,
+    category: partCategory,
+    favouritesOnly: partCategory === undefined && favouritesOnly,
+    favourites: new Set(favourites),
+  });
+  const choosePart = (id: string) => {
+    const p = catalog[id];
+    setPart(id);
+    setPosition(
+      (v) => placementOnPlane(v, workplane, p.height, angle).position,
+    );
+    setTool("Place");
+    setRecentParts((recent) => pushRecent(recent, id));
+  };
+  const toggleFavourite = (id: string) =>
+    setFavourites((current) => {
+      const next = current.includes(id)
+        ? current.filter((f) => f !== id)
+        : [...current, id];
+      if (!saveFavourites(next))
+        setStatus(
+          "Favourites apply for this session; they could not be saved.",
+        );
+      return next;
+    });
+  const related = relatedParts(catalogParts, currentPart);
   const partsPanel = (
     <>
       <div className="panel-title">
         <h2>Parts library</h2>
-        <span className="count">06</span>
+        <span
+          className="count"
+          aria-label={`${visibleParts.length} parts shown`}
+        >
+          {String(visibleParts.length).padStart(2, "0")}
+        </span>
       </div>
       <label className="search">
         <span aria-hidden="true">⌕</span>
         <input
-          placeholder="Search parts or numbers"
+          placeholder="Search parts, sizes or numbers"
           aria-label="Search parts"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <kbd>/</kbd>
       </label>
+      <div className="part-filters" role="group" aria-label="Filter parts">
+        {[undefined, ...catalogCategories(catalogParts)].map((category) => (
+          <button
+            key={category ?? "all"}
+            aria-pressed={partCategory === category && !favouritesOnly}
+            onClick={() => {
+              setPartCategory(category);
+              setFavouritesOnly(false);
+            }}
+          >
+            {category ?? "All"}
+          </button>
+        ))}
+        <button
+          aria-pressed={favouritesOnly}
+          onClick={() => {
+            setPartCategory(undefined);
+            setFavouritesOnly((v) => !v);
+          }}
+        >
+          ★ Favourites
+        </button>
+      </div>
+      {!search &&
+        !favouritesOnly &&
+        !partCategory &&
+        recentParts.length > 0 && (
+          <>
+            <div className="eyebrow">RECENTLY USED</div>
+            <div className="part-chips">
+              {recentParts.map((id) => (
+                <button
+                  key={id}
+                  aria-pressed={part === id}
+                  onClick={() => choosePart(id)}
+                >
+                  {catalog[id].name}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       <div className="eyebrow">
         STARTER COLLECTION <span>OFFLINE</span>
       </div>
+      {visibleParts.length === 0 && (
+        <div className="empty-parts" role="status">
+          <p>
+            {favouritesOnly && !favourites.length
+              ? "No favourites yet. Use ☆ on a part to keep it here."
+              : `No parts match${search ? ` “${search}”` : ""}.`}
+          </p>
+          <button
+            onClick={() => {
+              setSearch("");
+              setPartCategory(undefined);
+              setFavouritesOnly(false);
+            }}
+          >
+            Show all parts
+          </button>
+        </div>
+      )}
       <div className="part-grid">
-        {Object.values(catalog)
-          .filter((p) =>
-            (p.name + " " + p.id + " " + p.category)
-              .toLowerCase()
-              .includes(search.toLowerCase()),
-          )
-          .map((p) => (
-            <button
-              key={p.id}
-              className={"part-card " + (part === p.id ? "chosen" : "")}
-              aria-pressed={part === p.id}
-              onClick={() => {
-                setPart(p.id);
-                setPosition(
-                  (v) =>
-                    placementOnPlane(v, workplane, p.height, angle).position,
-                );
-                setTool("Place");
-              }}
-            >
-              <BrickIcon width={p.width / 20} depth={p.depth / 20} />
-              <strong>{p.name}</strong>
-              <small>{p.id.replace(".dat", "")}</small>
-              {part === p.id && <span className="part-check">✓</span>}
-            </button>
-          ))}
+        {visibleParts.map((p) => {
+          const favourite = favourites.includes(p.id);
+          return (
+            <div key={p.id} className="part-card-wrap">
+              <button
+                id={"part-" + p.id}
+                className={"part-card " + (part === p.id ? "chosen" : "")}
+                aria-pressed={part === p.id}
+                onClick={() => choosePart(p.id)}
+              >
+                <BrickIcon width={p.width / 20} depth={p.depth / 20} />
+                <strong>{p.name}</strong>
+                <small>{p.id.replace(".dat", "")}</small>
+                {part === p.id && <span className="part-check">✓</span>}
+              </button>
+              <button
+                className="part-favourite"
+                aria-label="Favourite"
+                aria-describedby={"part-" + p.id}
+                aria-pressed={favourite}
+                title={
+                  favourite ? "Remove from favourites" : "Add to favourites"
+                }
+                onClick={() => toggleFavourite(p.id)}
+              >
+                {favourite ? "★" : "☆"}
+              </button>
+            </div>
+          );
+        })}
       </div>
+      {related.length > 0 && (
+        <>
+          <div className="eyebrow related-title">
+            RELATED TO {currentPart.name.toUpperCase()}
+          </div>
+          <div className="part-chips">
+            {related.map((r) => (
+              <button key={r.id} onClick={() => choosePart(r.id)}>
+                {r.name}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
       <div className="panel-title color-title">
         <h2>Colour</h2>
         <span>{colors.find((c) => c.code === color)?.name}</span>
@@ -1488,21 +1682,69 @@ function Workspace() {
         <>
           <div className="selection-summary">
             <BrickIcon
-              color={colors.find((c) => c.code === selected[0].colorCode)?.hex}
+              color={
+                inspection.color.mixed
+                  ? undefined
+                  : colorHex(inspection.color.value.code)
+              }
             />
             <strong>
-              {selected.length === 1
-                ? catalog[selected[0].node.ref]?.name || selected[0].node.ref
-                : "Multiple parts"}
+              {inspection.part.mixed
+                ? `${selected.length} mixed parts`
+                : selected.length === 1
+                  ? inspection.part.value.name
+                  : `${selected.length} × ${inspection.part.value.name}`}
             </strong>
             <small>
-              {selected.length === 1
-                ? selected[0].node.ref
-                : "Selection spans " +
-                  new Set(selected.map((o) => o.layerId)).size +
-                  " layers"}
+              {inspection.part.mixed
+                ? `${new Set(selected.map((o) => o.node.ref)).size} part types`
+                : inspection.part.value.ref}
             </small>
           </div>
+          <dl className="inspector-properties">
+            <dt>Source</dt>
+            <dd>
+              {inspection.source.mixed
+                ? "Mixed"
+                : sourceLabels[inspection.source.value]}
+            </dd>
+            <dt>Colour</dt>
+            <dd>
+              {inspection.color.mixed
+                ? "Mixed"
+                : `${inspection.color.value.name} (${inspection.color.value.code})`}
+            </dd>
+            <dt>Layer</dt>
+            <dd>
+              {inspection.layer.mixed ? "Mixed" : inspection.layer.value.name}
+            </dd>
+            <dt>Submodel</dt>
+            <dd>
+              {inspection.parent.mixed
+                ? "Mixed"
+                : inspection.parent.value.root
+                  ? "Main model"
+                  : inspection.parent.value.name}
+            </dd>
+            <dt>Orientation</dt>
+            <dd>
+              {inspection.orientation.mixed
+                ? "Mixed"
+                : inspection.orientation.value}
+            </dd>
+            <dt>{selected.length === 1 ? "Size" : "Selection size"}</dt>
+            <dd>
+              {inspection.dimensions
+                ? `${inspection.dimensions.studs[0]} × ${inspection.dimensions.studs[1]} studs, ${inspection.dimensions.plates} plates tall · ${inspection.dimensions.ldu.join(" × ")} LDU incl. studs`
+                : "Unknown"}
+            </dd>
+            <dt>Checks</dt>
+            <dd>
+              {inspection.issues.length
+                ? inspection.issues.join("; ")
+                : "No problems found"}
+            </dd>
+          </dl>
           <h3>
             Position <small>LDU · world</small>
           </h3>
@@ -1511,22 +1753,37 @@ function Workspace() {
               <NumberInput
                 key={axis}
                 label={"Position " + axis}
-                value={selected[0].transform.position[i]}
-                step={i === 1 ? 8 : 20}
-                onChange={(n) =>
-                  void run(() => {
-                    const delta: Vec3 = [0, 0, 0];
-                    delta[i] = n - selected[0].transform.position[i];
-                    command("parts.transform", {
-                      ...scoped(),
-                      delta,
-                      space: "ldraw",
-                    });
-                  })
+                value={
+                  inspection.position[i].mixed
+                    ? undefined
+                    : inspection.position[i].value
                 }
+                step={i === 1 ? 8 : 20}
+                onChange={(n) => void run(() => setAxis(i, n))}
               />
             ))}
           </div>
+          {inspection.matrix && (
+            <details className="affine-matrix">
+              <summary>Advanced: placement matrix</summary>
+              <p className="muted">
+                LDraw row-major basis and position, as written to the source
+                file.
+              </p>
+              <table>
+                <tbody>
+                  {[0, 1, 2].map((row) => (
+                    <tr key={row}>
+                      {[0, 1, 2].map((c) => (
+                        <td key={c}>{inspection.matrix!.basis[row * 3 + c]}</td>
+                      ))}
+                      <td>{inspection.matrix!.position[row]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </details>
+          )}
           <div className="button-row">
             <button
               onClick={() =>
@@ -1597,6 +1854,46 @@ function Workspace() {
           >
             Apply current colour
           </button>
+          <ReplacePanel
+            project={project}
+            all={all}
+            selected={selected}
+            activeLayerId={activeLayer}
+            crossLayer={crossLayer}
+            onReplace={(payloads) =>
+              run(() => {
+                const p = editor.project;
+                const commands = payloads.map((payload) => ({
+                  schemaVersion: 1 as const,
+                  commandId: uid(),
+                  expectedRevision: p.revision,
+                  type: "parts.replace",
+                  payload: {
+                    ...payload,
+                    includeHidden: false,
+                    ...(!crossLayer ? { activeLayerId: activeLayer } : {}),
+                  },
+                }));
+                const result =
+                  commands.length === 1
+                    ? command(commands[0].type, commands[0].payload)
+                    : editor.transaction({
+                        commandId: uid(),
+                        expectedRevision: p.revision,
+                        commands,
+                      });
+                // Replaced parts inside shared submodels may get new IDs.
+                const remapped = (
+                  result as { idRemappings?: Record<string, string> }
+                ).idRemappings;
+                if (remapped)
+                  setSelection((ids) => ids.map((id) => remapped[id] ?? id));
+                setStatus(
+                  `Replaced ${payloads.reduce((n, x) => n + x.occurrenceIds.length, 0)} parts. Undo restores them.`,
+                );
+              })
+            }
+          />
           <div className="button-row">
             <button
               onClick={() =>
@@ -1614,7 +1911,7 @@ function Workspace() {
           </div>
           <p className="muted">
             {selected.length > 1
-              ? "Position fields move the selection by the delta from its first part. "
+              ? "A position value applies to every selected part. "
               : ""}
             Shared submodels become unique when edited.
           </p>
@@ -2195,6 +2492,7 @@ function Workspace() {
                 }}
               />
               <OfflinePanel />
+              <ResourceProfilePanel editor={editor} onStatus={setStatus} />
               <h3>Start from an original template</h3>
               <p className="muted">
                 Your current build is downloaded before a template replaces it.
@@ -2758,7 +3056,8 @@ function Workspace() {
                       command("parts.add", {
                         layerId: fill.layerId,
                         parts: fill.parts,
-                        maxAdditions: 10000,
+                        maxAdditions: resourceLimits(editor.resourceProfile)
+                          .additionsPerCommand,
                       });
                       setFillOpen(false);
                       setStatus("Fill committed as one undo step");

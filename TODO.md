@@ -17,7 +17,8 @@ Suggested order for the next implementation pass:
 - [x] Reconcile occurrence-path schemas with valid nested documents, add aggregate request preflight and remove quadratic scope matching. Deep paths have a distinct canonical schema; ordinary IDs remain bounded.
 - [x] Guard aggregate expanded path storage/work before and during occurrence collection; preserve native backup and local recovery without materializing the scene.
 - [x] Open over-budget projects in a source-only recovery view with native/full-source backups; defer imported STEP derivation without dropping source records.
-- [ ] Complete effective resource-profile UI/API/CLI plumbing, explicit impact/override controls, bounded output and cancellation. The app defaults to desktop; a phone viewport does not select the mobile profile. See [resource limits](docs/RESOURCE-LIMITS.md).
+- [x] Effective resource profiles: automatic phone/desktop selection, acknowledged desktop override on phones, Editor/import/archive/capture/CLI enforcement. See [resource limits](docs/RESOURCE-LIMITS.md).
+- [ ] Remaining resource work: geometry/GPU memory budgets, output pagination, cancellable instruction derivation and a user-facing derive-again control.
 - [ ] Bound remaining compiler work across valid project graphs; occurrence guards alone do not prove those limits.
 
 - [ ] Close M0 conformance gaps: whole-library BFC coverage beyond the new ancestor/internal dependency fixtures, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.

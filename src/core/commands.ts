@@ -4,6 +4,11 @@ import {
   type Materialization,
 } from "./materialization";
 import { expansionLimits, type ExpansionOptions } from "./expansion-policy";
+import {
+  isResourceProfile,
+  resourceLimits,
+  type ResourceProfileName,
+} from "./resource-profile";
 import { assertRequestBudget } from "./request-budget";
 import { editInstructions } from "../instructions/edit";
 import { makeSubmodel, sharedDefinitionTargets } from "./models";
@@ -422,7 +427,7 @@ function mutate(
           : c.type === "parts.transform"
             ? ["delta", "transform", "space"]
             : c.type === "parts.replace"
-              ? ["ref"]
+              ? ["ref", "anchorOffset"]
               : [];
       fields(v, [...scopeFields, ...allowed]);
       const selected = editable(p, v);
@@ -459,6 +464,29 @@ function mutate(
         if (c.type === "parts.replace") {
           n.ref = canonical(v.ref);
           n.kind = "part";
+          // Part-local offset of the new origin, so callers can keep e.g. the bottom
+          // face in place when heights differ (LDraw brick origins are at the top).
+          if (v.anchorOffset !== undefined) {
+            ensure(
+              Array.isArray(v.anchorOffset) &&
+                v.anchorOffset.length === 3 &&
+                v.anchorOffset.every(
+                  (x: unknown) =>
+                    typeof x === "number" &&
+                    Number.isFinite(x) &&
+                    Math.abs(x) <= 10000,
+                ),
+              "INVALID_INPUT",
+              "anchorOffset must be three finite LDU values",
+            );
+            n.transform = {
+              ...n.transform,
+              position: add(
+                n.transform.position,
+                mv(n.transform.basis, v.anchorOffset as Vec3),
+              ),
+            };
+          }
         }
         if (c.type === "parts.transform") {
           const parent = parentTransform(p, o.path);
@@ -737,6 +765,26 @@ export class Editor {
   requireMaterialization() {
     requireMaterialization(this.availability);
   }
+  get resourceProfile(): ResourceProfileName {
+    return this.expansionOptions.profile ?? "desktop";
+  }
+  /** Trusted session policy change. Re-assesses the current document without
+   * changing its revision; a stricter profile may leave it source-only. */
+  setResourceProfile(profile: ResourceProfileName) {
+    ensure(
+      isResourceProfile(profile),
+      "INVALID_INPUT",
+      "Unknown resource profile",
+    );
+    if (profile === this.resourceProfile) return this.materialization;
+    this.expansionOptions = { ...this.expansionOptions, profile };
+    this.availability = assessMaterialization(
+      this.state,
+      this.expansionOptions,
+    );
+    this.emit();
+    return this.materialization;
+  }
   get project() {
     return structuredClone(this.state);
   }
@@ -909,6 +957,22 @@ export class Editor {
     p.revision++;
     const beforeIds = new Set(occurrences(this.state).map((o) => o.id));
     const afterIds = new Set(occurrences(p).map((o) => o.id));
+    // Net growth, so regrouping (new IDs, same parts) and undo are not counted as additions.
+    if (!undoPatch) {
+      const additions = afterIds.size - beforeIds.size,
+        limit = resourceLimits(this.resourceProfile).additionsPerCommand;
+      ensure(
+        additions <= limit,
+        "LIMIT_EXCEEDED",
+        `This change adds ${additions.toLocaleString("en")} parts; the ${this.resourceProfile} profile allows ${limit.toLocaleString("en")} per command.`,
+        {
+          resource: "additionsPerCommand",
+          limit,
+          requiredAtLeast: additions,
+          profile: this.resourceProfile,
+        },
+      );
+    }
     const result = {
       revision: p.revision,
       affectedIds: occurrences(p).map((o) => o.id),

@@ -16,6 +16,7 @@ import { canonical } from "./path";
 import { installedSource } from "../catalog/catalog";
 import { deriveImportedSteps } from "./imported-steps";
 import type { ExpansionOptions } from "../core/expansion-policy";
+import { resourceLimits } from "../core/resource-profile";
 const num = (s: string) => {
   const n = Number(s);
   ensure(
@@ -30,10 +31,12 @@ export function importLDraw(
   name = "main.ldr",
   expansion: ExpansionOptions = {},
 ): Project {
+  const resources = resourceLimits(expansion.profile);
   ensure(
-    new TextEncoder().encode(text).length <= 25 * 1024 * 1024,
+    new TextEncoder().encode(text).length <= resources.importBytes,
     "LIMIT_EXCEEDED",
-    "Import exceeds 25 MiB",
+    `Import exceeds ${resources.importBytes / 1024 / 1024} MiB (${expansion.profile ?? "desktop"} profile)`,
+    { resource: "importBytes", limit: resources.importBytes },
   );
   ensure(!text.includes("\0"), "INVALID_INPUT", "NUL in source");
   const p = createProject(name.replace(/\.[^.]+$/, ""));
@@ -49,7 +52,7 @@ export function importLDraw(
       "Duplicate canonical filename " + name,
     );
     ensure(
-      Object.keys(p.models).length < 10000,
+      Object.keys(p.models).length < resources.embeddedFiles,
       "LIMIT_EXCEEDED",
       "Too many embedded files",
     );

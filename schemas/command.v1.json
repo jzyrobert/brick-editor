@@ -947,6 +947,14 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 1024
+            },
+            "anchorOffset": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 3,
+              "minItems": 3
             }
           },
           "required": [

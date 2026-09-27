@@ -3,6 +3,8 @@ import type { Editor } from "../core/commands";
 import type { BrickEditorAPI } from "../automation/api";
 import { BrowserProjects } from "../persistence/browser-projects";
 import { ProjectLibrary } from "./ProjectLibrary";
+import { ResourceProfilePanel } from "./ResourceProfilePanel";
+import { RESOURCE_PROFILES } from "../core/resource-profile";
 import { ensure } from "../core/types";
 
 export function LimitedSource({
@@ -111,6 +113,10 @@ export function LimitedSource({
       <p>
         The expanded model needs more memory than this editor currently allows.
         Your source is safe; download a backup or open another project.
+        {availability.profile === "mobile" &&
+          availability.estimate.metrics.leafCount <=
+            RESOURCE_PROFILES.desktop.occurrences &&
+          " This device is using phone limits; you can choose desktop limits under Device limits below."}
       </p>
       <details>
         <summary
@@ -131,6 +137,13 @@ export function LimitedSource({
           profile: {availability.profile}.
         </p>
       </details>
+      {availability.profile === "mobile" && (
+        <ResourceProfilePanel
+          editor={editor}
+          onStatus={setMessage}
+          headingLevel={2}
+        />
+      )}
       <p>{saveStatus}</p>
       <div className="button-row">
         <button

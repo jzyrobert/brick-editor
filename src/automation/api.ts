@@ -29,6 +29,14 @@ import {
 import type { SceneAdapter, RenderRequest } from "../render/adapter";
 import { template } from "../catalog/templates";
 import capabilities from "./capabilities.json";
+import {
+  resourceLimits,
+  type ResourcePreference,
+} from "../core/resource-profile";
+import {
+  applyResourcePreference,
+  resourceStatus,
+} from "../persistence/resource-preference";
 import { JobRegistry, runWorker } from "./jobs";
 import type { Project } from "../core/types";
 import { validate } from "../core/validate";
@@ -198,6 +206,16 @@ export function createAPI(
     },
     apiVersion: "1.0" as const,
     capabilities: async () => capabilities,
+    resources: {
+      status: async () => resourceStatus(editor),
+      setProfile: async (input: {
+        profile: ResourcePreference;
+        acknowledgeImpact?: boolean;
+      }) =>
+        applyResourcePreference(editor, input?.profile, {
+          acknowledgeImpact: input?.acknowledgeImpact === true,
+        }),
+    },
     jobs: {
       list: async () => jobs.list(),
       status: async (id: string) => jobs.status(id),
@@ -292,6 +310,16 @@ export function createAPI(
           "Unknown import format",
         );
         const baseRevision = editor.project.revision;
+        const profile = editor.resourceProfile,
+          limits = resourceLimits(profile);
+        ensure(
+          (input.format === "ldraw"
+            ? new TextEncoder().encode(input.text || "").length
+            : (input.bytes?.length ?? 0)) <= limits.importBytes,
+          "LIMIT_EXCEEDED",
+          `Import exceeds ${limits.importBytes / 1024 / 1024} MiB (${profile} profile)`,
+          { resource: "importBytes", limit: limits.importBytes, profile },
+        );
         const p =
           input.format === "ldraw"
             ? await jobs.wait<Project>(
@@ -301,7 +329,7 @@ export function createAPI(
                       new URL("../workers/import.worker.ts", import.meta.url),
                       { type: "module" },
                     ),
-                    { text: input.text || "", name: input.name },
+                    { text: input.text || "", name: input.name, profile },
                     signal,
                   ),
                 ),
@@ -309,7 +337,7 @@ export function createAPI(
             : input.format === "native"
               ? await jobs.wait<Project>(
                   jobs.start("native-import", () =>
-                    decodeNative(new Uint8Array(input.bytes || [])),
+                    decodeNative(new Uint8Array(input.bytes || []), limits),
                   ),
                 )
               : template(input.template || "blank");
@@ -384,6 +412,13 @@ export function createAPI(
         ) => renderer().setQuality(name, controls),
       },
       image: async (input: RenderRequest) => {
+        const pixels = resourceLimits(editor.resourceProfile).imagePixels;
+        ensure(
+          input.width * input.height <= pixels,
+          "LIMIT_EXCEEDED",
+          `Capture exceeds ${pixels / 1e6} megapixels (${editor.resourceProfile} profile)`,
+          { resource: "imagePixels", limit: pixels },
+        );
         ensure(
           input.revision === editor.project.revision,
           "REVISION_CONFLICT",

@@ -56,6 +56,16 @@ Nested folders organize layers while global layer order, visibility and locks re
 
 Scoped LDraw export now retains the selected paths through parent definitions, material/BFC records and embedded dependencies. Deleting a reference removes its orphaned INVERTNEXT directive; reflected raw polygon export reverses winding. These source/semantic regressions do not establish universal rendered ancestor-BFC equivalence.
 
+## Inspector and device limits checkpoint
+
+The Inspector now reports batch properties as one shared value or **Mixed**, never an arbitrary member's value (spec §8.4): part, source (official library, project definition, raw geometry or missing), colour, layer, parent submodel, orientation (upright rotations are named; mirrored and sheared placements are flagged), world size in studs/plates/LDU (conservative source bounds including studs; unknown outside the pinned library), and validation notes (missing definitions, locked or hidden members, occurrence diagnostics). A single selection exposes its LDraw placement matrix read-only under an advanced disclosure. Typing a position value sets that axis on every selected part in one undoable transaction.
+
+**Replace part** (Inspector) swaps selected catalogue parts for another catalogue part, keeping colour and layer. Because LDraw brick/plate origins sit on the top face, the default keeps the _bottom_ face in place (`parts.replace` accepts a part-local `anchorOffset`), with a keep-top option. The preview states the count and layer scope, the per-part height/footprint change and a possible-overlap warning for larger or taller parts; "all matching parts" resolves visible, unlocked, in-scope IDs before execution. The whole replacement is one undo step. It does not run a collision check, and raw geometry and project definitions are skipped.
+
+The parts catalogue now supports tokenised search across names, numbers, categories and sizes (`2x4`, `2 × 4` and `4x2` are equivalent; partial sizes narrow), category filters, per-device favourites, a recently-used row and related sizes (same footprint first, e.g. Brick 2 × 4 ↔ Plate 2 × 4). The shown-part count is live. Connector-support filtering is not offered because no starter part has verified connectors; decoration and colour-compatibility filters wait for a larger library.
+
+Device resource profiles (phone/desktop, spec §21.2) are selected automatically and can be changed per device; raising limits on a phone requires acknowledging the impact. See [RESOURCE-LIMITS.md](RESOURCE-LIMITS.md).
+
 ## Workplane, model and reliability checkpoint
 
 World, picked-triangle and numerical workplanes control rigid placement orientation, elevation, grid and free placement. Fill previews respect the plane basis and use conservative transformed obstacle bounds. Connector workplanes remain unavailable without verified connector data.

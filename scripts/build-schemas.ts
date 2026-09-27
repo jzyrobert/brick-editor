@@ -402,7 +402,10 @@ const payloads: Record<string, any> = {
       { required: ["transform"], not: { required: ["delta"] } },
     ],
   },
-  "parts.replace": obj({ ...scoped, ref: id }, ["occurrenceIds", "ref"]),
+  "parts.replace": obj({ ...scoped, ref: id, anchorOffset: vec }, [
+    "occurrenceIds",
+    "ref",
+  ]),
   "parts.duplicate": obj({ ...scoped, delta: vec }, ["occurrenceIds"]),
   "clipboard.paste": obj(
     {

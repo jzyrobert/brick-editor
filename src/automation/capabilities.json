@@ -220,6 +220,21 @@
       "connectorCoverage": "unverified"
     }
   },
+  "resourceProfiles": {
+    "profiles": ["desktop", "mobile"],
+    "selection": "automatic by device (phone-class touch screens or <=2 GB reported memory use mobile), or chosen per device",
+    "raiseAboveDeviceRequiresAcknowledgement": true,
+    "api": "resources.status(), resources.setProfile({ profile, acknowledgeImpact })",
+    "cli": "--resource-profile desktop|mobile",
+    "mobile": {
+      "importBytes": 10485760,
+      "decompressedBytes": 41943040,
+      "embeddedFiles": 5000,
+      "occurrences": 25000,
+      "additionsPerCommand": 2000,
+      "imagePixels": 4000000
+    }
+  },
   "limits": {
     "importBytes": 26214400,
     "decompressedBytes": 104857600,

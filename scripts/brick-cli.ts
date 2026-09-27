@@ -11,6 +11,11 @@ import { zipSync, strToU8 } from "fflate";
 import { importLDraw, exportLDraw, scopedLDraw } from "../src/ldraw/io";
 import { decodeNative, encodeNative } from "../src/persistence/native";
 import {
+  isResourceProfile,
+  resourceLimits,
+} from "../src/core/resource-profile";
+import { assessMaterialization } from "../src/core/materialization";
+import {
   InventoryService,
   type InventoryRequest,
 } from "../src/inventory/service";
@@ -36,7 +41,7 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      "brick-cli validate|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nQuery: --request query.json [--output query-result.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
+      "brick-cli validate|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nQuery: --request query.json [--output query-result.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
     );
     return;
   }
@@ -113,7 +118,13 @@ export async function main(argv: string[]) {
     const key = args[i].slice(2);
     ensure(
       args[i].startsWith("--") &&
-        [...allowed[operation], "input", "output", "report"].includes(key),
+        [
+          ...allowed[operation],
+          "input",
+          "output",
+          "report",
+          "resource-profile",
+        ].includes(key),
       "INVALID_INPUT",
       "Unknown flag or positional argument: " + args[i],
     );
@@ -168,10 +179,24 @@ export async function main(argv: string[]) {
     );
   }
 
+  const resourceProfile = flag("resource-profile") ?? "desktop";
+  ensure(
+    isResourceProfile(resourceProfile),
+    "INVALID_INPUT",
+    "--resource-profile must be desktop or mobile",
+  );
+  const resources = resourceLimits(resourceProfile);
+  ensure(
+    (await stat(input)).size <= resources.importBytes,
+    "LIMIT_EXCEEDED",
+    `Input exceeds ${resources.importBytes / 1024 / 1024} MiB (${resourceProfile} profile)`,
+  );
   const bytes = new Uint8Array(await readFile(input));
   const p = input.endsWith(".brickproj")
-    ? await decodeNative(bytes)
-    : importLDraw(new TextDecoder().decode(bytes), input.split("/").at(-1));
+    ? await decodeNative(bytes, resources)
+    : importLDraw(new TextDecoder().decode(bytes), input.split("/").at(-1), {
+        profile: resourceProfile,
+      });
   if (operation === "query") {
     const requestPath = flag("request");
     if (output)
@@ -204,6 +229,11 @@ export async function main(argv: string[]) {
           occurrences: occurrences(p).length,
           diagnostics: p.diagnostics,
           library: p.library,
+          resourceProfile,
+          materialization: (({ status, diagnostic }) => ({
+            status,
+            ...(diagnostic ? { diagnostic } : {}),
+          }))(assessMaterialization(p, { profile: resourceProfile })),
         },
         null,
         2,
@@ -323,7 +353,7 @@ export async function main(argv: string[]) {
       "Command file exceeds 25 MiB",
     );
     const commands = JSON.parse(await readFile(flag("commands")!, "utf8")),
-      editor = new Editor(p);
+      editor = new Editor(p, { profile: resourceProfile });
     assertRequestBudget(commands);
     if (Array.isArray(commands)) for (const c of commands) editor.dispatch(c);
     else editor.dispatch(commands);
@@ -343,7 +373,7 @@ export async function main(argv: string[]) {
       "INVALID_INPUT",
       "Choose an existing plan or generate layer steps, not both.",
     );
-    const editor = new Editor(p);
+    const editor = new Editor(p, { profile: resourceProfile });
     if (flag("max-per-step") || !Object.keys(p.instructionPlans).length)
       editor.dispatch({
         schemaVersion: 1,
@@ -470,9 +500,9 @@ export async function main(argv: string[]) {
         true,
       );
     ensure(
-      width * height <= 16000000,
+      width * height <= resources.imagePixels,
       "LIMIT_EXCEEDED",
-      "Capture exceeds 16 megapixels",
+      `Capture exceeds ${resources.imagePixels / 1e6} megapixels (${resourceProfile} profile)`,
     );
     if (operation === "render")
       ensure(flag("camera"), "INVALID_INPUT", "--camera is required");
