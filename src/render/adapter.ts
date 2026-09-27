@@ -66,6 +66,8 @@ export type RenderRequest = {
   background: { type: "solid" | "transparent"; color?: string };
   quality: "fast" | "balanced" | "photo";
   qualityControls?: Partial<QualityControls>;
+  /** Keep these additions opaque while dimming all other captured occurrences. */
+  instructionNewIds?: string[];
   strict?: boolean;
 };
 export class SceneAdapter {
@@ -99,7 +101,10 @@ export class SceneAdapter {
   private captureActive = false;
   private batches = new RenderBatches();
   private layerGhost = new LayerGhost();
+  private instructionDimming = new LayerGhost(0.3);
+  private instructionNewIds: Set<string> | null = null;
   private playViewActive = false;
+  private playIncludedIds?: Set<string>;
   private ghostLayerId: string | null = null;
   private batchingEnabled =
     new URLSearchParams(location.search).get("referenceRenderer") !== "1";
@@ -507,6 +512,7 @@ export class SceneAdapter {
           })),
         );
         if (this.disposed) return;
+        this.instructionDimming.restore();
         this.layerGhost.restore();
         for (const [id, g] of this.handles)
           if (!keep.has(id)) {
@@ -1028,8 +1034,16 @@ export class SceneAdapter {
     this.batches.rebuild(this.handles);
     this.invalidate();
   }
-  beginPlayView() {
+  beginPlayView(includedOccurrenceIds?: string[]) {
+    const included = new Set(includedOccurrenceIds ?? this.handles.keys());
+    ensure(
+      [...included].every((id) => this.handles.has(id)),
+      "INVALID_INPUT",
+      "Play includes an unknown occurrence",
+    );
+    this.playIncludedIds = included;
     this.playViewActive = true;
+    this.instructionDimming.restore();
     this.layerGhost.restore();
     this.batches.rebuild(this.handles);
     const camera = this.currentCamera();
@@ -1044,7 +1058,7 @@ export class SceneAdapter {
     this.selection.visible = false;
     if (this.transformHandles) this.transformHandles.helper.visible = false;
     this.clearGhost();
-    for (const group of this.handles.values()) group.visible = true;
+    for (const [id, group] of this.handles) group.visible = included.has(id);
     return () => {
       for (const [id, value] of visible) {
         const group = this.handles.get(id);
@@ -1055,6 +1069,7 @@ export class SceneAdapter {
       if (this.transformHandles && transformVisible !== undefined)
         this.transformHandles.helper.visible = transformVisible;
       this.playViewActive = false;
+      this.playIncludedIds = undefined;
       this.applyLayerGhost();
       this.batches.rebuild(this.handles);
       this.controls.enabled = true;
@@ -1256,6 +1271,8 @@ export class SceneAdapter {
     return point ? conversion(point.toArray() as Vec3) : null;
   }
   private applyLayerGhost() {
+    // Undo nested treatments in reverse order before replacing shared materials.
+    this.instructionDimming.restore();
     const ids = new Set(
       !this.playViewActive &&
       this.project &&
@@ -1267,6 +1284,15 @@ export class SceneAdapter {
         : [],
     );
     this.layerGhost.apply(this.handles, ids);
+    if (!this.playViewActive && this.instructionNewIds)
+      this.instructionDimming.apply(
+        this.handles,
+        new Set(
+          [...this.handles.keys()].filter(
+            (id) => !this.instructionNewIds!.has(id),
+          ),
+        ),
+      );
   }
   ghostOtherLayers(activeLayerId: string | null) {
     this.ghostLayerId = activeLayerId;
@@ -1277,8 +1303,12 @@ export class SceneAdapter {
     this.batches.rebuild(this.handles);
     this.invalidate();
   }
-  showStep(ids: string[] | null) {
+  showStep(ids: string[] | null, newIds?: string[]) {
     this.instructionVisibility = ids ? new Set(ids) : null;
+    this.instructionNewIds = ids && newIds ? new Set(newIds) : null;
+    if (this.captureActive) return;
+    this.applyLayerGhost();
+    this.batches.rebuild(this.handles);
     const visible = new Set(
       ids ??
         (this.project
@@ -1417,6 +1447,7 @@ export class SceneAdapter {
     );
     const p = this.project!,
       camera = this.currentCamera(),
+      savedInstructionVisibility = this.instructionVisibility,
       savedVisible = new Map(
         [...this.handles].map(([id, g]) => [id, g.visible]),
       ),
@@ -1449,6 +1480,7 @@ export class SceneAdapter {
     this.captureActive = true;
     this.controls.enabled = false;
     try {
+      this.instructionDimming.restore();
       this.layerGhost.restore();
       this.applyQuality(captureProfile);
       captureLighting = this.lightingManifest();
@@ -1464,13 +1496,27 @@ export class SceneAdapter {
       for (const o of occurrences(p)) {
         const obj = this.handles.get(o.id)!;
         obj.visible =
-          request.visibility.mode === "all" ||
-          (request.visibility.mode === "current"
-            ? o.visible
-            : request.visibility.mode === "occurrences"
-              ? selectedOccurrences.has(o.id)
-              : !!request.visibility.layerIds?.includes(o.layerId));
+          (!this.playIncludedIds || this.playIncludedIds.has(o.id)) &&
+          (request.visibility.mode === "all" ||
+            (request.visibility.mode === "current"
+              ? this.playViewActive || o.visible
+              : request.visibility.mode === "occurrences"
+                ? selectedOccurrences.has(o.id)
+                : !!request.visibility.layerIds?.includes(o.layerId)));
       }
+      if (request.instructionNewIds) {
+        const additions = new Set(request.instructionNewIds);
+        ensure(
+          [...additions].every((id) => this.handles.has(id)),
+          "INVALID_INPUT",
+          "Instruction additions contain unknown occurrence IDs",
+        );
+        this.instructionDimming.apply(
+          this.handles,
+          new Set([...this.handles.keys()].filter((id) => !additions.has(id))),
+        );
+      }
+      this.batches.rebuild(this.handles);
       this.grid.visible = false;
       this.selection.visible = false;
       if (this.transformHandles) this.transformHandles.helper.visible = false;
@@ -1512,6 +1558,7 @@ export class SceneAdapter {
     } finally {
       this.captureActive = false;
       this.applyLayerGhost();
+      this.batches.rebuild(this.handles);
       this.applyQuality(savedQuality);
       this.controls.enabled = controlsEnabled;
       this.renderer.setRenderTarget(target);
@@ -1519,6 +1566,20 @@ export class SceneAdapter {
       for (const [id, visible] of savedVisible) {
         const g = this.handles.get(id);
         if (g) g.visible = visible;
+      }
+      if (
+        !this.playViewActive &&
+        this.instructionVisibility !== savedInstructionVisibility
+      ) {
+        const latestVisible =
+          this.instructionVisibility ??
+          new Set(
+            occurrences(this.project!)
+              .filter((o) => o.visible)
+              .map((o) => o.id),
+          );
+        for (const [id, group] of this.handles)
+          group.visible = latestVisible.has(id);
       }
       this.scene.background = background;
       this.grid.visible = grid;
@@ -1603,6 +1664,7 @@ export class SceneAdapter {
     this.contextWork.abort();
     this.transformHandles?.dispose();
     this.transformHandles = undefined;
+    this.instructionDimming.restore();
     this.layerGhost.restore();
     this.clearGhost();
     cancelAnimationFrame(this.raf);

@@ -3,6 +3,36 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "worldProfile": {
+      "type": "object",
+      "properties": {
+        "excludedLayerIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "includedOccurrenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "maxItems": 100000,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "excludedLayerIds",
+        "includedOccurrenceIds"
+      ],
+      "additionalProperties": false
+    },
     "cameraSettings": {
       "type": "object",
       "properties": {
@@ -479,6 +509,7 @@
     }
   },
   "required": [
+    "worldProfile",
     "cameraSettings",
     "cameraSafety",
     "sourceRevision",

@@ -295,6 +295,28 @@ const payloads: Record<string, any> = {
         },
         ["definitionId", "nodeIds", "confirmShared", "operation", "delta"],
       ),
+      obj(
+        {
+          definitionId: id,
+          nodeIds: { ...arr(id), minItems: 1, uniqueItems: true },
+          confirmShared: { const: true },
+          includeHidden: { type: "boolean" },
+          activeLayerId: id,
+          operation: { const: "rotate" },
+          axis: vec,
+          degrees: { type: "number", minimum: -360000, maximum: 360000 },
+          pivot: vec,
+        },
+        [
+          "definitionId",
+          "nodeIds",
+          "confirmShared",
+          "operation",
+          "axis",
+          "degrees",
+          "pivot",
+        ],
+      ),
     ],
   },
   "parts.remove": obj(scoped, ["occurrenceIds"]),
@@ -505,6 +527,7 @@ const render = obj(
       },
       [],
     ),
+    instructionNewIds: { ...arr(id, 5000), uniqueItems: true },
     strict: { type: "boolean" },
   },
   [
@@ -612,8 +635,12 @@ const playCameraSettings = obj({
   maxPitch: { type: "number", minimum: 0, maximum: 1.48 },
 });
 const playSpawn = obj({ position: vec, yaw: num, pitch: num }, ["position"]);
+const playWorldProfile = obj({
+  excludedLayerIds: { ...arr(id, 10000), uniqueItems: true },
+});
 const playRequest = obj(
   {
+    worldProfile: playWorldProfile,
     cameraSettings: { ...playCameraSettings, required: [] },
     rigId: id,
     locomotion: { enum: ["walk", "fly-noclip"] },
@@ -648,6 +675,10 @@ const playTeleport = obj(
   ["position"],
 );
 const playSnapshot = obj({
+  worldProfile: obj({
+    ...playWorldProfile.properties,
+    includedOccurrenceIds: { ...arr(id), uniqueItems: true },
+  }),
   cameraSettings: playCameraSettings,
   cameraSafety: obj({
     aspectRatio: num,
@@ -777,6 +808,7 @@ const api = {
       {
         planId: id,
         format: { enum: ["pdf", "png-zip", "html-zip"] },
+        dimPrevious: { type: "boolean" },
         width: { type: "integer", minimum: 64, maximum: 16384 },
         height: { type: "integer", minimum: 64, maximum: 16384 },
       },

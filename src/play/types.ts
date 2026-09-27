@@ -3,7 +3,12 @@ import type { Vec3 } from "../core/types";
 /** Public coordinates are LDraw LDU: up is -Y. Angles are radians. */
 export type PlayLocomotion = "walk" | "fly-noclip";
 export type PlayCameraMode = "first-person" | "third-person";
+export type PlayWorldProfile = { excludedLayerIds: string[] };
+export type ResolvedPlayWorldProfile = PlayWorldProfile & {
+  includedOccurrenceIds: string[];
+};
 export type CollisionSnapshot = {
+  worldProfile?: ResolvedPlayWorldProfile;
   revision: number;
   vertices: Float32Array;
   indices: Uint32Array;
@@ -33,6 +38,7 @@ export const PLAY_CAMERA_LIMITS = Object.freeze({
 export type PlaySpawnRequest = { position: Vec3; yaw?: number; pitch?: number };
 export type PlaySpawn = { position: Vec3; yaw: number; pitch: number };
 export type PlayRequest = {
+  worldProfile?: PlayWorldProfile;
   cameraSettings?: Partial<PlayCameraSettings>;
   rigId?: string;
   locomotion?: PlayLocomotion;
@@ -87,6 +93,7 @@ export type AvatarPose = {
 };
 export type PlaySnapshotReport = {
   mechanism?: MechanismSnapshot & { blocked: boolean; blockedReason?: string };
+  worldProfile: ResolvedPlayWorldProfile;
   cameraSettings: PlayCameraSettings;
   cameraSafety: {
     aspectRatio: number;

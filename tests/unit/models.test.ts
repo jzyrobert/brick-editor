@@ -5,6 +5,7 @@ import { importLDraw, exportLDraw } from "../../src/ldraw/io";
 import { occurrenceRenderContext } from "../../src/render/source-context";
 import { mechanismFixture } from "../../src/mechanisms/fixtures";
 import { validateRig } from "../../src/mechanisms/kinematic";
+import { determinant } from "../../src/core/math";
 import { uid } from "../../src/core/types";
 import { encodeNative, decodeNative } from "../../src/persistence/native";
 const command = (
@@ -187,6 +188,115 @@ describe("submodel structure and explicit shared editing", () => {
       "Unlock",
     );
     expect(blocked.project).toEqual(locked);
+  });
+  it("rotates repeated affine leaves about a shared local pivot with read-only preview, native/export roundtrip and undo", async () => {
+    const original = importLDraw(repeated),
+      editor = new Editor(original),
+      before = occurrences(original);
+    const payload = {
+      definitionId: before[0].modelId,
+      nodeIds: [before[0].node.id, before[1].node.id],
+      confirmShared: true,
+      operation: "rotate",
+      axis: [0, 1, 0],
+      degrees: 90,
+      pivot: [20, -24, 10],
+    };
+    command(editor, "models.editShared", payload, true);
+    expect(editor.project).toEqual(original);
+    command(editor, "models.editShared", payload);
+    const after = occurrences(editor.project);
+    // Hand-computed local positions after +90 degrees around Y:
+    // (0,-24,0)->(10,-24,30), (80,-24,0)->(10,-24,-50).
+    // First parent itself rotates +90 Y and translates +100 X.
+    [
+      [130, -24, -10],
+      [50, -24, -10],
+      [-90, -24, 30],
+      [-90, -24, -50],
+    ].forEach((point, i) =>
+      point.forEach((value, k) =>
+        expect(after[i].transform.position[k]).toBeCloseTo(value, 10),
+      ),
+    );
+    expect(after.map((o) => o.id)).toEqual(before.map((o) => o.id));
+    for (let i = 0; i < after.length; i++) {
+      expect(determinant(after[i].transform.basis)).toBeCloseTo(
+        determinant(before[i].transform.basis),
+        10,
+      );
+      for (let col = 0; col < 3; col++)
+        expect(
+          Math.hypot(
+            ...[0, 3, 6].map((r) => after[i].transform.basis[r + col]),
+          ),
+        ).toBeCloseTo(
+          Math.hypot(
+            ...[0, 3, 6].map((r) => before[i].transform.basis[r + col]),
+          ),
+          10,
+        );
+    }
+    expect(
+      occurrences(await decodeNative(await encodeNative(editor.project))).map(
+        (o) => o.transform,
+      ),
+    ).toEqual(after.map((o) => o.transform));
+    const reload = occurrences(importLDraw(exportLDraw(editor.project)));
+    reload.forEach((o, i) =>
+      o.transform.position.forEach((v, k) =>
+        expect(v).toBeCloseTo(after[i].transform.position[k], 8),
+      ),
+    );
+    command(editor, "history.undo", {});
+    expect(occurrences(editor.project).map((o) => o.transform)).toEqual(
+      before.map((o) => o.transform),
+    );
+    command(editor, "history.redo", {});
+    expect(occurrences(editor.project).map((o) => o.transform)).toEqual(
+      after.map((o) => o.transform),
+    );
+  });
+  it("shared rotation refuses invalid axes and locked instances atomically", () => {
+    const original = importLDraw(repeated),
+      before = occurrences(original),
+      editor = new Editor(original);
+    const payload = {
+      definitionId: before[0].modelId,
+      nodeIds: [before[0].node.id],
+      confirmShared: true,
+      operation: "rotate",
+      axis: [0, 0, 0],
+      degrees: 90,
+      pivot: [0, 0, 0],
+    };
+    expect(() => command(editor, "models.editShared", payload)).toThrow(
+      "unit vector",
+    );
+    expect(editor.project).toEqual(original);
+    const locked = structuredClone(original);
+    locked.layers[before[2].layerId].locked = true;
+    const other = new Editor(locked);
+    expect(() =>
+      command(other, "models.editShared", { ...payload, axis: [0, 1, 0] }),
+    ).toThrow("Unlock");
+    expect(other.project).toEqual(locked);
+    const rigged = mechanismFixture(),
+      rigEditor = new Editor(rigged),
+      member = occurrences(rigged).find((o) =>
+        Object.values(rigged.motionRigs).some((r) =>
+          r.groups.some((g) => g.occurrenceIds.includes(o.id)),
+        ),
+      )!;
+    expect(() =>
+      command(rigEditor, "models.editShared", {
+        ...payload,
+        definitionId: member.modelId,
+        nodeIds: [member.node.id],
+        axis: [0, 1, 0],
+      }),
+    ).toThrow("motion-rig rest geometry");
+    expect(rigEditor.project).toEqual(rigged);
   });
   it("make unique isolates the definition without remapping paths or losing metadata", () => {
     const editor = new Editor(importLDraw(repeated)),

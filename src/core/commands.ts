@@ -2,6 +2,7 @@ import { editInstructions } from "../instructions/edit";
 import { makeSubmodel, sharedDefinitionTargets } from "./models";
 import { duplicateLayer, mutateFolder } from "./layers";
 import {
+  axisRotation,
   KinematicSession,
   rebaseRig,
   validateRig,
@@ -165,6 +166,9 @@ function mutate(
         "operation",
         "colorCode",
         "delta",
+        "axis",
+        "degrees",
+        "pivot",
       ]);
       ensure(
         v.confirmShared === true,
@@ -173,7 +177,7 @@ function mutate(
       );
       const targets = sharedDefinitionTargets(p, v.definitionId, v.nodeIds);
       editable(p, { ...v, occurrenceIds: targets.map((o) => o.id) });
-      if (v.operation === "move")
+      if (v.operation === "move" || v.operation === "rotate")
         ensure(
           !Object.values(p.motionRigs).some((r) =>
             r.groups.some((g) =>
@@ -181,13 +185,34 @@ function mutate(
             ),
           ),
           "INVALID_INPUT",
-          "Shared movement would change motion-rig rest geometry. Remove or re-author the affected rig first.",
+          "Shared transform would change motion-rig rest geometry. Remove or re-author the affected rig first.",
         );
       const definition = p.models[v.definitionId];
+      let rotation: Transform | undefined;
+      if (v.operation === "rotate") {
+        ensure(
+          Math.abs(Math.hypot(...v.axis) - 1) < 1e-6,
+          "INVALID_INPUT",
+          "Shared rotation axis must be a unit vector in definition-local coordinates.",
+        );
+        const length = Math.hypot(...v.axis),
+          basis = axisRotation(
+            v.axis.map((x: number) => x / length) as Vec3,
+            v.degrees,
+          );
+        rotation = {
+          basis,
+          position: add(
+            v.pivot,
+            mv(basis, v.pivot.map((x: number) => -x) as Vec3),
+          ),
+        };
+      }
       for (const node of definition.nodes.filter((n) =>
         v.nodeIds.includes(n.id),
       )) {
         if (v.operation === "recolor") node.colorCode = v.colorCode;
+        else if (rotation) node.transform = compose(rotation, node.transform);
         else node.transform.position = add(node.transform.position, v.delta);
       }
       break;

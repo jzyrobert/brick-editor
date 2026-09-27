@@ -1,3 +1,5 @@
+import { PlayWorldSettings } from "./PlayWorldSettings";
+import type { Layer } from "../core/types";
 import { PlaySettings } from "./PlaySettings";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { BrowserPlay } from "../play/browser";
@@ -19,16 +21,20 @@ export function PlayPanel({
   exit,
   children,
   rigs = {},
+  layers = {},
 }: {
   play: BrowserPlay;
   bookmark: () => void;
   exit: () => void;
   children?: React.ReactNode;
   rigs?: Record<string, MotionRig>;
+  layers?: Record<string, Layer>;
 }) {
   const state = useSyncExternalStore(play.subscribe, play.getState);
   const [message, setMessage] = useState("");
   const [rigId, setRigId] = useState("");
+  const [excludedLayerIds, setExcludedLayerIds] = useState<string[]>([]);
+  const [ground, setGround] = useState(true);
   const [bindings, setBindings] = useState(loadPlayKeys);
   const bindingRef = useRef(bindings);
   bindingRef.current = bindings;
@@ -227,8 +233,8 @@ export function PlayPanel({
           to see your brick figure.
         </p>
         <p className="muted">
-          Your build stays unchanged. A temporary ground plane supports
-          exploration. Character height: 72 LDU.
+          Your build stays unchanged. Choose which layers and ground to explore
+          below. Character height: 72 LDU.
         </p>
         {Object.keys(rigs).length > 0 && (
           <label>
@@ -247,12 +253,28 @@ export function PlayPanel({
             </select>
           </label>
         )}
+        <PlayWorldSettings
+          layers={layers}
+          excluded={excludedLayerIds}
+          ground={ground}
+          onExcluded={setExcludedLayerIds}
+          onGround={setGround}
+        />
         <button
           className="primary wide"
           disabled={state.loading}
           onClick={() =>
             attempt(() =>
-              play.enter({ realtime: true, ...(rigs[rigId] ? { rigId } : {}) }),
+              play.enter({
+                realtime: true,
+                ground,
+                worldProfile: {
+                  excludedLayerIds: excludedLayerIds.filter(
+                    (id) => !!layers[id],
+                  ),
+                },
+                ...(rigs[rigId] ? { rigId } : {}),
+              }),
             )
           }
         >

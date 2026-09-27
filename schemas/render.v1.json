@@ -177,6 +177,16 @@
       "required": [],
       "additionalProperties": false
     },
+    "instructionNewIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 5000,
+      "uniqueItems": true
+    },
     "strict": {
       "type": "boolean"
     }

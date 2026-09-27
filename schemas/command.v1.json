@@ -553,6 +553,72 @@
                 "delta"
               ],
               "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "definitionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "nodeIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "maxItems": 100000,
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "confirmShared": {
+                  "const": true
+                },
+                "includeHidden": {
+                  "type": "boolean"
+                },
+                "activeLayerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "operation": {
+                  "const": "rotate"
+                },
+                "axis": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 3,
+                  "minItems": 3
+                },
+                "degrees": {
+                  "type": "number",
+                  "minimum": -360000,
+                  "maximum": 360000
+                },
+                "pivot": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 3,
+                  "minItems": 3
+                }
+              },
+              "required": [
+                "definitionId",
+                "nodeIds",
+                "confirmShared",
+                "operation",
+                "axis",
+                "degrees",
+                "pivot"
+              ],
+              "additionalProperties": false
             }
           ]
         },

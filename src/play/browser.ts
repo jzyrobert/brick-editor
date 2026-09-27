@@ -1,3 +1,7 @@
+import {
+  resolvePlayWorldProfile,
+  validatePlayWorldProfile,
+} from "./world-profile";
 import type { SceneAdapter } from "../render/adapter";
 import type { Project } from "../core/types";
 import type { PlayMechanismSource } from "./mechanism";
@@ -78,7 +82,16 @@ export class BrowserPlay {
     this.emit({ loading: true, error: undefined });
     try {
       const r = this.renderer();
-      const project = request.rigId ? this.project?.() : undefined;
+      const project = this.project?.();
+      const requestedProfile = validatePlayWorldProfile(request.worldProfile);
+      ensure(
+        project || requestedProfile.excludedLayerIds.length === 0,
+        "INVALID_INPUT",
+        "Layer exclusions require an authored project snapshot",
+      );
+      const worldProfile = project
+        ? resolvePlayWorldProfile(project, request.worldProfile, request.rigId)
+        : undefined;
       const rig = request.rigId
         ? project?.motionRigs?.[request.rigId]
         : undefined;
@@ -90,7 +103,10 @@ export class BrowserPlay {
       const ids = rig?.groups.flatMap((group) => group.occurrenceIds) ?? [];
       const [{ PlaySession }, geometry] = await Promise.all([
         import("./session"),
-        r.playGeometry({ exclude: ids }),
+        r.playGeometry({
+          include: worldProfile?.includedOccurrenceIds,
+          exclude: ids,
+        }),
       ]);
       const mechanismSource: PlayMechanismSource | undefined =
         rig && project
@@ -125,8 +141,12 @@ export class BrowserPlay {
         "REVISION_CONFLICT",
         "Project changed while preparing Play",
       );
+      const collisionSnapshot = {
+        ...geometry,
+        ...(worldProfile ? { worldProfile } : {}),
+      };
       const session = await PlaySession.create(
-        geometry,
+        collisionSnapshot,
         request,
         mechanismSource,
       );
@@ -141,7 +161,7 @@ export class BrowserPlay {
       this.session = session;
       this.held = {};
       if (rig) this.restorePose = r.beginTransientPose();
-      this.restore = r.beginPlayView();
+      this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
       r.scene.add(this.avatar.group);
       this.realtime = request.realtime === true;

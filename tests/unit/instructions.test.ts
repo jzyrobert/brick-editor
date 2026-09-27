@@ -179,3 +179,20 @@ it("publishes per-step cameras and escaped notes while restoring the original vi
   });
   expect((await PDFDocument.load(pdf.bytes)).getPageCount()).toBe(4);
 });
+
+it("publishes explicit per-step additions for dimming without changing the authored plan", async () => {
+  const p = fixture(),
+    original = structuredClone(p),
+    r = renderer(p.revision);
+  const artifact = await publishInstructions(p, "test", r, {
+    format: "png-zip",
+    dimPrevious: true,
+  });
+  expect(p).toEqual(original);
+  expect(
+    vi.mocked(r.image).mock.calls.map(([request]) => request.instructionNewIds),
+  ).toEqual(p.instructionPlans.test.steps);
+  expect(artifact.report.dimPrevious).toBe(true);
+  expect(artifact.report.warnings.join(" ")).toContain("reduced opacity");
+  expect(r.setCamera).toHaveBeenLastCalledWith(camera);
+});

@@ -17,9 +17,14 @@ export function ModelTools({
   const [name, setName] = useState("New submodel"),
     [pivot, setPivot] = useState<Vec3>([0, 0, 0]),
     [message, setMessage] = useState(""),
-    [operation, setOperation] = useState<"recolor" | "move">("recolor"),
+    [operation, setOperation] = useState<"recolor" | "move" | "rotate">(
+      "recolor",
+    ),
     [color, setColor] = useState("4"),
     [delta, setDelta] = useState<Vec3>([20, 0, 0]),
+    [rotationPivot, setRotationPivot] = useState<Vec3>([0, 0, 0]),
+    [rotationAxis, setRotationAxis] = useState("Y"),
+    [degrees, setDegrees] = useState(90),
     [preview, setPreview] = useState<{
       revision: number;
       key: string;
@@ -35,7 +40,15 @@ export function ModelTools({
     confirmShared: true,
     ...(activeLayerId ? { activeLayerId } : {}),
     operation,
-    ...(operation === "recolor" ? { colorCode: color } : { delta }),
+    ...(operation === "recolor"
+      ? { colorCode: color }
+      : operation === "move"
+        ? { delta }
+        : {
+            pivot: rotationPivot,
+            axis: ["X", "Y", "Z"].map((a) => (a === rotationAxis ? 1 : 0)),
+            degrees,
+          }),
   };
   const key = JSON.stringify(sharedPayload);
   const attempt = (fn: () => void) => {
@@ -137,9 +150,9 @@ export function ModelTools({
       <details>
         <summary>Edit shared definition</summary>
         <p className="muted">
-          Select direct leaves from one definition. Movement below is in that
-          definition’s local coordinates. Locked or out-of-scope instances block
-          the whole edit.
+          Select direct leaves from one definition. Movement and rotation below
+          use that definition’s local coordinates. Locked or out-of-scope
+          instances block the whole edit.
         </p>
         <label>
           Shared operation
@@ -152,6 +165,7 @@ export function ModelTools({
           >
             <option value="recolor">Recolour all instances</option>
             <option value="move">Move all instances</option>
+            <option value="rotate">Rotate all instances</option>
           </select>
         </label>
         {operation === "recolor" ? (
@@ -165,8 +179,37 @@ export function ModelTools({
               }}
             />
           </label>
-        ) : (
+        ) : operation === "move" ? (
           numbers(delta, setDelta, "Shared move")
+        ) : (
+          <>
+            <label>
+              Shared rotation axis
+              <select
+                value={rotationAxis}
+                onChange={(e) => setRotationAxis(e.target.value)}
+              >
+                {["X", "Y", "Z"].map((a) => (
+                  <option key={a}>{a}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Shared rotation degrees
+              <input
+                type="number"
+                value={degrees}
+                min={-360000}
+                max={360000}
+                onChange={(e) => setDegrees(Number(e.target.value))}
+              />
+            </label>
+            {numbers(rotationPivot, setRotationPivot, "Shared rotation pivot")}
+            <p className="muted">
+              Rotate every selected definition leaf around this local pivot.
+              Existing scale, shear and reflection are preserved.
+            </p>
+          </>
         )}
         <button
           disabled={

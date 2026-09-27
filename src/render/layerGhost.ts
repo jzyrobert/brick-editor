@@ -1,6 +1,7 @@
 import * as THREE from "three";
 /** Temporary per-object materials. Shared prototype materials are never mutated. */
 export class LayerGhost {
+  constructor(private readonly opacity = 0.18) {}
   private originals = new Map<
     THREE.Mesh,
     { material: THREE.Material | THREE.Material[]; shadow: boolean }
@@ -22,7 +23,7 @@ export class LayerGhost {
       if (!copy) {
         copy = material.clone();
         copy.transparent = true;
-        copy.opacity = material.opacity * 0.18;
+        copy.opacity = material.opacity * this.opacity;
         copy.depthWrite = false;
         this.clones.set(material, copy);
       }

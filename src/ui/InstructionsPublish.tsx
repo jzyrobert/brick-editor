@@ -6,7 +6,11 @@ export function InstructionsPublish({
   project,
   planId,
   renderer,
+  dimPrevious,
+  onDimPreviousChange,
 }: {
+  dimPrevious: boolean;
+  onDimPreviousChange: (value: boolean) => void;
   project: Project;
   planId: string;
   renderer: PublishRenderer | undefined;
@@ -32,6 +36,7 @@ export function InstructionsPublish({
       const { publishInstructions } = await import("../instructions/publish");
       const artifact = await publishInstructions(project, planId, renderer, {
         format,
+        dimPrevious,
         width: Number(size),
         height: Number(size) * 0.75,
         signal: controller.signal,
@@ -68,6 +73,19 @@ export function InstructionsPublish({
       <p>
         Uses each saved step camera, or the current view when none is saved.
         Step notes, parts lists and a coverage report are included.
+      </p>
+      <label className="check-row">
+        <input
+          type="checkbox"
+          checked={dimPrevious}
+          disabled={busy}
+          onChange={(event) => onDimPreviousChange(event.target.checked)}
+        />
+        Dim previous parts in preview and publication
+      </label>
+      <p>
+        Earlier parts remain visible at reduced opacity. This view preference
+        does not change your model.
       </p>
       <div className="form-row">
         <label>

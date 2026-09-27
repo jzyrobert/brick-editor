@@ -77,12 +77,13 @@ export function createAPI(
       publish: async (request: {
         planId: string;
         format: PublishFormat;
+        dimPrevious?: boolean;
         width?: number;
         height?: number;
       }) => {
         ensure(
           Object.keys(request).every((k) =>
-            ["planId", "format", "width", "height"].includes(k),
+            ["planId", "format", "width", "height", "dimPrevious"].includes(k),
           ),
           "INVALID_INPUT",
           "Unknown publication option",

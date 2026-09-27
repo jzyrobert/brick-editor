@@ -17,6 +17,7 @@ export type PreparedPlan = {
   name: string;
   method: "explicit-order";
   assemblyValidated: false;
+  dimPrevious?: boolean;
   coverage: { intended: number; introduced: number; complete: true };
   steps: {
     number: number;
@@ -145,6 +146,7 @@ export type PublishOptions = {
   format: PublishFormat;
   width?: number;
   height?: number;
+  dimPrevious?: boolean;
   signal?: AbortSignal;
   onProgress?: (done: number, total: number) => void;
 };
@@ -170,6 +172,16 @@ export async function publishInstructions(
   const plan = prepareInstructionPlan(project, planId),
     width = options.width ?? 960,
     height = options.height ?? 720;
+  ensure(
+    options.dimPrevious === undefined ||
+      typeof options.dimPrevious === "boolean",
+    "INVALID_INPUT",
+    "Dim previous parts must be a boolean.",
+  );
+  plan.dimPrevious = options.dimPrevious ?? false;
+  if (plan.dimPrevious)
+    plan.warnings[1] =
+      "Previously introduced geometry is shown at reduced opacity; new additions retain their original appearance.";
   ensure(
     ["png-zip", "html-zip", "pdf"].includes(options.format),
     "INVALID_INPUT",
@@ -297,6 +309,7 @@ export async function publishInstructions(
         background: { type: "solid", color: "#ffffff" },
         quality: "photo",
         strict: true,
+        ...(options.dimPrevious ? { instructionNewIds: step.addedIds } : {}),
       });
       check();
       const bytes = new Uint8Array(await image.blob.arrayBuffer());

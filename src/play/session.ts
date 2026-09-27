@@ -1,3 +1,4 @@
+import { validatePlayWorldProfile } from "./world-profile";
 import { resolvePlayCameraSettings, playCameraSafety } from "./camera-settings";
 import {
   PlayMechanism,
@@ -19,6 +20,7 @@ import {
   type PlayCameraSettings,
   type PlaySpawnRequest,
   type PlaySpawn,
+  type ResolvedPlayWorldProfile,
 } from "./types";
 const S = P.scaleMetresPerLdu,
   DT = 1 / 60;
@@ -78,6 +80,7 @@ export class PlaySession {
   private spawn: Vec3;
   private selectedSpawn?: PlaySpawn;
   private cameraSettings: PlayCameraSettings;
+  private worldProfile: ResolvedPlayWorldProfile;
   private aspectRatio = 1;
   private arm = 120;
   private phase = 0;
@@ -92,6 +95,21 @@ export class PlaySession {
     request: PlayRequest,
     mechanismSource?: PlayMechanismSource,
   ) {
+    this.worldProfile = {
+      ...validatePlayWorldProfile(
+        snapshot.worldProfile
+          ? { excludedLayerIds: snapshot.worldProfile.excludedLayerIds }
+          : undefined,
+      ),
+      includedOccurrenceIds: [
+        ...(snapshot.worldProfile?.includedOccurrenceIds ?? []),
+      ],
+    };
+    // Session inclusion is immutable; animation snapshots share it without
+    // copying the entire authored occurrence list on every fixed tick/frame.
+    Object.freeze(this.worldProfile.excludedLayerIds);
+    Object.freeze(this.worldProfile.includedOccurrenceIds);
+    Object.freeze(this.worldProfile);
     this.cameraSettings = resolvePlayCameraSettings(request.cameraSettings);
     this.arm = this.cameraSettings.followDistance;
     this.world = new RAPIER.World({ x: 0, y: 0, z: 0 });
@@ -187,7 +205,32 @@ export class PlaySession {
       "realtime",
       "rigId",
       "cameraSettings",
+      "worldProfile",
     ]);
+    const requestedWorld = validatePlayWorldProfile(request.worldProfile);
+    const resolvedWorld = validatePlayWorldProfile(
+      snapshot.worldProfile
+        ? { excludedLayerIds: snapshot.worldProfile.excludedLayerIds }
+        : undefined,
+    );
+    ensure(
+      JSON.stringify(requestedWorld) === JSON.stringify(resolvedWorld),
+      "INVALID_INPUT",
+      "Play geometry must be extracted using the requested layer profile",
+    );
+    if (snapshot.worldProfile)
+      ensure(
+        Array.isArray(snapshot.worldProfile.includedOccurrenceIds) &&
+          snapshot.worldProfile.includedOccurrenceIds.length <= 100000 &&
+          snapshot.worldProfile.includedOccurrenceIds.every(
+            (id) =>
+              typeof id === "string" && id.length > 0 && id.length <= 1024,
+          ) &&
+          new Set(snapshot.worldProfile.includedOccurrenceIds).size ===
+            snapshot.worldProfile.includedOccurrenceIds.length,
+        "INVALID_INPUT",
+        "Invalid resolved Play occurrence profile",
+      );
     resolvePlayCameraSettings(request.cameraSettings);
     if (request.position) point(request.position);
     for (const k of ["yaw", "pitch"] as const)
@@ -776,6 +819,7 @@ export class PlaySession {
     this.alive();
     return {
       ...(this.mechanism ? { mechanism: this.mechanism.snapshot() } : {}),
+      worldProfile: this.worldProfile,
       cameraSettings: { ...this.cameraSettings },
       cameraSafety: this.cameraSafety(),
       ...(this.selectedSpawn

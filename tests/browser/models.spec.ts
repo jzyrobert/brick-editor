@@ -107,6 +107,48 @@ for (const width of [360, 1080, 1440]) {
       });
       const undone = await page.evaluate(() => window.brickEditor!.query());
       expect(undone.occurrences).toEqual(after.occurrences);
+      await page
+        .getByRole("combobox", { name: "Shared operation", exact: true })
+        .selectOption("rotate");
+      await page
+        .getByRole("combobox", { name: "Shared rotation axis", exact: true })
+        .selectOption("Y");
+      await page
+        .getByLabel("Shared rotation degrees", { exact: true })
+        .fill("90");
+      await page
+        .getByRole("button", { name: "Preview shared impact", exact: true })
+        .click();
+      expect(await page.evaluate(() => window.brickEditor!.query())).toEqual(
+        undone,
+      );
+      await page
+        .getByLabel("Shared rotation pivot X", { exact: true })
+        .fill("10");
+      await expect(
+        page.getByRole("button", {
+          name: "Apply to all 2 occurrences",
+          exact: true,
+        }),
+      ).toBeDisabled();
+      await page
+        .getByRole("button", { name: "Preview shared impact", exact: true })
+        .click();
+      await page
+        .getByRole("button", {
+          name: "Apply to all 2 occurrences",
+          exact: true,
+        })
+        .click();
+      const rotated = await page.evaluate(() => window.brickEditor!.query());
+      expect(rotated.revision).toBe(undone.revision + 1);
+      // Group pivot20 + local rotation pivot10: original worldX0/80 become
+      // X30 and Z30/-50 after +90 degrees around localY.
+      rotated.occurrences.forEach((o) =>
+        expect(o.transform.position[0]).toBeCloseTo(30, 10),
+      );
+      expect(rotated.occurrences[0].transform.position[2]).toBeCloseTo(30, 10);
+      expect(rotated.occurrences[1].transform.position[2]).toBeCloseTo(-50, 10);
       expect(errors).toEqual([]);
     } finally {
       await context.close();

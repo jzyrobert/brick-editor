@@ -195,6 +195,7 @@ export default function App() {
     [rows, setRows] = useState(4),
     [fill, setFill] = useState<ReturnType<typeof fillPreview> | null>(null),
     [step, setStep] = useState(0),
+    [dimPrevious, setDimPrevious] = useState(false),
     [activePlanId, setActivePlanId] = useState(""),
     [photoSize, setPhotoSize] = useState([1600, 1200]),
     [transparent, setTransparent] = useState(false),
@@ -533,8 +534,9 @@ export default function App() {
     if (mode === "Instructions" && !ownsTransientView())
       renderer.current?.showStep(
         plan ? plan.steps.slice(0, step + 1).flat() : null,
+        dimPrevious && plan ? plan.steps[step] : undefined,
       );
-  }, [mode, step, plan, transientView]);
+  }, [mode, step, plan, transientView, dimPrevious]);
   useEffect(() => {
     if (mode !== "Instructions") renderer.current?.showStep(null);
     // Document replacement cancels the old session synchronously through
@@ -1971,6 +1973,8 @@ export default function App() {
                     Download plan JSON
                   </button>
                   <InstructionsPublish
+                    dimPrevious={dimPrevious}
+                    onDimPreviousChange={setDimPrevious}
                     project={project}
                     planId={currentPlanId}
                     renderer={renderer.current}
@@ -1982,6 +1986,7 @@ export default function App() {
           {mode === "Play" && play.current && (
             <PlayPanel
               play={play.current}
+              layers={project.layers}
               rigs={project.motionRigs}
               exit={() => setMode("Build")}
               bookmark={() => {
