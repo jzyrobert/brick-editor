@@ -42,8 +42,7 @@ export function MechanismPanel({
       {!Object.keys(rigs).length ? (
         <p>
           Open the “Door & vehicle” template to try two original rigs. Rig
-          authoring is available in Build → Inspector → Create a hinge or
-          vehicle.
+          authoring is available in Build → Inspector → Create or edit a rig.
         </p>
       ) : (
         <>

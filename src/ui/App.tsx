@@ -470,6 +470,7 @@ export default function App() {
       () => renderer.current,
       () => play.current,
       () => mechanisms.current,
+      () => [...selectionRef.current],
     );
     if (new URLSearchParams(location.search).get("automation") === "1")
       window.brickEditor = api.current;

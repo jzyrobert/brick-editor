@@ -1,3 +1,6 @@
+import { deepStrictEqual } from "node:assert";
+import { sourceBounds, sourceDependencies } from "../src/core/spatial";
+import installedBounds from "../src/catalog/bounds.json";
 import { readFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { libraryLock, mappingLock } from "../src/catalog/catalog";
@@ -32,6 +35,27 @@ if (
   mappingLock.mappingPackSha256
 )
   throw new Error("Mapping lock mismatch");
+if (installedBounds.manifestSha256 !== libraryLock.manifestSha256)
+  throw new Error("Bounds library lock mismatch");
+const boundsSources = Object.fromEntries(
+  manifest.files
+    .filter((f: { path: string }) => f.path !== "LDConfig.ldr")
+    .map((f: { path: string }) => [
+      f.path.replace(/^(parts|p)\//, ""),
+      readFileSync(root + f.path, "utf8"),
+    ]),
+);
+deepStrictEqual(
+  installedBounds.dependencies,
+  JSON.parse(JSON.stringify(sourceDependencies(boundsSources))),
+  "Stale source dependency metadata",
+);
+for (const ref of Object.keys(boundsSources))
+  deepStrictEqual(
+    installedBounds.bounds[ref as keyof typeof installedBounds.bounds],
+    sourceBounds(boundsSources, ref),
+    "Stale source bounds: " + ref,
+  );
 console.log(
   JSON.stringify(
     {

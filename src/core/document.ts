@@ -8,7 +8,7 @@ import {
 } from "./types";
 import { identity, compose } from "./math";
 import { canonical } from "../ldraw/path";
-import { catalog, libraryLock, mappingLock } from "../catalog/catalog";
+import { installedSource, libraryLock, mappingLock } from "../catalog/catalog";
 export const encodePath = (path: string[]) => JSON.stringify(path);
 export function createProject(title = "Untitled build"): Project {
   return {
@@ -100,7 +100,7 @@ export function occurrences(p: Project): Occurrence[] {
         namespace:
           node.kind === "geometry" || p.models[node.ref]
             ? "project"
-            : catalog[node.ref]
+            : installedSource(node.ref)
               ? "official"
               : "missing",
         visible: p.layers[layerId].visible,

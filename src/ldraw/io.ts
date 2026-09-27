@@ -9,7 +9,7 @@ import {
 import { identity, mv, add, determinant } from "../core/math";
 import { createProject, validateDocument, occurrences } from "../core/document";
 import { canonical } from "./path";
-import { catalog } from "../catalog/catalog";
+import { installedSource } from "../catalog/catalog";
 const num = (s: string) => {
   const n = Number(s);
   ensure(
@@ -165,7 +165,7 @@ export function importLDraw(text: string, name = "main.ldr"): Project {
         n.ref = local;
         n.kind =
           p.models[local].classification === "custom" ? "part" : "submodel";
-      } else if (!catalog[n.ref])
+      } else if (!installedSource(n.ref))
         p.diagnostics.push({
           code: "REFERENCE_MISSING",
           severity: "warning",

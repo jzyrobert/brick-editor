@@ -79,7 +79,7 @@
         "sameHeightOnly": true,
         "workerCancellation": true
       },
-      "rigAuthoringUI": "hinge and planar vehicle creation with explicit groups, axes, preview and undo"
+      "rigAuthoringUI": "create/edit/remove representable single-joint or pure planar vehicle rigs; preserved frames, axes, IDs, limits and motor metadata"
     },
     "inventory": {
       "format": "bricklink-wanted-xml",
@@ -167,6 +167,15 @@
       "officialGeometryArchive": true,
       "recipientColourConfigurationRequired": true,
       "directArchiveImport": false
+    },
+    "automationQueries": {
+      "scope": true,
+      "currentSelection": true,
+      "sourceBounds": "conservative transformed source boxes, including studs and primitive endpoints",
+      "intersectionCandidates": "bounded broad-phase only; no verified collision or connectivity claim",
+      "headlessWithoutWebGL": true,
+      "cli": true,
+      "connectorCoverage": "unverified"
     }
   },
   "limits": {
@@ -183,7 +192,12 @@
     "selectionPolygonPoints": 2048,
     "selectionTriangleTests": 5000000,
     "selectionIntersectionWork": 20000000,
-    "transformHandleSelection": 1000
+    "transformHandleSelection": 1000,
+    "queryIntersectionComparisons": 2000000,
+    "queryIntersectionCandidates": 10000,
+    "queryDependencyWork": 2000000,
+    "queryAdditionalTextBudgetBytes": 8388608,
+    "queryDiagnosticItems": 2000000
   },
   "deduplication": {
     "entries": 500,

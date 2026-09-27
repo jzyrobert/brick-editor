@@ -1,3 +1,4 @@
+import sources from "./bounds.json";
 import data from "./data.json";
 export const libraryLock = data.libraryLock;
 export const mappingLock = data.mappingLock;
@@ -24,3 +25,11 @@ export const colors = [
   { code: "2", name: "Green", hex: "#237841" },
   { code: "19", name: "Tan", hex: "#e4cd9e" },
 ];
+
+/** Installed source definitions include primitives; purchasing identities remain in catalog. */
+export function installedSource(ref: string) {
+  return (
+    sources.manifestSha256 === libraryLock.manifestSha256 &&
+    Object.hasOwn(sources.bounds, ref)
+  );
+}

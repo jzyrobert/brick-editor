@@ -35,7 +35,7 @@ for (const width of [360, 1080]) {
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
       const ui = page.locator(".rig-authoring");
-      await ui.getByText("Create a hinge or vehicle", { exact: true }).click();
+      await ui.getByText("Create or edit a rig", { exact: true }).click();
       await ui
         .getByText("Choose parts for assignment", { exact: true })
         .click();

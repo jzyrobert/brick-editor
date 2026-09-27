@@ -8,6 +8,8 @@ Deployment follow-up: GitHub has validated `bricks.robertj.in` and Cloudflare DN
 
 Suggested order for the next implementation pass:
 
+- [ ] Reconcile occurrence-path schema limits with valid nested documents. A validated 32-level UUID path encodes to 1,249 characters and is rejected by the current 1,024-character ID input schema; audit query, scope and command IDs together with aggregate request budgets.
+
 - [ ] Close M0 conformance gaps: whole-library BFC coverage beyond the new ancestor/internal dependency fixtures, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.
 - [ ] Complete M2 editing: connected-assembly selection, general structural regrouping, connector workplanes. Transform handles, visible/through box and lasso selection, clipboard, arrays, layer duplication, folders and ghosting now work.
 - [ ] Complete M3 reliability: fully portable library packs, native migrations, broader storage recovery coverage and graphics recovery across more drivers. Bounded autosave and conflict-fork UI are implemented.
@@ -24,4 +26,6 @@ Also implemented: moving authored mechanism colliders during exploration, touch 
 
 Latest additions: session Play layer exclusions independent of editor visibility, optional temporary ground, prior-part dimming for instruction preview/publication, and affine-preserving shared rotation around a declared local pivot.
 
-Allowed-part masked fills and hinge/planar-vehicle creation are now implemented with preview and undo. Remaining: global packing optimization, connector-aware fill, general rig editing/removal UI and arbitrary-frame authoring UI. Play strafing is camera-relative in both views and locomotion modes; keyboard and touch regressions cover the corrected left/right directions.
+Allowed-part masked fills and hinge/planar-vehicle creation are now implemented with preview and undo. Remaining: global packing optimization, connector-aware fill, compound-rig editing and arbitrary-frame authoring UI. Representable single-joint/vehicle rigs now support edit/removal with preserved imported data. Play strafing is camera-relative in both views and locomotion modes; keyboard and touch regressions cover the corrected left/right directions.
+
+Structured browser/CLI queries now cover submodel/current-selection scopes, conservative source bounds, candidate overlaps and actionable dependency/physical-transform diagnostics without WebGL. Verified connectivity remains unavailable pending connector coverage.

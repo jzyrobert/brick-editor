@@ -4,11 +4,14 @@ import type { Editor } from "../core/commands";
 import { occurrences } from "../core/document";
 import { uid, type Vec3, type Transform } from "../core/types";
 import {
-  buildHingeRig,
+  buildJointRig,
+  rigAuthoringRequest,
+  type JointRigRequest,
   buildVehicleRig,
   rigDraftCommand,
 } from "../mechanisms/authoring";
 
+type RigKind = "hinge" | "fixed" | "prismatic" | "spherical" | "vehicle";
 const frame = (position: Vec3): Transform => ({
   position,
   basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
@@ -22,7 +25,8 @@ type WheelDraft = {
   id: string;
   occurrenceIds: string[];
   center: Vec3;
-  axis: string;
+  axis: Vec3;
+  basis?: Transform["basis"];
   radius: number;
   steering: boolean;
 };
@@ -30,7 +34,7 @@ const wheel = (): WheelDraft => ({
   id: uid(),
   occurrenceIds: [],
   center: [0, 0, 0],
-  axis: "X",
+  axis: [1, 0, 0],
   radius: 12,
   steering: false,
 });
@@ -46,13 +50,35 @@ export function RigAuthoring({
   activeLayerId?: string;
   onSelect: (ids: string[]) => void;
 }) {
-  const [kind, setKind] = useState<"hinge" | "vehicle">("hinge"),
+  const [kind, setKind] = useState<RigKind>("hinge"),
     [name, setName] = useState("My mechanism"),
-    [rigId, setRigId] = useState(uid),
+    [rigId, setRigId] = useState<string>(uid),
     [fixed, setFixed] = useState<string[]>([]),
     [moving, setMoving] = useState<string[]>([]),
     [pivot, setPivot] = useState<Vec3>([0, 0, 0]),
-    [hingeAxis, setHingeAxis] = useState("Y"),
+    [hingeAxis, setHingeAxis] = useState<Vec3>([0, 1, 0]),
+    [bounded, setBounded] = useState(true),
+    [existingId, setExistingId] = useState(""),
+    [editing, setEditing] = useState<{
+      id: string;
+      revision: number;
+      projectId: string;
+    }>(),
+    [fixedFrame, setFixedFrame] = useState<Transform>(),
+    [movingFrame, setMovingFrame] = useState<Transform>(),
+    [groupIds, setGroupIds] = useState({
+      fixed: "fixed",
+      moving: "moving",
+      chassis: "chassis",
+      joint: "hinge",
+    }),
+    [motor, setMotor] = useState<JointRigRequest["motor"]>(),
+    [chassisBasis, setChassisBasis] = useState<Transform["basis"]>(),
+    [removal, setRemoval] = useState<{
+      key: string;
+      revision: number;
+      count: number;
+    }>(),
     [minimum, setMinimum] = useState(0),
     [maximum, setMaximum] = useState(90),
     [chassis, setChassis] = useState<string[]>([]),
@@ -65,7 +91,7 @@ export function RigAuthoring({
     [filter, setFilter] = useState(""),
     [preview, setPreview] = useState<{
       key: string;
-      result: ReturnType<typeof buildHingeRig>;
+      result: ReturnType<typeof buildJointRig>;
     }>();
   const project = editor.project;
   const available = occurrences(project)
@@ -88,6 +114,13 @@ export function RigAuthoring({
     moving,
     pivot,
     hingeAxis,
+    bounded,
+    editing,
+    fixedFrame,
+    movingFrame,
+    groupIds,
+    motor,
+    chassisBasis,
     minimum,
     maximum,
     chassis,
@@ -100,7 +133,118 @@ export function RigAuthoring({
     projectId: project.id,
     activeLayerId,
   });
+  const targetId = project.motionRigs[existingId]
+    ? existingId
+    : (Object.keys(project.motionRigs)[0] ?? "");
+  const target = project.motionRigs[targetId];
+  const removalKey = JSON.stringify([
+    targetId,
+    project.id,
+    project.revision,
+    activeLayerId,
+  ]);
+  const currentRemoval = removal?.key === removalKey ? removal : undefined;
   const currentPreview = preview?.key === key ? preview.result : undefined;
+  const reset = () => {
+    setEditing(undefined);
+    setPreview(undefined);
+    setRemoval(undefined);
+    setRigId(uid());
+    setFixed([]);
+    setMoving([]);
+    setChassis([]);
+    setWheels([wheel(), wheel()]);
+    setFixedFrame(undefined);
+    setMovingFrame(undefined);
+    setChassisBasis(undefined);
+    setMotor(undefined);
+    setGroupIds({
+      fixed: "fixed",
+      moving: "moving",
+      chassis: "chassis",
+      joint: "hinge",
+    });
+    setName("My mechanism");
+    setBounded(true);
+    setHingeAxis([0, 1, 0]);
+    setMinimum(0);
+    setMaximum(90);
+  };
+  const loadExisting = () =>
+    attempt(() => {
+      reset();
+      const loaded = rigAuthoringRequest(
+        project,
+        targetId,
+        activeLayerId ? { activeLayerId } : {},
+      );
+      const request = loaded.request;
+      setRigId(request.id);
+      setName(request.name);
+      setEditing({
+        id: request.id,
+        revision: project.revision,
+        projectId: project.id,
+      });
+      if (loaded.kind === "joint") {
+        const r = loaded.request;
+        setKind(r.kind === "revolute" ? "hinge" : r.kind);
+        setFixed(r.fixed.occurrenceIds);
+        setMoving(r.moving.occurrenceIds);
+        setFixedFrame(r.fixed.frame);
+        setMovingFrame(r.moving.frame);
+        setPivot(r.pivotWorld);
+        setHingeAxis(r.axisWorld ?? [0, 1, 0]);
+        setBounded(!!r.limits);
+        setMinimum(r.limits?.[0] ?? 0);
+        setMaximum(r.limits?.[1] ?? (r.kind === "prismatic" ? 100 : 90));
+        setGroupIds({
+          fixed: r.fixed.id,
+          moving: r.moving.id,
+          chassis: "chassis",
+          joint: r.jointId,
+        });
+        setMotor(r.motor);
+      } else {
+        const r = loaded.request;
+        setKind("vehicle");
+        setChassis(r.chassis.occurrenceIds);
+        setChassisCenter(r.chassis.frame.position);
+        setChassisBasis(r.chassis.frame.basis);
+        setGroupIds({
+          fixed: "fixed",
+          moving: "moving",
+          chassis: r.chassis.id,
+          joint: "hinge",
+        });
+        setWheels(
+          r.wheels.map((w) => ({
+            id: w.id,
+            occurrenceIds: w.occurrenceIds,
+            center: w.frame.position,
+            basis: w.frame.basis,
+            axis: w.axisLocal,
+            radius: w.radius,
+            steering: w.steering,
+          })),
+        );
+        setWheelbase(r.wheelbase);
+        setMaxSteer(r.maxSteerDegrees);
+        setMaxSpeed(r.maxSpeed);
+      }
+      setMessage(
+        "Rig loaded. Original group frames and IDs are retained. Preview changes before updating.",
+      );
+    });
+  const removeCommand = (revision: number, dryRun: boolean) =>
+    editor.dispatch({
+      schemaVersion: 1,
+      commandId: uid(),
+      expectedRevision: revision,
+      type: "rigs.remove",
+      payload: { rigId: targetId, ...(activeLayerId ? { activeLayerId } : {}) },
+      dryRun,
+    });
   const attempt = (action: () => void) => {
     try {
       action();
@@ -130,11 +274,19 @@ export function RigAuthoring({
         "Selection assigned. Review the group count before previewing.",
       );
     });
-  const dispatch = (result: ReturnType<typeof buildHingeRig>, dryRun = false) =>
+  const dispatch = (result: ReturnType<typeof buildJointRig>, dryRun = false) =>
     editor.dispatch({ ...rigDraftCommand(result, uid()), dryRun });
   const prepare = () =>
     attempt(() => {
       setPreview(undefined);
+      if (
+        editing &&
+        (editing.revision !== project.revision ||
+          editing.projectId !== project.id)
+      )
+        throw new Error(
+          "Project changed since this rig was loaded. Load the rig again before editing.",
+        );
       const common = {
         id: rigId,
         name,
@@ -142,31 +294,54 @@ export function RigAuthoring({
         ...(activeLayerId ? { activeLayerId } : {}),
       };
       const result =
-        kind === "hinge"
-          ? buildHingeRig(project, {
+        kind !== "vehicle"
+          ? buildJointRig(project, {
               ...common,
-              fixed: { id: "fixed", occurrenceIds: fixed, frame: frame(pivot) },
+              kind: kind === "hinge" ? "revolute" : kind,
+              jointId: editing
+                ? groupIds.joint
+                : kind === "hinge"
+                  ? "hinge"
+                  : "joint",
+              fixed: {
+                id: groupIds.fixed,
+                occurrenceIds: fixed,
+                frame: fixedFrame ?? frame(pivot),
+              },
               moving: {
-                id: "moving",
+                id: groupIds.moving,
                 occurrenceIds: moving,
-                frame: frame(pivot),
+                frame: movingFrame ?? frame(pivot),
               },
               pivotWorld: pivot,
-              axisWorld: axis(hingeAxis),
-              limits: [minimum, maximum],
+              ...(["hinge", "prismatic"].includes(kind)
+                ? {
+                    axisWorld: hingeAxis,
+                    ...(bounded
+                      ? { limits: [minimum, maximum] as [number, number] }
+                      : {}),
+                  }
+                : {}),
+              ...(motor ? { motor } : {}),
             })
           : buildVehicleRig(project, {
               ...common,
               chassis: {
-                id: "chassis",
+                id: groupIds.chassis,
                 occurrenceIds: chassis,
-                frame: frame(chassisCenter),
+                frame: {
+                  position: chassisCenter,
+                  basis: chassisBasis ?? frame(chassisCenter).basis,
+                },
               },
               wheels: wheels.map((w) => ({
                 id: w.id,
                 occurrenceIds: w.occurrenceIds,
-                frame: frame(w.center),
-                axisLocal: axis(w.axis),
+                frame: {
+                  position: w.center,
+                  basis: w.basis ?? frame(w.center).basis,
+                },
+                axisLocal: w.axis,
                 radius: w.radius,
                 steering: w.steering,
               })),
@@ -177,7 +352,7 @@ export function RigAuthoring({
       dispatch(result, true);
       setPreview({ key, result });
       setMessage(
-        "Preview validated. Creating the rig records one undoable edit; it does not move parts.",
+        "Preview validated. Saving the rig records one undoable edit; it does not move parts.",
       );
     });
   const group = (
@@ -202,9 +377,16 @@ export function RigAuthoring({
       </div>
     </div>
   );
-  const vector = (label: string, value: Vec3, change: (v: Vec3) => void) => (
+  const vector = (
+    label: string,
+    value: Vec3,
+    change: (v: Vec3) => void,
+    units = "world LDU",
+  ) => (
     <fieldset>
-      <legend>{label} (world LDU)</legend>
+      <legend>
+        {label} ({units})
+      </legend>
       <div className="rig-vector">
         {["X", "Y", "Z"].map((a, i) => (
           <label key={a}>
@@ -228,29 +410,140 @@ export function RigAuthoring({
   );
   const axisSelect = (
     label: string,
-    value: string,
-    change: (v: string) => void,
-  ) => (
-    <label>
-      {label}
-      <select value={value} onChange={(e) => change(e.target.value)}>
-        {["X", "Y", "Z"].map((a) => (
-          <option key={a}>{a}</option>
-        ))}
-      </select>
-    </label>
-  );
+    value: Vec3,
+    change: (v: Vec3) => void,
+  ) => {
+    const selected =
+      ["X", "Y", "Z"].find((a) => axis(a).every((n, i) => n === value[i])) ??
+      "custom";
+    return (
+      <>
+        <label>
+          {label}
+          <select
+            value={selected}
+            onChange={(e) =>
+              change(
+                e.target.value === "custom" ? [1, 1, 0] : axis(e.target.value),
+              )
+            }
+          >
+            {["X", "Y", "Z"].map((a) => (
+              <option key={a}>{a}</option>
+            ))}
+            <option value="custom">Custom vector</option>
+          </select>
+        </label>
+        {selected === "custom" &&
+          vector(
+            `${label} direction`,
+            value,
+            change,
+            "direction, normalised on save",
+          )}
+      </>
+    );
+  };
   return (
     <details className="rig-authoring">
-      <summary>Create a hinge or vehicle</summary>
+      <summary>Create or edit a rig</summary>
+      {!!target && (
+        <section className="rig-existing" aria-label="Existing rig editing">
+          <label>
+            Existing rig
+            <select
+              value={targetId}
+              onChange={(e) => {
+                setExistingId(e.target.value);
+                reset();
+                setMessage("");
+              }}
+            >
+              {Object.values(project.motionRigs).map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="rig-actions">
+            <button onClick={loadExisting}>Load rig for editing</button>
+            <button
+              onClick={() => {
+                reset();
+                setMessage("New rig draft started.");
+              }}
+            >
+              Start a new rig
+            </button>
+            <button
+              onClick={() =>
+                attempt(() => {
+                  removeCommand(project.revision, true);
+                  setRemoval({
+                    key: removalKey,
+                    revision: project.revision,
+                    count: new Set(
+                      target.groups.flatMap((g) => g.occurrenceIds),
+                    ).size,
+                  });
+                })
+              }
+            >
+              Review rig removal
+            </button>
+          </div>
+          {currentRemoval && (
+            <div className="rig-preview">
+              <p>
+                Remove “{target.name}” and its joint/vehicle settings? Its{" "}
+                {currentRemoval.count} parts stay at their authored positions.
+                This is one undoable edit.
+              </p>
+              <button
+                className="danger wide"
+                onClick={() =>
+                  attempt(() => {
+                    removeCommand(currentRemoval.revision, false);
+                    reset();
+                    setMessage(
+                      "Rig removed. Parts were preserved. Undo restores its settings.",
+                    );
+                  })
+                }
+              >
+                Confirm remove rig
+              </button>
+              <button onClick={() => setRemoval(undefined)}>
+                Cancel removal
+              </button>
+            </div>
+          )}
+          {removal && !currentRemoval && (
+            <p>Project or scope changed. Review removal again.</p>
+          )}
+        </section>
+      )}
+      {editing && (
+        <p>
+          <strong>
+            Editing {project.motionRigs[editing.id]?.name ?? "a missing rig"}
+          </strong>
+          . Original group frames, IDs and supported metadata are retained.{" "}
+          {motor &&
+            "Motor metadata is preserved; the kinematic preview does not simulate motor forces."}
+        </p>
+      )}
+
       <p>
         Assign selected parts to separate rigid groups, then preview and create
         one kinematic rig. Connections and wheel contact are not inferred or
         physically validated.
       </p>
       <p>
-        World coordinates use LDU; negative Y points up. All group frames align
-        with world axes. Current selection: {selection.length} parts.
+        World coordinates use LDU; negative Y points up. New group frames align
+        with world axes; existing frames are retained when editing. Current
+        selection: {selection.length} parts.
       </p>
       <details className="rig-picker">
         <summary>Choose parts for assignment</summary>
@@ -313,9 +606,13 @@ export function RigAuthoring({
         Rig type
         <select
           value={kind}
+          disabled={!!editing}
           onChange={(e) => setKind(e.target.value as typeof kind)}
         >
           <option value="hinge">Hinge</option>
+          <option value="fixed">Fixed joint</option>
+          <option value="prismatic">Sliding joint</option>
+          <option value="spherical">Spherical joint (rest only)</option>
           <option value="vehicle">Planar vehicle</option>
         </select>
       </label>
@@ -327,30 +624,76 @@ export function RigAuthoring({
           onChange={(e) => setName(e.target.value)}
         />
       </label>
-      {kind === "hinge" ? (
+      {kind !== "vehicle" ? (
         <>
           {group("Fixed group", fixed, setFixed)}
-          {group("Moving group", moving, setMoving)}
-          {vector("Hinge pivot", pivot, setPivot)}
-          {axisSelect("Hinge world axis", hingeAxis, setHingeAxis)}
-          <div className="rig-pair">
-            <label>
-              Minimum angle (degrees)
-              <input
-                type="number"
-                value={minimum}
-                onChange={(e) => setMinimum(Number(e.target.value))}
-              />
-            </label>
-            <label>
-              Maximum angle (degrees)
-              <input
-                type="number"
-                value={maximum}
-                onChange={(e) => setMaximum(Number(e.target.value))}
-              />
-            </label>
-          </div>
+          {group(
+            ["fixed", "spherical"].includes(kind)
+              ? "Attached group"
+              : "Moving group",
+            moving,
+            setMoving,
+          )}
+          {vector(
+            kind === "hinge" ? "Hinge pivot" : "Joint pivot",
+            pivot,
+            setPivot,
+          )}
+          {kind === "fixed" && (
+            <p>
+              Fixed joints preserve the relative rest pose. There is no scalar
+              movement control.
+            </p>
+          )}
+          {kind === "spherical" && (
+            <p>
+              Spherical joints preserve their rest pose in the current kinematic
+              preview. Ball-joint motion and forces are not simulated.
+            </p>
+          )}
+          {["hinge", "prismatic"].includes(kind) && (
+            <>
+              {axisSelect(
+                kind === "hinge" ? "Hinge world axis" : "Sliding world axis",
+                hingeAxis,
+                setHingeAxis,
+              )}
+              <label className="rig-check">
+                <input
+                  type="checkbox"
+                  checked={bounded}
+                  onChange={(e) => setBounded(e.target.checked)}
+                />
+                Limit joint movement
+              </label>
+              {bounded ? (
+                <div className="rig-pair">
+                  <label>
+                    {kind === "hinge"
+                      ? "Minimum angle (degrees)"
+                      : "Minimum travel (LDU)"}
+                    <input
+                      type="number"
+                      value={minimum}
+                      onChange={(e) => setMinimum(Number(e.target.value))}
+                    />
+                  </label>
+                  <label>
+                    {kind === "hinge"
+                      ? "Maximum angle (degrees)"
+                      : "Maximum travel (LDU)"}
+                    <input
+                      type="number"
+                      value={maximum}
+                      onChange={(e) => setMaximum(Number(e.target.value))}
+                    />
+                  </label>
+                </div>
+              ) : (
+                <p>No joint limits are authored.</p>
+              )}
+            </>
+          )}
         </>
       ) : (
         <>
@@ -491,19 +834,17 @@ export function RigAuthoring({
           attempt(() => {
             if (!currentPreview) return;
             dispatch(currentPreview);
-            setPreview(undefined);
-            setRigId(uid());
-            setFixed([]);
-            setMoving([]);
-            setChassis([]);
-            setWheels([wheel(), wheel()]);
+            const wasEditing = !!editing;
+            reset();
             setMessage(
-              "Rig created. Open Play to preview the mechanism. Undo restores the previous project.",
+              wasEditing
+                ? "Rig updated. Undo restores its previous settings."
+                : "Rig created. Open Play to preview the mechanism. Undo restores the previous project.",
             );
           })
         }
       >
-        Create rig
+        {editing ? "Update rig" : "Create rig"}
       </button>
       {preview && !currentPreview && (
         <p>

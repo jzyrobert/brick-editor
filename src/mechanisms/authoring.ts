@@ -8,7 +8,7 @@ import {
 import { occurrences } from "../core/document";
 import { add, inverse, mv, physical } from "../core/math";
 import { KinematicSession, validateRig } from "./kinematic";
-import type { MotionRig, RigidGroup } from "./types";
+import type { JointSpec, MotionRig, RigidGroup } from "./types";
 
 export type GroupDraft = {
   id: string;
@@ -28,6 +28,17 @@ export type HingeRigRequest = IdentityDraft & {
   pivotWorld: Vec3;
   axisWorld: Vec3;
   limits: [number, number];
+};
+export type JointRigRequest = IdentityDraft & {
+  fixed: GroupDraft;
+  moving: GroupDraft;
+  jointId: string;
+  kind: JointSpec["kind"];
+  pivotWorld: Vec3;
+  axisWorld?: Vec3;
+  /** Degrees for revolute joints, LDU for prismatic joints. Absent means unbounded. */
+  limits?: [number, number];
+  motor?: JointSpec["motor"];
 };
 export type VehicleRigRequest = IdentityDraft & {
   chassis: GroupDraft;
@@ -193,6 +204,11 @@ function finish(
     affectedOccurrenceIds: ids,
     warnings: [
       "Kinematic preview does not infer joints, contacts, suspension or forces.",
+      ...(rig.joints.some((j) => j.kind === "spherical")
+        ? [
+            "Spherical joints preserve their authored rest orientation; this kinematic preview has no multi-axis spherical actuator.",
+          ]
+        : []),
       ...(rig.vehicle
         ? [
             "Vehicle motion uses the world XZ plane, initially forward along world −Z, regardless of chassis frame orientation. Steering rotates around world Y.",
@@ -204,7 +220,64 @@ function finish(
     ],
   };
 }
-/** Frames and pivot are authored in LDraw world coordinates; axis direction is normalized. */
+/** Explicit world pivot/axis are converted into each declared group frame. */
+export function buildJointRig(
+  project: Project,
+  request: JointRigRequest,
+): RigDraft {
+  fields(request, [
+    ...identityKeys,
+    "fixed",
+    "moving",
+    "jointId",
+    "kind",
+    "pivotWorld",
+    "axisWorld",
+    "limits",
+    "motor",
+  ]);
+  start(project, request);
+  const fixed = group(project, request.fixed, request.includeHidden === true),
+    moving = group(project, request.moving, request.includeHidden === true);
+  vector(request.pivotWorld);
+  const scalar = request.kind === "revolute" || request.kind === "prismatic";
+  ensure(
+    scalar ||
+      (request.axisWorld === undefined &&
+        request.limits === undefined &&
+        request.motor === undefined),
+    "INVALID_INPUT",
+    "Fixed and spherical joints cannot have scalar axes, limits or motors",
+  );
+  const a = inverse(fixed.frame),
+    b = inverse(moving.frame),
+    axis = scalar ? unit(request.axisWorld!) : undefined;
+  return finish(project, request, {
+    schemaVersion: 1,
+    id: request.id,
+    name: request.name,
+    mode: "kinematic",
+    groups: [fixed, moving],
+    joints: [
+      {
+        id: request.jointId,
+        kind: request.kind,
+        bodyA: fixed.id,
+        bodyB: moving.id,
+        anchorA: add(a.position, mv(a.basis, request.pivotWorld)),
+        anchorB: add(b.position, mv(b.basis, request.pivotWorld)),
+        ...(axis ? { axisA: mv(a.basis, axis), axisB: mv(b.basis, axis) } : {}),
+        ...(request.limits === undefined
+          ? {}
+          : { limits: structuredClone(request.limits) }),
+        ...(request.motor === undefined
+          ? {}
+          : { motor: structuredClone(request.motor) }),
+      },
+    ],
+  });
+}
+/** Bounded hinge convenience builder retained for existing callers. */
 export function buildHingeRig(
   project: Project,
   request: HingeRigRequest,
@@ -217,37 +290,15 @@ export function buildHingeRig(
     "axisWorld",
     "limits",
   ]);
-  start(project, request);
-  const fixed = group(project, request.fixed, request.includeHidden === true),
-    moving = group(project, request.moving, request.includeHidden === true);
-  vector(request.pivotWorld);
   ensure(
     Array.isArray(request.limits) && request.limits.length === 2,
     "INVALID_INPUT",
     "Declare both hinge angle limits in degrees",
   );
-  const axis = unit(request.axisWorld),
-    a = inverse(fixed.frame),
-    b = inverse(moving.frame);
-  return finish(project, request, {
-    schemaVersion: 1,
-    id: request.id,
-    name: request.name,
-    mode: "kinematic",
-    groups: [fixed, moving],
-    joints: [
-      {
-        id: "hinge",
-        kind: "revolute",
-        bodyA: fixed.id,
-        bodyB: moving.id,
-        anchorA: add(a.position, mv(a.basis, request.pivotWorld)),
-        anchorB: add(b.position, mv(b.basis, request.pivotWorld)),
-        axisA: mv(a.basis, axis),
-        axisB: mv(b.basis, axis),
-        limits: structuredClone(request.limits),
-      },
-    ],
+  return buildJointRig(project, {
+    ...request,
+    jointId: "hinge",
+    kind: "revolute",
   });
 }
 /** Wheel frame origins are the declared wheel centres; axles are local to those frames. */
@@ -311,6 +362,118 @@ export function buildVehicleRig(
       maxSpeed: request.maxSpeed,
     },
   });
+}
+export type RigAuthoringRequest =
+  | { kind: "joint"; request: JointRigRequest }
+  | { kind: "vehicle"; request: VehicleRigRequest };
+/** Imported values may satisfy domain tolerances yet be changed by normalized UI inputs. */
+function ensureLosslessRig(original: MotionRig, reconstructed: MotionRig) {
+  const equivalent = (a: unknown, b: unknown): boolean => {
+    if (typeof a === "number" && typeof b === "number")
+      return (
+        Math.abs(a - b) <=
+        1e-9 + 16 * Number.EPSILON * Math.max(Math.abs(a), Math.abs(b))
+      );
+    if (a === b) return true;
+    if (Array.isArray(a) || Array.isArray(b))
+      return (
+        Array.isArray(a) &&
+        Array.isArray(b) &&
+        a.length === b.length &&
+        a.every((v, i) => equivalent(v, b[i]))
+      );
+    if (!a || !b || typeof a !== "object" || typeof b !== "object")
+      return false;
+    const left = a as Record<string, unknown>,
+      right = b as Record<string, unknown>,
+      keys = Object.keys(left);
+    return (
+      keys.length === Object.keys(right).length &&
+      keys.every(
+        (key) => Object.hasOwn(right, key) && equivalent(left[key], right[key]),
+      )
+    );
+  };
+  const semantic = (rig: MotionRig) => ({
+    ...rig,
+    groups: [...rig.groups].sort((a, b) =>
+      a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
+    ),
+  });
+  ensure(
+    equivalent(semantic(original), semantic(reconstructed)),
+    "INVALID_INPUT",
+    "This rig cannot be loaded without changing stored axes, anchors or rest data. Keep the original rig, or explicitly redefine it through the automation API; this editor will not normalize it silently.",
+  );
+}
+/** Load only losslessly representable topologies. Never flatten a joint tree or discard extra groups. */
+export function rigAuthoringRequest(
+  project: Project,
+  rigId: string,
+  scope: { includeHidden?: boolean; activeLayerId?: string } = {},
+): RigAuthoringRequest {
+  fields(scope, ["includeHidden", "activeLayerId"]);
+  const rig = project.motionRigs[rigId];
+  ensure(rig, "INVALID_INPUT", "Unknown motion rig");
+  validateRig(project, rig);
+  const identity = {
+    id: rig.id,
+    name: rig.name,
+    expectedRevision: project.revision,
+    ...scope,
+  };
+  const draftGroup = (id: string): GroupDraft => {
+    const g = rig.groups.find((g) => g.id === id)!;
+    return {
+      id: g.id,
+      occurrenceIds: [...g.occurrenceIds],
+      frame: structuredClone(g.frame),
+    };
+  };
+  if (rig.vehicle) {
+    const v = rig.vehicle;
+    ensure(
+      rig.joints.length === 0 && rig.groups.length === v.wheels.length + 1,
+      "INVALID_INPUT",
+      "This editor cannot load a vehicle with extra groups or joints without losing authored data",
+    );
+    const request: VehicleRigRequest = {
+      ...identity,
+      chassis: draftGroup(v.chassisGroup),
+      wheels: v.wheels.map((w) => ({
+        ...draftGroup(w.groupId),
+        axisLocal: [...w.axis],
+        radius: w.radius,
+        steering: w.steering,
+      })),
+      wheelbase: v.wheelbase,
+      maxSteerDegrees: v.maxSteerDegrees,
+      maxSpeed: v.maxSpeed,
+    };
+    ensureLosslessRig(rig, buildVehicleRig(project, request).rig);
+    return { kind: "vehicle", request };
+  }
+  ensure(
+    rig.groups.length === 2 && rig.joints.length === 1,
+    "INVALID_INPUT",
+    "This editor supports one joint between two groups; a joint tree or extra groups cannot be loaded without losing authored data",
+  );
+  const joint = rig.joints[0],
+    fixed = draftGroup(joint.bodyA),
+    moving = draftGroup(joint.bodyB);
+  const request: JointRigRequest = {
+    ...identity,
+    fixed,
+    moving,
+    jointId: joint.id,
+    kind: joint.kind,
+    pivotWorld: add(fixed.frame.position, mv(fixed.frame.basis, joint.anchorA)),
+    ...(joint.axisA ? { axisWorld: mv(fixed.frame.basis, joint.axisA) } : {}),
+    ...(joint.limits ? { limits: structuredClone(joint.limits) } : {}),
+    ...(joint.motor ? { motor: structuredClone(joint.motor) } : {}),
+  };
+  ensureLosslessRig(rig, buildJointRig(project, request).rig);
+  return { kind: "joint", request };
 }
 export function rigDraftCommand(draft: RigDraft, commandId: string): Command {
   return {

@@ -606,7 +606,22 @@ const exportRequest = {
   ],
 };
 const query = obj(
-  { ref: id, colorCode: id, layerId: id, occurrenceIds: arr(id) },
+  {
+    ref: id,
+    colorCode: id,
+    layerId: id,
+    occurrenceIds: arr(id),
+    scope,
+    selection: { type: "boolean" },
+    connectivity: { enum: ["unverified", "verified"] },
+    spatial: { type: "boolean" },
+    intersectingCandidates: { type: "boolean" },
+    bounds: obj({
+      min: vec,
+      max: vec,
+      mode: { enum: ["intersects", "contained"] },
+    }),
+  },
   [],
 );
 const inventoryPreview = obj({

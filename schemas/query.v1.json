@@ -26,6 +26,144 @@
         "maxLength": 1024
       },
       "maxItems": 100000
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "all"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "visible"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "layers"
+            },
+            "layerIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "kind",
+            "layerIds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "selection"
+            },
+            "occurrenceIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "kind",
+            "occurrenceIds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "submodel"
+            },
+            "occurrenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "kind",
+            "occurrenceId"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "selection": {
+      "type": "boolean"
+    },
+    "connectivity": {
+      "enum": [
+        "unverified",
+        "verified"
+      ]
+    },
+    "spatial": {
+      "type": "boolean"
+    },
+    "intersectingCandidates": {
+      "type": "boolean"
+    },
+    "bounds": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "max": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "mode": {
+          "enum": [
+            "intersects",
+            "contained"
+          ]
+        }
+      },
+      "required": [
+        "min",
+        "max",
+        "mode"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [],

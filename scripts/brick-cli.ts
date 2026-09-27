@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFile, writeFile } from "node:fs/promises";
+import { queryProject } from "../src/automation/query";
+import { readFile, writeFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { zipSync, strToU8 } from "fflate";
@@ -31,12 +32,13 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      "brick-cli validate|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
+      "brick-cli validate|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nQuery: --request query.json [--output query-result.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
     );
     return;
   }
   const allowed: Record<string, string[]> = {
     validate: [],
+    query: ["request"],
     apply: ["commands"],
     export: ["format"],
     "export-profile": [
@@ -166,6 +168,29 @@ export async function main(argv: string[]) {
   const p = input.endsWith(".brickproj")
     ? await decodeNative(bytes)
     : importLDraw(new TextDecoder().decode(bytes), input.split("/").at(-1));
+  if (operation === "query") {
+    const requestPath = flag("request");
+    if (output)
+      ensure(
+        resolve(output) !== resolve(input) &&
+          (!requestPath || resolve(output) !== resolve(requestPath)),
+        "INVALID_INPUT",
+        "Query output must differ from source and request files",
+      );
+    if (requestPath)
+      ensure(
+        (await stat(requestPath)).size <= 25 * 1024 * 1024,
+        "LIMIT_EXCEEDED",
+        "Query request exceeds 25 MiB",
+      );
+    const request = requestPath
+      ? JSON.parse(await readFile(requestPath, "utf8"))
+      : {};
+    const result = JSON.stringify(queryProject(p, request), null, 2) + "\n";
+    if (output) await writeFile(output, result);
+    else console.log(result.trimEnd());
+    return;
+  }
   if (operation === "validate") {
     console.log(
       JSON.stringify(

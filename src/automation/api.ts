@@ -1,3 +1,4 @@
+import { queryProject, type QueryRequest } from "./query";
 import type { FillRequest, fillPreview } from "../edit/fill";
 import type { ExportRequest as ProfileRequest } from "../ldraw/export-profiles";
 import type { MechanismBrowser } from "../mechanisms/browser";
@@ -16,7 +17,6 @@ import type {
 } from "../play/types";
 import { type Editor } from "../core/commands";
 import { type CameraSpec, type Command, ensure } from "../core/types";
-import { occurrences } from "../core/document";
 import { importLDraw, exportLDraw, scopedLDraw } from "../ldraw/io";
 import { encodeNative, decodeNative } from "../persistence/native";
 import {
@@ -35,6 +35,7 @@ export function createAPI(
   render: () => SceneAdapter | undefined,
   play?: () => BrowserPlay | undefined,
   mechanisms?: () => MechanismBrowser | undefined,
+  selection?: () => string[],
 ) {
   const inventory = new InventoryService(),
     jobs = new JobRegistry();
@@ -283,27 +284,8 @@ export function createAPI(
       export: async (input: Parameters<InventoryService["export"]>[1]) =>
         inventory.export(editor.project, input),
     },
-    query: async (
-      input: {
-        colorCode?: string;
-        ref?: string;
-        layerId?: string;
-        occurrenceIds?: string[];
-      } = {},
-    ) => {
-      validate("query", input);
-      const p = editor.project;
-      return {
-        revision: p.revision,
-        occurrences: occurrences(p).filter(
-          (o) =>
-            (!input.colorCode || o.colorCode === input.colorCode) &&
-            (!input.ref || o.node.ref === input.ref) &&
-            (!input.layerId || o.layerId === input.layerId) &&
-            (!input.occurrenceIds || input.occurrenceIds.includes(o.id)),
-        ),
-        diagnostics: p.diagnostics,
-      };
+    query: async (input: QueryRequest = {}) => {
+      return queryProject(editor.project, input, selection?.());
     },
     dispatch: async (input: Command) => editor.dispatch(input),
     transaction: async (input: Parameters<Editor["transaction"]>[0]) =>
