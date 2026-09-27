@@ -68,6 +68,29 @@
             "layerIds"
           ],
           "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "occurrences"
+            },
+            "occurrenceIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 5000,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "mode",
+            "occurrenceIds"
+          ],
+          "additionalProperties": false
         }
       ]
     },
@@ -110,6 +133,49 @@
         "balanced",
         "photo"
       ]
+    },
+    "qualityControls": {
+      "type": "object",
+      "properties": {
+        "edges": {
+          "enum": [
+            "none",
+            "ordinary",
+            "all"
+          ]
+        },
+        "shadows": {
+          "enum": [
+            "off",
+            "soft"
+          ]
+        },
+        "shadowMapSize": {
+          "enum": [
+            512,
+            1024,
+            2048
+          ]
+        },
+        "pixelRatioCap": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 3
+        },
+        "toneMapping": {
+          "enum": [
+            "aces",
+            "neutral"
+          ]
+        },
+        "exposure": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 4
+        }
+      },
+      "required": [],
+      "additionalProperties": false
     },
     "strict": {
       "type": "boolean"

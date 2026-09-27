@@ -110,6 +110,22 @@ export function occurrences(p: Project): Occurrence[] {
   return out;
 }
 export function validateDocument(p: Project) {
+  if (p.metadata.preamble !== undefined) {
+    ensure(
+      Array.isArray(p.metadata.preamble) &&
+        p.metadata.preamble.length <= 100000 &&
+        p.metadata.preamble.every(
+          (line) =>
+            typeof line === "string" &&
+            line.length <= 4096 &&
+            !/[\r\n\0]/.test(line) &&
+            (!line.trim() || /^0(?:\s|$)/.test(line.trim())) &&
+            !/^0\s+(?:FILE|NOFILE)(?:\s|$)/i.test(line.trim()),
+        ),
+      "INVALID_INPUT",
+      "MPD preamble must contain only bounded, single-line comments without file boundaries",
+    );
+  }
   ensure(p.schemaVersion === 1, "INVALID_INPUT", "Unsupported project version");
   ensure(
     p.units === "LDU" && Number.isSafeInteger(p.revision) && p.revision >= 0,

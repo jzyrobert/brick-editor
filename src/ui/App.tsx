@@ -1,3 +1,15 @@
+import { QualityPanel } from "./QualityPanel";
+import { MechanismBrowser } from "../mechanisms/browser";
+import { MechanismPanel } from "./MechanismPanel";
+import { ProjectLibrary } from "./ProjectLibrary";
+import { OfflinePanel } from "./OfflinePanel";
+import { LayerActions } from "./LayerActions";
+import { ClipboardTools } from "./ClipboardTools";
+import { InstructionsPublish } from "./InstructionsPublish";
+import { SharePanel } from "./SharePanel";
+import { AutosaveQueue } from "../persistence/autosave";
+import { BrowserPlay } from "../play/browser";
+import { PlayPanel } from "./PlayPanel";
 import { useEffect, useRef, useState } from "react";
 import { Editor } from "../core/commands";
 import { occurrences } from "../core/document";
@@ -113,7 +125,10 @@ function NumberInput({
 }
 export default function App() {
   const [project, setProject] = useState(editor.project),
-    [mode, setMode] = useState("Build"),
+    [saveConflict, setSaveConflict] = useState(false),
+    [mode, setMode] = useState(
+      location.hash.startsWith("#v=") ? "Project" : "Build",
+    ),
     [tool, setTool] = useState("Select"),
     [part, setPart] = useState("3001.dat"),
     [color, setColor] = useState("4"),
@@ -156,10 +171,13 @@ export default function App() {
   const viewport = useRef<HTMLDivElement>(null),
     renderer = useRef<SceneAdapter | undefined>(undefined),
     api = useRef<BrickEditorAPI | undefined>(undefined),
+    play = useRef<BrowserPlay | undefined>(undefined),
+    mechanisms = useRef<MechanismBrowser | undefined>(undefined),
+    modeRef = useRef(mode),
     fileInput = useRef<HTMLInputElement>(null),
     worker = useRef<Worker | undefined>(undefined),
-    saveRevision = useRef<number | null>(null),
-    saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined),
+    saveRevisions = useRef(new Map<string, number>()),
+    autosave = useRef<AutosaveQueue | undefined>(undefined),
     loaded = useRef(false),
     operationEpoch = useRef(0),
     observedProjectId = useRef(editor.project.id),
@@ -178,6 +196,7 @@ export default function App() {
     selected = all.filter((o) => selection.includes(o.id)),
     currentPart = catalog[part],
     plan = Object.values(project.instructionPlans)[0];
+  modeRef.current = mode;
   projectRef.current = project;
   selectionRef.current = selection;
   interact.current = {
@@ -215,11 +234,18 @@ export default function App() {
     renderer.current?.select(ids);
   };
   useEffect(() => {
+    const openSharedPreview = () => {
+      if (location.hash.startsWith("#v=")) setMode("Project");
+    };
+    window.addEventListener("hashchange", openSharedPreview);
+    return () => window.removeEventListener("hashchange", openSharedPreview);
+  }, []);
+  useEffect(() => {
     const unsubscribe = editor.subscribe(() => {
       const p = editor.project;
+      play.current?.sourceChanged();
       if (observedProjectId.current !== p.id) {
         observedProjectId.current = p.id;
-        saveRevision.current = null;
       }
       setProject(p);
       setSelection((ids) =>
@@ -234,39 +260,75 @@ export default function App() {
         .catch(() => {});
       if (!loaded.current) return;
       setSaveStatus("Unsaved changes");
-      clearTimeout(saveTimer.current);
-      saveTimer.current = setTimeout(() => save(p), 750);
+      autosave.current?.schedule(p);
     });
     const save = async (p: typeof project) => {
       try {
-        setSaveStatus("Saving…");
+        if (editor.project.id === p.id) setSaveStatus("Saving…");
         const store = new LocalProjects(localStorage);
-        saveRevision.current = await store.save(p, saveRevision.current);
-        localStorage.setItem("brick-editor-current", p.id);
-        setSaveStatus("Saved revision " + p.revision);
+        saveRevisions.current.set(
+          p.id,
+          await store.save(p, saveRevisions.current.get(p.id) ?? null),
+        );
+        if (editor.project.id === p.id) {
+          localStorage.setItem("brick-editor-current", p.id);
+          setSaveStatus(
+            editor.project.revision === p.revision
+              ? "Saved revision " + p.revision
+              : "Unsaved changes",
+          );
+        }
       } catch (e) {
+        if ((e as { code?: string }).code === "REVISION_CONFLICT")
+          setSaveConflict(true);
         setSaveStatus("Save failed — download a backup");
         setStatus(e instanceof Error ? e.message : String(e));
       }
     };
+    autosave.current = new AutosaveQueue(save, (e) =>
+      setStatus(e instanceof Error ? e.message : String(e)),
+    );
+    const flushSave = () => {
+      if (document.hidden) void autosave.current?.flush();
+    };
+    document.addEventListener("visibilitychange", flushSave);
     try {
       renderer.current = new SceneAdapter(viewport.current!, setStatus);
     } catch (e) {
       setStatus(e instanceof Error ? e.message : String(e));
     }
-    api.current = createAPI(editor, () => renderer.current);
+    mechanisms.current = new MechanismBrowser(editor, () => renderer.current);
+    play.current = new BrowserPlay(
+      () => renderer.current,
+      () => editor.project.revision,
+      () => mechanisms.current?.exit(),
+    );
+    api.current = createAPI(
+      editor,
+      () => renderer.current,
+      () => play.current,
+      () => mechanisms.current,
+    );
     if (new URLSearchParams(location.search).get("automation") === "1")
       window.brickEditor = api.current;
     const init = async () => {
+      const initialRevision = editor.project.revision,
+        initialId = editor.project.id;
+      let recovered = false;
       try {
         const id = localStorage.getItem("brick-editor-current");
         const saved = id
           ? await new LocalProjects(localStorage).load(id)
           : null;
-        if (saved) {
-          saveRevision.current = saved.revision;
+        if (
+          saved &&
+          editor.project.revision === initialRevision &&
+          editor.project.id === initialId
+        ) {
+          saveRevisions.current.set(saved.id, saved.revision);
           observedProjectId.current = saved.id;
           editor.replace(saved);
+          recovered = true;
           setStatus("Recovered local project");
         } else renderer.current?.update(editor.project).catch(() => {});
       } catch (e) {
@@ -274,13 +336,22 @@ export default function App() {
         renderer.current?.update(editor.project).catch(() => {});
       }
       loaded.current = true;
+      if (
+        !recovered &&
+        (editor.project.revision !== initialRevision ||
+          editor.project.id !== initialId)
+      )
+        autosave.current?.schedule(editor.project);
     };
     void init();
     return () => {
       unsubscribe();
+      play.current?.dispose();
+      mechanisms.current?.dispose();
       renderer.current?.dispose();
       worker.current?.terminate();
-      clearTimeout(saveTimer.current);
+      autosave.current?.dispose();
+      document.removeEventListener("visibilitychange", flushSave);
       delete window.brickEditor;
     };
   }, []);
@@ -290,12 +361,17 @@ export default function App() {
     r.controls.enableRotate = mode === "Build" || mode === "Photo";
     r.controls.mouseButtons.LEFT = tool === "Navigate" ? 0 : (null as any);
     r.controls.touches.ONE = tool === "Navigate" ? 0 : (null as any);
-    r.controls.enabled = true;
+    r.controls.enabled = mode !== "Play";
     r.showStep(
       mode === "Instructions" && plan
         ? plan.steps.slice(0, step + 1).flat()
         : null,
     );
+    if (mode !== "Play") {
+      play.current?.exit();
+      mechanisms.current?.exit();
+    }
+    if (mode !== "Build") setPanel("Canvas");
   }, [tool, mode, step, plan]);
   useEffect(() => {
     if (tool === "Place" && mode === "Build")
@@ -349,6 +425,8 @@ export default function App() {
       if (pointers.size > 1) navigated = true;
     };
     const up = (e: PointerEvent) => {
+      if (modeRef.current !== "Build" || play.current?.getState().active)
+        return;
       const start = pointers.get(e.pointerId);
       pointers.delete(e.pointerId);
       const wasNavigation = navigated;
@@ -423,6 +501,8 @@ export default function App() {
   }, []);
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
+      if (modeRef.current !== "Build" || play.current?.getState().active)
+        return;
       if (
         (e.target as HTMLElement).matches("input,textarea,select") ||
         inventoryOpen
@@ -502,7 +582,6 @@ export default function App() {
         const backup = await api.current!.project.export({ format: "native" });
         download(backup.name, backup.bytes, backup.mimeType);
       }
-      saveRevision.current = null;
       editor.replace(template(name));
       setActiveLayer("base");
       setSelectionSafe([]);
@@ -624,6 +703,15 @@ export default function App() {
       setBusy(true);
       try {
         const p = editor.project;
+        const qualityProfile = renderer.current!.currentQuality();
+        const {
+          edges,
+          shadows,
+          shadowMapSize,
+          pixelRatioCap,
+          toneMapping,
+          exposure,
+        } = qualityProfile;
         const result = await api.current!.render.image({
           revision: p.revision,
           width: photoSize[0],
@@ -633,7 +721,15 @@ export default function App() {
           background: transparent
             ? { type: "transparent" }
             : { type: "solid", color: "#f4f5f6" },
-          quality: "photo",
+          quality: qualityProfile.name,
+          qualityControls: {
+            edges,
+            shadows,
+            shadowMapSize,
+            pixelRatioCap,
+            toneMapping,
+            exposure,
+          },
           strict: true,
         });
         ensure(
@@ -727,6 +823,7 @@ export default function App() {
             <button
               key={p.id}
               className={"part-card " + (part === p.id ? "chosen" : "")}
+              aria-pressed={part === p.id}
               onClick={() => {
                 setPart(p.id);
                 setPosition((v) => [v[0], elevation - p.height, v[2]]);
@@ -752,6 +849,7 @@ export default function App() {
             title={c.name}
             style={{ background: c.hex }}
             className={color === c.code ? "chosen" : ""}
+            aria-pressed={color === c.code}
             onClick={() => setColor(c.code)}
           >
             {color === c.code ? "✓" : ""}
@@ -789,7 +887,7 @@ export default function App() {
             )
           }
         >
-          ＋
+          + Add
         </button>
       </div>
       <div className="layer-list">
@@ -1073,7 +1171,7 @@ export default function App() {
     </>
   );
   return (
-    <div className="app">
+    <div className={"app mode-" + mode.toLowerCase()}>
       <header className="header">
         <a className="brand" href="#" aria-label="Brick Editor home">
           <span className="brand-icon">▦</span>
@@ -1088,6 +1186,7 @@ export default function App() {
               className={mode === m ? "active" : ""}
               onClick={() => {
                 setMode(m);
+                if (m !== "Build") setPanel("Canvas");
                 if (m === "Photo")
                   setCamera(renderer.current?.currentCamera() || camera);
               }}
@@ -1124,6 +1223,29 @@ export default function App() {
           Save project ↓
         </button>
       </div>
+      {saveConflict && (
+        <div className="save-conflict" role="alert">
+          <span>
+            Another tab saved this project. Your edits are still here; saving is
+            blocked until you make a separate copy.
+          </span>
+          <button onClick={() => void exportFile("native")}>
+            Download my backup
+          </button>
+          <button
+            onClick={() => {
+              const copy = editor.project;
+              copy.id = uid();
+              copy.title += " (copy)";
+              editor.replace(copy);
+              setSaveConflict(false);
+              setStatus("Created a separate project for your edits.");
+            }}
+          >
+            Fork my edits
+          </button>
+        </div>
+      )}
       <main className="workspace">
         <aside
           className={
@@ -1132,7 +1254,21 @@ export default function App() {
           }
         >
           <div className="mobile-sheet-head">
-            <strong>Parts</strong>
+            <strong>
+              Parts
+              <small className="selected-colour">
+                {colors.find((c) => c.code === color)?.name}
+              </small>
+            </strong>
+            <button
+              className="primary"
+              onClick={() => {
+                setTool("Place");
+                setPanel("Canvas");
+              }}
+            >
+              Place selected part →
+            </button>
             <button onClick={() => setPanel("Canvas")}>Close</button>
           </div>
           {partsPanel}
@@ -1146,11 +1282,11 @@ export default function App() {
             <small>LDraw coordinates · 20 LDU / stud</small>
           </div>
           <div className="view-controls">
-            {["3D", "Top", "Front", "Side"].map((v) => (
+            {["Fit", "Top", "Front", "Side"].map((v) => (
               <button
                 key={v}
                 onClick={() => {
-                  if (v === "3D") {
+                  if (v === "Fit") {
                     renderer.current?.fit();
                     return;
                   }
@@ -1173,7 +1309,7 @@ export default function App() {
               </button>
             ))}
           </div>
-          {all.length === 0 && mode === "Build" && (
+          {all.length === 0 && mode === "Build" && tool !== "Place" && (
             <div className="welcome">
               <span className="eyebrow">A LITTLE SPACE FOR BIG IDEAS</span>
               <h1>
@@ -1206,7 +1342,10 @@ export default function App() {
           {tool === "Place" && mode === "Build" && (
             <div className="placement-card">
               <div>
-                <strong>{currentPart.name}</strong>
+                <strong>
+                  {currentPart.name} ·{" "}
+                  {colors.find((c) => c.code === color)?.name}
+                </strong>
                 <span>Tap the grid to preview · grid snapping</span>
               </div>
               <div className="placement-values">
@@ -1366,6 +1505,7 @@ export default function App() {
               >
                 Download PNG + manifest ↓
               </button>
+              <QualityPanel renderer={renderer.current} />
             </div>
           )}
           {mode === "Instructions" && (
@@ -1417,23 +1557,36 @@ export default function App() {
                   >
                     Download plan JSON
                   </button>
+                  <InstructionsPublish
+                    project={project}
+                    planId={Object.keys(project.instructionPlans)[0]}
+                    renderer={renderer.current}
+                  />
                 </>
               )}
             </div>
           )}
-          {mode === "Play" && (
-            <div className="mode-card">
-              <span className="eyebrow">PLANNED · P1</span>
-              <h2>Explore your world.</h2>
-              <p>
-                Walking, first-person and rigid-joint third-person exploration
-                are not implemented in this build. Core editor acceptance gates
-                come first.
-              </p>
-              <button className="primary" onClick={() => setMode("Build")}>
-                Back to building
-              </button>
-            </div>
+          {mode === "Play" && play.current && (
+            <PlayPanel
+              play={play.current}
+              exit={() => setMode("Build")}
+              bookmark={() => {
+                const view = play.current!.camera();
+                command("camera.bookmark", {
+                  name: "Exploration view",
+                  camera: view,
+                });
+                setCamera(view);
+                setStatus("Exploration view saved in Photo bookmarks.");
+              }}
+            >
+              {mechanisms.current && (
+                <MechanismPanel
+                  mechanisms={mechanisms.current}
+                  rigs={project.motionRigs}
+                />
+              )}
+            </PlayPanel>
           )}
           {mode === "Project" && (
             <div className="mode-card">
@@ -1454,29 +1607,72 @@ export default function App() {
               <button className="wide" onClick={() => void exportFile("ldraw")}>
                 Export LDraw MPD ↓
               </button>
+              <SharePanel
+                project={project}
+                open={async (shared) => {
+                  if (occurrences(editor.project).length)
+                    await exportFile("native");
+                  editor.replace(shared);
+                  await renderer.current?.ready();
+                  renderer.current?.fit();
+                  setPanel("Canvas");
+                  setMode("Build");
+                }}
+              />
+              <ProjectLibrary
+                currentId={project.id}
+                open={async (saved) => {
+                  if (occurrences(editor.project).length)
+                    await exportFile("native");
+                  await autosave.current?.flush();
+                  saveRevisions.current.set(saved.id, saved.revision);
+                  editor.replace(saved);
+                  setSaveConflict(false);
+                  setMode("Build");
+                  setPanel("Canvas");
+                  await renderer.current?.ready();
+                  renderer.current?.fit();
+                }}
+              />
+              <OfflinePanel />
               <h3>Start from an original template</h3>
               <p className="muted">
                 Your current build is downloaded before a template replaces it.
               </p>
               <div className="template-grid">
-                {(["blank", "room", "wall", "200"] as const).map((t) => (
+                {(
+                  [
+                    "blank",
+                    "room",
+                    "wall",
+                    "200",
+                    "explore",
+                    "mechanisms",
+                  ] as const
+                ).map((t) => (
                   <button key={t} onClick={() => void useTemplate(t)}>
-                    {t === "blank"
-                      ? "Blank canvas"
-                      : t === "room"
-                        ? "Courtyard studio"
-                        : t === "wall"
-                          ? "Simple wall"
-                          : "200-part build"}
+                    {t === "mechanisms"
+                      ? "Door & vehicle"
+                      : t === "explore"
+                        ? "Exploration room"
+                        : t === "blank"
+                          ? "Blank canvas"
+                          : t === "room"
+                            ? "Courtyard studio"
+                            : t === "wall"
+                              ? "Simple wall"
+                              : "200-part build"}
                   </button>
                 ))}
               </div>
               <details>
                 <summary>Supported features and source notices</summary>
                 <p>
-                  Six pinned LDraw parts, local LDraw/native files, commands,
-                  layers, inventory and PNG. Texture projection, connector
-                  snapping, PDF publishing and Play are unavailable.
+                  Six pinned LDraw parts, local files, clipboard and arrays,
+                  layers, inventory, image and instruction publishing, Play
+                  exploration and kinematic mechanisms. Texture projection,
+                  connector snapping, dynamic suspension and advanced assembly
+                  planning remain unavailable.
                 </p>
                 <a
                   href={import.meta.env.BASE_URL + "notices/LDRAW.txt"}
@@ -1528,7 +1724,29 @@ export default function App() {
               Inspector
             </button>
           </div>
-          {panel === "Inspector" ? inspectorPanel : layersPanel}
+          {panel === "Inspector" ? (
+            <>
+              {inspectorPanel}
+              <ClipboardTools
+                editor={editor}
+                selection={selection}
+                layerId={activeLayer}
+                crossLayer={crossLayer}
+                position={position}
+                onSelect={setSelectionSafe}
+              />
+            </>
+          ) : (
+            <>
+              {layersPanel}
+              <LayerActions
+                project={project}
+                layerId={activeLayer}
+                dispatch={(type, payload) => command(type, payload)}
+                onRemoved={setActiveLayer}
+              />
+            </>
+          )}
           <div className="workplane">
             <h3>Workplane</h3>
             <NumberInput
@@ -1583,6 +1801,7 @@ export default function App() {
           <button
             key={p}
             className={panel === p ? "active" : ""}
+            aria-pressed={panel === p}
             onClick={() => setPanel(p)}
           >
             {p}

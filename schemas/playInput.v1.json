@@ -1,0 +1,36 @@
+{
+  "$id": "playInput",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "moveX": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "moveZ": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "vertical": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "run": {
+      "type": "boolean"
+    },
+    "jump": {
+      "type": "boolean"
+    },
+    "yaw": {
+      "type": "number"
+    },
+    "pitch": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

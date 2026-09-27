@@ -1,9 +1,23 @@
 import {
+  KinematicSession,
+  rebaseRig,
+  validateRig,
+} from "../mechanisms/kinematic";
+import {
+  copyFragment,
+  pasteFragment,
+  translation,
+  type CopyRequest,
+  type ClipboardFragment,
+} from "./fragments";
+import {
   type Project,
   type Command,
   type Node,
   type Occurrence,
   type Transform,
+  type Vec3,
+  type Basis,
   ensure,
   uid,
 } from "./types";
@@ -13,7 +27,7 @@ import {
   validateDocument,
   encodePath,
 } from "./document";
-import { identity, compose, inverse, add } from "./math";
+import { identity, compose, inverse, add, mv } from "./math";
 import { validate } from "./validate";
 import { canonical } from "../ldraw/path";
 import { stable } from "./hash";
@@ -105,7 +119,11 @@ function uniqueNode(p: Project, o: Occurrence): Node {
   }
   return model.nodes.find((n) => n.id === o.path.at(-1))!;
 }
-function mutate(p: Project, c: Command) {
+function mutate(
+  p: Project,
+  c: Command,
+  copyMappings: Record<string, string[]> = {},
+) {
   const v = c.payload;
   const scopeFields = ["occurrenceIds", "includeHidden", "activeLayerId"];
   switch (c.type) {
@@ -118,6 +136,142 @@ function mutate(p: Project, c: Command) {
       );
       p.title = v.title;
       break;
+    case "rigs.upsert": {
+      fields(v, ["rig", "includeHidden"]);
+      validateRig(p, v.rig);
+      editable(p, {
+        occurrenceIds: v.rig.groups.flatMap((g: any) => g.occurrenceIds),
+        includeHidden: v.includeHidden,
+      });
+      for (const existing of Object.values(p.motionRigs)) {
+        validateRig(p, existing, false);
+        if (existing.id !== v.rig.id)
+          ensure(
+            !existing.groups.some((g) =>
+              g.occurrenceIds.some((id) =>
+                v.rig.groups.some((g: any) => g.occurrenceIds.includes(id)),
+              ),
+            ),
+            "INVALID_INPUT",
+            "An occurrence cannot belong to multiple motion rigs.",
+          );
+      }
+      p.motionRigs[v.rig.id] = structuredClone(v.rig);
+      break;
+    }
+    case "rigs.remove": {
+      fields(v, ["rigId"]);
+      ensure(p.motionRigs[v.rigId], "INVALID_INPUT", "Unknown motion rig.");
+      delete p.motionRigs[v.rigId];
+      break;
+    }
+    case "rigs.applyPose": {
+      fields(v, ["rigId", "sourceRevision", "pose", "includeHidden"]);
+      ensure(
+        v.sourceRevision === p.revision,
+        "REVISION_CONFLICT",
+        "Mechanism pose belongs to an older source revision.",
+      );
+      const session = new KinematicSession(p, v.rigId);
+      const snapshot = session.setPose(v.pose);
+      const targets = editable(p, {
+        occurrenceIds: Object.keys(snapshot.transforms),
+        includeHidden: v.includeHidden,
+      });
+      for (const o of targets) {
+        const n = uniqueNode(p, o);
+        n.transform = compose(
+          inverse(parentTransform(p, o.path)),
+          snapshot.transforms[o.id],
+        );
+      }
+      p.motionRigs[v.rigId] = rebaseRig(p.motionRigs[v.rigId], snapshot);
+      validateRig(p, p.motionRigs[v.rigId]);
+      break;
+    }
+    case "parts.duplicate": {
+      fields(v, [...scopeFields, "delta"]);
+      editable(p, v);
+      const fragment = copyFragment(p, {
+        occurrenceIds: v.occurrenceIds,
+        includeHidden: v.includeHidden,
+      });
+      Object.assign(
+        copyMappings,
+        pasteFragment(p, fragment, [translation(v.delta ?? [20, 0, 20])]),
+      );
+      break;
+    }
+    case "clipboard.paste": {
+      fields(v, ["fragment", "delta", "layerId", "maxAdditions"]);
+      Object.assign(
+        copyMappings,
+        pasteFragment(p, v.fragment, [translation(v.delta ?? [0, 0, 0])], v),
+      );
+      break;
+    }
+    case "parts.array": {
+      fields(v, [
+        ...scopeFields,
+        "kind",
+        "count",
+        "delta",
+        "center",
+        "axis",
+        "angleDegrees",
+        "maxAdditions",
+      ]);
+      editable(p, v);
+      const fragment = copyFragment(p, {
+        occurrenceIds: v.occurrenceIds,
+        includeHidden: v.includeHidden,
+      });
+      const transforms: Transform[] = [];
+      for (let i = 1; i <= v.count; i++) {
+        if (v.kind === "linear")
+          transforms.push(
+            translation(v.delta.map((x: number) => x * i) as Vec3),
+          );
+        else {
+          const length = Math.hypot(...v.axis);
+          ensure(
+            length > 1e-9,
+            "INVALID_INPUT",
+            "Circular array axis must be nonzero.",
+          );
+          const [x, y, z] = v.axis.map((n: number) => n / length),
+            angle = (v.angleDegrees * i * Math.PI) / 180,
+            c = Math.cos(angle),
+            s = Math.sin(angle),
+            t = 1 - c;
+          const basis: Basis = [
+            t * x * x + c,
+            t * x * y - s * z,
+            t * x * z + s * y,
+            t * x * y + s * z,
+            t * y * y + c,
+            t * y * z - s * x,
+            t * x * z - s * y,
+            t * y * z + s * x,
+            t * z * z + c,
+          ];
+          const rotated = mv(basis, v.center);
+          transforms.push({
+            basis,
+            position: v.center.map(
+              (n: number, k: number) => n - rotated[k],
+            ) as Vec3,
+          });
+        }
+      }
+      Object.assign(
+        copyMappings,
+        pasteFragment(p, fragment, transforms, {
+          maxAdditions: v.maxAdditions,
+        }),
+      );
+      break;
+    }
     case "parts.add": {
       fields(v, ["parts", "layerId", "maxAdditions"]);
       ensure(
@@ -152,8 +306,7 @@ function mutate(p: Project, c: Command) {
     case "parts.remove":
     case "parts.recolor":
     case "parts.transform":
-    case "parts.replace":
-    case "parts.duplicate": {
+    case "parts.replace": {
       const allowed =
         c.type === "parts.recolor"
           ? ["colorCode", "preserveFixedColors"]
@@ -161,9 +314,7 @@ function mutate(p: Project, c: Command) {
             ? ["delta", "transform", "space"]
             : c.type === "parts.replace"
               ? ["ref"]
-              : c.type === "parts.duplicate"
-                ? ["delta"]
-                : [];
+              : [];
       fields(v, [...scopeFields, ...allowed]);
       const selected = editable(p, v);
       if (c.type === "parts.recolor")
@@ -207,24 +358,6 @@ function mutate(p: Project, c: Command) {
             position: add(o.transform.position, v.delta),
           };
           n.transform = compose(inverse(parent), world);
-        }
-        if (c.type === "parts.duplicate") {
-          ensure(
-            n.kind !== "geometry",
-            "INVALID_INPUT",
-            "Duplicate a custom part definition rather than a standalone source primitive",
-          );
-          const copy = {
-            ...structuredClone(n),
-            id: uid(),
-            transform: {
-              ...o.transform,
-              position: add(o.transform.position, v.delta || [20, 0, 20]),
-            },
-          };
-          delete copy.sourceRecordId;
-          p.models[p.rootModelId].nodes.push(copy);
-          p.layerAssignments[encodePath([copy.id])] = o.layerId;
         }
       }
       break;
@@ -412,7 +545,14 @@ export class Editor {
   private state: Project;
   private past: Patch[][] = [];
   private future: Patch[][] = [];
-  private ledger = new Map<string, { key: string; result: any }>();
+  private ledger = new Map<
+    string,
+    {
+      key: string;
+      result: any;
+      cut?: { key: string; fragment: ClipboardFragment };
+    }
+  >();
   private listeners = new Set<() => void>();
   historyTruncated = false;
   constructor(p = createProject()) {
@@ -448,6 +588,47 @@ export class Editor {
     this.ledger.clear();
     this.emit();
     return { revision: this.state.revision };
+  }
+  copy(request: CopyRequest) {
+    return copyFragment(this.state, request);
+  }
+  cut(request: CopyRequest & { expectedRevision: number; commandId: string }) {
+    fields(request, [
+      "occurrenceIds",
+      "includeHidden",
+      "expectedRevision",
+      "commandId",
+    ]);
+    const key = stable(request),
+      previous = this.ledger.get(request.commandId);
+    if (previous) {
+      ensure(
+        previous.cut?.key === key,
+        "INVALID_INPUT",
+        "Command ID reused with different content",
+      );
+      return structuredClone({
+        ...previous.result,
+        fragment: previous.cut.fragment,
+      });
+    }
+    const fragment = copyFragment(this.state, {
+      occurrenceIds: request.occurrenceIds,
+      includeHidden: request.includeHidden,
+    });
+    const result = this.dispatch({
+      schemaVersion: 1,
+      commandId: request.commandId,
+      expectedRevision: request.expectedRevision,
+      type: "parts.remove",
+      payload: {
+        occurrenceIds: request.occurrenceIds,
+        includeHidden: request.includeHidden,
+      },
+    });
+    const entry = this.ledger.get(request.commandId);
+    if (entry) entry.cut = { key, fragment };
+    return structuredClone({ ...result, fragment });
   }
   dispatch(c: Command) {
     return this.transaction({
@@ -490,6 +671,7 @@ export class Editor {
     const p = structuredClone(this.state);
     const history = input.commands[0].type;
     let undoPatch: Patch[] | undefined;
+    const copyMappings: Record<string, string[]> = {};
     if (history === "history.undo" || history === "history.redo") {
       ensure(
         input.commands.length === 1,
@@ -499,7 +681,7 @@ export class Editor {
       undoPatch = (history === "history.undo" ? this.past : this.future).at(-1);
       ensure(undoPatch, "INVALID_INPUT", "Nothing to " + history.split(".")[1]);
       applyPatches(p, undoPatch, history === "history.undo");
-    } else for (const c of input.commands) mutate(p, c);
+    } else for (const c of input.commands) mutate(p, c, copyMappings);
     p.diagnostics = p.diagnostics.filter((d) => d.code !== "REFERENCE_MISSING");
     for (const o of occurrences(p))
       if (o.namespace === "missing")
@@ -518,10 +700,17 @@ export class Editor {
       "Revision counter exhausted",
     );
     p.revision++;
+    const beforeIds = new Set(occurrences(this.state).map((o) => o.id));
+    const afterIds = new Set(occurrences(p).map((o) => o.id));
     const result = {
       revision: p.revision,
       affectedIds: occurrences(p).map((o) => o.id),
       idRemappings: {},
+      copyMappings,
+      addedIds: occurrences(p)
+        .filter((o) => !beforeIds.has(o.id))
+        .map((o) => o.id),
+      removedIds: [...beforeIds].filter((id) => !afterIds.has(id)),
       diagnostics: p.diagnostics,
       partCount: occurrences(p).length,
       dryRun: !!input.dryRun,

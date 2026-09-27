@@ -121,7 +121,104 @@ const scoped = {
   includeHidden: { type: "boolean" },
   activeLayerId: id,
 };
+const effort = (unit: string) =>
+  obj({ value: { type: "number", minimum: 0 }, unit: { const: unit } });
+const motor = (unit: string) =>
+  obj({
+    mode: { enum: ["position", "velocity"] },
+    target: num,
+    maxEffort: effort(unit),
+  });
+const jointBase = { id, bodyA: id, bodyB: id, anchorA: vec, anchorB: vec };
+const joint = {
+  oneOf: [
+    obj({ ...jointBase, kind: { enum: ["fixed", "spherical"] } }),
+    ...["revolute", "prismatic"].map((kind) =>
+      obj(
+        {
+          ...jointBase,
+          kind: { const: kind },
+          axisA: vec,
+          axisB: vec,
+          limits: { ...arr(num, 2), minItems: 2 },
+          motor: motor(kind === "revolute" ? "N*m" : "N"),
+        },
+        [...Object.keys(jointBase), "kind", "axisA", "axisB"],
+      ),
+    ),
+  ],
+};
+const motionRig = obj(
+  {
+    schemaVersion: { const: 1 },
+    id,
+    name: { type: "string", maxLength: 200 },
+    mode: { const: "kinematic" },
+    groups: {
+      ...arr(
+        obj({
+          id,
+          occurrenceIds: { ...arr(id, 10000), minItems: 1, uniqueItems: true },
+          frame: transform,
+          restTransforms: dictionary(transform),
+        }),
+        100,
+      ),
+      minItems: 1,
+    },
+    joints: arr(joint, 100),
+    vehicle: obj({
+      chassisGroup: id,
+      wheels: {
+        ...arr(
+          obj({
+            groupId: id,
+            axis: vec,
+            radius: { type: "number", minimum: 0.1 },
+            steering: { type: "boolean" },
+          }),
+          16,
+        ),
+        minItems: 2,
+      },
+      wheelbase: { type: "number", minimum: 1 },
+      maxSteerDegrees: {
+        type: "number",
+        exclusiveMinimum: 0,
+        exclusiveMaximum: 80,
+      },
+      maxSpeed: { type: "number", exclusiveMinimum: 0, maximum: 10000 },
+    }),
+  },
+  ["schemaVersion", "id", "name", "mode", "groups", "joints"],
+);
+const mechanismPose = obj(
+  {
+    jointPositions: dictionary(num),
+    vehicle: obj({
+      position: vec,
+      headingDegrees: num,
+      steeringDegrees: num,
+      wheelAngles: dictionary(num),
+    }),
+  },
+  ["jointPositions"],
+);
 const payloads: Record<string, any> = {
+  "rigs.upsert": obj(
+    { rig: { $ref: "motionRig" }, includeHidden: { type: "boolean" } },
+    ["rig"],
+  ),
+  "rigs.remove": obj({ rigId: id }),
+  "rigs.applyPose": obj(
+    {
+      rigId: id,
+      sourceRevision: integer,
+      pose: { $ref: "mechanismPose" },
+      includeHidden: { type: "boolean" },
+    },
+    ["rigId", "sourceRevision", "pose"],
+  ),
   "project.rename": obj({ title: { type: "string", maxLength: 200 } }),
   "parts.add": obj(
     {
@@ -153,6 +250,44 @@ const payloads: Record<string, any> = {
   },
   "parts.replace": obj({ ...scoped, ref: id }, ["occurrenceIds", "ref"]),
   "parts.duplicate": obj({ ...scoped, delta: vec }, ["occurrenceIds"]),
+  "clipboard.paste": obj(
+    {
+      fragment: obj({
+        schemaVersion: { const: 1 },
+        project: { $ref: "project" },
+      }),
+      delta: vec,
+      layerId: id,
+      maxAdditions: { type: "integer", minimum: 1, maximum: 10000 },
+    },
+    ["fragment"],
+  ),
+  "parts.array": {
+    oneOf: [
+      obj(
+        {
+          ...scoped,
+          kind: { const: "linear" },
+          count: { type: "integer", minimum: 1, maximum: 1000 },
+          delta: vec,
+          maxAdditions: { type: "integer", minimum: 1, maximum: 10000 },
+        },
+        ["occurrenceIds", "kind", "count", "delta"],
+      ),
+      obj(
+        {
+          ...scoped,
+          kind: { const: "circular" },
+          count: { type: "integer", minimum: 1, maximum: 1000 },
+          center: vec,
+          axis: vec,
+          angleDegrees: { type: "number", minimum: -360, maximum: 360 },
+          maxAdditions: { type: "integer", minimum: 1, maximum: 10000 },
+        },
+        ["occurrenceIds", "kind", "count", "center", "axis", "angleDegrees"],
+      ),
+    ],
+  },
   "layers.add": obj({ name: str }),
   "layers.update": obj(
     {
@@ -226,6 +361,10 @@ const render = obj(
         obj({ mode: { const: "all" } }),
         obj({ mode: { const: "current" } }),
         obj({ mode: { const: "layers" }, layerIds: arr(id) }),
+        obj({
+          mode: { const: "occurrences" },
+          occurrenceIds: { ...arr(id, 5000), uniqueItems: true },
+        }),
       ],
     },
     background: {
@@ -238,6 +377,17 @@ const render = obj(
       ],
     },
     quality: { enum: ["fast", "balanced", "photo"] },
+    qualityControls: obj(
+      {
+        edges: { enum: ["none", "ordinary", "all"] },
+        shadows: { enum: ["off", "soft"] },
+        shadowMapSize: { enum: [512, 1024, 2048] },
+        pixelRatioCap: { type: "number", minimum: 0.5, maximum: 3 },
+        toneMapping: { enum: ["aces", "neutral"] },
+        exposure: { type: "number", minimum: 0.1, maximum: 4 },
+      },
+      [],
+    ),
     strict: { type: "boolean" },
   },
   [
@@ -294,7 +444,9 @@ const importRequest = {
     obj(
       {
         format: { const: "template" },
-        template: { enum: ["blank", "room", "wall", "200"] },
+        template: {
+          enum: ["blank", "room", "wall", "200", "explore", "mechanisms"],
+        },
       },
       ["format", "template"],
     ),
@@ -334,8 +486,133 @@ const inventoryPreview = obj({
   substitutions: arr(id),
   request: { $ref: "inventory" },
 });
+const playRequest = obj(
+  {
+    locomotion: { enum: ["walk", "fly-noclip"] },
+    cameraMode: { enum: ["first-person", "third-person"] },
+    position: vec,
+    yaw: num,
+    pitch: num,
+    ground: { type: "boolean" },
+    realtime: { type: "boolean" },
+  },
+  [],
+);
+const playInput = obj(
+  {
+    moveX: { type: "number", minimum: -1, maximum: 1 },
+    moveZ: { type: "number", minimum: -1, maximum: 1 },
+    vertical: { type: "number", minimum: -1, maximum: 1 },
+    run: { type: "boolean" },
+    jump: { type: "boolean" },
+    yaw: num,
+    pitch: num,
+  },
+  [],
+);
+const playTeleport = obj(
+  {
+    position: vec,
+    policy: { enum: ["safe", "free-flight"] },
+    yaw: num,
+    pitch: num,
+  },
+  ["position"],
+);
+const playSnapshot = obj({
+  sourceRevision: integer,
+  tick: integer,
+  position: vec,
+  velocity: vec,
+  yaw: num,
+  pitch: num,
+  grounded: { type: "boolean" },
+  locomotion: { enum: ["walk", "fly-noclip"] },
+  cameraMode: { enum: ["first-person", "third-person"] },
+  collisionReady: { type: "boolean" },
+  avatarReady: { type: "boolean" },
+  avatarVisible: { type: "boolean" },
+  profile: obj({
+    id,
+    radius: num,
+    height: num,
+    eyeHeight: num,
+    stepHeight: num,
+    maxSlopeDegrees: num,
+    walkSpeed: num,
+    runSpeed: num,
+    flySpeed: num,
+    jumpSpeed: num,
+    gravity: num,
+    strideLength: num,
+    scaleMetresPerLdu: num,
+  }),
+  units: { const: "LDU" },
+  simulationHz: { const: 60 },
+  warnings: arr(str),
+  avatar: obj({
+    state: { enum: ["idle", "walk", "run", "jump", "fall"] },
+    heading: num,
+    phase: num,
+    headYaw: num,
+    leftHip: num,
+    rightHip: num,
+    leftShoulder: num,
+    rightShoulder: num,
+  }),
+});
 const api = {
   oneOf: Object.entries({
+    "play.enter": { $ref: "playRequest" },
+    "play.setInput": { $ref: "playInput" },
+    "play.teleport": { $ref: "playTeleport" },
+    "play.stepTicks": { type: "integer", minimum: 0, maximum: 3600 },
+    "play.setCameraMode": { enum: ["first-person", "third-person"] },
+    "play.setLocomotion": { enum: ["walk", "fly-noclip"] },
+    "play.pause": { type: "boolean" },
+    "play.snapshot": obj({}),
+    "play.exit": obj({}),
+    "clipboard.copy": obj(
+      { occurrenceIds: arr(id), includeHidden: { type: "boolean" } },
+      ["occurrenceIds"],
+    ),
+    "clipboard.cut": obj(
+      {
+        occurrenceIds: arr(id),
+        includeHidden: { type: "boolean" },
+        expectedRevision: integer,
+        commandId: id,
+      },
+      ["occurrenceIds", "expectedRevision", "commandId"],
+    ),
+    "instructions.publish": obj(
+      {
+        planId: id,
+        format: { enum: ["pdf", "png-zip", "html-zip"] },
+        width: { type: "integer", minimum: 64, maximum: 16384 },
+        height: { type: "integer", minimum: 64, maximum: 16384 },
+      },
+      ["planId", "format"],
+    ),
+    "mechanisms.enter": id,
+    "mechanisms.setJointPosition": obj({ jointId: id, value: num }),
+    "mechanisms.setVehicleInput": obj({
+      throttle: { type: "number", minimum: -1, maximum: 1 },
+      steering: { type: "number", minimum: -1, maximum: 1 },
+    }),
+    "mechanisms.stepTicks": { type: "integer", minimum: 0, maximum: 3600 },
+    "mechanisms.snapshot": obj({}),
+    "mechanisms.applyPose": obj({}),
+    "mechanisms.exit": obj({}),
+    "camera.fit": obj({}),
+    "render.quality.get": obj({}),
+    "render.quality.set": obj(
+      {
+        name: render.properties.quality,
+        controls: render.properties.qualityControls,
+      },
+      ["name"],
+    ),
     "project.import": { $ref: "importRequest" },
     "project.export": { $ref: "exportRequest" },
     query: { $ref: "query" },
@@ -355,6 +632,12 @@ const api = {
   ),
 };
 const schemas = {
+  motionRig,
+  mechanismPose,
+  playRequest,
+  playInput,
+  playTeleport,
+  playSnapshot,
   api,
   importRequest,
   exportRequest,

@@ -1,0 +1,241 @@
+.mode-play .left-sidebar,
+.mode-play .right-sidebar,
+.mode-play .canvas-toolbar,
+.mode-play .canvas-label,
+.mode-play .view-controls,
+.mode-play .canvas-bottom,
+.mode-play .mobile-nav {
+  display: none;
+}
+.mode-play .workspace {
+  grid-template-columns: minmax(0, 1fr);
+}
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+.play-overlay button {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+.play-top {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  pointer-events: auto;
+  z-index: 3;
+}
+.play-top > div {
+  margin-right: auto;
+  background: #ffffffed;
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #152c3a12;
+}
+.play-top strong,
+.play-top small {
+  display: block;
+}
+.play-top small {
+  margin-top: 4px;
+  color: #52626a;
+  font-size: 12px;
+}
+.play-look {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  pointer-events: auto;
+}
+.play-crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 24px;
+  color: #405662aa;
+  transform: translate(-50%, -50%);
+}
+.play-hint {
+  position: absolute;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  white-space: nowrap;
+  background: #ffffffdf;
+  padding: 8px 14px;
+  border-radius: 20px;
+}
+.play-stick {
+  position: absolute;
+  bottom: max(88px, env(safe-area-inset-bottom));
+  left: max(28px, env(safe-area-inset-left));
+  width: 126px;
+  height: 126px;
+  border-radius: 50%;
+  background: #ffffffaa;
+  border: 2px solid #ffffff;
+  box-shadow: 0 3px 20px #26333f26;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+.play-stick span {
+  width: 66px;
+  height: 66px;
+  background: #334852;
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+.play-actions {
+  position: absolute;
+  bottom: 108px;
+  right: max(28px, env(safe-area-inset-right));
+  display: grid;
+  grid-template-columns: repeat(2, 60px);
+  gap: 10px;
+  pointer-events: auto;
+}
+.play-actions button {
+  height: 60px;
+  border-radius: 50%;
+  touch-action: none;
+  background: #fff;
+  box-shadow: 0 3px 20px #26333f20;
+}
+.play-actions button[aria-pressed="true"] {
+  background: #334852;
+  color: white;
+}
+.play-bottom {
+  position: absolute;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+  white-space: nowrap;
+}
+.play-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(360px, calc(100% - 32px));
+  padding: 24px;
+  border-radius: 18px;
+  background: #fffffff5;
+  box-shadow: 0 15px 60px #20333f30;
+  pointer-events: auto;
+  display: grid;
+  gap: 12px;
+}
+.play-menu h2,
+.play-menu p {
+  margin: 0;
+}
+.play-message {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 70%;
+  background: #fff0d8;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+@media (max-width: 1100px) {
+  .mode-play .workspace {
+    padding-bottom: 0;
+  }
+  .play-hint,
+  .play-mouse-lock {
+    display: none;
+  }
+  .play-look::after {
+    content: "Drag here to look";
+    position: absolute;
+    right: 28px;
+    bottom: 220px;
+    color: #334852;
+    background: #ffffffbb;
+    border-radius: 16px;
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 480px) {
+  .play-top {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .play-top > div {
+    flex-basis: 100%;
+    padding: 8px 12px;
+  }
+  .play-top small {
+    font-size: 12px;
+  }
+  .play-top button {
+    padding: 7px 14px;
+  }
+  .play-stick {
+    left: 18px;
+    width: 110px;
+    height: 110px;
+    bottom: 95px;
+  }
+  .play-actions {
+    right: 18px;
+    bottom: 105px;
+    grid-template-columns: repeat(2, 52px);
+    gap: 7px;
+  }
+  .play-actions button {
+    height: 52px;
+    padding: 4px;
+  }
+  .play-bottom {
+    width: calc(100% - 24px);
+    bottom: 18px;
+  }
+  .play-bottom button {
+    flex: 1;
+    font-size: 12px;
+    padding: 8px;
+  }
+  .play-look::after {
+    right: 18px;
+    bottom: 205px;
+  }
+  .play-intro {
+    max-height: calc(100% - 24px);
+    overflow: auto;
+  }
+}
+
+.play-overlay.is-paused .play-look::after {
+  display: none;
+}
+
+.mode-play .mobile-panel {
+  display: none !important;
+}

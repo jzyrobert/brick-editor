@@ -1,3 +1,15 @@
+import type { MechanismBrowser } from "../mechanisms/browser";
+import type { QualityName, QualityControls } from "../render/quality";
+import type { PublishFormat } from "../instructions/publish";
+import type { CopyRequest } from "../core/fragments";
+import type { BrowserPlay } from "../play/browser";
+import type {
+  PlayRequest,
+  PlayInput,
+  PlayCameraMode,
+  PlayLocomotion,
+  PlayTeleportRequest,
+} from "../play/types";
 import { type Editor } from "../core/commands";
 import { type CameraSpec, type Command, ensure } from "../core/types";
 import { occurrences } from "../core/document";
@@ -17,6 +29,8 @@ import { validate } from "../core/validate";
 export function createAPI(
   editor: Editor,
   render: () => SceneAdapter | undefined,
+  play?: () => BrowserPlay | undefined,
+  mechanisms?: () => MechanismBrowser | undefined,
 ) {
   const inventory = new InventoryService(),
     jobs = new JobRegistry();
@@ -25,7 +39,87 @@ export function createAPI(
     ensure(r, "WEBGL_UNAVAILABLE", "WebGL2 renderer unavailable");
     return r;
   };
+  const player = () => {
+    const p = play?.();
+    ensure(p, "INVALID_INPUT", "Play controller unavailable");
+    return p;
+  };
+  const mechanism = () => {
+    const m = mechanisms?.();
+    ensure(m, "INVALID_INPUT", "Mechanism controller unavailable");
+    return m;
+  };
   return {
+    mechanisms: {
+      enter: async (rigId: string) => {
+        player().exit();
+        return mechanism().enter(rigId);
+      },
+      setJointPosition: async (jointId: string, value: number) =>
+        mechanism().setJointPosition(jointId, value),
+      setVehicleInput: async (input: { throttle: number; steering: number }) =>
+        mechanism().setVehicleInput(input),
+      stepTicks: async (count: number) => mechanism().stepTicks(count),
+      snapshot: async () => mechanism().snapshot(),
+      applyPose: async () => mechanism().applyPose(),
+      exit: async () => mechanism().exit(),
+    },
+    clipboard: {
+      copy: async (request: CopyRequest) => editor.copy(request),
+      cut: async (
+        request: CopyRequest & { expectedRevision: number; commandId: string },
+      ) => editor.cut(request),
+    },
+    instructions: {
+      publish: async (request: {
+        planId: string;
+        format: PublishFormat;
+        width?: number;
+        height?: number;
+      }) => {
+        ensure(
+          Object.keys(request).every((k) =>
+            ["planId", "format", "width", "height"].includes(k),
+          ),
+          "INVALID_INPUT",
+          "Unknown publication option",
+        );
+        const { publishInstructions } = await import("../instructions/publish");
+        return jobs.wait<Awaited<ReturnType<typeof publishInstructions>>>(
+          jobs.start("instruction-publication", (signal) =>
+            publishInstructions(editor.project, request.planId, renderer(), {
+              ...request,
+              signal,
+            }),
+          ),
+        );
+      },
+    },
+    play: {
+      enter: async (request: PlayRequest = {}) => {
+        validate("playRequest", request);
+        mechanisms?.()?.exit();
+        const report = await player().enter(request);
+        validate("playSnapshot", report);
+        return report;
+      },
+      exit: async () => player().exit(),
+      setInput: async (input: PlayInput) => {
+        validate("playInput", input);
+        return player().setInput(input);
+      },
+      setCameraMode: async (mode: PlayCameraMode) =>
+        player().setCameraMode(mode),
+      setLocomotion: async (mode: PlayLocomotion) =>
+        player().setLocomotion(mode),
+      teleport: async (input: PlayTeleportRequest) => {
+        validate("playTeleport", input);
+        return player().teleport(input);
+      },
+      stepTicks: async (count: number) => player().stepTicks(count),
+      snapshot: async () => player().snapshot(),
+      pause: async (paused = true) => player().pause(paused),
+    },
     apiVersion: "1.0" as const,
     capabilities: async () => capabilities,
     jobs: {
@@ -43,7 +137,7 @@ export function createAPI(
         bytes?: number[];
         name?: string;
         strict?: boolean;
-        template?: "blank" | "room" | "wall" | "200";
+        template?: "blank" | "room" | "wall" | "200" | "explore" | "mechanisms";
       }) => {
         validate("importRequest", input);
         ensure(
@@ -143,15 +237,45 @@ export function createAPI(
     dispatch: async (input: Command) => editor.dispatch(input),
     transaction: async (input: Parameters<Editor["transaction"]>[0]) =>
       editor.transaction(input),
-    camera: { set: async (input: CameraSpec) => renderer().setCamera(input) },
+    camera: {
+      set: async (input: CameraSpec) => renderer().setCamera(input),
+      fit: async () => renderer().fit(),
+    },
     render: {
+      quality: {
+        get: async () => renderer().currentQuality(),
+        set: async (
+          name: QualityName,
+          controls: Partial<QualityControls> = {},
+        ) => renderer().setQuality(name, controls),
+      },
       image: async (input: RenderRequest) => {
         ensure(
           input.revision === editor.project.revision,
           "REVISION_CONFLICT",
           "Capture revision is stale",
         );
-        const result = await renderer().image(input);
+        const activePlay = play?.();
+        const playState = activePlay?.getState();
+        const resumePlay = playState?.active && !playState.paused;
+        if (resumePlay) activePlay!.pause(true);
+        let result;
+        try {
+          const image = await renderer().image(input);
+          result = {
+            ...image,
+            manifest: {
+              ...image.manifest,
+              ...(playState?.active ? { play: activePlay!.snapshot() } : {}),
+              ...(mechanisms?.()?.active
+                ? { mechanism: mechanisms!()!.snapshot() }
+                : {}),
+            },
+          };
+        } finally {
+          if (resumePlay && activePlay?.getState().active)
+            activePlay.pause(false);
+        }
         ensure(
           input.revision === editor.project.revision,
           "REVISION_CONFLICT",

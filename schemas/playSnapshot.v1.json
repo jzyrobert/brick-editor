@@ -1,0 +1,205 @@
+{
+  "$id": "playSnapshot",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "tick": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "position": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 3
+    },
+    "velocity": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 3
+    },
+    "yaw": {
+      "type": "number"
+    },
+    "pitch": {
+      "type": "number"
+    },
+    "grounded": {
+      "type": "boolean"
+    },
+    "locomotion": {
+      "enum": [
+        "walk",
+        "fly-noclip"
+      ]
+    },
+    "cameraMode": {
+      "enum": [
+        "first-person",
+        "third-person"
+      ]
+    },
+    "collisionReady": {
+      "type": "boolean"
+    },
+    "avatarReady": {
+      "type": "boolean"
+    },
+    "avatarVisible": {
+      "type": "boolean"
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "radius": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "eyeHeight": {
+          "type": "number"
+        },
+        "stepHeight": {
+          "type": "number"
+        },
+        "maxSlopeDegrees": {
+          "type": "number"
+        },
+        "walkSpeed": {
+          "type": "number"
+        },
+        "runSpeed": {
+          "type": "number"
+        },
+        "flySpeed": {
+          "type": "number"
+        },
+        "jumpSpeed": {
+          "type": "number"
+        },
+        "gravity": {
+          "type": "number"
+        },
+        "strideLength": {
+          "type": "number"
+        },
+        "scaleMetresPerLdu": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "radius",
+        "height",
+        "eyeHeight",
+        "stepHeight",
+        "maxSlopeDegrees",
+        "walkSpeed",
+        "runSpeed",
+        "flySpeed",
+        "jumpSpeed",
+        "gravity",
+        "strideLength",
+        "scaleMetresPerLdu"
+      ],
+      "additionalProperties": false
+    },
+    "units": {
+      "const": "LDU"
+    },
+    "simulationHz": {
+      "const": 60
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 4096
+      },
+      "maxItems": 100000
+    },
+    "avatar": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "idle",
+            "walk",
+            "run",
+            "jump",
+            "fall"
+          ]
+        },
+        "heading": {
+          "type": "number"
+        },
+        "phase": {
+          "type": "number"
+        },
+        "headYaw": {
+          "type": "number"
+        },
+        "leftHip": {
+          "type": "number"
+        },
+        "rightHip": {
+          "type": "number"
+        },
+        "leftShoulder": {
+          "type": "number"
+        },
+        "rightShoulder": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "state",
+        "heading",
+        "phase",
+        "headYaw",
+        "leftHip",
+        "rightHip",
+        "leftShoulder",
+        "rightShoulder"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "sourceRevision",
+    "tick",
+    "position",
+    "velocity",
+    "yaw",
+    "pitch",
+    "grounded",
+    "locomotion",
+    "cameraMode",
+    "collisionReady",
+    "avatarReady",
+    "avatarVisible",
+    "profile",
+    "units",
+    "simulationHz",
+    "warnings",
+    "avatar"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,69 @@
+{
+  "$id": "mechanismPose",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "jointPositions": {
+      "type": "object",
+      "maxProperties": 10000,
+      "additionalProperties": {
+        "type": "number"
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    },
+    "vehicle": {
+      "type": "object",
+      "properties": {
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "headingDegrees": {
+          "type": "number"
+        },
+        "steeringDegrees": {
+          "type": "number"
+        },
+        "wheelAngles": {
+          "type": "object",
+          "maxProperties": 10000,
+          "additionalProperties": {
+            "type": "number"
+          },
+          "propertyNames": {
+            "not": {
+              "enum": [
+                "__proto__",
+                "constructor",
+                "prototype"
+              ]
+            }
+          }
+        }
+      },
+      "required": [
+        "position",
+        "headingDegrees",
+        "steeringDegrees",
+        "wheelAngles"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "jointPositions"
+  ],
+  "additionalProperties": false
+}

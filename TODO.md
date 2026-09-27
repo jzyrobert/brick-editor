@@ -5,11 +5,11 @@ The detailed backlog and acceptance gaps are maintained in [docs/STATUS.md](docs
 Suggested order for the next implementation pass:
 
 - [ ] Close M0 conformance gaps: BFC/conditional-line image comparisons, custom material scope, source assets and compiler budgets.
-- [ ] Complete M2 editing: transform handles, clipboard, multi-selection, layer management, workplanes and arrays.
-- [ ] Complete M3 reliability: portable exports, native migrations, multi-tab conflict UX, sustained-input autosave and graphics recovery.
+- [ ] Complete M2 editing: transform handles, multi-selection, layer folders, shared-definition editing and general workplanes. Clipboard, arrays and basic layer management now work.
+- [ ] Complete M3 reliability: fully portable library packs, native migrations, deeper multi-tab safeguards and graphics recovery. Bounded autosave and conflict-fork UI are implemented.
 - [ ] Extend inventory coverage and resolution UI beyond the curated starter mappings.
-- [ ] Measure the specified performance gates, including the 5,000-part workload and reference hardware.
-- [ ] After the P0 gates pass, implement M4 exploration, connectors and richer instructions.
-- [ ] Implement M5/M6 mechanisms, physics and advanced planning in the order specified.
+- [ ] Measure the specified performance gates, including repeated 5,000-part trials and reference hardware (the current single-run software benchmark is recorded).
+- [ ] Finish broader M4 exploration acceptance, connectors and instruction editing. Play, publishing, sharing and pose application now work; user reprioritized exploration ahead of the remaining P0 gates.
+- [ ] Complete M5/M6 dynamic physics, advanced rig authoring and planning in the order specified.
 
-Use [docs/VERIFICATION.md](docs/VERIFICATION.md) for the existing test evidence and its limits. Update the status report and capability declarations when closing items; keep Play unavailable until its prerequisite gates pass.
+Use [docs/VERIFICATION.md](docs/VERIFICATION.md) for the existing test evidence and its limits. Update the status report and capability declarations when closing items; keep remaining compatibility and acceptance gaps explicit.

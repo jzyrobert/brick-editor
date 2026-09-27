@@ -1,0 +1,479 @@
+{
+  "$id": "motionRig",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "mode": {
+      "const": "kinematic"
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "occurrenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "maxItems": 10000,
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "frame": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "basis": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 9,
+                "minItems": 9
+              }
+            },
+            "required": [
+              "position",
+              "basis"
+            ],
+            "additionalProperties": false
+          },
+          "restTransforms": {
+            "type": "object",
+            "maxProperties": 10000,
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "position": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 3,
+                  "minItems": 3
+                },
+                "basis": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 9,
+                  "minItems": 9
+                }
+              },
+              "required": [
+                "position",
+                "basis"
+              ],
+              "additionalProperties": false
+            },
+            "propertyNames": {
+              "not": {
+                "enum": [
+                  "__proto__",
+                  "constructor",
+                  "prototype"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "occurrenceIds",
+          "frame",
+          "restTransforms"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 100,
+      "minItems": 1
+    },
+    "joints": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "anchorB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "kind": {
+                "enum": [
+                  "fixed",
+                  "spherical"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "bodyA",
+              "bodyB",
+              "anchorA",
+              "anchorB",
+              "kind"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "anchorB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "kind": {
+                "const": "revolute"
+              },
+              "axisA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "axisB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "limits": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "motor": {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "position",
+                      "velocity"
+                    ]
+                  },
+                  "target": {
+                    "type": "number"
+                  },
+                  "maxEffort": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "unit": {
+                        "const": "N*m"
+                      }
+                    },
+                    "required": [
+                      "value",
+                      "unit"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "mode",
+                  "target",
+                  "maxEffort"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "bodyA",
+              "bodyB",
+              "anchorA",
+              "anchorB",
+              "kind",
+              "axisA",
+              "axisB"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "anchorB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "kind": {
+                "const": "prismatic"
+              },
+              "axisA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "axisB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "limits": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "motor": {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "position",
+                      "velocity"
+                    ]
+                  },
+                  "target": {
+                    "type": "number"
+                  },
+                  "maxEffort": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "unit": {
+                        "const": "N"
+                      }
+                    },
+                    "required": [
+                      "value",
+                      "unit"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "mode",
+                  "target",
+                  "maxEffort"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "bodyA",
+              "bodyB",
+              "anchorA",
+              "anchorB",
+              "kind",
+              "axisA",
+              "axisB"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "maxItems": 100
+    },
+    "vehicle": {
+      "type": "object",
+      "properties": {
+        "chassisGroup": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "wheels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "groupId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "axis": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "radius": {
+                "type": "number",
+                "minimum": 0.1
+              },
+              "steering": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "groupId",
+              "axis",
+              "radius",
+              "steering"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 16,
+          "minItems": 2
+        },
+        "wheelbase": {
+          "type": "number",
+          "minimum": 1
+        },
+        "maxSteerDegrees": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 80
+        },
+        "maxSpeed": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "chassisGroup",
+        "wheels",
+        "wheelbase",
+        "maxSteerDegrees",
+        "maxSpeed"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "mode",
+    "groups",
+    "joints"
+  ],
+  "additionalProperties": false
+}

@@ -1,7 +1,7 @@
 {
   "apiVersion": "1.0",
   "release": "development",
-  "milestone": "M1 plus selected M2/M3 workflows",
+  "milestone": "Core editor with selected M2\u2013M5 features; remaining acceptance gates documented",
   "features": {
     "ldraw": {
       "parsed": [
@@ -47,8 +47,11 @@
       "gridPlacement": true,
       "snapVerified": false,
       "physicsSupported": false,
-      "sourcePrimitiveDuplication": false,
-      "projectReplacementUndo": false
+      "sourcePrimitiveDuplication": true,
+      "projectReplacementUndo": false,
+      "clipboardFragments": true,
+      "linearCircularArrays": true,
+      "layerReorderDeleteUI": true
     },
     "inventory": {
       "format": "bricklink-wanted-xml",
@@ -63,20 +66,56 @@
       "png": true,
       "offscreenCapture": true,
       "idleOnDemand": true,
-      "instanced": false,
-      "qualityProfilesDistinct": false,
-      "coverage": "Audited starter parts and synthetic custom fixtures; see docs/STATUS.md"
+      "instanced": true,
+      "qualityProfilesDistinct": true,
+      "coverage": "Opaque non-reflected non-sheared mesh instancing; merged ordinary/conditional lines; transparent/reflected/sheared fallback; image parity fixtures"
     },
     "instructions": {
       "layerPlans": true,
       "assemblyValidation": false,
-      "pdf": false,
+      "pdf": true,
       "rootImportedSteps": true,
-      "rotstepCameraSemantics": false
+      "rotstepCameraSemantics": false,
+      "pngArchive": true,
+      "htmlArchive": true,
+      "coverageValidated": true
     },
     "play": {
-      "available": false,
-      "reason": "P0 acceptance gates must pass before exploration"
+      "available": true,
+      "engine": "@dimforge/rapier3d-compat@0.21.0",
+      "fixedHz": 60,
+      "firstPerson": true,
+      "thirdPersonRigidJoints": true,
+      "walk": true,
+      "flyNoclip": true,
+      "touchControls": true,
+      "authoringIsolation": true,
+      "poseApplication": true,
+      "dynamicMechanisms": false,
+      "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
+      "profile": "original-brick-figure-v1",
+      "coverage": "See docs/STATUS.md and Play acceptance tests; not universal model traversability",
+      "kinematicMechanisms": true
+    },
+    "sharing": {
+      "selfContainedMpdLinks": true,
+      "softUrlBytes": 8192,
+      "hardUrlBytes": 32768,
+      "decompressedBytes": 4194304,
+      "previewBeforeOpen": true
+    },
+    "offline": {
+      "optInAppSnapshot": true,
+      "starterLibrary": true,
+      "preservesOldVersions": true
+    },
+    "persistence": {
+      "autosaveDebounceMs": 750,
+      "autosaveMaxDelayMs": 3000,
+      "nativeSourceFiles": true,
+      "nativeAssetFiles": true,
+      "localProjectManagement": true,
+      "conflictFork": true
     }
   },
   "limits": {
@@ -101,18 +140,15 @@
   "unimplemented": [
     "connector snapping",
     "lasso and occlusion selection",
-    "full clipboard fragments",
-    "offline service-worker packs",
-    "instruction PDF layout",
-    "share fragments",
-    "Play and mechanisms",
     "path tracing",
     "collaboration",
-    "linear/circular arrays",
     "layer folders",
     "geometry sharing across colour variants",
     "composite purchasing decomposition",
     "full native migrations",
-    "full physical-device acceptance"
+    "full physical-device acceptance",
+    "dynamic mechanisms and suspension",
+    "instruction annotations and callouts",
+    "advanced material/texture fidelity"
   ]
 }

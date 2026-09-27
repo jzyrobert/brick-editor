@@ -1,3 +1,11 @@
+import { occurrenceSourceContext } from "./source-context";
+import {
+  resolveQuality,
+  type QualityName,
+  type QualityControls,
+  type RenderProfile,
+} from "./quality";
+import { RenderBatches } from "./batching";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { LDrawLoader } from "three/addons/loaders/LDrawLoader.js";
@@ -7,6 +15,7 @@ import {
   type CameraSpec,
   type Occurrence,
   type Vec3,
+  type Transform,
   ensure,
   AppError,
 } from "../core/types";
@@ -31,9 +40,14 @@ export type RenderRequest = {
   width: number;
   height: number;
   format: "png";
-  visibility: { mode: "all" | "current" | "layers"; layerIds?: string[] };
+  visibility: {
+    mode: "all" | "current" | "layers" | "occurrences";
+    layerIds?: string[];
+    occurrenceIds?: string[];
+  };
   background: { type: "solid" | "transparent"; color?: string };
   quality: "fast" | "balanced" | "photo";
+  qualityControls?: Partial<QualityControls>;
   strict?: boolean;
 };
 export class SceneAdapter {
@@ -63,7 +77,12 @@ export class SceneAdapter {
   private ghostToken = 0;
   private disposed = false;
   private captureActive = false;
+  private batches = new RenderBatches();
+  private batchingEnabled =
+    new URLSearchParams(location.search).get("referenceRenderer") !== "1";
   private lost = false;
+  private qualityProfile = resolveQuality("balanced");
+  private keyLight!: THREE.DirectionalLight;
   constructor(
     private element: HTMLElement,
     private report: (message: string) => void,
@@ -85,10 +104,19 @@ export class SceneAdapter {
     this.scene.background = new THREE.Color("#e9edef");
     this.root.rotation.x = Math.PI;
     this.scene.add(this.root, this.selection);
+    this.root.add(this.batches.root);
     this.ghost.rotation.x = Math.PI;
     this.scene.add(this.ghost);
     this.scene.add(new THREE.HemisphereLight(0xffffff, 0xa4adb2, 3));
     const sun = new THREE.DirectionalLight(0xffffff, 3);
+    this.keyLight = sun;
+    sun.name = "key";
+    sun.shadow.bias = -0.0002;
+    sun.shadow.normalBias = 0.2;
+    sun.shadow.camera.near = 0.5;
+    sun.shadow.camera.far = 5000;
+    sun.shadow.camera.left = sun.shadow.camera.bottom = -1500;
+    sun.shadow.camera.right = sun.shadow.camera.top = 1500;
     sun.position.set(250, 600, 300);
     this.scene.add(sun);
     const fill = new THREE.DirectionalLight(0xcbdcf0, 1.5);
@@ -175,6 +203,7 @@ export class SceneAdapter {
   }
   private prototype(o: Occurrence, p: Project): Promise<THREE.Group> {
     const source = o.namespace === "official" ? "" : exportLDraw(p);
+    const context = occurrenceSourceContext(p, o);
     const raw =
       o.node.kind === "geometry"
         ? p.models[o.modelId].records.find(
@@ -187,6 +216,8 @@ export class SceneAdapter {
       o.node.ref +
       ":" +
       o.colorCode +
+      ":" +
+      context +
       ":" +
       raw +
       ":" +
@@ -225,7 +256,7 @@ export class SceneAdapter {
           : o.node.ref;
       const line =
         o.node.kind === "geometry"
-          ? raw.replace(/^([2-5])\s+\S+/, `$1 ${o.colorCode}`)
+          ? raw.replace(/^(\s*[2-5])\s+\S+/, `$1 ${o.colorCode}`)
           : `1 ${o.colorCode} 0 0 0 1 0 0 0 1 0 0 0 1 ${ref}`;
       const projectSource = source.replace(/\n0 NOFILE\s*$/, "");
       const localNames = new Set(
@@ -246,6 +277,8 @@ export class SceneAdapter {
       const text =
         "0 FILE __render__.ldr\n" +
         this.colorText +
+        "\n" +
+        context +
         "\n" +
         line +
         "\n" +
@@ -276,6 +309,12 @@ export class SceneAdapter {
         "REFERENCE_MISSING",
         "Part compilation produced no geometry: " + o.node.ref,
       );
+      group.traverse((object) => {
+        if ((object as THREE.Mesh).isMesh) {
+          object.castShadow = true;
+          object.receiveShadow = true;
+        }
+      });
       this.allPrototypes.add(group);
       this.resolvedCache.set(key, group);
       return group;
@@ -400,6 +439,7 @@ export class SceneAdapter {
           this.cache.delete(key);
           this.allPrototypes.delete(proto);
         }
+        this.applyQuality(this.qualityProfile, true);
         this.root.visible = true;
         this.project = snapshot;
         this.revision = snapshot.revision;
@@ -464,11 +504,113 @@ export class SceneAdapter {
       warnings: this.project?.diagnostics || [],
     };
   }
+  currentQuality() {
+    return structuredClone(this.qualityProfile);
+  }
+  setQuality(name: QualityName, controls: Partial<QualityControls> = {}) {
+    ensure(
+      !this.captureActive,
+      "INVALID_INPUT",
+      "Wait for capture before changing render quality",
+    );
+    this.applyQuality(resolveQuality(name, controls));
+    this.resize();
+    return this.currentQuality();
+  }
+  private applyQuality(profile: RenderProfile, force = false) {
+    if (
+      !force &&
+      JSON.stringify(profile) === JSON.stringify(this.qualityProfile)
+    )
+      return;
+    this.qualityProfile = structuredClone(profile);
+    this.renderer.setPixelRatio(
+      Math.min(devicePixelRatio, profile.pixelRatioCap),
+    );
+    this.renderer.toneMapping =
+      profile.toneMapping === "aces"
+        ? THREE.ACESFilmicToneMapping
+        : THREE.NeutralToneMapping;
+    this.renderer.toneMappingExposure = profile.exposure;
+    this.renderer.shadowMap.enabled = profile.shadows === "soft";
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.keyLight.castShadow = profile.shadows === "soft";
+    if (this.keyLight.shadow.mapSize.x !== profile.shadowMapSize) {
+      this.keyLight.shadow.map?.dispose();
+      this.keyLight.shadow.map = null;
+      this.keyLight.shadow.mapSize.setScalar(profile.shadowMapSize);
+    }
+    for (const handle of this.handles.values())
+      handle.traverse((object) => {
+        if (!(object as THREE.LineSegments).isLineSegments) return;
+        const conditional = !!(
+          object as THREE.LineSegments
+        ).geometry.getAttribute("control0");
+        object.visible =
+          profile.edges === "all" ||
+          (profile.edges === "ordinary" && !conditional);
+      });
+    this.batches.rebuild(this.handles);
+  }
+  private lightingManifest() {
+    const lights: Record<string, unknown>[] = [];
+    this.scene.updateMatrixWorld(true);
+    this.scene.traverse((object) => {
+      const light = object as THREE.Light;
+      if (!light.isLight) return;
+      const directional = light as THREE.DirectionalLight;
+      const hemisphere = light as THREE.HemisphereLight;
+      lights.push({
+        type: light.type,
+        name: light.name,
+        color: light.color.getHexString(),
+        intensity: light.intensity,
+        position: conversion(
+          light.getWorldPosition(new THREE.Vector3()).toArray() as Vec3,
+        ),
+        ...(hemisphere.isHemisphereLight
+          ? { groundColor: hemisphere.groundColor.getHexString() }
+          : {}),
+        ...(directional.isDirectionalLight
+          ? {
+              target: conversion(
+                directional.target
+                  .getWorldPosition(new THREE.Vector3())
+                  .toArray() as Vec3,
+              ),
+              shadow: {
+                enabled: light.castShadow,
+                mapSize: directional.shadow.mapSize.toArray(),
+                bias: directional.shadow.bias,
+                normalBias: directional.shadow.normalBias,
+                camera: {
+                  near: directional.shadow.camera.near,
+                  far: directional.shadow.camera.far,
+                  left: directional.shadow.camera.left,
+                  right: directional.shadow.camera.right,
+                  top: directional.shadow.camera.top,
+                  bottom: directional.shadow.camera.bottom,
+                },
+              },
+            }
+          : {}),
+      });
+    });
+    return { space: "ldraw", lights, environment: null };
+  }
+  private drawScene() {
+    if (this.batchingEnabled)
+      this.batches.render(this.renderer, this.scene, this.camera);
+    else {
+      this.batches.root.visible = false;
+      this.renderer.render(this.scene, this.camera);
+    }
+  }
   invalidate() {
     if (this.raf || this.disposed || this.lost) return;
     this.raf = requestAnimationFrame(() => {
       this.raf = 0;
-      this.renderer.render(this.scene, this.camera);
+      this.drawScene();
     });
   }
   resize() {
@@ -491,6 +633,11 @@ export class SceneAdapter {
     this.camera.updateProjectionMatrix();
   }
   setCamera(spec: CameraSpec) {
+    ensure(
+      !this.captureActive,
+      "INVALID_INPUT",
+      "Wait for the current capture before changing the camera",
+    );
     validate("camera", spec);
     ensure(
       spec.far > spec.near,
@@ -539,24 +686,201 @@ export class SceneAdapter {
       up: conversion(this.camera.up.toArray() as Vec3),
     };
   }
+  /** A bounded, opening-preserving collision snapshot in public LDraw coordinates. */
+  async playGeometry() {
+    await this.ready();
+    this.root.updateMatrixWorld(true);
+    const vertices: number[] = [],
+      indices: number[] = [];
+    const bounds = new THREE.Box3();
+    const point = new THREE.Vector3();
+    const warnings: string[] = [];
+    let overBudget = false;
+    for (const group of this.handles.values()) {
+      group.traverse((object) => {
+        const mesh = object as THREE.Mesh;
+        if (!mesh.isMesh || overBudget) return;
+        const geometry = mesh.geometry,
+          position = geometry.getAttribute("position");
+        if (!position) return;
+        const index = geometry.index;
+        const count = index ? index.count : position.count;
+        if (indices.length + count > 3_000_000) {
+          overBudget = true;
+          return;
+        }
+        const offset = vertices.length / 3;
+        for (let i = 0; i < position.count; i++) {
+          point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
+          const converted = conversion(point.toArray() as Vec3);
+          vertices.push(...converted);
+          bounds.expandByPoint(new THREE.Vector3(...converted));
+        }
+        const mirrored = mesh.matrixWorld.determinant() < 0;
+        for (let i = 0; i + 2 < count; i += 3) {
+          const a = index ? index.getX(i) : i;
+          const b = index ? index.getX(i + 1) : i + 1;
+          const c = index ? index.getX(i + 2) : i + 2;
+          indices.push(
+            offset + a,
+            offset + (mirrored ? c : b),
+            offset + (mirrored ? b : c),
+          );
+        }
+      });
+    }
+    if (overBudget) {
+      warnings.push(
+        "Collision mesh exceeds one million triangles. Fly mode remains available.",
+      );
+      vertices.length = indices.length = 0;
+    }
+    if (
+      this.project &&
+      occurrences(this.project).some((o) => o.namespace === "missing")
+    ) {
+      warnings.push(
+        "Missing parts have no collision geometry. Use Fly to inspect this incomplete world.",
+      );
+      vertices.length = indices.length = 0;
+    }
+    return {
+      revision: this.revision,
+      vertices: new Float32Array(vertices),
+      indices: new Uint32Array(indices),
+      unsupported: warnings.length > 0,
+      bounds: {
+        min: (bounds.isEmpty() ? [0, 0, 0] : bounds.min.toArray()) as Vec3,
+        max: (bounds.isEmpty() ? [0, 0, 0] : bounds.max.toArray()) as Vec3,
+      },
+      warnings,
+    };
+  }
+  beginTransientPose() {
+    const matrices = new Map(
+      [...this.handles].map(([id, group]) => [id, group.matrix.clone()]),
+    );
+    return () => {
+      for (const [id, matrix] of matrices) {
+        const group = this.handles.get(id);
+        if (group) {
+          group.matrix.copy(matrix);
+          group.updateMatrixWorld(true);
+        }
+      }
+      this.batches.rebuild(this.handles);
+      this.invalidate();
+    };
+  }
+  applyTransientPose(transforms: Record<string, Transform>) {
+    ensure(
+      !this.captureActive,
+      "INVALID_INPUT",
+      "Wait for capture before changing the mechanism pose",
+    );
+    for (const [id, transform] of Object.entries(transforms)) {
+      const group = this.handles.get(id);
+      ensure(
+        group,
+        "INVALID_INPUT",
+        "Mechanism references an unknown occurrence",
+      );
+      const b = transform.basis,
+        p = transform.position;
+      group.matrix.set(
+        b[0],
+        b[1],
+        b[2],
+        p[0],
+        b[3],
+        b[4],
+        b[5],
+        p[1],
+        b[6],
+        b[7],
+        b[8],
+        p[2],
+        0,
+        0,
+        0,
+        1,
+      );
+      group.updateMatrixWorld(true);
+    }
+    this.batches.rebuild(this.handles);
+    this.invalidate();
+  }
+  beginPlayView() {
+    const camera = this.currentCamera();
+    const visible = new Map(
+      [...this.handles].map(([id, g]) => [id, g.visible]),
+    );
+    const grid = this.grid.visible,
+      selection = this.selection.visible;
+    this.controls.enabled = false;
+    this.grid.visible = false;
+    this.selection.visible = false;
+    this.clearGhost();
+    for (const group of this.handles.values()) group.visible = true;
+    return () => {
+      for (const [id, value] of visible) {
+        const group = this.handles.get(id);
+        if (group) group.visible = value;
+      }
+      this.grid.visible = grid;
+      this.selection.visible = selection;
+      this.controls.enabled = true;
+      this.setCamera(camera);
+    };
+  }
+  /** Update a moving camera without reallocating the camera or invoking orbit constraints. */
+  playCamera(spec: CameraSpec) {
+    if (this.captureActive) return;
+    if (!(this.camera instanceof THREE.PerspectiveCamera)) this.setCamera(spec);
+    this.cameraSpec = structuredClone(spec);
+    const camera = this.camera as THREE.PerspectiveCamera;
+    camera.fov = spec.fovDeg || 65;
+    camera.near = spec.near;
+    camera.far = spec.far;
+    camera.position.fromArray(conversion(spec.position));
+    camera.up.fromArray(conversion(spec.up));
+    this.controls.target.fromArray(conversion(spec.target));
+    camera.lookAt(this.controls.target);
+    camera.updateProjectionMatrix();
+    this.invalidate();
+  }
   fit() {
     const box = new THREE.Box3().setFromObject(this.root);
     if (box.isEmpty()) {
       this.setCamera(defaultCamera);
       return;
     }
-    const size = box.getSize(new THREE.Vector3()).length(),
-      center = box.getCenter(new THREE.Vector3());
+    const radius = box.getSize(new THREE.Vector3()).length() / 2;
+    const center = box.getCenter(new THREE.Vector3());
+    const aspect = Math.max(
+      0.1,
+      this.element.clientWidth / this.element.clientHeight,
+    );
+    const vertical = THREE.MathUtils.degToRad(45) / 2;
+    const limitingAngle = Math.min(
+      vertical,
+      Math.atan(Math.tan(vertical) * aspect),
+    );
+    const distance = (radius / Math.sin(limitingAngle)) * 1.12;
     this.setCamera({
       ...defaultCamera,
       position: conversion(
         center
           .clone()
-          .add(new THREE.Vector3(size * 0.8, size * 0.65, size * 0.9))
+          .add(
+            new THREE.Vector3(0.8, 0.65, 0.9)
+              .normalize()
+              .multiplyScalar(distance),
+          )
           .toArray() as Vec3,
       ),
       target: conversion(center.toArray() as Vec3),
-      span: size * 1.3,
+      span: radius * 2.3,
     });
   }
   select(ids: string[]) {
@@ -728,7 +1052,9 @@ export class SceneAdapter {
       "Image exceeds GPU size limit",
     );
     ensure(
-      ["all", "current", "layers"].includes(request.visibility.mode),
+      ["all", "current", "layers", "occurrences"].includes(
+        request.visibility.mode,
+      ),
       "INVALID_INPUT",
       "Explicit visibility is required",
     );
@@ -746,7 +1072,15 @@ export class SceneAdapter {
       background = this.scene.background,
       grid = this.grid.visible,
       selection = this.selection.visible,
-      target = this.renderer.getRenderTarget();
+      target = this.renderer.getRenderTarget(),
+      controlsEnabled = this.controls.enabled,
+      savedQuality = this.currentQuality();
+    const captureProfile = resolveQuality(
+      request.quality,
+      request.qualityControls,
+    );
+    let captureLighting: ReturnType<SceneAdapter["lightingManifest"]>;
+    let captureStats: typeof this.renderer.info.render;
     const rt = new THREE.WebGLRenderTarget(request.width, request.height, {
       format: THREE.RGBAFormat,
       type: THREE.UnsignedByteType,
@@ -760,14 +1094,28 @@ export class SceneAdapter {
       "Another capture is in progress",
     );
     this.captureActive = true;
+    this.controls.enabled = false;
     try {
+      this.applyQuality(captureProfile);
+      captureLighting = this.lightingManifest();
+      const selectedOccurrences = new Set(
+        request.visibility.occurrenceIds || [],
+      );
+      if (request.visibility.mode === "occurrences")
+        ensure(
+          [...selectedOccurrences].every((id) => this.handles.has(id)),
+          "INVALID_INPUT",
+          "Capture contains unknown occurrence IDs",
+        );
       for (const o of occurrences(p)) {
         const obj = this.handles.get(o.id)!;
         obj.visible =
           request.visibility.mode === "all" ||
           (request.visibility.mode === "current"
             ? o.visible
-            : !!request.visibility.layerIds?.includes(o.layerId));
+            : request.visibility.mode === "occurrences"
+              ? selectedOccurrences.has(o.id)
+              : !!request.visibility.layerIds?.includes(o.layerId));
       }
       this.grid.visible = false;
       this.selection.visible = false;
@@ -784,7 +1132,8 @@ export class SceneAdapter {
         "Document changed during capture",
       );
       this.renderer.setRenderTarget(rt);
-      this.renderer.render(this.scene, this.camera);
+      this.drawScene();
+      captureStats = { ...this.renderer.info.render };
       this.renderer.readRenderTargetPixels(
         rt,
         0,
@@ -795,6 +1144,8 @@ export class SceneAdapter {
       );
     } finally {
       this.captureActive = false;
+      this.applyQuality(savedQuality);
+      this.controls.enabled = controlsEnabled;
       this.renderer.setRenderTarget(target);
       rt.dispose();
       for (const [id, visible] of savedVisible) {
@@ -835,6 +1186,15 @@ export class SceneAdapter {
         documentHash: await sha256(stable(p)),
         library: p.library,
         renderer: "three@0.174.0",
+        appVersion: "brick-editor@0.1.0",
+        assetHashes: Object.fromEntries(
+          await Promise.all(
+            Object.entries(p.assets).map(async ([name, data]) => [
+              name,
+              await sha256(data),
+            ]),
+          ),
+        ),
         camera,
         request,
         warnings: p.diagnostics,
@@ -842,7 +1202,29 @@ export class SceneAdapter {
         graphics: this.renderer
           .getContext()
           .getParameter(this.renderer.getContext().RENDERER),
-        stats: { ...this.renderer.info.render },
+        stats: captureStats!,
+        profile: captureProfile,
+        lighting: captureLighting!,
+        clipping: {
+          space: "renderer-world",
+          planes: this.renderer.clippingPlanes.map((plane) => ({
+            normal: plane.normal.toArray(),
+            constant: plane.constant,
+          })),
+          localClippingEnabled: this.renderer.localClippingEnabled,
+        },
+        output: {
+          width: request.width,
+          height: request.height,
+          colorSpace: this.renderer.outputColorSpace,
+          toneMapping: captureProfile.toneMapping,
+          exposure: captureProfile.exposure,
+        },
+        capabilities: {
+          maxTextureSize: this.renderer.capabilities.maxTextureSize,
+          maxSamples: this.renderer.capabilities.maxSamples,
+          webgl2: true,
+        },
       },
     };
   }
@@ -877,6 +1259,7 @@ export class SceneAdapter {
     this.select([]);
     this.grid.geometry.dispose();
     (this.grid.material as THREE.Material).dispose();
+    this.batches.dispose();
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }

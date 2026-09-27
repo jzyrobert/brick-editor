@@ -2,6 +2,7 @@ import { type Project, ensure, AppError } from "../core/types";
 import { sha256 } from "../core/hash";
 import { validate } from "../core/validate";
 import { validateDocument } from "../core/document";
+import { encodeNative } from "./native";
 export interface StorageAdapter {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
@@ -48,7 +49,74 @@ export class LocalProjects {
     }
     return valid.sort((a, b) => b.revision - a.revision)[0] || null;
   }
+  async list() {
+    const ids = new Set<string>();
+    for (let i = 0; i < this.storage.length; i++) {
+      const key = this.storage.key(i);
+      const match = key?.match(/^brick-editor:([^:]+):(?:head|snapshot:)/);
+      if (match) {
+        try {
+          ids.add(decodeURIComponent(match[1]));
+        } catch {
+          /* Invalid foreign key. */
+        }
+      }
+    }
+    const result: {
+      id: string;
+      title: string;
+      revision: number;
+      approximateBytes: number;
+    }[] = [];
+    for (const id of ids) {
+      const project = await this.load(id);
+      if (project) {
+        const prefix = this.prefix(id);
+        let approximateBytes = 0;
+        for (let i = 0; i < this.storage.length; i++) {
+          const key = this.storage.key(i)!;
+          if (key.startsWith(prefix))
+            approximateBytes +=
+              (key.length + (this.storage.getItem(key)?.length || 0)) * 2;
+        }
+        result.push({
+          id,
+          title: project.title,
+          revision: project.revision,
+          approximateBytes,
+        });
+      }
+    }
+    return result.sort((a, b) => a.title.localeCompare(b.title));
+  }
+  async delete(id: string, expectedRevision: number) {
+    const remove = async () => {
+      const project = await this.load(id);
+      ensure(
+        project?.revision === expectedRevision,
+        "REVISION_CONFLICT",
+        "Saved project changed; refresh before deleting",
+      );
+      const prefix = this.prefix(id);
+      const owned = Array.from(
+        { length: this.storage.length },
+        (_, i) => this.storage.key(i)!,
+      ).filter((key) => key.startsWith(prefix));
+      for (const key of owned) this.storage.removeItem(key);
+    };
+    if (typeof navigator !== "undefined" && navigator.locks)
+      await navigator.locks.request("brick-editor-save:" + id, remove);
+    else await remove();
+  }
+  async exportBackup(id: string) {
+    const project = await this.load(id);
+    ensure(project, "INVALID_INPUT", "Saved project is unavailable");
+    return encodeNative(project);
+  }
   async save(p: Project, expectedStoredRevision: number | null) {
+    p = structuredClone(p);
+    validate("project", p);
+    validateDocument(p);
     const write = async () => {
       const previous = await this.load(p.id);
       ensure(
@@ -107,13 +175,5 @@ export class LocalProjects {
     if (typeof navigator !== "undefined" && navigator.locks)
       return navigator.locks.request("brick-editor-save:" + p.id, write);
     return write();
-  }
-  list() {
-    return Array.from(
-      { length: this.storage.length },
-      (_, i) => this.storage.key(i)!,
-    )
-      .filter((k) => /^brick-editor:.+:head$/.test(k))
-      .map((k) => decodeURIComponent(k.slice(13, -5)));
   }
 }

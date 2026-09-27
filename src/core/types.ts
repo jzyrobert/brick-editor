@@ -1,3 +1,4 @@
+import type { MotionRig } from "../mechanisms/types";
 export type Vec3 = [number, number, number];
 export type Basis = [
   number,
@@ -71,7 +72,7 @@ export type Project = {
   groups: Record<string, string[]>;
   instructionPlans: Record<string, { name: string; steps: string[][] }>;
   cameraBookmarks: Record<string, CameraSpec>;
-  motionRigs: Record<string, unknown>;
+  motionRigs: Record<string, MotionRig>;
   metadata: Record<string, unknown>;
   assets: Record<string, string>;
   diagnostics: Diagnostic[];

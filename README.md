@@ -1,6 +1,6 @@
 # Brick Editor
 
-A local-first, static React/TypeScript/three.js brick editor implementing the end-to-end M0/M1 workflow and selected M2/M3 features from [spec.md](spec.md). **This is a working development build, not completion of the full P0–P3 roadmap.** Remaining acceptance gates are recorded in [docs/STATUS.md](docs/STATUS.md).
+A local-first, static React/TypeScript/three.js brick editor implementing the core editor, Play exploration, kinematic mechanisms and selected M2–M5 features from [spec.md](spec.md). **This is a working development build, not completion of the full P0–P3 roadmap.** Remaining acceptance gates are recorded in [docs/STATUS.md](docs/STATUS.md).
 
 ## Run
 
@@ -33,7 +33,9 @@ Use Select to pick a part and Inspector to move, rotate, recolour, duplicate or 
 
 Layers have visibility and locks enforced by the command service. The UI edits only the active layer unless **Edit across layers** is enabled. Rectangular fill runs in a cancellable worker, reports conservative obstacle gaps, checks its revision at commit and creates one undo item. It does not claim optimal packing or verified connections.
 
-Project offers blank, studio, wall and 200-part original templates. Replacing a nonempty build through the template UI downloads a native backup first. Open local `.ldr`, `.mpd`, `.dat` or `.brickproj` files from Project. Unsupported texture metadata is retained and reported; strict image capture refuses it. Missing parts remain in the document with diagnostic wireframe boxes and cannot enter a complete purchasing export.
+Project offers blank, studio, wall and 200-part original templates. Replacing a nonempty build through the template UI downloads a native backup first. Clipboard tools in Inspector support copy/cut/paste, portable fragments and bounded linear/circular arrays. Layer controls support reordering and explicit reassign-or-delete decisions.
+
+Open local `.ldr`, `.mpd`, `.dat` or `.brickproj` files from Project. Unsupported texture metadata is retained and reported; strict image capture refuses it. Missing parts remain in the document with diagnostic wireframe boxes and cannot enter a complete purchasing export.
 
 Exports:
 
@@ -42,13 +44,17 @@ Exports:
 - **BrickLink Wanted List XML**: offline preview, source traceability, all/visible/active-layer/selection scopes, condition, acknowledged overrides, explicit partial ZIP/report, complete per-layer ZIP, download and copy. Six starter part identities and five colours per identity are audited. Other combinations remain unknown until acknowledged. XML uses `ITEMTYPE`, `ITEMID`, `COLOR`, `MINQTY`, without an XML declaration. Seller availability is not queried; an authenticated destination smoke test has **not** been performed.
 - **PNG + manifest**: offscreen render target, exact camera, explicit visibility, solid or transparent background, bounded pixel count, camera/revision/library hashes. No application screenshot or persistent drawing buffer is used.
 
-Instructions supports root imported STEP/ROTSTEP boundaries (rotation metadata retained) and layer-based plans/playback. Plans are organisational, not verified assembly instructions. Photo supports exact position/target, orthographic views, bookmarks, dimensions and transparency. **Play explicitly reports its unimplemented state.**
+Instructions supports root imported STEP/ROTSTEP boundaries (rotation metadata retained), layer-based plans/playback, sequential PNG/HTML archives and printable PDFs. Plans are organisational, not verified assembly instructions. Photo supports exact position/target, orthographic views, bookmarks, dimensions and transparency. **Play** provides first-person walking and free flight, third-person rigid-joint animation, touch movement/look/jump, safe respawn and fixed-tick automation. It freezes the build revision and restores the editor camera on exit. The original procedural figure is 72 LDU tall; models are never resized to fit it. A temporary ground plane belongs only to the session.
 
 Autosave writes and verifies a new snapshot before changing the head pointer, retaining the prior snapshot on failure. Quota errors keep the current build in memory and prompt a native backup. Web Locks serialize same-origin writes where available; expected stored revisions reject stale writers. Saving in browser storage is not a permanent file backup.
 
+Project also provides bounded self-contained share links, temporary import previews, opt-in offline downloads, and saved-project management. Native bundles include separately checksummed source and asset files.
+
+The **Door & vehicle** template includes two original kinematic rigs. In Play, preview hinges or advance a vehicle by fixed ticks; **Apply current pose** is the explicit undoable authoring operation. Dynamics and suspension remain unimplemented.
+
 ## Browser automation
 
-Open `/?automation=1` to expose `window.brickEditor`; the API is absent by default. See [docs/API.md](docs/API.md) and the generated [schemas](schemas).
+Open `/?automation=1` to expose `window.brickEditor`; the API is absent by default. See [docs/API.md](docs/API.md), [CLI examples](docs/CLI.md), and the generated [schemas](schemas).
 
 ```js
 const api = window.brickEditor;
@@ -101,7 +107,7 @@ The [Pages workflow](.github/workflows/pages.yml) checks, builds and deploys `di
 BASE_PATH=/brick-editor/ npm run build
 ```
 
-Host `dist/` at that path on an ordinary static HTTPS host. No server-side router is required. Runtime asset paths and workers respect the Vite base. Use HTTPS (or localhost) for Web Crypto and clipboard. The HTML contains a restrictive same-origin CSP and precompiled Ajv validators; it does not permit `unsafe-eval`. Serve MIME types normally. Do not serve the source repository or a development server as production hosting.
+Host `dist/` at that path on an ordinary static HTTPS host. No server-side router is required. Runtime asset paths and workers respect the Vite base. Use HTTPS (or localhost) for Web Crypto and clipboard. The HTML contains a restrictive same-origin CSP and precompiled Ajv validators; it does not permit JavaScript `unsafe-eval`; `wasm-unsafe-eval` permits the lazily loaded Rapier Play engine. Serve MIME types normally. Do not serve the source repository or a development server as production hosting.
 
 ## Library preparation and provenance
 

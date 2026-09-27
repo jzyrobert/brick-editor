@@ -1,7 +1,18 @@
+import { mechanismFixture } from "../mechanisms/fixtures";
+import { explorationSource } from "./exploration";
+import { importLDraw } from "../ldraw/io";
 import { createProject } from "../core/document";
 import { identity, rotationY } from "../core/math";
 import { uid, type Vec3 } from "../core/types";
-export function template(name: "blank" | "room" | "wall" | "200") {
+export function template(
+  name: "blank" | "room" | "wall" | "200" | "explore" | "mechanisms",
+) {
+  if (name === "mechanisms") return mechanismFixture();
+  if (name === "explore") {
+    const project = importLDraw(explorationSource(), "exploration.mpd");
+    project.title = "Exploration room";
+    return project;
+  }
   const p = createProject(
     name === "blank"
       ? "Untitled build"

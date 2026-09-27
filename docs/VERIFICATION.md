@@ -6,8 +6,8 @@ The final production build, clean install and test suites pass. These results es
 | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `npm ci`                   | Clean lockfile install passes                                                                              |
 | `npm run build`            | TypeScript and Vite 6.4.3 pass                                                                             |
-| `npm test`                 | **32 tests pass**, 2 files, 0 failures                                                                     |
-| `npm run test:browser`     | **9 tests pass**, 0 failures, against the production bundle                                                |
+| `npm test`                 | **87 tests pass**, 16 files, 0 failures                                                                    |
+| `npm run test:browser`     | **29 tests pass**, 0 failures, against the production bundle                                               |
 | Browser engine             | Playwright 1.63.0, Chromium 153.0.8010.12, SwiftShader software WebGL2                                     |
 | Layouts                    | 1440×1000 desktop, 1080×1800 touch, 360×800 touch                                                          |
 | `npm run library:validate` | 23 files and six physical parts; dependency closure, licence metadata and library/mapping hashes pass      |
@@ -21,6 +21,14 @@ Browser tests exercise a 200-part UI fill, command recolour/undo, native round t
 
 The first conformance run exposed a real loader integration failure: `s/` subparts were being rewritten to unresolved paths, and the loader returned empty groups after swallowing errors. The final adapter supplies an explicit embedded file map, checks for failed dependency attempts and rejects empty official prototypes. A separate material-cache issue was fixed by compiling colour directives in the same loader instance as the geometry. No placeholder cuboids stand in for the audited starter parts.
 
+## Expanded feature verification
+
+Production-browser coverage now includes fixed-tick Play and simultaneous touch movement/look, real doorway/stair collision, safe teleport and low-ceiling refusal, kinematic hinge/vehicle previews and undoable pose application, clipboard/arrays, layer disposition, PDF/PNG/HTML instruction publishing, native asset bundles, checksum-checked sharing, offline reload with lazy Play/PDF loading, multi-tab conflict forks and delayed startup recovery. The CLI suite also exports real Play PNGs and instruction PDFs. Recovery guards preserve edits made during delayed startup without re-saving an unchanged recovered project; the two-tab and controlled-delay regressions both pass.
+
+The actual-app exploration test exposed lost scoped colour/BFC records during per-face compilation and false capsule hits against an oversized ground box. Compilation now carries the applicable source context, and the optional ground is an infinite collision plane. Regression tests exercise the rendered room and controller together.
+
+The mobile UX review completed at **8.7/10** after fixes, including the expanded Project, Photo, Instructions and Play panels. See [UX audit](UX-AUDIT.md) and [conformance audit](CONFORMANCE-AUDIT.md). This is a headless-browser review, not physical-device testing.
+
 ## Performance smoke measurements
 
 Linux ARM64 VM, Neoverse-N1, four available CPUs, software WebGL2, 1440×1000 viewport, local production preview. These are **single-run timings**, not p95 statistics, frame-rate measurements or physical-phone benchmarks.
@@ -30,10 +38,12 @@ Linux ARM64 VM, Neoverse-N1, four available CPUs, software WebGL2, 1440×1000 vi
 | 200 real parts   |     31.5 ms |                       79.7 ms |                  14.4 ms |     4,249 ms |
 | 1,000 real parts |     68.7 ms |                       66.5 ms |                  38.9 ms |     1,979 ms |
 
-Initial shell/library readiness was approximately 579 ms. The first capture includes shader warmup; the later case benefits from cached prototypes/shaders. The single 1,000-part command-plus-scene result does not establish the specification's sub-100ms p95 target. Frustum culling remains enabled. Hardware FPS targets and the 5,000-part workload remain unverified. The production application JavaScript is approximately **281.5 kB gzip**, excluding the worker scripts/library. Vite still reports its advisory about the uncompressed main chunk exceeding 500 kB; further splitting is deferred.
+Initial shell/library readiness was approximately 579 ms. The first capture includes shader warmup; the later case benefits from cached prototypes/shaders. The single 1,000-part command-plus-scene result does not establish the specification's sub-100ms p95 target. Frustum culling remains enabled. Hardware FPS targets remain unverified. A later 5,000-part comparison reduced draw calls from 15,001 to seven, with matching geometry counts; cold software PNG capture increased from 9,156.8 ms to 12,702.5 ms. This establishes draw-call reduction, not an FPS improvement. The production application JavaScript is approximately **334 kB gzip**, with separately loaded Rapier (about 1.65 MB gzip) and PDF (about 182 kB gzip) chunks, excluding worker scripts/library. Vite still reports its advisory about the uncompressed main chunk exceeding 500 kB; further splitting is deferred.
 
 ## Evidence and limits
 
+- [Play exploration screenshot](screenshots/play-exploration.png)
+- [5,000-part reference report](reports/performance-5000-reference.json) and [batched report](reports/performance-5000-batched.json)
 - [Machine-readable verification](reports/verification.json)
 - [Performance environment, timings and draw statistics](reports/performance.json)
 - [Dependency advisory result](reports/npm-audit.json)
@@ -42,4 +52,4 @@ Initial shell/library readiness was approximately 579 ms. The first capture incl
 - [Interior PNG](screenshots/interior.png) and [render manifest](reports/interior.render.json)
 - [Desktop](screenshots/desktop.png), [1080×1800 touch](screenshots/mobile-1080.png), [360px touch](screenshots/mobile-360.png)
 
-There was no authenticated BrickLink upload, purchase, physical-device run, full-library compatibility test, universal connectivity/buildability proof or Play/physics test. Conditional-line and BFC coverage is limited to the shipped starter and synthetic conformance fixtures; broader visibility-image comparisons remain outstanding. See [STATUS.md](STATUS.md) for the remaining release gates.
+There was no authenticated BrickLink upload, purchase, physical-device run, full-library compatibility test, universal connectivity/buildability proof or dynamic mechanism physics test. Capsule exploration and kinematic mechanisms have automated coverage. Conditional-line and BFC coverage includes shipped starter, scoped custom geometry and batched/reference image comparisons; broader library compatibility remains outstanding. See [STATUS.md](STATUS.md) for the remaining release gates.

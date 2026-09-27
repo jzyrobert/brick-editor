@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-27T09:00:12.302Z",
+  "environment": {
+    "platform": "linux",
+    "arch": "arm64",
+    "cpu": "Neoverse-N1",
+    "availableCPUs": 4,
+    "browser": "153.0.8010.12",
+    "graphics": "SwiftShader software WebGL2",
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "physicalPhone": false
+  },
+  "shellMs": 365.09012700000005,
+  "measurements": [
+    {
+      "parts": 5000,
+      "commandMs": 418.4000000022352,
+      "sceneReadyMs": 420.5,
+      "inventoryMs": 132.79999999701977,
+      "captureMs": 12702.5,
+      "pngBytes": 68004,
+      "stats": {
+        "frame": 6,
+        "calls": 7,
+        "triangles": 3500000,
+        "points": 0,
+        "lines": 3480202
+      },
+      "graphics": "WebKit WebGL"
+    }
+  ],
+  "limitations": "Single-run local-server smoke measurements; not p95, hardware FPS, physical-phone performance, or proof of the 5,000-part frame-rate acceptance gate."
+}

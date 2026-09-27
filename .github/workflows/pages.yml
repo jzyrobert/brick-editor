@@ -25,9 +25,13 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
       - run: npm ci
+      - name: Install browser test runtime
+        run: npx playwright install --with-deps chromium
       - run: npm run format:check
       - run: npm test
       - run: npm run library:validate
+      - name: Browser acceptance tests
+        run: npm run test:browser
       - name: Build static site
         run: npm run build
         env:

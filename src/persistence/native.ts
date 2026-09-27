@@ -3,23 +3,52 @@ import { type Project, ensure } from "../core/types";
 import { canonical } from "../ldraw/path";
 import { validate } from "../core/validate";
 import { validateDocument } from "../core/document";
-import { sha256 } from "../core/hash";
+import { sha256, stable } from "../core/hash";
+import { exportLDraw } from "../ldraw/io";
 export async function encodeNative(p: Project) {
+  p = structuredClone(p);
+  validate("project", p);
+  validateDocument(p);
   const json = JSON.stringify(p);
-  return zipSync({
+  const files: Record<string, Uint8Array> = {
     "project.json": strToU8(json),
-    "manifest.json": strToU8(
-      JSON.stringify({
-        schemaVersion: 1,
-        projectSha256: await sha256(json),
-        library: p.library,
-        mapping: p.marketplace.mappingPackId,
-      }),
+    "sources/project.mpd": strToU8(exportLDraw(p)),
+    "notices.txt": strToU8(
+      "Official geometry is referenced by its pinned library lock. See distributed public/notices/LDRAW.txt. Imported sources and custom geometry are in sources/project.mpd. Original source records, notices and asset identifiers are retained in project.json. Asset files contain the exact source strings (including data URI encoding where supplied).\n",
     ),
-    "NOTICES.txt": strToU8(
-      "Official geometry is referenced by its pinned library lock. See distributed public/notices/LDRAW.txt. User sources retain their original notices in project.json.\n",
-    ),
-  });
+  };
+  const assetFiles: Record<string, string> = {};
+  for (const [name, value] of Object.entries(p.assets)) {
+    const path = "assets/" + (await sha256(name)) + ".txt";
+    files[path] = strToU8(value);
+    assetFiles[name] = path;
+  }
+  const entries: Record<string, string> = {};
+  for (const [path, bytes] of Object.entries(files))
+    entries[path] = await sha256(bytes);
+  files["manifest.json"] = strToU8(
+    JSON.stringify({
+      schemaVersion: 1,
+      projectSha256: await sha256(json),
+      library: p.library,
+      mapping: p.marketplace.mappingPackId,
+      entries,
+      assetFiles,
+    }),
+  );
+  ensure(
+    Object.values(files).reduce((sum, b) => sum + b.length, 0) <=
+      100 * 1024 * 1024,
+    "LIMIT_EXCEEDED",
+    "Native bundle exceeds 100 MiB expanded budget",
+  );
+  const archive = zipSync(files);
+  ensure(
+    archive.length <= 25 * 1024 * 1024,
+    "LIMIT_EXCEEDED",
+    "Native bundle exceeds 25 MiB compressed budget",
+  );
+  return archive;
 }
 export function boundedUnzip(bytes: Uint8Array) {
   ensure(
@@ -95,8 +124,92 @@ export async function decodeNative(bytes: Uint8Array) {
     "INVALID_INPUT",
     "Native bundle checksum mismatch",
   );
+  ensure(
+    manifest.schemaVersion === 1,
+    "INVALID_INPUT",
+    "Unsupported native manifest version",
+  );
+  const packaged =
+    Object.hasOwn(manifest, "entries") ||
+    Object.hasOwn(manifest, "assetFiles") ||
+    Object.keys(files).some(
+      (path) => path.startsWith("sources/") || path.startsWith("assets/"),
+    );
+  if (packaged) {
+    ensure(
+      manifest.entries &&
+        typeof manifest.entries === "object" &&
+        !Array.isArray(manifest.entries),
+      "INVALID_INPUT",
+      "Invalid native manifest entries",
+    );
+    for (const [path, hash] of Object.entries(manifest.entries)) {
+      ensure(
+        files[path] &&
+          typeof hash === "string" &&
+          (await sha256(files[path])) === hash,
+        "INVALID_INPUT",
+        "Native entry checksum mismatch: " + path,
+      );
+    }
+    ensure(
+      Object.keys(files).every(
+        (path) =>
+          path === "manifest.json" || Object.hasOwn(manifest.entries, path),
+      ),
+      "INVALID_INPUT",
+      "Native bundle contains an unlisted entry",
+    );
+  }
+  if (!packaged)
+    ensure(
+      Object.keys(files).every((path) =>
+        ["project.json", "manifest.json", "notices.txt"].includes(path),
+      ),
+      "INVALID_INPUT",
+      "Unknown legacy native bundle entry",
+    );
   const p = JSON.parse(json) as Project;
   validate("project", p);
   validateDocument(p);
+  ensure(
+    stable(manifest.library) === stable(p.library) &&
+      manifest.mapping === p.marketplace.mappingPackId,
+    "INVALID_INPUT",
+    "Native library or mapping lock mismatch",
+  );
+  if (packaged) {
+    ensure(
+      ["project.json", "sources/project.mpd", "notices.txt"].every((path) =>
+        Object.hasOwn(manifest.entries, path),
+      ),
+      "INVALID_INPUT",
+      "Native bundle is missing a required source or notices entry",
+    );
+    ensure(
+      strFromU8(files["sources/project.mpd"]) === exportLDraw(p),
+      "INVALID_INPUT",
+      "Native source file differs from authoritative project",
+    );
+    ensure(
+      manifest.assetFiles &&
+        typeof manifest.assetFiles === "object" &&
+        !Array.isArray(manifest.assetFiles) &&
+        Object.keys(manifest.assetFiles).length ===
+          Object.keys(p.assets).length,
+      "INVALID_INPUT",
+      "Native asset index mismatch",
+    );
+    for (const [name, value] of Object.entries(p.assets)) {
+      const path = "assets/" + (await sha256(name)) + ".txt";
+      ensure(
+        manifest.assetFiles[name] === path &&
+          files[path] &&
+          strFromU8(files[path]) === value,
+        "INVALID_INPUT",
+        "Native embedded asset mismatch",
+      );
+    }
+  }
   return p;
 }

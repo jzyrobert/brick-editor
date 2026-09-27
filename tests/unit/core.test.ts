@@ -516,7 +516,7 @@ it("storage namespaces imported IDs and does not discard the head on repeated re
     await store.save(p, i - 1);
   }
   expect((await store.load(p.id))?.revision).toBe(4);
-  expect(store.list()).toEqual([p.id]);
+  expect((await store.list()).map((saved) => saved.id)).toEqual([p.id]);
   const other = template("wall");
   other.id = "project";
   await store.save(other, null);
