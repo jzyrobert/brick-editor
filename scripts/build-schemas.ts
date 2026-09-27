@@ -813,6 +813,20 @@ playSnapshot.properties.mechanism = obj(
     warnings: arr(str),
     blocked: { type: "boolean" },
     jointTargets: dictionary(playJointTargetReport),
+    vehicleCollision: obj(
+      {
+        profile: { const: "source-boxes-v1" },
+        units: { const: "metres" },
+        supported: { type: "boolean" },
+        status: { enum: ["ready", "blocked", "unsupported"] },
+        reason: str,
+        obstacle: obj({
+          sourceId: { type: "string", maxLength: 12295 },
+          triangleIndex: integer,
+        }),
+      },
+      ["profile", "units", "supported", "status"],
+    ),
     blockedReason: str,
   },
   [
@@ -920,6 +934,7 @@ const api = {
       },
       ["name"],
     ),
+    "project.status": obj({}),
     "project.import": { $ref: "importRequest" },
     "project.export": { $ref: "exportRequest" },
     "project.exportProfile": { $ref: "exportProfileRequest" },

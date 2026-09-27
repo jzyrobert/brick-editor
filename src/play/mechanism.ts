@@ -1,5 +1,7 @@
+import type { DrivingTriangleSource } from "./vehicle-obstacles";
+import type { PlayVehicleCollisionReport } from "./types";
 import RAPIER from "@dimforge/rapier3d-compat";
-import { Matrix4, Quaternion } from "three";
+import { Matrix4, Quaternion, Vector3 } from "three";
 import { ensure, type Project, type Transform, type Vec3 } from "../core/types";
 import { add, inverse, mv } from "../core/math";
 import { KinematicSession } from "../mechanisms/kinematic";
@@ -135,8 +137,54 @@ export class PlayMechanism {
     id: string;
     collider: RAPIER.Collider;
     radius: number;
+    vertices: Float32Array;
+    indices: Uint32Array;
   }> = [];
   private vehicleChassis?: string;
+  private geometryKey = "";
+  private geometryCache: DrivingTriangleSource[] = [];
+  private vehicleReport?: PlayVehicleCollisionReport;
+  private vehicleCheck?: (
+    before: MechanismSnapshot,
+    after: MechanismSnapshot,
+  ) => PlayVehicleCollisionReport | undefined;
+  setVehicleWorld(
+    check: NonNullable<PlayMechanism["vehicleCheck"]>,
+    report?: PlayVehicleCollisionReport,
+  ) {
+    this.vehicleCheck = check;
+    this.vehicleReport = report;
+  }
+  collisionSources(): readonly DrivingTriangleSource[] {
+    const state = this.session.snapshot(),
+      frames = state.groupFrames;
+    const key = JSON.stringify(frames);
+    if (key === this.geometryKey) return this.geometryCache;
+    this.geometryKey = key;
+    this.geometryCache = this.proxies.map((proxy) => {
+      const frame = frames[proxy.id],
+        q = rotation(frame),
+        t = physics(frame.position);
+      const vertices = new Float32Array(proxy.vertices.length);
+      for (let i = 0; i < vertices.length; i += 3) {
+        const point = new Vector3(
+          proxy.vertices[i],
+          proxy.vertices[i + 1],
+          proxy.vertices[i + 2],
+        ).applyQuaternion(q);
+        vertices.set([point.x + t.x, point.y + t.y, point.z + t.z], i);
+      }
+      return {
+        sourceId: JSON.stringify([state.rigId, proxy.id]),
+        units: "metres",
+        up: "+Y",
+        owner: { kind: "rig", rigId: state.rigId },
+        vertices,
+        indices: proxy.indices,
+      };
+    });
+    return this.geometryCache;
+  }
   private vehicleRoots = new Map<string, string>();
   private steeringWheels = new Set<string>();
   private blocked = false;
@@ -205,7 +253,13 @@ export class PlayMechanism {
       const collider = world.createCollider(
         RAPIER.ColliderDesc.trimesh(vertices, mesh.indices),
       );
-      this.proxies.push({ id: group.id, collider, radius });
+      this.proxies.push({
+        id: group.id,
+        collider,
+        radius,
+        vertices,
+        indices: mesh.indices.slice(),
+      });
     }
     this.apply(this.session.snapshot());
   }
@@ -314,7 +368,37 @@ export class PlayMechanism {
       };
     return pose;
   }
-  private accept(before: MechanismSnapshot, target: MechanismSnapshot) {
+  private accept(
+    before: MechanismSnapshot,
+    target: MechanismSnapshot,
+    forceVehicle = false,
+  ) {
+    if (target.pose.vehicle && this.vehicleCheck) {
+      const changed =
+        JSON.stringify(before.pose.vehicle) !==
+        JSON.stringify(target.pose.vehicle);
+      if (changed || forceVehicle) {
+        this.vehicleReport = this.vehicleCheck(before, target);
+        if (this.vehicleReport && this.vehicleReport.status !== "ready") {
+          this.session.setPose(before.pose);
+          this.apply(before);
+          this.session.clearInput();
+          this.blocked = true;
+          this.reason = this.vehicleReport.reason;
+          return false;
+        }
+      } else if (
+        (this.vehicleReport?.status === "blocked" ||
+          this.vehicleReport?.status === "unsupported") &&
+        JSON.stringify(before.pose.jointPositions) ===
+          JSON.stringify(target.pose.jointPositions)
+      ) {
+        this.session.setPose(before.pose);
+        this.apply(before);
+        this.session.clearInput();
+        return false;
+      }
+    }
     let travel = Math.max(
       0,
       ...Object.keys(before.pose.jointPositions).map((id) =>
@@ -418,7 +502,15 @@ export class PlayMechanism {
   setVehicleInput(input: { throttle: number; steering: number }) {
     const before = this.session.snapshot();
     this.session.setVehicleInput(input);
-    this.accept(before, this.session.snapshot());
+    const after = this.session.snapshot();
+    // Releasing a control clears throttle but is not an attempt to resume a
+    // blocked vehicle. Preserve its explanation until motion/steering is requested.
+    if (
+      input.throttle !== 0 ||
+      before.pose.vehicle?.steeringDegrees !==
+        after.pose.vehicle?.steeringDegrees
+    )
+      this.accept(before, after, true);
     return this.snapshot();
   }
   step() {
@@ -459,15 +551,37 @@ export class PlayMechanism {
     const stopped = Object.values(jointTargets).find(
       (t) => t.status === "blocked",
     );
-    const reason = stopped?.blockedReason ?? this.reason;
+    const vehicleStopped =
+      this.vehicleReport && this.vehicleReport.status !== "ready";
+    const reason =
+      stopped?.blockedReason ??
+      (vehicleStopped ? this.vehicleReport?.reason : undefined) ??
+      this.reason;
     return {
       ...state,
       jointTargets,
-      blocked: this.blocked || !!stopped,
+      ...(this.vehicleReport
+        ? { vehicleCollision: structuredClone(this.vehicleReport) }
+        : {}),
+      blocked: this.blocked || !!stopped || !!vehicleStopped,
       ...(reason ? { blockedReason: reason } : {}),
       warnings: [
-        ...state.warnings,
-        "Moving surfaces stop conservatively before touching the player. Riding, pushing and vehicle/world collision response are not simulated.",
+        ...state.warnings.map((warning) =>
+          this.vehicleReport
+            ? warning.replace(
+                "no suspension, traction or collision response.",
+                "no suspension, traction or dynamic collision response.",
+              )
+            : warning,
+        ),
+        "Moving surfaces stop conservatively before touching the player. Riding and pushing are not simulated.",
+        ...(this.vehicleReport
+          ? [
+              this.vehicleReport.supported
+                ? "Vehicle/world protection uses conservative compiled-source box envelopes; this is not dynamic vehicle physics."
+                : "Vehicle motion is unavailable: " + this.vehicleReport.reason,
+            ]
+          : []),
       ],
     };
   }
@@ -475,6 +589,8 @@ export class PlayMechanism {
     for (const proxy of this.proxies)
       this.world.removeCollider(proxy.collider, true);
     this.proxies = [];
+    this.geometryCache = [];
+    this.vehicleCheck = undefined;
     this.targets.clear();
   }
 }

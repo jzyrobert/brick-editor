@@ -79,7 +79,8 @@
         "sameHeightOnly": true,
         "workerCancellation": true
       },
-      "rigAuthoringUI": "create/edit/remove representable single-joint or pure planar vehicle rigs; preserved frames, axes, IDs, limits and motor metadata"
+      "rigAuthoringUI": "create/edit/remove representable single-joint or pure planar vehicle rigs; preserved frames, axes, IDs, limits and motor metadata",
+      "sourceOnlyAdmission": "Source-valid projects above derived occurrence budgets retain native/LDraw backup and local recovery; derived editing, rendering and Play refuse with structured limits"
     },
     "inventory": {
       "format": "bricklink-wanted-xml",
@@ -113,7 +114,8 @@
       "stepReorderSplitMerge": true,
       "stepNotes": true,
       "stepCameras": true,
-      "dimPreviousParts": true
+      "dimPreviousParts": true,
+      "importedStepBudgetPolicy": "Preserve source STEP/ROTSTEP records and defer derived instruction plans when expansion exceeds policy"
     },
     "play": {
       "available": true,
@@ -159,6 +161,12 @@
         "blockedPolicy": "Keep last accepted tick pose; stop target until explicit retry",
         "pausePolicy": "Pause stops realtime; explicit manual ticks still advance; capture refuses mutations",
         "authoredChanges": false
+      },
+      "vehicleWorldCollision": {
+        "profile": "source-boxes-v1",
+        "policy": "Conservative swept chassis and wheel envelopes against complete included static and foreign-rig triangle geometry; refuse unsupported geometry or exhausted query budgets",
+        "dynamicResponse": false,
+        "riding": false
       }
     },
     "sharing": {

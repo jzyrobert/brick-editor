@@ -39,7 +39,14 @@ export function nearbyInteraction(
         rigId: rig.id,
         label: "Control vehicle",
         name: rig.name,
-        available: d <= 96,
+        available: d <= 96 && mechanism.vehicleCollision?.supported !== false,
+        ...(mechanism.vehicleCollision?.supported === false
+          ? {
+              blockedReason:
+                mechanism.vehicleCollision.reason ??
+                "Vehicle collision support is unavailable",
+            }
+          : {}),
         distance: d,
       });
     }

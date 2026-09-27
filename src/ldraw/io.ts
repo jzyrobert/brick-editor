@@ -7,9 +7,15 @@ import {
   ensure,
 } from "../core/types";
 import { identity, mv, add, determinant } from "../core/math";
-import { createProject, validateDocument, occurrences } from "../core/document";
+import {
+  createProject,
+  validateSourceDocument,
+  occurrences,
+} from "../core/document";
 import { canonical } from "./path";
 import { installedSource } from "../catalog/catalog";
+import { deriveImportedSteps } from "./imported-steps";
+import type { ExpansionOptions } from "../core/expansion-policy";
 const num = (s: string) => {
   const n = Number(s);
   ensure(
@@ -19,7 +25,11 @@ const num = (s: string) => {
   );
   return n;
 };
-export function importLDraw(text: string, name = "main.ldr"): Project {
+export function importLDraw(
+  text: string,
+  name = "main.ldr",
+  expansion: ExpansionOptions = {},
+): Project {
   ensure(
     new TextEncoder().encode(text).length <= 25 * 1024 * 1024,
     "LIMIT_EXCEEDED",
@@ -174,39 +184,13 @@ export function importLDraw(text: string, name = "main.ldr"): Project {
           details: { ref: n.ref },
         });
     }
-  // Validate custom-part graphs as well as expanded user models.
-  const done = new Set<string>();
-  const check = (id: string, stack: Set<string>) => {
-    ensure(!stack.has(id), "REFERENCE_CYCLE", "Cyclic embedded definition");
-    if (done.has(id)) return;
-    ensure(stack.size < 64, "LIMIT_EXCEEDED", "Reference depth exceeds 64");
-    const next = new Set(stack).add(id);
-    for (const n of p.models[id].nodes)
-      if (n.kind !== "geometry" && p.models[n.ref]) check(n.ref, next);
-    done.add(id);
-  };
-  for (const id of Object.keys(p.models)) check(id, new Set());
-  validateDocument(p);
-  const root = p.models[p.rootModelId];
-  if (root.records.some((r) => /^0\s+(?:STEP|ROTSTEP)(?:\s|$)/i.test(r.raw))) {
-    const all = occurrences(p);
-    const steps: string[][] = [];
-    let step: string[] = [];
-    for (const r of root.records) {
-      if (/^0\s+(?:STEP|ROTSTEP)(?:\s|$)/i.test(r.raw)) {
-        if (step.length) steps.push(step);
-        step = [];
-      } else if (r.nodeId)
-        step.push(
-          ...all.filter((o) => o.path[0] === r.nodeId).map((o) => o.id),
-        );
-    }
-    if (step.length) steps.push(step);
-    p.instructionPlans.imported = {
-      name: "Imported steps (rotation metadata retained)",
-      steps,
-    };
-  }
+  // Source validation covers custom physical dependencies as well as submodels.
+  validateSourceDocument(p);
+  const importedSteps = deriveImportedSteps(p, expansion);
+  if (importedSteps.status === "derived")
+    p.instructionPlans.imported = importedSteps.plan;
+  else if (importedSteps.status === "deferred")
+    p.diagnostics.push(importedSteps.diagnostic);
   return p;
 }
 export function nodeLine(n: Node, p: Project) {

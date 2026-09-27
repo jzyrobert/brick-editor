@@ -1,3 +1,9 @@
+import {
+  assessMaterialization,
+  requireMaterialization,
+  type Materialization,
+} from "./materialization";
+import { expansionLimits, type ExpansionOptions } from "./expansion-policy";
 import { assertRequestBudget } from "./request-budget";
 import { editInstructions } from "../instructions/edit";
 import { makeSubmodel, sharedDefinitionTargets } from "./models";
@@ -30,6 +36,7 @@ import {
   createProject,
   occurrences,
   validateDocument,
+  validateSourceDocument,
   encodePath,
 } from "./document";
 import { identity, compose, inverse, add, mv } from "./math";
@@ -704,10 +711,31 @@ export class Editor {
   >();
   private listeners = new Set<() => void>();
   historyTruncated = false;
-  constructor(p = createProject()) {
+  private availability: Materialization;
+  private expansionOptions: ExpansionOptions;
+  constructor(p = createProject(), expansionOptions: ExpansionOptions = {}) {
+    this.expansionOptions = structuredClone(expansionOptions);
+    const effective = expansionLimits(this.expansionOptions),
+      defaults = expansionLimits();
+    ensure(
+      Object.keys(effective).every(
+        (key) =>
+          effective[key as keyof typeof effective] <=
+          defaults[key as keyof typeof defaults],
+      ),
+      "INVALID_INPUT",
+      "Raised Editor expansion limits are not supported across derived consumers yet",
+    );
     validate("project", p);
-    validateDocument(p);
+    validateSourceDocument(p);
+    this.availability = assessMaterialization(p, expansionOptions);
     this.state = structuredClone(p);
+  }
+  get materialization() {
+    return structuredClone(this.availability);
+  }
+  requireMaterialization() {
+    requireMaterialization(this.availability);
   }
   get project() {
     return structuredClone(this.state);
@@ -719,29 +747,47 @@ export class Editor {
     };
   }
   private emit() {
-    for (const fn of this.listeners) fn();
+    for (const fn of this.listeners) {
+      try {
+        fn();
+      } catch (error) {
+        console.error("Editor subscriber failed after commit", error);
+      }
+    }
   }
   replace(p: Project) {
     validate("project", p);
-    validateDocument(p);
+    validateSourceDocument(p);
+    const replacement = structuredClone(p);
+    const availability = assessMaterialization(
+      replacement,
+      this.expansionOptions,
+    );
     const revision = Math.max(this.state.revision, p.revision) + 1;
     ensure(
       Number.isSafeInteger(revision),
       "LIMIT_EXCEEDED",
       "Revision counter exhausted",
     );
-    this.state = structuredClone(p);
-    this.state.revision = revision;
+    replacement.revision = revision;
+    availability.revision = revision;
+    this.state = replacement;
+    this.availability = availability;
     this.past = [];
     this.future = [];
     this.ledger.clear();
     this.emit();
-    return { revision: this.state.revision };
+    return {
+      revision: this.state.revision,
+      materialization: this.materialization,
+    };
   }
   copy(request: CopyRequest) {
+    this.requireMaterialization();
     return copyFragment(this.state, request);
   }
   cut(request: CopyRequest & { expectedRevision: number; commandId: string }) {
+    this.requireMaterialization();
     assertRequestBudget(request);
     fields(request, [
       "occurrenceIds",
@@ -795,6 +841,7 @@ export class Editor {
     commands: Command[];
     dryRun?: boolean;
   }) {
+    this.requireMaterialization();
     assertRequestBudget(input);
     ensure(
       input && Array.isArray(input.commands),
@@ -841,6 +888,7 @@ export class Editor {
       applyPatches(p, undoPatch, history === "history.undo");
     } else
       for (const c of input.commands) mutate(p, c, copyMappings, idRemappings);
+    requireMaterialization(assessMaterialization(p, this.expansionOptions));
     p.diagnostics = p.diagnostics.filter((d) => d.code !== "REFERENCE_MISSING");
     for (const o of occurrences(p))
       if (o.namespace === "missing")
@@ -904,6 +952,7 @@ export class Editor {
       this.historyTruncated = true;
     }
     this.state = p;
+    this.availability = assessMaterialization(p, this.expansionOptions);
     this.ledger.set(input.commandId, { key, result });
     if (this.ledger.size > 500)
       this.ledger.delete(this.ledger.keys().next().value!);

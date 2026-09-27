@@ -65,9 +65,9 @@ it("retains a small source whose derived paths exceed budget through native back
   // Guarded collector refuses before allocation; never expand the hostile graph.
   expect(() => validateDocument(p)).toThrow(/resource budget/);
   const editor = new Editor();
-  const previous = editor.project;
-  expect(() => editor.replace(p)).toThrow(/resource budget/);
-  expect(editor.project).toEqual(previous);
+  const admitted = editor.replace(p);
+  expect(admitted.materialization.status).toBe("limited");
+  expect(editor.project.models).toEqual(p.models);
   const original = JSON.stringify(p);
   const bundle = await encodeNative(p);
   expect(bundle.length).toBeLessThan(1024 * 1024);

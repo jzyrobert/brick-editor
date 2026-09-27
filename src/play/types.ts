@@ -111,10 +111,19 @@ export type PlayJointTargetReport = {
   speedUnits: "degrees/s" | "LDU/s";
   blockedReason?: string;
 };
+export type PlayVehicleCollisionReport = {
+  profile: "source-boxes-v1";
+  units: "metres";
+  supported: boolean;
+  status: "ready" | "blocked" | "unsupported";
+  reason?: string;
+  obstacle?: { sourceId: string; triangleIndex: number };
+};
 export type PlayMechanismReport = MechanismSnapshot & {
   blocked: boolean;
   blockedReason?: string;
   jointTargets: Record<string, PlayJointTargetReport>;
+  vehicleCollision?: PlayVehicleCollisionReport;
 };
 export type PlaySnapshotReport = {
   mechanism?: PlayMechanismReport;

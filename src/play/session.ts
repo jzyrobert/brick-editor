@@ -1,3 +1,5 @@
+import { PlayVehicleWorld } from "./vehicle-world";
+import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import { isOccurrenceId } from "../core/occurrence-id";
 import { validatePlayWorldProfile } from "./world-profile";
 import { resolvePlayCameraSettings, playCameraSafety } from "./camera-settings";
@@ -55,6 +57,7 @@ function keys(o: object, allowed: string[]) {
 /** Fixed-step isolated session. No authored project references or mutations. */
 export class PlaySession {
   private mechanisms = new Map<string, PlayMechanism>();
+  private vehicleWorld?: PlayVehicleWorld;
   private world: RAPIER.World;
   private collider: RAPIER.Collider;
   private controller: RAPIER.KinematicCharacterController;
@@ -125,6 +128,7 @@ export class PlaySession {
         "Collision exceeds the 1,000,000 triangle budget. Fly remains available.",
       );
     }
+    let drivingStatic: DrivingTriangleSource | undefined;
     if (this.ready && snapshot.indices.length) {
       const v = new Float32Array(snapshot.vertices.length);
       for (let i = 0; i < v.length; i += 3) {
@@ -135,6 +139,14 @@ export class PlaySession {
       this.world.createCollider(
         RAPIER.ColliderDesc.trimesh(v, snapshot.indices),
       );
+      drivingStatic = {
+        sourceId: "included-static-world",
+        units: "metres",
+        up: "+Y",
+        owner: { kind: "static" },
+        vertices: v,
+        indices: snapshot.indices,
+      };
     }
     if (request.ground !== false)
       this.warnings.push(
@@ -167,6 +179,37 @@ export class PlaySession {
             walk: this.locomotion === "walk",
           })),
         );
+      const sources = Array.isArray(mechanismSource)
+        ? mechanismSource
+        : mechanismSource
+          ? [mechanismSource]
+          : [];
+      if (
+        sources.some(
+          (source) => source.project.motionRigs[source.rigId].vehicle,
+        )
+      ) {
+        this.vehicleWorld = new PlayVehicleWorld(
+          sources,
+          drivingStatic,
+          request.ground !== false,
+          (exclude) =>
+            [...this.mechanisms]
+              .filter(([id]) => id !== exclude)
+              .map(([rigId, mechanism]) => ({
+                rigId,
+                sources: mechanism.collisionSources(),
+              })),
+          this.ready
+            ? undefined
+            : "Complete included collision geometry is unavailable",
+        );
+        for (const [id, mechanism] of this.mechanisms)
+          mechanism.setVehicleWorld(
+            (before, after) => this.vehicleWorld!.check(id, before, after),
+            this.vehicleWorld.report(id),
+          );
+      }
     } catch (error) {
       this.world.free();
       throw error;
@@ -547,7 +590,8 @@ export class PlaySession {
     return this.snapshot();
   }
   private step() {
-    for (const mechanism of this.mechanisms.values()) mechanism.step();
+    for (const id of [...this.mechanisms.keys()].sort())
+      this.mechanisms.get(id)!.step();
     if (this.mechanisms.size) this.world.step();
     this.previous = [...this.feet];
     const i = this.input;
@@ -914,6 +958,8 @@ export class PlaySession {
     if (this.disposed) return;
     for (const mechanism of this.mechanisms.values()) mechanism.dispose();
     this.mechanisms.clear();
+    this.vehicleWorld?.dispose();
+    this.vehicleWorld = undefined;
     this.world.free();
     this.disposed = true;
   }

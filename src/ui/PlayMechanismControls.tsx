@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import type { PlayVehicleCollisionReport } from "../play/types";
 import type { BrowserPlay } from "../play/browser";
 import type { MotionRig, MechanismSnapshot } from "../mechanisms/types";
 export function PlayMechanismControls({
@@ -12,7 +13,11 @@ export function PlayMechanismControls({
 }: {
   play: BrowserPlay;
   rig: MotionRig;
-  report: MechanismSnapshot & { blocked?: boolean; blockedReason?: string };
+  report: MechanismSnapshot & {
+    blocked?: boolean;
+    blockedReason?: string;
+    vehicleCollision?: PlayVehicleCollisionReport;
+  };
   onError: (message: string) => void;
   choices?: MotionRig[];
   onRigChange?: (rigId: string) => void;
@@ -91,9 +96,16 @@ export function PlayMechanismControls({
         immediately positions it and cancels only that joint’s animated travel.
       </p>
       <p>
-        Moving parts stop before touching you. Vehicles can pass through the
-        build; riding and pushing are not simulated. Your build stays unchanged.
+        Moving parts stop before touching you. Riding and pushing are not
+        simulated. Your build stays unchanged.
       </p>
+      {rig.vehicle && report.vehicleCollision && (
+        <p role={report.vehicleCollision.supported ? undefined : "status"}>
+          {report.vehicleCollision.supported
+            ? "Vehicle movement stops before included build geometry. Conservative collision shapes may stop it before visible surfaces touch."
+            : `Driving is unavailable: ${report.vehicleCollision.reason}`}
+        </p>
+      )}
       {rig.joints
         .filter((j) => j.kind === "revolute" || j.kind === "prismatic")
         .map((j) => (
@@ -121,6 +133,7 @@ export function PlayMechanismControls({
             Steering
             <input
               aria-label="Explore vehicle steering"
+              disabled={report.vehicleCollision?.supported === false}
               type="range"
               min={-1}
               max={1}
@@ -149,6 +162,7 @@ export function PlayMechanismControls({
             ].map(([value, label]) => (
               <button
                 key={label}
+                disabled={report.vehicleCollision?.supported === false}
                 onPointerDown={(e) => {
                   e.preventDefault();
                   e.currentTarget.setPointerCapture(e.pointerId);

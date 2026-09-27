@@ -599,12 +599,15 @@ export function PlayPanel({
                 ? "Release vehicle"
                 : state.interaction?.available
                   ? state.interaction.label
-                  : "Move closer to interact"}
+                  : state.interaction?.kind === "vehicle" &&
+                      state.interaction.blockedReason
+                    ? "Vehicle unavailable"
+                    : "Move closer to interact"}
               {bindings.interact && <kbd>{bindings.interact}</kbd>}
             </button>
             <small>
               {state.vehicleControl
-                ? "Joystick or movement keys drive and steer. You stay on foot; vehicles can pass through the build."
+                ? "Joystick or movement keys drive and steer. You stay on foot; included walls and other rigs can stop the vehicle."
                 : state.interaction?.name}
             </small>
             {!state.vehicleControl && state.interaction?.progress && (

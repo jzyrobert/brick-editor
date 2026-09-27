@@ -11,7 +11,8 @@ Suggested order for the next implementation pass:
 
 - [x] Reconcile occurrence-path schemas with valid nested documents, add aggregate request preflight and remove quadratic scope matching. Deep paths have a distinct canonical schema; ordinary IDs remain bounded.
 - [x] Guard aggregate expanded path storage/work before and during occurrence collection; preserve native backup and local recovery without materializing the scene.
-- [ ] Complete resource-profile UI/API/CLI plumbing, source-only opening with backup controls, deferred STEP derivation, bounded output and cancellation. The collector defaults to desktop unless a trusted caller supplies another profile. See [resource limits](docs/RESOURCE-LIMITS.md).
+- [x] Open over-budget projects in a source-only recovery view with native/full-source backups; defer imported STEP derivation without dropping source records.
+- [ ] Complete effective resource-profile UI/API/CLI plumbing, explicit impact/override controls, bounded output and cancellation. The app defaults to desktop; a phone viewport does not select the mobile profile. See [resource limits](docs/RESOURCE-LIMITS.md).
 - [ ] Bound remaining compiler work across valid project graphs; occurrence guards alone do not prove those limits.
 
 - [ ] Close M0 conformance gaps: whole-library BFC coverage beyond the new ancestor/internal dependency fixtures, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.
@@ -34,4 +35,4 @@ Allowed-part masked fills and hinge/planar-vehicle creation are now implemented 
 
 Structured browser/CLI queries now cover submodel/current-selection scopes, conservative source bounds, candidate overlaps and actionable dependency/physical-transform diagnostics without WebGL. Verified connectivity remains unavailable pending connector coverage.
 
-Nearby Play interaction now supports E/touch joint open/close and on-foot vehicle control using movement keys/joystick. Multiple active rigs now share the Play world. Contextual doors/sliders now animate on fixed ticks, support reversal and report blocked retries. Follow-up: scene picking/line-of-sight, authored seats and collision-safe entry/exit, riding and vehicle/world collision response. These require an explicit simulation/authoring contract; the current vehicle action is labeled Control vehicle rather than Enter vehicle.
+Nearby Play interaction now supports E/touch joint open/close and on-foot vehicle control using movement keys/joystick. Multiple active rigs now share the Play world. Contextual doors/sliders now animate on fixed ticks, support reversal and report blocked retries. Supported chassis/wheel vehicles now have conservative world/other-rig collision protection with persistent stop reasons and reverse retry; see [driving profile](docs/PLAY-VEHICLES.md). Follow-up: scene picking/line-of-sight, authored seats and collision-safe entry/exit, riding, articulated driving and dynamic collision response. These require an explicit simulation/authoring contract; the current vehicle action is labeled Control vehicle rather than Enter vehicle.

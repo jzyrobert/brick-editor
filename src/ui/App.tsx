@@ -1,3 +1,4 @@
+import { LimitedSource } from "./LimitedSource";
 import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
 import { RigAuthoring } from "./RigAuthoring";
@@ -61,6 +62,36 @@ import { type FillRequest, fillPreview } from "../edit/fill";
 import { zipSync, strToU8 } from "fflate";
 import "./styles.css";
 const editor = new Editor();
+const knownSaveRevisions = new Map<string, number>();
+let sourceSaveTail: Promise<unknown> = Promise.resolve();
+function enqueueSourceSave<T>(action: () => Promise<T>): Promise<T> {
+  const result = sourceSaveTail.then(action, action);
+  sourceSaveTail = result.catch(() => {});
+  return result;
+}
+let recoveryStarted = false;
+const runtime: {
+  renderer?: SceneAdapter;
+  play?: BrowserPlay;
+  mechanisms?: MechanismBrowser;
+  selection: () => string[];
+} = { selection: () => [] };
+let releaseRendererMount = () => {};
+let rendererMounted = Promise.resolve();
+function expectRendererMount() {
+  rendererMounted = new Promise<void>((resolve) => {
+    releaseRendererMount = resolve;
+  });
+}
+expectRendererMount();
+const applicationAPI = createAPI(
+  editor,
+  () => runtime.renderer,
+  () => runtime.play,
+  () => runtime.mechanisms,
+  () => runtime.selection(),
+  () => rendererMounted,
+);
 function download(
   name: string,
   bytes: Uint8Array | Blob,
@@ -154,6 +185,29 @@ function NumberInput({
   );
 }
 export default function App() {
+  const [availability, setAvailability] = useState(editor.materialization);
+  const [workspaceEpoch, setWorkspaceEpoch] = useState(0);
+  useEffect(
+    () =>
+      editor.subscribe(() => {
+        const next = editor.materialization;
+        if (next.status === "limited") setWorkspaceEpoch((epoch) => epoch + 1);
+        setAvailability(next);
+      }),
+    [],
+  );
+  return availability.status === "limited" ? (
+    <LimitedSource
+      editor={editor}
+      api={applicationAPI}
+      knownSaveRevisions={knownSaveRevisions}
+      enqueueSave={enqueueSourceSave}
+    />
+  ) : (
+    <Workspace key={workspaceEpoch} />
+  );
+}
+function Workspace() {
   const [project, setProject] = useState(editor.project),
     [transientView, setTransientView] = useState(false),
     [saveConflict, setSaveConflict] = useState(false),
@@ -223,7 +277,7 @@ export default function App() {
     modeRef = useRef(mode),
     fileInput = useRef<HTMLInputElement>(null),
     worker = useRef<Worker | undefined>(undefined),
-    saveRevisions = useRef(new Map<string, number>()),
+    saveRevisions = useRef(knownSaveRevisions),
     autosave = useRef<AutosaveQueue | undefined>(undefined),
     loaded = useRef(false),
     operationEpoch = useRef(0),
@@ -253,7 +307,10 @@ export default function App() {
       moving?.loading
     );
   };
-  const all = occurrences(project),
+  const all =
+      editor.materialization.status === "available" ? occurrences(project) : [],
+    // The parent unmounts this entire derived workspace on limited replacement.
+
     selected = all.filter((o) => selection.includes(o.id)),
     currentPart = catalog[part],
     currentPlanId = project.instructionPlans[activePlanId]
@@ -373,6 +430,20 @@ export default function App() {
         observedProjectId.current = p.id;
         setSaveConflict(false);
       }
+      if (editor.materialization.status === "limited") {
+        setSelection([]);
+        void autosave.current?.flush();
+        mechanisms.current?.exit();
+        renderer.current?.dispose();
+        renderer.current = undefined;
+        runtime.renderer = undefined;
+        runtime.play = undefined;
+        runtime.mechanisms = undefined;
+        runtime.selection = () => [];
+        releaseRendererMount();
+        expectRendererMount();
+        return;
+      }
       setProject(p);
       setSelection((ids) =>
         ids.filter((id) => occurrences(p).some((o) => o.id === id)),
@@ -388,35 +459,36 @@ export default function App() {
       setSaveStatus("Unsaved changes");
       autosave.current?.schedule(p);
     });
-    const save = async (p: typeof project) => {
-      try {
-        if (editor.project.id === p.id) setSaveStatus("Saving…");
-        const store = new LocalProjects(localStorage);
-        saveRevisions.current.set(
-          p.id,
-          await store.save(p, saveRevisions.current.get(p.id) ?? null),
-        );
-        if (editor.project.id === p.id) {
-          localStorage.setItem("brick-editor-current", p.id);
-          setSaveCoordinationUnavailable(false);
-          setSaveStatus(
-            editor.project.revision === p.revision
-              ? "Saved revision " + p.revision
-              : "Unsaved changes",
+    const save = (p: typeof project) =>
+      enqueueSourceSave(async () => {
+        try {
+          if (editor.project.id === p.id) setSaveStatus("Saving…");
+          const store = new LocalProjects(localStorage);
+          saveRevisions.current.set(
+            p.id,
+            await store.save(p, saveRevisions.current.get(p.id) ?? null),
           );
+          if (editor.project.id === p.id) {
+            localStorage.setItem("brick-editor-current", p.id);
+            setSaveCoordinationUnavailable(false);
+            setSaveStatus(
+              editor.project.revision === p.revision
+                ? "Saved revision " + p.revision
+                : "Unsaved changes",
+            );
+          }
+        } catch (e) {
+          if (editor.project.id !== p.id) return;
+          if (
+            (e as { code?: string }).code === "STORAGE_COORDINATION_UNAVAILABLE"
+          )
+            setSaveCoordinationUnavailable(true);
+          if ((e as { code?: string }).code === "REVISION_CONFLICT")
+            setSaveConflict(true);
+          setSaveStatus("Save failed — download a backup");
+          setStatus(e instanceof Error ? e.message : String(e));
         }
-      } catch (e) {
-        if (editor.project.id !== p.id) return;
-        if (
-          (e as { code?: string }).code === "STORAGE_COORDINATION_UNAVAILABLE"
-        )
-          setSaveCoordinationUnavailable(true);
-        if ((e as { code?: string }).code === "REVISION_CONFLICT")
-          setSaveConflict(true);
-        setSaveStatus("Save failed — download a backup");
-        setStatus(e instanceof Error ? e.message : String(e));
-      }
-    };
+      });
     autosave.current = new AutosaveQueue(save, (e) =>
       setStatus(e instanceof Error ? e.message : String(e)),
     );
@@ -465,16 +537,22 @@ export default function App() {
     const unsubscribePlayView = play.current.subscribe(syncTransientView);
     const unsubscribeMechanismView =
       mechanisms.current.subscribe(syncTransientView);
-    api.current = createAPI(
-      editor,
-      () => renderer.current,
-      () => play.current,
-      () => mechanisms.current,
-      () => [...selectionRef.current],
-    );
+    runtime.renderer = renderer.current;
+    runtime.play = play.current;
+    runtime.mechanisms = mechanisms.current;
+    runtime.selection = () => [...selectionRef.current];
+    api.current = applicationAPI;
+    releaseRendererMount();
     if (new URLSearchParams(location.search).get("automation") === "1")
       window.brickEditor = api.current;
     const init = async () => {
+      if (recoveryStarted) {
+        loaded.current = true;
+        renderer.current?.update(editor.project).catch(() => {});
+        autosave.current?.schedule(editor.project);
+        return;
+      }
+      recoveryStarted = true;
       const initialRevision = editor.project.revision,
         initialId = editor.project.id;
       let recovered = false;
@@ -841,6 +919,7 @@ export default function App() {
           "Import cancelled",
         );
         const result = await api.current!.project.import(input);
+        if (result.materialization.status === "limited") return;
         setStatus("Imported revision " + result.revision);
         await renderer.current?.ready();
         renderer.current?.fit();

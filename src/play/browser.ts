@@ -474,7 +474,7 @@ export class BrowserPlay {
     ensure(
       target?.available,
       "INVALID_INPUT",
-      "Move closer to the authored joint or vehicle",
+      target?.blockedReason ?? "Move closer to the authored joint or vehicle",
     );
     this.clearInput();
     if (target.kind === "vehicle") this.emit({ vehicleControl: target.rigId });

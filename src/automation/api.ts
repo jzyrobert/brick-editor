@@ -38,25 +38,30 @@ export function createAPI(
   play?: () => BrowserPlay | undefined,
   mechanisms?: () => MechanismBrowser | undefined,
   selection?: () => string[],
+  renderMounted?: () => Promise<void>,
 ) {
   const inventory = new InventoryService(),
     jobs = new JobRegistry();
   const renderer = () => {
+    editor.requireMaterialization();
     const r = render();
     ensure(r, "WEBGL_UNAVAILABLE", "WebGL2 renderer unavailable");
     return r;
   };
   const player = () => {
+    editor.requireMaterialization();
     const p = play?.();
     ensure(p, "INVALID_INPUT", "Play controller unavailable");
     return p;
   };
   const mechanism = () => {
+    editor.requireMaterialization();
     const m = mechanisms?.();
     ensure(m, "INVALID_INPUT", "Mechanism controller unavailable");
     return m;
   };
   const startFillPreview = (request: FillRequest) => {
+    editor.requireMaterialization();
     validateRequest("fillRequest", request);
     const source = structuredClone(editor.project);
     return jobs.start("fill-preview", async (signal) => {
@@ -184,10 +189,45 @@ export function createAPI(
       cancel: async (id: string) => jobs.cancel(id),
       wait: async (id: string) => jobs.wait(id),
     },
-    ready: async (options: { minRevision?: number; strict?: boolean } = {}) =>
-      renderer().ready(options.minRevision, options.strict),
+    ready: async (options: { minRevision?: number; strict?: boolean } = {}) => {
+      editor.requireMaterialization();
+      let unsubscribe = () => {};
+      let finished = false;
+      const invalidated = new Promise<never>((_resolve, reject) => {
+        unsubscribe = editor.subscribe(() => {
+          try {
+            editor.requireMaterialization();
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+      try {
+        return await Promise.race([
+          (async () => {
+            await renderMounted?.();
+            ensure(
+              !finished,
+              "CANCELLED",
+              "Renderer readiness was invalidated",
+            );
+            return renderer().ready(options.minRevision, options.strict);
+          })(),
+          invalidated,
+        ]);
+      } finally {
+        finished = true;
+        unsubscribe();
+        editor.requireMaterialization();
+      }
+    },
     project: {
+      status: async () => ({
+        ...editor.materialization,
+        sourceModels: Object.keys(editor.project.models).length,
+      }),
       exportProfile: async (request: ProfileRequest) => {
+        editor.requireMaterialization();
         validateRequest("exportProfileRequest", request);
         const snapshot = editor.project;
         return jobs.wait<
@@ -269,6 +309,8 @@ export function createAPI(
         scope?: Parameters<typeof resolveScope>[1];
       }) => {
         validateRequest("exportRequest", input);
+        if (input.format === "ldraw" && input.scope)
+          editor.requireMaterialization();
         const p = editor.project;
         return input.format === "native"
           ? {
@@ -291,12 +333,17 @@ export function createAPI(
       },
     },
     inventory: {
-      preview: async (input: InventoryRequest) =>
-        inventory.preview(editor.project, input),
-      export: async (input: Parameters<InventoryService["export"]>[1]) =>
-        inventory.export(editor.project, input),
+      preview: async (input: InventoryRequest) => {
+        editor.requireMaterialization();
+        return inventory.preview(editor.project, input);
+      },
+      export: async (input: Parameters<InventoryService["export"]>[1]) => {
+        editor.requireMaterialization();
+        return inventory.export(editor.project, input);
+      },
     },
     query: async (input: QueryRequest = {}) => {
+      editor.requireMaterialization();
       return queryProject(editor.project, input, selection?.());
     },
     dispatch: async (input: Command) => editor.dispatch(input),

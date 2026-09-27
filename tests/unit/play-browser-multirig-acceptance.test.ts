@@ -1,3 +1,4 @@
+import { movingSource } from "../helpers/play-moving-source";
 import { afterEach, expect, it, vi } from "vitest";
 import { Group, PerspectiveCamera, Vector3 } from "three";
 import { conversion } from "../../src/core/math";
@@ -147,8 +148,23 @@ it("source replacement and disposal invalidate a captured session without restor
 });
 
 it("vehicle keyboard/joystick left and right steer toward the corresponding projected camera side", async () => {
+  const source = await movingSource("vehicle");
   for (const moveX of [-1, 1]) {
     const h = setup();
+    h.renderer.playGeometry = async (options?: {
+      include?: string[];
+      exclude?: string[];
+    }) => {
+      if (options?.include && !options.exclude) {
+        const group = source.mechanism.project.motionRigs.vehicle.groups.find(
+          (group) =>
+            group.occurrenceIds.length === options.include!.length &&
+            group.occurrenceIds.every((id) => options.include!.includes(id)),
+        );
+        if (group) return source.mechanism.groups[group.id];
+      }
+      return source.geometry;
+    };
     await h.play.enter({
       rigId: "vehicle",
       position: [80, -0.3, -200],
