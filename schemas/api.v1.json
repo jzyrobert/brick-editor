@@ -687,6 +687,26 @@
           "const": "1.0"
         },
         "method": {
+          "const": "project.exportProfile"
+        },
+        "input": {
+          "$ref": "exportProfileRequest"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "query"
         },
         "input": {

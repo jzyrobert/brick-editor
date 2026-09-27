@@ -3,189 +3,254 @@
   "build": "npm run build: passed (TypeScript and Vite 6.4.3)",
   "cleanInstall": "npm ci: passed",
   "domainTests": {
-    "files": 21,
-    "passed": 107,
+    "files": 30,
+    "passed": 135,
     "failed": 0
   },
   "browserTests": {
-    "passed": 35,
+    "passed": 48,
     "failed": 0,
     "runner": "Playwright 1.63.0 / Chromium 153.0.8010.12 / SwiftShader",
     "tests": [
       {
         "title": "batched real/custom geometry matches reference with reflections, shear, transparency and scoped visibility",
         "status": "passed",
-        "durationMs": 70534
+        "durationMs": 72200
+      },
+      {
+        "title": "independent occurrence BFC pixels match a whole-MPD hand-expanded reference from both sides",
+        "status": "passed",
+        "durationMs": 4081
       },
       {
         "title": "clipboard UI copies, previews arrays without changes, commits and transfers a portable fragment",
         "status": "passed",
-        "durationMs": 6137
+        "durationMs": 6273
       },
       {
         "title": "render budget rejection retains every authored part and offline inventory",
         "status": "passed",
-        "durationMs": 3633
+        "durationMs": 3742
       },
       {
         "title": "WebGL initialization failure leaves native export and inventory usable",
         "status": "passed",
-        "durationMs": 533
+        "durationMs": 587
       },
       {
         "title": "200-part UI fill, edit/undo, native round trip, offline inventory and exact PNG",
         "status": "passed",
-        "durationMs": 6664
+        "durationMs": 7704
       },
       {
         "title": "desktop template renders real geometry and exports inventory in the UI",
         "status": "passed",
-        "durationMs": 2200
+        "durationMs": 2243
       },
       {
         "title": "touch layout 1080x1800: place, save and export",
         "status": "passed",
-        "durationMs": 10477
+        "durationMs": 9435
       },
       {
         "title": "touch layout 360x800: place, save and export",
         "status": "passed",
-        "durationMs": 3475
+        "durationMs": 3696
       },
       {
         "title": "strict render rejects unsupported texture metadata and API is opt in",
         "status": "passed",
-        "durationMs": 982
+        "durationMs": 1045
       },
       {
         "title": "custom fixed-colour decoration survives body repaint; mirrored and conditional lines render",
         "status": "passed",
-        "durationMs": 4941
+        "durationMs": 4968
       },
       {
         "title": "pinch gesture never places a part; rejected locked mutation is atomic; offline inventory stays available",
         "status": "passed",
-        "durationMs": 3000
+        "durationMs": 3152
       },
       {
         "title": "Photo UI exports a transparent PNG with the selected dimensions",
         "status": "passed",
-        "durationMs": 3561
+        "durationMs": 3653
       },
       {
         "title": "cancelled import leaves the authored document unchanged",
         "status": "passed",
-        "durationMs": 782
+        "durationMs": 807
       },
       {
         "title": "actual app preserves local colours and traverses the exploration doorway and four steps",
         "status": "passed",
-        "durationMs": 3225
+        "durationMs": 3025
+      },
+      {
+        "title": "export profile downloads preserve coordinates and package dependencies at 1440px",
+        "status": "passed",
+        "durationMs": 2432
+      },
+      {
+        "title": "export profile downloads preserve coordinates and package dependencies at 1080px",
+        "status": "passed",
+        "durationMs": 3094
       },
       {
         "title": "instruction UI publishes real cumulative PNGs and a printable PDF",
         "status": "passed",
-        "durationMs": 4888
+        "durationMs": 4864
       },
       {
         "title": "instruction cancellation leaves authored revision and camera unchanged",
         "status": "passed",
-        "durationMs": 4684
+        "durationMs": 5071
       },
       {
         "title": "layer UI reorders and explicitly reassigns or deletes members with undo and lock guards",
         "status": "passed",
-        "durationMs": 3634
+        "durationMs": 3668
       },
       {
         "title": "layer duplication, folder promotion and ghosting preserve document contents",
         "status": "passed",
-        "durationMs": 10667
+        "durationMs": 10666
       },
       {
         "title": "mechanism API captures real hinged motion while preserving authored rest, then applies, undoes and reloads rigs",
         "status": "passed",
-        "durationMs": 2202
+        "durationMs": 2231
       },
       {
         "title": "Play mechanisms panel operates a hinge and explicitly applies its pose",
         "status": "passed",
-        "durationMs": 1823
+        "durationMs": 1840
+      },
+      {
+        "title": "submodel creation and explicit shared preview preserve selection at 360px",
+        "status": "passed",
+        "durationMs": 2921
+      },
+      {
+        "title": "submodel creation and explicit shared preview preserve selection at 1080px",
+        "status": "passed",
+        "durationMs": 3521
+      },
+      {
+        "title": "submodel creation and explicit shared preview preserve selection at 1440px",
+        "status": "passed",
+        "durationMs": 4314
       },
       {
         "title": "explicit offline installation reloads at its deployed base path and provides parts, Play, inventory and PDF",
         "status": "passed",
-        "durationMs": 9939
+        "durationMs": 10546
       },
       {
         "title": "Play API uses deterministic ticks, isolates authoring, and restores the editor camera",
         "status": "passed",
-        "durationMs": 1711
+        "durationMs": 1877
       },
       {
         "title": "touch Play supports simultaneous move, look, jump and clears lost input at 360",
         "status": "passed",
-        "durationMs": 2637
+        "durationMs": 2752
       },
       {
         "title": "touch Play supports simultaneous move, look, jump and clears lost input at 1080",
         "status": "passed",
-        "durationMs": 4667
+        "durationMs": 3848
       },
       {
         "title": "capture uses distinct quality profiles, records lighting and restores interactive controls on success and failure",
         "status": "passed",
-        "durationMs": 4517
+        "durationMs": 4511
       },
       {
         "title": "box and lasso distinguish visible surfaces from through-selection, with touch-accessible add/remove and cancellation",
         "status": "passed",
-        "durationMs": 3522
+        "durationMs": 3377
       },
       {
         "title": "touch box selects with the sheet closed and a second finger cancels at 360",
         "status": "passed",
-        "durationMs": 2101
+        "durationMs": 1895
       },
       {
         "title": "touch box selects with the sheet closed and a second finger cancels at 1080",
         "status": "passed",
-        "durationMs": 2787
+        "durationMs": 2695
       },
       {
         "title": "shared links preview safely, dismiss without replacement and back up before confirmed opening",
         "status": "passed",
-        "durationMs": 2832
+        "durationMs": 3041
       },
       {
         "title": "a damaged share checksum is rejected without changing the recovered project",
         "status": "passed",
-        "durationMs": 3860
+        "durationMs": 3470
+      },
+      {
+        "title": "keyboard clipboard shares UI state, protects text input and supports persistent remapping",
+        "status": "passed",
+        "durationMs": 5397
       },
       {
         "title": "two tabs cannot overwrite saved edits and the losing tab can fork",
         "status": "passed",
-        "durationMs": 4825
+        "durationMs": 4431
       },
       {
         "title": "saved-project UI opens, downloads a valid backup and deletes only the chosen saved copy",
         "status": "passed",
-        "durationMs": 3797
+        "durationMs": 3875
       },
       {
         "title": "an early import during delayed startup recovery wins and is autosaved",
         "status": "passed",
-        "durationMs": 3761
+        "durationMs": 3874
+      },
+      {
+        "title": "IndexedDB fallback serializes two tabs across asynchronous checksums without Web Locks",
+        "status": "passed",
+        "durationMs": 4859
+      },
+      {
+        "title": "unavailable coordination preserves saved bytes and offers a native backup",
+        "status": "passed",
+        "durationMs": 2676
+      },
+      {
+        "title": "an expired fallback transaction cannot publish after its checksum resumes",
+        "status": "passed",
+        "durationMs": 2439
+      },
+      {
+        "title": "another-tab notification can back up the current draft before reloading the winner",
+        "status": "passed",
+        "durationMs": 3113
       },
       {
         "title": "desktop transform drag previews, cancels, commits once and supports exact numeric alternatives",
         "status": "passed",
-        "durationMs": 2850
+        "durationMs": 3007
       },
       {
         "title": "1080\u00d71800 touch transform commits one gesture and a second pointer cancels the next preview",
         "status": "passed",
-        "durationMs": 4061
+        "durationMs": 3893
+      },
+      {
+        "title": "workplanes use real faces and configurable free/grid placement at 1440px",
+        "status": "passed",
+        "durationMs": 3851
+      },
+      {
+        "title": "workplanes use real faces and configurable free/grid placement at 1080px",
+        "status": "passed",
+        "durationMs": 6673
       }
     ]
   },

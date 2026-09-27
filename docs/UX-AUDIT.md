@@ -97,3 +97,21 @@ The critic selected all 40 wall parts through the UI, enabled and visually inspe
 Score remains **8.7/10** using the prior rubric. Expanded inspector content requires scrolling, but essential actions have comfortable targets and the sticky Close control keeps the canvas reachable. Optional future refinement: a compact contextual transform toolbar could reduce sheet switching during repeated adjustments.
 
 Evidence: [Selection controls](screenshots/ux/selection-tools-360.png), [Move handles](screenshots/ux/transform-handles-360.png), [Layer folders](screenshots/ux/layer-folders-360.png), [Transform panel at 1080 × 1800](screenshots/ux/transform-panel-1080.png).
+
+## Structural editing, workplanes and export profiles — 8.6/10 checkpoint
+
+The integrated development app was inspected at 360 × 800 and 1080 × 1800 with emulated touch. ModelTools also passed an automated 1440 × 1000 desktop interaction regression. At all three sizes, Make submodel preserved selected world transforms and remapped the selection, shared-edit preview left the document unchanged, changing an input invalidated that preview, applying changed both selected colours in one revision, and undo restored the prior occurrences. These browser checks produced no page errors.
+
+The critic also chose an XY workplane, changed its grid to 10 LDU, enabled free placement, applied keyboard shortcut settings, and downloaded a native model-profile export at both touch sizes. There was no horizontal page overflow. The new structural-edit UI explains instance-local versus all-instance edits and requires an explicit impact preview. Sticky sheet controls preserve access back to the canvas.
+
+Provisional weighted rubric: task clarity 8.75, canvas/layout 8.5, touch/readability 8.5, state/navigation 9.0, export/recovery 8.25, visual consistency 8.75, yielding **8.6125 → 8.6/10**. This exceeds 8.5 but exposes two concrete polish issues: workplane preset buttons do not show the active plane, and the initially expanded export-profile form pushes sharing/saved-project controls farther down Project. These were sent to the separate implementation worker for refinement; this score does not presume those changes are already complete.
+
+Evidence: [Structural editing at 360 × 800](screenshots/ux/models-360.png), [Structural editing at 1080 × 1800](screenshots/ux/models-1080.png), [Keyboard settings](screenshots/ux/shortcuts-360.png). Remaining scope boundaries are implementation constraints, not hidden UX failures: grouping accepts contiguous sibling leaves, and shared editing currently offers recolour or local translation of direct leaves. Unsupported metadata and rig-rest changes produce explicit atomic refusals.
+
+## Structural editing and export re-review — 8.7/10, accepted
+
+The separate worker collapsed Model export profiles by default and added an accessible active state to workplane presets. The critic's first screenshot rerun caught that the active CSS class had no visual style; that incomplete fix was returned to the worker. A second actual screenshot now shows the chosen XY plane with a contrasting peach background, accent border/underline and bold label, as well as `aria-pressed=true`.
+
+At both requested touch sizes, the collapsed export section restores quick access to sharing and saved projects while expanding it still permits a successful native-project download. Workplane selection, numerical grid changes and shortcut application complete without page errors or horizontal overflow. The reviewed combined interface again scores **8.725 → 8.7/10**, using the accepted rubric scores: task clarity 9.0, canvas/layout 8.5, touch/readability 8.5, state/navigation 9.0, export/recovery 8.5, visual consistency 9.0. The requested threshold is strictly exceeded. Detailed inspector controls still require scrolling on a narrow screen; no claim is made about untested physical-device ergonomics or whole-spec completion.
+
+Updated evidence: [Active workplane](screenshots/ux/workplane-360.png), [Compact Project with export disclosure](screenshots/ux/export-profile-project-360.png), [Project at 1080 × 1800](screenshots/ux/export-profile-project-1080.png). The desktop/touch model-command regression remains in `tests/browser/models.spec.ts` (three passing viewport cases).

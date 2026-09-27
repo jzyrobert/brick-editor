@@ -1,3 +1,4 @@
+import type { ExportRequest as ProfileRequest } from "../ldraw/export-profiles";
 import type { MechanismBrowser } from "../mechanisms/browser";
 import type { QualityName, QualityControls } from "../render/quality";
 import type { PublishFormat } from "../instructions/publish";
@@ -131,6 +132,34 @@ export function createAPI(
     ready: async (options: { minRevision?: number; strict?: boolean } = {}) =>
       renderer().ready(options.minRevision, options.strict),
     project: {
+      exportProfile: async (request: ProfileRequest) => {
+        validate("exportProfileRequest", request);
+        const snapshot = editor.project;
+        return jobs.wait<
+          Awaited<
+            ReturnType<
+              (typeof import("../ldraw/export-profiles"))["exportProfile"]
+            >
+          >
+        >(
+          jobs.start("model-export", async (signal, progress) => {
+            const { exportProfile } = await import("../ldraw/export-profiles");
+            progress(0.1);
+            const artifact = await exportProfile(snapshot, request, {
+              signal,
+              progress: () => progress(0.5),
+            });
+            const current = editor.project;
+            ensure(
+              current.id === snapshot.id &&
+                current.revision === snapshot.revision,
+              "REVISION_CONFLICT",
+              "Document changed during model export",
+            );
+            return artifact;
+          }),
+        );
+      },
       import: async (input: {
         format: "ldraw" | "native" | "template";
         text?: string;

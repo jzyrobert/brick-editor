@@ -7,7 +7,7 @@ import { occurrences } from "../../src/core/document";
 import { occurrenceSourceContext } from "../../src/render/source-context";
 it("independent primitive compilation retains ancestor custom colours and local certified winding", async () => {
   const p = importLDraw(
-    "0 FILE root.ldr\n0 !COLOUR OriginalOrange CODE 100 VALUE #ED9851 EDGE #74471F\n1 100 0 0 0 1 0 0 0 1 0 0 0 1 child.ldr\n0 FILE child.ldr\n0 BFC CERTIFY CCW\n0 BFC INVERTNEXT\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat\n3 16 0 0 0 20 0 0 0 -20 0\n0 NOFILE\n",
+    "0 FILE root.ldr\n0 BFC CERTIFY CCW\n0 !COLOUR OriginalOrange CODE 100 VALUE #ED9851 EDGE #74471F\n1 100 0 0 0 1 0 0 0 1 0 0 0 1 child.ldr\n0 FILE child.ldr\n0 BFC CERTIFY CCW\n0 BFC INVERTNEXT\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat\n3 16 0 0 0 20 0 0 0 -20 0\n0 NOFILE\n",
   );
   const o = occurrences(p).find((o) => o.node.kind === "geometry")!,
     context = occurrenceSourceContext(p, o);

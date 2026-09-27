@@ -1,13 +1,20 @@
-import { type Project, type Vec3, ensure } from "../core/types";
+import {
+  type Project,
+  type Vec3,
+  type Basis,
+  type Transform,
+  ensure,
+} from "../core/types";
 import { catalog } from "../catalog/catalog";
 import { occurrences } from "../core/document";
-import { identity } from "../core/math";
+import { identity, mv, add, physical } from "../core/math";
 export type FillRequest = {
   ref: string;
   colorCode: string;
   columns: number;
   rows: number;
   origin: Vec3;
+  basis?: Basis;
   layerId: string;
   maxAdditions: number;
 };
@@ -26,7 +33,37 @@ export function fillPreview(p: Project, r: FillRequest) {
     "LAYER_LOCKED",
     "Fill layer is locked",
   );
-  const obstacles = occurrences(p);
+  const basis = r.basis ?? identity().basis;
+  ensure(
+    r.origin.length === 3 &&
+      r.origin.every((n) => Number.isFinite(n) && Math.abs(n) <= 1e7),
+    "INVALID_INPUT",
+    "Fill origin exceeds coordinate limits",
+  );
+  ensure(
+    basis.length === 9 &&
+      basis.every(Number.isFinite) &&
+      physical({ position: r.origin, basis }),
+    "INVALID_INPUT",
+    "Fill basis must be a rigid rotation",
+  );
+  const bounds = (definition: typeof part, transform: Transform) => {
+    const min: Vec3 = [Infinity, Infinity, Infinity],
+      max: Vec3 = [-Infinity, -Infinity, -Infinity];
+    for (const x of [-definition.width / 2, definition.width / 2])
+      for (const y of [0, definition.height])
+        for (const z of [-definition.depth / 2, definition.depth / 2]) {
+          const v = add(transform.position, mv(transform.basis, [x, y, z]));
+          for (let i = 0; i < 3; i++) {
+            min[i] = Math.min(min[i], v[i]);
+            max[i] = Math.max(max[i], v[i]);
+          }
+        }
+    return { min, max };
+  };
+  const obstacles = occurrences(p).map((o) =>
+    catalog[o.node.ref] ? bounds(catalog[o.node.ref], o.transform) : null,
+  );
   const parts: {
       ref: string;
       colorCode: string;
@@ -35,34 +72,26 @@ export function fillPreview(p: Project, r: FillRequest) {
     unresolvedCells: Vec3[] = [];
   for (let z = 0; z < r.rows; z++)
     for (let x = 0; x < r.columns; x++) {
-      const position: Vec3 = [
-        r.origin[0] + x * part.width,
-        r.origin[1],
-        r.origin[2] + z * part.depth,
-      ];
-      const blocked = obstacles.some((o) => {
-        const other = catalog[o.node.ref];
-        if (!other) return true;
-        const b = o.transform.basis;
-        const halfX =
-          (Math.abs(b[0]) * other.width + Math.abs(b[2]) * other.depth) / 2;
-        const halfZ =
-          (Math.abs(b[6]) * other.width + Math.abs(b[8]) * other.depth) / 2;
-        return (
-          Math.abs(position[0] - o.transform.position[0]) <
-            part.width / 2 + halfX - 0.01 &&
-          Math.abs(position[2] - o.transform.position[2]) <
-            part.depth / 2 + halfZ - 0.01 &&
-          position[1] < o.transform.position[1] + other.height - 0.01 &&
-          position[1] + part.height > o.transform.position[1] + 0.01
-        );
-      });
+      const position = add(
+        r.origin,
+        mv(basis, [x * part.width, 0, z * part.depth]),
+      );
+      const candidate = bounds(part, { position, basis });
+      const blocked = obstacles.some(
+        (other) =>
+          !other ||
+          [0, 1, 2].every(
+            (i) =>
+              candidate.min[i] < other.max[i] - 0.01 &&
+              candidate.max[i] > other.min[i] + 0.01,
+          ),
+      );
       if (blocked) unresolvedCells.push(position);
       else
         parts.push({
           ref: r.ref,
           colorCode: r.colorCode,
-          transform: { ...identity(), position },
+          transform: { basis: [...basis] as Basis, position },
         });
     }
   return {
@@ -70,7 +99,7 @@ export function fillPreview(p: Project, r: FillRequest) {
     parts,
     unresolvedCells,
     diagnostics: [
-      "Conservative rectangular body overlap check; grid placement is not verified connectivity.",
+      "Conservative world AABB check of all transformed body corners; unknown obstacles block every cell; grid placement is not verified connectivity.",
     ],
   };
 }

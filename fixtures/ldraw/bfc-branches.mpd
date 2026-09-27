@@ -1,0 +1,51 @@
+0 FILE main.ldr
+0 Original BFC branch conformance arrangement; CC0-1.0
+0 !COLOUR ScopeBlue CODE 100 VALUE #2255CC EDGE #111111
+0 !COLOUR FixedGold CODE 101 VALUE #EEBB22 EDGE #111111
+0 BFC CERTIFY CCW
+0 BFC INVERTNEXT
+1 100 -100 0 0 1 0 0 0 1 0 0 0 1 raw.ldr
+0 BFC NOCLIP
+1 100 0 0 0 1 0 0 0 1 0 0 0 1 raw.ldr
+0 BFC CLIP
+0 BFC INVERTNEXT
+1 100 100 0 0 -1 0 0 0 1 0 0 0 1 nested.ldr
+0 BFC NOCLIP
+0 BFC INVERTNEXT
+1 100 -100 -80 0 1 0 0 0 1 0 0 0 1 panel.dat
+0 BFC CLIP
+0 BFC INVERTNEXT
+1 100 0 -80 0 -1 0 0 0 1 0 0 0 1 patch.dat
+1 100 100 -80 0 -1 0 0 0 1 0 0 0 1 panel.dat
+0 BFC NOCLIP
+1 100 0 -40 0 1 0 0 0 1 0 0 0 1 patch.dat
+0 FILE raw.ldr
+0 BFC CERTIFY CCW
+3 16 0 0 0 30 0 0 0 -30 0
+0 FILE nested.ldr
+0 BFC CERTIFY CCW
+0 BFC INVERTNEXT
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 raw.ldr
+0 FILE panel.dat
+0 !LDRAW_ORG Unofficial_Part
+0 !LICENSE Redistributable under CC0-1.0
+0 BFC CERTIFY CCW
+3 16 0 0 0 30 0 0 0 -30 0
+3 101 4 -4 -0.1 12 -4 -0.1 4 -12 -0.1
+0 BFC NOCLIP
+1 16 15 -3 -0.2 0.2 0 0 0 0.2 0 0 0 0.2 inner.ldr
+0 FILE inner.ldr
+0 BFC CERTIFY CCW
+0 BFC CLIP
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 inner-patch.dat
+0 FILE inner-patch.dat
+0 !LDRAW_ORG Subpart
+0 !COLOUR InnerGreen CODE 100 VALUE #227733 EDGE #111111
+0 BFC CERTIFY CCW
+3 100 0 0 0 30 0 0 0 -30 0
+0 FILE patch.dat
+0 !LDRAW_ORG Subpart
+0 !LICENSE Redistributable under CC0-1.0
+0 BFC CERTIFY CCW
+3 16 0 0 0 30 0 0 0 -30 0
+0 NOFILE

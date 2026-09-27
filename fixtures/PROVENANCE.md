@@ -14,3 +14,5 @@ All model arrangements in this directory are original synthetic fixtures created
 - Additional security, scope, hidden-layer, override, reflection, missing-reference, cycle, malformed-token, XML-character and archive-corruption fixtures are intentionally constructed inline in the tests, so each is hand-auditable beside its expected result.
 
 No texture assets, character assets, LDCad shadow data, Minebench textures or proprietary instruction models are included. Broader texture, composite, printed/left/right part fixtures remain outstanding; see the status report.
+
+- `ldraw/bfc-branches.mpd` and `ldraw/bfc-branches.expected.mpd`: original CC0 seven-case ancestor/internal-dependency BFC arrangement and manually expanded polygon reference. Front/back browser comparisons use an independent whole-MPD loader; local colours, reflected references, inversion and inherited NOCLIP are exercised.

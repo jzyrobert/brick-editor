@@ -14,6 +14,7 @@ export function TransformPanel({
   enabled,
   activeLayerId,
   report,
+  modeRequest,
 }: {
   editor: Editor;
   renderer: () => SceneAdapter | undefined;
@@ -22,6 +23,7 @@ export function TransformPanel({
   enabled: boolean;
   activeLayerId?: string;
   report: (message: string) => void;
+  modeRequest?: { mode: "off" | "translate" | "rotate"; nonce: number };
 }) {
   const [mode, setMode] = useState<"off" | "translate" | "rotate">("off"),
     [snap, setSnap] = useState(true),
@@ -34,6 +36,9 @@ export function TransformPanel({
     >(undefined),
     refs = useRef({ renderer, report });
   refs.current = { renderer, report };
+  useEffect(() => {
+    if (modeRequest) setMode(modeRequest.mode);
+  }, [modeRequest]);
   const selectionKey = JSON.stringify(selection);
   useEffect(() => {
     if (!enabled || !selection.length || mode === "off") return;

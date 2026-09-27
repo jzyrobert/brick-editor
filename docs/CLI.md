@@ -30,3 +30,15 @@ npm run cli -- play --input build.mpd --position '[0,-100,100]' --locomotion fly
 The PNG captures the final Play camera. Its JSON report contains the rendering manifest, initial/final simulation snapshots, fixed tick count, input, avatar state, source revision, and software-rendering identification. The source file and authored document remain unchanged. Play exits before the browser closes.
 
 Output reports default to `<output>.report.json`; `--report` overrides that path. Unknown flags, duplicate singleton flags, missing flag values, and out-of-range numeric inputs fail without writing a result. Existing files are overwritten only after a successful operation.
+
+Model export profiles run without Chromium:
+
+```sh
+npm run cli -- export-profile --input model.brickproj --profile standard --scope visible --output visible.mpd
+npm run cli -- export-profile --input model.brickproj --profile layers --include-complete --output layers.zip
+npm run cli -- export-profile --input model.mpd --profile portable --include-official --output portable.zip
+```
+
+Use `--layer ID` (repeatable), `--scope selection --selection '["occurrence-id"]'`, or `--scope submodel --submodel 'occurrence-path-id'` for explicit scopes. Native profiles require `--scope all`. Unknown source metadata in filtered exports requires `--acknowledge-scoped-metadata`. Every operation writes a manifest report beside its output unless `--report` is supplied.
+
+A portable official-library ZIP contains `model.mpd` with unchanged official references, exact licensed dependency files under `ldraw/parts` and `ldraw/p`, hashes and attribution. Extract it and configure the receiving LDraw editor to search that `ldraw` directory. This editor opens the extracted MPD, not the ZIP. Use the recipient's colour configuration; the package does not embed `LDConfig.ldr`. Project-local replacements keep their custom identity. Native backups remain necessary for layers, groups, purchasing overrides, assets and rigs.

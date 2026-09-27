@@ -1,9 +1,15 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import type { Editor } from "../core/commands";
-import type { ClipboardFragment } from "../core/fragments";
+import {
+  clipboardSnapshot,
+  subscribeClipboard,
+  setClipboard,
+  copyToClipboard,
+  pasteFromClipboard,
+} from "../edit/clipboard";
 import { occurrences } from "../core/document";
 import { ensure, uid, type Vec3 } from "../core/types";
-let copied: ClipboardFragment | undefined;
+
 export function ClipboardTools({
   editor,
   selection,
@@ -19,8 +25,9 @@ export function ClipboardTools({
   position: Vec3;
   onSelect: (ids: string[]) => void;
 }) {
+  const copied = useSyncExternalStore(subscribeClipboard, clipboardSnapshot),
+    hasCopy = !!copied;
   const [message, setMessage] = useState(""),
-    [hasCopy, setHasCopy] = useState(!!copied),
     [kind, setKind] = useState("linear"),
     [count, setCount] = useState(3),
     [delta, setDelta] = useState<Vec3>([80, 0, 0]),
@@ -64,33 +71,17 @@ export function ClipboardTools({
   const copy = (cut = false) =>
     attempt(() => {
       validSelection();
-      copied = cut
-        ? editor.cut({
-            occurrenceIds: selection,
-            expectedRevision: editor.project.revision,
-            commandId: uid(),
-          }).fragment
-        : editor.copy({ occurrenceIds: selection });
-      setHasCopy(true);
+      copyToClipboard(editor, selection, layerId, crossLayer, cut);
       setMessage(
         cut ? "Cut to internal clipboard" : "Copied with referenced geometry",
       );
     });
   const paste = (atCursor = false) =>
     attempt(() => {
-      ensure(copied, "INVALID_INPUT", "Copy parts or open a fragment first");
-      const origin = occurrences(copied.project)[0]?.transform.position || [
-        0, 0, 0,
-      ];
-      const offset = atCursor
-        ? (position.map((v, i) => v - origin[i]) as Vec3)
-        : [0, 0, 0];
-      const result = editor.dispatch(
-        envelope("clipboard.paste", {
-          fragment: copied,
-          delta: offset,
-          layerId,
-        }),
+      const result = pasteFromClipboard(
+        editor,
+        layerId,
+        atCursor ? position : undefined,
       );
       onSelect(result.addedIds);
       setMessage(`Pasted ${result.addedIds.length} occurrences`);
@@ -166,8 +157,7 @@ export function ClipboardTools({
               editor.dispatch(
                 envelope("clipboard.paste", { fragment, layerId }, true),
               );
-              copied = fragment;
-              setHasCopy(true);
+              setClipboard(fragment);
               setMessage("Fragment ready to paste");
             })().catch((e) => setMessage(e.message));
             e.target.value = "";

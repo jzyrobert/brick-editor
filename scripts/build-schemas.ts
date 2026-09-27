@@ -248,6 +248,46 @@ const payloads: Record<string, any> = {
     },
     ["parts"],
   ),
+  "models.makeSubmodel": obj(
+    {
+      ...scoped,
+      name: { type: "string", minLength: 1, maxLength: 200 },
+      pivot: vec,
+    },
+    ["occurrenceIds", "name"],
+  ),
+  "models.makeUnique": obj(scoped, ["occurrenceIds"]),
+  "models.editShared": {
+    oneOf: [
+      obj(
+        {
+          definitionId: id,
+          nodeIds: { ...arr(id), minItems: 1, uniqueItems: true },
+          confirmShared: { const: true },
+          includeHidden: { type: "boolean" },
+          activeLayerId: id,
+          operation: { const: "recolor" },
+          colorCode: {
+            type: "string",
+            pattern: "^(?:[0-9]+|0x2[0-9a-fA-F]{6})$",
+          },
+        },
+        ["definitionId", "nodeIds", "confirmShared", "operation", "colorCode"],
+      ),
+      obj(
+        {
+          definitionId: id,
+          nodeIds: { ...arr(id), minItems: 1, uniqueItems: true },
+          confirmShared: { const: true },
+          includeHidden: { type: "boolean" },
+          activeLayerId: id,
+          operation: { const: "move" },
+          delta: vec,
+        },
+        ["definitionId", "nodeIds", "confirmShared", "operation", "delta"],
+      ),
+    ],
+  },
   "parts.remove": obj(scoped, ["occurrenceIds"]),
   "parts.recolor": obj(
     { ...scoped, colorCode: id, preserveFixedColors: { const: true } },
@@ -595,6 +635,17 @@ const playSnapshot = obj({
     rightShoulder: num,
   }),
 });
+const exportProfileRequest = obj(
+  {
+    profile: { enum: ["standard", "portable", "layers", "native"] },
+    scope,
+    expectedRevision: integer,
+    includeCompleteModel: { type: "boolean" },
+    includeOfficial: { type: "boolean" },
+    acknowledgeScopedMetadata: { type: "boolean" },
+  },
+  ["profile", "scope"],
+);
 const api = {
   oneOf: Object.entries({
     "play.enter": { $ref: "playRequest" },
@@ -649,6 +700,7 @@ const api = {
     ),
     "project.import": { $ref: "importRequest" },
     "project.export": { $ref: "exportRequest" },
+    "project.exportProfile": { $ref: "exportProfileRequest" },
     query: { $ref: "query" },
     dispatch: { $ref: "command" },
     "camera.set": { $ref: "camera" },
@@ -675,6 +727,7 @@ const schemas = {
   api,
   importRequest,
   exportRequest,
+  exportProfileRequest,
   query,
   inventoryPreview,
   project,

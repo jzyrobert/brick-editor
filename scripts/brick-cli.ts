@@ -31,7 +31,7 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      "brick-cli validate|apply|export|inventory|instructions|render|play --input file [--output file] [--report file]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
+      "brick-cli validate|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
     );
     return;
   }
@@ -39,6 +39,16 @@ export async function main(argv: string[]) {
     validate: [],
     apply: ["commands"],
     export: ["format"],
+    "export-profile": [
+      "profile",
+      "scope",
+      "selection",
+      "layer",
+      "submodel",
+      "include-official",
+      "include-complete",
+      "acknowledge-scoped-metadata",
+    ],
     inventory: [
       "format",
       "scope",
@@ -88,6 +98,9 @@ export async function main(argv: string[]) {
       "run",
       "jump",
       "no-ground",
+      "include-official",
+      "include-complete",
+      "acknowledge-scoped-metadata",
     ]),
     used = new Set<string>();
   for (let i = 0; i < args.length; i++) {
@@ -132,7 +145,10 @@ export async function main(argv: string[]) {
     return n;
   };
   ensure(input, "INVALID_INPUT", "--input is required");
-  if (output && ["play", "render", "instructions"].includes(operation)) {
+  if (
+    output &&
+    ["play", "render", "instructions", "export-profile"].includes(operation)
+  ) {
     ensure(
       resolve(output) !== resolve(input!),
       "INVALID_INPUT",
@@ -346,6 +362,47 @@ export async function main(argv: string[]) {
     );
     await writeFile(output, new Uint8Array(result.bytes));
     await writeFile(reportPath, JSON.stringify(result.report, null, 2));
+    return;
+  }
+  if (operation === "export-profile") {
+    ensure(output, "INVALID_INPUT", "--output is required");
+    const layers = flags("layer"),
+      kind = (flag("scope") ?? "all") as Scope["kind"];
+    ensure(
+      ["all", "visible", "selection", "layers", "submodel"].includes(kind),
+      "INVALID_INPUT",
+      "Unsupported export scope",
+    );
+    const scope: Scope = layers.length
+      ? { kind: "layers", layerIds: layers }
+      : kind === "selection"
+        ? { kind, occurrenceIds: JSON.parse(flag("selection") ?? "[]") }
+        : kind === "submodel"
+          ? { kind, occurrenceId: flag("submodel") ?? "" }
+          : kind === "layers"
+            ? { kind, layerIds: [] }
+            : { kind };
+    const { exportProfile } = await import("../src/ldraw/export-profiles");
+    const artifact = await exportProfile(
+      p,
+      {
+        profile: (flag("profile") ??
+          "standard") as import("../src/ldraw/export-profiles").ExportProfile,
+        scope,
+        expectedRevision: p.revision,
+        includeOfficial: args.includes("--include-official"),
+        includeCompleteModel: args.includes("--include-complete"),
+        acknowledgeScopedMetadata: args.includes(
+          "--acknowledge-scoped-metadata",
+        ),
+      },
+      {
+        readAsset: (path) =>
+          readFile(new URL("../public/" + path, import.meta.url)),
+      },
+    );
+    await writeFile(output, artifact.bytes);
+    await writeFile(reportPath, JSON.stringify(artifact.manifest, null, 2));
     return;
   }
   if (operation === "export") {

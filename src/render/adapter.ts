@@ -1,3 +1,11 @@
+import { normalizeBfcSource } from "./bfc-source";
+import {
+  planeFromTriangle,
+  planeOrigin,
+  placeBasis,
+  validateWorkplane,
+  type Workplane,
+} from "../edit/workplane";
 import {
   selectRegion as selectRenderedRegion,
   type Point2,
@@ -8,7 +16,7 @@ import {
   type TransformHandleOptions,
 } from "../edit/transform-handles";
 import { LayerGhost } from "./layerGhost";
-import { occurrenceSourceContext } from "./source-context";
+import { occurrenceRenderContext } from "./source-context";
 import {
   resolveQuality,
   type QualityName,
@@ -217,7 +225,8 @@ export class SceneAdapter {
   }
   private prototype(o: Occurrence, p: Project): Promise<THREE.Group> {
     const source = o.namespace === "official" ? "" : exportLDraw(p);
-    const context = occurrenceSourceContext(p, o);
+    const renderContext = occurrenceRenderContext(p, o);
+    const context = renderContext.source;
     const raw =
       o.node.kind === "geometry"
         ? p.models[o.modelId].records.find(
@@ -232,6 +241,8 @@ export class SceneAdapter {
       o.colorCode +
       ":" +
       context +
+      ":" +
+      renderContext.forceDoubleSided +
       ":" +
       raw +
       ":" +
@@ -288,17 +299,18 @@ export class SceneAdapter {
               )
               .join("")
           : this.libraryText;
-      const text =
+      const text = normalizeBfcSource(
         "0 FILE __render__.ldr\n" +
-        this.colorText +
-        "\n" +
-        context +
-        "\n" +
-        line +
-        "\n" +
-        projectSource +
-        "\n" +
-        library;
+          this.colorText +
+          "\n" +
+          context +
+          "\n" +
+          line +
+          "\n" +
+          projectSource +
+          "\n" +
+          library,
+      );
       loader.setFileMap(
         Object.fromEntries(
           [...text.matchAll(/^0 FILE (.+)$/gm)].map((m) => [m[1], m[1]]),
@@ -325,6 +337,13 @@ export class SceneAdapter {
       );
       group.traverse((object) => {
         if ((object as THREE.Mesh).isMesh) {
+          if (renderContext.forceDoubleSided) {
+            const mesh = object as THREE.Mesh;
+            for (const material of Array.isArray(mesh.material)
+              ? mesh.material
+              : [mesh.material])
+              material.side = THREE.DoubleSide;
+          }
           object.castShadow = true;
           object.receiveShadow = true;
         }
@@ -1023,6 +1042,101 @@ export class SceneAdapter {
         return obj.userData.occurrenceId as string;
     }
     return null;
+  }
+  /** Intersects only authored triangle meshes, preserving their complete world affine transform. */
+  pickFace(
+    x: number,
+    y: number,
+    selectedIds?: ReadonlySet<string>,
+    settings?: Workplane,
+  ): { occurrenceId: string; plane: Workplane } | null {
+    this.scene.updateMatrixWorld(true);
+    const ray = this.ray(x, y);
+    const handles = [...this.handles]
+      .filter(
+        ([id, g]) => g.visible && (!selectedIds?.size || selectedIds.has(id)),
+      )
+      .map(([, g]) => g);
+    for (const hit of ray.intersectObjects(handles, true)) {
+      const mesh = hit.object as THREE.Mesh;
+      if (!mesh.isMesh || !hit.face) continue;
+      let object: THREE.Object3D | null = mesh,
+        occurrenceId: string | undefined,
+        visible = true;
+      while (object) {
+        if (!object.visible) visible = false;
+        if (object.userData.occurrenceId)
+          occurrenceId = object.userData.occurrenceId;
+        object = object.parent;
+      }
+      if (!visible || !occurrenceId) continue;
+      const positions = mesh.geometry.getAttribute("position");
+      const point = (index: number) =>
+        conversion(
+          new THREE.Vector3()
+            .fromBufferAttribute(positions, index)
+            .applyMatrix4(mesh.matrixWorld)
+            .toArray() as Vec3,
+        );
+      try {
+        return {
+          occurrenceId,
+          plane: planeFromTriangle(
+            point(hit.face.a),
+            point(hit.face.b),
+            point(hit.face.c),
+            conversion(ray.ray.origin.toArray() as Vec3),
+            settings,
+          ),
+        };
+      } catch {
+        continue;
+      }
+    }
+    return null;
+  }
+  planeIntersection(x: number, y: number, plane: Workplane): Vec3 | null {
+    validateWorkplane(plane);
+    const n = new THREE.Vector3(...conversion(plane.normal)),
+      origin = new THREE.Vector3(...conversion(planeOrigin(plane)));
+    const point = this.ray(x, y).ray.intersectPlane(
+      new THREE.Plane().setFromNormalAndCoplanarPoint(n, origin),
+      new THREE.Vector3(),
+    );
+    return point ? conversion(point.toArray() as Vec3) : null;
+  }
+  setWorkplaneGuide(plane: Workplane) {
+    validateWorkplane(plane);
+    const basis = placeBasis(plane, 0),
+      origin = planeOrigin(plane);
+    const p = conversion(
+      origin.map((n, i) => n + plane.normal[i] * 0.1) as Vec3,
+    );
+    const u = conversion([basis[0], basis[3], basis[6]]),
+      down = conversion([basis[1], basis[4], basis[7]]),
+      v = conversion([basis[2], basis[5], basis[8]]);
+    this.grid.matrixAutoUpdate = false;
+    const scale = plane.grid / 20;
+    this.grid.matrix.set(
+      u[0] * scale,
+      down[0],
+      v[0] * scale,
+      p[0],
+      u[1] * scale,
+      down[1],
+      v[1] * scale,
+      p[1],
+      u[2] * scale,
+      down[2],
+      v[2] * scale,
+      p[2],
+      0,
+      0,
+      0,
+      1,
+    );
+    this.grid.updateMatrixWorld(true);
+    this.invalidate();
   }
   workplane(x: number, y: number, elevation: number): Vec3 | null {
     const point = this.ray(x, y).ray.intersectPlane(

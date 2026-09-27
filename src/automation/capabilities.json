@@ -61,7 +61,13 @@
       "matchingSelection": true,
       "layerDuplication": true,
       "layerFolders": true,
-      "ghostOtherLayers": true
+      "ghostOtherLayers": true,
+      "workplanes": ["world", "picked-face", "numerical"],
+      "rotatedFill": true,
+      "shortcutRemapping": true,
+      "makeSubmodel": "contiguous sibling selection",
+      "makeUnique": true,
+      "sharedDefinitionEditing": ["recolour", "local translation"]
     },
     "inventory": {
       "format": "bricklink-wanted-xml",
@@ -125,7 +131,16 @@
       "nativeSourceFiles": true,
       "nativeAssetFiles": true,
       "localProjectManagement": true,
-      "conflictFork": true
+      "conflictFork": true,
+      "indexedDbWriteCoordination": true,
+      "otherTabNotifications": true,
+      "backupBeforeReload": true
+    },
+    "exportProfiles": {
+      "profiles": ["standard", "portable", "layers", "native"],
+      "officialGeometryArchive": true,
+      "recipientColourConfigurationRequired": true,
+      "directArchiveImport": false
     }
   },
   "limits": {
@@ -164,7 +179,7 @@
     "instruction annotations and callouts",
     "advanced material/texture fidelity",
     "connected-assembly selection without connector coverage",
-    "arbitrary workplanes and shared-definition editing",
-    "complete ancestor BFC rendering conformance"
+    "general structural regrouping and shared rotations",
+    "whole-library BFC conformance beyond audited fixtures"
   ]
 }

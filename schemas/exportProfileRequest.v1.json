@@ -1,0 +1,124 @@
+{
+  "$id": "exportProfileRequest",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "profile": {
+      "enum": [
+        "standard",
+        "portable",
+        "layers",
+        "native"
+      ]
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "all"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "visible"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "layers"
+            },
+            "layerIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "kind",
+            "layerIds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "selection"
+            },
+            "occurrenceIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "maxItems": 100000
+            }
+          },
+          "required": [
+            "kind",
+            "occurrenceIds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "submodel"
+            },
+            "occurrenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "kind",
+            "occurrenceId"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "includeCompleteModel": {
+      "type": "boolean"
+    },
+    "includeOfficial": {
+      "type": "boolean"
+    },
+    "acknowledgeScopedMetadata": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "profile",
+    "scope"
+  ],
+  "additionalProperties": false
+}

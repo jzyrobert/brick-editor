@@ -1957,3 +1957,64 @@ summary:focus-visible {
 .selection-tools[open] > summary::before {
   content: "▾";
 }
+.face-pick-card {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  width: min(420px, calc(100% - 24px));
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 6px 24px #26394426;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.face-pick-card button {
+  min-height: 44px;
+  flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .face-pick-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+.shortcut-settings > summary {
+  min-height: 44px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+.shortcut-settings > summary::before {
+  content: "▸";
+  margin-right: 8px;
+}
+.shortcut-settings[open] > summary::before {
+  content: "▾";
+}
+.shortcut-settings label {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(100px, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+.shortcut-settings input,
+.shortcut-settings button {
+  min-height: 44px;
+  min-width: 0;
+}
+.shortcut-settings button {
+  margin: 6px 6px 0 0;
+}
+.workplane .panel-tabs button[aria-pressed="true"] {
+  background: var(--accent-soft, #f9e2cd);
+  border-color: var(--accent, #ba542d);
+  color: #74301a;
+  box-shadow: inset 0 -3px 0 var(--accent, #ba542d);
+  font-weight: 700;
+}

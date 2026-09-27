@@ -1,3 +1,4 @@
+import { withStorageWriteLock } from "./write-lock";
 import { type Project, ensure, AppError } from "../core/types";
 import { sha256 } from "../core/hash";
 import { validate } from "../core/validate";
@@ -90,13 +91,14 @@ export class LocalProjects {
     return result.sort((a, b) => a.title.localeCompare(b.title));
   }
   async delete(id: string, expectedRevision: number) {
-    const remove = async () => {
+    const remove = async (assertHeld: () => void) => {
       const project = await this.load(id);
       ensure(
         project?.revision === expectedRevision,
         "REVISION_CONFLICT",
         "Saved project changed; refresh before deleting",
       );
+      assertHeld();
       const prefix = this.prefix(id);
       const owned = Array.from(
         { length: this.storage.length },
@@ -104,9 +106,7 @@ export class LocalProjects {
       ).filter((key) => key.startsWith(prefix));
       for (const key of owned) this.storage.removeItem(key);
     };
-    if (typeof navigator !== "undefined" && navigator.locks)
-      await navigator.locks.request("brick-editor-save:" + id, remove);
-    else await remove();
+    await withStorageWriteLock(this.storage, id, remove);
   }
   async exportBackup(id: string) {
     const project = await this.load(id);
@@ -117,8 +117,9 @@ export class LocalProjects {
     p = structuredClone(p);
     validate("project", p);
     validateDocument(p);
-    const write = async () => {
+    const write = async (assertHeld: () => void) => {
       const previous = await this.load(p.id);
+      assertHeld();
       ensure(
         (previous?.revision ?? null) === expectedStoredRevision,
         "REVISION_CONFLICT",
@@ -143,6 +144,7 @@ export class LocalProjects {
         key = prefix + "snapshot:" + p.revision + ":" + crypto.randomUUID(),
         json = JSON.stringify(p),
         envelope = JSON.stringify({ json, hash: await sha256(json) });
+      assertHeld();
       try {
         this.storage.setItem(key, envelope);
         ensure(
@@ -172,8 +174,6 @@ export class LocalProjects {
       for (const old of keys.slice(2)) this.storage.removeItem(old);
       return p.revision;
     };
-    if (typeof navigator !== "undefined" && navigator.locks)
-      return navigator.locks.request("brick-editor-save:" + p.id, write);
-    return write();
+    return withStorageWriteLock(this.storage, p.id, write);
   }
 }

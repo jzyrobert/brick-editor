@@ -1,3 +1,20 @@
+import { ExportProfiles } from "./ExportProfiles";
+import { ModelTools } from "./ModelTools";
+import { ShortcutSettings } from "./ShortcutSettings";
+import {
+  loadShortcuts,
+  saveShortcuts,
+  shortcutAction,
+  type Shortcuts,
+} from "../edit/shortcuts";
+import { copyToClipboard, pasteFromClipboard } from "../edit/clipboard";
+import { WorkplanePanel } from "./WorkplanePanel";
+import {
+  defaultWorkplane,
+  placementOnPlane,
+  placeBasis,
+  type Workplane,
+} from "../edit/workplane";
 import { TransformPanel } from "./TransformPanel";
 import { folderPath } from "./LayerFolders";
 import { SelectionTools, type SelectionShape } from "./SelectionTools";
@@ -136,10 +153,17 @@ function NumberInput({
 export default function App() {
   const [project, setProject] = useState(editor.project),
     [saveConflict, setSaveConflict] = useState(false),
+    [saveCoordinationUnavailable, setSaveCoordinationUnavailable] =
+      useState(false),
     [mode, setMode] = useState(
       location.hash.startsWith("#v=") ? "Project" : "Build",
     ),
     [tool, setTool] = useState("Select"),
+    [shortcuts, setShortcuts] = useState<Shortcuts>(loadShortcuts),
+    [transformModeRequest, setTransformModeRequest] = useState<{
+      mode: "off" | "translate" | "rotate";
+      nonce: number;
+    }>(),
     [part, setPart] = useState("3001.dat"),
     [color, setColor] = useState("4"),
     [search, setSearch] = useState(""),
@@ -153,7 +177,8 @@ export default function App() {
     [ghostOtherLayers, setGhostOtherLayers] = useState(false),
     [position, setPosition] = useState<Vec3>([0, -24, 0]),
     [angle, setAngle] = useState(0),
-    [elevation, setElevation] = useState(0),
+    [workplane, setWorkplane] = useState(defaultWorkplane),
+    [pickingFace, setPickingFace] = useState(false),
     [status, setStatus] = useState("Ready to build"),
     [saveStatus, setSaveStatus] = useState("Not yet saved"),
     [panel, setPanel] = useState("Parts"),
@@ -207,7 +232,8 @@ export default function App() {
       color,
       activeLayer,
       crossLayer,
-      elevation,
+      workplane,
+      pickingFace,
       angle,
     });
   const all = occurrences(project),
@@ -226,7 +252,8 @@ export default function App() {
     color,
     activeLayer,
     crossLayer,
-    elevation,
+    workplane,
+    pickingFace,
     angle,
   };
   const run = async (fn: () => unknown | Promise<unknown>) => {
@@ -250,6 +277,13 @@ export default function App() {
     includeHidden: false,
     ...(!crossLayer ? { activeLayerId: activeLayer } : {}),
   });
+  const updateWorkplane = (next: Workplane) => {
+    setWorkplane(next);
+    setPosition(
+      (v) => placementOnPlane(v, next, currentPart.height, angle).position,
+    );
+    setFill(null);
+  };
   const setSelectionSafe = (ids: string[]) => {
     setSelection(ids);
     renderer.current?.select(ids);
@@ -283,7 +317,9 @@ export default function App() {
         viewport.current!,
         () => ({
           enabled:
-            modeRef.current === "Build" && interact.current.tool === "Select",
+            modeRef.current === "Build" &&
+            interact.current.tool === "Select" &&
+            !interact.current.pickingFace,
           shape: interact.current.selectionShape,
           depth: interact.current.selectionDepth,
           renderer: renderer.current,
@@ -292,7 +328,15 @@ export default function App() {
         (ids) => receiveSelection(ids),
         setStatus,
       ),
-    [mode, tool, selectionShape, selectionDepth, activeLayer, crossLayer],
+    [
+      mode,
+      tool,
+      selectionShape,
+      selectionDepth,
+      activeLayer,
+      crossLayer,
+      pickingFace,
+    ],
   );
   useEffect(() => {
     const openSharedPreview = () => {
@@ -307,6 +351,7 @@ export default function App() {
       play.current?.sourceChanged();
       if (observedProjectId.current !== p.id) {
         observedProjectId.current = p.id;
+        setSaveConflict(false);
       }
       setProject(p);
       setSelection((ids) =>
@@ -333,6 +378,7 @@ export default function App() {
         );
         if (editor.project.id === p.id) {
           localStorage.setItem("brick-editor-current", p.id);
+          setSaveCoordinationUnavailable(false);
           setSaveStatus(
             editor.project.revision === p.revision
               ? "Saved revision " + p.revision
@@ -340,6 +386,11 @@ export default function App() {
           );
         }
       } catch (e) {
+        if (editor.project.id !== p.id) return;
+        if (
+          (e as { code?: string }).code === "STORAGE_COORDINATION_UNAVAILABLE"
+        )
+          setSaveCoordinationUnavailable(true);
         if ((e as { code?: string }).code === "REVISION_CONFLICT")
           setSaveConflict(true);
         setSaveStatus("Save failed — download a backup");
@@ -353,6 +404,31 @@ export default function App() {
       if (document.hidden) void autosave.current?.flush();
     };
     document.addEventListener("visibilitychange", flushSave);
+    const notifySavedChange = (event: StorageEvent) => {
+      const id = editor.project.id;
+      if (event.key !== "brick-editor:" + encodeURIComponent(id) + ":head")
+        return;
+      void new LocalProjects(localStorage)
+        .load(id)
+        .then((saved) => {
+          if (editor.project.id !== id || !loaded.current) return;
+          const known = saveRevisions.current.get(id);
+          if (known !== undefined && (saved?.revision ?? null) !== known) {
+            setSaveConflict(true);
+            setStatus(
+              saved
+                ? "Another tab saved a new revision. Your current draft is unchanged."
+                : "Another tab removed the saved copy. Keep a backup or fork your draft.",
+            );
+          }
+        })
+        .catch(() =>
+          setStatus(
+            "Could not check another tab's save; keep a native backup.",
+          ),
+        );
+    };
+    window.addEventListener("storage", notifySavedChange);
     try {
       renderer.current = new SceneAdapter(viewport.current!, setStatus);
     } catch (e) {
@@ -413,6 +489,7 @@ export default function App() {
       worker.current?.terminate();
       autosave.current?.dispose();
       document.removeEventListener("visibilitychange", flushSave);
+      window.removeEventListener("storage", notifySavedChange);
       delete window.brickEditor;
     };
   }, []);
@@ -440,12 +517,18 @@ export default function App() {
     if (mode !== "Build") setPanel("Canvas");
   }, [tool, mode, step, plan]);
   useEffect(() => {
+    renderer.current?.setWorkplaneGuide(workplane);
+  }, [workplane]);
+  useEffect(() => {
+    if (mode !== "Build") setPickingFace(false);
+  }, [mode]);
+  useEffect(() => {
     if (tool === "Place" && mode === "Build")
       void renderer.current
-        ?.previewPart(part, color, position, rotationY(angle))
+        ?.previewPart(part, color, position, placeBasis(workplane, angle))
         .catch((e) => setStatus(e.message));
     else renderer.current?.clearGhost();
-  }, [tool, part, color, position, angle, mode, project.revision]);
+  }, [tool, part, color, position, angle, mode, project.revision, workplane]);
   useEffect(() => {
     if (!inventoryOpen && !fillOpen) return;
     const previous = document.activeElement as HTMLElement;
@@ -509,16 +592,36 @@ export default function App() {
         return;
       const r = renderer.current,
         s = interact.current;
-      if (!r || s.tool === "Navigate") return;
+      if (!r) return;
+      if (s.pickingFace) {
+        void run(() => {
+          const face = r.pickFace(e.clientX, e.clientY, undefined, s.workplane);
+          ensure(
+            face,
+            "INVALID_INPUT",
+            "Tap a visible model face to define the workplane.",
+          );
+          setWorkplane(face.plane);
+          setPosition(
+            (v) =>
+              placementOnPlane(v, face.plane, catalog[s.part].height, s.angle)
+                .position,
+          );
+          setPickingFace(false);
+          setFill(null);
+          setStatus("Workplane aligned to the selected face.");
+        });
+        return;
+      }
+      if (s.tool === "Navigate") return;
       const p = editor.project;
       if (s.tool === "Place") {
-        const v = r.workplane(e.clientX, e.clientY, s.elevation);
+        const v = r.planeIntersection(e.clientX, e.clientY, s.workplane);
         if (v) {
-          setPosition([
-            Math.round(v[0] / 20) * 20,
-            s.elevation - catalog[s.part].height,
-            Math.round(v[2] / 20) * 20,
-          ]);
+          setPosition(
+            placementOnPlane(v, s.workplane, catalog[s.part].height, s.angle)
+              .position,
+          );
           setStatus("Placement preview ready. Choose Place part to commit.");
         }
         return;
@@ -571,28 +674,83 @@ export default function App() {
       if (modeRef.current !== "Build" || play.current?.getState().active)
         return;
       if (
-        (e.target as HTMLElement).matches("input,textarea,select") ||
-        inventoryOpen
+        (e.target instanceof Element &&
+          e.target.closest(
+            "input,textarea,select,[contenteditable]:not([contenteditable=false]),[role=textbox]",
+          )) ||
+        inventoryOpen ||
+        fillOpen ||
+        e.isComposing
       )
         return;
-      const key = e.key.toLowerCase();
-      if ((e.ctrlKey || e.metaKey) && key === "z") {
-        e.preventDefault();
-        void run(() => command(e.shiftKey ? "history.redo" : "history.undo"));
+      const action = shortcutAction(e, shortcuts);
+      if (!action) return;
+      e.preventDefault();
+      if (e.repeat && !["undo", "redo"].includes(action)) return;
+      if (action === "undo" || action === "redo") {
+        void run(() => command("history." + action));
         return;
       }
-      if ((e.ctrlKey || e.metaKey) && key === "d") {
-        e.preventDefault();
-        void run(() => command("parts.duplicate", scoped()));
+      if (action === "copy" || action === "cut") {
+        void run(() => {
+          copyToClipboard(
+            editor,
+            selectionRef.current,
+            activeLayer,
+            crossLayer,
+            action === "cut",
+          );
+          setStatus(
+            action === "cut"
+              ? "Cut to internal clipboard"
+              : "Copied selection to internal clipboard",
+          );
+        });
         return;
       }
-      if (key === "delete" || key === "backspace")
-        void run(() => command("parts.remove", scoped()));
-      if (key === "v") setTool("Select");
-      if (key === "b") setTool("Place");
-      if (key === "c") setTool("Paint");
-      if (key === "f") renderer.current?.fit();
-      if (key === "escape") {
+      if (action === "paste") {
+        void run(() => {
+          const result = pasteFromClipboard(editor, activeLayer);
+          setSelectionSafe(result.addedIds);
+          setStatus(`Pasted ${result.addedIds.length} occurrences`);
+        });
+        return;
+      }
+      if (action === "duplicate" || action === "remove") {
+        void run(() =>
+          command(
+            action === "duplicate" ? "parts.duplicate" : "parts.remove",
+            scoped(),
+          ),
+        );
+        return;
+      }
+      if (action === "select") {
+        setTool("Select");
+        setTransformModeRequest({ mode: "off", nonce: Date.now() });
+      }
+      if (action === "place") setTool("Place");
+      if (action === "paint") setTool("Paint");
+      if (action === "focus") renderer.current?.fit();
+      if (action === "move" || action === "rotate") {
+        if (!selectionRef.current.length) {
+          setStatus("Select parts before showing transform handles.");
+          return;
+        }
+        setTool("Select");
+        setSelectionShape("click");
+        setPickingFace(false);
+        setTransformModeRequest({
+          mode: action === "move" ? "translate" : "rotate",
+          nonce: Date.now(),
+        });
+      }
+      if (action === "cancel") {
+        if (interact.current.pickingFace) {
+          setPickingFace(false);
+          setStatus("Face picking cancelled.");
+          return;
+        }
         setSelectionSafe([]);
         setFillOpen(false);
         setTool("Select");
@@ -600,7 +758,7 @@ export default function App() {
     };
     window.addEventListener("keydown", listener);
     return () => window.removeEventListener("keydown", listener);
-  }, [selection, activeLayer, crossLayer, inventoryOpen]);
+  }, [selection, activeLayer, crossLayer, inventoryOpen, fillOpen, shortcuts]);
   async function openFile(file: File) {
     await run(async () => {
       ensure(
@@ -740,6 +898,7 @@ export default function App() {
         columns,
         rows,
         origin: position,
+        basis: placeBasis(workplane, angle),
         layerId: activeLayer,
         maxAdditions: 10000,
       };
@@ -825,14 +984,23 @@ export default function App() {
             className={tool === t ? "active" : ""}
             onClick={() => {
               setTool(t);
+              if (t === "Select")
+                setTransformModeRequest({ mode: "off", nonce: Date.now() });
               if (t === "Place")
-                setPosition((v) => [
-                  v[0],
-                  elevation - currentPart.height,
-                  v[2],
-                ]);
+                setPosition(
+                  (v) =>
+                    placementOnPlane(v, workplane, currentPart.height, angle)
+                      .position,
+                );
             }}
-            title={["Select · V", "Place · B", "Paint · C", "Orbit and pan"][i]}
+            title={
+              [
+                `Select · ${shortcuts.select || "unassigned"}`,
+                `Place · ${shortcuts.place || "unassigned"}`,
+                `Paint · ${shortcuts.paint || "unassigned"}`,
+                "Orbit and pan",
+              ][i]
+            }
           >
             <span aria-hidden="true">{["↖", "⊞", "◈", "⤧"][i]}</span>
             {t}
@@ -893,7 +1061,10 @@ export default function App() {
               aria-pressed={part === p.id}
               onClick={() => {
                 setPart(p.id);
-                setPosition((v) => [v[0], elevation - p.height, v[2]]);
+                setPosition(
+                  (v) =>
+                    placementOnPlane(v, workplane, p.height, angle).position,
+                );
                 setTool("Place");
               }}
             >
@@ -1318,6 +1489,26 @@ export default function App() {
           Save project ↓
         </button>
       </div>
+      {saveCoordinationUnavailable && (
+        <div className="save-conflict" role="alert">
+          <span>
+            Automatic saving is unavailable because this browser cannot safely
+            coordinate tabs. Your edits remain in memory. Download a native
+            backup before closing.
+          </span>
+          <button onClick={() => void exportFile("native")}>
+            Download my backup
+          </button>
+          <button
+            onClick={() => {
+              autosave.current?.schedule(editor.project);
+              setSaveStatus("Retrying automatic save…");
+            }}
+          >
+            Retry automatic save
+          </button>
+        </div>
+      )}
       {saveConflict && (
         <div className="save-conflict" role="alert">
           <span>
@@ -1326,6 +1517,47 @@ export default function App() {
           </span>
           <button onClick={() => void exportFile("native")}>
             Download my backup
+          </button>
+          <button
+            onClick={() =>
+              void run(async () => {
+                await autosave.current?.flush();
+                const baseRevision = editor.project.revision,
+                  projectId = editor.project.id;
+                const backup = await api.current!.project.export({
+                  format: "native",
+                });
+                download(backup.name, backup.bytes, backup.mimeType);
+                const saved = await new LocalProjects(localStorage).load(
+                  projectId,
+                );
+                ensure(
+                  editor.project.id === projectId &&
+                    editor.project.revision === baseRevision,
+                  "REVISION_CONFLICT",
+                  "Your draft changed while reloading; it has been kept in memory.",
+                );
+                ensure(
+                  saved,
+                  "INVALID_INPUT",
+                  "The saved copy is no longer available. Keep the backup or fork your draft.",
+                );
+                saveRevisions.current.set(saved.id, saved.revision);
+                loaded.current = false;
+                try {
+                  editor.replace(saved);
+                } finally {
+                  loaded.current = true;
+                }
+                setSaveConflict(false);
+                setSaveStatus("Recovered saved revision " + saved.revision);
+                setStatus(
+                  "Downloaded your draft backup and reloaded the saved project.",
+                );
+              })
+            }
+          >
+            Back up and reload saved
           </button>
           <button
             onClick={() => {
@@ -1404,6 +1636,14 @@ export default function App() {
               </button>
             ))}
           </div>
+          {pickingFace && mode === "Build" && (
+            <div className="face-pick-card">
+              <span>Tap a model face to align the workplane.</span>
+              <button onClick={() => setPickingFace(false)}>
+                Cancel face picking
+              </button>
+            </div>
+          )}
           {all.length === 0 && mode === "Build" && tool !== "Place" && (
             <div className="welcome">
               <span className="eyebrow">A LITTLE SPACE FOR BIG IDEAS</span>
@@ -1441,7 +1681,12 @@ export default function App() {
                   {currentPart.name} ·{" "}
                   {colors.find((c) => c.code === color)?.name}
                 </strong>
-                <span>Tap the grid to preview · grid snapping</span>
+                <span>
+                  Tap the workplane to preview ·{" "}
+                  {workplane.free
+                    ? "free placement"
+                    : `${workplane.grid} LDU grid`}
+                </span>
               </div>
               <div className="placement-values">
                 {["X", "Y", "Z"].map((axis, i) => (
@@ -1460,7 +1705,9 @@ export default function App() {
               </div>
               <button
                 aria-label="Rotate placement"
-                onClick={() => setAngle((a) => (a + 90) % 360)}
+                onClick={() =>
+                  setAngle((a) => (a + workplane.rotationIncrement) % 360)
+                }
               >
                 ↻ {angle}°
               </button>
@@ -1474,7 +1721,10 @@ export default function App() {
                         {
                           ref: part,
                           colorCode: color,
-                          transform: { position, basis: rotationY(angle) },
+                          transform: {
+                            position,
+                            basis: placeBasis(workplane, angle),
+                          },
                         },
                       ],
                     });
@@ -1702,6 +1952,7 @@ export default function App() {
               <button className="wide" onClick={() => void exportFile("ldraw")}>
                 Export LDraw MPD ↓
               </button>
+              <ExportProfiles project={project} selection={selection} />
               <SharePanel
                 project={project}
                 open={async (shared) => {
@@ -1760,6 +2011,17 @@ export default function App() {
                   </button>
                 ))}
               </div>
+              <ShortcutSettings
+                value={shortcuts}
+                onChange={(value) => {
+                  setShortcuts(value);
+                  setStatus(
+                    saveShortcuts(value)
+                      ? "Keyboard shortcuts saved on this device."
+                      : "Keyboard shortcuts applied for this session; browser preferences could not be saved.",
+                  );
+                }}
+              />
               <details>
                 <summary>Supported features and source notices</summary>
                 <p>
@@ -1795,7 +2057,9 @@ export default function App() {
             <span>
               {tool === "Select" && selectionShape !== "click"
                 ? `${selectionShape === "box" ? "Box" : "Lasso"} · ${selectionDepth === "visible" ? "Visible surfaces" : "Through"}`
-                : "Grid · 20 LDU"}
+                : workplane.free
+                  ? "Free placement"
+                  : `Grid · ${workplane.grid} LDU`}
             </span>
           </div>
         </section>
@@ -1832,15 +2096,23 @@ export default function App() {
               enabled={
                 mode === "Build" &&
                 tool === "Select" &&
-                selectionShape === "click"
+                selectionShape === "click" &&
+                !pickingFace
               }
               activeLayerId={crossLayer ? undefined : activeLayer}
               report={setStatus}
+              modeRequest={transformModeRequest}
             />
           </div>
           {panel === "Inspector" ? (
             <>
               {inspectorPanel}
+              <ModelTools
+                editor={editor}
+                selection={selection}
+                activeLayerId={crossLayer ? undefined : activeLayer}
+                onSelect={setSelectionSafe}
+              />
               <ClipboardTools
                 editor={editor}
                 selection={selection}
@@ -1864,21 +2136,18 @@ export default function App() {
               />
             </>
           )}
-          <div className="workplane">
-            <h3>Workplane</h3>
-            <NumberInput
-              label="Elevation (LDU)"
-              value={elevation}
-              step={8}
-              onChange={(n) => {
-                setElevation(n);
-                setPosition((v) => [v[0], n - currentPart.height, v[2]]);
-              }}
-            />
-            <p className="muted">
-              Negative Y is up. Imported affine transforms stay unrounded.
-            </p>
-          </div>
+          <WorkplanePanel
+            value={workplane}
+            onChange={updateWorkplane}
+            pickingFace={pickingFace}
+            onCancelPick={() => setPickingFace(false)}
+            onPickFace={() => {
+              setPickingFace(true);
+              setTool("Select");
+              setPanel("Canvas");
+              setStatus("Tap a visible model face to align the workplane.");
+            }}
+          />
         </aside>
       </main>
       <footer className="status-bar">

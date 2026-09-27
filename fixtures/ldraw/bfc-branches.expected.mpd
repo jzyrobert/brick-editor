@@ -1,0 +1,30 @@
+0 FILE expected.ldr
+0 Hand-expanded BFC faces; CC0-1.0. Independent oracle, no editor flattening.
+0 !COLOUR ScopeBlue CODE 100 VALUE #2255CC EDGE #111111
+0 !COLOUR FixedGold CODE 101 VALUE #EEBB22 EDGE #111111
+0 !COLOUR InnerGreen CODE 102 VALUE #227733 EDGE #111111
+0 BFC CERTIFY CCW
+0 Explicit single ancestor inversion
+3 100 -100 -30 0 -70 0 0 -100 0 0
+0 Parent NOCLIP forces both sides
+3 100 0 0 0 30 0 0 0 -30 0
+3 100 0 -30 0 30 0 0 0 0 0
+0 Two explicit inversions cancel; reflection compensated
+3 100 100 -30 0 70 0 0 100 0 0
+0 Physical part resets ancestor NOCLIP and INVERTNEXT
+3 100 -100 -80 0 -70 -80 0 -100 -110 0
+3 101 -96 -84 -0.1 -88 -84 -0.1 -96 -92 -0.1
+0 Subpart explicit inversion plus negative determinant cancel
+3 100 0 -80 0 -30 -80 0 0 -110 0
+0 Mirrored physical part retains outward-facing surfaces
+3 100 100 -110 0 70 -80 0 100 -80 0
+3 101 96 -92 -0.1 88 -84 -0.1 96 -84 -0.1
+0 Parent NOCLIP on an atomic subpart also forces both sides
+3 100 0 -40 0 30 -40 0 0 -70 0
+3 100 0 -70 0 30 -40 0 0 -40 0
+0 Part-local NOCLIP propagates through model and subpart despite CLIP below
+3 102 -85 -83 -0.2 -79 -83 -0.2 -85 -89 -0.2
+3 102 -85 -89 -0.2 -79 -83 -0.2 -85 -83 -0.2
+3 102 85 -83 -0.2 79 -83 -0.2 85 -89 -0.2
+3 102 85 -89 -0.2 79 -83 -0.2 85 -83 -0.2
+0 NOFILE

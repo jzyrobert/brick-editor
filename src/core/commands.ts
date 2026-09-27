@@ -1,3 +1,4 @@
+import { makeSubmodel, sharedDefinitionTargets } from "./models";
 import { duplicateLayer, mutateFolder } from "./layers";
 import {
   KinematicSession,
@@ -124,10 +125,72 @@ function mutate(
   p: Project,
   c: Command,
   copyMappings: Record<string, string[]> = {},
+  idRemappings: Record<string, string> = {},
 ) {
   const v = c.payload;
   const scopeFields = ["occurrenceIds", "includeHidden", "activeLayerId"];
   switch (c.type) {
+    case "models.makeSubmodel": {
+      fields(v, [...scopeFields, "name", "pivot"]);
+      const mapping = makeSubmodel(
+        p,
+        editable(p, v),
+        v as { name: string; pivot?: Vec3 },
+        uniqueNode,
+      );
+      for (const key of Object.keys(idRemappings))
+        idRemappings[key] = mapping[idRemappings[key]] || idRemappings[key];
+      Object.assign(idRemappings, mapping);
+      break;
+    }
+    case "models.makeUnique": {
+      fields(v, scopeFields);
+      const targets = editable(p, v);
+      ensure(
+        targets.every((o) => o.path.length > 1),
+        "INVALID_INPUT",
+        "Select leaves inside a submodel instance to make its definition unique.",
+      );
+      targets.forEach((o) => uniqueNode(p, o));
+      break;
+    }
+    case "models.editShared": {
+      fields(v, [
+        "definitionId",
+        "nodeIds",
+        "confirmShared",
+        "includeHidden",
+        "activeLayerId",
+        "operation",
+        "colorCode",
+        "delta",
+      ]);
+      ensure(
+        v.confirmShared === true,
+        "INVALID_INPUT",
+        "Shared edits require explicit acknowledgement of all instances.",
+      );
+      const targets = sharedDefinitionTargets(p, v.definitionId, v.nodeIds);
+      editable(p, { ...v, occurrenceIds: targets.map((o) => o.id) });
+      if (v.operation === "move")
+        ensure(
+          !Object.values(p.motionRigs).some((r) =>
+            r.groups.some((g) =>
+              g.occurrenceIds.some((id) => targets.some((o) => o.id === id)),
+            ),
+          ),
+          "INVALID_INPUT",
+          "Shared movement would change motion-rig rest geometry. Remove or re-author the affected rig first.",
+        );
+      const definition = p.models[v.definitionId];
+      for (const node of definition.nodes.filter((n) =>
+        v.nodeIds.includes(n.id),
+      )) {
+        if (v.operation === "recolor") node.colorCode = v.colorCode;
+        else node.transform.position = add(node.transform.position, v.delta);
+      }
+      break;
+    }
     case "project.rename":
       fields(v, ["title"]);
       ensure(
@@ -708,6 +771,7 @@ export class Editor {
     const history = input.commands[0].type;
     let undoPatch: Patch[] | undefined;
     const copyMappings: Record<string, string[]> = {};
+    const idRemappings: Record<string, string> = {};
     if (history === "history.undo" || history === "history.redo") {
       ensure(
         input.commands.length === 1,
@@ -717,7 +781,8 @@ export class Editor {
       undoPatch = (history === "history.undo" ? this.past : this.future).at(-1);
       ensure(undoPatch, "INVALID_INPUT", "Nothing to " + history.split(".")[1]);
       applyPatches(p, undoPatch, history === "history.undo");
-    } else for (const c of input.commands) mutate(p, c, copyMappings);
+    } else
+      for (const c of input.commands) mutate(p, c, copyMappings, idRemappings);
     p.diagnostics = p.diagnostics.filter((d) => d.code !== "REFERENCE_MISSING");
     for (const o of occurrences(p))
       if (o.namespace === "missing")
@@ -741,7 +806,7 @@ export class Editor {
     const result = {
       revision: p.revision,
       affectedIds: occurrences(p).map((o) => o.id),
-      idRemappings: {},
+      idRemappings,
       copyMappings,
       addedLayerIds: Object.keys(p.layers).filter(
         (id) => !this.state.layers[id],
