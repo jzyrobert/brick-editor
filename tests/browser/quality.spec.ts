@@ -84,7 +84,7 @@ test("capture uses distinct quality profiles, records lighting and restores inte
         format: "png",
         visibility: {
           mode: "occurrences",
-          occurrenceIds: ["missing-occurrence"],
+          occurrenceIds: ['["missing-occurrence"]'],
         },
         background: { type: "transparent" },
         quality: "photo",

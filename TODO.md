@@ -9,7 +9,8 @@ Deployment follow-up: GitHub HTTPS still failed certificate verification on 2026
 
 Suggested order for the next implementation pass:
 
-- [ ] Reconcile occurrence-path schema limits with valid nested documents. A validated 32-level UUID path encodes to 1,249 characters and is rejected by the current 1,024-character ID input schema; audit query, scope and command IDs together with aggregate request budgets.
+- [x] Reconcile occurrence-path schemas with valid nested documents, add aggregate request preflight and remove quadratic scope matching. Deep paths have a distinct canonical schema; ordinary IDs remain bounded.
+- [ ] Bound aggregate expanded occurrence-path memory and remaining compiler work across valid project graphs; request preflight alone does not prove those limits.
 
 - [ ] Close M0 conformance gaps: whole-library BFC coverage beyond the new ancestor/internal dependency fixtures, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.
 - [ ] Complete M2 editing: connected-assembly selection, general structural regrouping, connector workplanes. Transform handles, visible/through box and lasso selection, clipboard, arrays, layer duplication, folders and ghosting now work.

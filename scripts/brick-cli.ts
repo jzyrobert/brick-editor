@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+import {
+  assertRequestBudget,
+  MAX_REQUEST_BYTES,
+} from "../src/core/request-budget";
 import { queryProject } from "../src/automation/query";
 import { readFile, writeFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -313,8 +317,14 @@ export async function main(argv: string[]) {
       "INVALID_INPUT",
       "--commands and --output are required",
     );
+    ensure(
+      (await stat(flag("commands")!)).size <= MAX_REQUEST_BYTES,
+      "LIMIT_EXCEEDED",
+      "Command file exceeds 25 MiB",
+    );
     const commands = JSON.parse(await readFile(flag("commands")!, "utf8")),
       editor = new Editor(p);
+    assertRequestBudget(commands);
     if (Array.isArray(commands)) for (const c of commands) editor.dispatch(c);
     else editor.dispatch(commands);
     await writeFile(output, await encodeNative(editor.project));

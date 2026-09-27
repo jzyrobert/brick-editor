@@ -79,8 +79,9 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "minLength": 1,
-                "maxLength": 1024
+                "minLength": 5,
+                "maxLength": 393409,
+                "format": "occurrence-id"
               },
               "maxItems": 5000,
               "uniqueItems": true
@@ -181,8 +182,9 @@
       "type": "array",
       "items": {
         "type": "string",
-        "minLength": 1,
-        "maxLength": 1024
+        "minLength": 5,
+        "maxLength": 393409,
+        "format": "occurrence-id"
       },
       "maxItems": 5000,
       "uniqueItems": true

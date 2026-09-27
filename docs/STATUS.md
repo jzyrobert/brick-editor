@@ -98,7 +98,7 @@ Representable single-joint and pure planar vehicle rigs now support guarded load
 
 Browser and CLI queries now include submodel/selection scopes, counts, source-derived conservative bounds, unknown-geometry IDs, nested unresolved dependencies, physical-transform diagnostics and bounded overlap candidates without WebGL. Connectivity is explicitly unverified until a verified connector pack exists. Source boxes are checked against the pinned library closure in CI; overlap candidates do not establish physical collisions or buildability.
 
-A contract audit also reproduced an open M0 gap: valid deeply nested UUID occurrence paths can exceed the generic 1,024-character schema limit. A 32-level fixture produces a 1,249-character path that queries cannot accept by ID. This requires a coordinated occurrence-ID and aggregate-request budget fix across query, scope and command schemas; it is tracked in TODO.
+The reproduced deep-occurrence input gap is fixed: canonical JSON paths now have their own depth/segment/encoded bounds, while ordinary IDs retain their prior limit. Aggregate request preflight rejects oversized, cyclic or deeply nested commands before hashing or mutation. Scope resolution uses a prefix trie and exact editing membership uses a Set, avoiding selection-size × project-size scans. Native import limits remain separate. Broader expanded-graph and compiler memory budgets remain an M0 gap.
 
 ## Nearby Play interaction
 

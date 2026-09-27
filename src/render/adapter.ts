@@ -1,3 +1,4 @@
+import { validateRequest } from "../core/validate-request";
 import { normalizeBfcSource } from "./bfc-source";
 import {
   planeFromTriangle,
@@ -42,7 +43,6 @@ import { conversion } from "../core/math";
 import { exportLDraw } from "../ldraw/io";
 import { libraryLock } from "../catalog/catalog";
 import { sha256, stable } from "../core/hash";
-import { validate } from "../core/validate";
 const defaultCamera: CameraSpec = {
   space: "ldraw",
   projection: "perspective",
@@ -775,7 +775,7 @@ export class SceneAdapter {
       "INVALID_INPUT",
       "Wait for the current capture before changing the camera",
     );
-    validate("camera", spec);
+    validateRequest("camera", spec);
     ensure(
       spec.far > spec.near,
       "INVALID_INPUT",
@@ -1410,7 +1410,7 @@ export class SceneAdapter {
       "INVALID_INPUT",
       "Finish or cancel the transform gesture before capture",
     );
-    validate("render", request);
+    validateRequest("render", request);
     ensure(
       !this.captureActive,
       "INVALID_INPUT",

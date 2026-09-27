@@ -1,3 +1,4 @@
+import { assertRequestBudget } from "./request-budget";
 import { editInstructions } from "../instructions/edit";
 import { makeSubmodel, sharedDefinitionTargets } from "./models";
 import { duplicateLayer, mutateFolder } from "./layers";
@@ -74,10 +75,10 @@ function editable(p: Project, payload: Record<string, any>): Occurrence[] {
     "INVALID_INPUT",
     "Select at least one occurrence",
   );
-  const all = occurrences(p),
-    found = all.filter((o) => payload.occurrenceIds.includes(o.id));
+  const selectedIds = new Set(payload.occurrenceIds as string[]),
+    found = occurrences(p).filter((o) => selectedIds.has(o.id));
   ensure(
-    found.length === new Set(payload.occurrenceIds).size,
+    found.length === selectedIds.size,
     "INVALID_INPUT",
     "Unknown occurrence ID",
   );
@@ -741,6 +742,7 @@ export class Editor {
     return copyFragment(this.state, request);
   }
   cut(request: CopyRequest & { expectedRevision: number; commandId: string }) {
+    assertRequestBudget(request);
     fields(request, [
       "occurrenceIds",
       "includeHidden",
@@ -779,6 +781,7 @@ export class Editor {
     return structuredClone({ ...result, fragment });
   }
   dispatch(c: Command) {
+    assertRequestBudget(c);
     return this.transaction({
       commandId: c.commandId,
       expectedRevision: c.expectedRevision,
@@ -792,6 +795,12 @@ export class Editor {
     commands: Command[];
     dryRun?: boolean;
   }) {
+    assertRequestBudget(input);
+    ensure(
+      input && Array.isArray(input.commands),
+      "INVALID_INPUT",
+      "Transaction commands must be an array",
+    );
     ensure(
       input.commands.length > 0 && input.commands.length <= 1000,
       "LIMIT_EXCEEDED",

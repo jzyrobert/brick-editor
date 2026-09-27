@@ -1,3 +1,4 @@
+import { validateRequest } from "../core/validate-request";
 import { queryProject, type QueryRequest } from "./query";
 import type { FillRequest, fillPreview } from "../edit/fill";
 import type { ExportRequest as ProfileRequest } from "../ldraw/export-profiles";
@@ -55,7 +56,7 @@ export function createAPI(
     return m;
   };
   const startFillPreview = (request: FillRequest) => {
-    validate("fillRequest", request);
+    validateRequest("fillRequest", request);
     const source = structuredClone(editor.project);
     return jobs.start("fill-preview", async (signal) => {
       const result = await runWorker<ReturnType<typeof fillPreview>>(
@@ -130,7 +131,7 @@ export function createAPI(
     },
     play: {
       enter: async (request: PlayRequest = {}) => {
-        validate("playRequest", request);
+        validateRequest("playRequest", request);
         mechanisms?.()?.exit();
         const report = await player().enter(request);
         validate("playSnapshot", report);
@@ -143,7 +144,7 @@ export function createAPI(
       useSpawn: async () => player().useSpawn(),
       exit: async () => player().exit(),
       setInput: async (input: PlayInput) => {
-        validate("playInput", input);
+        validateRequest("playInput", input);
         return player().setInput(input);
       },
       setMechanismJoint: async (
@@ -163,7 +164,7 @@ export function createAPI(
       setLocomotion: async (mode: PlayLocomotion) =>
         player().setLocomotion(mode),
       teleport: async (input: PlayTeleportRequest) => {
-        validate("playTeleport", input);
+        validateRequest("playTeleport", input);
         return player().teleport(input);
       },
       stepTicks: async (count: number) => player().stepTicks(count),
@@ -182,7 +183,7 @@ export function createAPI(
       renderer().ready(options.minRevision, options.strict),
     project: {
       exportProfile: async (request: ProfileRequest) => {
-        validate("exportProfileRequest", request);
+        validateRequest("exportProfileRequest", request);
         const snapshot = editor.project;
         return jobs.wait<
           Awaited<
@@ -262,7 +263,7 @@ export function createAPI(
         format: "ldraw" | "native";
         scope?: Parameters<typeof resolveScope>[1];
       }) => {
-        validate("exportRequest", input);
+        validateRequest("exportRequest", input);
         const p = editor.project;
         return input.format === "native"
           ? {

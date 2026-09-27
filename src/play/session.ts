@@ -1,3 +1,4 @@
+import { isOccurrenceId } from "../core/occurrence-id";
 import { validatePlayWorldProfile } from "./world-profile";
 import { resolvePlayCameraSettings, playCameraSafety } from "./camera-settings";
 import {
@@ -235,10 +236,7 @@ export class PlaySession {
       ensure(
         Array.isArray(snapshot.worldProfile.includedOccurrenceIds) &&
           snapshot.worldProfile.includedOccurrenceIds.length <= 100000 &&
-          snapshot.worldProfile.includedOccurrenceIds.every(
-            (id) =>
-              typeof id === "string" && id.length > 0 && id.length <= 1024,
-          ) &&
+          snapshot.worldProfile.includedOccurrenceIds.every(isOccurrenceId) &&
           new Set(snapshot.worldProfile.includedOccurrenceIds).size ===
             snapshot.worldProfile.includedOccurrenceIds.length,
         "INVALID_INPUT",

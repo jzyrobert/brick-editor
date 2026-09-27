@@ -232,7 +232,7 @@ it("retains attribution preamble and rejects dangling fragment metadata atomical
   command(e, "clipboard.paste", { fragment });
   expect(exportLDraw(e.project)).toContain("0 Original author: Example Maker");
   const invalid = structuredClone(fragment);
-  invalid.project.groups.bad = ["not-an-occurrence"];
+  invalid.project.groups.bad = [JSON.stringify(["not-an-occurrence"])];
   const before = e.project;
   expect(() => command(e, "clipboard.paste", { fragment: invalid })).toThrow(
     /outside the fragment/,

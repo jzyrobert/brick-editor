@@ -1,12 +1,13 @@
+import { validateRequest } from "../core/validate-request";
 import { zipSync, strToU8 } from "fflate";
 import {
   type Project,
   type Scope,
   type Diagnostic,
   ensure,
-  AppError,
 } from "../core/types";
-import { occurrences } from "../core/document";
+import { resolveScope } from "../core/scope";
+export { resolveScope } from "../core/scope";
 import { physical } from "../core/math";
 import { sha256, stable } from "../core/hash";
 import { mappingLock, libraryLock } from "../catalog/catalog";
@@ -47,42 +48,6 @@ export type Preview = {
   request: InventoryRequest;
   projectHash: string;
 };
-export function resolveScope(p: Project, scope: Scope) {
-  const all = occurrences(p);
-  if (scope.kind === "all") return all;
-  if (scope.kind === "visible") return all.filter((o) => o.visible);
-  if (scope.kind === "layers") {
-    ensure(
-      scope.layerIds.every((id) => p.layers[id]),
-      "INVALID_INPUT",
-      "Unknown layer",
-    );
-    return all.filter((o) => scope.layerIds.includes(o.layerId));
-  }
-  const selected =
-    scope.kind === "selection" ? scope.occurrenceIds : [scope.occurrenceId];
-  const paths = selected.map((id) => {
-    try {
-      const path = JSON.parse(id);
-      ensure(
-        Array.isArray(path) && path.every((s) => typeof s === "string"),
-        "INVALID_INPUT",
-        "Invalid occurrence path",
-      );
-      ensure(
-        all.some((o) => path.every((s, i) => o.path[i] === s)),
-        "INVALID_INPUT",
-        "Unknown scope occurrence",
-      );
-      return path as string[];
-    } catch {
-      throw new AppError("INVALID_INPUT", "Invalid occurrence scope");
-    }
-  });
-  return all.filter((o) =>
-    paths.some((path) => path.every((s, i) => s === o.path[i])),
-  );
-}
 export const xmlText = (s: string) => {
   ensure(
     !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]|[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/u.test(
@@ -131,7 +96,7 @@ export function wantedXML(rows: Lot[], r: InventoryRequest) {
 export class InventoryService {
   private previews = new Map<string, Preview>();
   async preview(p: Project, request: InventoryRequest): Promise<Preview> {
-    validate("inventory", request);
+    validateRequest("inventory", request);
     ensure(
       request.expectedRevision === p.revision,
       "REVISION_CONFLICT",
@@ -325,7 +290,7 @@ export class InventoryService {
       errorPolicy: "block" | "export-resolved";
     },
   ) {
-    validate("inventoryExport", r);
+    validateRequest("inventoryExport", r);
     const preview = this.previews.get(r.previewId);
     ensure(
       preview &&

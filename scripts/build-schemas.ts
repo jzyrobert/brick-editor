@@ -1,10 +1,23 @@
 import Ajv from "ajv";
 import standaloneCode from "ajv/dist/standalone/index.js";
 import { writeFileSync } from "node:fs";
+import { _Code } from "ajv/dist/compile/codegen/code.js";
+import {
+  isOccurrenceId,
+  NODE_ID_MAX_CODEPOINTS,
+  OCCURRENCE_PATH_MAX_DEPTH,
+  OCCURRENCE_ID_MAX_LENGTH,
+} from "../src/core/occurrence-id";
 const str = { type: "string", maxLength: 4096 },
   num = { type: "number" },
   id = { type: "string", minLength: 1, maxLength: 1024 },
   integer = { type: "integer", minimum: 0, maximum: Number.MAX_SAFE_INTEGER };
+const occurrenceId = {
+  type: "string",
+  minLength: 5,
+  maxLength: OCCURRENCE_ID_MAX_LENGTH,
+  format: "occurrence-id",
+};
 const obj = (
   properties: any,
   required = Object.keys(properties),
@@ -23,6 +36,10 @@ const dictionary = (value: any) => ({
   maxProperties: 10000,
   additionalProperties: value,
   propertyNames: { not: { enum: ["__proto__", "constructor", "prototype"] } },
+});
+const occurrenceDictionary = (value: any) => ({
+  ...dictionary(value),
+  propertyNames: occurrenceId,
 });
 const node = obj(
   {
@@ -54,7 +71,7 @@ const diagnostic = obj(
     code: id,
     message: str,
     severity: { enum: ["warning", "error"] },
-    occurrenceIds: arr(id),
+    occurrenceIds: arr(occurrenceId),
     details: {},
   },
   ["code", "message", "severity", "occurrenceIds"],
@@ -64,8 +81,8 @@ const scope = {
     obj({ kind: { const: "all" } }),
     obj({ kind: { const: "visible" } }),
     obj({ kind: { const: "layers" }, layerIds: arr(id) }),
-    obj({ kind: { const: "selection" }, occurrenceIds: arr(id) }),
-    obj({ kind: { const: "submodel" }, occurrenceId: id }),
+    obj({ kind: { const: "selection" }, occurrenceIds: arr(occurrenceId) }),
+    obj({ kind: { const: "submodel" }, occurrenceId }),
   ],
 };
 const project = obj({
@@ -79,7 +96,7 @@ const project = obj({
   marketplace: obj({
     mappingPackId: id,
     mappingPackSha256: id,
-    overrides: dictionary(
+    overrides: occurrenceDictionary(
       obj({
         itemId: id,
         colorId: id,
@@ -118,13 +135,13 @@ const project = obj({
     ]),
   ),
   defaultLayerId: id,
-  layerAssignments: dictionary(id),
-  groups: dictionary(arr(id)),
+  layerAssignments: occurrenceDictionary(id),
+  groups: dictionary(arr(occurrenceId)),
   instructionPlans: dictionary(
     obj(
       {
         name: str,
-        steps: arr(arr(id)),
+        steps: arr(arr(occurrenceId)),
         stepMetadata: arr(obj({ notes: str, camera }, [])),
       },
       ["name", "steps"],
@@ -140,7 +157,7 @@ project.required = project.required.filter(
   (key: string) => key !== "layerFolders",
 );
 const scoped = {
-  occurrenceIds: { ...arr(id), minItems: 1, uniqueItems: true },
+  occurrenceIds: { ...arr(occurrenceId), minItems: 1, uniqueItems: true },
   includeHidden: { type: "boolean" },
   activeLayerId: id,
 };
@@ -181,9 +198,13 @@ const motionRig = obj(
       ...arr(
         obj({
           id,
-          occurrenceIds: { ...arr(id, 10000), minItems: 1, uniqueItems: true },
+          occurrenceIds: {
+            ...arr(occurrenceId, 10000),
+            minItems: 1,
+            uniqueItems: true,
+          },
           frame: transform,
-          restTransforms: dictionary(transform),
+          restTransforms: occurrenceDictionary(transform),
         }),
         100,
       ),
@@ -419,7 +440,7 @@ const payloads: Record<string, any> = {
   }),
   "groups.create": obj({
     name: id,
-    occurrenceIds: { ...arr(id), uniqueItems: true },
+    occurrenceIds: { ...arr(occurrenceId), uniqueItems: true },
   }),
   "camera.bookmark": obj({ name: id, camera }),
   "layers.assign": obj({ ...scoped, layerId: id }, [
@@ -427,7 +448,7 @@ const payloads: Record<string, any> = {
     "layerId",
   ]),
   "inventory.override": obj({
-    occurrenceId: id,
+    occurrenceId,
     mapping: {
       oneOf: [
         { type: "null" },
@@ -440,7 +461,9 @@ const payloads: Record<string, any> = {
       ],
     },
   }),
-  "instructions.create": obj({ name: str, occurrenceIds: arr(id) }, ["name"]),
+  "instructions.create": obj({ name: str, occurrenceIds: arr(occurrenceId) }, [
+    "name",
+  ]),
   "instructions.rename": obj({ planId: id, name: str }),
   "instructions.remove": obj({ planId: id }),
   "instructions.step.add": obj({ planId: id, index: integer }, ["planId"]),
@@ -457,12 +480,12 @@ const payloads: Record<string, any> = {
   "instructions.step.assign": obj({
     planId: id,
     index: integer,
-    occurrenceIds: arr(id),
+    occurrenceIds: arr(occurrenceId),
   }),
   "instructions.step.split": obj({
     planId: id,
     index: integer,
-    occurrenceIds: arr(id),
+    occurrenceIds: arr(occurrenceId),
   }),
   "instructions.step.merge": obj({ planId: id, index: integer }),
   "instructions.step.update": obj(
@@ -509,7 +532,7 @@ const render = obj(
         obj({ mode: { const: "layers" }, layerIds: arr(id) }),
         obj({
           mode: { const: "occurrences" },
-          occurrenceIds: { ...arr(id, 5000), uniqueItems: true },
+          occurrenceIds: { ...arr(occurrenceId, 5000), uniqueItems: true },
         }),
       ],
     },
@@ -534,7 +557,7 @@ const render = obj(
       },
       [],
     ),
-    instructionNewIds: { ...arr(id, 5000), uniqueItems: true },
+    instructionNewIds: { ...arr(occurrenceId, 5000), uniqueItems: true },
     strict: { type: "boolean" },
   },
   [
@@ -610,7 +633,7 @@ const query = obj(
     ref: id,
     colorCode: id,
     layerId: id,
-    occurrenceIds: arr(id),
+    occurrenceIds: arr(occurrenceId),
     scope,
     selection: { type: "boolean" },
     connectivity: { enum: ["unverified", "verified"] },
@@ -638,14 +661,14 @@ const inventoryPreview = obj({
       itemId: id,
       colorId: id,
       quantity: { ...integer, minimum: 1 },
-      occurrenceIds: arr(id),
+      occurrenceIds: arr(occurrenceId),
       layers: dictionary(integer),
       verification: { enum: ["verified", "acknowledged"] },
     }),
   ),
   diagnostics: arr(diagnostic),
-  excludedOccurrenceIds: arr(id),
-  substitutions: arr(id),
+  excludedOccurrenceIds: arr(occurrenceId),
+  substitutions: arr(occurrenceId),
   request: { $ref: "inventory" },
 });
 const playCameraSettings = obj({
@@ -701,7 +724,7 @@ const playTeleport = obj(
 const playSnapshot = obj({
   worldProfile: obj({
     ...playWorldProfile.properties,
-    includedOccurrenceIds: { ...arr(id), uniqueItems: true },
+    includedOccurrenceIds: { ...arr(occurrenceId), uniqueItems: true },
   }),
   cameraSettings: playCameraSettings,
   cameraSafety: obj({
@@ -827,12 +850,12 @@ const api = {
     "play.snapshot": obj({}),
     "play.exit": obj({}),
     "clipboard.copy": obj(
-      { occurrenceIds: arr(id), includeHidden: { type: "boolean" } },
+      { occurrenceIds: arr(occurrenceId), includeHidden: { type: "boolean" } },
       ["occurrenceIds"],
     ),
     "clipboard.cut": obj(
       {
-        occurrenceIds: arr(id),
+        occurrenceIds: arr(occurrenceId),
         includeHidden: { type: "boolean" },
         expectedRevision: integer,
         commandId: id,
@@ -952,10 +975,20 @@ const schemas = {
 };
 const ajv = new Ajv({
   allErrors: true,
-  code: { source: true, esm: true },
+  code: {
+    source: true,
+    esm: true,
+    formats: new _Code(`(() => {
+    const NODE_ID_MAX_CODEPOINTS = ${NODE_ID_MAX_CODEPOINTS};
+    const OCCURRENCE_PATH_MAX_DEPTH = ${OCCURRENCE_PATH_MAX_DEPTH};
+    const OCCURRENCE_ID_MAX_LENGTH = ${OCCURRENCE_ID_MAX_LENGTH};
+    return {"occurrence-id": ${isOccurrenceId.toString()}};
+  })()`),
+  },
   strictNumbers: true,
   strictRequired: false,
 });
+ajv.addFormat("occurrence-id", isOccurrenceId);
 for (const [name, s] of Object.entries(schemas)) {
   const schema = {
     $id: name,

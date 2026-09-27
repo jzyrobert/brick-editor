@@ -1,4 +1,4 @@
-import { validate } from "../core/validate";
+import { validateRequest } from "../core/validate-request";
 import { occurrences } from "../core/document";
 import { physical } from "../core/math";
 import { ensure, type Project, type Scope } from "../core/types";
@@ -30,7 +30,7 @@ export function queryProject(
   input: QueryRequest = {},
   selected?: string[],
 ) {
-  validate("query", input);
+  validateRequest("query", input);
   const missingCache = new Map<string, string[]>();
   let dependencyWork = 0;
   const chargeDependency = () =>

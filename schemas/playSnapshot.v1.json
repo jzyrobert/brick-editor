@@ -20,8 +20,9 @@
           "type": "array",
           "items": {
             "type": "string",
-            "minLength": 1,
-            "maxLength": 1024
+            "minLength": 5,
+            "maxLength": 393409,
+            "format": "occurrence-id"
           },
           "maxItems": 100000,
           "uniqueItems": true

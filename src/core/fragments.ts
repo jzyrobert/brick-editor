@@ -1,3 +1,4 @@
+import { assertRequestBudget } from "./request-budget";
 import { encodePath, occurrences, validateDocument } from "./document";
 import { identity } from "./math";
 import {
@@ -86,6 +87,7 @@ export function copyFragment(
   project: Project,
   request: CopyRequest,
 ): ClipboardFragment {
+  assertRequestBudget(request);
   validate("project", project);
   validateDocument(project);
   ensure(
@@ -192,11 +194,7 @@ export function copyFragment(
   sourceSafe(p);
   validateDocument(p);
   const fragment: ClipboardFragment = { schemaVersion: 1, project: p };
-  ensure(
-    JSON.stringify(fragment).length <= MAX_BYTES,
-    "LIMIT_EXCEEDED",
-    "Clipboard fragment exceeds 16 MiB.",
-  );
+  assertRequestBudget(fragment, MAX_BYTES);
   return fragment;
 }
 /** Add a validated self-contained fragment under one wrapper per world transform. */
@@ -206,6 +204,7 @@ export function pasteFragment(
   transforms: Transform[],
   options: { layerId?: string; maxAdditions?: number } = {},
 ) {
+  assertRequestBudget(fragment, MAX_BYTES);
   ensure(
     fragment &&
       fragment.schemaVersion === 1 &&
@@ -215,11 +214,7 @@ export function pasteFragment(
     "INVALID_INPUT",
     "Unsupported clipboard fragment.",
   );
-  ensure(
-    JSON.stringify(fragment).length <= MAX_BYTES,
-    "LIMIT_EXCEEDED",
-    "Clipboard fragment exceeds 16 MiB.",
-  );
+
   const source = fragment.project;
   validate("project", source);
   validateDocument(source);

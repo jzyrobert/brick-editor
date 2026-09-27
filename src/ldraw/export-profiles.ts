@@ -1,3 +1,4 @@
+import { validateRequest } from "../core/validate-request";
 import { zipSync, strToU8 } from "fflate";
 import { type Project, type Scope, ensure } from "../core/types";
 import { occurrences } from "../core/document";
@@ -6,7 +7,6 @@ import { exportLDraw, scopedLDraw, importLDraw } from "./io";
 import { canonical } from "./path";
 import { libraryLock } from "../catalog/catalog";
 import { sha256 } from "../core/hash";
-import { validate } from "../core/validate";
 import { encodeNative } from "../persistence/native";
 export type ExportProfile = "standard" | "portable" | "layers" | "native";
 export type ExportRequest = {
@@ -189,7 +189,7 @@ export async function exportProfile(
   request: ExportRequest,
   options: ExportOptions = {},
 ) {
-  validate("exportProfileRequest", request);
+  validateRequest("exportProfileRequest", request);
   check(options);
   ensure(
     request.expectedRevision === undefined ||

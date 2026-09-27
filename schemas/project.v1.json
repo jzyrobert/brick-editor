@@ -99,13 +99,10 @@
             "additionalProperties": false
           },
           "propertyNames": {
-            "not": {
-              "enum": [
-                "__proto__",
-                "constructor",
-                "prototype"
-              ]
-            }
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 393409,
+            "format": "occurrence-id"
           }
         }
       },
@@ -364,13 +361,10 @@
         "maxLength": 1024
       },
       "propertyNames": {
-        "not": {
-          "enum": [
-            "__proto__",
-            "constructor",
-            "prototype"
-          ]
-        }
+        "type": "string",
+        "minLength": 5,
+        "maxLength": 393409,
+        "format": "occurrence-id"
       }
     },
     "groups": {
@@ -380,8 +374,9 @@
         "type": "array",
         "items": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 1024
+          "minLength": 5,
+          "maxLength": 393409,
+          "format": "occurrence-id"
         },
         "maxItems": 100000
       },
@@ -411,8 +406,9 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "minLength": 1,
-                "maxLength": 1024
+                "minLength": 5,
+                "maxLength": 393409,
+                "format": "occurrence-id"
               },
               "maxItems": 100000
             },
@@ -664,8 +660,9 @@
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 1,
-              "maxLength": 1024
+              "minLength": 5,
+              "maxLength": 393409,
+              "format": "occurrence-id"
             },
             "maxItems": 100000
           },

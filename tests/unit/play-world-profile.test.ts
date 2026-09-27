@@ -85,27 +85,32 @@ it("requires collision extraction to match the requested profile and freezes rep
   await expect(PlaySession.create(mesh, request)).rejects.toThrow("extracted");
   mesh.worldProfile = {
     excludedLayerIds: ["roof"],
-    includedOccurrenceIds: ["floor"],
+    includedOccurrenceIds: [JSON.stringify(["floor"])],
   };
   const s = await PlaySession.create(mesh, request);
   try {
-    mesh.worldProfile.includedOccurrenceIds.push("wall");
+    mesh.worldProfile.includedOccurrenceIds.push(JSON.stringify(["wall"]));
     request.worldProfile.excludedLayerIds.length = 0;
     const report = s.snapshot();
     expect(report.worldProfile).toEqual({
       excludedLayerIds: ["roof"],
-      includedOccurrenceIds: ["floor"],
+      includedOccurrenceIds: [JSON.stringify(["floor"])],
     });
     validate("playSnapshot", report);
     expect(() => {
       report.worldProfile.includedOccurrenceIds.length = 0;
     }).toThrow();
     expect(s.snapshot().worldProfile).toBe(report.worldProfile);
-    expect(s.snapshot().worldProfile.includedOccurrenceIds).toEqual(["floor"]);
+    expect(s.snapshot().worldProfile.includedOccurrenceIds).toEqual([
+      JSON.stringify(["floor"]),
+    ]);
   } finally {
     s.dispose();
   }
-  mesh.worldProfile.includedOccurrenceIds = ["floor", "floor"];
+  mesh.worldProfile.includedOccurrenceIds = [
+    JSON.stringify(["floor"]),
+    JSON.stringify(["floor"]),
+  ];
   await expect(
     PlaySession.create(mesh, { worldProfile: { excludedLayerIds: ["roof"] } }),
   ).rejects.toThrow("occurrence profile");
