@@ -2,7 +2,7 @@ import { withStorageWriteLock } from "./write-lock";
 import { type Project, ensure, AppError } from "../core/types";
 import { sha256 } from "../core/hash";
 import { validate } from "../core/validate";
-import { validateDocument } from "../core/document";
+import { validateSourceDocument } from "../core/document";
 import { encodeNative } from "./native";
 export interface StorageAdapter {
   getItem(key: string): string | null;
@@ -36,7 +36,7 @@ export class LocalProjects {
         if (entry && (await sha256(entry.json)) === entry.hash) {
           const p = JSON.parse(entry.json);
           validate("project", p);
-          validateDocument(p);
+          validateSourceDocument(p);
           ensure(
             p.id === id,
             "INVALID_INPUT",
@@ -116,7 +116,7 @@ export class LocalProjects {
   async save(p: Project, expectedStoredRevision: number | null) {
     p = structuredClone(p);
     validate("project", p);
-    validateDocument(p);
+    validateSourceDocument(p);
     const write = async (assertHeld: () => void) => {
       const previous = await this.load(p.id);
       assertHeld();

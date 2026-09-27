@@ -10,7 +10,9 @@ Deployment follow-up: GitHub HTTPS still failed certificate verification on 2026
 Suggested order for the next implementation pass:
 
 - [x] Reconcile occurrence-path schemas with valid nested documents, add aggregate request preflight and remove quadratic scope matching. Deep paths have a distinct canonical schema; ordinary IDs remain bounded.
-- [ ] Bound aggregate expanded occurrence-path memory and remaining compiler work across valid project graphs; request preflight alone does not prove those limits.
+- [x] Guard aggregate expanded path storage/work before and during occurrence collection; preserve native backup and local recovery without materializing the scene.
+- [ ] Complete resource-profile UI/API/CLI plumbing, source-only opening with backup controls, deferred STEP derivation, bounded output and cancellation. The collector defaults to desktop unless a trusted caller supplies another profile. See [resource limits](docs/RESOURCE-LIMITS.md).
+- [ ] Bound remaining compiler work across valid project graphs; occurrence guards alone do not prove those limits.
 
 - [ ] Close M0 conformance gaps: whole-library BFC coverage beyond the new ancestor/internal dependency fixtures, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.
 - [ ] Complete M2 editing: connected-assembly selection, general structural regrouping, connector workplanes. Transform handles, visible/through box and lasso selection, clipboard, arrays, layer duplication, folders and ghosting now work.

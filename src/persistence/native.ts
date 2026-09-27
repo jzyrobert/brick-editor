@@ -2,13 +2,13 @@ import { zipSync, strToU8, strFromU8, Unzip, UnzipInflate } from "fflate";
 import { type Project, ensure } from "../core/types";
 import { canonical } from "../ldraw/path";
 import { validate } from "../core/validate";
-import { validateDocument } from "../core/document";
+import { validateSourceDocument } from "../core/document";
 import { sha256, stable } from "../core/hash";
 import { exportLDraw } from "../ldraw/io";
 export async function encodeNative(p: Project) {
   p = structuredClone(p);
   validate("project", p);
-  validateDocument(p);
+  validateSourceDocument(p);
   const json = JSON.stringify(p);
   const files: Record<string, Uint8Array> = {
     "project.json": strToU8(json),
@@ -171,7 +171,7 @@ export async function decodeNative(bytes: Uint8Array) {
     );
   const p = JSON.parse(json) as Project;
   validate("project", p);
-  validateDocument(p);
+  validateSourceDocument(p);
   ensure(
     stable(manifest.library) === stable(p.library) &&
       manifest.mapping === p.marketplace.mappingPackId,

@@ -7,8 +7,16 @@ import {
   uid,
 } from "./types";
 import { identity, compose } from "./math";
+import { estimateExpansion } from "./expansion";
+import { isOccurrenceId } from "./occurrence-id";
 import { canonical } from "../ldraw/path";
 import { installedSource, libraryLock, mappingLock } from "../catalog/catalog";
+import {
+  expansionLimits,
+  preflightExpansion,
+  assertExpansionResource,
+  type ExpansionOptions,
+} from "./expansion-policy";
 export const encodePath = (path: string[]) => JSON.stringify(path);
 export function createProject(title = "Untitled build"): Project {
   return {
@@ -49,17 +57,42 @@ export function createProject(title = "Untitled build"): Project {
     diagnostics: [],
   };
 }
-export function occurrences(p: Project): Occurrence[] {
+/** Materializes a bounded derived view. Source-only validation and persistence
+ * use validateSourceDocument; scene consumers must satisfy these budgets. */
+export function occurrences(
+  p: Project,
+  options: ExpansionOptions = {},
+): Occurrence[] {
+  const limits = expansionLimits(options);
+  preflightExpansion(p, limits);
   const out: Occurrence[] = [];
-  let visited = 0;
+  let visited = 0,
+    retainedCharacters = 0,
+    generatedCharacters = 0,
+    pathSlots = 0;
+  const segmentWeights = new Map<string, number>();
+  const segmentWeight = (id: string) => {
+    let weight = segmentWeights.get(id);
+    if (weight === undefined) {
+      weight = JSON.stringify(id).length + 1;
+      segmentWeights.set(id, weight);
+    }
+    return weight;
+  };
   const walk = (
     modelId: string,
     path: string[],
     t: Transform,
     color: string,
     ancestors: Set<string>,
+    pathWeight: number,
   ) => {
-    ensure(path.length < 64, "LIMIT_EXCEEDED", "Reference depth exceeds 64");
+    assertExpansionResource(
+      "referenceDepth",
+      path.length + 1,
+      limits,
+      "traversal",
+    );
     ensure(
       !ancestors.has(modelId),
       "REFERENCE_CYCLE",
@@ -69,24 +102,41 @@ export function occurrences(p: Project): Occurrence[] {
     ensure(model, "REFERENCE_MISSING", "Missing submodel " + modelId);
     const next = new Set(ancestors).add(modelId);
     for (const node of model.nodes) {
-      ensure(
-        ++visited <= 200000,
-        "LIMIT_EXCEEDED",
-        "Expanded graph exceeds budget",
+      assertExpansionResource("visitedNodes", ++visited, limits, "traversal");
+      const nextWeight = pathWeight + segmentWeight(node.id);
+      assertExpansionResource("maxDepth", path.length + 1, limits, "traversal");
+      generatedCharacters += nextWeight + 1;
+      assertExpansionResource(
+        "generatedIdCharacters",
+        generatedCharacters,
+        limits,
+        "traversal",
       );
+      if (node.kind !== "submodel") {
+        assertExpansionResource(
+          "leafCount",
+          out.length + 1,
+          limits,
+          "traversal",
+        );
+        retainedCharacters += nextWeight + 1;
+        pathSlots += path.length + 1;
+        assertExpansionResource(
+          "retainedIdCharacters",
+          retainedCharacters,
+          limits,
+          "traversal",
+        );
+        assertExpansionResource("pathSlots", pathSlots, limits, "traversal");
+      }
       const np = [...path, node.id],
         id = encodePath(np),
         world = compose(t, node.transform),
         c = node.colorCode === "16" ? color : node.colorCode;
       if (node.kind === "submodel") {
-        walk(node.ref, np, world, c, next);
+        walk(node.ref, np, world, c, next, nextWeight);
         continue;
       }
-      ensure(
-        out.length < 100000,
-        "LIMIT_EXCEEDED",
-        "Expanded occurrences exceed 100,000",
-      );
       const layerId = p.layerAssignments[id] || p.defaultLayerId;
       ensure(p.layers[layerId], "INVALID_INPUT", "Unknown layer assignment");
       out.push({
@@ -107,10 +157,11 @@ export function occurrences(p: Project): Occurrence[] {
       });
     }
   };
-  walk(p.rootModelId, [], identity(), "16", new Set());
+  walk(p.rootModelId, [], identity(), "16", new Set(), 0);
   return out;
 }
-export function validateDocument(p: Project) {
+/** Validate authoritative source without allocating its expanded scene. */
+export function validateSourceDocument(p: Project): void {
   if (p.metadata.preamble !== undefined) {
     ensure(
       Array.isArray(p.metadata.preamble) &&
@@ -253,19 +304,69 @@ export function validateDocument(p: Project) {
       );
     }
   }
-  const done = new Set<string>();
-  const check = (id: string, stack: Set<string>) => {
-    ensure(!stack.has(id), "REFERENCE_CYCLE", "Cyclic definition");
-    if (done.has(id)) return;
-    ensure(stack.size < 64, "LIMIT_EXCEEDED", "Reference depth exceeds 64");
-    const next = new Set(stack).add(id);
+  // Cache subtree height, not only visitation: a shared suffix reached later
+  // through a deeper prefix must still obey the reference-depth limit.
+  const heights = new Map<string, number>();
+  const active = new Set<string>();
+  const check = (id: string): number => {
+    ensure(!active.has(id), "REFERENCE_CYCLE", "Cyclic definition");
+    ensure(active.size < 64, "LIMIT_EXCEEDED", "Reference depth exceeds 64");
+    const cached = heights.get(id);
+    if (cached !== undefined) {
+      ensure(
+        active.size + cached <= 64,
+        "LIMIT_EXCEEDED",
+        "Reference depth exceeds 64",
+      );
+      return cached;
+    }
+    active.add(id);
+    let height = 1;
     for (const n of p.models[id].nodes)
-      if (n.kind !== "geometry" && p.models[n.ref]) check(n.ref, next);
-    done.add(id);
+      if (n.kind !== "geometry" && Object.hasOwn(p.models, n.ref))
+        height = Math.max(height, 1 + check(n.ref));
+    active.delete(id);
+    heights.set(id, height);
+    return height;
   };
-  for (const id of Object.keys(p.models)) check(id, new Set());
-  const expanded = occurrences(p),
-    occurrenceIds = new Set(expanded.map((o) => o.id));
+  for (const id of Object.keys(p.models)) check(id);
+  const estimate = estimateExpansion(p, {
+    ceilings: { leafCount: 100000, visitedNodes: 200000 },
+  });
+  ensure(
+    !estimate.saturated.leafCount,
+    "LIMIT_EXCEEDED",
+    "Expanded occurrences exceed 100,000",
+  );
+  ensure(
+    !estimate.saturated.visitedNodes,
+    "LIMIT_EXCEEDED",
+    "Expanded graph exceeds budget",
+  );
+  // Resolve only supplied metadata paths, stopping at physical-part boundaries.
+  // Shared definitions are indexed once; no expanded ID set is required.
+  const indexes = new Map(
+    Object.entries(p.models).map(
+      ([id, model]) =>
+        [id, new Map(model.nodes.map((node) => [node.id, node]))] as const,
+    ),
+  );
+  const isLeaf = (id: string): boolean => {
+    if (!isOccurrenceId(id)) return false;
+    const path = JSON.parse(id) as string[];
+    let modelId = p.rootModelId;
+    for (let i = 0; i < path.length; i++) {
+      const node = indexes.get(modelId)?.get(path[i]);
+      if (!node) return false;
+      if (i === path.length - 1) return node.kind !== "submodel";
+      if (node.kind !== "submodel") return false;
+      modelId = node.ref;
+    }
+    return false;
+  };
+  for (const [id, layerId] of Object.entries(p.layerAssignments))
+    if (isLeaf(id))
+      ensure(p.layers[layerId], "INVALID_INPUT", "Unknown layer assignment");
   for (const plan of Object.values(p.instructionPlans)) {
     ensure(
       !plan.stepMetadata || plan.stepMetadata.length === plan.steps.length,
@@ -276,7 +377,7 @@ export function validateDocument(p: Project) {
     for (const step of plan.steps)
       for (const id of step) {
         ensure(
-          occurrenceIds.has(id) && !introduced.has(id),
+          isLeaf(id) && !introduced.has(id),
           "INVALID_INPUT",
           "Instruction plan contains a missing or repeated occurrence.",
         );
@@ -285,5 +386,9 @@ export function validateDocument(p: Project) {
     for (const metadata of plan.stepMetadata ?? [])
       if (metadata.camera) validateInstructionCamera(metadata.camera);
   }
-  return expanded;
+}
+/** Compatibility entry point for callers requiring a materializable scene. */
+export function validateDocument(p: Project): Occurrence[] {
+  validateSourceDocument(p);
+  return occurrences(p);
 }
