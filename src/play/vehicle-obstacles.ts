@@ -197,10 +197,21 @@ export class DrivingObstacleSnapshot {
     boxes: readonly DrivingBox[],
     from: DrivingPose,
     to: DrivingPose,
-    budget: { queries?: number; candidates?: number } = {},
+    budget: {
+      queries?: number;
+      candidates?: number;
+      allowVertical?: boolean;
+    } = {},
   ): ObstacleSweep {
     // Validate pose/proxy inputs even when the broadphase finds no candidates.
-    const empty = sweepDrivingBoxes(rigId, boxes, from, to, []);
+    const empty = sweepDrivingBoxes(
+      rigId,
+      boxes,
+      from,
+      to,
+      [],
+      budget.allowVertical,
+    );
     const queryBudget = budget.queries ?? 16384,
       candidateBudget = budget.candidates ?? 512;
     ensure(
@@ -228,8 +239,14 @@ export class DrivingObstacleSnapshot {
           Math.abs(box.center[2]) + box.halfExtents[2],
         ),
       );
-      low = Math.min(low, from.y + box.center[1] - box.halfExtents[1]);
-      high = Math.max(high, from.y + box.center[1] + box.halfExtents[1]);
+      low = Math.min(
+        low,
+        Math.min(from.y, to.y) + box.center[1] - box.halfExtents[1],
+      );
+      high = Math.max(
+        high,
+        Math.max(from.y, to.y) + box.center[1] + box.halfExtents[1],
+      );
     }
     // Include conservative yaw-envelope overshoot, not only the true geometry.
     const padding = Math.SQRT2 * 0.005 + 0.00001;
@@ -312,7 +329,14 @@ export class DrivingObstacleSnapshot {
         });
         return { collider, owner: source.owner };
       });
-      const result = sweepDrivingBoxes(rigId, boxes, from, to, obstacles);
+      const result = sweepDrivingBoxes(
+        rigId,
+        boxes,
+        from,
+        to,
+        obstacles,
+        budget.allowVertical,
+      );
       // Handles belong to the temporary world; expose stable source provenance.
       const { colliderHandle, ...sweep } = result;
       return {

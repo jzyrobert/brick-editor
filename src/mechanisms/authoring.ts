@@ -8,7 +8,7 @@ import {
 import { occurrences } from "../core/document";
 import { add, inverse, mv, physical } from "../core/math";
 import { KinematicSession, validateRig } from "./kinematic";
-import type { JointSpec, MotionRig, RigidGroup } from "./types";
+import type { DriverSeatSpec, JointSpec, MotionRig, RigidGroup } from "./types";
 
 export type GroupDraft = {
   id: string;
@@ -41,6 +41,7 @@ export type JointRigRequest = IdentityDraft & {
   motor?: JointSpec["motor"];
 };
 export type VehicleRigRequest = IdentityDraft & {
+  driverSeat?: DriverSeatSpec;
   chassis: GroupDraft;
   wheels: Array<
     GroupDraft & { axisLocal: Vec3; radius: number; steering: boolean }
@@ -313,6 +314,7 @@ export function buildVehicleRig(
     "wheelbase",
     "maxSteerDegrees",
     "maxSpeed",
+    "driverSeat",
   ]);
   start(project, request);
   ensure(
@@ -360,8 +362,47 @@ export function buildVehicleRig(
       wheelbase: request.wheelbase,
       maxSteerDegrees: request.maxSteerDegrees,
       maxSpeed: request.maxSpeed,
+      ...(request.driverSeat !== undefined
+        ? { driverSeat: structuredClone(request.driverSeat) }
+        : {}),
     },
   });
+}
+/** Update only seat metadata, preserving all authored vehicle geometry and mechanics. */
+export function buildDriverSeatDraft(
+  project: Project,
+  request: {
+    rigId: string;
+    expectedRevision: number;
+    driverSeat: DriverSeatSpec | null;
+    includeHidden?: boolean;
+    activeLayerId?: string;
+  },
+): RigDraft {
+  fields(request, [
+    "rigId",
+    "expectedRevision",
+    "driverSeat",
+    "includeHidden",
+    "activeLayerId",
+  ]);
+  const existing = project.motionRigs[request.rigId];
+  ensure(
+    existing?.vehicle,
+    "INVALID_INPUT",
+    "Choose an existing vehicle rig for a driver seat",
+  );
+  ensure(
+    request.driverSeat !== undefined,
+    "INVALID_INPUT",
+    "Supply driver seat metadata or null to remove it",
+  );
+  const identity = { ...request, id: existing.id, name: existing.name };
+  start(project, identity);
+  const rig = structuredClone(existing);
+  if (request.driverSeat === null) delete rig.vehicle!.driverSeat;
+  else rig.vehicle!.driverSeat = structuredClone(request.driverSeat);
+  return finish(project, identity, rig);
 }
 export type RigAuthoringRequest =
   | { kind: "joint"; request: JointRigRequest }
@@ -449,6 +490,9 @@ export function rigAuthoringRequest(
       wheelbase: v.wheelbase,
       maxSteerDegrees: v.maxSteerDegrees,
       maxSpeed: v.maxSpeed,
+      ...(v.driverSeat !== undefined
+        ? { driverSeat: structuredClone(v.driverSeat) }
+        : {}),
     };
     ensureLosslessRig(rig, buildVehicleRig(project, request).rig);
     return { kind: "vehicle", request };

@@ -116,6 +116,12 @@
       "maxItems": 3,
       "minItems": 3
     },
+    "positionAnchor": {
+      "enum": [
+        "standing-feet",
+        "seated-avatar-root"
+      ]
+    },
     "velocity": {
       "type": "array",
       "items": {
@@ -239,7 +245,8 @@
             "walk",
             "run",
             "jump",
-            "fall"
+            "fall",
+            "seated"
           ]
         },
         "heading": {
@@ -273,6 +280,65 @@
         "rightHip",
         "leftShoulder",
         "rightShoulder"
+      ],
+      "additionalProperties": false
+    },
+    "occupancy": {
+      "type": "object",
+      "properties": {
+        "rigId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "seatId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "profile": {
+          "const": "brick-figure-open-seat-v1"
+        },
+        "pelvisWorldLdu": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "avatarRootWorldLdu": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "effectiveEyeWorldLdu": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "localLookYaw": {
+          "type": "number"
+        },
+        "localLookPitch": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "rigId",
+        "seatId",
+        "profile",
+        "pelvisWorldLdu",
+        "avatarRootWorldLdu",
+        "effectiveEyeWorldLdu",
+        "localLookYaw",
+        "localLookPitch"
       ],
       "additionalProperties": false
     },
@@ -956,6 +1022,7 @@
     "sourceRevision",
     "tick",
     "position",
+    "positionAnchor",
     "velocity",
     "yaw",
     "pitch",

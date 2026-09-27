@@ -1,3 +1,4 @@
+import { PlaySeatEntry } from "./PlaySeatEntry";
 import { PlayWorldSettings } from "./PlayWorldSettings";
 import type { Layer } from "../core/types";
 import { PlaySettings } from "./PlaySettings";
@@ -333,6 +334,7 @@ export function PlayPanel({
       </div>
     );
   const report = state.report!;
+  const occupied = report.occupancy;
   const mechanisms =
     report.mechanisms ??
     (report.mechanism ? { [report.mechanism.rigId]: report.mechanism } : {});
@@ -343,22 +345,37 @@ export function PlayPanel({
     : nearbyRigId && mechanisms[nearbyRigId]
       ? nearbyRigId
       : activeRigs[0]?.id;
-  const nearbyReport = state.vehicleControl
-    ? mechanisms[state.vehicleControl]
-    : nearbyRigId
-      ? mechanisms[nearbyRigId]
-      : report.mechanism;
+  const seatRig =
+    state.interaction?.kind === "vehicle" &&
+    rigs[state.interaction.rigId]?.vehicle?.driverSeat
+      ? rigs[state.interaction.rigId]
+      : undefined;
+  const nearbyReport = occupied
+    ? mechanisms[occupied.rigId]
+    : state.vehicleControl
+      ? mechanisms[state.vehicleControl]
+      : nearbyRigId
+        ? mechanisms[nearbyRigId]
+        : report.mechanism;
 
   return (
-    <div className={"play-overlay" + (state.paused ? " is-paused" : "")}>
+    <div
+      className={
+        "play-overlay" +
+        (state.paused ? " is-paused" : "") +
+        (occupied ? " is-seated" : "")
+      }
+    >
       <div className="play-top">
         <div>
           <strong>
-            {state.vehicleControl
-              ? "Controlling vehicle · on foot"
-              : report.locomotion === "walk"
-                ? "Walking"
-                : "Flying · pass through walls"}
+            {occupied
+              ? "Driving · " + (rigs[occupied.rigId]?.name ?? "driver seat")
+              : state.vehicleControl
+                ? "Controlling vehicle · on foot"
+                : report.locomotion === "walk"
+                  ? "Walking"
+                  : "Flying · pass through walls"}
           </strong>
           <small>
             {report.cameraMode === "first-person"
@@ -420,9 +437,10 @@ export function PlayPanel({
           <h2>Take a breather.</h2>
           <p>Movement is paused.</p>
           <button className="primary" onClick={() => play.pause(false)}>
-            Resume exploring
+            {occupied ? "Resume driving" : "Resume exploring"}
           </button>
           <button
+            disabled={!!occupied}
             onClick={() =>
               attempt(() => {
                 play.respawn();
@@ -452,8 +470,13 @@ export function PlayPanel({
         <>
           <div className="play-hint">
             {bindings.forward || "—"}/{bindings.left || "—"}/
-            {bindings.backward || "—"}/{bindings.right || "—"} move · drag to
-            look · {bindings.jump || "—"} jump · {bindings.fly || "—"} fly ·{" "}
+            {bindings.backward || "—"}/{bindings.right || "—"}{" "}
+            {occupied ? "drive" : "move"} · drag to look ·{" "}
+            {!occupied && (
+              <>
+                {bindings.jump || "—"} jump · {bindings.fly || "—"} fly ·{" "}
+              </>
+            )}
             {bindings.camera || "—"} camera · {bindings.interact || "—"}{" "}
             interact
           </div>
@@ -477,10 +500,10 @@ export function PlayPanel({
                 transform: `translate(${stick[0] * 30}px,${-stick[1] * 30}px)`,
               }}
             >
-              {state.vehicleControl ? "Drive" : "Move"}
+              {state.vehicleControl || occupied ? "Drive" : "Move"}
             </span>
           </div>
-          {!state.vehicleControl && (
+          {!state.vehicleControl && !occupied && (
             <div className="play-actions">
               <button
                 aria-pressed={run}
@@ -543,19 +566,21 @@ export function PlayPanel({
         </>
       )}
       <div className="play-bottom">
-        <button
-          onClick={() =>
-            attempt(() =>
-              play.setLocomotion(
-                report.locomotion === "walk" ? "fly-noclip" : "walk",
-              ),
-            )
-          }
-        >
-          {report.locomotion === "walk"
-            ? "Fly through walls"
-            : "Switch to Walk"}
-        </button>
+        {!occupied && (
+          <button
+            onClick={() =>
+              attempt(() =>
+                play.setLocomotion(
+                  report.locomotion === "walk" ? "fly-noclip" : "walk",
+                ),
+              )
+            }
+          >
+            {report.locomotion === "walk"
+              ? "Fly through walls"
+              : "Switch to Walk"}
+          </button>
+        )}
         <button
           onClick={() =>
             attempt(() =>
@@ -585,45 +610,85 @@ export function PlayPanel({
         </button>
       </div>
       {!state.paused &&
-        (!remoteOpen || state.vehicleControl) &&
-        (state.interaction || state.vehicleControl) && (
+        (!remoteOpen || state.vehicleControl || occupied) &&
+        (state.interaction || state.vehicleControl || occupied) && (
           <div className="play-interaction">
-            <button
-              disabled={!state.vehicleControl && !state.interaction?.available}
-              onClick={() => {
-                clear();
-                attempt(() => play.interact());
-              }}
-            >
-              {state.vehicleControl
-                ? "Release vehicle"
-                : state.interaction?.available
-                  ? state.interaction.label
-                  : state.interaction?.kind === "vehicle" &&
-                      state.interaction.blockedReason
-                    ? "Vehicle unavailable"
-                    : "Move closer to interact"}
-              {bindings.interact && <kbd>{bindings.interact}</kbd>}
-            </button>
-            <small>
-              {state.vehicleControl
-                ? "Joystick or movement keys drive and steer. You stay on foot; included walls and other rigs can stop the vehicle."
-                : state.interaction?.name}
-            </small>
-            {!state.vehicleControl && state.interaction?.progress && (
-              <small>{state.interaction.progress}</small>
-            )}
-            {!state.vehicleControl && state.interaction?.blockedReason ? (
-              <small role="status">{state.interaction.blockedReason}</small>
+            {occupied ? (
+              <>
+                <button
+                  onClick={() => {
+                    clear();
+                    attempt(() => play.exitVehicle({}));
+                  }}
+                >
+                  Exit vehicle
+                </button>
+                <small>
+                  Seated driver · use the joystick to drive and steer.
+                </small>
+                {message && <small role="status">{message}</small>}
+                {nearbyReport?.blocked && (
+                  <small role="status">{nearbyReport.blockedReason}</small>
+                )}
+              </>
+            ) : !state.vehicleControl && seatRig ? (
+              <PlaySeatEntry
+                play={play}
+                rig={seatRig}
+                report={report}
+                message={message}
+                eligibility={{
+                  eligible: state.interaction?.available ?? false,
+                  reason: state.interaction?.blockedReason,
+                }}
+                action={(fn) => {
+                  clear();
+                  attempt(fn);
+                }}
+              />
             ) : (
-              nearbyReport?.blocked && (
-                <small role="status">{nearbyReport.blockedReason}</small>
-              )
+              <>
+                <button
+                  disabled={
+                    !state.vehicleControl && !state.interaction?.available
+                  }
+                  onClick={() => {
+                    clear();
+                    attempt(() => play.interact());
+                  }}
+                >
+                  {state.vehicleControl
+                    ? "Release vehicle"
+                    : state.interaction?.available
+                      ? state.interaction.label
+                      : state.interaction?.kind === "vehicle" &&
+                          state.interaction.blockedReason
+                        ? "Vehicle unavailable"
+                        : "Move closer to interact"}
+                  {bindings.interact && <kbd>{bindings.interact}</kbd>}
+                </button>
+                <small>
+                  {state.vehicleControl
+                    ? "Joystick or movement keys drive and steer. You stay on foot; included walls and other rigs can stop the vehicle."
+                    : state.interaction?.name}
+                </small>
+                {!state.vehicleControl && state.interaction?.progress && (
+                  <small>{state.interaction.progress}</small>
+                )}
+                {!state.vehicleControl && state.interaction?.blockedReason ? (
+                  <small role="status">{state.interaction.blockedReason}</small>
+                ) : (
+                  nearbyReport?.blocked && (
+                    <small role="status">{nearbyReport.blockedReason}</small>
+                  )
+                )}
+              </>
             )}
           </div>
         )}
       {!state.paused &&
         !state.vehicleControl &&
+        !occupied &&
         activeRigId &&
         rigs[activeRigId] &&
         mechanisms[activeRigId] && (
@@ -640,11 +705,13 @@ export function PlayPanel({
             onError={setMessage}
           />
         )}
-      {message && (
-        <div className="play-message" role="status">
-          {message}
-        </div>
-      )}
+      {message &&
+        !occupied &&
+        !(seatRig && !state.vehicleControl && !remoteOpen) && (
+          <div className="play-message" role="status">
+            {message}
+          </div>
+        )}
     </div>
   );
 }

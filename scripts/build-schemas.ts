@@ -211,28 +211,69 @@ const motionRig = obj(
       minItems: 1,
     },
     joints: arr(joint, 100),
-    vehicle: obj({
-      chassisGroup: id,
-      wheels: {
-        ...arr(
-          obj({
-            groupId: id,
-            axis: vec,
-            radius: { type: "number", minimum: 0.1 },
-            steering: { type: "boolean" },
-          }),
-          16,
-        ),
-        minItems: 2,
+    vehicle: obj(
+      {
+        chassisGroup: id,
+        wheels: {
+          ...arr(
+            obj({
+              groupId: id,
+              axis: vec,
+              radius: { type: "number", minimum: 0.1 },
+              steering: { type: "boolean" },
+            }),
+            16,
+          ),
+          minItems: 2,
+        },
+        wheelbase: { type: "number", minimum: 1 },
+        maxSteerDegrees: {
+          type: "number",
+          exclusiveMinimum: 0,
+          exclusiveMaximum: 80,
+        },
+        maxSpeed: { type: "number", exclusiveMinimum: 0, maximum: 10000 },
+        driverSeat: obj({
+          id: {
+            type: "string",
+            minLength: 1,
+            maxLength: 128,
+            not: { enum: ["__proto__", "constructor", "prototype"] },
+          },
+          profile: { const: "brick-figure-open-seat-v1" },
+          pelvisPosition: {
+            ...arr({ type: "number", minimum: -10000, maximum: 10000 }, 3),
+            minItems: 3,
+          },
+          yawDegrees: { type: "number", minimum: -360, maximum: 360 },
+          accessPoint: {
+            ...arr({ type: "number", minimum: -10000, maximum: 10000 }, 3),
+            minItems: 3,
+          },
+          approachPosition: {
+            ...arr({ type: "number", minimum: -10000, maximum: 10000 }, 3),
+            minItems: 3,
+          },
+          exits: {
+            ...arr(
+              obj({
+                position: {
+                  ...arr(
+                    { type: "number", minimum: -10000, maximum: 10000 },
+                    3,
+                  ),
+                  minItems: 3,
+                },
+                yawDegrees: { type: "number", minimum: -360, maximum: 360 },
+              }),
+              4,
+            ),
+            minItems: 1,
+          },
+        }),
       },
-      wheelbase: { type: "number", minimum: 1 },
-      maxSteerDegrees: {
-        type: "number",
-        exclusiveMinimum: 0,
-        exclusiveMaximum: 80,
-      },
-      maxSpeed: { type: "number", exclusiveMinimum: 0, maximum: 10000 },
-    }),
+      ["chassisGroup", "wheels", "wheelbase", "maxSteerDegrees", "maxSpeed"],
+    ),
   },
   ["schemaVersion", "id", "name", "mode", "groups", "joints"],
 );
@@ -615,7 +656,15 @@ const importRequest = {
       {
         format: { const: "template" },
         template: {
-          enum: ["blank", "room", "wall", "200", "explore", "mechanisms"],
+          enum: [
+            "blank",
+            "room",
+            "wall",
+            "200",
+            "explore",
+            "mechanisms",
+            "seated-vehicle",
+          ],
         },
       },
       ["format", "template"],
@@ -742,6 +791,11 @@ const playJointTargetReport = obj(
   },
   ["current", "target", "speed", "status", "units", "speedUnits"],
 );
+const playSeatRequest = obj({ rigId: id, seatId: id });
+const playSeatExit = obj(
+  { exitIndex: { type: "integer", minimum: 0, maximum: 3 } },
+  [],
+);
 const playSnapshot = obj({
   worldProfile: obj({
     ...playWorldProfile.properties,
@@ -756,6 +810,7 @@ const playSnapshot = obj({
   sourceRevision: integer,
   tick: integer,
   position: vec,
+  positionAnchor: { enum: ["standing-feet", "seated-avatar-root"] },
   velocity: vec,
   yaw: num,
   pitch: num,
@@ -784,7 +839,7 @@ const playSnapshot = obj({
   simulationHz: { const: 60 },
   warnings: arr(str),
   avatar: obj({
-    state: { enum: ["idle", "walk", "run", "jump", "fall"] },
+    state: { enum: ["idle", "walk", "run", "jump", "fall", "seated"] },
     heading: num,
     phase: num,
     headYaw: num,
@@ -793,6 +848,16 @@ const playSnapshot = obj({
     leftShoulder: num,
     rightShoulder: num,
   }),
+});
+playSnapshot.properties.occupancy = obj({
+  rigId: id,
+  seatId: id,
+  profile: { const: "brick-figure-open-seat-v1" },
+  pelvisWorldLdu: vec,
+  avatarRootWorldLdu: vec,
+  effectiveEyeWorldLdu: vec,
+  localLookYaw: num,
+  localLookPitch: num,
 });
 playSnapshot.properties.spawn = {
   ...playSpawn,
@@ -879,6 +944,9 @@ const api = {
       },
       ["throttle", "steering"],
     ),
+    "play.enterVehicle": { $ref: "playSeatRequest" },
+    "play.exitVehicle": { $ref: "playSeatExit" },
+    "play.vehicleSeatEligibility": { $ref: "playSeatRequest" },
     "play.teleport": { $ref: "playTeleport" },
     "play.stepTicks": { type: "integer", minimum: 0, maximum: 3600 },
     "play.setCameraMode": { enum: ["first-person", "third-person"] },
@@ -997,6 +1065,8 @@ const schemas = {
   playInput,
   playJointTarget,
   playTeleport,
+  playSeatRequest,
+  playSeatExit,
   playSnapshot,
   api,
   importRequest,

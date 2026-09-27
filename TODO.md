@@ -9,6 +9,10 @@ Deployment follow-up: GitHub HTTPS still failed certificate verification on 2026
 
 Suggested order for the next implementation pass:
 
+- [ ] Fix the reported Santorini MPD loading failure: raw faces currently exhaust renderer occurrence/variant budgets and trigger repeated whole-project compilation. Preserve source identities while compiling and batching raw geometry efficiently.
+
+- [x] Implement the authored open-bench driver-seat slice: collision-checked entry/exit, atomic rider/vehicle movement, seated visuals, API/capture reporting and mobile UX audit. Runtime, metadata editing, focused browser acceptance and an independent 8.7/10 mobile review pass; final integrated CI remains the publication gate.
+
 - [x] Reconcile occurrence-path schemas with valid nested documents, add aggregate request preflight and remove quadratic scope matching. Deep paths have a distinct canonical schema; ordinary IDs remain bounded.
 - [x] Guard aggregate expanded path storage/work before and during occurrence collection; preserve native backup and local recovery without materializing the scene.
 - [x] Open over-budget projects in a source-only recovery view with native/full-source backups; defer imported STEP derivation without dropping source records.

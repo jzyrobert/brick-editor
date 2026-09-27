@@ -4,7 +4,7 @@ The actual contract is the exported TypeScript API in `src/automation/api.ts` pl
 
 - `capabilities()` returns the machine-readable support report.
 - `ready({minRevision?, strict?})` awaits staged renderer updates and refuses missing/unsupported resources in strict mode.
-- `project.import({format:'ldraw', text, name?, strict?})`, `{format:'native', bytes:number[]}` or `{format:'template', template:'blank'|'room'|'wall'|'200'}` stages a new project and returns its revision. No user file is uploaded. A concurrent edit rejects the import.
+- `project.import({format:'ldraw', text, name?, strict?})`, `{format:'native', bytes:number[]}` or `{format:'template', template:'blank'|'room'|'wall'|'200'|'explore'|'mechanisms'|'seated-vehicle'}` stages a new project and returns its revision. No user file is uploaded. A concurrent edit rejects the import.
 - `project.export({format:'native'|'ldraw', scope?})` returns `{name,mimeType,bytes:Uint8Array}`. Native exports preserve the whole project. LDraw scope uses the inventory scope shape.
 - `query({ref?,colorCode?,layerId?,occurrenceIds?})` returns revision, semantic occurrences and diagnostics. Unimplemented spatial/connectivity queries are not advertised.
 - `dispatch({schemaVersion:1,commandId,expectedRevision,type,payload,dryRun?})` atomically changes the document. `dryRun` validates and returns counts without mutation/history/ledger entry.
@@ -54,7 +54,7 @@ Snapshots and result objects are copies. Never infer persistent IDs from rendere
 
 ## Play exploration
 
-`play.enter({realtime:false})` freezes the current rendered revision; manual fixed ticks are the API default. The UI uses realtime mode with bounded catch-up. Public positions are feet anchors in LDraw LDU (negative Y up); angles are radians. The declared 72 LDU capsule is never rescaled to a doorway. The Rapier engine is pinned and lazy-loaded.
+`play.enter({realtime:false})` freezes the current rendered revision; manual fixed ticks are the API default. The UI uses realtime mode with bounded catch-up. Public positions are in LDraw LDU (negative Y up); `positionAnchor` distinguishes standing feet from the virtual avatar root while seated. Angles are radians. The declared 72 LDU capsule is never rescaled to a doorway. The Rapier engine is pinned and lazy-loaded.
 
 ```js
 await api.play.enter({ position: [0, 0, 150], locomotion: "walk" });
@@ -151,3 +151,28 @@ Each 60 Hz tick advances the actual mechanism through the existing swept actor-c
 The contextual E/touch action uses 90 degrees/second or 40 LDU/second. Activating it while moving reverses the intended destination, including before the midpoint. A blocked contextual action retries the same destination after the explorer moves clear. Existing `play.setMechanismJoint` remains an immediate swept placement and cancels a queued target only for that joint.
 
 Pausing stops realtime advancement and retains targets for resume. Explicit `stepTicks` still advances a paused session for automation; capture's mutation lock rejects stepping and new targets. Exiting or replacing the session discards targets. The authored project, rest pose and exported source remain unchanged until an explicit apply-pose command.
+
+## Authored driver seats
+
+The `seated-vehicle` template provides an original open-bench example. A vehicle's optional `driverSeat` metadata specifies a pelvis anchor, access point, standing approach and 1–4 ordered standing exits in chassis-local LDU; its facing and exit yaw values use degrees. Native backups and vehicle edits preserve this data. Runtime occupancy is separate and is never stored as a source part or inventory item.
+
+```js
+await api.project.import({ format: "template", template: "seated-vehicle" });
+await api.ready();
+await api.play.enter({ rigId: "vehicle", position: [80, -0.3, -188] });
+const seat = { rigId: "vehicle", seatId: "driver" };
+const eligibility = await api.play.vehicleSeatEligibility(seat);
+if (eligibility.eligible) {
+  await api.play.enterVehicle(seat);
+  await api.play.setInput({ moveZ: 1, moveX: 0.2 });
+  await api.play.stepTicks(30);
+  await api.play.setInput({});
+  await api.play.exitVehicle();
+}
+```
+
+`vehicleSeatEligibility` performs the complete current entry validation and returns `{eligible,rigId,seatId,reason?}`. Entry checks again, so a later world change may invalidate an earlier result. The per-frame contextual UI uses a cheaper reach/access hint and reports any final entry refusal. `exitVehicle({exitIndex?})` tries the explicit index when supplied, otherwise the authored order. A blocked exit stops input but retains occupancy; reposition and retry, or exit Play. Unsafe entry leaves the actor and vehicle unchanged.
+
+While occupied, `positionAnchor` is `seated-avatar-root`, `avatar.state` is `seated`, and `occupancy` contains `rigId`, `seatId`, `profile`, `pelvisWorldLdu`, `avatarRootWorldLdu`, `effectiveEyeWorldLdu`, `localLookYaw` and `localLookPitch`. The last two are radians. Movement input controls the vehicle while look remains relative to it. The eye is fixed by the explicit seated profile; standing eye-height settings apply again after exit. Fly, teleport and spawn changes require leaving the seat first. Entry, exit and movement obey the capture mutation lock.
+
+See [vehicle profile and boundaries](PLAY-VEHICLES.md) for collision policy and supported geometry. These seats use upright unarticulated kinematics and rigid straight-leg figures; they do not imply inferred seats, arbitrary cabin fit, general moving-platform support or dynamic suspension.

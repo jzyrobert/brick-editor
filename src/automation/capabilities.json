@@ -80,7 +80,8 @@
         "workerCancellation": true
       },
       "rigAuthoringUI": "create/edit/remove representable single-joint or pure planar vehicle rigs; preserved frames, axes, IDs, limits and motor metadata",
-      "sourceOnlyAdmission": "Source-valid projects above derived occurrence budgets retain native/LDraw backup and local recovery; derived editing, rendering and Play refuse with structured limits"
+      "sourceOnlyAdmission": "Source-valid projects above derived occurrence budgets retain native/LDraw backup and local recovery; derived editing, rendering and Play refuse with structured limits",
+      "driverSeatMetadataUI": true
     },
     "inventory": {
       "format": "bricklink-wanted-xml",
@@ -134,7 +135,7 @@
       "coverage": "See docs/STATUS.md and Play acceptance tests; not universal model traversability",
       "kinematicMechanisms": true,
       "movingKinematicColliders": true,
-      "movingColliderPolicy": "Authored rigid-group triangle surfaces; conservatively stop before touching walking actor; no riding, pushing or vehicle/world dynamics",
+      "movingColliderPolicy": "Authored rigid-group triangle surfaces; conservatively stop before touching walking or seated actor; certified own-vehicle seated attachment; no pushing or dynamic response",
       "cameraSettings": true,
       "validatedSessionSpawns": true,
       "remappablePlayKeys": true,
@@ -145,7 +146,7 @@
         "maxGroups": 128,
         "maxMovingTriangles": 200000
       },
-      "nearbyInteraction": "E/touch authored joint toggle and remote vehicle control; no seated entry or riding",
+      "nearbyInteraction": "E/touch authored joint toggle, remote vehicle control, and explicit authored driver-seat entry/exit",
       "jointTargetAnimation": {
         "fixedTickHz": 60,
         "kinds": ["revolute", "prismatic"],
@@ -166,7 +167,16 @@
         "profile": "source-boxes-v1",
         "policy": "Conservative swept chassis and wheel envelopes against complete included static and foreign-rig triangle geometry; refuse unsupported geometry or exhausted query budgets",
         "dynamicResponse": false,
-        "riding": false
+        "riding": true
+      },
+      "seatedVehicles": {
+        "profile": "brick-figure-open-seat-v1",
+        "authoring": "Explicit chassis-local pelvis/access/approach and 1\u20134 ordered standing exits; metadata review and undoable save",
+        "body": "Independent compound boxes enclosing original rigid straight-leg seated visual; no mesh-derived physics",
+        "entry": "Reach, access ray, supported approach, wheel-envelope clearance and swept raised transfer; refuse before mutation",
+        "driving": "Conservative vehicle and rider sweeps; retain accepted poses when blocked",
+        "exit": "Current-frame authored exits with real walkable support and swept transfer; blocked exit retains occupancy",
+        "scope": "Supported upright unarticulated chassis/wheel rigs only; no inferred seats, low cabins, general platform riding or dynamic suspension"
       }
     },
     "sharing": {

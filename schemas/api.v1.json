@@ -268,6 +268,66 @@
           "const": "1.0"
         },
         "method": {
+          "const": "play.enterVehicle"
+        },
+        "input": {
+          "$ref": "playSeatRequest"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "play.exitVehicle"
+        },
+        "input": {
+          "$ref": "playSeatExit"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "play.vehicleSeatEligibility"
+        },
+        "input": {
+          "$ref": "playSeatRequest"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "play.teleport"
         },
         "input": {

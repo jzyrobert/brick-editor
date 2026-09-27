@@ -2,6 +2,7 @@ import { LimitedSource } from "./LimitedSource";
 import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
 import { RigAuthoring } from "./RigAuthoring";
+import { SeatAuthoring } from "./SeatAuthoring";
 import { ShortcutSettings } from "./ShortcutSettings";
 import {
   loadShortcuts,
@@ -2197,20 +2198,23 @@ function Workspace() {
                     "200",
                     "explore",
                     "mechanisms",
+                    "seated-vehicle",
                   ] as const
                 ).map((t) => (
                   <button key={t} onClick={() => void useTemplate(t)}>
-                    {t === "mechanisms"
-                      ? "Door & vehicle"
-                      : t === "explore"
-                        ? "Exploration room"
-                        : t === "blank"
-                          ? "Blank canvas"
-                          : t === "room"
-                            ? "Courtyard studio"
-                            : t === "wall"
-                              ? "Simple wall"
-                              : "200-part build"}
+                    {t === "seated-vehicle"
+                      ? "Open-bench vehicle"
+                      : t === "mechanisms"
+                        ? "Door & vehicle"
+                        : t === "explore"
+                          ? "Exploration room"
+                          : t === "blank"
+                            ? "Blank canvas"
+                            : t === "room"
+                              ? "Courtyard studio"
+                              : t === "wall"
+                                ? "Simple wall"
+                                : "200-part build"}
                   </button>
                 ))}
               </div>
@@ -2313,6 +2317,10 @@ function Workspace() {
               selection={selection}
               activeLayerId={crossLayer ? undefined : activeLayer}
               onSelect={setSelectionSafe}
+            />
+            <SeatAuthoring
+              editor={editor}
+              activeLayerId={crossLayer ? undefined : activeLayer}
             />
           </div>
           {panel === "Inspector" ? (

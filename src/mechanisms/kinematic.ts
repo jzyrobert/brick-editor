@@ -264,6 +264,7 @@ export function validateRig(
       "wheelbase",
       "maxSteerDegrees",
       "maxSpeed",
+      "driverSeat",
     ]);
     ensure(
       ids.has(v.chassisGroup) && !parent.has(v.chassisGroup),
@@ -287,6 +288,42 @@ export function validateRig(
       "INVALID_INPUT",
       "Vehicle requires 2–16 authored wheel groups.",
     );
+    if (v.driverSeat !== undefined) {
+      const seat = v.driverSeat;
+      fields(seat, [
+        "id",
+        "profile",
+        "pelvisPosition",
+        "yawDegrees",
+        "accessPoint",
+        "approachPosition",
+        "exits",
+      ]);
+      const point = (p: unknown) =>
+        vector(p) && p.every((x) => Math.abs(x) <= 10000);
+      const yaw = (n: unknown) => finite(n) && Math.abs(n) <= 360;
+      ensure(
+        safeId(seat.id) &&
+          seat.profile === "brick-figure-open-seat-v1" &&
+          point(seat.pelvisPosition) &&
+          point(seat.accessPoint) &&
+          point(seat.approachPosition) &&
+          yaw(seat.yawDegrees) &&
+          Array.isArray(seat.exits) &&
+          seat.exits.length >= 1 &&
+          seat.exits.length <= 4,
+        "INVALID_INPUT",
+        "Driver seat requires a supported profile, bounded chassis-local positions, yaw and 1–4 ordered exits.",
+      );
+      for (const exit of seat.exits) {
+        fields(exit, ["position", "yawDegrees"]);
+        ensure(
+          point(exit.position) && yaw(exit.yawDegrees),
+          "INVALID_INPUT",
+          "Invalid driver seat exit position or yaw.",
+        );
+      }
+    }
     const wheels = new Set<string>();
     for (const w of v.wheels) {
       fields(w, ["groupId", "axis", "radius", "steering"]);

@@ -1,3 +1,4 @@
+import { seatPoint } from "./vehicle-seat";
 import {
   resolvePlayWorldProfile,
   validatePlayWorldProfile,
@@ -15,6 +16,7 @@ import type {
   PlaySnapshotReport,
   PlayCameraSettings,
   PlaySpawnRequest,
+  PlaySeatRequest,
 } from "./types";
 import type { PlaySession } from "./session";
 import { nearbyInteraction, type PlayInteraction } from "./interaction";
@@ -261,6 +263,7 @@ export class BrowserPlay {
     };
   }
   private nearby(report: PlaySnapshotReport) {
+    if (report.occupancy) return undefined;
     const rigs = this.project?.().motionRigs ?? {};
     return Object.keys(
       report.mechanisms ??
@@ -275,7 +278,32 @@ export class BrowserPlay {
             )
           : [],
       )
-      .sort((a, b) => a.distance - b.distance)[0];
+      .map((target) => {
+        const seat = rigs[target.rigId]?.vehicle?.driverSeat;
+        if (target.kind !== "vehicle" || !seat) return target;
+        const mechanism = report.mechanisms?.[target.rigId] ?? report.mechanism;
+        const frame =
+          mechanism!.groupFrames[rigs[target.rigId].vehicle!.chassisGroup];
+        const access = seatPoint(frame, seat.accessPoint);
+        const distance = Math.hypot(
+          ...access.map((value, index) => value - report.position[index]),
+        );
+        const eligibility = this.current().seatInteractionHint({
+          rigId: target.rigId,
+          seatId: seat.id,
+        });
+        return {
+          ...target,
+          label: "Enter driver seat",
+          distance,
+          available: eligibility.eligible,
+          blockedReason: eligibility.reason,
+        };
+      })
+      .sort(
+        (a, b) =>
+          Number(b.available) - Number(a.available) || a.distance - b.distance,
+      )[0];
   }
 
   private schedule() {
@@ -456,6 +484,49 @@ export class BrowserPlay {
       this.draw();
     };
   }
+  vehicleSeatEligibility(request: PlaySeatRequest) {
+    return this.current().vehicleSeatEligibility(request);
+  }
+  enterVehicle(request: PlaySeatRequest) {
+    this.assertMutable();
+    const report = this.current().enterVehicle(request);
+    this.held = {};
+    this.emit({ vehicleControl: undefined });
+    this.draw();
+    this.emit();
+    return report;
+  }
+  exitVehicle(input: { exitIndex?: number } = {}) {
+    this.assertMutable();
+    try {
+      const report = this.current().exitVehicle(input);
+      this.held = {};
+      this.draw();
+      this.emit();
+      return report;
+    } catch (error) {
+      this.held = {};
+      this.draw();
+      this.emit();
+      throw error;
+    }
+  }
+  controlVehicle(rigId: string) {
+    this.assertMutable();
+    const report = this.current().snapshot();
+    ensure(!report.occupancy, "INVALID_INPUT", "Exit vehicle first");
+    const mechanism =
+      report.mechanisms?.[rigId] ??
+      (report.mechanism?.rigId === rigId ? report.mechanism : undefined);
+    ensure(
+      mechanism?.pose.vehicle &&
+        mechanism.vehicleCollision?.supported !== false,
+      "INVALID_INPUT",
+      mechanism?.vehicleCollision?.reason ?? "Unknown supported active vehicle",
+    );
+    this.clearInput();
+    this.emit({ vehicleControl: rigId });
+  }
   releaseVehicle() {
     this.assertMutable();
     if (!this.state.vehicleControl) return;
@@ -466,6 +537,10 @@ export class BrowserPlay {
     this.assertMutable();
     ensure(!this.state.paused, "INVALID_INPUT", "Resume Play to interact");
     const report = this.current().snapshot();
+    if (report.occupancy) {
+      this.exitVehicle();
+      return;
+    }
     if (this.state.vehicleControl) {
       this.releaseVehicle();
       return;
@@ -477,8 +552,12 @@ export class BrowserPlay {
       target?.blockedReason ?? "Move closer to the authored joint or vehicle",
     );
     this.clearInput();
-    if (target.kind === "vehicle") this.emit({ vehicleControl: target.rigId });
-    else
+    if (target.kind === "vehicle") {
+      const seat =
+        this.project?.().motionRigs[target.rigId]?.vehicle?.driverSeat;
+      if (seat) this.enterVehicle({ rigId: target.rigId, seatId: seat.id });
+      else this.controlVehicle(target.rigId);
+    } else
       this.setJointTarget({
         rigId: target.rigId,
         jointId: target.jointId,

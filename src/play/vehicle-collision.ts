@@ -141,6 +141,7 @@ export function sweepDrivingBoxes(
   from: DrivingPose,
   to: DrivingPose,
   obstacles: readonly DrivingObstacle[],
+  allowVertical = false,
 ): DrivingSweep {
   ensure(
     boxes.length > 0 &&
@@ -156,9 +157,9 @@ export function sweepDrivingBoxes(
           Number.isFinite(n) &&
           Math.abs(n) <= DRIVING_QUERY_DOMAIN.maxAbsYawRadians,
       ) &&
-      Math.hypot(to.x - from.x, to.z - from.z) <=
+      Math.hypot(to.x - from.x, to.y - from.y, to.z - from.z) <=
         DRIVING_QUERY_DOMAIN.maxTranslationMetres &&
-      from.y === to.y,
+      (allowVertical || from.y === to.y),
     "INVALID_INPUT",
     "Driving sweep requires bounded finite planar poses at constant height",
   );
@@ -225,7 +226,7 @@ export function sweepDrivingBoxes(
     const rot = yawRotation(yaw);
     const velocity = {
       x: (to.x - from.x) / segments,
-      y: 0,
+      y: (to.y - from.y) / segments,
       z: (to.z - from.z) / segments,
     };
     const margin = radius * Math.abs(angle / segments);
@@ -235,7 +236,7 @@ export function sweepDrivingBoxes(
       );
       const position = {
         x: from.x + (to.x - from.x) * fraction + center.x,
-        y: from.y + center.y,
+        y: from.y + (to.y - from.y) * fraction + center.y,
         z: from.z + (to.z - from.z) * fraction + center.z,
       };
       const shape = new RAPIER.Cuboid(
@@ -243,7 +244,8 @@ export function sweepDrivingBoxes(
         box.halfExtents[1],
         box.halfExtents[2] + margin,
       );
-      const bottom = position.y - box.halfExtents[1];
+      const bottom =
+        Math.min(position.y, position.y + velocity.y) - box.halfExtents[1];
       for (let i = 0; i < foreign.length; i++) {
         const collider = foreign[i].collider;
         // Every point of this collider lies below the proxy throughout planar

@@ -453,6 +453,101 @@
           "type": "number",
           "exclusiveMinimum": 0,
           "maximum": 10000
+        },
+        "driverSeat": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "not": {
+                "enum": [
+                  "__proto__",
+                  "constructor",
+                  "prototype"
+                ]
+              }
+            },
+            "profile": {
+              "const": "brick-figure-open-seat-v1"
+            },
+            "pelvisPosition": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": -10000,
+                "maximum": 10000
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "yawDegrees": {
+              "type": "number",
+              "minimum": -360,
+              "maximum": 360
+            },
+            "accessPoint": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": -10000,
+                "maximum": 10000
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "approachPosition": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": -10000,
+                "maximum": 10000
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "exits": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "position": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": -10000,
+                      "maximum": 10000
+                    },
+                    "maxItems": 3,
+                    "minItems": 3
+                  },
+                  "yawDegrees": {
+                    "type": "number",
+                    "minimum": -360,
+                    "maximum": 360
+                  }
+                },
+                "required": [
+                  "position",
+                  "yawDegrees"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 4,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "id",
+            "profile",
+            "pelvisPosition",
+            "yawDegrees",
+            "accessPoint",
+            "approachPosition",
+            "exits"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [

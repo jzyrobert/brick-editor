@@ -23,7 +23,19 @@ export type JointSpec = {
     maxEffort: { value: number; unit: "N" | "N*m" };
   };
 };
+/** All points are chassis-local LDU, with negative Y up. */
+export type DriverSeatSpec = {
+  id: string;
+  profile: "brick-figure-open-seat-v1";
+  pelvisPosition: Vec3;
+  yawDegrees: number;
+  accessPoint: Vec3;
+  approachPosition: Vec3;
+  /** Ordered standing-feet locations; the first safe exit wins. */
+  exits: Array<{ position: Vec3; yawDegrees: number }>;
+};
 export type VehicleSpec = {
+  driverSeat?: DriverSeatSpec;
   chassisGroup: string;
   wheels: Array<{
     groupId: string;

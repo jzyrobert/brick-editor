@@ -1,3 +1,20 @@
+import { add, mv } from "../core/math";
+import type { DriverSeatSpec } from "../mechanisms/types";
+import {
+  seatPoint,
+  seatYaw,
+  seatPlacement,
+  seatBodyBoxes,
+  seatBodyPose,
+  verifyWheelAttachment,
+  validateSeatTransfer,
+} from "./vehicle-seat";
+import { SEATED_VISUAL_POSE, type SeatedPlacement } from "./seated-profile";
+import type {
+  PlaySeatRequest,
+  PlaySeatEligibility,
+  PlayOccupancy,
+} from "./types";
 import { PlayVehicleWorld } from "./vehicle-world";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import { isOccurrenceId } from "../core/occurrence-id";
@@ -58,6 +75,18 @@ function keys(o: object, allowed: string[]) {
 export class PlaySession {
   private mechanisms = new Map<string, PlayMechanism>();
   private vehicleWorld?: PlayVehicleWorld;
+  private seatSources = new Map<
+    string,
+    { source: PlayMechanismSource; seat: DriverSeatSpec; chassisGroup: string }
+  >();
+  private occupied?: {
+    request: PlaySeatRequest;
+    placement: SeatedPlacement;
+    localLookYaw: number;
+    localLookPitch: number;
+  };
+  private seatedColliders: RAPIER.Collider[] = [];
+  private seatEligibilityCache?: { key: string; result: PlaySeatEligibility };
   private world: RAPIER.World;
   private collider: RAPIER.Collider;
   private controller: RAPIER.KinematicCharacterController;
@@ -177,6 +206,14 @@ export class PlaySession {
           new PlayMechanism(this.world, source, () => ({
             position: this.feet,
             walk: this.locomotion === "walk",
+            ...(this.occupied
+              ? {
+                  seat: {
+                    rigId: this.occupied.request.rigId,
+                    envelopes: this.occupied.placement.envelopes,
+                  },
+                }
+              : {}),
           })),
         );
       const sources = Array.isArray(mechanismSource)
@@ -209,6 +246,36 @@ export class PlaySession {
             (before, after) => this.vehicleWorld!.check(id, before, after),
             this.vehicleWorld.report(id),
           );
+        for (const source of sources) {
+          const vehicle = source.project.motionRigs[source.rigId].vehicle;
+          if (vehicle?.driverSeat)
+            this.seatSources.set(source.rigId, {
+              source,
+              seat: structuredClone(vehicle.driverSeat),
+              chassisGroup: vehicle.chassisGroup,
+            });
+          this.mechanisms.get(source.rigId)!.setRiderGuard((before, after) => {
+            if (this.occupied?.request.rigId !== source.rigId) return undefined;
+            const info = this.seatSources.get(source.rigId)!;
+            const old = seatPlacement(
+                before.groupFrames[info.chassisGroup],
+                info.seat,
+              ),
+              next = seatPlacement(
+                after.groupFrames[info.chassisGroup],
+                info.seat,
+              );
+            const result = this.vehicleWorld!.sweepBody(
+              seatBodyBoxes(),
+              seatBodyPose(old),
+              seatBodyPose(next),
+              source.rigId,
+            );
+            return result.accepted
+              ? undefined
+              : (result.reason ?? "Seated body motion is blocked");
+          });
+        }
       }
     } catch (error) {
       this.world.free();
@@ -388,6 +455,8 @@ export class PlaySession {
       undefined,
       undefined,
       this.collider,
+      undefined,
+      (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
     );
   }
   private findSafe(candidate: Vec3): Vec3 | undefined {
@@ -420,6 +489,8 @@ export class PlaySession {
         undefined,
         undefined,
         this.collider,
+        undefined,
+        (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
       );
       if (
         hit &&
@@ -434,6 +505,270 @@ export class PlaySession {
       }
     }
     return undefined;
+  }
+  private requireOnFoot() {
+    ensure(!this.occupied, "INVALID_INPUT", "Exit vehicle first");
+  }
+  private sweepStanding(a: Vec3, b: Vec3) {
+    if (!this.clear(a) || !this.clear(b)) return false;
+    const hit = this.world.castShape(
+      this.center(a),
+      rot,
+      physics(b.map((v, i) => v - a[i]) as Vec3),
+      this.capsule,
+      0,
+      1,
+      true,
+      undefined,
+      undefined,
+      this.collider,
+      undefined,
+      (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
+    );
+    return !hit;
+  }
+  private validateSeatRequest(request: PlaySeatRequest) {
+    ensure(
+      request && typeof request === "object" && !Array.isArray(request),
+      "INVALID_INPUT",
+      "Seat request must be an object",
+    );
+    keys(request, ["rigId", "seatId"]);
+    ensure(
+      [request.rigId, request.seatId].every(
+        (id) =>
+          typeof id === "string" && id.length > 0 && [...id].length <= 1024,
+      ),
+      "INVALID_INPUT",
+      "Seat request needs bounded rig and seat IDs",
+    );
+  }
+  private seatEntry(request: PlaySeatRequest, fullTransfer = true) {
+    this.validateSeatRequest(request);
+    this.alive();
+    this.requireOnFoot();
+    ensure(
+      this.locomotion === "walk" && this.ready,
+      "INVALID_INPUT",
+      "Driver seat entry requires Walk with complete collision",
+    );
+    const info = this.seatSources.get(request.rigId);
+    ensure(
+      info && info.seat.id === request.seatId,
+      "INVALID_INPUT",
+      "Unknown active driver seat",
+    );
+    const mechanism = this.mechanisms.get(request.rigId)!,
+      state = mechanism.snapshot();
+    ensure(
+      state.vehicleCollision?.supported,
+      "INVALID_INPUT",
+      state.vehicleCollision?.reason ??
+        "Vehicle does not support protected driving",
+    );
+    const frame = state.groupFrames[info.chassisGroup],
+      access = seatPoint(frame, info.seat.accessPoint);
+    ensure(
+      Math.hypot(...access.map((v, i) => v - this.feet[i])) <= 96,
+      "INVALID_INPUT",
+      "Move within 96 LDU of the driver seat access point",
+    );
+    const eye: Vec3 = [
+        this.feet[0],
+        this.feet[1] - this.cameraSettings.eyeHeight,
+        this.feet[2],
+      ],
+      delta = access.map((v, i) => v - eye[i]) as Vec3;
+    const ray = new RAPIER.Ray(physics(eye), physics(delta));
+    const obstruction = this.world.castRay(
+      ray,
+      1,
+      true,
+      undefined,
+      undefined,
+      this.collider,
+    );
+    ensure(
+      !obstruction || obstruction.timeOfImpact >= 0.999,
+      "INVALID_INPUT",
+      "Driver seat access is obstructed",
+    );
+    const approach = seatPoint(frame, info.seat.approachPosition),
+      placement = seatPlacement(frame, info.seat);
+    verifyWheelAttachment(info.source, state, placement);
+    // Eligibility is a preliminary access/profile hint. Only explicit entry
+    // performs every standing and staged-body transfer query against this tick.
+    if (!fullTransfer) return { info, placement };
+    this.validateSpawn({ position: approach });
+    ensure(
+      this.sweepStanding(this.feet, approach),
+      "INVALID_INPUT",
+      "Driver seat approach is blocked",
+    );
+    validateSeatTransfer(
+      this.vehicleWorld!,
+      approach,
+      placement,
+      false,
+      (a, b) => this.sweepStanding(a, b),
+    );
+    return { info, placement };
+  }
+  seatInteractionHint(request: PlaySeatRequest): PlaySeatEligibility {
+    this.validateSeatRequest(request);
+    this.alive();
+    try {
+      this.seatEntry(request, false);
+      return { ...request, eligible: true };
+    } catch (error) {
+      return {
+        ...request,
+        eligible: false,
+        reason:
+          error instanceof Error ? error.message : "Driver seat is unavailable",
+      };
+    }
+  }
+  vehicleSeatEligibility(request: PlaySeatRequest): PlaySeatEligibility {
+    this.validateSeatRequest(request);
+    this.alive();
+    const key = JSON.stringify([
+      request,
+      this.feet,
+      this.locomotion,
+      this.cameraSettings.eyeHeight,
+      this.occupied?.request,
+      [...this.mechanisms].map(([id, mechanism]) => [
+        id,
+        mechanism.snapshot().groupFrames,
+      ]),
+    ]);
+    if (this.seatEligibilityCache?.key === key)
+      return { ...this.seatEligibilityCache.result };
+    let result: PlaySeatEligibility;
+    try {
+      this.seatEntry(request);
+      result = { ...request, eligible: true };
+    } catch (error) {
+      result = {
+        ...request,
+        eligible: false,
+        reason:
+          error instanceof Error ? error.message : "Driver seat is unavailable",
+      };
+    }
+    this.seatEligibilityCache = { key, result };
+    return { ...result };
+  }
+  enterVehicle(request: PlaySeatRequest) {
+    const { placement } = this.seatEntry(request);
+    this.clearInput();
+    this.occupied = {
+      request: { ...request },
+      placement,
+      localLookYaw: 0,
+      localLookPitch: this.pitch,
+    };
+    this.collider.setEnabled(false);
+    for (const box of placement.envelopes)
+      this.seatedColliders.push(
+        this.world.createCollider(
+          RAPIER.ColliderDesc.cuboid(
+            ...(box.halfExtents.map((n) => n * S) as Vec3),
+          ).setSensor(true),
+        ),
+      );
+    this.updateOccupant();
+    this.previous = [...this.feet];
+    this.world.step();
+    this.updateArm(true);
+    return this.snapshot();
+  }
+  exitVehicle(input: { exitIndex?: number } = {}) {
+    this.alive();
+    ensure(this.occupied, "INVALID_INPUT", "Enter a driver seat first");
+    ensure(
+      input && typeof input === "object" && !Array.isArray(input),
+      "INVALID_INPUT",
+      "Exit request must be an object",
+    );
+    keys(input, ["exitIndex"]);
+    const info = this.seatSources.get(this.occupied.request.rigId)!,
+      frame = this.mechanisms.get(this.occupied.request.rigId)!.snapshot()
+        .groupFrames[info.chassisGroup];
+    ensure(
+      input.exitIndex === undefined ||
+        (Number.isInteger(input.exitIndex) &&
+          input.exitIndex >= 0 &&
+          input.exitIndex < info.seat.exits.length),
+      "INVALID_INPUT",
+      "Unknown driver seat exit",
+    );
+    this.clearInput();
+    let chosen: { position: Vec3; yaw: number } | undefined;
+    for (const index of input.exitIndex === undefined
+      ? info.seat.exits.map((_, i) => i)
+      : [input.exitIndex]) {
+      const exit = info.seat.exits[index],
+        position = seatPoint(frame, exit.position),
+        yaw = seatYaw(frame) + (exit.yawDegrees * Math.PI) / 180;
+      try {
+        this.validateSpawn({ position });
+        validateSeatTransfer(
+          this.vehicleWorld!,
+          position,
+          this.occupied.placement,
+          true,
+          (a, b) => this.sweepStanding(a, b),
+        );
+        chosen = { position, yaw };
+        break;
+      } catch {
+        /* Test the next explicitly authored exit, never invent a teleport. */
+      }
+    }
+    ensure(
+      chosen,
+      "INVALID_INPUT",
+      "Exit blocked — move the vehicle to a clear space",
+    );
+    for (const collider of this.seatedColliders)
+      this.world.removeCollider(collider, true);
+    this.seatedColliders = [];
+    this.occupied = undefined;
+    this.collider.setEnabled(true);
+    this.feet = [...chosen.position];
+    this.previous = [...this.feet];
+    this.yaw = chosen.yaw;
+    this.velocity = [0, 0, 0];
+    this.grounded = false;
+    this.syncCollider();
+    this.world.step();
+    this.updateArm(true);
+    return this.snapshot();
+  }
+  private updateOccupant() {
+    if (!this.occupied) return;
+    const info = this.seatSources.get(this.occupied.request.rigId)!,
+      frame = this.mechanisms.get(this.occupied.request.rigId)!.snapshot()
+        .groupFrames[info.chassisGroup];
+    this.occupied.placement = seatPlacement(frame, info.seat);
+    this.feet = [...this.occupied.placement.avatarRoot];
+    this.velocity = [0, 0, 0];
+    this.grounded = true;
+    this.heading = seatYaw(this.occupied.placement.pelvisFrame);
+    this.yaw = this.heading + this.occupied.localLookYaw;
+    this.pitch = this.occupied.localLookPitch;
+    this.occupied.placement.envelopes.forEach((box, i) => {
+      this.seatedColliders[i].setTranslation(physics(box.frame.position));
+      const yaw = seatYaw(box.frame);
+      this.seatedColliders[i].setRotation({
+        x: 0,
+        y: Math.sin(yaw / 2),
+        z: 0,
+        w: Math.cos(yaw / 2),
+      });
+    });
   }
   setInput(input: PlayInput) {
     this.alive();
@@ -474,6 +809,17 @@ export class PlaySession {
     if (input.yaw !== undefined)
       this.yaw = ((input.yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     if (input.pitch !== undefined) this.pitch = this.clampPitch(input.pitch);
+    if (this.occupied) {
+      this.occupied.localLookYaw = Math.atan2(
+        Math.sin(this.yaw - this.heading),
+        Math.cos(this.yaw - this.heading),
+      );
+      this.occupied.localLookPitch = this.pitch;
+      this.mechanisms.get(this.occupied.request.rigId)!.setVehicleInput({
+        throttle: input.moveZ ?? 0,
+        steering: -(input.moveX ?? 0),
+      });
+    }
   }
   clearInput() {
     for (const mechanism of this.mechanisms.values()) mechanism.clearInput();
@@ -493,6 +839,7 @@ export class PlaySession {
     return this.snapshot();
   }
   setLocomotion(mode: PlayLocomotion) {
+    this.requireOnFoot();
     this.alive();
     ensure(
       mode === "walk" || mode === "fly-noclip",
@@ -524,6 +871,7 @@ export class PlaySession {
     return this.snapshot();
   }
   teleport(input: PlayTeleportRequest) {
+    this.requireOnFoot();
     this.alive();
     keys(input, ["position", "policy", "yaw", "pitch"]);
     point(input.position);
@@ -559,6 +907,7 @@ export class PlaySession {
     return this.snapshot();
   }
   respawn() {
+    this.requireOnFoot();
     return this.teleport({
       position: this.safe ?? this.spawn,
       policy: this.ready ? "safe" : "free-flight",
@@ -590,8 +939,17 @@ export class PlaySession {
     return this.snapshot();
   }
   private step() {
-    for (const id of [...this.mechanisms.keys()].sort())
+    for (const id of [...this.mechanisms.keys()].sort()) {
       this.mechanisms.get(id)!.step();
+      if (this.occupied?.request.rigId === id) this.updateOccupant();
+    }
+    if (this.occupied) {
+      this.world.step();
+      this.previous = [...this.feet];
+      this.updateArm();
+      this.tick++;
+      return;
+    }
     if (this.mechanisms.size) this.world.step();
     this.previous = [...this.feet];
     const i = this.input;
@@ -663,6 +1021,17 @@ export class PlaySession {
     this.tick++;
   }
   private avatar(): AvatarPose {
+    if (this.occupied)
+      return {
+        state: "seated",
+        heading: this.heading,
+        phase: this.phase,
+        headYaw: Math.max(-0.7, Math.min(0.7, this.occupied.localLookYaw)),
+        leftHip: SEATED_VISUAL_POSE.leftHip,
+        rightHip: SEATED_VISUAL_POSE.rightHip,
+        leftShoulder: SEATED_VISUAL_POSE.leftShoulder,
+        rightShoulder: SEATED_VISUAL_POSE.rightShoulder,
+      };
     let swing = Math.sin(this.phase) * this.amplitude;
     const airborne = !this.grounded && this.locomotion === "walk";
     if (airborne) swing = this.velocity[1] < 0 ? 0.2 : -0.15;
@@ -705,9 +1074,17 @@ export class PlaySession {
   }
   configureCamera(input: Partial<PlayCameraSettings>) {
     this.alive();
+    ensure(
+      !this.occupied ||
+        input.eyeHeight === undefined ||
+        input.eyeHeight === this.cameraSettings.eyeHeight,
+      "INVALID_INPUT",
+      "Exit vehicle first to change standing eye height",
+    );
     const settings = resolvePlayCameraSettings(input, this.cameraSettings);
     this.cameraSettings = settings;
     this.pitch = this.clampPitch(this.pitch);
+    if (this.occupied) this.occupied.localLookPitch = this.pitch;
     this.updateArm(true);
     return this.snapshot();
   }
@@ -763,6 +1140,8 @@ export class PlaySession {
       undefined,
       undefined,
       this.collider,
+      undefined,
+      (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
     );
     ensure(
       hit && hit.normal1.y >= Math.cos((P.maxSlopeDegrees * Math.PI) / 180),
@@ -772,12 +1151,14 @@ export class PlaySession {
     return { position: [...input.position], yaw, pitch };
   }
   chooseSpawn(input: PlaySpawnRequest) {
+    this.requireOnFoot();
     this.alive();
     const spawn = this.validateSpawn(input);
     this.selectedSpawn = spawn;
     return this.snapshot();
   }
   useSpawn() {
+    this.requireOnFoot();
     this.alive();
     ensure(
       this.selectedSpawn,
@@ -801,35 +1182,37 @@ export class PlaySession {
       undefined,
       undefined,
       this.collider,
+      undefined,
+      (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
     );
     return hit
       ? Math.max(0, this.cameraSettings.followDistance * hit.time_of_impact - 1)
       : this.cameraSettings.followDistance;
   }
-  private currentArm() {
-    const target: Vec3 = [
-      this.feet[0],
-      this.feet[1] - P.height * 0.7,
-      this.feet[2],
-    ];
+  private followRig(feet: Vec3 = this.feet) {
+    // Seated chase framing is a presentation offset only. It keeps its target
+    // above the bench and looks down past a shoulder; own-rig camera collision
+    // remains active. The first-person eye and stored look intent are unchanged.
+    const target: Vec3 = this.occupied
+      ? seatPoint(this.occupied.placement.pelvisFrame, [0, -20, -10])
+      : [feet[0], feet[1] - P.height * 0.7, feet[2]];
+    const yaw = this.yaw + (this.occupied ? 0.35 : 0);
+    const pitch = this.occupied
+      ? Math.max(-1.35, Math.min(1.1, this.pitch - 0.65))
+      : this.pitch;
     const look: Vec3 = [
-      Math.sin(this.yaw) * Math.cos(this.pitch),
-      -Math.sin(this.pitch),
-      -Math.cos(this.yaw) * Math.cos(this.pitch),
+      Math.sin(yaw) * Math.cos(pitch),
+      -Math.sin(pitch),
+      -Math.cos(yaw) * Math.cos(pitch),
     ];
+    return { target, look };
+  }
+  private currentArm() {
+    const { target, look } = this.followRig();
     return Math.min(this.arm, this.desiredArm(target, look));
   }
   private updateArm(immediate = false) {
-    const target: Vec3 = [
-      this.feet[0],
-      this.feet[1] - P.height * 0.7,
-      this.feet[2],
-    ];
-    const look: Vec3 = [
-      Math.sin(this.yaw) * Math.cos(this.pitch),
-      -Math.sin(this.pitch),
-      -Math.cos(this.yaw) * Math.cos(this.pitch),
-    ];
+    const { target, look } = this.followRig();
     const desired = this.desiredArm(target, look);
     this.arm =
       desired < this.arm || immediate
@@ -842,19 +1225,21 @@ export class PlaySession {
     const feet = this.feet.map(
       (v, k) => this.previous[k] + (v - this.previous[k]) * alpha,
     ) as Vec3;
-    const look: Vec3 = [
-      Math.sin(this.yaw) * Math.cos(this.pitch),
-      -Math.sin(this.pitch),
-      -Math.cos(this.yaw) * Math.cos(this.pitch),
-    ];
-    const target: Vec3 = [
-      feet[0],
-      feet[1] -
-        (this.cameraMode === "first-person"
-          ? this.cameraSettings.eyeHeight
-          : P.height * 0.7),
-      feet[2],
-    ];
+    const follow = this.followRig(feet);
+    const look: Vec3 =
+      this.cameraMode === "third-person"
+        ? follow.look
+        : [
+            Math.sin(this.yaw) * Math.cos(this.pitch),
+            -Math.sin(this.pitch),
+            -Math.cos(this.yaw) * Math.cos(this.pitch),
+          ];
+    const target: Vec3 =
+      this.cameraMode === "third-person"
+        ? follow.target
+        : this.occupied
+          ? [...this.occupied.placement.eye]
+          : [feet[0], feet[1] - this.cameraSettings.eyeHeight, feet[2]];
     let pos: Vec3 = [...target];
     if (this.cameraMode === "third-person") {
       const arm = Math.min(this.arm, this.desiredArm(target, look));
@@ -928,6 +1313,22 @@ export class PlaySession {
       ...(this.mechanisms.size === 1
         ? { mechanism: Object.values(mechanisms)[0] }
         : {}),
+      positionAnchor: this.occupied ? "seated-avatar-root" : "standing-feet",
+      ...(this.occupied
+        ? {
+            occupancy: {
+              ...this.occupied.request,
+              profile: "brick-figure-open-seat-v1" as const,
+              pelvisWorldLdu: [
+                ...this.occupied.placement.pelvisFrame.position,
+              ] as Vec3,
+              avatarRootWorldLdu: [...this.feet] as Vec3,
+              effectiveEyeWorldLdu: [...this.occupied.placement.eye] as Vec3,
+              localLookYaw: this.occupied.localLookYaw,
+              localLookPitch: this.occupied.localLookPitch,
+            },
+          }
+        : {}),
       worldProfile: this.worldProfile,
       cameraSettings: { ...this.cameraSettings },
       cameraSafety: this.cameraSafety(),
@@ -958,6 +1359,9 @@ export class PlaySession {
     if (this.disposed) return;
     for (const mechanism of this.mechanisms.values()) mechanism.dispose();
     this.mechanisms.clear();
+    this.seatSources.clear();
+    this.occupied = undefined;
+    this.seatedColliders = [];
     this.vehicleWorld?.dispose();
     this.vehicleWorld = undefined;
     this.world.free();

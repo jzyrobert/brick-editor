@@ -1,3 +1,4 @@
+import type { DrivingBox, DrivingPose } from "./vehicle-collision";
 import { AppError } from "../core/types";
 import type { MechanismSnapshot } from "../mechanisms/types";
 import type { PlayMechanismSource } from "./mechanism";
@@ -129,6 +130,68 @@ export class PlayVehicleWorld {
       delete report.obstacle;
     }
     return this.report(rigId);
+  }
+  /** Body queries include own-vehicle geometry unless the attachment invariant
+   * has already been certified. Caller supplies no opaque visibility filters. */
+  sweepBody(
+    boxes: DrivingBox[],
+    from: DrivingPose,
+    to: DrivingPose,
+    excludeRigId?: string,
+  ) {
+    if (!this.staticWorld)
+      return {
+        accepted: false,
+        reason: "Complete collision geometry is unavailable",
+      };
+    if (
+      this.ground &&
+      boxes.some(
+        (box) =>
+          Math.min(from.y, to.y) + box.center[1] - box.halfExtents[1] <
+          -0.00001,
+      )
+    )
+      return {
+        accepted: false,
+        reason: "Body transfer intersects session ground",
+      };
+    const snapshots = [this.staticWorld];
+    try {
+      for (const foreign of this.acceptedGeometry(excludeRigId ?? "")) {
+        let cache = this.foreign.get(foreign.rigId);
+        if (!cache || cache.sources !== foreign.sources) {
+          cache = {
+            sources: foreign.sources,
+            snapshot: new DrivingObstacleSnapshot(foreign.sources, 200000),
+          };
+          this.foreign.set(foreign.rigId, cache);
+        }
+        snapshots.push(cache.snapshot);
+      }
+      let queries = 0,
+        candidates = 0;
+      for (const snapshot of snapshots) {
+        const result = snapshot.sweep(excludeRigId ?? "", boxes, from, to, {
+          queries: 16384 - queries,
+          candidates: 512 - candidates,
+          allowVertical: true,
+        });
+        queries += result.queries;
+        candidates += result.candidateTriangles;
+        if (!result.accepted)
+          return {
+            accepted: false,
+            reason:
+              result.reason === "contact"
+                ? "Body transfer intersects included geometry"
+                : "Body transfer exceeds collision work budget",
+          };
+      }
+      return { accepted: true };
+    } catch (error) {
+      return { accepted: false, reason: reason(error) };
+    }
   }
   dispose() {
     this.profiles.clear();

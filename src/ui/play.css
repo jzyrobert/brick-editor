@@ -471,3 +471,53 @@
   font-size: 13px;
   color: var(--ink);
 }
+.play-interaction .play-seat-remote {
+  margin-top: 10px;
+  min-height: 44px;
+}
+.seat-authoring {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.seat-authoring summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.seat-authoring label {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0;
+}
+.seat-authoring input,
+.seat-authoring select,
+.seat-authoring button {
+  min-height: 44px;
+  min-width: 0;
+  max-width: 100%;
+}
+.seat-authoring input,
+.seat-authoring select {
+  width: 100%;
+}
+.seat-authoring fieldset {
+  min-width: 0;
+  margin: 12px 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.seat-authoring p {
+  overflow-wrap: anywhere;
+}
+/* Keep the seated figure visible in the centre of the chase camera. */
+.play-overlay.is-seated .play-interaction {
+  top: 84px;
+  bottom: auto;
+}
+@media (max-width: 640px) {
+  .play-overlay.is-seated .play-interaction {
+    top: 126px;
+  }
+}

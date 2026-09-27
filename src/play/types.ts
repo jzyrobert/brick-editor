@@ -83,7 +83,7 @@ export const CHARACTER_PROFILE = Object.freeze({
   scaleMetresPerLdu: 0.02,
 });
 export type AvatarPose = {
-  state: "idle" | "walk" | "run" | "jump" | "fall";
+  state: "idle" | "walk" | "run" | "jump" | "fall" | "seated";
   heading: number;
   phase: number;
   headYaw: number;
@@ -125,7 +125,22 @@ export type PlayMechanismReport = MechanismSnapshot & {
   jointTargets: Record<string, PlayJointTargetReport>;
   vehicleCollision?: PlayVehicleCollisionReport;
 };
+export type PlaySeatRequest = { rigId: string; seatId: string };
+export type PlaySeatEligibility = PlaySeatRequest & {
+  eligible: boolean;
+  reason?: string;
+};
+export type PlayOccupancy = PlaySeatRequest & {
+  profile: "brick-figure-open-seat-v1";
+  pelvisWorldLdu: Vec3;
+  avatarRootWorldLdu: Vec3;
+  effectiveEyeWorldLdu: Vec3;
+  localLookYaw: number;
+  localLookPitch: number;
+};
 export type PlaySnapshotReport = {
+  occupancy?: PlayOccupancy;
+  positionAnchor: "standing-feet" | "seated-avatar-root";
   mechanism?: PlayMechanismReport;
   mechanisms?: Record<string, PlayMechanismReport>;
   worldProfile: ResolvedPlayWorldProfile;

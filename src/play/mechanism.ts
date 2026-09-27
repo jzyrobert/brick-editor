@@ -141,6 +141,15 @@ export class PlayMechanism {
     indices: Uint32Array;
   }> = [];
   private vehicleChassis?: string;
+  private riderBlockedReason?: string;
+  private riderGuard?: (
+    before: MechanismSnapshot,
+    after: MechanismSnapshot,
+  ) => string | undefined;
+  setRiderGuard(guard: NonNullable<PlayMechanism["riderGuard"]>) {
+    this.riderGuard = guard;
+  }
+
   private geometryKey = "";
   private geometryCache: DrivingTriangleSource[] = [];
   private vehicleReport?: PlayVehicleCollisionReport;
@@ -192,7 +201,14 @@ export class PlayMechanism {
   constructor(
     private world: RAPIER.World,
     source: PlayMechanismSource,
-    private actor: () => { position: Vec3; walk: boolean },
+    private actor: () => {
+      position: Vec3;
+      walk: boolean;
+      seat?: {
+        rigId: string;
+        envelopes: Array<{ frame: Transform; halfExtents: Vec3 }>;
+      };
+    },
   ) {
     this.session = new KinematicSession(source.project, source.rigId);
     const rig = source.project.motionRigs![source.rigId];
@@ -274,6 +290,7 @@ export class PlayMechanism {
     const actor = this.actor();
     if (actor.walk)
       for (const proxy of this.proxies) {
+        if (actor.seat?.rigId === before.rigId) continue;
         const a = before.groupFrames[proxy.id],
           b = after.groupFrames[proxy.id];
         let distance =
@@ -312,6 +329,24 @@ export class PlayMechanism {
         // Every point on the swept proxy remains within this distance of its old
         // surface. Inflating the capsule therefore conservatively rejects crossing,
         // including rotating thin doors and endpoints clear on both sides.
+        if (actor.seat) {
+          for (const box of actor.seat.envelopes) {
+            const inflated = new RAPIER.Cuboid(
+              ...(box.halfExtents.map(
+                (n) => (n + distance + 0.05) * S,
+              ) as Vec3),
+            );
+            if (
+              proxy.collider.intersectsShape(
+                inflated,
+                physics(box.frame.position),
+                rotation(box.frame),
+              )
+            )
+              return false;
+          }
+          continue;
+        }
         const inflated = new RAPIER.Capsule(
           (P.height / 2 - P.radius) * S,
           (P.radius + distance + 0.05) * S,
@@ -398,6 +433,25 @@ export class PlayMechanism {
         this.session.clearInput();
         return false;
       }
+    }
+    if (
+      this.riderBlockedReason &&
+      !forceVehicle &&
+      JSON.stringify(before.pose) === JSON.stringify(target.pose)
+    ) {
+      this.session.setPose(before.pose);
+      this.session.clearInput();
+      return false;
+    }
+    const riderFailure = this.riderGuard?.(before, target);
+    if (riderFailure) {
+      this.session.setPose(before.pose);
+      this.apply(before);
+      this.session.clearInput();
+      this.blocked = true;
+      this.reason = riderFailure;
+      this.riderBlockedReason = riderFailure;
+      return false;
     }
     let travel = Math.max(
       0,
@@ -509,8 +563,10 @@ export class PlayMechanism {
       input.throttle !== 0 ||
       before.pose.vehicle?.steeringDegrees !==
         after.pose.vehicle?.steeringDegrees
-    )
+    ) {
+      this.riderBlockedReason = undefined;
       this.accept(before, after, true);
+    }
     return this.snapshot();
   }
   step() {
@@ -555,6 +611,7 @@ export class PlayMechanism {
       this.vehicleReport && this.vehicleReport.status !== "ready";
     const reason =
       stopped?.blockedReason ??
+      this.riderBlockedReason ??
       (vehicleStopped ? this.vehicleReport?.reason : undefined) ??
       this.reason;
     return {
@@ -563,7 +620,11 @@ export class PlayMechanism {
       ...(this.vehicleReport
         ? { vehicleCollision: structuredClone(this.vehicleReport) }
         : {}),
-      blocked: this.blocked || !!stopped || !!vehicleStopped,
+      blocked:
+        this.blocked ||
+        !!stopped ||
+        !!vehicleStopped ||
+        !!this.riderBlockedReason,
       ...(reason ? { blockedReason: reason } : {}),
       warnings: [
         ...state.warnings.map((warning) =>
@@ -591,6 +652,7 @@ export class PlayMechanism {
     this.proxies = [];
     this.geometryCache = [];
     this.vehicleCheck = undefined;
+    this.riderGuard = undefined;
     this.targets.clear();
   }
 }

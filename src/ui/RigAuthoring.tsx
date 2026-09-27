@@ -326,6 +326,15 @@ export function RigAuthoring({
             })
           : buildVehicleRig(project, {
               ...common,
+              // Seat editing has its own explicit review/removal flow. Retain
+              // the frozen source metadata when changing vehicle mechanics.
+              ...(editing && project.motionRigs[editing.id]?.vehicle?.driverSeat
+                ? {
+                    driverSeat: structuredClone(
+                      project.motionRigs[editing.id].vehicle!.driverSeat!,
+                    ),
+                  }
+                : {}),
               chassis: {
                 id: groupIds.chassis,
                 occurrenceIds: chassis,

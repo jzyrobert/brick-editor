@@ -3,7 +3,7 @@ import { occurrences } from "../core/document";
 import type { Project, Vec3 } from "../core/types";
 import type { MotionRig, RigidGroup } from "./types";
 /** Original CC0 demonstration geometry; custom parts have no marketplace mapping. */
-export function mechanismFixtureSource() {
+export function mechanismFixtureSource(openBench = false) {
   const out = [
     "0 FILE mechanisms.ldr",
     "0 Original CC0-1.0 hinged door and planar vehicle test",
@@ -51,6 +51,11 @@ export function mechanismFixtureSource() {
   box([-20, -48, -2], [20, 48, 2]);
   begin("chassis.dat");
   box([-36, -8, -32], [36, 8, 32]);
+  if (openBench) {
+    // Original open seat: cushion below pelvis, backrest behind straight legs.
+    box([-14, -13, 13], [14, -8, 24]);
+    box([-20, -46, 34], [20, -8, 38]);
+  }
   begin("wheel.dat");
   for (let i = 0; i < 16; i++) {
     const a = (i * Math.PI) / 8,
@@ -67,8 +72,11 @@ export function mechanismFixtureSource() {
   }
   return out.join("\n") + "\n0 NOFILE\n";
 }
-export function mechanismFixture(): Project {
-  const project = importLDraw(mechanismFixtureSource(), "mechanisms.mpd");
+export function mechanismFixture(openBench = false): Project {
+  const project = importLDraw(
+    mechanismFixtureSource(openBench),
+    "mechanisms.mpd",
+  );
   project.title = "Door and kinematic vehicle";
   const all = occurrences(project);
   const group = (id: string, index: number): RigidGroup => ({
@@ -125,5 +133,26 @@ export function mechanismFixture(): Project {
     },
   };
   project.motionRigs = { door, vehicle };
+  return project;
+}
+
+/** Original CC0 open-bench example. Existing mechanism template remains seat-free. */
+export function openBenchFixture(): Project {
+  const project = mechanismFixture(true);
+  project.title = "Open-bench driver seat";
+  const rig = project.motionRigs!.vehicle;
+  rig.name = "Open-bench vehicle";
+  rig.vehicle!.driverSeat = {
+    id: "driver",
+    profile: "brick-figure-open-seat-v1",
+    pelvisPosition: [0, -17, 12],
+    yawDegrees: 0,
+    accessPoint: [45, -6, 12],
+    approachPosition: [80, 23.7, 12],
+    exits: [
+      { position: [80, 23.7, 12], yawDegrees: 0 },
+      { position: [-80, 23.7, 12], yawDegrees: 0 },
+    ],
+  };
   return project;
 }

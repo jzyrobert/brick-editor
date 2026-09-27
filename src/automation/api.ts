@@ -173,6 +173,21 @@ export function createAPI(
         player().setCameraMode(mode),
       setLocomotion: async (mode: PlayLocomotion) =>
         player().setLocomotion(mode),
+      enterVehicle: async (input: { rigId: string; seatId: string }) => {
+        validateRequest("playSeatRequest", input);
+        return player().enterVehicle(input);
+      },
+      exitVehicle: async (input: { exitIndex?: number } = {}) => {
+        validateRequest("playSeatExit", input);
+        return player().exitVehicle(input);
+      },
+      vehicleSeatEligibility: async (input: {
+        rigId: string;
+        seatId: string;
+      }) => {
+        validateRequest("playSeatRequest", input);
+        return player().vehicleSeatEligibility(input);
+      },
       teleport: async (input: PlayTeleportRequest) => {
         validateRequest("playTeleport", input);
         return player().teleport(input);
@@ -261,7 +276,14 @@ export function createAPI(
         bytes?: number[];
         name?: string;
         strict?: boolean;
-        template?: "blank" | "room" | "wall" | "200" | "explore" | "mechanisms";
+        template?:
+          | "blank"
+          | "room"
+          | "wall"
+          | "200"
+          | "explore"
+          | "mechanisms"
+          | "seated-vehicle";
       }) => {
         validate("importRequest", input);
         ensure(

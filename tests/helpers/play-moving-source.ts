@@ -5,9 +5,11 @@ import { mechanismFixture } from "../../src/mechanisms/fixtures";
 import { scopedLDraw } from "../../src/ldraw/io";
 import { occurrences } from "../../src/core/document";
 import type { CollisionSnapshot } from "../../src/play/types";
-export async function movingSource(rigId: string) {
-  const project = mechanismFixture(),
-    rig = project.motionRigs![rigId];
+export async function movingSource(
+  rigId: string,
+  project = mechanismFixture(),
+) {
+  const rig = project.motionRigs![rigId];
   const mesh = async (ids: string[]): Promise<CollisionSnapshot> => {
     const source = scopedLDraw(project, ids, true);
     const loader = new LDrawLoader().setConditionalLineMaterial(

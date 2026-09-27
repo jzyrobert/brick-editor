@@ -553,27 +553,35 @@
     "score": 8.7,
     "scale": 10,
     "evidence": "../UX-AUDIT.md",
-    "checkpoint": "Animated contextual joints: fresh independent mobile/desktop review"
+    "checkpoint": "Protected vehicle collision feedback: independent 360px/1080px review; source-only recovery separately scores 8.8"
   },
   "liveCloudflareVerification": {
     "url": "https://bricks.robertj.in/",
-    "commit": "1232e48196e502b0292180a119e85c01fa243ae5",
-    "deploymentId": "57ec4532-d1fd-4721-9eed-50291688bb7e",
+    "commit": "3c4596991dd9fa3135d4c615b6d479c49a390911",
+    "deploymentId": "d39136b2-49ba-4afc-a4ea-f1dc045e470d",
     "validHttps": true,
     "browserTests": 5,
     "coverage": [
-      "deep occurrence import/query/edit/capture/Play",
-      "animated interaction at desktop/360px/1080px",
-      "pause/frozen capture/blocked retry"
+      "source-only recovery at 360px/1080px and denied storage",
+      "pending-ready invalidation on rapid source replacement",
+      "vehicle world stop, reverse, capture and unchanged source at 360px/1440px"
     ],
-    "note": "Resource safeguard checkpoint deployed after250unit/98browser cleanCI; source-onlyUI and vehicle-world protection not yet deployed."
+    "note": "Deployed after clean CI: 278 unit and 103 browser checks. Seated entry and riding remain subsequent work."
   },
   "resourceCheckpoint": {
     "occurrencePreflight": "passed",
     "incrementalAccounting": "passed",
     "sourceNativeRoundtrip": "passed",
     "localRecovery": "passed",
-    "limitedSourceUI": "not yet included",
+    "limitedSourceUI": "passed",
     "effectiveProfileUIAPI": "not yet included"
+  },
+  "ciCheckpoint": {
+    "commit": "3c4596991dd9fa3135d4c615b6d479c49a390911",
+    "runId": 36331550085,
+    "passed": true,
+    "unitTests": 278,
+    "browserTests": 103,
+    "browserDurationMinutes": 6.4
   }
 }

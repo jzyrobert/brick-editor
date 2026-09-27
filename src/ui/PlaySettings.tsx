@@ -73,6 +73,7 @@ export function PlaySettings({
               <span>{labels[key]}</span>
               <input
                 aria-label={labels[key]}
+                disabled={!!report.occupancy && key === "eyeHeight"}
                 type="number"
                 min={angular(key) ? degrees(limits.min) : limits.min}
                 max={angular(key) ? degrees(limits.max) : limits.max}
@@ -144,100 +145,13 @@ export function PlaySettings({
           </p>
         )}
       </details>
-      <details>
-        <summary>Safe spawn</summary>
-        <p className="muted">
-          Save a clear, supported feet position. Validation never moves you or
-          edits the build. Returning to a saved spawn switches to Walk and stays
-          paused.
-        </p>
-        <button
-          className="wide"
-          onClick={() =>
-            attempt(
-              () =>
-                play.chooseSpawn({
-                  position: report.position,
-                  yaw: report.yaw,
-                  pitch: report.pitch,
-                }),
-              "Current position validated and remembered for this session.",
-            )
-          }
-        >
-          Remember current safe position
-        </button>
-        <p>
-          {report.spawn
-            ? `Saved spawn: ${report.spawn.position.map((n) => Number(n.toFixed(2))).join(", ")} LDU`
-            : "No validated spawn has been saved for this session."}
-        </p>
-        <button
-          className="wide"
-          disabled={!report.spawn}
-          onClick={() =>
-            attempt(
-              () => play.useSpawn(),
-              "Returned to the saved spawn in Walk mode. Resume when ready.",
-            )
-          }
-        >
-          Go to saved spawn
-        </button>
+      {!report.occupancy && (
         <details>
-          <summary>Choose spawn coordinates</summary>
-          <button
-            className="wide"
-            onClick={() => {
-              setPosition(report.position.map(String));
-              setYaw(String(degrees(report.yaw)));
-              setPitch(String(degrees(report.pitch)));
-              setMessage(
-                "Current feet coordinates copied. Validate to remember them.",
-              );
-            }}
-          >
-            Copy current coordinates
-          </button>
-          {(["X", "Y", "Z"] as const).map((axis, i) => (
-            <label className="play-setting" key={axis}>
-              <span>Feet {axis} (LDU)</span>
-              <input
-                aria-label={`Spawn feet ${axis} (LDU)`}
-                type="number"
-                step="1"
-                value={position[i]}
-                onChange={(e) =>
-                  setPosition((values) =>
-                    values.map((n, j) => (j === i ? e.target.value : n)),
-                  )
-                }
-              />
-            </label>
-          ))}
-          <label className="play-setting">
-            <span>Yaw (degrees)</span>
-            <input
-              aria-label="Spawn yaw (degrees)"
-              type="number"
-              step="1"
-              value={yaw}
-              onChange={(e) => setYaw(e.target.value)}
-            />
-          </label>
-          <label className="play-setting">
-            <span>Pitch (degrees)</span>
-            <input
-              aria-label="Spawn pitch (degrees)"
-              type="number"
-              step="1"
-              value={pitch}
-              onChange={(e) => setPitch(e.target.value)}
-            />
-          </label>
+          <summary>Safe spawn</summary>
           <p className="muted">
-            Coordinates use LDraw space: negative Y is up. Unsupported or
-            occupied positions are refused.
+            Save a clear, supported feet position. Validation never moves you or
+            edits the build. Returning to a saved spawn switches to Walk and
+            stays paused.
           </p>
           <button
             className="wide"
@@ -245,20 +159,115 @@ export function PlaySettings({
               attempt(
                 () =>
                   play.chooseSpawn({
-                    position: position.map((n, i) =>
-                      number(n, ["X", "Y", "Z"][i]),
-                    ) as [number, number, number],
-                    yaw: (number(yaw, "yaw") * Math.PI) / 180,
-                    pitch: (number(pitch, "pitch") * Math.PI) / 180,
+                    position: report.position,
+                    yaw: report.yaw,
+                    pitch: report.pitch,
                   }),
-                "Spawn coordinates validated and remembered. Your current position is unchanged.",
+                "Current position validated and remembered for this session.",
               )
             }
           >
-            Validate and save spawn
+            Remember current safe position
           </button>
+          <p>
+            {report.spawn
+              ? `Saved spawn: ${report.spawn.position.map((n) => Number(n.toFixed(2))).join(", ")} LDU`
+              : "No validated spawn has been saved for this session."}
+          </p>
+          <button
+            className="wide"
+            disabled={!report.spawn}
+            onClick={() =>
+              attempt(
+                () => play.useSpawn(),
+                "Returned to the saved spawn in Walk mode. Resume when ready.",
+              )
+            }
+          >
+            Go to saved spawn
+          </button>
+          <details>
+            <summary>Choose spawn coordinates</summary>
+            <button
+              className="wide"
+              onClick={() => {
+                setPosition(report.position.map(String));
+                setYaw(String(degrees(report.yaw)));
+                setPitch(String(degrees(report.pitch)));
+                setMessage(
+                  "Current feet coordinates copied. Validate to remember them.",
+                );
+              }}
+            >
+              Copy current coordinates
+            </button>
+            {(["X", "Y", "Z"] as const).map((axis, i) => (
+              <label className="play-setting" key={axis}>
+                <span>Feet {axis} (LDU)</span>
+                <input
+                  aria-label={`Spawn feet ${axis} (LDU)`}
+                  type="number"
+                  step="1"
+                  value={position[i]}
+                  onChange={(e) =>
+                    setPosition((values) =>
+                      values.map((n, j) => (j === i ? e.target.value : n)),
+                    )
+                  }
+                />
+              </label>
+            ))}
+            <label className="play-setting">
+              <span>Yaw (degrees)</span>
+              <input
+                aria-label="Spawn yaw (degrees)"
+                type="number"
+                step="1"
+                value={yaw}
+                onChange={(e) => setYaw(e.target.value)}
+              />
+            </label>
+            <label className="play-setting">
+              <span>Pitch (degrees)</span>
+              <input
+                aria-label="Spawn pitch (degrees)"
+                type="number"
+                step="1"
+                value={pitch}
+                onChange={(e) => setPitch(e.target.value)}
+              />
+            </label>
+            <p className="muted">
+              Coordinates use LDraw space: negative Y is up. Unsupported or
+              occupied positions are refused.
+            </p>
+            <button
+              className="wide"
+              onClick={() =>
+                attempt(
+                  () =>
+                    play.chooseSpawn({
+                      position: position.map((n, i) =>
+                        number(n, ["X", "Y", "Z"][i]),
+                      ) as [number, number, number],
+                      yaw: (number(yaw, "yaw") * Math.PI) / 180,
+                      pitch: (number(pitch, "pitch") * Math.PI) / 180,
+                    }),
+                  "Spawn coordinates validated and remembered. Your current position is unchanged.",
+                )
+              }
+            >
+              Validate and save spawn
+            </button>
+          </details>
         </details>
-      </details>
+      )}
+      {report.occupancy && (
+        <p className="muted">
+          The seat profile fixes your eye anchor. Exit the vehicle before
+          choosing a walking spawn or recovering your position.
+        </p>
+      )}
       <p role="status" aria-live="polite">
         {message}
       </p>
