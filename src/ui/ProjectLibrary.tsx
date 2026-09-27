@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LocalProjects } from "../persistence/storage";
+import { BrowserProjects } from "../persistence/browser-projects";
 import type { Project } from "../core/types";
 export function ProjectLibrary({
   currentId,
@@ -9,13 +9,13 @@ export function ProjectLibrary({
   open: (p: Project) => Promise<void>;
 }) {
   const [projects, setProjects] = useState<
-      Awaited<ReturnType<LocalProjects["list"]>>
+      Awaited<ReturnType<BrowserProjects["list"]>>
     >([]),
     [message, setMessage] = useState(""),
     [deleting, setDeleting] = useState<string>();
   const refresh = async () => {
     try {
-      setProjects(await new LocalProjects(localStorage).list());
+      setProjects(await new BrowserProjects(localStorage).list());
     } catch (e) {
       setMessage(e instanceof Error ? e.message : String(e));
     }
@@ -43,7 +43,7 @@ export function ProjectLibrary({
               disabled={p.id === currentId}
               onClick={() =>
                 attempt(async () => {
-                  const value = await new LocalProjects(localStorage).load(
+                  const value = await new BrowserProjects(localStorage).load(
                     p.id,
                   );
                   if (!value)
@@ -57,7 +57,7 @@ export function ProjectLibrary({
             <button
               onClick={() =>
                 attempt(async () => {
-                  const bytes = await new LocalProjects(
+                  const bytes = await new BrowserProjects(
                     localStorage,
                   ).exportBackup(p.id);
                   const url = URL.createObjectURL(
@@ -95,7 +95,7 @@ export function ProjectLibrary({
                 className="danger"
                 onClick={() =>
                   attempt(async () => {
-                    await new LocalProjects(localStorage).delete(
+                    await new BrowserProjects(localStorage).delete(
                       p.id,
                       p.revision,
                     );

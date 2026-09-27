@@ -17,7 +17,9 @@ import {
   type TransformHandleOptions,
 } from "../edit/transform-handles";
 import { LayerGhost } from "./layerGhost";
-import { occurrenceRenderContext } from "./source-context";
+import { occurrenceRenderContext, occurrenceRawRecord } from "./source-context";
+import { RawPrimitiveCompiler, repairFaceNormals } from "./raw-primitives";
+import { dependencySource } from "./dependency-source";
 import {
   resolveQuality,
   type QualityName,
@@ -40,7 +42,6 @@ import {
 } from "../core/types";
 import { occurrences } from "../core/document";
 import { conversion } from "../core/math";
-import { exportLDraw } from "../ldraw/io";
 import { libraryLock } from "../catalog/catalog";
 import { sha256, stable } from "../core/hash";
 const defaultCamera: CameraSpec = {
@@ -87,6 +88,12 @@ export class SceneAdapter {
   private allPrototypes = new Set<THREE.Group>();
   private libraryText = "";
   private colorText = "";
+  private rawCompiler?: RawPrimitiveCompiler;
+  private updateEpoch = 0;
+  private compilationKeys = new WeakMap<
+    Project,
+    Map<string, Promise<string>>
+  >();
   private knownColors = new Set<string>();
   private resolvedCache = new Map<string, THREE.Group>();
   private load: Promise<void>;
@@ -322,34 +329,51 @@ export class SceneAdapter {
         .filter((c) => c !== "16" && c !== "24"),
     );
   }
-  private prototype(o: Occurrence, p: Project): Promise<THREE.Group> {
-    const source = o.namespace === "official" ? "" : exportLDraw(p);
+  private compilationKey(project: Project, source: string) {
+    let keys = this.compilationKeys.get(project);
+    if (!keys) {
+      keys = new Map();
+      this.compilationKeys.set(project, keys);
+    }
+    let value = keys.get(source);
+    if (!value) {
+      value = sha256(source);
+      keys.set(source, value);
+    }
+    return value;
+  }
+  private async prototype(o: Occurrence, p: Project): Promise<THREE.Group> {
+    const source =
+      o.namespace === "project" && o.node.kind !== "geometry"
+        ? dependencySource(p, o.node.ref)
+        : "";
     const renderContext = occurrenceRenderContext(p, o);
     const context = renderContext.source;
-    const raw =
-      o.node.kind === "geometry"
-        ? p.models[o.modelId].records.find(
-            (r) => r.id === o.node.sourceRecordId,
-          )?.raw || ""
-        : "";
-    const key =
-      o.namespace +
-      ":" +
-      o.node.ref +
-      ":" +
-      o.colorCode +
-      ":" +
-      context +
-      ":" +
-      renderContext.forceDoubleSided +
-      ":" +
-      raw +
-      ":" +
-      source;
+    const raw = o.node.kind === "geometry" ? occurrenceRawRecord(p, o) : "";
+    const fingerprint = await this.compilationKey(
+      p,
+      context + "\n" + renderContext.forceDoubleSided + "\n" + source,
+    );
+    const key = JSON.stringify([
+      o.namespace,
+      o.node.ref,
+      o.colorCode,
+      fingerprint,
+      raw,
+    ]);
     const cached = this.cache.get(key);
     if (cached) return cached;
     const promise = (async () => {
       await this.load;
+      if (o.node.kind === "geometry") {
+        const compiler = (this.rawCompiler ??= new RawPrimitiveCompiler(
+          this.colorText,
+        ));
+        const group = await compiler.compile(raw, o.colorCode, renderContext);
+        this.allPrototypes.add(group);
+        this.resolvedCache.set(key, group);
+        return group;
+      }
       if (o.namespace === "missing") {
         const g = new THREE.Group();
         const mesh = new THREE.Mesh(
@@ -378,10 +402,7 @@ export class SceneAdapter {
         o.namespace === "project"
           ? p.models[o.node.ref]?.name || o.node.ref
           : o.node.ref;
-      const line =
-        o.node.kind === "geometry"
-          ? raw.replace(/^(\s*[2-5])\s+\S+/, `$1 ${o.colorCode}`)
-          : `1 ${o.colorCode} 0 0 0 1 0 0 0 1 0 0 0 1 ${ref}`;
+      const line = `1 ${o.colorCode} 0 0 0 1 0 0 0 1 0 0 0 1 ${ref}`;
       const projectSource = source.replace(/\n0 NOFILE\s*$/, "");
       const localNames = new Set(
         Object.values(p.models).map((m) => m.name.toLowerCase()),
@@ -434,6 +455,7 @@ export class SceneAdapter {
         "REFERENCE_MISSING",
         "Part compilation produced no geometry: " + o.node.ref,
       );
+      repairFaceNormals(group);
       group.traverse((object) => {
         if ((object as THREE.Mesh).isMesh) {
           if (renderContext.forceDoubleSided) {
@@ -456,6 +478,7 @@ export class SceneAdapter {
   }
   update(p: Project) {
     const snapshot = structuredClone(p);
+    const epoch = ++this.updateEpoch;
     this.pending = this.pending
       .catch(() => {})
       .then(async () => {
@@ -467,51 +490,77 @@ export class SceneAdapter {
         );
         const all = occurrences(snapshot),
           keep = new Set(all.map((o) => o.id));
+        const physical = all.filter((o) => o.node.kind !== "geometry");
         ensure(
-          all.length <= 5000,
+          physical.length <= 5000,
           "LIMIT_EXCEEDED",
-          "Reference renderer budget is 5,000 occurrences; document and exports remain available.",
+          "Reference renderer budget is 5,000 part occurrences; document and exports remain available.",
         );
-        const variants = new Set(
-          all.map(
-            (o) =>
-              o.namespace +
-              ":" +
-              o.node.ref +
-              ":" +
-              o.colorCode +
-              (o.node.kind === "geometry" ? ":" + o.node.id : ""),
-          ),
+        ensure(
+          all.length - physical.length <= 100000,
+          "LIMIT_EXCEEDED",
+          "Raw primitive rendering exceeds 100,000 source occurrences",
         );
+        const variants = new Map<string, Occurrence>();
+        for (const o of physical) {
+          const context = occurrenceRenderContext(snapshot, o);
+          variants.set(
+            JSON.stringify([o.namespace, o.node.ref, o.colorCode, context]),
+            o,
+          );
+        }
         ensure(
           variants.size <= 128,
           "LIMIT_EXCEEDED",
           "Reference renderer budget is 128 part/material variants.",
         );
-        const customVariants = new Set(
-          all
-            .filter((o) => o.namespace === "project")
-            .map(
-              (o) =>
-                o.node.ref +
-                ":" +
-                o.colorCode +
-                (o.node.kind === "geometry" ? o.node.id : ""),
-            ),
-        ).size;
-        ensure(
-          !customVariants ||
-            exportLDraw(snapshot).length * customVariants <= 50 * 1024 * 1024,
-          "LIMIT_EXCEEDED",
-          "Custom geometry compilation exceeds its bounded source budget.",
-        );
-        const loaded = await Promise.all(
-          all.map(async (o) => ({
-            o,
-            prototype: await this.prototype(o, snapshot),
-          })),
-        );
-        if (this.disposed) return;
+        let sourceBytes = 0;
+        const encoder = new TextEncoder();
+        const contexts = new Set<string>();
+        for (const o of all) {
+          const context = occurrenceRenderContext(snapshot, o).source;
+          if (!contexts.has(context)) {
+            contexts.add(context);
+            sourceBytes += encoder.encode(context).length;
+          }
+          if (o.node.kind === "geometry")
+            sourceBytes += encoder.encode(
+              occurrenceRawRecord(snapshot, o),
+            ).length;
+          ensure(
+            sourceBytes <= 50 * 1024 * 1024,
+            "LIMIT_EXCEEDED",
+            "Geometry compilation exceeds its bounded source/context budget.",
+          );
+        }
+        for (const o of variants.values()) {
+          if (o.namespace !== "project") continue;
+          sourceBytes += encoder.encode(
+            dependencySource(snapshot, o.node.ref),
+          ).length;
+          ensure(
+            sourceBytes <= 50 * 1024 * 1024,
+            "LIMIT_EXCEEDED",
+            "Custom geometry compilation exceeds its bounded dependency source budget.",
+          );
+        }
+        const loaded: Array<{ o: Occurrence; prototype: THREE.Group }> = [];
+        // Bound concurrent loader work and let input/source replacement interrupt
+        // large raw-geometry imports without discarding any source occurrences.
+        for (let offset = 0; offset < all.length; offset += 128) {
+          if (this.disposed || epoch !== this.updateEpoch) return;
+          loaded.push(
+            ...(await Promise.all(
+              all.slice(offset, offset + 128).map(async (o) => ({
+                o,
+                prototype: await this.prototype(o, snapshot),
+              })),
+            )),
+          );
+          if (offset + 128 < all.length)
+            await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+        if (this.disposed || epoch !== this.updateEpoch) return;
         this.instructionDimming.restore();
         this.layerGhost.restore();
         for (const [id, g] of this.handles)
@@ -569,7 +618,7 @@ export class SceneAdapter {
               for (const mat of Array.isArray(mesh.material)
                 ? mesh.material
                 : [mesh.material])
-                mat.dispose();
+                if (!mat.userData.rawPrimitiveShared) mat.dispose();
           });
           this.resolvedCache.delete(key);
           this.cache.delete(key);
@@ -585,6 +634,7 @@ export class SceneAdapter {
         this.invalidate();
       })
       .catch((e) => {
+        if (this.disposed || epoch !== this.updateEpoch) return;
         this.error = e;
         this.root.visible = false;
         this.invalidate();
@@ -595,7 +645,13 @@ export class SceneAdapter {
     return this.pending;
   }
   async ready(minRevision?: number, strict = false) {
-    await this.withContext(this.pending);
+    // A newer update supersedes queued work, which then settles without rendering;
+    // wait until no newer update was queued while this one was pending.
+    let pending: Promise<void>;
+    do {
+      pending = this.pending;
+      await this.withContext(pending);
+    } while (pending !== this.pending);
     ensure(!this.lost, "WEBGL_UNAVAILABLE", "Graphics context is lost");
     ensure(
       minRevision === undefined || this.revision >= minRevision,
@@ -1691,7 +1747,11 @@ export class SceneAdapter {
             materials.add(m);
       });
     geometries.forEach((g) => g.dispose());
-    materials.forEach((m) => m.dispose());
+    materials.forEach((m) => {
+      if (!m.userData.rawPrimitiveShared) m.dispose();
+    });
+    this.rawCompiler?.dispose();
+    this.rawCompiler = undefined;
     this.select([]);
     this.grid.geometry.dispose();
     (this.grid.material as THREE.Material).dispose();

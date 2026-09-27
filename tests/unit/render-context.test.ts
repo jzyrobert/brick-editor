@@ -47,3 +47,21 @@ it("independent primitive compilation retains ancestor custom colours and local 
   expect(vertices).toBe(3);
   expect(colors).toContain("ed9851");
 });
+it("indexed source context refreshes after a project revision and retains per-record BFC state", async () => {
+  const { occurrenceRawRecord } = await import(
+    "../../src/render/source-context"
+  );
+  const p = importLDraw(
+    "0 FILE main.ldr\n0 BFC CERTIFY CCW\n3 4 0 0 0 20 0 0 0 -20 0\n0 BFC CW\n3 4 0 0 1 20 0 1 0 -20 1\n",
+  );
+  const [a, b] = occurrences(p);
+  expect(occurrenceSourceContext(p, a)).toContain("CERTIFY CCW");
+  expect(occurrenceSourceContext(p, b)).toContain("CERTIFY CW");
+  expect(occurrenceRawRecord(p, b)).toBe("3 4 0 0 1 20 0 1 0 -20 1");
+  const record = p.models[p.rootModelId].records.find(
+    (r) => r.raw === "0 BFC CW",
+  )!;
+  record.raw = "0 BFC CCW";
+  p.revision++;
+  expect(occurrenceSourceContext(p, b)).toContain("CERTIFY CCW");
+});

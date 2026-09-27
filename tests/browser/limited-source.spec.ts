@@ -228,13 +228,21 @@ for (const { width, denyStorage } of [
           page.getByText("Unsaved prior project", { exact: true }),
         ).toBeVisible();
         expect(
-          await page.evaluate(
-            (id) =>
-              !!localStorage.getItem(
-                "brick-editor:" + encodeURIComponent(id) + ":head",
-              ),
-            previousId,
-          ),
+          await page.evaluate(async (id) => {
+            const db = await new Promise<IDBDatabase>((resolve) => {
+              const r = indexedDB.open("brick-editor-projects", 1);
+              r.onsuccess = () => resolve(r.result);
+            });
+            const found = await new Promise<boolean>((resolve) => {
+              const r = db
+                .transaction("projects")
+                .objectStore("projects")
+                .get(id);
+              r.onsuccess = () => resolve(!!r.result?.snapshots.length);
+            });
+            db.close();
+            return found;
+          }, previousId),
         ).toBe(true);
       }
       const pendingCode = await page.evaluate(

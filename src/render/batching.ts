@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { ensure } from "../core/types";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
 /** Transform conditional-line control points and vectors along with ordinary geometry. */
@@ -24,6 +25,51 @@ export function transformLineGeometry(
   return geometry;
 }
 
+/** Bake affine meshes without changing source geometry. Three normally flips front-face
+ * state for reflected object matrices; after baking we must reverse each triangle. */
+export function transformTriangleGeometry(
+  source: THREE.BufferGeometry,
+  matrix: THREE.Matrix4,
+) {
+  const geometry = source.index ? source.toNonIndexed() : source.clone();
+  geometry.applyMatrix4(matrix);
+  if (matrix.determinant() < 0) {
+    for (const attribute of Object.values(geometry.attributes)) {
+      const buffer = attribute as THREE.BufferAttribute;
+      for (let vertex = 0; vertex + 2 < buffer.count; vertex += 3) {
+        for (let component = 0; component < buffer.itemSize; component++) {
+          const a = (vertex + 1) * buffer.itemSize + component;
+          const b = (vertex + 2) * buffer.itemSize + component;
+          const value = buffer.array[a];
+          buffer.array[a] = buffer.array[b];
+          buffer.array[b] = value;
+        }
+      }
+    }
+  }
+  return geometry;
+}
+
+export const RAW_BATCH_LIMITS = Object.freeze({
+  chunkVertices: 65536,
+  vertices: 2_000_000,
+  bytes: 128 * 1024 * 1024,
+});
+
+function rawLayout(geometry: THREE.BufferGeometry) {
+  return Object.entries(geometry.attributes)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, attribute]) =>
+      [
+        name,
+        attribute.itemSize,
+        attribute.normalized,
+        attribute.array.constructor.name,
+      ].join("/"),
+    )
+    .join("|");
+}
+
 /** Three's instanced normal path does not represent arbitrary shear or reflection. */
 export function canInstanceMatrix(matrix: THREE.Matrix4) {
   if (matrix.determinant() <= 1e-12) return false;
@@ -44,7 +90,13 @@ export function canInstanceMatrix(matrix: THREE.Matrix4) {
 }
 
 type Drawable = THREE.Mesh | THREE.LineSegments;
-type Entry = { object: Drawable; matrix: THREE.Matrix4; occurrenceId: string };
+type Entry = {
+  object: Drawable;
+  matrix: THREE.Matrix4;
+  occurrenceId: string;
+  /** Baked only as a draw-call optimization; may still render unmerged. */
+  optional?: boolean;
+};
 
 /**
  * A render-only cache. Authoritative occurrence handles remain available unchanged
@@ -78,12 +130,12 @@ export class RenderBatches {
     const signature = JSON.stringify(visible.map(([id]) => id));
     if (signature === this.signature) return;
     this.clear();
-    this.signature = signature;
     this.root.parent?.updateMatrixWorld(true);
     const parentInverse = new THREE.Matrix4()
       .copy(this.root.parent?.matrixWorld || new THREE.Matrix4())
       .invert();
     const buckets = new Map<string, Entry[]>();
+    const rawBuckets = new Map<string, Entry[]>();
     for (const [occurrenceId, group] of visible) {
       group.updateMatrixWorld(true);
       group.traverse((object) => {
@@ -105,6 +157,47 @@ export class RenderBatches {
         const materials = Array.isArray(drawable.material)
           ? drawable.material
           : [drawable.material];
+        const raw = !!(
+          group.userData.rawPrimitive ||
+          group.userData.prototype?.userData.rawPrimitive
+        );
+        const opaque = materials.every((m) => !m.transparent);
+        // Raw primitives, and opaque meshes whose sheared/reflected placement instancing
+        // cannot represent, are baked into merged batches instead of one draw each.
+        const rawEligible =
+          (raw ||
+            (opaque &&
+              (drawable as THREE.Mesh).isMesh &&
+              !canInstanceMatrix(matrix))) &&
+          opaque &&
+          Math.abs(matrix.determinant()) > 1e-12 &&
+          Object.values(drawable.geometry.attributes).every(
+            (a) =>
+              !(a as THREE.InterleavedBufferAttribute)
+                .isInterleavedBufferAttribute,
+          ) &&
+          Object.keys(drawable.geometry.morphAttributes).length === 0 &&
+          drawable.geometry.drawRange.start === 0 &&
+          drawable.geometry.drawRange.count === Infinity;
+        if (rawEligible) {
+          const key = [
+            (drawable as THREE.Mesh).isMesh ? "mesh" : "line",
+            rawLayout(drawable.geometry),
+            ...materials.map((m) => m.uuid),
+            drawable.renderOrder,
+            drawable.castShadow,
+            drawable.receiveShadow,
+          ].join(":");
+          const entries = rawBuckets.get(key) || [];
+          entries.push({
+            object: drawable,
+            matrix,
+            occurrenceId,
+            optional: !raw,
+          });
+          rawBuckets.set(key, entries);
+          return;
+        }
         const eligible =
           materials.every((m) => !m.transparent) &&
           (!(drawable as THREE.Mesh).isMesh || canInstanceMatrix(matrix));
@@ -122,6 +215,48 @@ export class RenderBatches {
         entries.push({ object: drawable, matrix, occurrenceId });
         buckets.set(key, entries);
       });
+    }
+    let rawVertices = 0,
+      rawBytes = 0;
+    for (const entries of rawBuckets.values()) {
+      let chunk: Entry[] = [],
+        chunkVertices = 0;
+      for (const entry of entries) {
+        const geometry = entry.object.geometry;
+        const vertices =
+          geometry.index?.count || geometry.getAttribute("position").count;
+        const bytes = Object.values(geometry.attributes).reduce(
+          (sum, a) => sum + vertices * a.itemSize * a.array.BYTES_PER_ELEMENT,
+          0,
+        );
+        if (
+          entry.optional &&
+          (rawVertices + vertices > RAW_BATCH_LIMITS.vertices ||
+            rawBytes + bytes > RAW_BATCH_LIMITS.bytes)
+        ) {
+          this.fallback(entry.object, entry.matrix, entry.occurrenceId);
+          continue;
+        }
+        rawVertices += vertices;
+        rawBytes += bytes;
+        ensure(
+          rawVertices <= RAW_BATCH_LIMITS.vertices &&
+            rawBytes <= RAW_BATCH_LIMITS.bytes,
+          "LIMIT_EXCEEDED",
+          "Raw render batches exceed two million vertices or 128 MiB of generated attributes.",
+        );
+        if (
+          chunk.length &&
+          chunkVertices + vertices > RAW_BATCH_LIMITS.chunkVertices
+        ) {
+          this.mergeRaw(chunk);
+          chunk = [];
+          chunkVertices = 0;
+        }
+        chunk.push(entry);
+        chunkVertices += vertices;
+      }
+      if (chunk.length) this.mergeRaw(chunk);
     }
     for (const entries of buckets.values()) {
       const first = entries[0].object;
@@ -187,6 +322,74 @@ export class RenderBatches {
         this.root.add(lines);
       }
     }
+    this.signature = signature;
+  }
+  private mergeRaw(entries: Entry[]) {
+    const first = entries[0].object;
+    const mesh = !!(first as THREE.Mesh).isMesh;
+    const geometries = entries.map((entry) =>
+      mesh
+        ? transformTriangleGeometry(entry.object.geometry, entry.matrix)
+        : transformLineGeometry(entry.object.geometry, entry.matrix),
+    );
+    let merged: THREE.BufferGeometry | null;
+    try {
+      merged = mergeGeometries(geometries, false);
+    } finally {
+      geometries.forEach((geometry) => geometry.dispose());
+    }
+    if (!merged) {
+      entries.forEach((entry) =>
+        this.fallback(entry.object, entry.matrix, entry.occurrenceId),
+      );
+      return;
+    }
+    merged.clearGroups();
+    // Material-array groups use cumulative primitive counts, never a fixed first-face stride.
+    let offset = 0;
+    const groups: Array<{
+      start: number;
+      count: number;
+      materialIndex: number;
+    }> = [];
+    for (const entry of entries) {
+      const source = entry.object.geometry;
+      const count =
+        source.index?.count || source.getAttribute("position").count;
+      const sourceGroups = source.groups.length
+        ? source.groups
+        : [{ start: 0, count, materialIndex: 0 }];
+      for (const group of sourceGroups) {
+        const start = offset + group.start,
+          materialIndex = group.materialIndex || 0,
+          groupCount = Math.max(0, Math.min(group.count, count - group.start));
+        const previous = groups.at(-1);
+        if (
+          previous &&
+          previous.materialIndex === materialIndex &&
+          previous.start + previous.count === start
+        )
+          previous.count += groupCount;
+        else groups.push({ start, count: groupCount, materialIndex });
+      }
+      offset += count;
+    }
+    for (const group of groups)
+      merged.addGroup(group.start, group.count, group.materialIndex);
+    merged.computeBoundingBox();
+    merged.computeBoundingSphere();
+    const drawable = mesh
+      ? new THREE.Mesh(merged, first.material)
+      : new THREE.LineSegments(merged, first.material);
+    drawable.renderOrder = first.renderOrder;
+    drawable.castShadow = first.castShadow;
+    drawable.receiveShadow = first.receiveShadow;
+    drawable.userData = {
+      occurrenceIds: entries.map((entry) => entry.occurrenceId),
+      rawPrimitiveBatch: true,
+    };
+    this.generated.push(merged);
+    this.root.add(drawable);
   }
   private fallback(
     source: Drawable,

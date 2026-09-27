@@ -6,6 +6,8 @@ export declare const playRequest: Validator;
 export declare const playInput: Validator;
 export declare const playJointTarget: Validator;
 export declare const playTeleport: Validator;
+export declare const playSeatRequest: Validator;
+export declare const playSeatExit: Validator;
 export declare const playSnapshot: Validator;
 export declare const api: Validator;
 export declare const importRequest: Validator;

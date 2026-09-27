@@ -19,12 +19,23 @@ async function saved(page: Page) {
   await expect(page.locator(".save-state")).toContainText("Saved revision");
 }
 async function stored(page: Page, id?: string) {
-  return page.evaluate((id) => {
+  return page.evaluate(async (id) => {
     const selected = id ?? localStorage.getItem("brick-editor-current")!;
-    const head = localStorage.getItem(
-      "brick-editor:" + encodeURIComponent(selected) + ":head",
-    )!;
-    return JSON.parse(JSON.parse(localStorage.getItem(head)!).json);
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const r = indexedDB.open("brick-editor-projects", 1);
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    const record = await new Promise<any>((resolve, reject) => {
+      const r = db
+        .transaction("projects")
+        .objectStore("projects")
+        .get(selected);
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    db.close();
+    return record?.deleted ? null : JSON.parse(record.snapshots[0].json);
   }, id);
 }
 test("two tabs cannot overwrite saved edits and the losing tab can fork", async ({
@@ -152,15 +163,15 @@ test("an early import during delayed startup recovery wins and is autosaved", as
       recoveryDigestBlocked?: boolean;
       releaseRecoveryDigest?: () => void;
     };
-    const id = localStorage.getItem("brick-editor-current")!;
-    const head = localStorage.getItem(
-      "brick-editor:" + encodeURIComponent(id) + ":head",
-    )!;
-    const storedJson = JSON.parse(localStorage.getItem(head)!).json as string;
     const digest = crypto.subtle.digest.bind(crypto.subtle);
     let held = false;
     crypto.subtle.digest = (algorithm, data) => {
-      if (!held && new TextDecoder().decode(data) === storedJson) {
+      if (
+        !held &&
+        new TextDecoder()
+          .decode(data)
+          .includes('"title":"Previously saved wall"')
+      ) {
         held = true;
         controls.recoveryDigestBlocked = true;
         return new Promise<void>((resolve) => {
@@ -299,7 +310,8 @@ test("unavailable coordination preserves saved bytes and offers a native backup"
   await rename(page, "Protected saved copy");
   await saved(page);
   const original = await stored(page);
-  await context.addInitScript(() => {
+  await page.evaluate(() => {
+    (window as any).savedIDB = indexedDB;
     Object.defineProperty(navigator, "locks", {
       value: undefined,
       configurable: true,
@@ -309,13 +321,16 @@ test("unavailable coordination preserves saved bytes and offers a native backup"
       configurable: true,
     });
   });
-  await page.reload();
-  await expect(page.getByLabel("Project title")).toHaveValue(
-    "Protected saved copy",
-  );
+
   await rename(page, "Unsaved in memory");
   await expect(page.getByRole("alert")).toContainText(
     "Automatic saving is unavailable",
+  );
+  await page.evaluate(() =>
+    Object.defineProperty(window, "indexedDB", {
+      value: (window as any).savedIDB,
+      configurable: true,
+    }),
   );
   expect((await stored(page, original.id)).title).toBe("Protected saved copy");
   const event = page.waitForEvent("download");

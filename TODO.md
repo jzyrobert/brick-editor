@@ -9,7 +9,8 @@ Deployment follow-up: GitHub HTTPS still failed certificate verification on 2026
 
 Suggested order for the next implementation pass:
 
-- [ ] Fix the reported Santorini MPD loading failure: raw faces currently exhaust renderer occurrence/variant budgets and trigger repeated whole-project compilation. Preserve source identities while compiling and batching raw geometry efficiently.
+- [x] Fix the reported Santorini MPD loading failure: raw primitives compile/batch efficiently with preserved source identities, non-certified faces render lit, and projects persist in IndexedDB beyond the localStorage quota. See STATUS "Raw-geometry architectural imports".
+- [ ] Measure raw-geometry import performance (load, capture, draw calls, memory) on real phone hardware; current evidence is software WebGL on a desktop-class VM.
 
 - [x] Implement the authored open-bench driver-seat slice: collision-checked entry/exit, atomic rider/vehicle movement, seated visuals, API/capture reporting and mobile UX audit. Runtime, metadata editing, focused browser acceptance and an independent 8.7/10 mobile review pass; final integrated CI remains the publication gate.
 

@@ -56,7 +56,7 @@ import { catalog, colors } from "../catalog/catalog";
 import { template } from "../catalog/templates";
 import { SceneAdapter } from "../render/adapter";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
-import { LocalProjects } from "../persistence/storage";
+import { BrowserProjects } from "../persistence/browser-projects";
 import { type Preview } from "../inventory/service";
 import { FillOptions, defaultFillOptions } from "./FillOptions";
 import { type FillRequest, fillPreview } from "../edit/fill";
@@ -85,13 +85,19 @@ function expectRendererMount() {
   });
 }
 expectRendererMount();
+// Stored-project recovery is asynchronous (IndexedDB); automation readiness must not
+// resolve against the blank startup document while it is still in flight.
+let releaseStartupRecovery = () => {};
+const startupRecovered = new Promise<void>((resolve) => {
+  releaseStartupRecovery = resolve;
+});
 const applicationAPI = createAPI(
   editor,
   () => runtime.renderer,
   () => runtime.play,
   () => runtime.mechanisms,
   () => runtime.selection(),
-  () => rendererMounted,
+  () => Promise.all([rendererMounted, startupRecovered]).then(() => {}),
 );
 function download(
   name: string,
@@ -464,7 +470,7 @@ function Workspace() {
       enqueueSourceSave(async () => {
         try {
           if (editor.project.id === p.id) setSaveStatus("Saving…");
-          const store = new LocalProjects(localStorage);
+          const store = new BrowserProjects(localStorage);
           saveRevisions.current.set(
             p.id,
             await store.save(p, saveRevisions.current.get(p.id) ?? null),
@@ -499,9 +505,12 @@ function Workspace() {
     document.addEventListener("visibilitychange", flushSave);
     const notifySavedChange = (event: StorageEvent) => {
       const id = editor.project.id;
-      if (event.key !== "brick-editor:" + encodeURIComponent(id) + ":head")
+      if (
+        event.key !== "brick-editor:" + encodeURIComponent(id) + ":head" &&
+        event.key !== "brick-editor-project-change"
+      )
         return;
-      void new LocalProjects(localStorage)
+      void new BrowserProjects(localStorage)
         .load(id)
         .then((saved) => {
           if (editor.project.id !== id || !loaded.current) return;
@@ -560,7 +569,7 @@ function Workspace() {
       try {
         const id = localStorage.getItem("brick-editor-current");
         const saved = id
-          ? await new LocalProjects(localStorage).load(id)
+          ? await new BrowserProjects(localStorage).load(id)
           : null;
         if (
           saved &&
@@ -578,6 +587,7 @@ function Workspace() {
         renderer.current?.update(editor.project).catch(() => {});
       }
       loaded.current = true;
+      releaseStartupRecovery();
       if (
         !recovered &&
         (editor.project.revision !== initialRevision ||
@@ -1710,7 +1720,7 @@ function Workspace() {
                   format: "native",
                 });
                 download(backup.name, backup.bytes, backup.mimeType);
-                const saved = await new LocalProjects(localStorage).load(
+                const saved = await new BrowserProjects(localStorage).load(
                   projectId,
                 );
                 ensure(

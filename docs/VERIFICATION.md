@@ -143,3 +143,21 @@ Checkpoint `3c45969` passed clean GitHub CI ([run 36331550085](https://github.co
 Seated runtime passes the focused entry/drive/exit, rider/world and foreign-door collision, safe-exit, yaw-wrap and camera-obstruction checks. The integrated pre-camera-adjustment run passed 295 tests across 65 files; the camera and API preflight additions have separate focused coverage. Five final production-browser cases pass (26.6 seconds) at 360px, 1080px and desktop, including real simultaneous touch driving/look, capture, blocked-exit recovery, stale metadata refusal and preserving the seat through the older vehicle editor. Independent mobile review improved from 8.2 to **8.7/10** after the elevated chase view and exit-card placement fixes. The rendered original figure is also checked against independent body boxes at rotated seat/head angles. Live deployment remains `3c45969` until this checkpoint passes integrated CI.
 
 An isolated checkout of the exact staged seated-driving checkpoint passes **297 unit/integration/CLI tests across 66 files**, including the final camera and API-preflight additions. This keeps subsequent Santorini renderer/storage work out of the seat checkpoint's evidence.
+
+## Raw-geometry architectural import checkpoint
+
+Evidence for the supplied Santorini v2 MPD set (user files; not committed). Software WebGL2 (SwiftShader) on the Linux ARM64 VM; single runs, not p95 statistics or phone measurements.
+
+| File                          | Leaves | Ready after import | Result                                           |
+| ----------------------------- | -----: | -----------------: | ------------------------------------------------ |
+| `room_C0.mpd`                 |    615 |            ~0.35 s | Renders; previously refused (128-variant budget) |
+| `all_interiors_only.mpd`      |  2,356 |             ~1.0 s | Renders; previously refused                      |
+| `santorini_v2_cutaway.mpd`    | 13,923 |             ~5.1 s | Renders                                          |
+| `santorini_v2_complete.mpd`   | 19,922 |          ~8.2–10 s | Renders; previously refused (5,000 occurrences)  |
+| `all_interiors_only_flat.ldr` | 27,600 |             ~8.0 s | Renders (all raw geometry)                       |
+
+- Rendered output was compared by eye with the supplied previews: white walls, blue domes/shutters, vines and cobbles match. The first integrated build rendered non-certified walls black (zero normals from loader twin-face smoothing); that is fixed and guarded by `tests/browser/raw-geometry.spec.ts`, which fails with 0 lit pixels when the fix is removed.
+- Complete-file persistence: import → IndexedDB saved revision 1 → reload (identical models and LDraw export) → raw-face recolour → saved revision 3 → reload (identical). Native backup 1.03 MB, 142 source models. Previously localStorage autosave threw `QuotaExceededError` at ~9.5 M characters.
+- Draw calls for the complete file fell from ~580 to ~250–270 per frame after baking sheared/non-instanceable part placements into merged batches (6 → 64 merged meshes, 582 → 10 per-object fallbacks). Frame time on software GL did not change measurably (~27–31 ms at 360×800, 1080×1800 and 1440×1000), so this is not an FPS claim. JS heap after load: ~310–530 MB depending on viewport.
+- Two startup races surfaced and were fixed: automation `ready()` could resolve before asynchronous IndexedDB recovery, and against an update superseded by a newer one.
+- The BFC pixel reference now disables loader smoothing, because the stock loader cancels double-sided twin normals in the reference as well.

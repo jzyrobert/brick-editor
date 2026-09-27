@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Editor } from "../core/commands";
 import type { BrickEditorAPI } from "../automation/api";
-import { LocalProjects } from "../persistence/storage";
+import { BrowserProjects } from "../persistence/browser-projects";
 import { ProjectLibrary } from "./ProjectLibrary";
 import { ensure } from "../core/types";
 
@@ -68,7 +68,7 @@ export function LimitedSource({
     let active = true;
     setSaveStatus("Saving source…");
     void enqueueSave(() =>
-      new LocalProjects(localStorage).save(
+      new BrowserProjects(localStorage).save(
         project,
         knownSaveRevisions.get(project.id) ?? null,
       ),

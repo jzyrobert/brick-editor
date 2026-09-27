@@ -8,6 +8,10 @@ export async function referencePixels(text: string, z: number) {
   const loader = new LDrawLoader().setConditionalLineMaterial(
     LDrawConditionalLineMaterial,
   );
+  // The fixture's faces are isolated triangles, so loader smoothing could only pair a
+  // double-sided (NOCLIP/uncertified) face with its reversed twin and cancel both normals,
+  // rendering them unlit. Culling and winding are what this reference checks.
+  loader.smoothNormals = false;
   const group = await new Promise<THREE.Group>((resolve, reject) =>
     (
       loader.parse as unknown as (
