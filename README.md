@@ -101,7 +101,7 @@ Inventory never launches Chromium. A blocked complete export exits nonzero, writ
 
 Published site: [Brick Editor](https://bricks.robertj.in/), hosted on Cloudflare Pages. See [deployment configuration](docs/DEPLOYMENT.md).
 
-The [deployment workflow](.github/workflows/cloudflare.yml) validates pushes to `main`, then advances the branch watched by Cloudflare Pages. Remaining implementation work is tracked in [TODO.md](TODO.md) and [the detailed status report](docs/STATUS.md).
+The [deployment workflow](.github/workflows/cloudflare.yml) validates pushes to `main`, then uploads the tested static assets with Wrangler when the repository Cloudflare token is configured. Remaining implementation work is tracked in [TODO.md](TODO.md) and [the detailed status report](docs/STATUS.md).
 
 ```sh
 BASE_PATH=/brick-editor/ npm run build

@@ -4,7 +4,8 @@ The detailed backlog and acceptance gaps are maintained in [docs/STATUS.md](docs
 
 Deployment follow-up: GitHub HTTPS still failed certificate verification on 2026-09-27; the user requested migration to Cloudflare Pages. Cloudflare Pages is deployed, the domain is active, DNS points to Pages, and HTTPS returns HTTP 200 with a valid certificate.
 
-- [ ] Finish secure live keyboard/touch checks and verify automatic Cloudflare publication from the tested branch. See [hosting configuration](docs/DEPLOYMENT.md).
+- [x] Verify secure live keyboard/touch controls at desktop, 360px and 1080px widths, including corrected steering, nearby interaction, multiple mechanisms and capture behavior.
+- [ ] Add the repository Actions secret `CLOUDFLARE_API_TOKEN` (Pages Edit), then verify a successful automatic Wrangler upload. The account variable and workflow are configured; native Git build triggers are disabled because they failed to start builds. See [hosting configuration](docs/DEPLOYMENT.md).
 
 Suggested order for the next implementation pass:
 

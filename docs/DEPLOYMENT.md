@@ -2,9 +2,11 @@
 
 Production address: **https://bricks.robertj.in/**. The app has moved from GitHub Pages to the Cloudflare Pages project **brick-editor**, in the same account as modern-mahjong. Its provider URL is **https://brick-editor.pages.dev/**.
 
-The Cloudflare connection can manage Pages and DNS but cannot create account API tokens. This repository therefore uses the existing Cloudflare GitHub integration instead of duplicating modern-mahjong's Wrangler deployment secret. The result is still a static Cloudflare Pages deployment, with no application server.
+`.github/workflows/cloudflare.yml` runs formatting, unit/integration/CLI tests, pinned-library validation and the full Chromium browser suite on `main`. A successful run uploads the tested `dist/` artifact and advances `cloudflare-production` without force. The publication job uses pinned Wrangler 4.142.0 to upload that artifact to Cloudflare Pages, following the same approach as modern-mahjong.
 
-`.github/workflows/cloudflare.yml` runs formatting, unit/integration/CLI tests, pinned-library validation and the full Chromium browser suite on `main`. Only a successful run advances `cloudflare-production` to the tested commit. Cloudflare watches that branch, with preview deployments disabled, and builds `dist/` using `npm ci && npm run build`, Node 22.14.0 and `BASE_PATH=/`. The branch advances without force, preventing an older rerun from rolling production backward.
+**Automatic publication awaits configuration of the repository Actions secret `CLOUDFLARE_API_TOKEN`**, with Cloudflare Pages Edit permission for the hosting account. The repository variable `CLOUDFLARE_ACCOUNT_ID` is already configured. Until the secret exists, the workflow explicitly warns and skips upload; a green validation run alone does not mean production changed. Add the secret through GitHub settings, then run the workflow and verify its Cloudflare deployment. Never commit the token.
+
+The authenticated Cloudflare connection deployed the current site directly. It can manage Pages and DNS but cannot create the required API token, and GitHub cannot reveal another repository's encrypted secret. Native Git build triggers failed to start deployments even after reconnection, so automatic native builds and previews are disabled. The source connection and tested branch remain available for manual builds using the settings below. This is a static deployment with no application server.
 
 Cloudflare project settings:
 
@@ -19,7 +21,7 @@ Cloudflare project settings:
 | Base path         | /                       |
 | Custom domain     | bricks.robertj.in       |
 
-The custom domain must be attached to the Pages project before its DNS is changed. The Cloudflare `robertj.in` record is CNAME `bricks` → `brick-editor.pages.dev`, DNS only, TTL Auto. Pages itself serves through Cloudflare and handles TLS. Domain verification is active and HTTPS returned HTTP 200 with a valid certificate on 2026-09-27. Live-browser and automatic-publication checks are tracked in TODO.md until they pass.
+The custom domain must be attached to the Pages project before its DNS is changed. The Cloudflare `robertj.in` record is CNAME `bricks` → `brick-editor.pages.dev`, DNS only, TTL Auto. Pages itself serves through Cloudflare and handles TLS. Domain verification is active and HTTPS returned HTTP 200 with a valid certificate on 2026-09-27. Secure live Chromium checks passed at desktop, 360px and 1080px widths, including keyboard/touch steering, multiple mechanisms and capture behavior. Automatic publication remains tracked in TODO.md until its credential is configured and an upload succeeds.
 
 GitHub's former custom-domain certificate never became valid during the migration checks. The old GitHub Pages deployment workflow is replaced by the validation/publication workflow above. Do not repoint production DNS to GitHub while it still has the invalid certificate.
 
