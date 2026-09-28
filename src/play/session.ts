@@ -29,6 +29,12 @@ import {
   validatePlayMechanismSources,
   type PlayMechanismSource,
 } from "./mechanism";
+import type { AutoDoor, AutoDoorSkip } from "./auto-doors";
+import {
+  PlayDynamicsWorld,
+  validateDynamicRigSources,
+  type DynamicRigSource,
+} from "./dynamics";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { ensure, type CameraSpec, type Vec3 } from "../core/types";
 import {
@@ -37,6 +43,8 @@ import {
   type PlayCameraMode,
   type PlayInput,
   type PlayJointTargetRequest,
+  type PlayMotorRequest,
+  type PlayAutoDoorSwing,
   type PlayLocomotion,
   type PlayRequest,
   type PlaySnapshotReport,
@@ -51,6 +59,7 @@ const S = P.scaleMetresPerLdu,
   DT = 1 / 60;
 const rot = { x: 0, y: 0, z: 0, w: 1 };
 const physics = ([x, y, z]: Vec3) => ({ x: x * S, y: -y * S, z: -z * S });
+const physicsDirection = ([x, y, z]: Vec3) => ({ x, y: -y, z: -z });
 const ldraw = ({ x, y, z }: { x: number; y: number; z: number }): Vec3 => [
   x / S,
   -y / S,
@@ -86,6 +95,8 @@ function keys(o: object, allowed: string[]) {
 /** Fixed-step isolated session. No authored project references or mutations. */
 export class PlaySession {
   private mechanisms = new Map<string, PlayMechanism>();
+  /** Optional dynamic rigid-body world; absent unless dynamic rigs were requested. */
+  private dynamics?: PlayDynamicsWorld;
   private vehicleWorld?: PlayVehicleWorld;
   private seatSources = new Map<
     string,
@@ -141,6 +152,7 @@ export class PlaySession {
     snapshot: CollisionSnapshot,
     request: PlayRequest,
     mechanismSource?: PlayMechanismSource | PlayMechanismSource[],
+    autoDoors?: { doors: AutoDoor[]; skipped: AutoDoorSkip[] },
   ) {
     this.worldProfile = {
       ...validatePlayWorldProfile(
@@ -212,12 +224,38 @@ export class PlaySession {
         P.radius * S,
       ).setSensor(true),
     );
+    const allSources = Array.isArray(mechanismSource)
+      ? mechanismSource
+      : mechanismSource
+        ? [mechanismSource]
+        : [];
+    const dynamicIds = new Set(request.dynamicRigIds ?? []);
     try {
-      for (const source of Array.isArray(mechanismSource)
-        ? mechanismSource
-        : mechanismSource
-          ? [mechanismSource]
-          : [])
+      const dynamicSources = allSources.filter((source) =>
+        dynamicIds.has(source.rigId),
+      ) as DynamicRigSource[];
+      if (dynamicSources.length) {
+        ensure(
+          this.ready,
+          "INVALID_INPUT",
+          "Dynamic physics needs complete included collision geometry. Use kinematic physics for this build.",
+        );
+        this.dynamics = new PlayDynamicsWorld(
+          drivingStatic
+            ? {
+                vertices: drivingStatic.vertices,
+                indices: drivingStatic.indices,
+              }
+            : undefined,
+          request.ground !== false,
+          this.world,
+          dynamicSources,
+          revision,
+        );
+      }
+      for (const source of allSources.filter(
+        (source) => !dynamicIds.has(source.rigId),
+      ))
         this.mechanisms.set(
           source.rigId,
           new PlayMechanism(this.world, source, () => ({
@@ -233,11 +271,14 @@ export class PlaySession {
               : {}),
           })),
         );
-      const sources = Array.isArray(mechanismSource)
-        ? mechanismSource
-        : mechanismSource
-          ? [mechanismSource]
-          : [];
+      const sources = allSources.filter(
+        (source) => !dynamicIds.has(source.rigId),
+      );
+      if (this.dynamics)
+        for (const [id, mechanism] of this.mechanisms) {
+          this.dynamics.addKinematicRig(id, mechanism.movingShapes());
+          this.dynamics.syncKinematicRig(id, mechanism.groupFrames(), true);
+        }
       if (
         sources.some(
           (source) => source.project.motionRigs[source.rigId].vehicle,
@@ -247,13 +288,18 @@ export class PlaySession {
           sources,
           drivingStatic,
           request.ground !== false,
-          (exclude) =>
-            [...this.mechanisms]
+          (exclude) => [
+            ...[...this.mechanisms]
               .filter(([id]) => id !== exclude)
               .map(([rigId, mechanism]) => ({
                 rigId,
                 sources: mechanism.collisionSources(),
               })),
+            ...(this.dynamics?.rigIds() ?? []).map((rigId) => ({
+              rigId,
+              sources: this.dynamics!.rig(rigId)!.collisionSources(),
+            })),
+          ],
           this.ready
             ? undefined
             : "Complete included collision geometry is unavailable",
@@ -295,6 +341,8 @@ export class PlaySession {
         }
       }
     } catch (error) {
+      for (const mechanism of this.mechanisms.values()) mechanism.dispose();
+      this.dynamics?.dispose();
       this.world.free();
       throw error;
     }
@@ -325,11 +373,110 @@ export class PlaySession {
       );
     this.syncCollider();
     this.world.step();
+    if (autoDoors) {
+      const groups = new Map(
+        allSources.map((source) => [source.rigId, source.groups] as const),
+      );
+      this.autoDoors = {
+        doors: autoDoors.doors.map((door) => {
+          const mechanism = this.mechanisms.get(door.rigId);
+          const leafGroup = `leaf-${door.jointId === "door" ? 1 : door.jointId.slice(5)}`;
+          const mesh = groups.get(door.rigId)?.[leafGroup];
+          const swing =
+            mechanism && mesh
+              ? this.chooseDoorSwing(
+                  door,
+                  mesh,
+                  mechanism.proxyCollider(leafGroup),
+                )
+              : "blocked";
+          mechanism?.restrictJointLimits(
+            door.jointId,
+            swing === "both"
+              ? [-90, 90]
+              : swing === "positive"
+                ? [0, 90]
+                : swing === "negative"
+                  ? [-90, 0]
+                  : [0, 0],
+          );
+          return { ...structuredClone(door), swing };
+        }),
+        skipped: structuredClone(autoDoors.skipped),
+      };
+    }
+  }
+  private autoDoors?: {
+    doors: Array<AutoDoor & { swing: PlayAutoDoorSwing }>;
+    skipped: AutoDoorSkip[];
+  };
+  /**
+   * LDraw has no door-stop data. Sweep an inset convex proxy of the leaf
+   * both ways around the hinge against the rest of the Play world (frame,
+   * walls, other rigs): a direction is free when the leaf clears 15-90 degrees.
+   */
+  private chooseDoorSwing(
+    door: AutoDoor,
+    mesh: CollisionSnapshot,
+    own: RAPIER.Collider | undefined,
+  ): PlayAutoDoorSwing {
+    const v = mesh.vertices;
+    if (!v.length) return "blocked";
+    const min = [Infinity, Infinity, Infinity],
+      max = [-Infinity, -Infinity, -Infinity];
+    for (let i = 0; i < v.length; i++) {
+      min[i % 3] = Math.min(min[i % 3], v[i]);
+      max[i % 3] = Math.max(max[i % 3], v[i]);
+    }
+    const center = min.map((m, k) => (m + max[k]) / 2),
+      shrink = min.map((m, k) => {
+        const half = (max[k] - m) / 2;
+        return half > 2.5 ? (half - 2) / half : 0.2;
+      });
+    const seen = new Set<string>(),
+      points: number[] = [];
+    for (let i = 0; i < v.length; i += 3) {
+      const q = [0, 1, 2].map(
+        (k) => center[k] + (v[i + k] - center[k]) * shrink[k] - door.pivot[k],
+      ) as Vec3;
+      const key = q.map((n) => Math.round(n)).join(",");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const m = physics(q);
+      points.push(m.x, m.y, m.z);
+    }
+    const shape = new RAPIER.ConvexPolyhedron(new Float32Array(points), null);
+    const axis = physicsDirection(door.axis);
+    const blocked = (degrees: number) => {
+      const half = (degrees * Math.PI) / 360,
+        s = Math.sin(half);
+      return !!this.world.intersectionWithShape(
+        physics(door.pivot),
+        { x: axis.x * s, y: axis.y * s, z: axis.z * s, w: Math.cos(half) },
+        shape,
+        RAPIER.QueryFilterFlags.EXCLUDE_SENSORS,
+        undefined,
+        own,
+      );
+    };
+    if (blocked(0)) return "both";
+    const free = (sign: number) =>
+      [15, 35, 60, 90].every((angle) => !blocked(sign * angle));
+    const positive = free(1),
+      negative = free(-1);
+    return positive && negative
+      ? "both"
+      : positive
+        ? "positive"
+        : negative
+          ? "negative"
+          : "blocked";
   }
   static async create(
     snapshot: CollisionSnapshot,
     request: PlayRequest = {},
     mechanismSource?: PlayMechanismSource | PlayMechanismSource[],
+    autoDoors?: { doors: AutoDoor[]; skipped: AutoDoorSkip[] },
   ): Promise<PlaySession> {
     ensure(
       request && typeof request === "object",
@@ -346,6 +493,8 @@ export class PlaySession {
       "realtime",
       "rigId",
       "rigIds",
+      "dynamicRigIds",
+      "autoDoors",
       "cameraSettings",
       "worldProfile",
     ]);
@@ -446,12 +595,43 @@ export class PlaySession {
       "Requested Play rigs require matching geometry from the same source revision",
     );
     validatePlayMechanismSources(sources, snapshot.revision);
+    if (request.dynamicRigIds !== undefined) {
+      ensure(
+        Array.isArray(request.dynamicRigIds) &&
+          new Set(request.dynamicRigIds).size ===
+            request.dynamicRigIds.length &&
+          request.dynamicRigIds.every((id) =>
+            sources.some((source) => source.rigId === id),
+          ),
+        "INVALID_INPUT",
+        "dynamicRigIds must be distinct active Play rigs",
+      );
+      validateDynamicRigSources(
+        sources.filter((source) =>
+          request.dynamicRigIds!.includes(source.rigId),
+        ) as DynamicRigSource[],
+        snapshot.revision,
+      );
+    }
     await (initialization ??= RAPIER.init());
+    if (autoDoors)
+      ensure(
+        autoDoors.doors.every((door) =>
+          (Array.isArray(mechanismSource) ? mechanismSource : []).some(
+            (source) =>
+              source.rigId === door.rigId &&
+              !request.dynamicRigIds?.includes(door.rigId),
+          ),
+        ),
+        "INVALID_INPUT",
+        "Automatic doors need their derived kinematic rig sources",
+      );
     return new PlaySession(
       snapshot.revision,
       snapshot,
       request,
       mechanismSource,
+      autoDoors,
     );
   }
   private alive() {
@@ -839,6 +1019,8 @@ export class PlaySession {
   }
   clearInput() {
     for (const mechanism of this.mechanisms.values()) mechanism.clearInput();
+    for (const id of this.dynamics?.rigIds() ?? [])
+      this.dynamics!.rig(id)!.clearInput();
     this.setInput({});
     this.accumulator = 0;
     this.jumpHeld = false;
@@ -976,6 +1158,14 @@ export class PlaySession {
       this.mechanisms.get(id)!.step();
       if (this.occupied?.request.rigId === id) this.updateOccupant();
     }
+    if (this.dynamics) {
+      for (const [id, mechanism] of this.mechanisms)
+        this.dynamics.syncKinematicRig(id, mechanism.groupFrames());
+      this.dynamics.step(
+        this.feet,
+        this.locomotion === "walk" && !this.occupied,
+      );
+    }
     if (this.occupied) {
       this.world.step();
       this.previous = [...this.feet];
@@ -983,7 +1173,7 @@ export class PlaySession {
       this.tick++;
       return;
     }
-    if (this.mechanisms.size) this.world.step();
+    if (this.mechanisms.size || this.dynamics) this.world.step();
     this.previous = [...this.feet];
     const i = this.input;
     let x = i.moveX,
@@ -1021,6 +1211,19 @@ export class PlaySession {
       this.controller.computeColliderMovement(this.collider, physics(delta));
       delta = ldraw(this.controller.computedMovement());
       this.grounded = this.controller.computedGrounded();
+      if (this.dynamics) {
+        const hits = [];
+        for (let n = 0; n < this.controller.numComputedCollisions(); n++) {
+          const hit = this.controller.computedCollision(n);
+          if (hit?.collider && this.dynamics.isMirror(hit.collider.handle))
+            hits.push({
+              handle: hit.collider.handle,
+              point: hit.witness1,
+              remaining: hit.translationDeltaRemaining,
+            });
+        }
+        this.dynamics.push(hits);
+      }
       if (
         this.grounded ||
         Math.abs(delta[1]) < Math.abs(this.velocity[1] * DT) * 0.5
@@ -1293,32 +1496,57 @@ export class PlaySession {
       far: 100000,
     };
   }
-  private mechanismTarget(rigId?: string) {
+  private rigTarget(rigId?: string) {
+    const dynamicIds = this.dynamics?.rigIds() ?? [];
+    const count = this.mechanisms.size + dynamicIds.length;
+    ensure(count > 0, "INVALID_INPUT", "Enter Play with an authored rig first");
     ensure(
-      this.mechanisms.size > 0,
-      "INVALID_INPUT",
-      "Enter Play with an authored rig first",
-    );
-    ensure(
-      rigId !== undefined || this.mechanisms.size === 1,
+      rigId !== undefined || count === 1,
       "INVALID_INPUT",
       "Specify rigId when multiple Play rigs are active",
     );
-    const mechanism =
-      rigId === undefined
-        ? this.mechanisms.values().next().value
-        : this.mechanisms.get(rigId);
-    ensure(mechanism, "INVALID_INPUT", "Unknown active Play rig");
-    return mechanism;
+    const id = rigId ?? [...this.mechanisms.keys(), ...dynamicIds][0];
+    const dynamic = this.dynamics?.rig(id),
+      kinematic = this.mechanisms.get(id);
+    ensure(dynamic || kinematic, "INVALID_INPUT", "Unknown active Play rig");
+    return dynamic
+      ? ({ kind: "dynamic", rig: dynamic } as const)
+      : ({ kind: "kinematic", rig: kinematic! } as const);
+  }
+  private mechanismTarget(rigId?: string) {
+    const target = this.rigTarget(rigId);
+    ensure(
+      target.kind === "kinematic",
+      "INVALID_INPUT",
+      "This rig is simulated dynamically; its joints move through motors. Use an animated joint target instead.",
+    );
+    return target.rig;
   }
   setJointTarget(input: PlayJointTargetRequest) {
     this.alive();
     keys(input, ["rigId", "jointId", "target", "speed"]);
-    this.mechanismTarget(input.rigId).setJointTarget(
+    this.rigTarget(input.rigId).rig.setJointTarget(
       input.jointId,
       input.target,
       input.speed,
     );
+    return this.snapshot();
+  }
+  /** Enable or stop an authored joint motor on a kinematic or dynamic rig. */
+  setMotor(input: PlayMotorRequest) {
+    this.alive();
+    ensure(
+      input && typeof input === "object" && !Array.isArray(input),
+      "INVALID_INPUT",
+      "Motor request must be an object",
+    );
+    keys(input, ["rigId", "jointId", "enabled"]);
+    ensure(
+      typeof input.jointId === "string",
+      "INVALID_INPUT",
+      "Motor request needs a joint ID",
+    );
+    this.rigTarget(input.rigId).rig.setMotor(input.jointId, input.enabled);
     return this.snapshot();
   }
   setMechanismJoint(id: string, value: number, rigId?: string) {
@@ -1332,20 +1560,28 @@ export class PlaySession {
     rigId?: string,
   ) {
     this.alive();
-    this.mechanismTarget(rigId).setVehicleInput(input);
-    this.world.step();
+    const target = this.rigTarget(rigId);
+    target.rig.setVehicleInput(input);
+    if (target.kind === "kinematic") this.world.step();
     return this.snapshot();
   }
   snapshot(): PlaySnapshotReport {
     this.alive();
     const mechanisms = Object.fromEntries(
-      [...this.mechanisms].map(([id, mechanism]) => [id, mechanism.snapshot()]),
+      [
+        ...[...this.mechanisms].map(
+          ([id, mechanism]) => [id, mechanism.snapshot()] as const,
+        ),
+        ...(this.dynamics?.rigIds() ?? []).map(
+          (id) => [id, this.dynamics!.rig(id)!.snapshot()] as const,
+        ),
+      ].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
     );
+    const rigCount = Object.keys(mechanisms).length;
     return {
-      ...(this.mechanisms.size ? { mechanisms } : {}),
-      ...(this.mechanisms.size === 1
-        ? { mechanism: Object.values(mechanisms)[0] }
-        : {}),
+      ...(this.autoDoors ? { autoDoors: structuredClone(this.autoDoors) } : {}),
+      ...(rigCount ? { mechanisms } : {}),
+      ...(rigCount === 1 ? { mechanism: Object.values(mechanisms)[0] } : {}),
       positionAnchor: this.occupied ? "seated-avatar-root" : "standing-feet",
       ...(this.occupied
         ? {
@@ -1400,6 +1636,8 @@ export class PlaySession {
     if (this.disposed) return;
     for (const mechanism of this.mechanisms.values()) mechanism.dispose();
     this.mechanisms.clear();
+    this.dynamics?.dispose();
+    this.dynamics = undefined;
     this.seatSources.clear();
     this.occupied = undefined;
     this.seatedColliders = [];

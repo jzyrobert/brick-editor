@@ -47,6 +47,31 @@ export type VehicleSpec = {
   maxSteerDegrees: number;
   maxSpeed: number;
 };
+/**
+ * Optional settings used only when Play simulates this rig dynamically. The
+ * authored rig stays kinematic data; Play chooses the simulation per session.
+ * Mass is kilograms, lengths are LDU, forces are simulation newtons at the
+ * declared 0.02 m/LDU gameplay scale. None of this describes real clutch power.
+ */
+export type RigDynamics = {
+  /** Per-group overrides. Root groups of non-vehicle rigs default to anchored. */
+  groups?: Record<string, { massKg?: number; anchored?: boolean }>;
+  /** Coulomb friction coefficient for this rig's colliders (default 0.7). */
+  friction?: number;
+  /** Ray-cast wheel suspension for dynamic vehicles. */
+  suspension?: {
+    /** Spring rest length, LDU. */
+    restLength: number;
+    /** Maximum compression travel, LDU. */
+    travel: number;
+    /** Spring stiffness (Rapier units: N/m per kilogram-ish; 5–200). */
+    stiffness: number;
+    /** Compression/relaxation damping factor (0.1–20). */
+    damping: number;
+  };
+  /** Total engine force at full throttle, simulation N. */
+  engineForce?: number;
+};
 export type MotionRig = {
   schemaVersion: 1;
   id: string;
@@ -55,6 +80,7 @@ export type MotionRig = {
   groups: RigidGroup[];
   joints: JointSpec[];
   vehicle?: VehicleSpec;
+  dynamics?: RigDynamics;
 };
 export type KinematicPose = {
   jointPositions: Record<string, number>;
@@ -70,7 +96,7 @@ export type MechanismSnapshot = {
   rigId: string;
   tick: number;
   simulationHz: 60;
-  mode: "kinematic";
+  mode: "kinematic" | "dynamic";
   units: "LDU";
   scaleMetresPerLdu: 0.02;
   pose: KinematicPose;

@@ -190,3 +190,18 @@ Measured with `santorini_v2_complete.mpd` (user file; not committed) on software
 - Full Playwright suite against the production bundle (private config, own preview port): **136 tests; 134 passed on the first run**, the two failures were expectations of the old "no connector data" state (health Connections label, query connectivity status); both were updated and pass. New `connectors.spec.ts` taps a brick onto an off-grid brick (desktop and 390 px phone), turns it, checks the health report, **Select connected**, `connectors.groups/connected` and **Pick a stud**.
 - `npm run library:validate` checks the connector pack hash and library binding; Prettier and TypeScript pass.
 - Not established: other connector families, candidate cycling, real clutch or buildability, physical-device behaviour.
+
+## Motors, dynamic physics and automatic doors (28 September 2026)
+
+- Format check passes; `npx vitest run` (after rebasing onto the connector work in eb31233): **89 files, 433 tests pass**. New files: `play-dynamics.test.ts` (byte-identical replay, motor-driven joints, pushing, kinematic/dynamic velocity motors with blocking and retry, suspension vehicle and steering convention, validation, proxy reduction), `play-auto-doors.test.ts` (door-table pins, re-derivation of pack doors from shipped geometry, the real 60596/60616a door room with frame-decided swing, walk-through, posed export, two-way doors opening away from the explorer, skip reasons), `rig-dynamics-data.test.ts` (native round trip, undoable physics-only drafts, posed export) and `cli-play-mechanisms.test.ts` (CLI `--open-doors`, `--posed-output`, `--rigs`, `--dynamic-rigs`, `--vehicle`, `--motors`, `--joint-targets`, reproducible reports).
+- Playwright (private config, SwiftShader): **147 tests pass**. These include `play-physics.spec.ts` (the door opens with E at 1440 px and with a tap at 360 px; the Dynamic choice in the folded Mechanism physics section; the motor toggle in the remote drawer at both sizes), `play-physics-performance.spec.ts` and the unchanged `hud-layout.spec.ts` at 360×600 and 411×685.
+- Performance (`play-physics-performance.spec.ts`, VM load average about 12 from concurrent agents, so numbers are noisy). Means over 300 fixed ticks with the car driving, the spinner motor running and the explorer walking, physics playground; door room with the door opening:
+
+| Profile                                                       | No rigs    | Kinematic rigs | Dynamic rigs | Auto door  |
+| ------------------------------------------------------------- | ---------- | -------------- | ------------ | ---------- |
+| Desktop, ms/tick (p95)                                        | 0.45 (1.7) | 5.8 (10.0)     | 1.4 (2.5)    | 0.9 (2.7)  |
+| Phone context, mobile profile, 4× CPU throttle, ms/tick (p95) | 2.0 (2.8)  | 21.0 (34.4)    | 3.4 (6.6)    | 2.9 (10.0) |
+| Desktop realtime frame, ms (mean)                             | 98         | 72             | 63           | 380        |
+| Phone realtime frame, ms (mean)                               | 24         | 27             | 25           | 139        |
+
+Dynamic ticks stay within the 10 ms per-frame tick budget in both profiles. Kinematic cost is dominated by the existing conservative vehicle-world sweeps while the car drives; a Node microbenchmark put the new motor at about 0.15 ms/tick. The new idle fast path halves the cost of idle kinematic rigs (1.3 → 0.6 ms/tick for four idle rigs in Node). Frame times are software-rendering bound (the door room renders real LDraw parts). None of these are phone-hardware measurements.

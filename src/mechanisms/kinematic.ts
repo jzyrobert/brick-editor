@@ -1,6 +1,7 @@
 import {
   ensure,
   type Basis,
+  type Occurrence,
   type Project,
   type Transform,
   type Vec3,
@@ -74,6 +75,8 @@ export function validateRig(
   project: Project,
   rig: MotionRig,
   checkRest = true,
+  /** Optional precomputed occurrence index for the same project revision. */
+  lookup?: ReadonlyMap<string, Occurrence>,
 ) {
   fields(rig, [
     "schemaVersion",
@@ -83,6 +86,7 @@ export function validateRig(
     "groups",
     "joints",
     "vehicle",
+    "dynamics",
   ]);
   ensure(
     rig.schemaVersion === 1 &&
@@ -104,7 +108,7 @@ export function validateRig(
   );
   const ids = new Set<string>(),
     members = new Set<string>(),
-    all = new Map(occurrences(project).map((o) => [o.id, o]));
+    all = lookup ?? new Map(occurrences(project).map((o) => [o.id, o]));
   for (const group of rig.groups) {
     fields(group, ["id", "occurrenceIds", "frame", "restTransforms"]);
     ensure(
@@ -344,7 +348,84 @@ export function validateRig(
       wheels.add(w.groupId);
     }
   }
+  if (rig.dynamics !== undefined) validateRigDynamics(rig, ids);
   return rig;
+}
+/** Bounds for optional dynamic settings. They configure Play only. */
+export const RIG_DYNAMICS_LIMITS = Object.freeze({
+  massKg: { min: 0.001, max: 100000 },
+  friction: { min: 0, max: 4 },
+  restLength: { min: 0.5, max: 200 },
+  travel: { min: 0.5, max: 200 },
+  stiffness: { min: 1, max: 500 },
+  damping: { min: 0.05, max: 50 },
+  engineForce: { min: 0, max: 1000000 },
+});
+function validateRigDynamics(rig: MotionRig, groupIds: Set<string>) {
+  const d = rig.dynamics!,
+    L = RIG_DYNAMICS_LIMITS;
+  fields(d, ["groups", "friction", "suspension", "engineForce"]);
+  const within = (n: unknown, range: { min: number; max: number }) =>
+    finite(n) && n >= range.min && n <= range.max;
+  if (d.groups !== undefined) {
+    ensure(
+      d.groups && typeof d.groups === "object" && !Array.isArray(d.groups),
+      "INVALID_INPUT",
+      "Dynamic group settings must be keyed by rig group ID.",
+    );
+    for (const [id, settings] of Object.entries(d.groups)) {
+      ensure(
+        groupIds.has(id),
+        "INVALID_INPUT",
+        `Dynamic settings name unknown group ${id}.`,
+      );
+      fields(settings, ["massKg", "anchored"]);
+      ensure(
+        (settings.massKg === undefined || within(settings.massKg, L.massKg)) &&
+          (settings.anchored === undefined ||
+            typeof settings.anchored === "boolean"),
+        "INVALID_INPUT",
+        `Group mass must be ${L.massKg.min}–${L.massKg.max} kg and anchored must be boolean.`,
+      );
+    }
+    if (rig.vehicle)
+      ensure(
+        !Object.entries(d.groups).some(
+          ([id, settings]) =>
+            settings.anchored &&
+            (id === rig.vehicle!.chassisGroup ||
+              rig.vehicle!.wheels.some((w) => w.groupId === id)),
+        ),
+        "INVALID_INPUT",
+        "A dynamic vehicle chassis or wheel cannot be anchored.",
+      );
+  }
+  ensure(
+    d.friction === undefined || within(d.friction, L.friction),
+    "INVALID_INPUT",
+    `Friction must be ${L.friction.min}–${L.friction.max}.`,
+  );
+  ensure(
+    d.engineForce === undefined || within(d.engineForce, L.engineForce),
+    "INVALID_INPUT",
+    `Engine force must be ${L.engineForce.min}–${L.engineForce.max} N.`,
+  );
+  if (d.suspension !== undefined) {
+    ensure(
+      !!rig.vehicle,
+      "INVALID_INPUT",
+      "Suspension settings require a vehicle rig.",
+    );
+    fields(d.suspension, ["restLength", "travel", "stiffness", "damping"]);
+    ensure(
+      within(d.suspension.restLength, L.restLength) &&
+        within(d.suspension.travel, L.travel) &&
+        within(d.suspension.stiffness, L.stiffness) &&
+        within(d.suspension.damping, L.damping),
+      "INVALID_INPUT",
+      "Suspension needs rest length and travel of 0.5–200 LDU, stiffness 1–500 and damping 0.05–50.",
+    );
+  }
 }
 export class KinematicSession {
   private rig: MotionRig;
@@ -352,9 +433,11 @@ export class KinematicSession {
   private tick = 0;
   private throttle = 0;
   private steering = 0;
+  private revision: number;
   constructor(
-    private project: Project,
+    project: Project,
     rigId: string,
+    lookup?: ReadonlyMap<string, Occurrence>,
   ) {
     const rig = project.motionRigs[rigId] as MotionRig;
     ensure(
@@ -362,9 +445,11 @@ export class KinematicSession {
       "INVALID_INPUT",
       "Unknown or inconsistent motion rig identity.",
     );
-    validateRig(project, rig);
+    validateRig(project, rig, true, lookup);
     this.rig = structuredClone(rig);
-    this.project = structuredClone(project);
+    // Only the revision is needed; cloning the whole project per rig was
+    // quadratic in large Play worlds with many (derived) rigs.
+    this.revision = project.revision;
     this.pose = {
       jointPositions: Object.fromEntries(
         rig.joints
@@ -399,6 +484,30 @@ export class KinematicSession {
   }
   clearInput() {
     this.throttle = 0;
+  }
+  /** True when a fixed tick cannot change the pose (no throttle). */
+  get stationary() {
+    return this.throttle === 0;
+  }
+  /** Advance the tick counter of a stationary rig without recomputing its pose. */
+  idleTick() {
+    ensure(this.stationary, "INVALID_INPUT", "Rig is moving");
+    this.tick++;
+  }
+  /** Narrow one scalar joint's limits for this session (never widens them). */
+  restrictLimits(id: string, limits: [number, number]) {
+    const joint = this.rig.joints.find((j) => j.id === id);
+    ensure(
+      joint &&
+        (joint.kind === "revolute" || joint.kind === "prismatic") &&
+        limits[0] <= 0 &&
+        limits[1] >= 0 &&
+        (!joint.limits ||
+          (limits[0] >= joint.limits[0] && limits[1] <= joint.limits[1])),
+      "INVALID_INPUT",
+      "Session limits must narrow the authored limits and include zero.",
+    );
+    joint.limits = [limits[0], limits[1]];
   }
   setVehicleInput(input: { throttle: number; steering: number }) {
     fields(input, ["throttle", "steering"]);
@@ -560,7 +669,7 @@ export class KinematicSession {
         transforms[id] = compose(delta, g.restTransforms[id]);
     }
     return {
-      sourceRevision: this.project.revision,
+      sourceRevision: this.revision,
       rigId: this.rig.id,
       tick: this.tick,
       simulationHz: 60,

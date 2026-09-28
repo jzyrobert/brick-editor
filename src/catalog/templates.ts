@@ -1,4 +1,9 @@
-import { mechanismFixture, openBenchFixture } from "../mechanisms/fixtures";
+import {
+  mechanismFixture,
+  openBenchFixture,
+  physicsFixture,
+} from "../mechanisms/fixtures";
+import { doorRoomSource } from "./door-room";
 import { explorationSource } from "./exploration";
 import { importLDraw } from "../ldraw/io";
 import { createProject } from "../core/document";
@@ -12,9 +17,17 @@ export function template(
     | "200"
     | "explore"
     | "mechanisms"
-    | "seated-vehicle",
+    | "seated-vehicle"
+    | "door-room"
+    | "physics",
 ) {
   if (name === "seated-vehicle") return openBenchFixture();
+  if (name === "physics") return physicsFixture();
+  if (name === "door-room") {
+    const project = importLDraw(doorRoomSource(), "door-room.ldr");
+    project.title = "Door room";
+    return project;
+  }
   if (name === "mechanisms") return mechanismFixture();
   if (name === "explore") {
     const project = importLDraw(explorationSource(), "exploration.mpd");

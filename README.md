@@ -50,7 +50,9 @@ Autosave writes and verifies a new snapshot before changing the head pointer, re
 
 Project also provides bounded self-contained share links, temporary import previews, opt-in offline downloads, and saved-project management. Native bundles include separately checksummed source and asset files.
 
-The **Door & vehicle** template includes two original kinematic rigs. In Play, choose **All mechanisms**, approach a joint or vehicle, and press **E** or tap the nearby action. Doors open/close; vehicle control uses movement keys or the joystick while your explorer stays in place. Remote controls can select any active rig. The separate mechanism preview offers **Apply current pose** as an explicit undoable authoring operation. Seated entry, riding, vehicle/world dynamics and suspension remain unimplemented.
+The **Door & vehicle** template includes two original kinematic rigs. In Play, choose **All mechanisms**, approach a joint or vehicle, and press **E** or tap the nearby action. Doors open/close; vehicle control uses movement keys or the joystick while your explorer stays in place. Remote controls can select any active rig. The separate mechanism preview offers **Apply current pose** as an explicit undoable authoring operation.
+
+Official LDraw doors open without rigging: the **Door room** template contains a real 60596 frame and 60616a door, and Play hinges it to its frame automatically (E or tap **Open door**). The **Physics playground** template adds a loose crate and a motorised spinner; under **Play → Mechanism physics → Dynamic**, rigs become Rapier bodies with gravity, joint motors, suspension and pushing. Play never edits the build, and a static posed MPD is available from automation (`play.exportPosedModel`, CLI `--posed-output`). See [Play physics](docs/PLAY-PHYSICS.md). Riding and seated driving of dynamic vehicles remain unimplemented.
 
 ## Browser automation
 

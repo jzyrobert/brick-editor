@@ -38,6 +38,15 @@ npm run cli -- play --input build.mpd --position '[0,-100,100]' --locomotion fly
 
 The PNG captures the final Play camera. Its JSON report contains the rendering manifest, initial/final simulation snapshots, fixed tick count, input, avatar state, source revision, and software-rendering identification. The source file and authored document remain unchanged. Play exits before the browser closes.
 
+Mechanisms, doors and physics:
+
+```sh
+npm run cli -- play --input fixtures/ldraw/door-room.ldr --position '[0,-0.3,220]' --open-doors --move-forward 1 --ticks 240 --output door.png --posed-output door-posed.ldr
+npm run cli -- play --input physics.brickproj --rigs all --dynamic-rigs all --vehicle '{"rigId":"vehicle","throttle":1,"steering":0}' --motors '[{"rigId":"spinner","jointId":"axle","enabled":true}]' --joint-targets '[{"rigId":"door","jointId":"hinge","target":90,"speed":90}]' --ticks 90 --output physics.png
+```
+
+`--rigs all|JSON-array` activates authored rigs, and `--dynamic-rigs all|JSON-array` simulates them dynamically. `--joint-targets`, `--motors` and `--vehicle` take the same objects as `play.setJointTarget`, `play.setMotor` and `play.setMechanismVehicleInput`. They are applied after entry and before the input and ticks. Official LDraw doors hinge automatically: `--open-doors` opens every free door at 90 degrees/s, and `--no-auto-doors` keeps them static. `--posed-output` writes a static posed MPD of the final pose. The source file is never modified. The report's `playRun` records the applied targets, motors and vehicle input. Identical flags reproduce identical reports on the same machine and browser.
+
 Output reports default to `<output>.report.json`; `--report` overrides that path. Unknown flags, duplicate singleton flags, missing flag values, and out-of-range numeric inputs fail without writing a result. Existing files are overwritten only after a successful operation.
 
 Model export profiles run without Chromium:

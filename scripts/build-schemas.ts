@@ -294,6 +294,31 @@ const motionRig = obj(
       },
       ["chassisGroup", "wheels", "wheelbase", "maxSteerDegrees", "maxSpeed"],
     ),
+    dynamics: obj(
+      {
+        groups: {
+          ...dictionary(
+            obj(
+              {
+                massKg: { type: "number", minimum: 0.001, maximum: 100000 },
+                anchored: { type: "boolean" },
+              },
+              [],
+            ),
+          ),
+          maxProperties: 100,
+        },
+        friction: { type: "number", minimum: 0, maximum: 4 },
+        suspension: obj({
+          restLength: { type: "number", minimum: 0.5, maximum: 200 },
+          travel: { type: "number", minimum: 0.5, maximum: 200 },
+          stiffness: { type: "number", minimum: 1, maximum: 500 },
+          damping: { type: "number", minimum: 0.05, maximum: 50 },
+        }),
+        engineForce: { type: "number", minimum: 0, maximum: 1000000 },
+      },
+      [],
+    ),
   },
   ["schemaVersion", "id", "name", "mode", "groups", "joints"],
 );
@@ -738,6 +763,8 @@ const importRequest = {
             "explore",
             "mechanisms",
             "seated-vehicle",
+            "door-room",
+            "physics",
           ],
         },
       },
@@ -812,6 +839,8 @@ const playRequest = obj(
     cameraSettings: { ...playCameraSettings, required: [] },
     rigId: id,
     rigIds: { ...arr(id, 32), uniqueItems: true },
+    dynamicRigIds: { ...arr(id, 14), uniqueItems: true },
+    autoDoors: { type: "boolean" },
     locomotion: { enum: ["walk", "fly-noclip"] },
     cameraMode: { enum: ["first-person", "third-person"] },
     position: vec,
@@ -864,6 +893,49 @@ const playJointTargetReport = obj(
     blockedReason: str,
   },
   ["current", "target", "speed", "status", "units", "speedUnits"],
+);
+const playMotorRequest = obj(
+  { rigId: id, jointId: id, enabled: { type: "boolean" } },
+  ["jointId", "enabled"],
+);
+const playMotorReport = obj(
+  {
+    mode: { enum: ["position", "velocity"] },
+    target: num,
+    enabled: { type: "boolean" },
+    status: { enum: ["running", "holding", "blocked", "at-limit", "stopped"] },
+    units: { enum: ["degrees", "LDU"] },
+    targetUnits: { enum: ["degrees", "LDU", "degrees/s", "LDU/s"] },
+    simulation: { enum: ["kinematic-rate", "dynamic-motor"] },
+    blockedReason: str,
+  },
+  ["mode", "target", "enabled", "status", "units", "targetUnits", "simulation"],
+);
+const playDynamicsReport = obj(
+  {
+    engine: str,
+    gravity: num,
+    bodies: dictionary(
+      obj({
+        anchored: { type: "boolean" },
+        massKg: num,
+        colliders: integer,
+        sleeping: { type: "boolean" },
+        linearVelocity: vec,
+        angularSpeed: num,
+      }),
+    ),
+    wheels: dictionary(
+      obj({
+        contact: { type: "boolean" },
+        suspensionLength: num,
+        steeringDegrees: num,
+        rotationDegrees: num,
+      }),
+    ),
+    speed: num,
+  },
+  ["engine", "gravity", "bodies"],
 );
 const playSeatRequest = obj({ rigId: id, seatId: id });
 const playSeatExit = obj(
@@ -933,6 +1005,23 @@ playSnapshot.properties.occupancy = obj({
   localLookYaw: num,
   localLookPitch: num,
 });
+playSnapshot.properties.autoDoors = obj({
+  doors: arr(
+    obj({
+      rigId: id,
+      jointId: id,
+      occurrenceId,
+      part: id,
+      anchorOccurrenceId: occurrenceId,
+      pivot: vec,
+      axis: vec,
+      leaf: vec,
+      swing: { enum: ["both", "positive", "negative", "blocked"] },
+    }),
+    1000,
+  ),
+  skipped: arr(obj({ occurrenceId, part: id, reason: str }), 100000),
+});
 playSnapshot.properties.spawn = {
   ...playSpawn,
   required: ["position", "yaw", "pitch"],
@@ -943,10 +1032,12 @@ playSnapshot.properties.mechanism = obj(
     rigId: id,
     tick: integer,
     simulationHz: { const: 60 },
-    mode: { const: "kinematic" },
+    mode: { enum: ["kinematic", "dynamic"] },
     units: { const: "LDU" },
     scaleMetresPerLdu: num,
     pose: mechanismPose,
+    motors: dictionary(playMotorReport),
+    dynamics: playDynamicsReport,
     groupFrames: dictionary(transform),
     transforms: dictionary(transform),
     warnings: arr(str),
@@ -1006,6 +1097,8 @@ const api = {
     "play.useSpawn": obj({}),
     "play.setInput": { $ref: "playInput" },
     "play.setJointTarget": { $ref: "playJointTarget" },
+    "play.setMotor": { $ref: "playMotorRequest" },
+    "play.exportPosedModel": obj({}),
     "play.setMechanismJoint": obj({ jointId: id, value: num, rigId: id }, [
       "jointId",
       "value",
@@ -1146,6 +1239,7 @@ const schemas = {
   playRequest,
   playInput,
   playJointTarget,
+  playMotorRequest,
   playTeleport,
   playSeatRequest,
   playSeatExit,

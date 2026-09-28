@@ -342,6 +342,126 @@
       ],
       "additionalProperties": false
     },
+    "autoDoors": {
+      "type": "object",
+      "properties": {
+        "doors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rigId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "jointId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "occurrenceId": {
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 393409,
+                "format": "occurrence-id"
+              },
+              "part": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorOccurrenceId": {
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 393409,
+                "format": "occurrence-id"
+              },
+              "pivot": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "axis": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "leaf": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "swing": {
+                "enum": [
+                  "both",
+                  "positive",
+                  "negative",
+                  "blocked"
+                ]
+              }
+            },
+            "required": [
+              "rigId",
+              "jointId",
+              "occurrenceId",
+              "part",
+              "anchorOccurrenceId",
+              "pivot",
+              "axis",
+              "leaf",
+              "swing"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 1000
+        },
+        "skipped": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "occurrenceId": {
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 393409,
+                "format": "occurrence-id"
+              },
+              "part": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 4096
+              }
+            },
+            "required": [
+              "occurrenceId",
+              "part",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100000
+        }
+      },
+      "required": [
+        "doors",
+        "skipped"
+      ],
+      "additionalProperties": false
+    },
     "spawn": {
       "type": "object",
       "properties": {
@@ -389,7 +509,10 @@
           "const": 60
         },
         "mode": {
-          "const": "kinematic"
+          "enum": [
+            "kinematic",
+            "dynamic"
+          ]
         },
         "units": {
           "const": "LDU"
@@ -461,6 +584,189 @@
           },
           "required": [
             "jointPositions"
+          ],
+          "additionalProperties": false
+        },
+        "motors": {
+          "type": "object",
+          "maxProperties": 10000,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "enum": [
+                  "position",
+                  "velocity"
+                ]
+              },
+              "target": {
+                "type": "number"
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "status": {
+                "enum": [
+                  "running",
+                  "holding",
+                  "blocked",
+                  "at-limit",
+                  "stopped"
+                ]
+              },
+              "units": {
+                "enum": [
+                  "degrees",
+                  "LDU"
+                ]
+              },
+              "targetUnits": {
+                "enum": [
+                  "degrees",
+                  "LDU",
+                  "degrees/s",
+                  "LDU/s"
+                ]
+              },
+              "simulation": {
+                "enum": [
+                  "kinematic-rate",
+                  "dynamic-motor"
+                ]
+              },
+              "blockedReason": {
+                "type": "string",
+                "maxLength": 4096
+              }
+            },
+            "required": [
+              "mode",
+              "target",
+              "enabled",
+              "status",
+              "units",
+              "targetUnits",
+              "simulation"
+            ],
+            "additionalProperties": false
+          },
+          "propertyNames": {
+            "not": {
+              "enum": [
+                "__proto__",
+                "constructor",
+                "prototype"
+              ]
+            }
+          }
+        },
+        "dynamics": {
+          "type": "object",
+          "properties": {
+            "engine": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "gravity": {
+              "type": "number"
+            },
+            "bodies": {
+              "type": "object",
+              "maxProperties": 10000,
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "anchored": {
+                    "type": "boolean"
+                  },
+                  "massKg": {
+                    "type": "number"
+                  },
+                  "colliders": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "sleeping": {
+                    "type": "boolean"
+                  },
+                  "linearVelocity": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "maxItems": 3,
+                    "minItems": 3
+                  },
+                  "angularSpeed": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "anchored",
+                  "massKg",
+                  "colliders",
+                  "sleeping",
+                  "linearVelocity",
+                  "angularSpeed"
+                ],
+                "additionalProperties": false
+              },
+              "propertyNames": {
+                "not": {
+                  "enum": [
+                    "__proto__",
+                    "constructor",
+                    "prototype"
+                  ]
+                }
+              }
+            },
+            "wheels": {
+              "type": "object",
+              "maxProperties": 10000,
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "contact": {
+                    "type": "boolean"
+                  },
+                  "suspensionLength": {
+                    "type": "number"
+                  },
+                  "steeringDegrees": {
+                    "type": "number"
+                  },
+                  "rotationDegrees": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "contact",
+                  "suspensionLength",
+                  "steeringDegrees",
+                  "rotationDegrees"
+                ],
+                "additionalProperties": false
+              },
+              "propertyNames": {
+                "not": {
+                  "enum": [
+                    "__proto__",
+                    "constructor",
+                    "prototype"
+                  ]
+                }
+              }
+            },
+            "speed": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "engine",
+            "gravity",
+            "bodies"
           ],
           "additionalProperties": false
         },
@@ -709,7 +1015,10 @@
             "const": 60
           },
           "mode": {
-            "const": "kinematic"
+            "enum": [
+              "kinematic",
+              "dynamic"
+            ]
           },
           "units": {
             "const": "LDU"
@@ -781,6 +1090,189 @@
             },
             "required": [
               "jointPositions"
+            ],
+            "additionalProperties": false
+          },
+          "motors": {
+            "type": "object",
+            "maxProperties": 10000,
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "position",
+                    "velocity"
+                  ]
+                },
+                "target": {
+                  "type": "number"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "enum": [
+                    "running",
+                    "holding",
+                    "blocked",
+                    "at-limit",
+                    "stopped"
+                  ]
+                },
+                "units": {
+                  "enum": [
+                    "degrees",
+                    "LDU"
+                  ]
+                },
+                "targetUnits": {
+                  "enum": [
+                    "degrees",
+                    "LDU",
+                    "degrees/s",
+                    "LDU/s"
+                  ]
+                },
+                "simulation": {
+                  "enum": [
+                    "kinematic-rate",
+                    "dynamic-motor"
+                  ]
+                },
+                "blockedReason": {
+                  "type": "string",
+                  "maxLength": 4096
+                }
+              },
+              "required": [
+                "mode",
+                "target",
+                "enabled",
+                "status",
+                "units",
+                "targetUnits",
+                "simulation"
+              ],
+              "additionalProperties": false
+            },
+            "propertyNames": {
+              "not": {
+                "enum": [
+                  "__proto__",
+                  "constructor",
+                  "prototype"
+                ]
+              }
+            }
+          },
+          "dynamics": {
+            "type": "object",
+            "properties": {
+              "engine": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "gravity": {
+                "type": "number"
+              },
+              "bodies": {
+                "type": "object",
+                "maxProperties": 10000,
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "anchored": {
+                      "type": "boolean"
+                    },
+                    "massKg": {
+                      "type": "number"
+                    },
+                    "colliders": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "sleeping": {
+                      "type": "boolean"
+                    },
+                    "linearVelocity": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "angularSpeed": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "anchored",
+                    "massKg",
+                    "colliders",
+                    "sleeping",
+                    "linearVelocity",
+                    "angularSpeed"
+                  ],
+                  "additionalProperties": false
+                },
+                "propertyNames": {
+                  "not": {
+                    "enum": [
+                      "__proto__",
+                      "constructor",
+                      "prototype"
+                    ]
+                  }
+                }
+              },
+              "wheels": {
+                "type": "object",
+                "maxProperties": 10000,
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "contact": {
+                      "type": "boolean"
+                    },
+                    "suspensionLength": {
+                      "type": "number"
+                    },
+                    "steeringDegrees": {
+                      "type": "number"
+                    },
+                    "rotationDegrees": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "contact",
+                    "suspensionLength",
+                    "steeringDegrees",
+                    "rotationDegrees"
+                  ],
+                  "additionalProperties": false
+                },
+                "propertyNames": {
+                  "not": {
+                    "enum": [
+                      "__proto__",
+                      "constructor",
+                      "prototype"
+                    ]
+                  }
+                }
+              },
+              "speed": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "engine",
+              "gravity",
+              "bodies"
             ],
             "additionalProperties": false
           },

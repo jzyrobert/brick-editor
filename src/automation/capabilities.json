@@ -79,7 +79,7 @@
         "sameHeightOnly": true,
         "workerCancellation": true
       },
-      "rigAuthoringUI": "create/edit/remove representable single-joint or pure planar vehicle rigs; preserved frames, axes, IDs, limits and motor metadata",
+      "rigAuthoringUI": "create/edit/remove representable single-joint or pure planar vehicle rigs; preserved frames, axes, IDs, limits, motor metadata and physics settings; separate physics-settings review (masses, anchoring, friction, suspension, engine force)",
       "sourceOnlyAdmission": "Source-valid projects above derived occurrence budgets retain native/LDraw backup and local recovery; derived editing, rendering and Play refuse with structured limits",
       "driverSeatMetadataUI": true
     },
@@ -133,13 +133,34 @@
       "touchControls": true,
       "authoringIsolation": true,
       "poseApplication": true,
-      "dynamicMechanisms": false,
+      "dynamicMechanisms": {
+        "optIn": "play.enter dynamicRigIds (UI: Play > Mechanism physics > Dynamic)",
+        "engine": "@dimforge/rapier3d-compat@0.21.0 (bundled, Apache-2.0)",
+        "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces",
+        "joints": ["fixed", "revolute", "prismatic", "spherical"],
+        "motors": "Authored position/velocity motors limited by maxEffort; animated joint targets drive motor setpoints",
+        "vehicles": "Rapier ray-cast wheels with sprung suspension, engine force, brake and authored maxSpeed/maxSteer",
+        "pushing": "Walking pushes loose dynamic bodies with bounded impulses; bodies never move the explorer",
+        "limits": {
+          "rigs": 14,
+          "bodies": 64,
+          "dynamicMembers": 512,
+          "hullPoints": 256
+        },
+        "reproducibility": "Identical reports for identical inputs in the pinned engine/browser; not promised across platforms",
+        "notSimulated": [
+          "clutch strength",
+          "breaking",
+          "riding moving platforms",
+          "seated driving of dynamic vehicles"
+        ]
+      },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
       "profile": "original-brick-figure-v1",
       "coverage": "See docs/STATUS.md and Play acceptance tests; not universal model traversability",
       "kinematicMechanisms": true,
       "movingKinematicColliders": true,
-      "movingColliderPolicy": "Authored rigid-group triangle surfaces; conservatively stop before touching walking or seated actor; certified own-vehicle seated attachment; no pushing or dynamic response",
+      "movingColliderPolicy": "Authored rigid-group triangle surfaces; kinematic rigs conservatively stop before touching walking or seated actor; dynamic rigs are simulated bodies that the walking actor can push",
       "cameraSettings": true,
       "validatedSessionSpawns": true,
       "remappablePlayKeys": true,
@@ -170,7 +191,7 @@
       "vehicleWorldCollision": {
         "profile": "source-boxes-v1",
         "policy": "Conservative swept chassis and wheel envelopes against complete included static and foreign-rig triangle geometry; refuse unsupported geometry or exhausted query budgets",
-        "dynamicResponse": false,
+        "dynamicResponse": "Only for rigs entered with dynamic physics",
         "riding": true
       },
       "seatedVehicles": {
@@ -181,7 +202,19 @@
         "driving": "Conservative vehicle and rider sweeps; retain accepted poses when blocked",
         "exit": "Current-frame authored exits with real walkable support and swept transfer; blocked exit retains occupancy",
         "scope": "Supported upright unarticulated chassis/wheel rigs only; no inferred seats, low cabins, general platform riding or dynamic suspension"
-      }
+      },
+      "motors": {
+        "kinematic": "Position motors travel at 90 degrees/s or 40 LDU/s; velocity motors run at their target; swept actor checks block and auto-retry",
+        "dynamic": "Rapier joint motors with maxEffort",
+        "control": "play.setMotor({rigId,jointId,enabled}); manual joint commands stop that joint's motor"
+      },
+      "automaticDoors": {
+        "table": "src/play/door-parts.json: hinge axis, pivot and leaf for official LDraw door leaves derived from part geometry",
+        "runtime": "Session-only derived kinematic rigs hinged to the part holding each door; never written to the project",
+        "swing": "Free direction decided by sweeping an inset leaf proxy against the Play world; two-way doors open away from the explorer",
+        "control": "E / on-screen Open door action, play.interact(), play.setJointTarget, CLI --open-doors; disable with autoDoors:false"
+      },
+      "posedExport": "play.exportPosedModel() / mechanisms.exportPosedModel() / CLI --posed-output: static posed LDraw MPD; project and rest pose unchanged"
     },
     "sharing": {
       "selfContainedMpdLinks": true,
@@ -371,13 +404,15 @@
     "composite purchasing decomposition",
     "full native migrations",
     "full physical-device acceptance",
-    "dynamic mechanisms and suspension",
     "instruction annotations and callouts",
     "advanced material/texture fidelity",
     "connector snapping beyond stud/anti-stud (clips, hinges, pins, side studs)",
     "connected-assembly selection through parts without verified connector data",
     "snap-candidate cycling",
     "general structural regrouping",
-    "whole-library BFC conformance beyond audited fixtures"
+    "whole-library BFC conformance beyond audited fixtures",
+    "riding dynamic bodies and seated driving of dynamic vehicles",
+    "compound-rig and arbitrary-frame authoring UI",
+    "auto-rig proposals beyond official door leaves"
   ]
 }

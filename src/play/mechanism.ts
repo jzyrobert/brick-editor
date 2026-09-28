@@ -2,16 +2,32 @@ import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import type { PlayVehicleCollisionReport } from "./types";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { Matrix4, Quaternion, Vector3 } from "three";
-import { ensure, type Project, type Transform, type Vec3 } from "../core/types";
+import {
+  ensure,
+  type Occurrence,
+  type Project,
+  type Transform,
+  type Vec3,
+} from "../core/types";
 import { add, inverse, mv } from "../core/math";
 import { KinematicSession } from "../mechanisms/kinematic";
-import type { KinematicPose, MechanismSnapshot } from "../mechanisms/types";
+import type {
+  JointSpec,
+  KinematicPose,
+  MechanismSnapshot,
+} from "../mechanisms/types";
 import {
   CHARACTER_PROFILE as P,
   JOINT_TARGET_SPEED_LIMITS,
   type CollisionSnapshot,
   type PlayJointTargetReport,
+  type PlayMotorReport,
 } from "./types";
+/** Kinematic travel rate of authored position motors (maxEffort is not simulated). */
+export const KINEMATIC_MOTOR_RATE = Object.freeze({
+  revolute: 90,
+  prismatic: 40,
+});
 const S = P.scaleMetresPerLdu;
 const physics = ([x, y, z]: Vec3) => ({ x: x * S, y: -y * S, z: -z * S });
 const rotation = (frame: Transform) => {
@@ -41,6 +57,8 @@ export type PlayMechanismSource = {
   project: Project;
   rigId: string;
   groups: Record<string, CollisionSnapshot>;
+  /** Optional shared occurrence index of `project` (avoids re-expansion per rig). */
+  lookup?: ReadonlyMap<string, Occurrence>;
 };
 export function validatePlayMechanismSource(
   source: PlayMechanismSource,
@@ -58,7 +76,7 @@ export function validatePlayMechanismSource(
     "REVISION_CONFLICT",
     "Moving collision source revision differs from Play",
   );
-  new KinematicSession(source.project, source.rigId);
+  new KinematicSession(source.project, source.rigId, source.lookup);
   const rig = source.project.motionRigs![source.rigId];
   ensure(
     rig.groups.length <= 128,
@@ -132,6 +150,15 @@ export function validatePlayMechanismSources(
 export class PlayMechanism {
   private session: KinematicSession;
   private jointKinds = new Map<string, string>();
+  private motors = new Map<
+    string,
+    {
+      joint: JointSpec;
+      enabled: boolean;
+      status: PlayMotorReport["status"];
+      blockedReason?: string;
+    }
+  >();
   private targets = new Map<string, Omit<PlayJointTargetReport, "current">>();
   private proxies: Array<{
     id: string;
@@ -194,6 +221,25 @@ export class PlayMechanism {
     });
     return this.geometryCache;
   }
+  /** Group-local physics surfaces (metres), for mirroring into dynamic Play. */
+  movingShapes() {
+    return this.proxies.map(({ id, vertices, indices }) => ({
+      id,
+      vertices,
+      indices,
+    }));
+  }
+  groupFrames() {
+    return this.session.snapshot().groupFrames;
+  }
+  /** Walking-world collider of one moving group, if it has surfaces. */
+  proxyCollider(groupId: string) {
+    return this.proxies.find((proxy) => proxy.id === groupId)?.collider;
+  }
+  /** Narrow a joint's limits for this session only (derived door swing). */
+  restrictJointLimits(id: string, limits: [number, number]) {
+    this.session.restrictLimits(id, limits);
+  }
   private vehicleRoots = new Map<string, string>();
   private steeringWheels = new Set<string>();
   private blocked = false;
@@ -210,9 +256,23 @@ export class PlayMechanism {
       };
     },
   ) {
-    this.session = new KinematicSession(source.project, source.rigId);
+    this.session = new KinematicSession(
+      source.project,
+      source.rigId,
+      source.lookup,
+    );
     const rig = source.project.motionRigs![source.rigId];
     this.jointKinds = new Map(rig.joints.map((j) => [j.id, j.kind]));
+    for (const joint of rig.joints)
+      if (
+        joint.motor &&
+        (joint.kind === "revolute" || joint.kind === "prismatic")
+      )
+        this.motors.set(joint.id, {
+          joint: structuredClone(joint),
+          enabled: true,
+          status: "running",
+        });
     if (rig.vehicle) {
       this.vehicleChassis = rig.vehicle.chassisGroup;
       const roots = new Set([
@@ -519,6 +579,7 @@ export class PlayMechanism {
     const before = this.session.snapshot(),
       target = this.session.setJointPosition(id, value);
     this.targets.delete(id);
+    this.pauseMotor(id);
     this.accept(before, target);
     return this.snapshot();
   }
@@ -542,6 +603,7 @@ export class PlayMechanism {
     } finally {
       this.session.setPose(before.pose);
     }
+    this.pauseMotor(id);
     this.targets.set(id, {
       target,
       speed,
@@ -552,6 +614,84 @@ export class PlayMechanism {
     this.blocked = false;
     this.reason = undefined;
     return this.snapshot();
+  }
+  private pauseMotor(id: string) {
+    const motor = this.motors.get(id);
+    if (motor) {
+      motor.enabled = false;
+      motor.status = "stopped";
+      motor.blockedReason = undefined;
+    }
+  }
+  /** Enable or stop one authored motor. Manual joint commands stop it too. */
+  setMotor(id: string, enabled: boolean) {
+    const motor = this.motors.get(id);
+    ensure(
+      motor,
+      "INVALID_INPUT",
+      "This joint has no authored revolute or prismatic motor",
+    );
+    ensure(
+      typeof enabled === "boolean",
+      "INVALID_INPUT",
+      "Motor enabled must be boolean",
+    );
+    motor.enabled = enabled;
+    motor.status = enabled ? "running" : "stopped";
+    motor.blockedReason = undefined;
+    if (enabled) this.targets.delete(id);
+    return this.snapshot();
+  }
+  private stepMotors() {
+    for (const id of [...this.motors.keys()].sort()) {
+      const motor = this.motors.get(id)!;
+      if (!motor.enabled) continue;
+      const joint = motor.joint,
+        spec = joint.motor!,
+        kind = joint.kind as "revolute" | "prismatic",
+        state = this.session.snapshot(),
+        current = state.pose.jointPositions[id],
+        [low, high] = joint.limits ?? [-Infinity, Infinity];
+      let next: number;
+      if (spec.mode === "position") {
+        const goal = Math.min(high, Math.max(low, spec.target)),
+          rate = KINEMATIC_MOTOR_RATE[kind] / 60,
+          distance = goal - current;
+        if (distance === 0) {
+          motor.status = "holding";
+          motor.blockedReason = undefined;
+          continue;
+        }
+        next =
+          Math.abs(distance) <= rate
+            ? goal
+            : current + Math.sign(distance) * rate;
+      } else {
+        next = Math.min(high, Math.max(low, current + spec.target / 60));
+        if (next === current) {
+          motor.status = spec.target === 0 ? "holding" : "at-limit";
+          motor.blockedReason = undefined;
+          continue;
+        }
+      }
+      if (!this.accept(state, this.session.setJointPosition(id, next))) {
+        motor.status = "blocked";
+        motor.blockedReason = this.reason;
+        continue;
+      }
+      motor.blockedReason = undefined;
+      motor.status =
+        spec.mode === "position" &&
+        next === Math.min(high, Math.max(low, spec.target))
+          ? "holding"
+          : "running";
+      // An unlimited axle keeps turning; fold whole turns so the scalar stays
+      // bounded. The rotation is identical, so no sweep is needed.
+      if (kind === "revolute" && !joint.limits && Math.abs(next) >= 3600) {
+        const folded = next - 360 * Math.trunc(next / 360);
+        this.apply(this.session.setJointPosition(id, folded));
+      }
+    }
   }
   setVehicleInput(input: { throttle: number; steering: number }) {
     const before = this.session.snapshot();
@@ -570,6 +710,16 @@ export class PlayMechanism {
     return this.snapshot();
   }
   step() {
+    // Idle fast path: with no throttle, travel or running motor nothing can
+    // move, so skip the pose/sweep work (and the collider updates it causes).
+    if (
+      this.session.stationary &&
+      ![...this.targets.values()].some((t) => t.status === "moving") &&
+      ![...this.motors.values()].some((m) => m.enabled)
+    ) {
+      this.session.idleTick();
+      return;
+    }
     const before = this.session.snapshot(),
       after = this.session.stepTicks(1);
     this.accept(before, after);
@@ -592,6 +742,7 @@ export class PlayMechanism {
         motion.blockedReason = this.reason;
       } else if (next === motion.target) motion.status = "complete";
     }
+    if (this.motors.size) this.stepMotors();
   }
   clearInput() {
     this.session.clearInput();
@@ -614,9 +765,38 @@ export class PlayMechanism {
       this.riderBlockedReason ??
       (vehicleStopped ? this.vehicleReport?.reason : undefined) ??
       this.reason;
+    const motors = Object.fromEntries(
+      [...this.motors].map(([id, motor]): [string, PlayMotorReport] => {
+        const revolute = motor.joint.kind === "revolute",
+          spec = motor.joint.motor!;
+        return [
+          id,
+          {
+            mode: spec.mode,
+            target: spec.target,
+            enabled: motor.enabled,
+            status: motor.status,
+            units: revolute ? "degrees" : "LDU",
+            targetUnits:
+              spec.mode === "position"
+                ? revolute
+                  ? "degrees"
+                  : "LDU"
+                : revolute
+                  ? "degrees/s"
+                  : "LDU/s",
+            simulation: "kinematic-rate",
+            ...(motor.blockedReason
+              ? { blockedReason: motor.blockedReason }
+              : {}),
+          },
+        ];
+      }),
+    );
     return {
       ...state,
       jointTargets,
+      ...(this.motors.size ? { motors } : {}),
       ...(this.vehicleReport
         ? { vehicleCollision: structuredClone(this.vehicleReport) }
         : {}),
@@ -628,12 +808,14 @@ export class PlayMechanism {
       ...(reason ? { blockedReason: reason } : {}),
       warnings: [
         ...state.warnings.map((warning) =>
-          this.vehicleReport
-            ? warning.replace(
-                "no suspension, traction or collision response.",
-                "no suspension, traction or dynamic collision response.",
-              )
-            : warning,
+          warning.startsWith("Motor targets and effort")
+            ? "Authored motors run at kinematic rates in Play (position motors 90 degrees/s or 40 LDU/s; velocity motors at their target). Effort limits apply only to dynamic physics."
+            : this.vehicleReport
+              ? warning.replace(
+                  "no suspension, traction or collision response.",
+                  "no suspension, traction or dynamic collision response.",
+                )
+              : warning,
         ),
         "Moving surfaces stop conservatively before touching the player. Riding and pushing are not simulated.",
         ...(this.vehicleReport

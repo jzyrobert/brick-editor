@@ -117,7 +117,7 @@ function editable(p: Project, payload: Record<string, any>): Occurrence[] {
 }
 // Node IDs are local to definitions. Cloning a definition preserves its local IDs,
 // hence all occurrence paths and occurrence-scoped metadata stay stable.
-function uniqueNode(p: Project, o: Occurrence): Node {
+export function uniqueNode(p: Project, o: Occurrence): Node {
   let model = p.models[p.rootModelId];
   for (const id of o.path.slice(0, -1)) {
     const n = model.nodes.find((n) => n.id === id)!;
@@ -729,7 +729,7 @@ function mutate(
       ensure(false, "INVALID_INPUT", "Unsupported command " + c.type);
   }
 }
-function parentTransform(p: Project, path: string[]) {
+export function parentTransform(p: Project, path: string[]) {
   let t = identity(),
     m = p.models[p.rootModelId];
   for (const id of path.slice(0, -1)) {

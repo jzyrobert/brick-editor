@@ -17,6 +17,7 @@ import type {
   PlayCameraMode,
   PlayLocomotion,
   PlayTeleportRequest,
+  PlayMotorRequest,
 } from "../play/types";
 import { type Editor } from "../core/commands";
 import { type CameraSpec, type Command, ensure } from "../core/types";
@@ -163,6 +164,23 @@ export function createAPI(
         jobs.wait<ReturnType<typeof fillPreview>>(startFillPreview(request)),
     },
     mechanisms: {
+      /** Authored rigs with their joints and optional dynamic settings. */
+      list: async () =>
+        Object.values(editor.project.motionRigs ?? {})
+          .map((rig) => ({
+            id: rig.id,
+            name: rig.name,
+            vehicle: !!rig.vehicle,
+            joints: rig.joints.map((joint) => ({
+              id: joint.id,
+              kind: joint.kind,
+              ...(joint.motor ? { motor: structuredClone(joint.motor) } : {}),
+            })),
+            ...(rig.dynamics
+              ? { dynamics: structuredClone(rig.dynamics) }
+              : {}),
+          }))
+          .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)),
       enter: async (rigId: string) => {
         player().exit();
         return mechanism().enter(rigId);
@@ -174,6 +192,8 @@ export function createAPI(
       stepTicks: async (count: number) => mechanism().stepTicks(count),
       snapshot: async () => mechanism().snapshot(),
       applyPose: async () => mechanism().applyPose(),
+      /** Static posed LDraw text; the project and rest pose are unchanged. */
+      exportPosedModel: async () => mechanism().exportPosedModel(),
       exit: async () => mechanism().exit(),
     },
     clipboard: {
@@ -230,6 +250,17 @@ export function createAPI(
         validateRequest("playJointTarget", input);
         return player().setJointTarget(input);
       },
+      setMotor: async (input: PlayMotorRequest) => {
+        validateRequest("playMotorRequest", input);
+        return player().setMotor(input);
+      },
+      /** The contextual E/touch action: nearest door, joint or vehicle. */
+      interact: async () => {
+        player().interact();
+        return player().snapshot();
+      },
+      /** Static posed LDraw snapshot; the project and rest pose are unchanged. */
+      exportPosedModel: async () => player().exportPosedModel(),
       setMechanismJoint: async (
         jointId: string,
         value: number,
@@ -443,7 +474,9 @@ export function createAPI(
           | "200"
           | "explore"
           | "mechanisms"
-          | "seated-vehicle";
+          | "seated-vehicle"
+          | "door-room"
+          | "physics";
       }) => {
         validate("importRequest", input);
         ensure(

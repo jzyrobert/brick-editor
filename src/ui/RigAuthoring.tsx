@@ -297,10 +297,20 @@ export function RigAuthoring({
         expectedRevision: project.revision,
         ...(activeLayerId ? { activeLayerId } : {}),
       };
+      // Physics settings have their own review flow; keep them through edits.
+      const keptDynamics =
+        editing && project.motionRigs[editing.id]?.dynamics
+          ? {
+              dynamics: structuredClone(
+                project.motionRigs[editing.id].dynamics!,
+              ),
+            }
+          : {};
       const result =
         kind !== "vehicle"
           ? buildJointRig(project, {
               ...common,
+              ...keptDynamics,
               kind: kind === "hinge" ? "revolute" : kind,
               jointId: editing
                 ? groupIds.joint
@@ -330,6 +340,7 @@ export function RigAuthoring({
             })
           : buildVehicleRig(project, {
               ...common,
+              ...keptDynamics,
               // Seat editing has its own explicit review/removal flow. Retain
               // the frozen source metadata when changing vehicle mechanics.
               ...(editing && project.motionRigs[editing.id]?.vehicle?.driverSeat

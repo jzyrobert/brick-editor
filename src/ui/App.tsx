@@ -2,6 +2,7 @@ import { LimitedSource } from "./LimitedSource";
 import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
 import { RigAuthoring } from "./RigAuthoring";
+import { RigPhysicsAuthoring } from "./RigPhysicsAuthoring";
 import { SeatAuthoring } from "./SeatAuthoring";
 import { ShortcutSettings } from "./ShortcutSettings";
 import {
@@ -3736,22 +3737,28 @@ function Workspace() {
                     "explore",
                     "mechanisms",
                     "seated-vehicle",
+                    "door-room",
+                    "physics",
                   ] as const
                 ).map((t) => (
                   <button key={t} onClick={() => void useTemplate(t)}>
-                    {t === "seated-vehicle"
-                      ? "Open-bench vehicle"
-                      : t === "mechanisms"
-                        ? "Door & vehicle"
-                        : t === "explore"
-                          ? "Exploration room"
-                          : t === "blank"
-                            ? "Blank canvas"
-                            : t === "room"
-                              ? "Courtyard studio"
-                              : t === "wall"
-                                ? "Simple wall"
-                                : "200-part build"}
+                    {t === "door-room"
+                      ? "Door room"
+                      : t === "physics"
+                        ? "Physics playground"
+                        : t === "seated-vehicle"
+                          ? "Open-bench vehicle"
+                          : t === "mechanisms"
+                            ? "Door & vehicle"
+                            : t === "explore"
+                              ? "Exploration room"
+                              : t === "blank"
+                                ? "Blank canvas"
+                                : t === "room"
+                                  ? "Courtyard studio"
+                                  : t === "wall"
+                                    ? "Simple wall"
+                                    : "200-part build"}
                   </button>
                 ))}
               </div>
@@ -3902,6 +3909,11 @@ function Workspace() {
               onSelect={setSelectionSafe}
             />
             <SeatAuthoring
+              editor={editor}
+              project={project}
+              activeLayerId={crossLayer ? undefined : activeLayer}
+            />
+            <RigPhysicsAuthoring
               editor={editor}
               project={project}
               activeLayerId={crossLayer ? undefined : activeLayer}

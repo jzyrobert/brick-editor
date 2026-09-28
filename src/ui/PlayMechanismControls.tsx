@@ -1,5 +1,8 @@
 import { useEffect, useRef } from "react";
-import type { PlayVehicleCollisionReport } from "../play/types";
+import type {
+  PlayMotorReport,
+  PlayVehicleCollisionReport,
+} from "../play/types";
 import type { BrowserPlay } from "../play/browser";
 import type { MotionRig, MechanismSnapshot } from "../mechanisms/types";
 export function PlayMechanismControls({
@@ -17,6 +20,7 @@ export function PlayMechanismControls({
     blocked?: boolean;
     blockedReason?: string;
     vehicleCollision?: PlayVehicleCollisionReport;
+    motors?: Record<string, PlayMotorReport>;
   };
   onError: (message: string) => void;
   choices?: MotionRig[];
@@ -24,6 +28,7 @@ export function PlayMechanismControls({
   onOpenChange?: (open: boolean) => void;
 }) {
   const details = useRef<HTMLDetailsElement>(null);
+  const dynamic = report.mode === "dynamic";
   useEffect(() => () => onOpenChange?.(false), [onOpenChange]);
   const attempt = (fn: () => unknown) => {
     try {
@@ -92,12 +97,15 @@ export function PlayMechanismControls({
       )}
       <p className="play-remote-note">
         Advanced controls can move this mechanism from anywhere. Nearby actions
-        remain available when you close this panel. Setting a joint here
-        immediately positions it and cancels only that joint’s animated travel.
+        remain available when you close this panel.{" "}
+        {dynamic
+          ? "Setting a joint here drives it to that angle with its motor."
+          : "Setting a joint here immediately positions it and cancels only that joint’s animated travel."}
       </p>
       <p>
-        Moving parts stop before touching you. Riding and pushing are not
-        simulated. Your build stays unchanged.
+        {dynamic
+          ? "Dynamic physics: joints move through motors, loose parts fall and can be pushed. Your build stays unchanged."
+          : "Moving parts stop before touching you. Riding and pushing are not simulated. Your build stays unchanged."}
       </p>
       {rig.vehicle && report.vehicleCollision && (
         <p role={report.vehicleCollision.supported ? undefined : "status"}>
@@ -109,23 +117,54 @@ export function PlayMechanismControls({
       {rig.joints
         .filter((j) => j.kind === "revolute" || j.kind === "prismatic")
         .map((j) => (
-          <label key={j.id}>
-            {j.id}: {(report.pose.jointPositions[j.id] ?? 0).toFixed(1)}{" "}
-            {j.kind === "revolute" ? "degrees" : "LDU"}
-            <input
-              aria-label={`Explore joint ${j.id}`}
-              type="range"
-              min={j.limits?.[0] ?? -180}
-              max={j.limits?.[1] ?? 180}
-              step={1}
-              value={report.pose.jointPositions[j.id] ?? 0}
-              onChange={(e) =>
-                attempt(() =>
-                  play.setMechanismJoint(j.id, Number(e.target.value), rig.id),
-                )
-              }
-            />
-          </label>
+          <div key={j.id} className="play-joint-control">
+            <label>
+              {j.id}: {(report.pose.jointPositions[j.id] ?? 0).toFixed(1)}{" "}
+              {j.kind === "revolute" ? "degrees" : "LDU"}
+              <input
+                aria-label={`Explore joint ${j.id}`}
+                type="range"
+                min={j.limits?.[0] ?? -180}
+                max={j.limits?.[1] ?? 180}
+                step={1}
+                value={Math.round(report.pose.jointPositions[j.id] ?? 0)}
+                onChange={(e) =>
+                  attempt(() =>
+                    dynamic
+                      ? play.setJointTarget({
+                          rigId: rig.id,
+                          jointId: j.id,
+                          target: Number(e.target.value),
+                          speed: j.kind === "revolute" ? 90 : 40,
+                        })
+                      : play.setMechanismJoint(
+                          j.id,
+                          Number(e.target.value),
+                          rig.id,
+                        ),
+                  )
+                }
+              />
+            </label>
+            {report.motors?.[j.id] && (
+              <button
+                type="button"
+                aria-pressed={report.motors[j.id].enabled}
+                onClick={() =>
+                  attempt(() =>
+                    play.setMotor({
+                      rigId: rig.id,
+                      jointId: j.id,
+                      enabled: !report.motors![j.id].enabled,
+                    }),
+                  )
+                }
+              >
+                {report.motors[j.id].enabled ? "Stop motor" : "Start motor"}
+                <small> · {report.motors[j.id].status.replace("-", " ")}</small>
+              </button>
+            )}
+          </div>
         ))}
       {rig.vehicle && (
         <>

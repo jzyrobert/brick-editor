@@ -42,6 +42,13 @@ export type PlayRequest = {
   cameraSettings?: Partial<PlayCameraSettings>;
   rigId?: string;
   rigIds?: string[];
+  /** Active rigs simulated with dynamic rigid bodies instead of kinematic poses. */
+  dynamicRigIds?: string[];
+  /**
+   * Hinge official LDraw door leaves automatically (default true). Derived
+   * rigs are session-only and never written to the project.
+   */
+  autoDoors?: boolean;
   locomotion?: PlayLocomotion;
   cameraMode?: PlayCameraMode;
   position?: Vec3;
@@ -119,11 +126,73 @@ export type PlayVehicleCollisionReport = {
   reason?: string;
   obstacle?: { sourceId: string; triangleIndex: number };
 };
+export type PlayMotorRequest = {
+  rigId?: string;
+  jointId: string;
+  enabled: boolean;
+};
+/**
+ * Authored joint motors in Play. Kinematic rigs travel at a declared rate
+ * (position motors at 90 degrees/s or 40 LDU/s; velocity motors at their
+ * target); dynamic rigs drive Rapier joint motors limited by maxEffort.
+ */
+export type PlayMotorReport = {
+  mode: "position" | "velocity";
+  target: number;
+  enabled: boolean;
+  status: "running" | "holding" | "blocked" | "at-limit" | "stopped";
+  units: "degrees" | "LDU";
+  targetUnits: "degrees" | "LDU" | "degrees/s" | "LDU/s";
+  simulation: "kinematic-rate" | "dynamic-motor";
+  blockedReason?: string;
+};
+export type PlayDynamicsReport = {
+  engine: string;
+  /** Simulation gravity, metres/second squared. */
+  gravity: number;
+  bodies: Record<
+    string,
+    {
+      anchored: boolean;
+      massKg: number;
+      colliders: number;
+      sleeping: boolean;
+      /** LDU/second, LDraw axes. */
+      linearVelocity: Vec3;
+      /** Degrees/second. */
+      angularSpeed: number;
+    }
+  >;
+  wheels?: Record<
+    string,
+    {
+      contact: boolean;
+      /** LDU. */
+      suspensionLength: number;
+      steeringDegrees: number;
+      rotationDegrees: number;
+    }
+  >;
+  /** Forward chassis speed, LDU/second. */
+  speed?: number;
+};
 export type PlayMechanismReport = MechanismSnapshot & {
   blocked: boolean;
   blockedReason?: string;
   jointTargets: Record<string, PlayJointTargetReport>;
   vehicleCollision?: PlayVehicleCollisionReport;
+  motors?: Record<string, PlayMotorReport>;
+  dynamics?: PlayDynamicsReport;
+};
+/** Static posed snapshot; the authored project is never changed. */
+export type PlayPosedModel = {
+  format: "ldraw-mpd";
+  text: string;
+  sourceRevision: number;
+  tick: number;
+  rigIds: string[];
+  posedOccurrenceIds: string[];
+  warnings: string[];
 };
 export type PlaySeatRequest = { rigId: string; seatId: string };
 export type PlaySeatEligibility = PlaySeatRequest & {
@@ -138,7 +207,24 @@ export type PlayOccupancy = PlaySeatRequest & {
   localLookYaw: number;
   localLookPitch: number;
 };
+/** Free swing direction of an automatic door, decided from the Play world. */
+export type PlayAutoDoorSwing = "both" | "positive" | "negative" | "blocked";
+export type PlayAutoDoorsReport = {
+  doors: Array<{
+    rigId: string;
+    jointId: string;
+    occurrenceId: string;
+    part: string;
+    anchorOccurrenceId: string;
+    pivot: Vec3;
+    axis: Vec3;
+    leaf: Vec3;
+    swing: PlayAutoDoorSwing;
+  }>;
+  skipped: Array<{ occurrenceId: string; part: string; reason: string }>;
+};
 export type PlaySnapshotReport = {
+  autoDoors?: PlayAutoDoorsReport;
   occupancy?: PlayOccupancy;
   positionAnchor: "standing-feet" | "seated-avatar-root";
   mechanism?: PlayMechanismReport;

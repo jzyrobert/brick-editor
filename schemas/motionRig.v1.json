@@ -558,6 +558,83 @@
         "maxSpeed"
       ],
       "additionalProperties": false
+    },
+    "dynamics": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "object",
+          "maxProperties": 100,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "massKg": {
+                "type": "number",
+                "minimum": 0.001,
+                "maximum": 100000
+              },
+              "anchored": {
+                "type": "boolean"
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          },
+          "propertyNames": {
+            "not": {
+              "enum": [
+                "__proto__",
+                "constructor",
+                "prototype"
+              ]
+            }
+          }
+        },
+        "friction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "suspension": {
+          "type": "object",
+          "properties": {
+            "restLength": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 200
+            },
+            "travel": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 200
+            },
+            "stiffness": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 500
+            },
+            "damping": {
+              "type": "number",
+              "minimum": 0.05,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "restLength",
+            "travel",
+            "stiffness",
+            "damping"
+          ],
+          "additionalProperties": false
+        },
+        "engineForce": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      },
+      "required": [],
+      "additionalProperties": false
     }
   },
   "required": [

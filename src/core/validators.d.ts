@@ -5,6 +5,7 @@ export declare const mechanismPose: Validator;
 export declare const playRequest: Validator;
 export declare const playInput: Validator;
 export declare const playJointTarget: Validator;
+export declare const playMotorRequest: Validator;
 export declare const playTeleport: Validator;
 export declare const playSeatRequest: Validator;
 export declare const playSeatExit: Validator;

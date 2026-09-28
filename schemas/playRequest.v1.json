@@ -74,6 +74,19 @@
       "maxItems": 32,
       "uniqueItems": true
     },
+    "dynamicRigIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 14,
+      "uniqueItems": true
+    },
+    "autoDoors": {
+      "type": "boolean"
+    },
     "locomotion": {
       "enum": [
         "walk",

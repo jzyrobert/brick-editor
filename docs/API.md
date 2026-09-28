@@ -188,3 +188,42 @@ Verified stud/anti-stud connectors ([method and coverage](CONNECTORS.md)):
 - `connectors.groups()` returns connected groups (largest first), uncovered occurrence IDs and the number of stud contacts.
 
 `health.check()` reports the Connections check from the same data.
+
+## Motors, dynamic physics, automatic doors and posed export
+
+See [Play physics](PLAY-PHYSICS.md) for behaviour and limits.
+
+```js
+await api.project.import({ format: "template", template: "physics" });
+await api.ready();
+const rigs = (await api.mechanisms.list()).map((rig) => rig.id);
+await api.play.enter({
+  rigIds: rigs,
+  dynamicRigIds: rigs,
+  position: [300, -0.3, 300],
+});
+await api.play.setMotor({ rigId: "spinner", jointId: "axle", enabled: false });
+await api.play.setJointTarget({
+  rigId: "door",
+  jointId: "hinge",
+  target: 90,
+  speed: 90,
+});
+await api.play.setMechanismVehicleInput(
+  { throttle: 1, steering: 0 },
+  "vehicle",
+);
+const state = await api.play.stepTicks(120); // mechanisms[id].mode === "dynamic"
+const posed = await api.play.exportPosedModel(); // { format: "ldraw-mpd", text, … }
+await api.play.exit();
+```
+
+- `play.enter({dynamicRigIds})` names active rigs to simulate dynamically (at most 14). `autoDoors:false` turns automatic door hinges off; they are on by default.
+- `play.setMotor({rigId?,jointId,enabled})` enables or stops an authored revolute or prismatic motor. Reports include `motors[jointId]` with `mode`, `target`, `enabled`, `status` (`running`, `holding`, `blocked`, `at-limit`, `stopped`), `units`, `targetUnits` and `simulation` (`kinematic-rate` or `dynamic-motor`).
+- Dynamic mechanism reports use `mode:"dynamic"` and add `dynamics` with the engine, gravity (m/s²), per-group `bodies` (anchored, massKg, colliders, sleeping, linearVelocity in LDU/s, angularSpeed in degrees/s), per-wheel `wheels` (contact, suspensionLength in LDU, steering and rotation in degrees) and chassis `speed` (LDU/s). `setMechanismJoint` is refused for dynamic rigs; use `setJointTarget`, which drives the joint motor.
+- `snapshot.autoDoors` lists derived door rigs (`rigId` `auto-door:N`, `jointId`, door and holder occurrence IDs, part, world `pivot`, `axis`, `leaf` and `swing`: `positive`, `negative`, `both` or `blocked`). It also lists `skipped` doors with a reason. Open a door with `play.interact()` near it, or with `setJointTarget`.
+- `play.interact()` performs the contextual E/tap action and returns the snapshot.
+- `play.exportPosedModel()` and `mechanisms.exportPosedModel()` return a static posed MPD of all active mechanisms: `{format:"ldraw-mpd",text,sourceRevision,tick,rigIds,posedOccurrenceIds,warnings}`. The project is not edited.
+- `mechanisms.list()` returns authored rigs with their joints, motors and optional `dynamics` settings.
+
+Rig `dynamics` settings (optional, schema `motionRig`): `groups` keyed by group ID with `massKg` (0.001–100,000) and `anchored`; `friction` (0–4); `suspension` for vehicles, with `restLength` and `travel` in LDU (0.5–200), `stiffness` (1–500) and `damping` (0.05–50); and `engineForce` in simulation N. A dynamic vehicle chassis or wheel cannot be anchored.

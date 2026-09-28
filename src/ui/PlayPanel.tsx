@@ -38,6 +38,7 @@ export function PlayPanel({
     "all" | "single" | "static"
   >("all");
   const [remoteRigId, setRemoteRigId] = useState("");
+  const [physics, setPhysics] = useState<"kinematic" | "dynamic">("kinematic");
   const [remoteOpen, setRemoteOpen] = useState(false);
   let allOption = "__all_mechanisms__";
   while (rigs[allOption]) allOption += "_";
@@ -295,6 +296,34 @@ export function PlayPanel({
             Static build keeps every part still.
           </p>
         )}
+        {Object.keys(rigs).length > 0 && mechanismMode !== "static" && (
+          <details className="play-world-settings play-physics-settings">
+            <summary>Mechanism physics</summary>
+            <label>
+              <input
+                type="radio"
+                name="play-physics"
+                checked={physics === "kinematic"}
+                onChange={() => setPhysics("kinematic")}
+              />
+              Kinematic · parts follow their joints exactly
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="play-physics"
+                checked={physics === "dynamic"}
+                onChange={() => setPhysics("dynamic")}
+              />
+              Dynamic · gravity, motors, suspension and pushing
+            </label>
+            <p>
+              Dynamic physics simulates each rigid group as one body. Loose
+              parts fall and can be pushed; cars ride on sprung wheels.
+              Simulated masses and forces are not real brick strength.
+            </p>
+          </details>
+        )}
         <PlayWorldSettings
           layers={layers}
           excluded={excludedLayerIds}
@@ -316,10 +345,24 @@ export function PlayPanel({
                   ),
                 },
                 ...(mechanismMode === "all" && Object.keys(rigs).length
-                  ? { rigIds: Object.keys(rigs) }
+                  ? {
+                      rigIds: Object.keys(rigs),
+                      ...(physics === "dynamic"
+                        ? { dynamicRigIds: Object.keys(rigs).slice(0, 14) }
+                        : {}),
+                    }
                   : mechanismMode === "single" && rigs[rigId]
-                    ? { rigId }
+                    ? {
+                        rigId,
+                        ...(physics === "dynamic"
+                          ? { dynamicRigIds: [rigId] }
+                          : {}),
+                      }
                     : {}),
+                // Static build keeps every part still, doors included.
+                ...(mechanismMode === "static" && Object.keys(rigs).length
+                  ? { autoDoors: false }
+                  : {}),
               }),
             )
           }

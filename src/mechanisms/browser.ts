@@ -3,6 +3,7 @@ import { ensure, uid } from "../core/types";
 import type { SceneAdapter } from "../render/adapter";
 import { KinematicSession } from "./kinematic";
 import type { MechanismSnapshot } from "./types";
+import { posedLDraw } from "./posed-export";
 export type MechanismViewState = {
   active: boolean;
   loading: boolean;
@@ -119,6 +120,20 @@ export class MechanismBrowser {
   }
   snapshot() {
     return this.current().snapshot();
+  }
+  /** Static posed LDraw snapshot of the previewed pose; nothing is edited. */
+  exportPosedModel() {
+    const report = this.current().snapshot();
+    const posed = posedLDraw(this.editor.project, report.transforms);
+    return {
+      format: "ldraw-mpd" as const,
+      text: posed.text,
+      sourceRevision: report.sourceRevision,
+      tick: report.tick,
+      rigIds: [report.rigId],
+      posedOccurrenceIds: posed.posedOccurrenceIds,
+      warnings: posed.warnings,
+    };
   }
   applyPose() {
     const report = this.current().snapshot(),

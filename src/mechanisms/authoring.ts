@@ -8,7 +8,13 @@ import {
 import { occurrences } from "../core/document";
 import { add, inverse, mv, physical } from "../core/math";
 import { KinematicSession, validateRig } from "./kinematic";
-import type { DriverSeatSpec, JointSpec, MotionRig, RigidGroup } from "./types";
+import type {
+  DriverSeatSpec,
+  JointSpec,
+  MotionRig,
+  RigDynamics,
+  RigidGroup,
+} from "./types";
 
 export type GroupDraft = {
   id: string;
@@ -39,9 +45,13 @@ export type JointRigRequest = IdentityDraft & {
   /** Degrees for revolute joints, LDU for prismatic joints. Absent means unbounded. */
   limits?: [number, number];
   motor?: JointSpec["motor"];
+  /** Optional dynamic-Play settings, preserved through edits. */
+  dynamics?: RigDynamics;
 };
 export type VehicleRigRequest = IdentityDraft & {
   driverSeat?: DriverSeatSpec;
+  /** Optional dynamic-Play settings, preserved through edits. */
+  dynamics?: RigDynamics;
   chassis: GroupDraft;
   wheels: Array<
     GroupDraft & { axisLocal: Vec3; radius: number; steering: boolean }
@@ -236,6 +246,7 @@ export function buildJointRig(
     "axisWorld",
     "limits",
     "motor",
+    "dynamics",
   ]);
   start(project, request);
   const fixed = group(project, request.fixed, request.includeHidden === true),
@@ -276,6 +287,9 @@ export function buildJointRig(
           : { motor: structuredClone(request.motor) }),
       },
     ],
+    ...(request.dynamics === undefined
+      ? {}
+      : { dynamics: structuredClone(request.dynamics) }),
   });
 }
 /** Bounded hinge convenience builder retained for existing callers. */
@@ -315,6 +329,7 @@ export function buildVehicleRig(
     "maxSteerDegrees",
     "maxSpeed",
     "driverSeat",
+    "dynamics",
   ]);
   start(project, request);
   ensure(
@@ -366,6 +381,9 @@ export function buildVehicleRig(
         ? { driverSeat: structuredClone(request.driverSeat) }
         : {}),
     },
+    ...(request.dynamics === undefined
+      ? {}
+      : { dynamics: structuredClone(request.dynamics) }),
   });
 }
 /** Update only seat metadata, preserving all authored vehicle geometry and mechanics. */
@@ -402,6 +420,42 @@ export function buildDriverSeatDraft(
   const rig = structuredClone(existing);
   if (request.driverSeat === null) delete rig.vehicle!.driverSeat;
   else rig.vehicle!.driverSeat = structuredClone(request.driverSeat);
+  return finish(project, identity, rig);
+}
+/**
+ * Update only a rig's optional dynamic-Play settings (masses, anchoring,
+ * friction, suspension, engine force); `null` removes them. Mechanics, rest
+ * data and members are unchanged, and the result is one undoable rig edit.
+ */
+export function buildRigDynamicsDraft(
+  project: Project,
+  request: {
+    rigId: string;
+    expectedRevision: number;
+    dynamics: RigDynamics | null;
+    includeHidden?: boolean;
+    activeLayerId?: string;
+  },
+): RigDraft {
+  fields(request, [
+    "rigId",
+    "expectedRevision",
+    "dynamics",
+    "includeHidden",
+    "activeLayerId",
+  ]);
+  const existing = project.motionRigs[request.rigId];
+  ensure(existing, "INVALID_INPUT", "Choose an existing rig");
+  ensure(
+    request.dynamics !== undefined,
+    "INVALID_INPUT",
+    "Supply physics settings or null to remove them",
+  );
+  const identity = { ...request, id: existing.id, name: existing.name };
+  start(project, identity);
+  const rig = structuredClone(existing);
+  if (request.dynamics === null) delete rig.dynamics;
+  else rig.dynamics = structuredClone(request.dynamics);
   return finish(project, identity, rig);
 }
 export type RigAuthoringRequest =
@@ -493,6 +547,7 @@ export function rigAuthoringRequest(
       ...(v.driverSeat !== undefined
         ? { driverSeat: structuredClone(v.driverSeat) }
         : {}),
+      ...(rig.dynamics ? { dynamics: structuredClone(rig.dynamics) } : {}),
     };
     ensureLosslessRig(rig, buildVehicleRig(project, request).rig);
     return { kind: "vehicle", request };
@@ -515,6 +570,7 @@ export function rigAuthoringRequest(
     ...(joint.axisA ? { axisWorld: mv(fixed.frame.basis, joint.axisA) } : {}),
     ...(joint.limits ? { limits: structuredClone(joint.limits) } : {}),
     ...(joint.motor ? { motor: structuredClone(joint.motor) } : {}),
+    ...(rig.dynamics ? { dynamics: structuredClone(rig.dynamics) } : {}),
   };
   ensureLosslessRig(rig, buildJointRig(project, request).rig);
   return { kind: "joint", request };

@@ -106,6 +106,14 @@ export async function main(argv: string[]) {
       "width",
       "height",
       "look",
+      "rigs",
+      "dynamic-rigs",
+      "no-auto-doors",
+      "open-doors",
+      "joint-targets",
+      "motors",
+      "vehicle",
+      "posed-output",
     ],
   };
   ensure(
@@ -120,6 +128,8 @@ export async function main(argv: string[]) {
       "run",
       "jump",
       "no-ground",
+      "no-auto-doors",
+      "open-doors",
       "include-official",
       "include-complete",
       "acknowledge-scoped-metadata",
@@ -665,6 +675,64 @@ export async function main(argv: string[]) {
       "INVALID_INPUT",
       "--position requires a JSON array of three finite LDU coordinates",
     );
+    const json = (key: string) => {
+      const text = flag(key);
+      if (text === undefined) return undefined;
+      try {
+        return JSON.parse(text) as unknown;
+      } catch {
+        throw new AppError("INVALID_INPUT", `--${key} must be JSON`);
+      }
+    };
+    const idList = (key: string) => {
+      const value = flag(key) === "all" ? "all" : json(key);
+      ensure(
+        value === undefined ||
+          value === "all" ||
+          (Array.isArray(value) &&
+            value.length <= 32 &&
+            value.every((v) => typeof v === "string" && v.length > 0)),
+        "INVALID_INPUT",
+        `--${key} takes "all" or a JSON array of rig IDs`,
+      );
+      return value as "all" | string[] | undefined;
+    };
+    const rigs = idList("rigs"),
+      dynamicRigs = idList("dynamic-rigs");
+    const jointTargets = (json("joint-targets") ?? []) as Array<{
+        rigId?: string;
+        jointId: string;
+        target: number;
+        speed: number;
+      }>,
+      motors = (json("motors") ?? []) as Array<{
+        rigId?: string;
+        jointId: string;
+        enabled: boolean;
+      }>,
+      vehicle = json("vehicle") as
+        | { rigId?: string; throttle: number; steering: number }
+        | undefined;
+    ensure(
+      Array.isArray(jointTargets) &&
+        jointTargets.length <= 128 &&
+        Array.isArray(motors) &&
+        motors.length <= 128 &&
+        (vehicle === undefined ||
+          (vehicle !== null && typeof vehicle === "object")),
+      "INVALID_INPUT",
+      "--joint-targets and --motors take JSON arrays; --vehicle takes a JSON object",
+    );
+    const posedOutput = flag("posed-output");
+    if (posedOutput)
+      ensure(
+        operation === "play" &&
+          ![input, output, reportPath].some(
+            (path) => path && resolve(path) === resolve(posedOutput),
+          ),
+        "INVALID_INPUT",
+        "--posed-output must be a new path for a play run",
+      );
     const result = await withHeadlessPage(p, (page) =>
       page.evaluate(
         async ({
@@ -676,15 +744,51 @@ export async function main(argv: string[]) {
           input,
           ticks,
           look,
+          rigs,
+          dynamicRigs,
+          jointTargets,
+          motors,
+          vehicle,
+          openDoors,
+          posed,
         }) => {
           const a = window.brickEditor!,
             q = await a.query();
           try {
-            let before, after;
+            let before, after, posedModel;
             if (operation === "play") {
-              before = await a.play.enter(request);
+              const authored = (await a.mechanisms.list()).map((rig) => rig.id);
+              const rigIds = rigs === "all" ? authored : (rigs ?? []);
+              before = await a.play.enter({
+                ...request,
+                ...(rigIds.length ? { rigIds } : {}),
+                ...(dynamicRigs
+                  ? {
+                      dynamicRigIds:
+                        dynamicRigs === "all" ? rigIds : dynamicRigs,
+                    }
+                  : {}),
+              });
+              for (const motor of motors) await a.play.setMotor(motor);
+              if (openDoors)
+                for (const door of before.autoDoors?.doors ?? [])
+                  if (door.swing !== "blocked")
+                    await a.play.setJointTarget({
+                      rigId: door.rigId,
+                      jointId: door.jointId,
+                      target: door.swing === "negative" ? -90 : 90,
+                      speed: 90,
+                    });
+              for (const target of jointTargets)
+                await a.play.setJointTarget(target);
+              if (vehicle)
+                await a.play.setMechanismVehicleInput(
+                  { throttle: vehicle.throttle, steering: vehicle.steering },
+                  vehicle.rigId,
+                );
               await a.play.setInput(input);
               after = await a.play.stepTicks(ticks);
+              if (posed) posedModel = await a.play.exportPosedModel();
             } else await a.camera.set(camera!);
             const image = await a.render.image({
               revision: q.revision,
@@ -699,10 +803,22 @@ export async function main(argv: string[]) {
             });
             return {
               bytes: Array.from(new Uint8Array(await image.blob.arrayBuffer())),
+              posedModel,
               manifest: {
                 ...image.manifest,
                 ...(operation === "play"
-                  ? { playRun: { initial: before, final: after, input, ticks } }
+                  ? {
+                      playRun: {
+                        initial: before,
+                        final: after,
+                        input,
+                        ticks,
+                        ...(jointTargets.length ? { jointTargets } : {}),
+                        ...(motors.length ? { motors } : {}),
+                        ...(vehicle ? { vehicle } : {}),
+                        ...(openDoors ? { openDoors: true } : {}),
+                      },
+                    }
                   : {}),
               },
             };
@@ -724,7 +840,15 @@ export async function main(argv: string[]) {
             pitch,
             ground: !args.includes("--no-ground"),
             realtime: false,
+            ...(args.includes("--no-auto-doors") ? { autoDoors: false } : {}),
           },
+          rigs,
+          dynamicRigs,
+          jointTargets,
+          motors,
+          vehicle,
+          openDoors: args.includes("--open-doors"),
+          posed: !!posedOutput,
           input: {
             moveX,
             moveZ,
@@ -739,6 +863,8 @@ export async function main(argv: string[]) {
       ),
     );
     await writeFile(output, new Uint8Array(result.bytes));
+    if (posedOutput && result.posedModel)
+      await writeFile(posedOutput, result.posedModel.text);
     await writeFile(
       reportPath,
       JSON.stringify(

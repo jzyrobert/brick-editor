@@ -17,9 +17,15 @@ import type {
   PlayCameraSettings,
   PlaySpawnRequest,
   PlaySeatRequest,
+  PlayMotorRequest,
+  PlayPosedModel,
 } from "./types";
+import { posedLDraw } from "../mechanisms/posed-export";
 import type { PlaySession } from "./session";
 import { nearbyInteraction, type PlayInteraction } from "./interaction";
+import { occurrences } from "../core/document";
+import { deriveDoorRigs, type DerivedDoors } from "./auto-doors";
+import type { DynamicRigSource } from "./dynamics";
 import { BrickAvatar } from "./avatar";
 
 /** Wall time a realtime frame may spend on catch-up physics ticks. */
@@ -139,7 +145,7 @@ export class BrowserPlay {
       const worldProfile = project
         ? resolvePlayWorldProfile(project, request.worldProfile, rigIds)
         : undefined;
-      const rigs = rigIds.map((id) => {
+      const authored = rigIds.map((id) => {
         const rig =
           project?.motionRigs && Object.hasOwn(project.motionRigs, id)
             ? project.motionRigs[id]
@@ -147,6 +153,43 @@ export class BrowserPlay {
         ensure(rig, "INVALID_INPUT", "Unknown authored Play rig");
         return rig;
       });
+      const dynamicRigIds = request.dynamicRigIds ?? [];
+      ensure(
+        Array.isArray(dynamicRigIds) &&
+          dynamicRigIds.every((id) => rigIds.includes(id)),
+        "INVALID_INPUT",
+        "dynamicRigIds must name requested authored rigs",
+      );
+      // One occurrence expansion serves door derivation and every rig check.
+      const all = project ? occurrences(project) : [];
+      const lookup = new Map(all.map((o) => [o.id, o]));
+      let derived: DerivedDoors | undefined;
+      if (project && request.autoDoors !== false) {
+        derived = deriveDoorRigs(project, {
+          all,
+          included: worldProfile
+            ? new Set(worldProfile.includedOccurrenceIds)
+            : undefined,
+          reserved: new Set(
+            Object.values(project.motionRigs ?? {}).flatMap((rig) =>
+              rig.groups.flatMap((group) => group.occurrenceIds),
+            ),
+          ),
+          maxRigs: 32 - authored.length,
+          maxGroups:
+            128 - authored.reduce((sum, rig) => sum + rig.groups.length, 0),
+        });
+        if (!derived.doors.length && !derived.skipped.length)
+          derived = undefined;
+      }
+      const sourceProject =
+        project && derived
+          ? {
+              ...project,
+              motionRigs: { ...project.motionRigs, ...derived.rigs },
+            }
+          : project;
+      const rigs = [...authored, ...Object.values(derived?.rigs ?? {})];
       const ids = rigs.flatMap((rig) =>
         rig.groups.flatMap((group) => group.occurrenceIds),
       );
@@ -171,7 +214,18 @@ export class BrowserPlay {
       let triangles = 0;
       for (const rig of rigs) {
         const groups: PlayMechanismSource["groups"] = {};
+        const members: DynamicRigSource["members"] = {};
+        const dynamic = dynamicRigIds.includes(rig.id);
         for (const group of rig.groups) {
+          if (dynamic)
+            for (const id of group.occurrenceIds) {
+              members[id] = await r.playGeometry({ include: [id] });
+              ensure(
+                epoch === this.epoch,
+                "INVALID_INPUT",
+                "Play entry cancelled",
+              );
+            }
           const mesh = await r.playGeometry({ include: group.occurrenceIds });
           ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
           ensure(
@@ -197,7 +251,13 @@ export class BrowserPlay {
             );
           }
         }
-        mechanismSources.push({ project: project!, rigId: rig.id, groups });
+        mechanismSources.push({
+          project: sourceProject!,
+          rigId: rig.id,
+          groups,
+          lookup,
+          ...(dynamic ? { members } : {}),
+        });
       }
       ensure(
         geometry.revision === this.revision(),
@@ -208,10 +268,18 @@ export class BrowserPlay {
         ...geometry,
         ...(worldProfile ? { worldProfile } : {}),
       };
+      const sessionRequest: PlayRequest = { ...request };
+      if (derived && Object.keys(derived.rigs).length) {
+        delete sessionRequest.rigId;
+        sessionRequest.rigIds = rigs.map((rig) => rig.id);
+      }
       const session = await PlaySession.create(
         collisionSnapshot,
-        request,
+        sessionRequest,
         mechanismSources,
+        derived
+          ? { doors: derived.doors, skipped: derived.skipped }
+          : undefined,
       );
       if (epoch !== this.epoch) {
         session.dispose();
@@ -222,7 +290,23 @@ export class BrowserPlay {
         throw new Error("Project changed while preparing Play");
       }
       this.session = session;
-      this.sessionRigs = project?.motionRigs ?? {};
+      const doorRigs = structuredClone(derived?.rigs ?? {});
+      // Mirror each door's decided swing so nearby actions use the same limits.
+      for (const door of session.snapshot().autoDoors?.doors ?? []) {
+        const joint = doorRigs[door.rigId]?.joints.find(
+          (j) => j.id === door.jointId,
+        );
+        if (joint)
+          joint.limits =
+            door.swing === "both"
+              ? [-90, 90]
+              : door.swing === "positive"
+                ? [0, 90]
+                : door.swing === "negative"
+                  ? [-90, 0]
+                  : [0, 0];
+      }
+      this.sessionRigs = { ...(project?.motionRigs ?? {}), ...doorRigs };
       this.held = {};
       if (rigs.length) this.restorePose = r.beginTransientPose();
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
@@ -312,7 +396,12 @@ export class BrowserPlay {
       )
       .map((target) => {
         const seat = rigs[target.rigId]?.vehicle?.driverSeat;
-        if (target.kind !== "vehicle" || !seat) return target;
+        const dynamic =
+          (report.mechanisms?.[target.rigId] ?? report.mechanism)?.mode ===
+          "dynamic";
+        // Driver seats use the kinematic profile; dynamic vehicles are driven
+        // from the explorer's position instead.
+        if (target.kind !== "vehicle" || !seat || dynamic) return target;
         const mechanism = report.mechanisms?.[target.rigId] ?? report.mechanism;
         const frame =
           mechanism!.groupFrames[rigs[target.rigId].vehicle!.chassisGroup];
@@ -589,7 +678,10 @@ export class BrowserPlay {
     );
     this.clearInput();
     if (target.kind === "vehicle") {
-      const seat = this.sessionRigs[target.rigId]?.vehicle?.driverSeat;
+      const seat =
+        report.mechanisms?.[target.rigId]?.mode === "dynamic"
+          ? undefined
+          : this.sessionRigs[target.rigId]?.vehicle?.driverSeat;
       if (seat) this.enterVehicle({ rigId: target.rigId, seatId: seat.id });
       else this.controlVehicle(target.rigId);
     } else
@@ -611,6 +703,41 @@ export class BrowserPlay {
     this.draw();
     this.emit();
     return report;
+  }
+  setMotor(request: PlayMotorRequest) {
+    this.assertMutable();
+    const report = this.current().setMotor(request);
+    this.draw();
+    this.emit();
+    return report;
+  }
+  /**
+   * Static posed LDraw snapshot of every active mechanism (including derived
+   * doors and dynamic bodies). Rest-pose export and the project are untouched.
+   */
+  exportPosedModel(): PlayPosedModel {
+    const report = this.current().snapshot();
+    const project = this.project?.();
+    ensure(
+      project && project.revision === report.sourceRevision,
+      "REVISION_CONFLICT",
+      "Posed export needs the Play source revision",
+    );
+    const mechanisms = Object.values(report.mechanisms ?? {});
+    const transforms = Object.assign(
+      {},
+      ...mechanisms.map((mechanism) => mechanism.transforms),
+    );
+    const posed = posedLDraw(project, transforms);
+    return {
+      format: "ldraw-mpd",
+      text: posed.text,
+      sourceRevision: report.sourceRevision,
+      tick: report.tick,
+      rigIds: mechanisms.map((mechanism) => mechanism.rigId).sort(),
+      posedOccurrenceIds: posed.posedOccurrenceIds,
+      warnings: posed.warnings,
+    };
   }
   setMechanismJoint(id: string, value: number, rigId?: string) {
     this.assertMutable();

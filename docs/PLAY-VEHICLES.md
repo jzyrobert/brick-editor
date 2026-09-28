@@ -25,3 +25,7 @@ The original figure uses whole rigid legs rotated at the hips, with no knees, me
 **Exit vehicle** checks the ordered authored exits in the vehicle's current frame. Each exit needs real walkable support and a clear swept transfer. Player-owned collision sensors never count as floor. If every exit is blocked, occupancy remains, driving input stops and the player can reposition or leave Play. Fly, teleport and spawn changes require exiting the seat first. Captures freeze seat mutations and report occupancy, pelvis/root/eye anchors, local look and the seated pose without changing authored source.
 
 The template **Open-bench vehicle** supplies one original authored example. The coordinate editor reviews only metadata; Play is responsible for geometry checks. General platform riding, inferred seats, low-cabin fit, articulated vehicles, suspension and dynamic collision response remain separate work. The earlier mobile scores apply to remote driving and source recovery; the new seat flow independently scored 8.7/10 after fixing chase-camera framing and moving the exit card away from the driver.
+
+## Dynamic vehicles
+
+Entering Play with dynamic physics (`dynamicRigIds`) replaces this kinematic profile for that session. The chassis is a Rapier body on sprung ray-cast wheels, with engine force, brake and authored steering and speed limits. Dynamic vehicles can be driven remotely (Control vehicle); seated entry keeps the kinematic profile. See [Play physics](PLAY-PHYSICS.md).

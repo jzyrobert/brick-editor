@@ -59,7 +59,45 @@ export function nearbyInteraction(
     const [min, max] =
       joint.limits ?? (joint.kind === "revolute" ? [0, 90] : [0, 40]);
     const closed = Math.max(min, Math.min(max, 0));
-    const opened = Math.abs(max - closed) >= Math.abs(min - closed) ? max : min;
+    let opened = Math.abs(max - closed) >= Math.abs(min - closed) ? max : min;
+    // Two-way automatic doors open away from the explorer, like a push door.
+    const door = report.autoDoors?.doors.find(
+      (d) => d.rigId === rig.id && d.jointId === joint.id,
+    );
+    if (door && min < 0 && max > 0) {
+      const [ax, ay, az] = door.axis,
+        [lx, ly, lz] = door.leaf;
+      const swing: Vec3 = [
+        ay * lz - az * ly,
+        az * lx - ax * lz,
+        ax * ly - ay * lx,
+      ];
+      const toward = [0, 1, 2].reduce(
+        (sum, k) =>
+          sum +
+          swing[k] *
+            ((k === 1
+              ? report.position[1] - report.profile.height / 2
+              : report.position[k]) -
+              door.pivot[k]),
+        0,
+      );
+      const now = mechanism.pose.jointPositions[joint.id] ?? 0,
+        moving = mechanism.jointTargets?.[joint.id];
+      // Keep the side an open (or opening) door is already on.
+      opened =
+        moving && moving.status !== "complete" && Math.abs(moving.target) > 1e-6
+          ? moving.target > 0
+            ? max
+            : min
+          : Math.abs(now) > 1
+            ? now > 0
+              ? max
+              : min
+            : toward > 0
+              ? min
+              : max;
+    }
     if (Math.abs(opened - closed) < 1e-6) continue;
     const current = mechanism.pose.jointPositions[joint.id] ?? 0;
     const travel = mechanism.jointTargets?.[joint.id];
@@ -91,11 +129,15 @@ export function nearbyInteraction(
           ? "Retry closing"
           : "Retry opening"
         : close
-          ? "Close joint"
-          : "Open joint",
+          ? door
+            ? "Close door"
+            : "Close joint"
+          : door
+            ? "Open door"
+            : "Open joint",
       progress,
       blockedReason: retry ? travel.blockedReason : undefined,
-      name: `${rig.name} · ${joint.id}`,
+      name: door ? `${rig.name} · ${door.part}` : `${rig.name} · ${joint.id}`,
       available: d <= 96,
       distance: d,
     });
