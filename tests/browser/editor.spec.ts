@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { openMode } from "./helpers/mode";
 test("200-part UI fill, edit/undo, native round trip, offline inventory and exact PNG", async ({
   page,
 }, testInfo) => {
@@ -126,7 +127,7 @@ test("desktop template renders real geometry and exports inventory in the UI", a
   });
   await expect(page.locator(".canvas-bottom")).toContainText("74 parts");
   await page.screenshot({ path: info.outputPath("desktop.png") });
-  await page.getByRole("button", { name: "Export ↗", exact: true }).click();
+  await page.getByRole("button", { name: "Export", exact: true }).click();
   await page.getByRole("button", { name: "Preview parts list" }).click();
   await expect(
     page.getByRole("button", { name: "Download XML" }),
@@ -165,7 +166,7 @@ for (const viewport of [
     const save = page.waitForEvent("download");
     await page.getByRole("button", { name: "Save project" }).click();
     expect((await save).suggestedFilename()).toMatch(/brickproj$/);
-    await page.getByRole("button", { name: "Export ↗", exact: true }).click();
+    await page.getByRole("button", { name: "Export", exact: true }).click();
     await page.getByRole("button", { name: "Preview parts list" }).click();
     await expect(
       page.getByRole("button", { name: "Download XML" }),
@@ -388,7 +389,7 @@ test("Photo UI exports a transparent PNG with the selected dimensions", async ({
     });
     await window.brickEditor!.ready({ strict: true });
   });
-  await page.getByRole("button", { name: "Photo", exact: true }).click();
+  await openMode(page, "Photo");
   await page.getByLabel("Width", { exact: true }).fill("320");
   await page.getByLabel("Height", { exact: true }).fill("240");
   await page.getByLabel("Transparent background").check();

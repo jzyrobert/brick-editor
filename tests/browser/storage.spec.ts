@@ -2,6 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync, strFromU8 } from "fflate";
 import { createHash } from "node:crypto";
+import { openMode } from "./helpers/mode";
 async function rename(page: Page, title: string) {
   await page.evaluate(async (title) => {
     const a = window.brickEditor!,
@@ -98,7 +99,7 @@ test("saved-project UI opens, downloads a valid backup and deletes only the chos
   await rename(page, "Current blank");
   await saved(page);
   const blank = await stored(page);
-  await page.getByRole("button", { name: "Project", exact: true }).click();
+  await openMode(page, "Project");
   const row = page.locator(".saved-project").filter({ hasText: "Saved wall" });
   await expect(row).toBeVisible();
   const event = page.waitForEvent("download");
@@ -117,14 +118,14 @@ test("saved-project UI opens, downloads a valid backup and deletes only the chos
   expect(
     (await page.evaluate(() => window.brickEditor!.query())).occurrences,
   ).toHaveLength(40);
-  await page.getByRole("button", { name: "Project", exact: true }).click();
+  await openMode(page, "Project");
   await page
     .locator(".saved-project")
     .filter({ hasText: "Current blank" })
     .getByRole("button", { name: "Open saved project" })
     .click();
   await expect(page.getByLabel("Project title")).toHaveValue("Current blank");
-  await page.getByRole("button", { name: "Project", exact: true }).click();
+  await openMode(page, "Project");
   await row
     .getByRole("button", { name: "Delete saved copy", exact: true })
     .click();

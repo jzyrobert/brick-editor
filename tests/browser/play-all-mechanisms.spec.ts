@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 for (const width of [360, 1080, 1440]) {
   test(`all mechanisms default and separated remote controls at ${width}px`, async ({
     browser,
@@ -25,7 +26,7 @@ for (const width of [360, 1080, 1440]) {
         await window.brickEditor!.ready();
       });
       const before = await page.evaluate(() => window.brickEditor!.query());
-      await page.getByRole("button", { name: "Play", exact: true }).click();
+      await openMode(page, "Play");
       await expect(
         page.getByLabel("Explore with mechanism").locator("option:checked"),
       ).toHaveText("All mechanisms (2)");

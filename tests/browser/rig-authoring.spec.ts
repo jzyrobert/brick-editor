@@ -107,8 +107,8 @@ for (const width of [360, 1080]) {
         .click();
       // Draft survives switching away to the canvas for normal part selection.
       await page
-        .getByRole("navigation", { name: "Mobile panels" })
-        .getByRole("button", { name: "Canvas", exact: true })
+        .locator(".mobile-panel.mobile-open .mobile-sheet-head")
+        .getByRole("button", { name: "Close" })
         .click();
       await page
         .getByRole("navigation", { name: "Mobile panels" })

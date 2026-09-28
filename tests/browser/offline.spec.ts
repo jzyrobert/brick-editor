@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { PDFDocument } from "pdf-lib";
+import { openMode } from "./helpers/mode";
 test("explicit offline installation reloads at its deployed base path and provides parts, Play, inventory and PDF", async ({
   page,
   context,
@@ -8,7 +9,7 @@ test("explicit offline installation reloads at its deployed base path and provid
   await page.goto("./?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
   const base = new URL("./", page.url()).href;
-  await page.getByRole("button", { name: "Project", exact: true }).click();
+  await openMode(page, "Project");
   await page
     .getByRole("button", { name: "Download / check for updates", exact: true })
     .click();
@@ -51,9 +52,7 @@ test("explicit offline installation reloads at its deployed base path and provid
       };
     });
     expect(result).toEqual({ count: 74, ready: true, inventory: 74 });
-    await page
-      .getByRole("button", { name: "Instructions", exact: true })
-      .click();
+    await openMode(page, "Instructions");
     await page
       .getByRole("button", { name: "Generate layer steps", exact: true })
       .click();

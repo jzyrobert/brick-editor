@@ -1,4 +1,5 @@
 import { test, expect, devices } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 
 // Raw triangles count as expanded leaves but stay within renderer part budgets.
 const flat = (n: number) =>
@@ -107,7 +108,7 @@ test.describe("phone", () => {
       ),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Place selected part →" }),
+      page.getByRole("button", { name: "Place selected part" }),
     ).toBeHidden();
     expect(
       await page.evaluate(() => window.brickEditor!.resources.status()),
@@ -146,7 +147,7 @@ test("desktop keeps desktop limits and shows the device limits panel", async ({
   expect(
     await page.evaluate(() => window.brickEditor!.resources.status()),
   ).toMatchObject({ profile: "desktop", detected: "desktop" });
-  await page.getByRole("button", { name: "Project", exact: true }).click();
+  await openMode(page, "Project");
   const panel = page.getByRole("region", { name: "Device limits" });
   await expect(panel).toContainText("desktop or laptop");
   await panel.getByLabel("Phone limits").check();

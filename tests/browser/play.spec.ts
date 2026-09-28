@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 
 async function ready(page: Page) {
   await page.goto("/?automation=1");
@@ -115,7 +116,7 @@ for (const viewport of [
       await page.goto("/?automation=1");
       await page.waitForFunction(() => !!window.brickEditor?.play);
       await page.evaluate(() => window.brickEditor!.ready());
-      await page.getByRole("button", { name: "Play", exact: true }).click();
+      await openMode(page, "Play");
       await page
         .getByRole("button", { name: "Enter Play", exact: true })
         .click();

@@ -1,0 +1,1103 @@
+/*
+ * Creative-mode HUD. The build fills the screen; controls live in slots at its
+ * edges and dim while you work the model. Layered after styles.css.
+ */
+:root {
+  --paper: #f4f1ea;
+  --ink: #1d2230;
+  --secondary: #4f5a6e;
+  --line: #e2dccf;
+  --accent: #2e7d43;
+  --hud: rgba(29, 34, 48, 0.92);
+  --hud-line: rgba(244, 241, 234, 0.16);
+  --chalk: #f4f1ea;
+  --grass: #5bb56a;
+  --sun: #ffd166;
+  --hud-mute: #b9c0cf;
+  --scene: #dfe6ea;
+}
+::selection {
+  background: #ffd16688;
+  color: var(--ink);
+}
+body {
+  background: var(--scene);
+  color: var(--ink);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 2px;
+}
+.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.primary:hover {
+  background: #266a38;
+  border-color: #266a38;
+}
+.icon {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Full-bleed shell: the canvas is the ground everything else floats over. */
+.app {
+  position: relative;
+  display: block;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--scene);
+}
+.workspace {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.canvas-shell {
+  position: absolute;
+  inset: 0;
+  background: var(--scene);
+}
+.hud-slab {
+  background: var(--hud);
+  border: 2px solid var(--hud-line);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(20, 24, 36, 0.24);
+  color: var(--chalk);
+}
+.hud-el {
+  transition:
+    opacity 0.15s ease-out,
+    transform 0.2s ease-out;
+}
+.hud-dim .hud-el,
+.hud-dim .canvas-toolbar,
+.hud-dim .left-sidebar,
+.hud-dim .right-sidebar,
+.hud-dim .mode-card {
+  opacity: 0.18;
+  pointer-events: none;
+}
+.left-sidebar,
+.right-sidebar,
+.canvas-toolbar,
+.mode-card {
+  transition: opacity 0.15s ease-out;
+}
+
+/* Top HUD: mode switcher, project slab, actions. */
+.hud-top {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.hud-top > * {
+  pointer-events: auto;
+}
+.mode-tabs {
+  display: flex;
+  gap: 2px;
+  height: auto;
+  padding: 4px;
+  margin: 0;
+}
+.mode-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--hud-mute);
+  font-weight: 600;
+  font-size: 13px;
+}
+.mode-tabs button:hover {
+  background: rgba(244, 241, 234, 0.08);
+  color: var(--chalk);
+}
+.mode-tabs button.active {
+  background: var(--chalk);
+  color: var(--ink);
+}
+.mode-tabs button.active:after {
+  content: none;
+}
+.project-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  min-width: 0;
+  padding: 0 14px;
+}
+.project-bar .brand {
+  display: inline;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--hud-mute);
+  white-space: nowrap;
+}
+.project-bar .brand b {
+  color: var(--chalk);
+  font-weight: 750;
+}
+.save-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--grass);
+  flex-shrink: 0;
+}
+.project-bar input {
+  width: 200px;
+  min-height: 36px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--chalk);
+  font-weight: 650;
+}
+.project-bar input:hover,
+.project-bar input:focus {
+  background: rgba(244, 241, 234, 0.08);
+}
+.project-bar .save-state {
+  border: 0;
+  padding: 0;
+  font-size: 12px;
+  color: var(--hud-mute);
+  white-space: nowrap;
+}
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.header-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  font-weight: 650;
+}
+.header-actions .hud-slab:hover {
+  background: #2a3044;
+  border-color: var(--hud-line);
+}
+.header-actions .primary {
+  min-width: 0;
+  justify-content: center;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(20, 24, 36, 0.24);
+}
+
+/* Tool dock (desktop): bottom centre. */
+.canvas-toolbar {
+  top: auto;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  gap: 4px;
+  padding: 6px;
+  background: var(--hud);
+  border: 2px solid var(--hud-line);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(20, 24, 36, 0.26);
+}
+.canvas-toolbar button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--chalk);
+  font-size: 13px;
+  font-weight: 600;
+}
+.canvas-toolbar button:hover {
+  background: rgba(244, 241, 234, 0.1);
+}
+.canvas-toolbar button.active {
+  background: var(--grass);
+  color: #10240f;
+}
+.canvas-toolbar button:disabled {
+  opacity: 0.35;
+}
+.tool-segment {
+  gap: 2px;
+  padding-right: 6px;
+  border-right: 2px solid var(--hud-line);
+}
+.tool-segment:last-of-type {
+  border-right: 0;
+  padding-right: 0;
+}
+.tool-segment:last-of-type button {
+  font-size: 13px;
+  padding: 0 12px;
+}
+.views-toggle {
+  display: none !important;
+}
+
+/* Camera views: a slim strip under the actions on desktop, a popover on touch. */
+.view-controls {
+  position: absolute;
+  top: 74px;
+  right: 326px;
+  z-index: 14;
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: var(--hud);
+  border: 2px solid var(--hud-line);
+  border-radius: 12px;
+}
+.view-controls button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--chalk);
+  font-size: 12px;
+  font-weight: 600;
+}
+.view-controls button:hover {
+  background: rgba(244, 241, 234, 0.1);
+}
+
+/* Floating chalk sheets: parts inventory left, layers/inspector right. */
+.left-sidebar,
+.right-sidebar {
+  position: absolute;
+  top: 74px;
+  bottom: 90px;
+  z-index: 12;
+  width: 300px;
+  padding: 18px 16px;
+  overflow: auto;
+  background: var(--paper);
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(20, 24, 36, 0.22);
+  overscroll-behavior: contain;
+}
+.left-sidebar {
+  left: 12px;
+}
+.right-sidebar {
+  right: 12px;
+  width: 310px;
+}
+.part-card {
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+}
+.part-card.chosen {
+  border-color: var(--grass);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--grass);
+}
+.part-check {
+  color: var(--accent);
+}
+.part-filters button[aria-pressed="true"],
+.part-chips button[aria-pressed="true"],
+.right-tabs button.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--chalk);
+}
+.part-favourite[aria-pressed="true"] {
+  color: #b7791f;
+}
+.parts-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 18px 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.offline-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Status chips. */
+.canvas-bottom {
+  position: absolute;
+  left: 324px;
+  right: auto;
+  bottom: 24px;
+  z-index: 13;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 17px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--chalk);
+  background: var(--hud);
+}
+.canvas-bottom b,
+.status-bar b {
+  color: var(--hud-mute);
+}
+.canvas-bottom .grid-state {
+  color: var(--hud-mute);
+  font-weight: 500;
+}
+.status-bar {
+  position: absolute;
+  right: 12px;
+  bottom: 24px;
+  z-index: 13;
+  height: 34px;
+  max-width: min(520px, calc(100% - 24px));
+  padding: 0 14px;
+  gap: 12px;
+  border: 0;
+  border-radius: 17px;
+  background: var(--hud);
+  color: var(--chalk);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+.status-bar > span:first-child {
+  color: var(--chalk);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.status-bar > span:last-child {
+  color: var(--hud-mute);
+  white-space: nowrap;
+}
+.status-bar button {
+  min-height: 28px;
+  padding: 0 10px;
+}
+.placement-card,
+.welcome,
+.mode-card {
+  z-index: 16;
+}
+.placement-card {
+  bottom: 88px;
+}
+.mode-card {
+  top: 74px;
+  left: 12px;
+  background: var(--paper);
+  border: 0;
+  box-shadow: 0 10px 30px rgba(20, 24, 36, 0.22);
+}
+.mode-build .mode-card {
+  display: none;
+}
+.welcome {
+  background: var(--paper);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(20, 24, 36, 0.18);
+}
+/* Non-build modes use the full canvas; the build panels step aside. */
+.app:not(.mode-build) .left-sidebar,
+.app:not(.mode-build) .right-sidebar {
+  display: none;
+}
+.app:not(.mode-build) .canvas-bottom {
+  left: 12px;
+}
+
+@media (max-width: 1400px) and (min-width: 1101px) {
+  .project-bar .brand,
+  .project-bar .save-state {
+    display: none;
+  }
+}
+
+/* Touch/tablet and phone: canvas everywhere, tools in a thumb column, hotbar below. */
+@media (max-width: 1100px) {
+  .app {
+    height: 100dvh;
+  }
+  .workspace {
+    position: absolute;
+  }
+  .canvas-toolbar {
+    top: 50%;
+    bottom: auto;
+    left: auto;
+    right: 10px;
+    transform: translateY(-50%);
+    flex-direction: column;
+    width: auto;
+    padding: 5px;
+    gap: 3px;
+  }
+  .tool-segment {
+    flex-direction: column;
+    gap: 3px;
+    padding: 0 0 5px;
+    border-right: 0;
+    border-bottom: 2px solid var(--hud-line);
+  }
+  .tool-segment:last-of-type {
+    border-bottom: 0;
+    padding: 0;
+  }
+  .canvas-toolbar button,
+  .tool-segment:last-of-type button {
+    width: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    padding: 0;
+    justify-content: center;
+  }
+  .canvas-toolbar button > span,
+  .tool-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .views-toggle {
+    display: flex !important;
+  }
+  .view-controls {
+    display: none;
+    top: 50%;
+    right: 72px;
+    transform: translateY(-50%);
+    flex-direction: column;
+  }
+  .view-controls.open {
+    display: flex;
+  }
+  .view-controls button {
+    min-height: 44px;
+    min-width: 72px;
+  }
+  .header-actions .tool-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .header-actions button {
+    width: 48px;
+    padding: 0;
+    justify-content: center;
+  }
+  .project-bar .brand {
+    display: none;
+  }
+  /* Sheets rise above the hotbar at half height; the handle takes them to full. */
+  .mobile-panel,
+  .left-sidebar.mobile-panel,
+  .right-sidebar.mobile-panel {
+    display: none;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: calc(82px + env(safe-area-inset-bottom));
+    width: auto;
+    height: min(56dvh, calc(100dvh - 170px));
+    padding: 6px 16px 18px;
+    border-radius: 18px 18px 0 0;
+    background: var(--paper);
+    box-shadow: 0 -10px 30px rgba(20, 24, 36, 0.24);
+    z-index: 18;
+  }
+  .sheet-full .mobile-panel {
+    height: calc(100dvh - 82px - 70px - env(safe-area-inset-bottom));
+  }
+  .mobile-panel.mobile-open {
+    display: block;
+  }
+  .mobile-sheet-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    position: sticky;
+    top: -6px;
+    z-index: 2;
+    margin: 0 -16px 12px;
+    padding: 0 16px 8px;
+    background: var(--paper);
+  }
+  .mobile-sheet-head strong {
+    font-size: 17px;
+    margin-right: auto;
+  }
+  .sheet-handle {
+    flex-basis: 100%;
+    min-height: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    display: grid;
+    place-items: center;
+  }
+  .sheet-handle::after {
+    content: "";
+    width: 44px;
+    height: 5px;
+    border-radius: 3px;
+    background: #c9c4b8;
+  }
+  .sheet-open .canvas-bottom,
+  .sheet-open .view-controls {
+    display: none;
+  }
+  /* Hotbar. */
+  .mobile-nav {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    z-index: 19;
+    display: flex;
+    gap: 5px;
+    height: 64px;
+    padding: 6px;
+    border-top: 0;
+  }
+  .mobile-nav button {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    padding: 4px 2px 3px;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 2px;
+    border: 2px solid rgba(244, 241, 234, 0.16);
+    border-radius: 10px;
+    background: rgba(244, 241, 234, 0.05);
+    color: var(--chalk);
+    font-size: 12px;
+    font-weight: 650;
+  }
+  .mobile-nav button > span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mobile-nav button.active,
+  .mobile-nav button.chosen {
+    border-color: var(--sun);
+    background: rgba(255, 209, 102, 0.12);
+    color: var(--chalk);
+  }
+  .canvas-bottom {
+    left: 12px;
+    bottom: calc(86px + env(safe-area-inset-bottom));
+    height: 30px;
+    font-size: 12px;
+  }
+  .canvas-bottom .grid-state {
+    display: none;
+  }
+  /* Status reads as a toast in the corner above the hotbar. */
+  .status-bar {
+    left: auto;
+    right: 12px;
+    bottom: calc(86px + env(safe-area-inset-bottom));
+    height: 30px;
+    max-width: 55%;
+    font-size: 12px;
+  }
+  .status-bar > span:last-child {
+    display: none;
+  }
+  .placement-card {
+    bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+  .mode-card {
+    top: 70px;
+    max-height: calc(100% - 170px);
+  }
+}
+@media (max-width: 650px) {
+  .hud-top {
+    gap: 6px;
+  }
+  .mode-tabs {
+    padding: 3px;
+  }
+  .mode-tabs button {
+    min-height: 40px;
+    min-width: 40px;
+    padding: 0 9px;
+    justify-content: center;
+  }
+  .mode-tabs button:not(.active) .mode-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .project-bar {
+    position: absolute;
+    top: 54px;
+    left: 0;
+    height: 30px;
+    padding: 0 10px;
+    gap: 6px;
+    border-radius: 15px;
+  }
+  .project-bar input {
+    width: 150px;
+    min-height: 26px;
+    font-size: 12px;
+  }
+  .project-bar .save-state {
+    display: none;
+  }
+  .header-actions button {
+    width: 44px;
+    min-height: 44px;
+    border-radius: 12px;
+  }
+  .mode-card {
+    top: 96px;
+    max-height: calc(100% - 196px);
+  }
+  .status-bar {
+    max-width: 50%;
+  }
+}
+@media (max-width: 380px) {
+  .mode-tabs button {
+    padding: 0 7px;
+  }
+}
+
+/* Round-1 fixes: neutralise legacy header rules and oversize toolbar spans. */
+.mode-tabs {
+  order: 0;
+  width: auto;
+  margin-left: 0;
+  justify-content: flex-start;
+}
+.canvas-toolbar button > span,
+.canvas-toolbar > button > span {
+  font-size: inherit;
+  margin: 0;
+}
+.right-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 0 16px;
+  border-radius: 12px;
+  background: #e9e4d8;
+}
+.right-tabs button {
+  flex: 1;
+  min-height: 40px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-weight: 650;
+  color: var(--secondary);
+}
+@media (min-width: 1101px) {
+  .canvas-bottom {
+    left: 12px;
+  }
+  .canvas-toolbar button {
+    padding: 0 10px;
+  }
+}
+@media (max-width: 1100px) {
+  /* Status is announced always, but shown only briefly after it changes. */
+  .status-bar:not(.fresh) {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+@media (max-width: 650px) {
+  .mode-tabs {
+    order: 0;
+    height: auto;
+  }
+  .header-actions {
+    margin-left: auto;
+  }
+  .project-bar input {
+    width: min(58vw, 240px);
+  }
+}
+@media (max-width: 380px) {
+  .mode-tabs button.active .mode-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .mode-tabs button {
+    min-width: 40px;
+  }
+}
+
+/* ---- Finish-review fixes ---- */
+
+/* Disclosure markers are drawn, not glyphs. */
+details > summary::before {
+  content: "" !important;
+  display: inline-block;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-right: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease-out;
+}
+details[open] > summary::before {
+  transform: rotate(45deg);
+}
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Icons inside text buttons sit on the text baseline. */
+button .icon,
+a .icon {
+  display: inline-block;
+  vertical-align: -3px;
+}
+.part-check {
+  top: 6px;
+  right: 6px;
+}
+.swatches button .icon {
+  margin: auto;
+}
+.library-note .icon {
+  color: var(--accent);
+}
+.mode-chevron {
+  display: none;
+}
+
+/* Status is a transient toast at every size; revision lives in the project slab. */
+.status-bar:not(.fresh) {
+  opacity: 0;
+  pointer-events: none;
+}
+.status-bar > span:last-child {
+  display: none;
+}
+
+/* One Fit control; the other camera views pop up from the tool dock. */
+.views-toggle {
+  display: flex !important;
+}
+.view-controls {
+  display: none;
+}
+.view-controls.open {
+  display: flex;
+}
+@media (min-width: 1101px) {
+  .view-controls {
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: 88px;
+    transform: translateX(-50%);
+  }
+}
+
+.save-chip {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  /* Hotbar: colour slot, held parts, then panels. One active treatment, with lift. */
+  .app .mobile-nav button.active,
+  .app .mobile-nav button.chosen {
+    border-color: var(--sun);
+    background: rgba(255, 209, 102, 0.14);
+    color: var(--chalk);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(10, 12, 20, 0.35);
+  }
+  .mobile-nav button {
+    transition:
+      transform 0.18s ease-out,
+      box-shadow 0.18s ease-out,
+      border-color 0.15s;
+  }
+  .hotbar-colour-slot {
+    flex: 0 0 52px !important;
+  }
+  .hotbar-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  }
+  .hotbar-part svg:not(.icon) {
+    width: 34px;
+    height: 22px;
+  }
+  /* Sheets rise instead of popping. */
+  .mobile-panel.mobile-open {
+    animation: sheet-rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .sheet-open .welcome {
+    display: none;
+  }
+  /* Mode cards become sheets at the bottom, leaving the model visible above. */
+  .app .mode-card {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-width: none;
+    max-height: min(52dvh, calc(100dvh - 120px));
+    overflow: auto;
+    border-radius: 18px 18px 0 0;
+    padding: 26px 20px calc(20px + env(safe-area-inset-bottom));
+    box-shadow: 0 -10px 30px rgba(20, 24, 36, 0.24);
+  }
+  .app .mode-card::before {
+    content: "";
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 44px;
+    height: 5px;
+    margin-left: -22px;
+    border-radius: 3px;
+    background: #c9c4b8;
+  }
+  .app .mode-card h2 {
+    font-size: 22px;
+  }
+}
+@keyframes sheet-rise {
+  from {
+    transform: translateY(28px);
+    opacity: 0.6;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (pointer: coarse) {
+  .play-key-settings {
+    display: none;
+  }
+}
+
+/* Tablet: sheet and hotbar keep a comfortable width instead of stretching. */
+@media (min-width: 651px) and (max-width: 1100px) {
+  .mobile-panel,
+  .left-sidebar.mobile-panel,
+  .right-sidebar.mobile-panel {
+    left: 12px;
+    right: auto;
+    width: min(680px, calc(100% - 96px));
+    border-radius: 18px;
+    bottom: calc(86px + env(safe-area-inset-bottom));
+  }
+  .mobile-panel .part-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .mobile-panel .part-card {
+    min-height: 118px;
+  }
+  .mobile-nav {
+    right: auto;
+    width: min(680px, calc(100% - 20px));
+  }
+  .app .mode-card {
+    left: 12px;
+    right: auto;
+    width: min(620px, calc(100% - 24px));
+    border-radius: 18px;
+    bottom: 12px;
+  }
+}
+
+/* Phone: one-row HUD. Mode chip opens the switcher; save chip sits by export. */
+@media (max-width: 650px) {
+  .project-bar {
+    display: none;
+  }
+  .mode-tabs:not(.open) button:not(.active) {
+    display: none;
+  }
+  .mode-tabs button.active .mode-label {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+  .mode-chevron {
+    display: block;
+    margin-left: -2px;
+    color: var(--secondary);
+  }
+  .mode-tabs.open {
+    position: absolute;
+    top: 0;
+    left: 0;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 190px;
+  }
+  .mode-tabs.open button {
+    justify-content: flex-start;
+    min-height: 46px;
+  }
+  .mode-tabs.open button .mode-label {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+  .mode-tabs.open .mode-chevron {
+    transform: rotate(180deg);
+  }
+  .header-actions .hud-slab {
+    width: auto;
+    padding: 0 12px;
+    gap: 6px;
+  }
+  .save-chip {
+    display: inline;
+    font-size: 13px;
+    font-weight: 650;
+  }
+  .header-actions .hud-slab .icon {
+    color: var(--grass);
+  }
+  .app .mode-card {
+    max-height: min(56dvh, calc(100dvh - 90px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-panel.mobile-open {
+    animation: none;
+  }
+}
+.part-card .icon,
+.part-card-wrap .icon {
+  width: 16px;
+  height: 16px;
+}
+.part-favourite .icon {
+  width: 20px;
+  height: 20px;
+  margin: auto;
+}
+@media (max-width: 1600px) {
+  .canvas-bottom .grid-state {
+    display: none;
+  }
+}
+/* Diagnostics rows: a quiet full outline instead of a thick side stripe. */
+.diagnostics button {
+  border: 1px solid #eed6bc;
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+/* Phones have no room beside a sheet; tablets keep the tool rail next to it. */
+@media (max-width: 650px) {
+  .sheet-open .canvas-toolbar {
+    display: none;
+  }
+}
+
+/* Active Play owns the screen with its own controls; the build HUD steps aside. */
+.app:has(.play-overlay) .hud-top,
+.app:has(.play-overlay) .mobile-nav,
+.app:has(.play-overlay) .canvas-toolbar,
+.app:has(.play-overlay) .canvas-bottom,
+.app:has(.play-overlay) .view-controls,
+.app:has(.play-overlay) .status-bar {
+  display: none;
+}
+/* Save alerts float above the canvas under the top HUD. */
+.save-conflict {
+  position: absolute;
+  top: 74px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: min(760px, calc(100% - 24px));
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(20, 24, 36, 0.24);
+  color: var(--ink);
+}
+@media (max-width: 650px) {
+  .save-conflict {
+    top: 66px;
+  }
+}

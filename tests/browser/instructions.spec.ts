@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { PDFDocument } from "pdf-lib";
 import { unzipSync, strFromU8 } from "fflate";
+import { openMode } from "./helpers/mode";
 
 test("instruction UI publishes real cumulative PNGs and a printable PDF", async ({
   page,
@@ -25,7 +26,7 @@ test("instruction UI publishes real cumulative PNGs and a printable PDF", async 
     });
     await a.ready({ strict: true });
   });
-  await page.getByRole("button", { name: "Instructions", exact: true }).click();
+  await openMode(page, "Instructions");
   const publication = page.getByRole("region", {
     name: "Publish instructions",
   });
@@ -93,7 +94,7 @@ test("instruction cancellation leaves authored revision and camera unchanged", a
     });
     await a.ready();
   });
-  await page.getByRole("button", { name: "Instructions", exact: true }).click();
+  await openMode(page, "Instructions");
   const savedCamera = await page.evaluate(async () => {
     const camera = {
       space: "ldraw" as const,

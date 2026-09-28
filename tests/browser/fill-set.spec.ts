@@ -89,11 +89,11 @@ for (const width of [360, 1080, 1440]) {
       });
       if (width !== 1440)
         await page
-          .getByRole("navigation", { name: "Mobile panels" })
-          .getByRole("button", { name: "Canvas", exact: true })
+          .locator(".mobile-panel.mobile-open .mobile-sheet-head")
+          .getByRole("button", { name: "Close" })
           .click();
       await page
-        .getByRole("button", { name: "⊞ Rectangular fill", exact: true })
+        .getByRole("button", { name: "Rectangular fill", exact: true })
         .click();
       const dialog = page.getByRole("dialog", { name: "Rectangular fill" });
       await dialog.getByLabel("Fill using an allowed part set").check();

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 test("Play keys validate, persist, drive movement and preserve Escape on focused inputs", async ({
   page,
 }) => {
@@ -11,7 +12,7 @@ test("Play keys validate, persist, drive movement and preserve Escape on focused
     });
     await window.brickEditor!.ready();
   });
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   await page.getByText("Play keyboard controls", { exact: true }).click();
   const forward = page.getByLabel("Move forward Play key", { exact: true });
   await forward.fill("S");
@@ -65,7 +66,7 @@ test("Play keys validate, persist, drive movement and preserve Escape on focused
   ).toBeVisible();
   await page.reload();
   await page.waitForFunction(() => !!window.brickEditor);
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   await page.getByText("Play keyboard controls", { exact: true }).click();
   await expect(
     page.getByLabel("Move forward Play key", { exact: true }),

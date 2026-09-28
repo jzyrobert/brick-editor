@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 for (const viewport of [
   { width: 360, height: 800 },
   { width: 1080, height: 1800 },
@@ -31,7 +32,7 @@ for (const viewport of [
         return layerId;
       });
       const before = await page.evaluate(() => window.brickEditor!.query());
-      await page.getByRole("button", { name: "Play", exact: true }).click();
+      await openMode(page, "Play");
       await page.getByText("World included in Play", { exact: true }).click();
       await expect(
         page.getByRole("checkbox", {
@@ -59,7 +60,7 @@ for (const viewport of [
       await page
         .getByRole("button", { name: "Exit Play", exact: true })
         .click();
-      await page.getByRole("button", { name: "Play", exact: true }).click();
+      await openMode(page, "Play");
       await page.getByText("World included in Play", { exact: true }).click();
       await page
         .getByRole("checkbox", { name: "Wall · hidden in editor", exact: true })

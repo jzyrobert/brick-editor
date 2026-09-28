@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 
 test("door and vehicle keep independent live poses in one frozen Play world", async ({
   page,
@@ -12,7 +13,7 @@ test("door and vehicle keep independent live poses in one frozen Play world", as
     });
     await window.brickEditor!.ready();
   });
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   const before = await page.evaluate(() =>
     window.brickEditor!.project.export({ format: "ldraw" }),
   );
@@ -164,7 +165,7 @@ test("an explicit pause during capture wins over automatic resume", async ({
 }) => {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   await page.evaluate(async () => {
     const a = window.brickEditor!;
     const s = await a.play.enter({ realtime: true });

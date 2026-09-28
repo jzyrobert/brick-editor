@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { unzipSync, strFromU8 } from "fflate";
+import { openMode } from "./helpers/mode";
 
 for (const width of [360, 1080, 1440])
   test(`open-bench entry driving and exit at ${width}px`, async ({
@@ -28,7 +29,7 @@ for (const width of [360, 1080, 1440])
         await window.brickEditor!.ready();
       });
       const authored = await page.evaluate(() => window.brickEditor!.query());
-      await page.getByRole("button", { name: "Play", exact: true }).click();
+      await openMode(page, "Play");
       await page.evaluate(() =>
         window.brickEditor!.play.enter({
           rigId: "vehicle",
@@ -366,7 +367,7 @@ test("blocked seat exits retain the driver and become usable after reversing cle
     });
     await a.ready();
   });
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   await page.evaluate(() =>
     window.brickEditor!.play.enter({
       rigId: "vehicle",

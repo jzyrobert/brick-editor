@@ -82,8 +82,8 @@ for (const size of [
       await page.getByRole("button", { name: /Brick 2 × 4 3001/ }).click();
       if (size.touch)
         await page
-          .getByRole("navigation", { name: "Mobile panels" })
-          .getByRole("button", { name: "Canvas", exact: true })
+          .locator(".mobile-panel.mobile-open .mobile-sheet-head")
+          .getByRole("button", { name: "Close" })
           .click();
       rect = (await page.locator(".viewport canvas").boundingBox())!;
       await tap(rect.x + rect.width / 2 + 17, rect.y + rect.height / 2 + 12);
@@ -116,8 +116,8 @@ for (const size of [
       await panel.getByLabel("Free placement", { exact: true }).check();
       if (size.touch)
         await page
-          .getByRole("navigation", { name: "Mobile panels" })
-          .getByRole("button", { name: "Canvas", exact: true })
+          .locator(".mobile-panel.mobile-open .mobile-sheet-head")
+          .getByRole("button", { name: "Close" })
           .click();
       await tap(rect.x + rect.width / 2 + 17, rect.y + rect.height / 2 + 12);
       const freeX = Number(

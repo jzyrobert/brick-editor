@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 for (const width of [360, 1440])
   test(`vehicle world stop, reverse and capture preserve authored source at ${width}px`, async ({
     browser,
@@ -20,7 +21,7 @@ for (const width of [360, 1440])
         await a.project.import({ format: "template", template: "mechanisms" });
         await a.ready();
       });
-      await page.getByRole("button", { name: "Play", exact: true }).click();
+      await openMode(page, "Play");
       const source = await page.evaluate(() =>
         window.brickEditor!.project.export({ format: "ldraw" }),
       );

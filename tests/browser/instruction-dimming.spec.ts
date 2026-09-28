@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 for (const viewport of [
   { width: 360, height: 800 },
   { width: 1080, height: 1800 },
@@ -18,9 +19,7 @@ for (const viewport of [
         await api.ready();
         await api.camera.fit();
       });
-      await page
-        .getByRole("button", { name: "Instructions", exact: true })
-        .click();
+      await openMode(page, "Instructions");
       await page
         .getByRole("button", { name: "Generate layer steps", exact: true })
         .click();
@@ -38,7 +37,7 @@ for (const viewport of [
         return page.locator(".viewport canvas").screenshot({
           animations: "disabled",
           style:
-            ".mode-card,.canvas-label,.canvas-bottom,.canvas-toolbar,.view-toolbar { visibility:hidden !important; }",
+            ".mode-card,.canvas-label,.canvas-bottom,.canvas-toolbar,.view-toolbar,.hud-top,.hud-el,.left-sidebar,.right-sidebar,.status-bar,.mobile-nav { visibility:hidden !important; }",
         });
       };
       const capture = (dim: boolean, onlyNew = false) =>

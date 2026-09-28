@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 async function screenRight(page: Page) {
   return page.evaluate(async () => {
     const a = window.brickEditor!,
@@ -43,7 +44,7 @@ async function open(page: Page) {
     });
     await window.brickEditor!.ready();
   });
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
 }
 test("A and D strafe toward actual camera left and right in both views and movement modes", async ({
   page,

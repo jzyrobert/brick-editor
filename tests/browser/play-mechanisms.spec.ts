@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 test("Play uses posed door colliders, refuses actor-crossing motion and restores authored geometry", async ({
   page,
 }) => {
@@ -117,7 +118,7 @@ test("1080×1800 touch UI selects an authored door rig and controls its live col
   const revision = await page.evaluate(
     async () => (await window.brickEditor!.query()).revision,
   );
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   await page.getByLabel("Explore with mechanism").selectOption("door");
   await page.getByRole("button", { name: "Enter Play", exact: true }).click();
   await expect(

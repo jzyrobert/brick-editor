@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync, strFromU8 } from "fflate";
+import { openMode } from "./helpers/mode";
 const placements = (text: string) =>
   text
     .split(/\r?\n/)
@@ -55,7 +56,7 @@ for (const size of [
         await a.ready();
       });
       const before = await page.evaluate(() => window.brickEditor!.query());
-      await page.getByRole("button", { name: "Project", exact: true }).click();
+      await openMode(page, "Project");
       const panel = page.getByRole("region", { name: "Model export profiles" });
       await panel.getByText("Model export profiles", { exact: true }).click();
       await panel

@@ -34,6 +34,7 @@ import { MechanismPanel } from "./MechanismPanel";
 import { ProjectLibrary } from "./ProjectLibrary";
 import { ResourceProfilePanel } from "./ResourceProfilePanel";
 import { ReplacePanel } from "./ReplacePanel";
+import { Icon, type IconName } from "./icons";
 import { inspectSelection, sourceLabels } from "../edit/inspect";
 import {
   catalogCategories,
@@ -55,7 +56,13 @@ import { SharePanel } from "./SharePanel";
 import { AutosaveQueue } from "../persistence/autosave";
 import { BrowserPlay } from "../play/browser";
 import { PlayPanel } from "./PlayPanel";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Editor } from "../core/commands";
 import { occurrences } from "../core/document";
 import {
@@ -82,6 +89,7 @@ import { FillOptions, defaultFillOptions } from "./FillOptions";
 import { type FillRequest, fillPreview } from "../edit/fill";
 import { zipSync, strToU8 } from "fflate";
 import "./styles.css";
+import "./hud.css";
 const editor = new Editor();
 // A stored preference was acknowledged when chosen; otherwise the device decides.
 try {
@@ -292,8 +300,12 @@ function Workspace() {
     [workplane, setWorkplane] = useState(defaultWorkplane),
     [pickingFace, setPickingFace] = useState(false),
     [status, setStatus] = useState("Ready to build"),
+    [statusFresh, setStatusFresh] = useState(false),
     [saveStatus, setSaveStatus] = useState("Not yet saved"),
     [panel, setPanel] = useState("Parts"),
+    [sheetFull, setSheetFull] = useState(false),
+    [viewsOpen, setViewsOpen] = useState(false),
+    [modesOpen, setModesOpen] = useState(false),
     [inventoryOpen, setInventoryOpen] = useState(false),
     [inventoryScope, setInventoryScope] = useState<Scope["kind"]>("all"),
     [condition, setCondition] = useState("any"),
@@ -1267,6 +1279,35 @@ function Workspace() {
       }
     });
   }
+  // On touch layouts the status toast shows briefly after each change.
+  useEffect(() => {
+    setStatusFresh(true);
+    const timer = window.setTimeout(() => setStatusFresh(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [status]);
+  // The HUD dims and lets pointers through while a finger or pointer drags the model.
+  const appRoot = useRef<HTMLDivElement>(null);
+  const canvasGesture = useRef<
+    { x: number; y: number; timer?: number } | undefined
+  >(undefined);
+  const beginCanvasGesture = (e: ReactPointerEvent) => {
+    window.clearTimeout(canvasGesture.current?.timer);
+    canvasGesture.current = { x: e.clientX, y: e.clientY };
+  };
+  const moveCanvasGesture = (e: ReactPointerEvent) => {
+    const g = canvasGesture.current;
+    if (!g || g.timer !== undefined) return;
+    if (Math.hypot(e.clientX - g.x, e.clientY - g.y) > 8)
+      appRoot.current?.classList.add("hud-dim");
+  };
+  const endCanvasGesture = () => {
+    const g = canvasGesture.current;
+    if (!g) return;
+    g.timer = window.setTimeout(() => {
+      appRoot.current?.classList.remove("hud-dim");
+      canvasGesture.current = undefined;
+    }, 250);
+  };
   const toolbar = (
     <>
       <div className="tool-segment">
@@ -1294,8 +1335,10 @@ function Workspace() {
               ][i]
             }
           >
-            <span aria-hidden="true">{["↖", "⊞", "◈", "⤧"][i]}</span>
-            {t}
+            <Icon
+              name={(["select", "place", "paint", "navigate"] as const)[i]}
+            />
+            <span className="tool-label">{t}</span>
           </button>
         ))}
       </div>
@@ -1305,19 +1348,39 @@ function Workspace() {
           disabled={!editor.canUndo}
           onClick={() => void run(() => command("history.undo"))}
         >
-          ↶
+          <Icon name="undo" />
         </button>
         <button
           aria-label="Redo"
           disabled={!editor.canRedo}
           onClick={() => void run(() => command("history.redo"))}
         >
-          ↷
+          <Icon name="redo" />
         </button>
       </div>
-      <button onClick={() => renderer.current?.fit()}>
-        ⌖ <span>Fit view</span>
-      </button>
+      <div className="tool-segment">
+        <button onClick={() => renderer.current?.fit()}>
+          <Icon name="view" />
+          <span className="tool-label">Fit view</span>
+        </button>
+        <button
+          className="views-toggle"
+          aria-expanded={viewsOpen}
+          onClick={() => setViewsOpen((v) => !v)}
+        >
+          <Icon name="canvas" />
+          <span className="tool-label">Camera views</span>
+        </button>
+        <button
+          onClick={() => {
+            setFillOpen(true);
+            setFill(null);
+          }}
+        >
+          <Icon name="fill" />
+          <span className="tool-label">Rectangular fill</span>
+        </button>
+      </div>
     </>
   );
   const catalogParts = Object.values(catalog);
@@ -1355,11 +1418,11 @@ function Workspace() {
           className="count"
           aria-label={`${visibleParts.length} parts shown`}
         >
-          {String(visibleParts.length).padStart(2, "0")}
+          {visibleParts.length}
         </span>
       </div>
       <label className="search">
-        <span aria-hidden="true">⌕</span>
+        <Icon name="search" size={18} />
         <input
           placeholder="Search parts, sizes or numbers"
           aria-label="Search parts"
@@ -1388,7 +1451,7 @@ function Workspace() {
             setFavouritesOnly((v) => !v);
           }}
         >
-          ★ Favourites
+          <Icon name="star" size={14} filled /> Favourites
         </button>
       </div>
       {!search &&
@@ -1396,7 +1459,7 @@ function Workspace() {
         !partCategory &&
         recentParts.length > 0 && (
           <>
-            <div className="eyebrow">RECENTLY USED</div>
+            <h3 className="parts-heading">Recently used</h3>
             <div className="part-chips">
               {recentParts.map((id) => (
                 <button
@@ -1410,19 +1473,19 @@ function Workspace() {
             </div>
           </>
         )}
-      <div className="eyebrow">
+      <h3 className="parts-heading">
         {favouritesOnly
-          ? "★ FAVOURITES"
+          ? "Favourites"
           : partCategory
-            ? partCategory.toUpperCase()
-            : "STARTER COLLECTION"}{" "}
-        <span>OFFLINE</span>
-      </div>
+            ? partCategory
+            : "Starter collection"}
+        <span className="offline-tag">Offline</span>
+      </h3>
       {visibleParts.length === 0 && (
         <div className="empty-parts" role="status">
           <p>
             {favouritesOnly && !favourites.length
-              ? "No favourites yet. Use ☆ on a part to keep it here."
+              ? "No favourites yet. Use the star on a part to keep it here."
               : `No parts match${search ? ` “${search}”` : ""}.`}
           </p>
           <button
@@ -1450,7 +1513,11 @@ function Workspace() {
                 <BrickIcon width={p.width / 20} depth={p.depth / 20} />
                 <strong>{p.name}</strong>
                 <small>{p.id.replace(".dat", "")}</small>
-                {part === p.id && <span className="part-check">✓</span>}
+                {part === p.id && (
+                  <span className="part-check">
+                    <Icon name="check" size={16} />
+                  </span>
+                )}
               </button>
               <button
                 className="part-favourite"
@@ -1461,7 +1528,7 @@ function Workspace() {
                 }
                 onClick={() => toggleFavourite(p.id)}
               >
-                {favourite ? "★" : "☆"}
+                <Icon name="star" size={20} filled={favourite} />
               </button>
             </div>
           );
@@ -1473,9 +1540,9 @@ function Workspace() {
         !partCategory &&
         !favouritesOnly && (
           <>
-            <div className="eyebrow related-title">
-              RELATED TO {currentPart.name.toUpperCase()}
-            </div>
+            <h3 className="parts-heading related-title">
+              Related to {currentPart.name}
+            </h3>
             <div className="part-chips">
               {related.map((r) => (
                 <button key={r.id} onClick={() => choosePart(r.id)}>
@@ -1489,7 +1556,7 @@ function Workspace() {
         <h2>Colour</h2>
         <span>{colors.find((c) => c.code === color)?.name}</span>
       </div>
-      <div className="swatches">
+      <div className="swatches" id="colour-swatches">
         {colors.map((c) => (
           <button
             key={c.code}
@@ -1500,7 +1567,7 @@ function Workspace() {
             aria-pressed={color === c.code}
             onClick={() => setColor(c.code)}
           >
-            {color === c.code ? "✓" : ""}
+            {color === c.code && <Icon name="check" size={18} />}
           </button>
         ))}
       </div>
@@ -1509,7 +1576,7 @@ function Workspace() {
         colours require inventory review.
       </p>
       <div className="library-note">
-        <span>◎</span>
+        <Icon name="info" size={18} />
         <div>
           <strong>Real LDraw geometry</strong>
           <p>
@@ -1565,7 +1632,7 @@ function Workspace() {
                   )
                 }
               >
-                {l.visible ? "◉" : "○"}
+                <Icon name={l.visible ? "eye" : "eyeOff"} size={18} />
               </button>
               <button
                 aria-label={(l.locked ? "Unlock " : "Lock ") + l.name}
@@ -1578,7 +1645,7 @@ function Workspace() {
                   )
                 }
               >
-                {l.locked ? "▣" : "□"}
+                <Icon name={l.locked ? "lock" : "unlock"} size={18} />
               </button>
             </div>
           ))}
@@ -1803,7 +1870,7 @@ function Workspace() {
                 )
               }
             >
-              ↑ 1 plate
+              <Icon name="arrowUp" size={16} /> 1 plate
             </button>
             <button
               onClick={() =>
@@ -1816,7 +1883,7 @@ function Workspace() {
                 )
               }
             >
-              ↓ 1 plate
+              <Icon name="arrowDown" size={16} /> 1 plate
             </button>
           </div>
           <button
@@ -1966,43 +2033,57 @@ function Workspace() {
     </>
   );
   return (
-    <div className={"app mode-" + mode.toLowerCase()}>
-      <header className="header">
-        <a className="brand" href="#" aria-label="Brick Editor home">
-          <span className="brand-icon">▦</span>
-          <span>
-            brick<span className="brand-light">editor</span>
-          </span>
-        </a>
-        <nav className="mode-tabs" aria-label="Editor mode">
-          {["Build", "Instructions", "Photo", "Play", "Project"].map((m) => (
-            <button
-              key={m}
-              className={mode === m ? "active" : ""}
-              onClick={() => {
-                setMode(m);
-                if (m !== "Build") setPanel("Canvas");
-                if (m === "Photo")
-                  setCamera(renderer.current?.currentCamera() || camera);
-              }}
-            >
-              {m}
-            </button>
-          ))}
+    <div
+      ref={appRoot}
+      className={
+        "app mode-" +
+        mode.toLowerCase() +
+        (panel !== "Canvas" ? " sheet-open" : "") +
+        (sheetFull ? " sheet-full" : "")
+      }
+    >
+      <div className="hud-top hud-el">
+        <nav
+          className={"mode-tabs hud-slab" + (modesOpen ? " open" : "")}
+          aria-label="Editor mode"
+        >
+          {(["Build", "Instructions", "Photo", "Play", "Project"] as const).map(
+            (m) => (
+              <button
+                key={m}
+                aria-label={m}
+                title={m}
+                aria-pressed={mode === m}
+                className={mode === m ? "active" : ""}
+                onClick={() => {
+                  // On phones the current mode is a chip that opens the switcher.
+                  if (m === mode) {
+                    setModesOpen((open) => !open);
+                    return;
+                  }
+                  setModesOpen(false);
+                  setMode(m);
+                  if (m !== "Build") setPanel("Canvas");
+                  if (m === "Photo")
+                    setCamera(renderer.current?.currentCamera() || camera);
+                }}
+              >
+                <Icon name={m.toLowerCase() as IconName} />
+                <span className="mode-label">{m}</span>
+                {mode === m && (
+                  <span className="mode-chevron">
+                    <Icon name="collapse" size={16} />
+                  </span>
+                )}
+              </button>
+            ),
+          )}
         </nav>
-        <div className="header-actions">
-          <span className="local-badge">
-            <i />
-            Local workspace
+        <div className="project-bar hud-slab">
+          <span className="brand" aria-hidden="true">
+            brick<b>editor</b>
           </span>
-          <button className="primary" onClick={() => setInventoryOpen(true)}>
-            Export <span>↗</span>
-          </button>
-        </div>
-      </header>
-      <div className="project-bar">
-        <div>
-          <span className="project-icon">▱</span>
+          <i className="save-dot" aria-hidden="true" />
           <input
             aria-label="Project title"
             value={project.title}
@@ -2014,9 +2095,26 @@ function Workspace() {
           />
           <span className="save-state">{saveStatus}</span>
         </div>
-        <button onClick={() => void exportFile("native")}>
-          Save project ↓
-        </button>
+        <div className="header-actions">
+          <button
+            className="hud-slab"
+            onClick={() => void exportFile("native")}
+          >
+            <Icon name="save" />
+            <span className="tool-label">Save project</span>
+            <span className="save-chip" aria-hidden="true">
+              {saveStatus.startsWith("Saved")
+                ? "Saved"
+                : /…|ing/.test(saveStatus)
+                  ? "Saving"
+                  : "Save"}
+            </span>
+          </button>
+          <button className="primary" onClick={() => setInventoryOpen(true)}>
+            <Icon name="export" />
+            <span className="tool-label">Export</span>
+          </button>
+        </div>
       </div>
       {saveCoordinationUnavailable && (
         <div className="save-conflict" role="alert">
@@ -2110,6 +2208,11 @@ function Workspace() {
           }
         >
           <div className="mobile-sheet-head">
+            <button
+              className="sheet-handle"
+              aria-label={sheetFull ? "Collapse panel" : "Expand panel"}
+              onClick={() => setSheetFull((v) => !v)}
+            />
             <strong>
               Parts
               <small className="selected-colour">
@@ -2123,7 +2226,7 @@ function Workspace() {
                 setPanel("Canvas");
               }}
             >
-              Place selected part →
+              Place selected part <Icon name="arrowRight" size={16} />
             </button>
             <button onClick={() => setPanel("Canvas")}>Close</button>
           </div>
@@ -2131,14 +2234,16 @@ function Workspace() {
         </aside>
         <section className="canvas-shell">
           <div className="canvas-toolbar">{toolbar}</div>
-          <div className="viewport" ref={viewport} />
-          <div className="canvas-label">
-            <span className="live-dot" />{" "}
-            {mode === "Build" ? "BUILD WORKSPACE" : mode.toUpperCase()}
-            <small>LDraw coordinates · 20 LDU / stud</small>
-          </div>
-          <div className="view-controls">
-            {["Fit", "Top", "Front", "Side"].map((v) => (
+          <div
+            className="viewport"
+            ref={viewport}
+            onPointerDown={beginCanvasGesture}
+            onPointerMove={moveCanvasGesture}
+            onPointerUp={endCanvasGesture}
+            onPointerCancel={endCanvasGesture}
+          />
+          <div className={"view-controls hud-el" + (viewsOpen ? " open" : "")}>
+            {["Top", "Front", "Side"].map((v) => (
               <button
                 key={v}
                 onClick={() => {
@@ -2175,7 +2280,6 @@ function Workspace() {
           )}
           {all.length === 0 && mode === "Build" && tool !== "Place" && (
             <div className="welcome">
-              <span className="eyebrow">A LITTLE SPACE FOR BIG IDEAS</span>
               <h1>
                 Make something
                 <br />
@@ -2190,7 +2294,7 @@ function Workspace() {
                 className="primary"
                 onClick={() => void useTemplate("room")}
               >
-                Explore the studio template ↗
+                Explore the studio template <Icon name="arrowRight" size={16} />
               </button>
               <button
                 className="text-button"
@@ -2270,7 +2374,6 @@ function Workspace() {
           )}
           {mode === "Photo" && (
             <div className="mode-card">
-              <span className="eyebrow">PHOTO STUDIO</span>
               <h2>A different perspective.</h2>
               <p>
                 Position the camera freely, or enter an exact interior view.
@@ -2379,14 +2482,13 @@ function Workspace() {
                 disabled={busy}
                 onClick={() => void capture()}
               >
-                Download PNG + manifest ↓
+                Download PNG + manifest <Icon name="arrowDown" size={16} />
               </button>
               <QualityPanel renderer={renderer.current} />
             </div>
           )}
           {mode === "Instructions" && (
             <div className="mode-card">
-              <span className="eyebrow">ASSEMBLY SEQUENCE</span>
               <h2>One step at a time.</h2>
               <p>
                 Create an organisational sequence from your layers. This is not
@@ -2488,7 +2590,6 @@ function Workspace() {
           )}
           {mode === "Project" && (
             <div className="mode-card">
-              <span className="eyebrow">YOUR LOCAL WORKSPACE</span>
               <h2>Keep the things you make.</h2>
               <p>
                 Download a native backup to preserve your project. Browser
@@ -2496,14 +2597,14 @@ function Workspace() {
               </p>
               <div className="button-row">
                 <button onClick={() => fileInput.current?.click()}>
-                  Open file ↑
+                  Open file <Icon name="arrowUp" size={16} />
                 </button>
                 <button onClick={() => void exportFile("native")}>
-                  Native backup ↓
+                  Native backup <Icon name="arrowDown" size={16} />
                 </button>
               </div>
               <button className="wide" onClick={() => void exportFile("ldraw")}>
-                Export LDraw MPD ↓
+                Export LDraw MPD <Icon name="arrowDown" size={16} />
               </button>
               <ExportProfiles project={project} selection={selection} />
               <SharePanel
@@ -2593,25 +2694,18 @@ function Workspace() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  LDraw attribution and licences ↗
+                  LDraw attribution and licences{" "}
+                  <Icon name="external" size={14} />
                 </a>
               </details>
             </div>
           )}
-          <div className="canvas-bottom">
+          <div className="canvas-bottom hud-el hud-slab">
             <span>
               {all.length.toLocaleString()} parts <b>·</b> {selection.length}{" "}
               selected
             </span>
-            <button
-              onClick={() => {
-                setFillOpen(true);
-                setFill(null);
-              }}
-            >
-              ⊞ Rectangular fill
-            </button>
-            <span>
+            <span className="grid-state">
               {tool === "Select" && selectionShape !== "click"
                 ? `${selectionShape === "box" ? "Box" : "Lasso"} · ${selectionDepth === "visible" ? "Visible surfaces" : "Through"}`
                 : workplane.free
@@ -2627,6 +2721,11 @@ function Workspace() {
           }
         >
           <div className="mobile-sheet-head">
+            <button
+              className="sheet-handle"
+              aria-label={sheetFull ? "Collapse panel" : "Expand panel"}
+              onClick={() => setSheetFull((v) => !v)}
+            />
             <strong>{panel}</strong>
             <button onClick={() => setPanel("Canvas")}>Close</button>
           </div>
@@ -2721,7 +2820,9 @@ function Workspace() {
           />
         </aside>
       </main>
-      <footer className="status-bar">
+      <footer
+        className={"status-bar hud-el" + (statusFresh || busy ? " fresh" : "")}
+      >
         <span role="status" aria-live="polite">
           {busy ? "Working… " : ""}
           {status}
@@ -2753,15 +2854,68 @@ function Workspace() {
           {project.layers[activeLayer]?.name}
         </span>
       </footer>
-      <nav className="mobile-nav" aria-label="Mobile panels">
-        {["Canvas", "Parts", "Layers", "Inspector"].map((p) => (
+      <nav className="mobile-nav hud-el hud-slab" aria-label="Mobile panels">
+        <button
+          className="hotbar-colour-slot"
+          aria-label={
+            "Colour: " + (colors.find((c) => c.code === color)?.name ?? color)
+          }
+          onClick={() => {
+            setPanel("Parts");
+            requestAnimationFrame(() =>
+              document
+                .getElementById("colour-swatches")
+                ?.scrollIntoView({ block: "center" }),
+            );
+          }}
+        >
+          <i
+            className="hotbar-swatch"
+            style={{ background: colors.find((c) => c.code === color)?.hex }}
+          />
+        </button>
+        {[part, ...recentParts.filter((id) => id !== part)]
+          .slice(0, 2)
+          .map((id) => (
+            <button
+              key={id}
+              className={"hotbar-part" + (part === id ? " chosen" : "")}
+              aria-label={"Place " + catalog[id].name}
+              onClick={() => {
+                choosePart(id);
+                setPanel("Canvas");
+              }}
+            >
+              <BrickIcon
+                width={catalog[id].width / 20}
+                depth={catalog[id].depth / 20}
+                color={colors.find((c) => c.code === color)?.hex}
+              />
+              <span>
+                {catalog[id].name
+                  .replace(/^(Brick|Plate) /, "")
+                  .replace(/ /g, "")}
+              </span>
+            </button>
+          ))}
+        {(["Parts", "Layers", "Inspector"] as const).map((p) => (
           <button
             key={p}
             className={panel === p ? "active" : ""}
+            aria-label={p}
             aria-pressed={panel === p}
-            onClick={() => setPanel(p)}
+            onClick={() => setPanel(panel === p ? "Canvas" : p)}
           >
-            {p}
+            <Icon
+              name={
+                p === "Parts"
+                  ? "parts"
+                  : p === "Layers"
+                    ? "layers"
+                    : "inspector"
+              }
+            />
+            <span aria-hidden="true">{p === "Inspector" ? "Inspect" : p}</span>
           </button>
         ))}
       </nav>
@@ -2786,7 +2940,6 @@ function Workspace() {
           >
             <div className="dialog-heading">
               <div>
-                <span className="eyebrow">TAKE YOUR BUILD WITH YOU</span>
                 <h2>Export build</h2>
               </div>
               <button
@@ -2964,7 +3117,7 @@ function Workspace() {
                     disabled={!preview.canExportComplete}
                     onClick={() => void exportInventory()}
                   >
-                    Download XML ↓
+                    Download XML <Icon name="arrowDown" size={16} />
                   </button>
                   <button
                     disabled={!preview.canExportComplete}
@@ -2981,7 +3134,7 @@ function Workspace() {
                       )
                     }
                   >
-                    Report ↓
+                    Report <Icon name="arrowDown" size={16} />
                   </button>
                 </div>
                 {!preview.canExportComplete && (

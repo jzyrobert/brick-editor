@@ -242,7 +242,6 @@ export function PlayPanel({
   if (!state.active)
     return (
       <div className="mode-card play-intro">
-        <span className="eyebrow">EXPLORE YOUR BUILD</span>
         <h2>Step inside.</h2>
         <p>
           Walk through your model or fly through walls. Switch to third person

@@ -9,10 +9,10 @@ test("catalogue search, filters, favourites, recent and related parts", async ({
   await page.waitForFunction(() => !!window.brickEditor);
   const grid = page.locator(".part-grid");
   const count = page.locator(".panel-title .count").first();
-  await expect(count).toHaveText("06");
+  await expect(count).toHaveText("6");
   await page.getByLabel("Search parts").fill("2x2");
   await expect(grid.locator(".part-card")).toHaveCount(2);
-  await expect(count).toHaveText("02");
+  await expect(count).toHaveText("2");
   await page.getByLabel("Search parts").fill("window");
   await expect(page.locator(".empty-parts")).toContainText(
     "No parts match “window”",
@@ -22,10 +22,10 @@ test("catalogue search, filters, favourites, recent and related parts", async ({
   const filters = page.getByRole("group", { name: "Filter parts" });
   await filters.getByRole("button", { name: "Plates" }).click();
   await expect(grid.locator(".part-card")).toHaveCount(2);
-  await filters.getByRole("button", { name: "★ Favourites" }).click();
+  await filters.getByRole("button", { name: "Favourites" }).click();
   await expect(page.locator(".empty-parts")).toContainText("No favourites yet");
   await expect(
-    page.locator(".eyebrow").filter({ hasText: "FAVOURITES" }),
+    page.locator(".parts-heading").filter({ hasText: "Favourites" }),
   ).toBeVisible();
   await expect(page.getByText(/RELATED TO/)).toBeHidden();
   await filters.getByRole("button", { name: "All" }).click();
@@ -57,7 +57,7 @@ test("catalogue search, filters, favourites, recent and related parts", async ({
   await page.waitForFunction(() => !!window.brickEditor);
   await page
     .getByRole("group", { name: "Filter parts" })
-    .getByRole("button", { name: "★ Favourites" })
+    .getByRole("button", { name: "Favourites" })
     .click();
   await expect(grid.locator(".part-card")).toHaveCount(1);
   await expect(grid).toContainText("Brick 1 × 1");

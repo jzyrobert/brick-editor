@@ -1,11 +1,12 @@
 import { test, expect } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 
 test("Play buttons retain WASD and Escape while Enter and Space activate native controls once", async ({
   page,
 }) => {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor?.play);
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   await page.evaluate(() =>
     window.brickEditor!.play.enter({
       locomotion: "fly-noclip",

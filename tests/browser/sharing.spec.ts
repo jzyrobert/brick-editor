@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync, strFromU8 } from "fflate";
+import { openMode } from "./helpers/mode";
 
 test("shared links preview safely, dismiss without replacement and back up before confirmed opening", async ({
   page,
@@ -12,7 +13,7 @@ test("shared links preview safely, dismiss without replacement and back up befor
       r = await a.project.import({ format: "template", template: "room" });
     await a.ready({ minRevision: r.revision });
   });
-  await page.getByRole("button", { name: "Project", exact: true }).click();
+  await openMode(page, "Project");
   await page
     .getByRole("button", { name: "Create share link", exact: true })
     .click();
@@ -30,7 +31,7 @@ test("shared links preview safely, dismiss without replacement and back up befor
   });
   await expect(textarea).toHaveCount(0);
   await expect(page.locator(".save-state")).toContainText("Saved revision");
-  await page.getByRole("button", { name: "Build", exact: true }).click();
+  await openMode(page, "Build");
   await page.goto(url.href);
   await page.waitForFunction(() => !!window.brickEditor);
   const dialog = page.getByRole("dialog", { name: "Shared model preview" });
@@ -86,7 +87,7 @@ test("a damaged share checksum is rejected without changing the recovered projec
     });
   });
   await expect(page.locator(".save-state")).toContainText("Saved revision");
-  await page.getByRole("button", { name: "Project", exact: true }).click();
+  await openMode(page, "Project");
   await page
     .getByRole("button", { name: "Create share link", exact: true })
     .click();

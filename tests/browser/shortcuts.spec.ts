@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 test("keyboard clipboard shares UI state, protects text input and supports persistent remapping", async ({
   page,
 }) => {
@@ -58,13 +59,13 @@ test("keyboard clipboard shares UI state, protects text input and supports persi
   await title.press("v");
   await expect(title).toHaveValue("v");
   await expect(page.locator(".canvas-bottom")).toContainText("40 parts");
-  await page.getByRole("button", { name: "Project", exact: true }).click();
+  await openMode(page, "Project");
   await page.getByText("Keyboard shortcuts", { exact: true }).click();
   await page.getByLabel("Paint tool shortcut").fill("P");
   await page
     .getByRole("button", { name: "Apply shortcuts", exact: true })
     .click();
-  await page.getByRole("button", { name: "Build", exact: true }).click();
+  await openMode(page, "Build");
   await page.keyboard.press("p");
   await expect(
     page

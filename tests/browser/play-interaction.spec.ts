@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 for (const viewport of [
   { width: 1440, height: 1000 },
   { width: 360, height: 800 },
@@ -24,7 +25,7 @@ for (const viewport of [
         });
         await window.brickEditor!.ready();
       });
-      await page.getByRole("button", { name: "Play", exact: true }).click();
+      await openMode(page, "Play");
       const before = await page.evaluate(() =>
         window.brickEditor!.project.export({ format: "ldraw" }),
       );
@@ -217,7 +218,7 @@ test("animated target pauses, survives frozen capture, and retries a blocked clo
     await a.project.import({ format: "template", template: "mechanisms" });
     await a.ready();
   });
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   const result = await page.evaluate(async () => {
     const a = window.brickEditor!;
     const authored = await a.project.export({ format: "ldraw" });

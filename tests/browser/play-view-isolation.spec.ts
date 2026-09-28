@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 test("instruction previews cannot replace an active API Play camera and resume after exit", async ({
   page,
 }) => {
@@ -11,7 +12,7 @@ test("instruction previews cannot replace an active API Play camera and resume a
     });
     await window.brickEditor!.ready();
   });
-  await page.getByRole("button", { name: "Instructions", exact: true }).click();
+  await openMode(page, "Instructions");
   const saved = await page.evaluate(async () => {
     const a = window.brickEditor!,
       q = await a.query();

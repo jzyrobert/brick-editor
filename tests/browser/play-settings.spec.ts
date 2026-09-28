@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 for (const viewport of [
   { width: 360, height: 800 },
   { width: 1080, height: 1800 },
@@ -24,7 +25,7 @@ for (const viewport of [
       const documentBefore = await page.evaluate(() =>
         window.brickEditor!.query(),
       );
-      await page.getByRole("button", { name: "Play", exact: true }).click();
+      await openMode(page, "Play");
       await page
         .getByRole("button", { name: "Enter Play", exact: true })
         .click();

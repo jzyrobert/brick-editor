@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openMode } from "./helpers/mode";
 test("mechanism API captures real hinged motion while preserving authored rest, then applies, undoes and reloads rigs", async ({
   page,
 }) => {
@@ -134,7 +135,7 @@ test("Play mechanisms panel operates a hinge and explicitly applies its pose", a
     await a.ready({ strict: true });
     return (await a.query()).revision;
   });
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await openMode(page, "Play");
   await page.getByLabel("Authored rig").selectOption("door");
   await page
     .getByRole("button", { name: "Preview mechanism", exact: true })

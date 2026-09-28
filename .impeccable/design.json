@@ -1,0 +1,543 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-28T08:57:22.256074+00:00",
+  "title": "Design System: Brick Editor",
+  "extensions": {
+    "colorMeta": {
+      "ink-navy": {
+        "role": "neutral",
+        "displayName": "Ink Navy",
+        "canonical": "#1d2230",
+        "tonalRamp": [
+          "#1d2230",
+          "#323b53",
+          "#475376",
+          "#5c6c99",
+          "#808db2",
+          "#a6afc9",
+          "#ccd1e0",
+          "#eff1f5"
+        ]
+      },
+      "hud-slab": {
+        "role": "neutral",
+        "displayName": "HUD Slab",
+        "canonical": "rgba(29, 34, 48, 0.92)",
+        "tonalRamp": [
+          "#1d2230",
+          "#323b53",
+          "#475376",
+          "#5c6c99",
+          "#808db2",
+          "#a6afc9",
+          "#ccd1e0",
+          "#eff1f5"
+        ]
+      },
+      "hud-slab-hover": {
+        "role": "neutral",
+        "displayName": "HUD Slab Hover",
+        "canonical": "#2a3044",
+        "tonalRamp": [
+          "#1d212f",
+          "#333a52",
+          "#485275",
+          "#5d6b97",
+          "#818cb1",
+          "#a7afc8",
+          "#cdd1e0",
+          "#eff1f5"
+        ]
+      },
+      "hud-line": {
+        "role": "neutral",
+        "displayName": "HUD Line",
+        "canonical": "rgba(244, 241, 234, 0.16)",
+        "tonalRamp": [
+          "#322b1a",
+          "#574b2e",
+          "#7c6a41",
+          "#a18a54",
+          "#b9a679",
+          "#cec1a1",
+          "#e3dbc9",
+          "#f6f4ee"
+        ]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Chalk",
+        "canonical": "#f4f1ea",
+        "tonalRamp": [
+          "#322b1a",
+          "#574b2e",
+          "#7c6a41",
+          "#a18a54",
+          "#b9a679",
+          "#cec1a1",
+          "#e3dbc9",
+          "#f6f4ee"
+        ]
+      },
+      "hud-mute": {
+        "role": "neutral",
+        "displayName": "HUD Mute",
+        "canonical": "#b9c0cf",
+        "tonalRamp": [
+          "#1f242d",
+          "#363e4f",
+          "#4d5870",
+          "#647291",
+          "#8692ac",
+          "#aab3c5",
+          "#cfd3de",
+          "#f0f1f5"
+        ]
+      },
+      "slate-secondary": {
+        "role": "neutral",
+        "displayName": "Slate Secondary",
+        "canonical": "#4f5a6e",
+        "tonalRamp": [
+          "#20242d",
+          "#373f4d",
+          "#4f5a6e",
+          "#66758e",
+          "#8894aa",
+          "#acb4c3",
+          "#d0d4dd",
+          "#f0f2f4"
+        ]
+      },
+      "sheet-line": {
+        "role": "neutral",
+        "displayName": "Sheet Line",
+        "canonical": "#e2dccf",
+        "tonalRamp": [
+          "#302a1d",
+          "#534832",
+          "#766747",
+          "#99865c",
+          "#b2a280",
+          "#c9bea6",
+          "#e0dacc",
+          "#f5f3ef"
+        ]
+      },
+      "tab-well": {
+        "role": "neutral",
+        "displayName": "Tab Well",
+        "canonical": "#e9e4d8",
+        "tonalRamp": [
+          "#312b1c",
+          "#554a30",
+          "#796944",
+          "#9d8858",
+          "#b5a57d",
+          "#cbc0a4",
+          "#e2dbcb",
+          "#f6f4ef"
+        ]
+      },
+      "sheet-handle": {
+        "role": "neutral",
+        "displayName": "Sheet Handle",
+        "canonical": "#c9c4b8",
+        "tonalRamp": [
+          "#2b2821",
+          "#4b4639",
+          "#6b6452",
+          "#8b816a",
+          "#a79f8b",
+          "#c1bcae",
+          "#dcd8d1",
+          "#f4f3f1"
+        ]
+      },
+      "card-white": {
+        "role": "neutral",
+        "displayName": "Card White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5e5e5e",
+          "#7a7a7a",
+          "#999999",
+          "#b8b8b8",
+          "#d6d6d6",
+          "#f2f2f2"
+        ]
+      },
+      "scene-haze": {
+        "role": "neutral",
+        "displayName": "Scene Haze",
+        "canonical": "#dfe6ea",
+        "tonalRamp": [
+          "#1e282e",
+          "#354650",
+          "#4b6472",
+          "#618194",
+          "#849fae",
+          "#a9bcc6",
+          "#ced9df",
+          "#f0f3f5"
+        ]
+      },
+      "commit-grass": {
+        "role": "primary",
+        "displayName": "Commit Grass",
+        "canonical": "#2e7d43",
+        "tonalRamp": [
+          "#15381e",
+          "#246134",
+          "#338a4a",
+          "#42b360",
+          "#6ac883",
+          "#97d9a8",
+          "#c3e9cd",
+          "#ecf8ef"
+        ]
+      },
+      "commit-grass-deep": {
+        "role": "primary",
+        "displayName": "Commit Grass Deep",
+        "canonical": "#266a38",
+        "tonalRamp": [
+          "#14381e",
+          "#236234",
+          "#328b49",
+          "#41b45f",
+          "#69c982",
+          "#96d9a8",
+          "#c3e9cd",
+          "#ecf8ef"
+        ]
+      },
+      "lit-grass": {
+        "role": "primary",
+        "displayName": "Lit Grass",
+        "canonical": "#5bb56a",
+        "tonalRamp": [
+          "#18351d",
+          "#295b32",
+          "#3b8247",
+          "#4ca95c",
+          "#72c07f",
+          "#9dd3a6",
+          "#c7e6cc",
+          "#edf7ef"
+        ]
+      },
+      "lit-grass-ink": {
+        "role": "primary",
+        "displayName": "Lit Grass Ink",
+        "canonical": "#10240f",
+        "tonalRamp": [
+          "#183617",
+          "#2a5e27",
+          "#3b8538",
+          "#4dad48",
+          "#73c36f",
+          "#9dd59a",
+          "#c7e7c5",
+          "#edf8ed"
+        ]
+      },
+      "sun-gold": {
+        "role": "secondary",
+        "displayName": "Sun Gold",
+        "canonical": "#ffd166",
+        "tonalRamp": [
+          "#4c3500",
+          "#855d00",
+          "#bd8400",
+          "#f5ab00",
+          "#ffc233",
+          "#ffd470",
+          "#ffe6ad",
+          "#fff7e5"
+        ]
+      },
+      "favourite-amber": {
+        "role": "tertiary",
+        "displayName": "Favourite Amber",
+        "canonical": "#b7791f",
+        "tonalRamp": [
+          "#412b0b",
+          "#714b13",
+          "#a16b1b",
+          "#d18a23",
+          "#e1a651",
+          "#eac185",
+          "#f3dcb9",
+          "#fbf4e9"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Empty-canvas welcome headline only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Mode-card and dialog titles; 22px on touch sheets, 25px on desktop mode cards."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Touch sheet heads; 13px 700 for section headings inside sheets."
+      },
+      "hud-label": {
+        "displayName": "HUD Label",
+        "purpose": "Mode tabs, tool dock, slab buttons, project name. Weights 600-650, emphasis 750."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Sheet content and help text."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Status toast, counts chip, view strip, hotbar slot names, save state."
+      }
+    },
+    "shadows": [
+      {
+        "name": "slab",
+        "value": "0 6px 18px rgba(20, 24, 36, 0.24)",
+        "purpose": "HUD slabs and the Export button."
+      },
+      {
+        "name": "dock",
+        "value": "0 8px 22px rgba(20, 24, 36, 0.26)",
+        "purpose": "The tool dock."
+      },
+      {
+        "name": "sheet",
+        "value": "0 10px 30px rgba(20, 24, 36, 0.22)",
+        "purpose": "Docked desktop sheets, mode cards; 0.24 for save alerts."
+      },
+      {
+        "name": "rising-sheet",
+        "value": "0 -10px 30px rgba(20, 24, 36, 0.24)",
+        "purpose": "Touch sheets and mode cards rising from the bottom edge."
+      },
+      {
+        "name": "hotbar-lift",
+        "value": "0 6px 12px rgba(10, 12, 20, 0.35)",
+        "purpose": "Selected hotbar slot, paired with translateY(-3px)."
+      },
+      {
+        "name": "swatch-bevel",
+        "value": "inset 0 -3px 0 rgba(0, 0, 0, 0.18)",
+        "purpose": "Moulded underside of the hotbar colour swatch."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 3px solid #ffd166; outline-offset: 2px",
+        "purpose": "Every focusable control."
+      }
+    ],
+    "motion": [
+      {
+        "name": "hud-recede",
+        "value": "opacity 0.15s ease-out",
+        "purpose": "HUD dims to 0.18 and goes click-through while dragging on the canvas; restores after release."
+      },
+      {
+        "name": "hud-shift",
+        "value": "transform 0.2s ease-out",
+        "purpose": "HUD element position changes."
+      },
+      {
+        "name": "hotbar-lift",
+        "value": "transform 0.18s ease-out, box-shadow 0.18s ease-out",
+        "purpose": "Selected hotbar slot lift."
+      },
+      {
+        "name": "sheet-rise",
+        "value": "0.2s cubic-bezier(0.2, 0.8, 0.2, 1), from translateY(28px) opacity 0.6",
+        "purpose": "Touch sheets rise instead of popping; disabled under prefers-reduced-motion."
+      },
+      {
+        "name": "status-toast",
+        "value": "about 4000ms visible after each change",
+        "purpose": "Status shows transiently; text stays in a live region."
+      },
+      {
+        "name": "disclosure",
+        "value": "transform 0.15s ease-out",
+        "purpose": "Drawn chevron rotation on details/summary."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "max-width: 650px"
+      },
+      {
+        "name": "narrow-phone",
+        "value": "max-width: 380px"
+      },
+      {
+        "name": "tablet",
+        "value": "651px to 1100px"
+      },
+      {
+        "name": "desktop",
+        "value": "min-width: 1101px"
+      },
+      {
+        "name": "desktop-compact",
+        "value": "1101px to 1400px"
+      },
+      {
+        "name": "coarse-pointer",
+        "value": "pointer: coarse"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Commit Grass with white text for commits: Export, Place selected part, start.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 12h15M14 6.5l5.5 5.5-5.5 5.5\"/></svg>Export</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 16px;background:#2e7d43;border:2px solid #2e7d43;border-radius:14px;color:#fff;font:650 13px/1 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;box-shadow:0 6px 18px rgba(20,24,36,.24);cursor:pointer;transition:background .15s,border-color .15s}.ds-btn-primary:hover{background:#266a38;border-color:#266a38}.ds-btn-primary:focus-visible{outline:3px solid #ffd166;outline-offset:2px}"
+    },
+    {
+      "name": "HUD Slab Button",
+      "kind": "button",
+      "refersTo": "hud-slab-button",
+      "description": "Navy slab button for non-commit HUD actions such as Save project.",
+      "html": "<button class=\"ds-slab-btn\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 4.5v11M7 11l5 5 5-5M4.5 19.5h15\"/></svg>Save project</button>",
+      "css": ".ds-slab-btn{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 16px;background:rgba(29,34,48,.92);border:2px solid rgba(244,241,234,.16);border-radius:14px;color:#f4f1ea;font:650 13px/1 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;box-shadow:0 6px 18px rgba(20,24,36,.24);cursor:pointer;transition:background .15s}.ds-slab-btn:hover{background:#2a3044}.ds-slab-btn:focus-visible{outline:3px solid #ffd166;outline-offset:2px}"
+    },
+    {
+      "name": "Mode Switcher",
+      "kind": "nav",
+      "refersTo": "mode-tab",
+      "description": "Segmented navy strip of the five modes; the active mode is chalk with ink text.",
+      "html": "<nav class=\"ds-modes\"><button class=\"active\">Build</button><button>Instructions</button><button>Photo</button><button>Play</button><button>Project</button></nav>",
+      "css": ".ds-modes{display:inline-flex;gap:2px;padding:4px;background:rgba(29,34,48,.92);border:2px solid rgba(244,241,234,.16);border-radius:14px}.ds-modes button{min-height:40px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#b9c0cf;font:600 13px/1 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;cursor:pointer}.ds-modes button:hover{background:rgba(244,241,234,.08);color:#f4f1ea}.ds-modes button.active{background:#f4f1ea;color:#1d2230}.ds-modes button:focus-visible{outline:3px solid #ffd166;outline-offset:2px}"
+    },
+    {
+      "name": "Tool Dock",
+      "kind": "custom",
+      "refersTo": "tool-button",
+      "description": "Navy dock of labelled tool keys split by 2px dividers; the held tool is Lit Grass with dark ink.",
+      "html": "<div class=\"ds-dock\"><div class=\"ds-seg\"><button class=\"active\">Select</button><button>Place</button><button>Paint</button><button>Navigate</button></div><div class=\"ds-seg\"><button>Undo</button><button disabled>Redo</button></div></div>",
+      "css": ".ds-dock{display:inline-flex;gap:4px;padding:6px;background:rgba(29,34,48,.92);border:2px solid rgba(244,241,234,.16);border-radius:16px;box-shadow:0 8px 22px rgba(20,24,36,.26)}.ds-seg{display:flex;gap:2px;padding-right:6px;border-right:2px solid rgba(244,241,234,.16)}.ds-seg:last-child{border-right:0;padding-right:0}.ds-dock button{min-height:44px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#f4f1ea;font:600 13px/1 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;cursor:pointer}.ds-dock button:hover{background:rgba(244,241,234,.1)}.ds-dock button.active{background:#5bb56a;color:#10240f}.ds-dock button:disabled{opacity:.35}.ds-dock button:focus-visible{outline:3px solid #ffd166;outline-offset:2px}"
+    },
+    {
+      "name": "Hotbar",
+      "kind": "custom",
+      "refersTo": "hotbar-slot",
+      "description": "Touch hotbar: bevelled colour swatch, held parts and panel keys; the active key lifts with a gold ring.",
+      "html": "<div class=\"ds-hotbar\"><button class=\"ds-colour\"><span class=\"ds-swatch\"></span></button><button class=\"active\">2×4</button><button>Parts</button><button>Layers</button><button>Inspect</button></div>",
+      "css": ".ds-hotbar{display:flex;gap:5px;height:64px;padding:6px;box-sizing:border-box;width:360px;background:rgba(29,34,48,.92);border:2px solid rgba(244,241,234,.16);border-radius:14px}.ds-hotbar button{flex:1;min-width:0;min-height:48px;border:2px solid rgba(244,241,234,.16);border-radius:10px;background:rgba(244,241,234,.05);color:#f4f1ea;font:650 12px/1 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;cursor:pointer;transition:transform .18s ease-out,box-shadow .18s ease-out,border-color .15s}.ds-hotbar .ds-colour{flex:0 0 52px}.ds-swatch{display:block;margin:auto;width:30px;height:30px;border-radius:8px;background:#c91a09;border:2px solid rgba(255,255,255,.85);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}.ds-hotbar button.active{border-color:#ffd166;background:rgba(255,209,102,.14);transform:translateY(-3px);box-shadow:0 6px 12px rgba(10,12,20,.35)}.ds-hotbar button:focus-visible{outline:3px solid #ffd166;outline-offset:2px}"
+    },
+    {
+      "name": "Filter Chips",
+      "kind": "chip",
+      "refersTo": "filter-chip-active",
+      "description": "Pill filters on chalk sheets; pressed inverts to ink navy.",
+      "html": "<div class=\"ds-chips\"><button aria-pressed=\"true\">All</button><button aria-pressed=\"false\">Bricks</button><button aria-pressed=\"false\">Plates</button></div>",
+      "css": ".ds-chips{display:flex;gap:6px;padding:16px;background:#f4f1ea}.ds-chips button{min-height:44px;padding:0 14px;border:1px solid #e2dccf;border-radius:18px;background:#fff;color:#1d2230;font:400 13px/1 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;cursor:pointer}.ds-chips button:hover{border-color:#c9c4b8}.ds-chips button[aria-pressed=true]{background:#1d2230;border-color:#1d2230;color:#f4f1ea}.ds-chips button:focus-visible{outline:3px solid #ffd166;outline-offset:2px}"
+    },
+    {
+      "name": "Part Card",
+      "kind": "card",
+      "refersTo": "part-card",
+      "description": "White inventory card on a chalk sheet; chosen state gets a grass border and check.",
+      "html": "<div class=\"ds-sheet\"><button class=\"ds-part chosen\"><b>Brick 2 × 4</b><span>3001</span></button><button class=\"ds-part\"><b>Brick 2 × 2</b><span>3003</span></button></div>",
+      "css": ".ds-sheet{display:grid;grid-template-columns:repeat(2,140px);gap:10px;padding:18px 16px;background:#f4f1ea;border-radius:16px;box-shadow:0 10px 30px rgba(20,24,36,.22)}.ds-part{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:118px;padding:10px;background:#fff;border:2px solid #e2dccf;border-radius:12px;color:#1d2230;font:13px/1.4 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;cursor:pointer;text-align:left}.ds-part span{font-size:12px;color:#4f5a6e}.ds-part:hover{border-color:#c9c4b8}.ds-part.chosen{border-color:#5bb56a;box-shadow:inset 0 0 0 1px #5bb56a}.ds-part:focus-visible{outline:3px solid #ffd166;outline-offset:2px}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "sheet",
+      "description": "White field on a chalk sheet with a Sun Gold focus ring.",
+      "html": "<label class=\"ds-search\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg><input placeholder=\"Search parts, sizes or numbers\"></label>",
+      "css": ".ds-search{display:flex;align-items:center;gap:8px;width:280px;padding:0 10px;background:#fff;border:1px solid #e2dccf;border-radius:8px;color:#1d2230}.ds-search input{flex:1;min-height:44px;border:0;background:transparent;color:#1d2230;font:13px ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;outline:none}.ds-search:focus-within{outline:3px solid #ffd166;outline-offset:2px}"
+    },
+    {
+      "name": "Status Toast",
+      "kind": "custom",
+      "refersTo": "status-toast",
+      "description": "Navy pill shown for about 4s after each change; always in a live region.",
+      "html": "<div class=\"ds-toast\" role=\"status\"><span>Placed Brick 2 × 4</span></div>",
+      "css": ".ds-toast{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:17px;background:rgba(29,34,48,.92);color:#f4f1ea;font:600 12px/1 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;font-variant-numeric:tabular-nums;transition:opacity .15s ease-out}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Creative-Mode HUD",
+    "overview": "**Creative North Star: \"The Creative-Mode HUD\"**\n\nThe build is the world and the interface is a heads-up display laid over it. The 3D canvas fills the whole viewport at every size; there is no header, sidebar frame or status bar boxing it in. Controls live in slots pinned to the screen edges (mode switcher and project top left, save and export top right, a tool dock at the bottom centre on desktop or a right-edge thumb column on touch, a hotbar along the bottom on touch), and the whole HUD dims to near-transparent and click-through while a finger or pointer drags on the model.\n\nTwo materials carry everything. Controls are deep ink-navy slabs at high opacity with crisp 2px chalk-tinted outlines and chalk text. Content (parts inventory, layers, inspector, mode cards, welcome) sits on chalk inventory sheets with navy ink. Colour is spent on state, not decoration: grass lights the tool you are holding, a darker grass commits, sun gold rings what is focused or held. Type is the platform system sans, set bold for HUD labels with tabular numerals so part counts never jitter.\n\nThe mood is playful and sturdy without being toy trade dress or a cold CAD cockpit. Density is low on touch (44–48px keys) and moderate on desktop, where the parts inventory and properties dock as floating chalk sheets beside the model rather than framing it.",
+    "keyCharacteristics": [
+      "Full-bleed canvas; every control floats in an edge slot, 12px from the viewport edge.",
+      "Navy HUD slabs (controls) and chalk sheets (content): two materials, never mixed on one surface.",
+      "Grass marks the tool in hand; darker grass commits; sun gold rings focus and the held hotbar slot.",
+      "Authored 24px, 2px-stroke, round-cap SVG icons; drawn disclosure chevrons.",
+      "System sans, bold HUD labels, tabular numerals throughout.",
+      "The HUD recedes while you work the model and steps aside entirely in active Play."
+    ],
+    "rules": [
+      {
+        "name": "The Lit Slot Rule",
+        "body": "Lit Grass means \"the tool you are holding\" and nothing else on the HUD. It always takes dark Lit Grass Ink text; white on Lit Grass fails contrast.",
+        "section": "colors"
+      },
+      {
+        "name": "The Commit Grass Rule",
+        "body": "Anything that commits (export, place, start) is Commit Grass with white text. One commit per slot group; everything else on navy is a slab button.",
+        "section": "colors"
+      },
+      {
+        "name": "The Gold Ring Rule",
+        "body": "Sun Gold is a ring, not a fill: focus outlines (3px, 2px offset) and the held hotbar slot's border. Its washes never exceed about 14% opacity.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "`font-variant-numeric: tabular-nums` is set on the body; part counts, selection counts and revision numbers never shift width as they change.",
+        "section": "typography"
+      },
+      {
+        "name": "The Canvas Owns the Ground Rule",
+        "body": "Nothing frames the canvas. A new control goes into an existing edge slot or a new floating slot; it never becomes a bar that shrinks the viewport.",
+        "section": "layout"
+      },
+      {
+        "name": "The Play Steps Aside Rule",
+        "body": "In active Play the whole build HUD (top row, tool dock, hotbar, counts chip, views, status) is removed; Play brings its own controls.",
+        "section": "layout"
+      },
+      {
+        "name": "The Recede Rule",
+        "body": "While a pointer or finger drags on the canvas, every HUD element fades to 0.18 opacity and becomes click-through (150ms ease-out), then restores after release. New HUD elements must join this behaviour.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep the canvas full-bleed and put every new control in a floating edge slot 12px from the viewport edge.",
+      "Do use HUD Slab navy with a 2px HUD Line outline for controls and chalk sheets for content.",
+      "Do give the held tool Lit Grass with Lit Grass Ink text, and every commit Commit Grass with white text.",
+      "Do ring focus with 3px Sun Gold at 2px offset, and mark the held hotbar slot with a gold border, a 3px lift and the lift shadow.",
+      "Do draw icons from the authored 24px, 2px-stroke set and draw disclosure chevrons in CSS.",
+      "Do keep touch keys at 44px or more (46px tool keys, 48px hotbar and header keys) and keep labels accessible when they are visually hidden.",
+      "Do make new HUD elements dim with the Recede Rule and hide during active Play.",
+      "Do show status as a transient toast (about 4s) while keeping it permanently in a live region."
+    ],
+    "donts": [
+      "Don't frame the canvas with a header bar, fixed sidebars or a permanent status bar.",
+      "Don't put white text on Lit Grass, or use Lit Grass for commit buttons.",
+      "Don't fill panels or large areas with Sun Gold; it rings and outlines.",
+      "Don't use text characters (arrows, plus signs, stars, triangles) as icons or disclosure markers.",
+      "Don't add small uppercase or letter-spaced labels above headings.",
+      "Don't imitate LEGO logos, wordmarks or trade dress. The generic studded-brick silhouette in the authored Place and Parts icons is the world's own drawing and stays.",
+      "Don't load webfonts from third parties; use the system stack or a self-hosted face.",
+      "Don't stretch touch sheets past 680px on tablets; the model must stay visible beside them."
+    ]
+  }
+}

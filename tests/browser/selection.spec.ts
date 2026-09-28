@@ -128,7 +128,10 @@ for (const width of [360, 1080])
       await page
         .getByLabel("Selection gesture", { exact: true })
         .selectOption("box");
-      await mobile.getByRole("button", { name: "Canvas", exact: true }).click();
+      await page
+        .locator(".mobile-panel.mobile-open .mobile-sheet-head")
+        .getByRole("button", { name: "Close" })
+        .click();
       const rect = (await page.locator(".viewport canvas").boundingBox())!,
         cx = rect.x + rect.width / 2,
         cy = rect.y + rect.height / 2;
@@ -142,7 +145,10 @@ for (const width of [360, 1080])
       await touch("touchEnd", []);
       await expect(page.locator(".canvas-bottom")).toContainText("1 selected");
       const before = await page.evaluate(() => window.brickEditor!.query());
-      const cameraBefore = await page.locator(".viewport canvas").screenshot();
+      const cameraBefore = await page.locator(".viewport canvas").screenshot({
+        style:
+          ".hud-top, .hud-el, .canvas-toolbar, .left-sidebar, .right-sidebar, .mode-card, .status-bar, .mobile-nav { visibility: hidden !important; }",
+      });
       await touch("touchStart", [{ x: cx - 15, y: cy - 15, id: 1 }]);
       await touch("touchMove", [{ x: cx + 15, y: cy + 15, id: 1 }]);
       await touch("touchStart", [
@@ -166,9 +172,12 @@ for (const width of [360, 1080])
           ),
       );
       expect(
-        (await page.locator(".viewport canvas").screenshot()).equals(
-          cameraBefore,
-        ),
+        (
+          await page.locator(".viewport canvas").screenshot({
+            style:
+              ".hud-top, .hud-el, .canvas-toolbar, .left-sidebar, .right-sidebar, .mode-card, .status-bar, .mobile-nav { visibility: hidden !important; }",
+          })
+        ).equals(cameraBefore),
       ).toBe(false);
       await cdp.detach();
     } finally {

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync, strFromU8 } from "fflate";
+import { openMode } from "./helpers/mode";
 for (const size of [
   { width: 1440, height: 1000, touch: false },
   { width: 1080, height: 1800, touch: true },
@@ -27,9 +28,7 @@ for (const size of [
         await a.camera.fit();
       });
       const before = await page.evaluate(() => window.brickEditor!.query());
-      await page
-        .getByRole("button", { name: "Instructions", exact: true })
-        .click();
+      await openMode(page, "Instructions");
       await page
         .getByRole("button", { name: "Generate layer steps", exact: true })
         .click();
@@ -141,7 +140,7 @@ test("instruction viewport keeps its cumulative step mask after asynchronous doc
     await api.ready();
     await api.camera.fit();
   });
-  await page.getByRole("button", { name: "Instructions", exact: true }).click();
+  await openMode(page, "Instructions");
   await page
     .getByRole("button", { name: "Generate layer steps", exact: true })
     .click();
@@ -159,7 +158,7 @@ test("instruction viewport keeps its cumulative step mask after asynchronous doc
     return page.locator(".viewport canvas").screenshot({
       animations: "disabled",
       style:
-        ".mode-card,.canvas-label,.canvas-bottom,.canvas-toolbar,.view-toolbar { visibility:hidden !important; }",
+        ".mode-card,.canvas-label,.canvas-bottom,.canvas-toolbar,.view-toolbar,.hud-top,.hud-el,.left-sidebar,.right-sidebar,.status-bar,.mobile-nav { visibility:hidden !important; }",
     });
   };
   await expect(page.getByText(/Step 1 of 4 · 10 new parts/)).toBeVisible();
