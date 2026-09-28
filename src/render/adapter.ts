@@ -39,6 +39,26 @@ import {
   type RenderProfile,
 } from "./quality";
 import { RenderBatches } from "./batching";
+import {
+  resolveLook,
+  lookUsesPipeline,
+  classifyFinish,
+  parseFlakeMaterials,
+  FINISH_PARAMETERS,
+  LOOK_LIGHTING,
+  type FlakeSpec,
+  type LookControls,
+  type LookName,
+  type RenderLook,
+} from "./look";
+import {
+  LookPipeline,
+  jitterOffset,
+  applyFlakes,
+  removeFlakes,
+} from "./look-pipeline";
+import type { ResourceProfileName } from "../core/resource-profile";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { LDrawLoader } from "three/addons/loaders/LDrawLoader.js";
@@ -81,11 +101,18 @@ export type RenderRequest = {
   background: { type: "solid" | "transparent"; color?: string };
   quality: "fast" | "balanced" | "photo";
   qualityControls?: Partial<QualityControls>;
+  /** Shading look for this capture; defaults to "standard" so captures stay reproducible. */
+  look?: LookName;
+  lookControls?: Partial<LookControls>;
   /** Keep these additions opaque while dimming all other captured occurrences. */
   instructionNewIds?: string[];
   strict?: boolean;
 };
 export { explodeLifts };
+function disposeTexture(texture: THREE.Texture | undefined) {
+  texture?.dispose();
+  return undefined;
+}
 export type SectionSpec = { axis: "x" | "y" | "z"; at: number; flip?: boolean };
 /** Renderer-world clipping plane for an LDraw-space section (world = (x, −y, −z)). */
 function sectionPlane(spec: SectionSpec) {
@@ -233,6 +260,23 @@ export class SceneAdapter {
   private contextWork = new AbortController();
   private qualityProfile = resolveQuality("balanced");
   private keyLight!: THREE.DirectionalLight;
+  private hemisphereLight!: THREE.HemisphereLight;
+  private fillLight!: THREE.DirectionalLight;
+  private look = resolveLook("standard");
+  private lookResourceProfile: ResourceProfileName = "desktop";
+  private pipeline?: LookPipeline;
+  private environmentMap?: THREE.Texture;
+  private flakeSpecs?: Map<string, FlakeSpec>;
+  /** Transparent plane that only shows shadows (and AO) under the model. */
+  private shadowGround: THREE.Mesh<THREE.PlaneGeometry, THREE.ShadowMaterial>;
+  /** Index of the next accumulated sample of a still view (photo look). */
+  private stillSample = 0;
+  private refineRaf = 0;
+  private lookStats = { passes: 1, samples: 0 };
+  /** World-space model bounds (grown) that limit ambient occlusion. */
+  private aoBox = new THREE.Box3();
+  /** Whether the next draw must re-render a cached shadow map. */
+  private shadowDirty = true;
   constructor(
     private element: HTMLElement,
     private report: (message: string) => void,
@@ -257,7 +301,8 @@ export class SceneAdapter {
     this.root.add(this.batches.root);
     this.ghost.rotation.x = Math.PI;
     this.scene.add(this.ghost);
-    this.scene.add(new THREE.HemisphereLight(0xffffff, 0xa4adb2, 3));
+    this.hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xa4adb2, 3);
+    this.scene.add(this.hemisphereLight);
     const sun = new THREE.DirectionalLight(0xffffff, 3);
     this.keyLight = sun;
     sun.name = "key";
@@ -270,17 +315,31 @@ export class SceneAdapter {
     sun.position.set(250, 600, 300);
     this.scene.add(sun);
     const fill = new THREE.DirectionalLight(0xcbdcf0, 1.5);
+    this.fillLight = fill;
     fill.position.set(-300, 150, -200);
     this.scene.add(fill);
+    this.scene.add(sun.target);
     this.grid = new THREE.GridHelper(2000, 100, 0xaab6bd, 0xd1d9de);
     this.grid.position.y = -0.1;
     this.scene.add(this.grid);
     this.annotations.name = "architectural-annotations";
     this.scene.add(this.annotations);
+    this.shadowGround = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.ShadowMaterial({ opacity: 0.3, depthWrite: true }),
+    );
+    this.shadowGround.name = "shadow ground";
+    this.shadowGround.rotation.x = -Math.PI / 2;
+    this.shadowGround.receiveShadow = true;
+    this.shadowGround.visible = false;
+    this.scene.add(this.shadowGround);
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.5, 50000);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = false;
-    this.controls.addEventListener("change", () => this.invalidate());
+    // Orbiting moves only the camera, so a cached shadow map stays valid.
+    this.controls.addEventListener("change", () =>
+      this.invalidate({ cameraOnly: true }),
+    );
     this.setCamera(defaultCamera);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(element);
@@ -302,6 +361,8 @@ export class SceneAdapter {
     this.contextWork.abort();
     cancelAnimationFrame(this.raf);
     this.raf = 0;
+    cancelAnimationFrame(this.refineRaf);
+    this.refineRaf = 0;
     this.report(
       "Graphics context lost. Your document remains available for native export.",
     );
@@ -313,6 +374,11 @@ export class SceneAdapter {
     // Three rebuilds its GPU caches before this listener; retained scene
     // geometry and materials upload again on the next draw.
     this.renderer.setRenderTarget(null);
+    // Render-target contents (the prefiltered environment) do not survive a loss.
+    this.environmentMap?.dispose();
+    this.environmentMap = undefined;
+    if (this.look.environment === "room")
+      this.scene.environment = this.ensureEnvironment();
     this.resize();
     this.report("Graphics restored.");
     this.invalidate();
@@ -749,9 +815,11 @@ export class SceneAdapter {
           this.allPrototypes.delete(proto);
         }
         this.project = snapshot;
+        this.tuneMaterials();
         this.applyLayerGhost();
         this.rebuildAnnotations();
         this.applyQuality(this.qualityProfile, true);
+        this.fitLookToModel();
         this.root.visible = true;
         this.revision = snapshot.revision;
         this.error = undefined;
@@ -835,6 +903,158 @@ export class SceneAdapter {
     this.resize();
     return this.currentQuality();
   }
+  currentLook() {
+    return structuredClone(this.look);
+  }
+  /** Diagnostics for the last interactive frame: full-screen passes and still samples. */
+  get lookFrameStats() {
+    return { ...this.lookStats };
+  }
+  setLook(name: LookName, controls: Partial<LookControls> = {}) {
+    ensure(
+      !this.captureActive,
+      "INVALID_INPUT",
+      "Wait for capture before changing the render look",
+    );
+    this.applyLook(resolveLook(name, controls, this.lookResourceProfile));
+    return this.currentLook();
+  }
+  /** Phones degrade look defaults (see resolveLook); re-resolves the current look. */
+  setLookResourceProfile(profile: ResourceProfileName) {
+    if (profile === this.lookResourceProfile) return;
+    this.lookResourceProfile = profile;
+    if (this.captureActive) return;
+    this.applyLook(resolveLook(this.look.name, {}, profile));
+  }
+  private applyLook(look: RenderLook, refreshTreatments = true) {
+    if (JSON.stringify(look) === JSON.stringify(this.look)) return;
+    this.look = structuredClone(look);
+    const ibl = look.environment === "room";
+    this.scene.environment = ibl ? this.ensureEnvironment() : null;
+    // Image-based light replaces most of the flat hemisphere fill.
+    this.scene.environmentIntensity = LOOK_LIGHTING.environment;
+    this.hemisphereLight.intensity = ibl ? LOOK_LIGHTING.hemisphere : 3;
+    this.keyLight.intensity = ibl ? LOOK_LIGHTING.key : 3;
+    this.fillLight.intensity = ibl ? LOOK_LIGHTING.fill : 1.5;
+    this.shadowGround.visible = look.ground === "shadow";
+    const gridMaterial = this.grid.material as THREE.LineBasicMaterial;
+    gridMaterial.transparent = look.ground === "shadow";
+    gridMaterial.opacity = look.ground === "shadow" ? 0.45 : 1;
+    gridMaterial.needsUpdate = true;
+    this.tuneMaterials();
+    // Ghost/dimming clones copy material parameters when they are applied.
+    if (refreshTreatments) this.applyLayerGhost();
+    this.fitLookToModel();
+    this.applyQuality(this.qualityProfile, true);
+    if (!ibl) this.environmentMap = disposeTexture(this.environmentMap);
+    if (!lookUsesPipeline(look)) {
+      this.pipeline?.dispose();
+      this.pipeline = undefined;
+    }
+    this.invalidate();
+  }
+  private ensureEnvironment() {
+    if (!this.environmentMap) {
+      const generator = new THREE.PMREMGenerator(this.renderer);
+      const room = new RoomEnvironment();
+      this.environmentMap = generator.fromScene(room, 0.04).texture;
+      room.dispose();
+      generator.dispose();
+    }
+    return this.environmentMap;
+  }
+  /** Tune (or restore) LDrawLoader finish materials in place. In-place tuning keeps
+   * batching keys, prototype sharing and ghost/dimming treatments unchanged. */
+  private tuneMaterials() {
+    const plastic = this.look.materials === "plastic";
+    const flakes = this.colorText
+      ? (this.flakeSpecs ??= parseFlakeMaterials(this.colorText))
+      : new Map<string, FlakeSpec>();
+    const seen = new Set<THREE.Material>();
+    for (const group of this.allPrototypes)
+      group.traverse((object) => {
+        const mesh = object as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        for (const material of Array.isArray(mesh.material)
+          ? mesh.material
+          : [mesh.material]) {
+          if (seen.has(material)) continue;
+          seen.add(material);
+          const standard = material as THREE.MeshStandardMaterial;
+          if (!standard.isMeshStandardMaterial) continue;
+          const base = (standard.userData.lookBase ??= {
+            roughness: standard.roughness,
+            metalness: standard.metalness,
+            envMapIntensity: standard.envMapIntensity,
+          }) as {
+            roughness: number;
+            metalness: number;
+            envMapIntensity: number;
+          };
+          const flaked = !!standard.userData.lookFlake;
+          if (!plastic) {
+            standard.roughness = base.roughness;
+            standard.metalness = base.metalness;
+            standard.envMapIntensity = base.envMapIntensity;
+            if (flaked) removeFlakes(standard);
+            continue;
+          }
+          const finish = classifyFinish({
+            name: standard.name,
+            roughness: base.roughness,
+            metalness: base.metalness,
+            transparent: standard.transparent,
+            emissive: standard.emissive,
+          });
+          const parameters = FINISH_PARAMETERS[finish];
+          standard.roughness = parameters.roughness;
+          standard.metalness = parameters.metalness;
+          standard.envMapIntensity = parameters.envMapIntensity;
+          const flake = flakes.get(standard.name.toLowerCase());
+          if (flake && !flaked) applyFlakes(standard, flake);
+        }
+      });
+  }
+  /** Fit the key light's shadow camera and the shadow ground to the model. The
+   * standard look keeps its original fixed ±1500 LDU shadow frustum. */
+  private fitLookToModel() {
+    const sun = this.keyLight;
+    const camera = sun.shadow.camera;
+    if (this.look.shadows !== "soft" && this.look.ground !== "shadow") {
+      sun.position.set(250, 600, 300);
+      sun.target.position.set(0, 0, 0);
+      sun.shadow.normalBias = 0.2;
+      camera.near = 0.5;
+      camera.far = 5000;
+      camera.left = camera.bottom = -1500;
+      camera.right = camera.top = 1500;
+    } else {
+      const box = new THREE.Box3();
+      this.root.updateMatrixWorld(true);
+      for (const group of this.handles.values()) box.expandByObject(group);
+      if (box.isEmpty())
+        box.set(new THREE.Vector3(-80, 0, -80), new THREE.Vector3(80, 48, 80));
+      const sphere = box.getBoundingSphere(new THREE.Sphere());
+      const radius = Math.max(sphere.radius, 40);
+      const direction = new THREE.Vector3(250, 600, 300).normalize();
+      sun.target.position.copy(sphere.center);
+      sun.position.copy(sphere.center).addScaledVector(direction, radius * 3);
+      camera.left = camera.bottom = -radius * 1.1;
+      camera.right = camera.top = radius * 1.1;
+      camera.near = radius * 1.5;
+      camera.far = radius * 4.5;
+      sun.shadow.normalBias = 0.2;
+      this.shadowGround.position.set(
+        sphere.center.x,
+        box.min.y - 0.05,
+        sphere.center.z,
+      );
+      this.shadowGround.scale.setScalar(radius * 16);
+      this.aoBox.copy(box).expandByScalar(radius * 0.12);
+    }
+    camera.updateProjectionMatrix();
+    sun.target.updateMatrixWorld();
+  }
   private applyQuality(profile: RenderProfile, force = false) {
     if (
       !force &&
@@ -843,18 +1063,35 @@ export class SceneAdapter {
       return;
     this.qualityProfile = structuredClone(profile);
     this.applyPixelRatio();
+    const toneMapping =
+      this.look.toneMapping === "neutral" ? "neutral" : profile.toneMapping;
     this.renderer.toneMapping =
-      profile.toneMapping === "aces"
+      toneMapping === "aces"
         ? THREE.ACESFilmicToneMapping
         : THREE.NeutralToneMapping;
-    this.renderer.toneMappingExposure = profile.exposure;
-    this.renderer.shadowMap.enabled = profile.shadows === "soft";
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.keyLight.castShadow = profile.shadows === "soft";
-    if (this.keyLight.shadow.mapSize.x !== profile.shadowMapSize) {
+    this.renderer.toneMappingExposure =
+      profile.exposure * this.look.exposureScale;
+    // A look may raise shadows and hide edges; it never changes the stored profile.
+    const shadows = this.look.shadows === "soft" ? "soft" : profile.shadows;
+    const shadowMapSize =
+      this.look.shadows === "soft"
+        ? Math.max(
+            profile.shadowMapSize,
+            this.look.resourceProfile === "mobile" ? 1024 : 2048,
+          )
+        : profile.shadowMapSize;
+    const edges = this.look.edges === "hidden" ? "none" : profile.edges;
+    this.renderer.shadowMap.enabled = shadows === "soft";
+    // Phones filter forced look shadows with plain PCF (fewer taps per pixel).
+    this.renderer.shadowMap.type =
+      this.look.shadows === "soft" && this.look.resourceProfile === "mobile"
+        ? THREE.PCFShadowMap
+        : THREE.PCFSoftShadowMap;
+    this.keyLight.castShadow = shadows === "soft";
+    if (this.keyLight.shadow.mapSize.x !== shadowMapSize) {
       this.keyLight.shadow.map?.dispose();
       this.keyLight.shadow.map = null;
-      this.keyLight.shadow.mapSize.setScalar(profile.shadowMapSize);
+      this.keyLight.shadow.mapSize.setScalar(shadowMapSize);
     }
     for (const handle of this.handles.values())
       handle.traverse((object) => {
@@ -863,8 +1100,7 @@ export class SceneAdapter {
           object as THREE.LineSegments
         ).geometry.getAttribute("control0");
         object.visible =
-          profile.edges === "all" ||
-          (profile.edges === "ordinary" && !conditional);
+          edges === "all" || (edges === "ordinary" && !conditional);
       });
     this.batches.rebuild(this.handles);
   }
@@ -924,7 +1160,15 @@ export class SceneAdapter {
     });
     return { space: "ldraw", lights, environment: null };
   }
-  private drawScene() {
+  /** Draw the scene into the current render target (the canvas when none). */
+  private drawDirect() {
+    // Looks with forced shadows re-render the shadow map only after a scene change,
+    // not for every orbit frame (the shadow pass doubles the draw calls).
+    const shadowMap = this.renderer.shadowMap;
+    const cached = this.look.shadows === "soft";
+    shadowMap.autoUpdate = !cached;
+    if (cached && this.shadowDirty) shadowMap.needsUpdate = true;
+    this.shadowDirty = false;
     if (this.batchingEnabled)
       this.batches.render(this.renderer, this.scene, this.camera);
     else {
@@ -932,11 +1176,118 @@ export class SceneAdapter {
       this.renderer.render(this.scene, this.camera);
     }
   }
-  invalidate() {
-    if (this.raf || this.disposed || this.lost) return;
+  /** The look as drawn right now: continuous Play frames never accumulate, and
+   * phones also drop AO while playing. */
+  private interactiveLook(): LookControls {
+    if (!this.playViewActive) return this.look;
+    return {
+      ...this.look,
+      samples: 1,
+      ambientOcclusion:
+        this.look.resourceProfile === "mobile"
+          ? "off"
+          : this.look.ambientOcclusion,
+    };
+  }
+  private drawScene() {
+    const look = this.interactiveLook();
+    if (!lookUsesPipeline(look)) {
+      this.lookStats = { passes: 1, samples: 0 };
+      this.drawDirect();
+      return;
+    }
+    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
+    const accumulate = look.samples > 1;
+    const sample = accumulate ? this.stillSample : 0;
+    this.drawLookFrame(look, null, size.x, size.y, sample, {
+      aoScale: 0.5,
+      msaa: this.look.resourceProfile === "mobile" ? 2 : 4,
+    });
+    this.lookStats = {
+      passes: this.pipeline!.lastPasses,
+      samples: accumulate ? sample + 1 : 0,
+    };
+    if (accumulate && sample + 1 < look.samples) {
+      // Refine a still view one jittered sample per frame; any change restarts.
+      this.refineRaf = requestAnimationFrame(() => {
+        this.refineRaf = 0;
+        if (this.lost || this.disposed || this.raf || this.captureActive)
+          return;
+        this.stillSample++;
+        this.drawScene();
+      });
+    }
+  }
+  /** One frame of the HDR look pipeline, jittered (camera sub-pixel offset and key
+   * light position) when it is a later sample of an accumulated still. */
+  private drawLookFrame(
+    look: LookControls,
+    target: THREE.WebGLRenderTarget | null,
+    width: number,
+    height: number,
+    sample: number,
+    options: { aoScale: number; msaa: number; afterDraw?: () => void },
+  ) {
+    const pipeline = (this.pipeline ??= new LookPipeline());
+    const accumulate = look.samples > 1;
+    const camera = this.camera;
+    const key = this.keyLight.position.clone();
+    if (accumulate && sample > 0) {
+      this.shadowDirty = true;
+      const [jx, jy] = jitterOffset(sample);
+      camera.setViewOffset(width, height, jx, jy, width, height);
+      // Spread the key light over a disc for area-light penumbrae.
+      const [u, v] = jitterOffset(sample + 7);
+      const radius = key.distanceTo(this.keyLight.target.position) * 0.04;
+      const side = new THREE.Vector3(1, 0, 0),
+        up = new THREE.Vector3(0, 0, 1);
+      this.keyLight.position
+        .addScaledVector(side, u * 2 * radius)
+        .addScaledVector(up, v * 2 * radius);
+    }
+    try {
+      pipeline.render({
+        renderer: this.renderer,
+        scene: this.scene,
+        camera,
+        draw: () => {
+          this.drawDirect();
+          options.afterDraw?.();
+        },
+        target,
+        width,
+        height,
+        ao: look.ambientOcclusion === "gtao",
+        aoScale: options.aoScale,
+        aoBox: this.aoBox,
+        vignette: look.vignette,
+        sample,
+        accumulate,
+        msaa: options.msaa,
+      });
+    } finally {
+      if (accumulate && sample > 0) {
+        camera.clearViewOffset();
+        // The next frame needs the shadow map of the unjittered light again.
+        this.shadowDirty = true;
+      }
+      this.keyLight.position.copy(key);
+    }
+  }
+  invalidate(options: { cameraOnly?: boolean } = {}) {
+    if (this.disposed || this.lost) return;
+    if (!options.cameraOnly) this.shadowDirty = true;
+    // Any change restarts the still accumulation.
+    this.stillSample = 0;
+    if (this.refineRaf) {
+      cancelAnimationFrame(this.refineRaf);
+      this.refineRaf = 0;
+    }
+    if (this.raf) return;
     this.raf = requestAnimationFrame(() => {
       this.raf = 0;
-      if (!this.lost && !this.disposed) this.drawScene();
+      // A capture owns the renderer; its cleanup redraws the view.
+      if (!this.lost && !this.disposed && !this.captureActive) this.drawScene();
     });
   }
   resize() {
@@ -2059,10 +2410,16 @@ export class SceneAdapter {
       transformVisible = this.transformHandles?.helper.visible,
       target = this.renderer.getRenderTarget(),
       controlsEnabled = this.controls.enabled,
-      savedQuality = this.currentQuality();
+      savedQuality = this.currentQuality(),
+      savedLook = this.currentLook();
     const captureProfile = resolveQuality(
       request.quality,
       request.qualityControls,
+    );
+    const captureLook = resolveLook(
+      request.look ?? "standard",
+      request.lookControls,
+      this.lookResourceProfile,
     );
     let captureLighting: ReturnType<SceneAdapter["lightingManifest"]>;
     let captureStats: typeof this.renderer.info.render;
@@ -2086,6 +2443,7 @@ export class SceneAdapter {
     try {
       this.instructionDimming.restore();
       this.layerGhost.restore();
+      this.applyLook(captureLook, false);
       this.applyQuality(captureProfile);
       captureLighting = this.lightingManifest();
       const selectedOccurrences = new Set(
@@ -2135,6 +2493,7 @@ export class SceneAdapter {
           ? null
           : new THREE.Color(request.background.color || "#ffffff");
       this.aspect(request.width / request.height);
+      this.shadowDirty = true;
       await this.withContext(this.compileForCapture());
       ensure(
         !this.lost &&
@@ -2148,9 +2507,40 @@ export class SceneAdapter {
         "REVISION_CONFLICT",
         "Document changed during capture",
       );
-      this.renderer.setRenderTarget(rt);
-      this.drawScene();
-      captureStats = { ...this.renderer.info.render };
+      if (lookUsesPipeline(captureLook)) {
+        // Accumulated captures anti-alias through jitter; single frames use MSAA.
+        const samples = captureLook.samples;
+        for (let sample = 0; sample < samples; sample++) {
+          if (sample && sample % 4 === 0) {
+            // Yield so a long accumulation keeps the page responsive.
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            ensure(
+              !this.lost && capturedContext === this.contextEpoch,
+              "WEBGL_UNAVAILABLE",
+              "Graphics context changed during capture",
+            );
+          }
+          this.drawLookFrame(
+            captureLook,
+            rt,
+            request.width,
+            request.height,
+            sample,
+            {
+              aoScale: 1,
+              msaa: samples > 1 ? 0 : 4,
+              afterDraw: () => {
+                if (sample === 0)
+                  captureStats = { ...this.renderer.info.render };
+              },
+            },
+          );
+        }
+      } else {
+        this.renderer.setRenderTarget(rt);
+        this.drawDirect();
+        captureStats = { ...this.renderer.info.render };
+      }
       capturedFloorFocus = this.floorFocusSpec && { ...this.floorFocusSpec };
       capturedAnnotations = this.annotationCounts();
       this.renderer.readRenderTargetPixels(
@@ -2169,6 +2559,7 @@ export class SceneAdapter {
     } finally {
       this.captureActive = false;
       this.computeFloorFocus();
+      this.applyLook(savedLook, false);
       this.applyLayerGhost();
       this.batches.rebuild(this.handles);
       this.applyQuality(savedQuality);
@@ -2238,6 +2629,7 @@ export class SceneAdapter {
           .getParameter(this.renderer.getContext().RENDERER),
         stats: captureStats!,
         profile: captureProfile,
+        look: captureLook,
         lighting: captureLighting!,
         clipping: {
           space: "renderer-world",
@@ -2256,8 +2648,13 @@ export class SceneAdapter {
           width: request.width,
           height: request.height,
           colorSpace: this.renderer.outputColorSpace,
-          toneMapping: captureProfile.toneMapping,
-          exposure: captureProfile.exposure,
+          toneMapping:
+            captureLook.toneMapping === "neutral"
+              ? "neutral"
+              : captureProfile.toneMapping,
+          exposure: captureProfile.exposure * captureLook.exposureScale,
+          // Only the look pipeline tone-maps captures; direct captures are linear sRGB.
+          toneMapped: lookUsesPipeline(captureLook),
         },
         capabilities: {
           maxTextureSize: this.renderer.capabilities.maxTextureSize,
@@ -2277,6 +2674,12 @@ export class SceneAdapter {
     this.clearGhost();
     this.clearAnnotations();
     cancelAnimationFrame(this.raf);
+    cancelAnimationFrame(this.refineRaf);
+    this.pipeline?.dispose();
+    this.pipeline = undefined;
+    this.environmentMap = disposeTexture(this.environmentMap);
+    this.shadowGround.geometry.dispose();
+    this.shadowGround.material.dispose();
     this.resizeObserver.disconnect();
     this.controls.dispose();
     this.renderer.domElement.removeEventListener(

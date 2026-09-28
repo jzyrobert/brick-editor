@@ -4,6 +4,15 @@ Run commands from the repository with Node 22.14 or later after `npm ci` and `np
 
 Inventory, validation, native/LDraw conversion, command application, and instruction JSON run directly in Node. PNG capture, Play capture, and PDF/PNG/HTML publication launch a temporary loopback server and local Chromium, then close both. No remote renderer or keyboard emulation is used.
 
+## Still renders and render looks
+
+```sh
+npm run cli -- render --input fixtures/ldraw/finishes.mpd --camera fixtures/renders/interior.camera.json --look realistic --output realistic.png
+npm run cli -- render-collection --input build.brickproj --collection exterior/ --look photo --output exterior.zip
+```
+
+`render`, `render-collection` and `play` accept `--look standard|realistic|photo` (default `standard`, the original look). `realistic` adds image-based lighting, tuned plastic/finish materials, ambient occlusion and soft shadows and hides outlines; `photo` also accumulates 32 jittered samples per image. See [rendering looks](RENDERING.md). Software WebGL makes `photo` captures slow (tens of seconds per megapixel).
+
 ## Instruction publication
 
 ```sh

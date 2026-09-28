@@ -5,6 +5,7 @@ import { LayerGhost } from "../../src/render/layerGhost";
 import { importLDraw } from "../../src/ldraw/io";
 import { occurrences } from "../../src/core/document";
 import { resolveQuality } from "../../src/render/quality";
+import { resolveLook } from "../../src/render/look";
 
 it.each([false, true])(
   "restores view materials after readback failure (capture dimming: %s)",
@@ -79,10 +80,12 @@ it.each([false, true])(
       ready: async () => {},
       currentCamera: () => ({}),
       currentQuality: () => resolveQuality("balanced"),
+      look: resolveLook("standard"),
+      lookResourceProfile: "desktop",
       applyQuality: vi.fn(),
       lightingManifest: () => ({}),
       aspect: vi.fn(),
-      drawScene: draw,
+      drawDirect: draw,
       resize: vi.fn(),
       invalidate: vi.fn(),
       batches: { rebuild: vi.fn() },

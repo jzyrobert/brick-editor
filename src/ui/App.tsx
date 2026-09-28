@@ -95,6 +95,11 @@ import { type Preview } from "../inventory/service";
 import { FillOptions, defaultFillOptions } from "./FillOptions";
 import { type FillRequest, fillPreview } from "../edit/fill";
 import { zipSync, strToU8 } from "fflate";
+import {
+  loadLookPreference,
+  saveLookPreference,
+} from "../persistence/look-preference";
+import { LOOK_NAMES, lookControls, type LookName } from "../render/look";
 import "./styles.css";
 import "./hud.css";
 const editor = new Editor();
@@ -316,6 +321,7 @@ function Workspace() {
     [section, setSection] = useState<SectionSpec | null>(null),
     [measurePoints, setMeasurePoints] = useState<Vec3[]>([]),
     [explodeBricks, setExplodeBricks] = useState(0),
+    [renderLook, setRenderLook] = useState<LookName>(loadLookPreference),
     [sectionRange, setSectionRange] = useState<{
       min: number;
       max: number;
@@ -653,6 +659,9 @@ function Workspace() {
     window.addEventListener("storage", notifySavedChange);
     try {
       renderer.current = new SceneAdapter(viewport.current!, setStatus);
+      // Phones degrade the realistic looks; apply the viewer's saved look.
+      renderer.current.setLookResourceProfile(editor.resourceProfile);
+      renderer.current.setLook(loadLookPreference());
     } catch (e) {
       setStatus(e instanceof Error ? e.message : String(e));
     }
@@ -1325,6 +1334,7 @@ function Workspace() {
       try {
         const p = editor.project;
         const qualityProfile = renderer.current!.currentQuality();
+        const look = renderer.current!.currentLook();
         const {
           edges,
           shadows,
@@ -1351,6 +1361,9 @@ function Workspace() {
             toneMapping,
             exposure,
           },
+          // Photos use the chosen look (Camera views); photo accumulates samples.
+          look: look.name,
+          lookControls: lookControls(look),
           strict: true,
         });
         ensure(
@@ -1458,6 +1471,30 @@ function Workspace() {
   useEffect(() => {
     renderer.current?.setSectionPlane(mode === "Play" ? null : section);
   }, [section, mode]);
+  useEffect(() => {
+    renderer.current?.setLookResourceProfile(editor.resourceProfile);
+  }, [editor.resourceProfile]);
+  // Automation may change the look; show the renderer's when the views open.
+  useEffect(() => {
+    const current = renderer.current?.currentLook().name;
+    if (viewsOpen && current) setRenderLook(current);
+  }, [viewsOpen]);
+  const chooseLook = (name: LookName) => {
+    try {
+      renderer.current?.setLook(name);
+      setRenderLook(name);
+      saveLookPreference(name);
+      setStatus(
+        name === "standard"
+          ? "Standard look: flat lighting with part outlines."
+          : name === "realistic"
+            ? "Realistic look: plastic materials, soft shadows and ambient occlusion."
+            : "Photo look: realistic, and the view refines itself while it is still.",
+      );
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : String(e));
+    }
+  };
   // On touch layouts the status toast shows briefly after each change.
   useEffect(() => {
     setStatusFresh(true);
@@ -2572,6 +2609,26 @@ function Workspace() {
                   </button>
                 </>
               )}
+            </div>
+            <div
+              className="section-control look-control"
+              role="group"
+              aria-label="Render look"
+            >
+              <span className="look-label">Look</span>
+              {LOOK_NAMES.map((name) => (
+                <button
+                  key={name}
+                  aria-pressed={renderLook === name}
+                  onClick={() => chooseLook(name)}
+                >
+                  {name === "standard"
+                    ? "Standard"
+                    : name === "realistic"
+                      ? "Realistic"
+                      : "Photo"}
+                </button>
+              ))}
             </div>
             {mode !== "Play" && (
               <FloorControls

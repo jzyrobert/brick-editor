@@ -4,6 +4,7 @@ import type { FillRequest, fillPreview } from "../edit/fill";
 import type { ExportRequest as ProfileRequest } from "../ldraw/export-profiles";
 import type { MechanismBrowser } from "../mechanisms/browser";
 import type { QualityName, QualityControls } from "../render/quality";
+import type { LookName, LookControls } from "../render/look";
 import type { PublishFormat } from "../instructions/publish";
 import type { CopyRequest } from "../core/fragments";
 import type { BrowserPlay } from "../play/browser";
@@ -546,6 +547,13 @@ export function createAPI(
           controls: Partial<QualityControls> = {},
         ) => renderer().setQuality(name, controls),
       },
+      /** Shading look: standard (default), realistic (IBL, finishes, AO, soft shadows,
+       * no outlines) or photo (realistic plus progressive still refinement). */
+      look: {
+        get: async () => renderer().currentLook(),
+        set: async (name: LookName, controls: Partial<LookControls> = {}) =>
+          renderer().setLook(name, controls),
+      },
       image: captureImage,
       /** Exploded view: lift floors (top-level submodels, else layers) apart. Render-only. */
       explode: {
@@ -618,6 +626,7 @@ export function createAPI(
         width: number;
         height: number;
         quality?: RenderRequest["quality"];
+        look?: RenderRequest["look"];
         background?: RenderRequest["background"];
         visibility?: RenderRequest["visibility"];
       }) => {
@@ -672,6 +681,7 @@ export function createAPI(
                 color: "#ffffff",
               },
               quality: input.quality ?? "balanced",
+              ...(input.look ? { look: input.look } : {}),
             });
             first ??= shot.manifest;
             shots.push({

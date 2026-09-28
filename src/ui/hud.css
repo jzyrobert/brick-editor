@@ -1248,6 +1248,12 @@ a .icon {
     width: 140px;
   }
 }
+/* Render look: a labelled segmented choice at the end of the views popover. */
+.look-control .look-label {
+  font-weight: 700;
+  color: var(--chalk);
+  opacity: 0.75;
+}
 /* The views popover anchors under the top HUD so it never covers the model's lower floors. */
 @media (min-width: 1101px) {
   .view-controls {

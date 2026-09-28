@@ -27,3 +27,19 @@ it("CLI and domain inventory agree offline, and blocked export retains a previou
   expect(await readFile(output, "utf8")).toBe(before);
   expect(JSON.parse(await readFile(report, "utf8")).complete).toBe(false);
 });
+it("CLI render rejects an unknown look before launching a renderer", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "brick-cli-look-"));
+  await expect(
+    main([
+      "render",
+      "--input",
+      "fixtures/ldraw/nested.mpd",
+      "--camera",
+      "fixtures/renders/interior.camera.json",
+      "--look",
+      "glossy",
+      "--output",
+      join(dir, "image.png"),
+    ]),
+  ).rejects.toThrow("--look must be standard, realistic or photo");
+});

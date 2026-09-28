@@ -647,6 +647,22 @@ const render = obj(
       },
       [],
     ),
+    look: { enum: ["standard", "realistic", "photo"] },
+    lookControls: obj(
+      {
+        environment: { enum: ["none", "room"] },
+        materials: { enum: ["ldraw", "plastic"] },
+        ambientOcclusion: { enum: ["off", "gtao"] },
+        edges: { enum: ["quality", "hidden"] },
+        shadows: { enum: ["quality", "soft"] },
+        ground: { enum: ["grid", "shadow"] },
+        samples: { type: "integer", minimum: 1, maximum: 64 },
+        vignette: { type: "number", minimum: 0, maximum: 0.5 },
+        toneMapping: { enum: ["quality", "neutral"] },
+        exposureScale: { type: "number", minimum: 0.25, maximum: 4 },
+      },
+      [],
+    ),
     instructionNewIds: { ...arr(occurrenceId, 5000), uniqueItems: true },
     strict: { type: "boolean" },
   },
@@ -1048,6 +1064,14 @@ const api = {
       {
         name: render.properties.quality,
         controls: render.properties.qualityControls,
+      },
+      ["name"],
+    ),
+    "render.look.get": obj({}),
+    "render.look.set": obj(
+      {
+        name: render.properties.look,
+        controls: render.properties.lookControls,
       },
       ["name"],
     ),

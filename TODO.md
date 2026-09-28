@@ -28,6 +28,8 @@ Suggested order for the next implementation pass:
 - [ ] Measure the specified performance gates, including repeated 5,000-part trials and reference hardware (the current single-run software benchmark is recorded).
 - [x] Revision review (spec §20.3): named checkpoints, occurrence-level change reports (UI/API/CLI), model-health panel and camera collections.
 - [x] Architectural aids (spec §20.2): horizontal and vertical section cuts, measure tool, exploded floors, floor guides with floor focus (upper floors hidden, lower floors ghosted, saved per camera bookmark) and room labels. Follow-up: room outlines/areas and dimension-string overlays. See STATUS "Floor guides, floor focus and room labels".
+- [x] Photorealistic rendering investigation: Standard (default), Realistic (IBL, tuned finishes, GTAO, fitted soft shadows, no outlines) and Photo (still accumulation) looks in Camera views, API and CLI. See [rendering looks](docs/RENDERING.md).
+- [ ] Rendering follow-ups: measure the Realistic/Photo looks on real phone GPUs; route Standard captures through the tone-mapping pipeline (they are currently not tone-mapped); consider logo-on-stud primitives once the library includes them.
 - [x] Creative-mode HUD redesign for phone/tablet/desktop (see DESIGN.md). Follow-up: migrate legacy panel-content styles (slate tones, 11px help text) to the DESIGN.md scale.
 - [ ] Finish broader M4 exploration acceptance, connectors and advanced instruction editing. Play, publishing, sharing and pose application now work; user reprioritized exploration ahead of the remaining P0 gates.
 - [ ] Complete M5/M6 dynamic physics, advanced rig authoring and planning in the order specified.
