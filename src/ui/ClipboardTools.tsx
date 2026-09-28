@@ -63,7 +63,7 @@ export function ClipboardTools({
   ) => ({
     schemaVersion: 1 as const,
     commandId: uid(),
-    expectedRevision: editor.project.revision,
+    expectedRevision: editor.revision,
     type,
     payload,
     dryRun,
@@ -241,7 +241,7 @@ export function ClipboardTools({
                   envelope("parts.array", payload, true),
                 );
               setPreview({
-                revision: editor.project.revision,
+                revision: editor.revision,
                 key: JSON.stringify(payload),
                 count: result.addedIds.length,
               });
@@ -258,7 +258,7 @@ export function ClipboardTools({
               const payload = arrayPayload();
               ensure(
                 preview &&
-                  preview.revision === editor.project.revision &&
+                  preview.revision === editor.revision &&
                   preview.key === JSON.stringify(payload),
                 "REVISION_CONFLICT",
                 "Selection or build changed. Preview again.",

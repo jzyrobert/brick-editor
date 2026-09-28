@@ -161,3 +161,25 @@ Evidence for the supplied Santorini v2 MPD set (user files; not committed). Soft
 - Draw calls for the complete file fell from ~580 to ~250–270 per frame after baking sheared/non-instanceable part placements into merged batches (6 → 64 merged meshes, 582 → 10 per-object fallbacks). Frame time on software GL did not change measurably (~27–31 ms at 360×800, 1080×1800 and 1440×1000), so this is not an FPS claim. JS heap after load: ~310–530 MB depending on viewport.
 - Two startup races surfaced and were fixed: automation `ready()` could resolve before asynchronous IndexedDB recovery, and against an update superseded by a newer one.
 - The BFC pixel reference now disables loader smoothing, because the stock loader cancels double-sided twin normals in the reference as well.
+
+## Play performance on large imports
+
+Measured with `santorini_v2_complete.mpd` (user file; not committed) on software WebGL2 (SwiftShader) on the shared 4-core Linux ARM64 VM, which other jobs were also using. Frame intervals there are dominated by software rasterisation and CPU contention, so they are not phone frame rates. The comparable figures are main-thread JavaScript time per animation frame, fixed-tick cost, draw statistics and entry time. There were two interleaved runs per build, and the ranges below cover both.
+
+| Metric (complete file)                                   | Before (6f2b9d4) |                                     After |
+| -------------------------------------------------------- | ---------------: | ----------------------------------------: |
+| Main-thread JS per realtime frame, standing in the open  |       506–582 ms |                                    5–8 ms |
+| Main-thread JS per realtime frame, walking into a facade |       577–690 ms |                                  14–18 ms |
+| One Play frame submission (CPU)                          |         18–21 ms |                                2.4–4.9 ms |
+| Frame with an active mechanism pose (door/vehicle/drag)  |       419–577 ms |                                   4–13 ms |
+| Enter Play                                               |            3.3 s |                                 1.5–2.2 s |
+| Phone drawing buffer at 360×800, DPR 3                   |    720×1140 (2×) |                            540×855 (1.5×) |
+| Draw calls / triangles per first-person frame            | ~240–260 / ~450k |                                 unchanged |
+| Static collision triangles                               |          477,952 | 402,904 (126k welded vertices, was 1.43M) |
+
+- **Root cause:** each realtime frame deep-copied the whole project twice, once for the revision check and once for the interaction lookup (`Editor.project` is a `structuredClone`). Play now reads a cheap `Editor.revision` and snapshots the rigs once per session.
+- Rendering no longer rebuilds a JSON signature of about 20k occurrence IDs every frame. It also no longer walks or recomposes about 42k hidden handle objects: batched handles are excluded from the draw traversal. Moving rig members are drawn from their live handles, so an animated pose no longer re-merges every static batch per frame. Play redraws only when its camera, avatar or pose changes.
+- Static collision stays one trimesh collider. Before it is built, reversed twins, exact duplicates and zero-area faces are removed; queries are two-sided, so the surface is unchanged. Deterministic `stepTicks` walks reached the same endpoints as before (one endpoint differed by under 1 LDU after 480 ticks).
+- **Still expensive:** character-controller ticks while pressing into dense decorative geometry (flowers, vines) cost about 20–65 ms here, against under 1 ms in the open. Realtime catch-up now stops after 10 ms of ticks per frame and drops the whole-tick backlog, so the world slows instead of each frame getting longer. Individual ticks are unchanged.
+- The first switch to third person compiles the avatar shaders once (a one-off stall of hundreds of ms on software GL).
+- Phone FPS, GPU time and battery use were not measured on a physical device.

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Editor } from "../core/commands";
-import { ensure, uid, type Vec3 } from "../core/types";
+import { ensure, uid, type Project, type Vec3 } from "../core/types";
 import type { DriverSeatSpec } from "../mechanisms/types";
 import {
   buildDriverSeatDraft,
@@ -19,12 +19,14 @@ const newSeat = (): DriverSeatSpec => ({
 });
 export function SeatAuthoring({
   editor,
+  project,
   activeLayerId,
 }: {
   editor: Editor;
+  /** The workspace's current snapshot (see RigAuthoring). */
+  project: Project;
   activeLayerId?: string;
 }) {
-  const project = editor.project;
   const vehicles = Object.values(project.motionRigs ?? {}).filter(
     (rig) => rig.vehicle,
   );
@@ -297,7 +299,7 @@ export function SeatAuthoring({
             onClick={() =>
               attempt(() => {
                 ensure(
-                  review.projectId === editor.project.id &&
+                  review.projectId === editor.projectId &&
                     review.activeLayerId === activeLayerId,
                   "REVISION_CONFLICT",
                   "Project or active editing layer changed; review again.",

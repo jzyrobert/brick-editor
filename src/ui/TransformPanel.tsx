@@ -101,7 +101,7 @@ export function TransformPanel({
       ensure(r, "WEBGL_UNAVAILABLE", "The renderer is unavailable.");
       await r.ready(revision);
       ensure(
-        editor.project.revision === revision,
+        editor.revision === revision,
         "REVISION_CONFLICT",
         "Selection changed; try again.",
       );

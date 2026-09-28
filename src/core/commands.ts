@@ -788,6 +788,13 @@ export class Editor {
   get project() {
     return structuredClone(this.state);
   }
+  /** Cheap reads for hot paths; `project` deep-copies the whole document. */
+  get revision() {
+    return this.state.revision;
+  }
+  get projectId() {
+    return this.state.id;
+  }
   subscribe(fn: () => void) {
     this.listeners.add(fn);
     return () => {

@@ -16,6 +16,10 @@ import type {
   PlayOccupancy,
 } from "./types";
 import { PlayVehicleWorld } from "./vehicle-world";
+import {
+  compactCollisionMesh,
+  type CompactCollisionMesh,
+} from "./collision-mesh";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import { isOccurrenceId } from "../core/occurrence-id";
 import { validatePlayWorldProfile } from "./world-profile";
@@ -63,6 +67,14 @@ function point(p: unknown): asserts p is Vec3 {
     "INVALID_INPUT",
     "Play position must contain three finite LDU coordinates.",
   );
+}
+function validMesh(vertices: ArrayLike<number>, indices: ArrayLike<number>) {
+  for (let i = 0; i < vertices.length; i++)
+    if (!Number.isFinite(vertices[i])) return false;
+  const corners = vertices.length / 3;
+  for (let i = 0; i < indices.length; i++)
+    if (!(indices[i] < corners)) return false;
+  return true;
 }
 function keys(o: object, allowed: string[]) {
   ensure(
@@ -123,6 +135,7 @@ export class PlaySession {
   private ready: boolean;
   private warnings: string[];
   private bounds: CollisionSnapshot["bounds"];
+  private staticStats?: CompactCollisionMesh["stats"];
   private constructor(
     private revision: number,
     snapshot: CollisionSnapshot,
@@ -159,14 +172,18 @@ export class PlaySession {
     }
     let drivingStatic: DrivingTriangleSource | undefined;
     if (this.ready && snapshot.indices.length) {
-      const v = new Float32Array(snapshot.vertices.length);
+      // One static trimesh (Rapier builds its BVH once). Compaction is lossless for
+      // two-sided queries and removes the reversed twins of double-sided faces.
+      const compact = compactCollisionMesh(snapshot.vertices, snapshot.indices);
+      this.staticStats = compact.stats;
+      const v = compact.vertices;
       for (let i = 0; i < v.length; i += 3) {
-        v[i] = snapshot.vertices[i] * S;
-        v[i + 1] = -snapshot.vertices[i + 1] * S;
-        v[i + 2] = -snapshot.vertices[i + 2] * S;
+        v[i] = v[i] * S;
+        v[i + 1] = -v[i + 1] * S;
+        v[i + 2] = -v[i + 2] * S;
       }
       this.world.createCollider(
-        RAPIER.ColliderDesc.trimesh(v, snapshot.indices),
+        RAPIER.ColliderDesc.trimesh(v, compact.indices),
       );
       drivingStatic = {
         sourceId: "included-static-world",
@@ -174,7 +191,7 @@ export class PlaySession {
         up: "+Y",
         owner: { kind: "static" },
         vertices: v,
-        indices: snapshot.indices,
+        indices: compact.indices,
       };
     }
     if (request.ground !== false)
@@ -384,8 +401,7 @@ export class PlaySession {
     ensure(
       snapshot.vertices.length % 3 === 0 &&
         snapshot.indices.length % 3 === 0 &&
-        snapshot.vertices.every(Number.isFinite) &&
-        snapshot.indices.every((i) => i < snapshot.vertices.length / 3),
+        validMesh(snapshot.vertices, snapshot.indices),
       "INVALID_INPUT",
       "Invalid collision mesh.",
     );
@@ -923,20 +939,37 @@ export class PlaySession {
     for (let i = 0; i < count; i++) this.step();
     return this.snapshot();
   }
-  advance(seconds: number) {
+  /**
+   * Realtime catch-up. Each fixed tick is unchanged; only how many run per frame is
+   * bounded. When catch-up ticks exceed `budgetMs` of wall time, the whole-tick backlog
+   * is dropped (the world briefly runs slower than realtime) instead of making every
+   * following frame slower still. Returns the number of ticks run.
+   */
+  advance(seconds: number, budgetMs = Infinity) {
     this.alive();
     ensure(
       finite(seconds) && seconds >= 0,
       "INVALID_INPUT",
       "Frame duration must be nonnegative.",
     );
+    ensure(
+      budgetMs > 0,
+      "INVALID_INPUT",
+      "Frame tick budget must be positive.",
+    );
     this.accumulator += Math.min(seconds, 0.1);
+    const start = performance.now();
     let count = 0;
-    while (this.accumulator >= DT && count++ < 6) {
+    while (this.accumulator >= DT && count < 6) {
       this.step();
       this.accumulator -= DT;
+      count++;
+      if (performance.now() - start >= budgetMs) {
+        this.accumulator %= DT;
+        break;
+      }
     }
-    return this.snapshot();
+    return count;
   }
   private step() {
     for (const id of [...this.mechanisms.keys()].sort()) {
@@ -1353,6 +1386,14 @@ export class PlaySession {
       simulationHz: 60,
       warnings: [...this.warnings],
       avatar: this.avatar(),
+    };
+  }
+  /** Diagnostics for budgets and regression tests; not part of the snapshot contract. */
+  collisionStats() {
+    this.alive();
+    return {
+      colliders: this.world.colliders.len(),
+      static: this.staticStats ? { ...this.staticStats } : undefined,
     };
   }
   dispose() {

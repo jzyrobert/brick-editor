@@ -22,6 +22,9 @@ import type { PlaySession } from "./session";
 import { nearbyInteraction, type PlayInteraction } from "./interaction";
 import { BrickAvatar } from "./avatar";
 
+/** Wall time a realtime frame may spend on catch-up physics ticks. */
+export const PLAY_FRAME_TICK_BUDGET_MS = 10;
+
 export type PlayViewState = {
   active: boolean;
   paused: boolean;
@@ -34,6 +37,10 @@ export type PlayViewState = {
 /** Owns browser lifetime, never authoring state. API sessions are manual-tick by default. */
 export class BrowserPlay {
   private session?: PlaySession;
+  /** Authored rigs for the active session. Sessions end whenever the source
+   * revision changes, so one snapshot per entry is exact; reading the live
+   * project per frame would deep-copy the whole document every frame. */
+  private sessionRigs: Project["motionRigs"] = {};
   private captureSession?: PlaySession;
   private captureInputClear = false;
   private pauseVersion = 0;
@@ -56,6 +63,7 @@ export class BrowserPlay {
     return this.epoch;
   }
   private realtime = false;
+  private lastVisual = "";
   private held: PlayInput = {};
   private last = 0;
   private notifyAt = 0;
@@ -214,10 +222,12 @@ export class BrowserPlay {
         throw new Error("Project changed while preparing Play");
       }
       this.session = session;
+      this.sessionRigs = project?.motionRigs ?? {};
       this.held = {};
       if (rigs.length) this.restorePose = r.beginTransientPose();
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
+      this.lastVisual = "";
       r.scene.add(this.avatar.group);
       this.realtime = request.realtime === true;
       this.emit({ active: true, paused: false, loading: false });
@@ -249,22 +259,44 @@ export class BrowserPlay {
           ? { [report.mechanism.rigId]: report.mechanism }
           : {}),
     );
-    if (mechanisms.length)
-      r.applyTransientPose(
-        Object.assign({}, ...mechanisms.map((m) => m.transforms)),
-      );
-    r.playCamera(this.session.camera(this.realtime && !this.state.paused));
-    this.avatar?.update(this.session.snapshot());
-    r.invalidate();
+    const transforms = mechanisms.length
+      ? Object.assign({}, ...mechanisms.map((m) => m.transforms))
+      : undefined;
+    const camera = this.session.camera(this.realtime && !this.state.paused);
+    // Only redraw when something Play controls on screen changed; standing still
+    // (or paused) no longer re-renders the whole world every animation frame.
+    // Values are compared at 1/1000 precision: ground snapping jitters a resting
+    // character by ~1e-6 LDU per tick, which is invisible but would defeat this.
+    const visual = JSON.stringify(
+      [
+        r.cameraChanges,
+        camera,
+        transforms,
+        report.position,
+        report.avatar,
+        report.avatarVisible,
+        report.cameraMode,
+      ],
+      (_, value) =>
+        typeof value === "number" ? Math.round(value * 1000) / 1000 : value,
+    );
+    if (visual !== this.lastVisual) {
+      this.lastVisual = visual;
+      if (transforms) r.applyTransientPose(transforms);
+      r.playCamera(camera);
+      // camera() is read-only, so one snapshot serves the avatar, pose and UI.
+      this.avatar?.update(report);
+      r.invalidate();
+    }
     this.state = {
       ...this.state,
-      report: this.session.snapshot(),
+      report,
       interaction: this.nearby(report),
     };
   }
   private nearby(report: PlaySnapshotReport) {
     if (report.occupancy) return undefined;
-    const rigs = this.project?.().motionRigs ?? {};
+    const rigs = this.sessionRigs;
     return Object.keys(
       report.mechanisms ??
         (report.mechanism
@@ -323,6 +355,7 @@ export class BrowserPlay {
       }
       this.session.advance(
         Math.max(0, Math.min((now - this.last) / 1000, 0.1)),
+        PLAY_FRAME_TICK_BUDGET_MS,
       );
       this.last = now;
       this.draw();
@@ -452,6 +485,7 @@ export class BrowserPlay {
     const session = this.current();
     this.captureSession = session;
     this.captureInputClear = false;
+    this.lastVisual = "";
     let restore: (() => void) | undefined;
     try {
       restore = session.beginCameraCapture(aspectRatio);
@@ -471,6 +505,8 @@ export class BrowserPlay {
     return () => {
       if (finished) return;
       finished = true;
+      // The capture camera replaced the live one; the next draw must restore it.
+      this.lastVisual = "";
       if (this.session !== session) return;
       try {
         restore!();
@@ -553,8 +589,7 @@ export class BrowserPlay {
     );
     this.clearInput();
     if (target.kind === "vehicle") {
-      const seat =
-        this.project?.().motionRigs[target.rigId]?.vehicle?.driverSeat;
+      const seat = this.sessionRigs[target.rigId]?.vehicle?.driverSeat;
       if (seat) this.enterVehicle({ rigId: target.rigId, seatId: seat.id });
       else this.controlVehicle(target.rigId);
     } else
@@ -612,12 +647,14 @@ export class BrowserPlay {
     if (!force) this.assertMutable();
     this.captureSession = undefined;
     this.captureInputClear = false;
+    this.lastVisual = "";
     ++this.epoch;
     cancelAnimationFrame(this.raf);
     this.clearInput();
     if (document.pointerLockElement) void document.exitPointerLock();
     this.session?.dispose();
     this.session = undefined;
+    this.sessionRigs = {};
     this.avatar?.dispose();
     this.avatar = undefined;
     this.restorePose?.();

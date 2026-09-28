@@ -26,8 +26,7 @@ export class TransformGesture {
     private renderer: TransformPreviewRenderer,
   ) {
     this.unsubscribe = editor.subscribe(() => {
-      if (this.state && editor.project.revision !== this.state.revision)
-        this.cancel();
+      if (this.state && editor.revision !== this.state.revision) this.cancel();
     });
   }
   get active() {
@@ -88,7 +87,7 @@ export class TransformGesture {
   private current() {
     ensure(this.state, "INVALID_INPUT", "Start a transform gesture first.");
     ensure(
-      this.editor.project.revision === this.state.revision,
+      this.editor.revision === this.state.revision,
       "REVISION_CONFLICT",
       "Selection changed during the transform.",
     );

@@ -7,6 +7,10 @@ export class LayerGhost {
     { material: THREE.Material | THREE.Material[]; shadow: boolean }
   >();
   private clones = new Map<THREE.Material, THREE.Material>();
+  /** Whether any object currently carries a temporary material. */
+  get active() {
+    return this.originals.size > 0;
+  }
   restore() {
     for (const [object, original] of this.originals) {
       object.material = original.material;

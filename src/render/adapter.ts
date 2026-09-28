@@ -44,6 +44,8 @@ import { occurrences } from "../core/document";
 import { conversion } from "../core/math";
 import { libraryLock } from "../catalog/catalog";
 import { sha256, stable } from "../core/hash";
+/** Play renders continuously; cap its drawing buffer below phone DPRs of 2-3. */
+export const PLAY_PIXEL_RATIO_CAP = 1.5;
 const defaultCamera: CameraSpec = {
   space: "ldraw",
   projection: "perspective",
@@ -111,6 +113,7 @@ export class SceneAdapter {
   private instructionDimming = new LayerGhost(0.3);
   private instructionNewIds: Set<string> | null = null;
   private playViewActive = false;
+  private cameraChangeCount = 0;
   private playIncludedIds?: Set<string>;
   private ghostLayerId: string | null = null;
   private batchingEnabled =
@@ -717,9 +720,7 @@ export class SceneAdapter {
     )
       return;
     this.qualityProfile = structuredClone(profile);
-    this.renderer.setPixelRatio(
-      Math.min(devicePixelRatio, profile.pixelRatioCap),
-    );
+    this.applyPixelRatio();
     this.renderer.toneMapping =
       profile.toneMapping === "aces"
         ? THREE.ACESFilmicToneMapping
@@ -744,6 +745,16 @@ export class SceneAdapter {
           (profile.edges === "ordinary" && !conditional);
       });
     this.batches.rebuild(this.handles);
+  }
+  /** Continuous Play frames cap the backing store; phones report DPR 3. */
+  private applyPixelRatio() {
+    const ratio = Math.min(
+      devicePixelRatio,
+      this.qualityProfile.pixelRatioCap,
+      this.playViewActive ? PLAY_PIXEL_RATIO_CAP : Infinity,
+    );
+    if (this.renderer.getPixelRatio() !== ratio)
+      this.renderer.setPixelRatio(ratio);
   }
   private lightingManifest() {
     const lights: Record<string, unknown>[] = [];
@@ -825,6 +836,10 @@ export class SceneAdapter {
     }
     this.camera.updateProjectionMatrix();
   }
+  /** Counts explicit camera replacements so demand-driven Play frames reapply theirs. */
+  get cameraChanges() {
+    return this.cameraChangeCount;
+  }
   setCamera(spec: CameraSpec) {
     ensure(
       !this.captureActive,
@@ -832,6 +847,7 @@ export class SceneAdapter {
       "Wait for the current capture before changing the camera",
     );
     validateRequest("camera", spec);
+    this.cameraChangeCount++;
     ensure(
       spec.far > spec.near,
       "INVALID_INPUT",
@@ -888,10 +904,25 @@ export class SceneAdapter {
     );
     await this.ready();
     this.root.updateMatrixWorld(true);
-    const vertices: number[] = [],
-      indices: number[] = [];
-    const bounds = new THREE.Box3();
-    const point = new THREE.Vector3();
+    // Typed, amortised-growth buffers: large worlds have millions of corners, and
+    // per-corner arrays/vectors made entering Play allocation-bound.
+    let vertices = new Float32Array(1 << 16),
+      indices = new Uint32Array(1 << 16),
+      vertexFloats = 0,
+      indexCount = 0;
+    const grow = <T extends Float32Array | Uint32Array>(
+      array: T,
+      need: number,
+    ) => {
+      if (need <= array.length) return array;
+      let size = array.length;
+      while (size < need) size *= 2;
+      const next = new (array.constructor as { new (n: number): T })(size);
+      next.set(array);
+      return next;
+    };
+    const min = [Infinity, Infinity, Infinity],
+      max = [-Infinity, -Infinity, -Infinity];
     const warnings: string[] = [];
     let overBudget = false;
     const include = selection?.include ? new Set(selection.include) : undefined;
@@ -912,27 +943,41 @@ export class SceneAdapter {
         if (!position) return;
         const index = geometry.index;
         const count = index ? index.count : position.count;
-        if (indices.length + count > 3_000_000) {
+        if (indexCount + count > 3_000_000) {
           overBudget = true;
           return;
         }
-        const offset = vertices.length / 3;
+        const offset = vertexFloats / 3;
+        vertices = grow(vertices, vertexFloats + position.count * 3);
+        const e = mesh.matrixWorld.elements;
         for (let i = 0; i < position.count; i++) {
-          point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
-          const converted = conversion(point.toArray() as Vec3);
-          vertices.push(...converted);
-          bounds.expandByPoint(new THREE.Vector3(...converted));
+          const x = position.getX(i),
+            y = position.getY(i),
+            z = position.getZ(i);
+          const w = 1 / (e[3] * x + e[7] * y + e[11] * z + e[15]);
+          // Three world space to public LDraw coordinates (conversion()).
+          const px = (e[0] * x + e[4] * y + e[8] * z + e[12]) * w,
+            py = -(e[1] * x + e[5] * y + e[9] * z + e[13]) * w,
+            pz = -(e[2] * x + e[6] * y + e[10] * z + e[14]) * w;
+          vertices[vertexFloats++] = px;
+          vertices[vertexFloats++] = py;
+          vertices[vertexFloats++] = pz;
+          if (px < min[0]) min[0] = px;
+          if (px > max[0]) max[0] = px;
+          if (py < min[1]) min[1] = py;
+          if (py > max[1]) max[1] = py;
+          if (pz < min[2]) min[2] = pz;
+          if (pz > max[2]) max[2] = pz;
         }
         const mirrored = mesh.matrixWorld.determinant() < 0;
+        indices = grow(indices, indexCount + count);
         for (let i = 0; i + 2 < count; i += 3) {
           const a = index ? index.getX(i) : i;
           const b = index ? index.getX(i + 1) : i + 1;
           const c = index ? index.getX(i + 2) : i + 2;
-          indices.push(
-            offset + a,
-            offset + (mirrored ? c : b),
-            offset + (mirrored ? b : c),
-          );
+          indices[indexCount++] = offset + a;
+          indices[indexCount++] = offset + (mirrored ? c : b);
+          indices[indexCount++] = offset + (mirrored ? b : c);
         }
       });
     }
@@ -940,7 +985,7 @@ export class SceneAdapter {
       warnings.push(
         "Collision mesh exceeds one million triangles. Fly mode remains available.",
       );
-      vertices.length = indices.length = 0;
+      vertexFloats = indexCount = 0;
     }
     if (
       this.project &&
@@ -954,16 +999,17 @@ export class SceneAdapter {
       warnings.push(
         "Missing parts have no collision geometry. Use Fly to inspect this incomplete world.",
       );
-      vertices.length = indices.length = 0;
+      vertexFloats = indexCount = 0;
     }
+    const empty = min[0] > max[0];
     return {
       revision: this.revision,
-      vertices: new Float32Array(vertices),
-      indices: new Uint32Array(indices),
+      vertices: vertices.slice(0, vertexFloats),
+      indices: indices.slice(0, indexCount),
       unsupported: warnings.length > 0,
       bounds: {
-        min: (bounds.isEmpty() ? [0, 0, 0] : bounds.min.toArray()) as Vec3,
-        max: (bounds.isEmpty() ? [0, 0, 0] : bounds.max.toArray()) as Vec3,
+        min: (empty ? [0, 0, 0] : min) as Vec3,
+        max: (empty ? [0, 0, 0] : max) as Vec3,
       },
       warnings,
     };
@@ -1048,7 +1094,7 @@ export class SceneAdapter {
           group.updateMatrixWorld(true);
         }
       }
-      this.batches.rebuild(this.handles);
+      if (!this.batches.setDynamic([])) this.batches.rebuild(this.handles);
       this.invalidate();
     };
   }
@@ -1058,13 +1104,19 @@ export class SceneAdapter {
       "INVALID_INPUT",
       "Wait for capture before changing the mechanism pose",
     );
+    const ids = Object.keys(transforms);
+    ensure(
+      ids.every((id) => this.handles.has(id)),
+      "INVALID_INPUT",
+      "Mechanism references an unknown occurrence",
+    );
+    // Moving occurrences draw live from their handles, so later poses only update
+    // matrices instead of re-merging every static batch each frame.
+    const dynamic = this.batches.dynamicIds;
+    if (ids.some((id) => !dynamic.has(id)))
+      this.batches.setDynamic([...dynamic, ...ids]);
     for (const [id, transform] of Object.entries(transforms)) {
-      const group = this.handles.get(id);
-      ensure(
-        group,
-        "INVALID_INPUT",
-        "Mechanism references an unknown occurrence",
-      );
+      const group = this.handles.get(id)!;
       const b = transform.basis,
         p = transform.position;
       group.matrix.set(
@@ -1087,7 +1139,6 @@ export class SceneAdapter {
       );
       group.updateMatrixWorld(true);
     }
-    this.batches.rebuild(this.handles);
     this.invalidate();
   }
   beginPlayView(includedOccurrenceIds?: string[]) {
@@ -1099,9 +1150,14 @@ export class SceneAdapter {
     );
     this.playIncludedIds = included;
     this.playViewActive = true;
+    this.applyPixelRatio();
+    // Batches key on materials, so only a material restore needs a re-merge; the
+    // visibility changes below are detected by the batches themselves.
+    const materialsChanged =
+      this.instructionDimming.active || this.layerGhost.active;
     this.instructionDimming.restore();
     this.layerGhost.restore();
-    this.batches.rebuild(this.handles);
+    if (materialsChanged) this.batches.rebuild(this.handles);
     const camera = this.currentCamera();
     const visible = new Map(
       [...this.handles].map(([id, g]) => [id, g.visible]),
@@ -1126,8 +1182,10 @@ export class SceneAdapter {
         this.transformHandles.helper.visible = transformVisible;
       this.playViewActive = false;
       this.playIncludedIds = undefined;
+      this.applyPixelRatio();
       this.applyLayerGhost();
-      this.batches.rebuild(this.handles);
+      if (this.layerGhost.active || this.instructionDimming.active)
+        this.batches.rebuild(this.handles);
       this.controls.enabled = true;
       this.setCamera(camera);
     };
