@@ -40,6 +40,7 @@ import { CameraCollections } from "./CameraCollections";
 import { Icon, type IconName } from "./icons";
 import { inspectSelection, sourceLabels } from "../edit/inspect";
 import { measure } from "../edit/measure";
+import { occurrenceBox, stackingTarget } from "../edit/stacking";
 import {
   catalogCategories,
   relatedParts,
@@ -312,6 +313,7 @@ function Workspace() {
     [modesOpen, setModesOpen] = useState(false),
     [section, setSection] = useState<SectionSpec | null>(null),
     [measurePoints, setMeasurePoints] = useState<Vec3[]>([]),
+    [explodeBricks, setExplodeBricks] = useState(0),
     [sectionRange, setSectionRange] = useState<{
       min: number;
       max: number;
@@ -898,6 +900,42 @@ function Workspace() {
       }
       const p = editor.project;
       if (s.tool === "Place") {
+        // Tapping an existing part stacks on its top or sits beside it; otherwise the
+        // tap lands on the workplane.
+        const surface = r.pickSurface(e.clientX, e.clientY);
+        const target =
+          surface &&
+          (() => {
+            const project = editor.project;
+            const hit = occurrences(project).find(
+              (o) => o.id === surface.occurrenceId,
+            );
+            if (!hit) return null;
+            const spec = catalog[s.part];
+            return stackingTarget(
+              s.workplane,
+              surface,
+              occurrenceBox(project, hit),
+              hit.namespace === "official" && !!catalog[hit.node.ref],
+              { width: spec.width, depth: spec.depth, angle: s.angle },
+            );
+          })();
+        if (target) {
+          setPosition(
+            placementOnPlane(
+              target.point,
+              target.plane,
+              catalog[s.part].height,
+              s.angle,
+            ).position,
+          );
+          setStatus(
+            surface!.normal[1] < -0.7
+              ? "Preview stacked on top. Choose Place part to commit."
+              : "Preview placed beside the part. Choose Place part to commit.",
+          );
+          return;
+        }
         const v = r.planeIntersection(e.clientX, e.clientY, s.workplane);
         if (v) {
           setPosition(
@@ -1333,6 +1371,18 @@ function Workspace() {
         : "Vertical section on: one side of the model is hidden.",
     );
   };
+  // Exploded floors are a viewing aid; Play shares the renderer, so it is suspended there.
+  useEffect(() => {
+    const groups =
+      renderer.current?.setExplode(mode === "Play" ? 0 : explodeBricks * 24) ??
+      0;
+    if (explodeBricks && mode !== "Play" && groups < 2) {
+      setExplodeBricks(0);
+      setStatus(
+        "Nothing to explode: the model needs two or more submodels or layers.",
+      );
+    }
+  }, [explodeBricks, mode]);
   // Measurements exist only while the Measure tool is in hand.
   useEffect(() => {
     if (tool !== "Measure" && measurePoints.length) setMeasurePoints([]);
@@ -1381,6 +1431,8 @@ function Workspace() {
         {["Select", "Place", "Paint", "Navigate", "Measure"].map((t, i) => (
           <button
             key={t}
+            // Exploded positions are visual only: editing and measuring wait until assembled.
+            disabled={explodeBricks > 0 && t !== "Navigate"}
             className={tool === t ? "active" : ""}
             onClick={() => {
               setTool(t);
@@ -2341,6 +2393,41 @@ function Workspace() {
                 {v}
               </button>
             ))}
+            <div className="section-control explode-control">
+              <button
+                aria-pressed={explodeBricks > 0}
+                onClick={() => {
+                  if (explodeBricks) {
+                    setExplodeBricks(0);
+                    setStatus("Floors assembled. Editing tools are back.");
+                    return;
+                  }
+                  setTool("Navigate");
+                  setExplodeBricks(4);
+                  setStatus(
+                    "Exploded view: floors are lifted apart for viewing; editing is paused until you assemble.",
+                  );
+                }}
+              >
+                {explodeBricks ? "Assemble floors" : "Explode floors"}
+              </button>
+              {explodeBricks > 0 && (
+                <label>
+                  <span className="section-label">
+                    {explodeBricks} brick{explodeBricks === 1 ? "" : "s"} apart
+                  </span>
+                  <input
+                    type="range"
+                    aria-label="Explode spread"
+                    min={1}
+                    max={20}
+                    step={1}
+                    value={explodeBricks}
+                    onChange={(e) => setExplodeBricks(Number(e.target.value))}
+                  />
+                </label>
+              )}
+            </div>
             <div className="section-control">
               <button
                 aria-pressed={section !== null}
@@ -2470,7 +2557,7 @@ function Workspace() {
                   {colors.find((c) => c.code === color)?.name}
                 </strong>
                 <span>
-                  Tap the workplane to preview ·{" "}
+                  Tap the ground, or a part to stack on or beside ·{" "}
                   {workplane.free
                     ? "free placement"
                     : `${workplane.grid} LDU grid`}

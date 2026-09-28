@@ -17,6 +17,8 @@ import {
   type TransformHandleOptions,
 } from "../edit/transform-handles";
 import { LayerGhost } from "./layerGhost";
+import installedBounds from "../catalog/bounds.json";
+import { projectBounds, transformBounds, type Bounds } from "../core/spatial";
 import { occurrenceRenderContext, occurrenceRawRecord } from "./source-context";
 import { RawPrimitiveCompiler, repairFaceNormals } from "./raw-primitives";
 import { dependencySource } from "./dependency-source";
@@ -73,6 +75,77 @@ export type RenderRequest = {
   instructionNewIds?: string[];
   strict?: boolean;
 };
+/** Group occurrences into floors for an exploded view. Candidate groups are the root's
+ * top-level submodels (else layers). Floor levels come from the bottoms of significant
+ * groups (≥ 2% of parts), merged within a brick; every group is lifted by the index of the
+ * highest level it rests on × gap, so walls, windows and furniture travel with their floor.
+ * LDraw −Y is up, so a larger y is lower. */
+export function explodeLifts(project: Project, gap: number) {
+  const all = occurrences(project);
+  const byNode = new Map<string, typeof all>();
+  for (const o of all) {
+    if (o.path.length < 2) continue;
+    const key = o.path[0];
+    byNode.set(key, [...(byNode.get(key) ?? []), o]);
+  }
+  let groups = [...byNode.values()];
+  if (groups.length < 2) {
+    const byLayer = new Map<string, typeof all>();
+    for (const o of all)
+      byLayer.set(o.layerId, [...(byLayer.get(o.layerId) ?? []), o]);
+    groups = [...byLayer.values()];
+  }
+  const lifts = new Map<string, number>();
+  if (groups.length < 2) return { lifts, groups: 0 };
+  // Lowest point of each group from conservative source bounds (raw faces carry their
+  // geometry in vertices, so placement positions alone say nothing about height).
+  const sources = projectBounds(
+    project,
+    installedBounds.bounds as unknown as Record<string, Bounds | null>,
+    installedBounds.dependencies.transitive,
+  );
+  const records = new Map<string, Map<string, string>>();
+  const lowest = (o: (typeof all)[number]) => {
+    let local: Bounds | null = null;
+    try {
+      if (o.node.kind === "geometry") {
+        let map = records.get(o.modelId);
+        if (!map) {
+          map = new Map(
+            project.models[o.modelId]?.records.map((r) => [r.id, r.raw]) ?? [],
+          );
+          records.set(o.modelId, map);
+        }
+        local = sources.primitive(map.get(o.node.sourceRecordId ?? "") ?? "");
+      } else local = sources.model(o.node.ref);
+    } catch {
+      local = null;
+    }
+    return local
+      ? transformBounds(local, o.transform).max[1]
+      : o.transform.position[1];
+  };
+  const bottoms = new Map(groups.map((g) => [g, Math.max(...g.map(lowest))]));
+  const bottom = (g: typeof all) => bottoms.get(g)!;
+  const significant = Math.max(1, Math.ceil(all.length * 0.02));
+  const TOL = 24;
+  const levels: number[] = [];
+  for (const y of groups
+    .filter((g) => g.length >= significant)
+    .map(bottom)
+    .sort((x, y) => y - x))
+    if (!levels.length || levels.at(-1)! - y > TOL) levels.push(y);
+  if (levels.length < 2) return { lifts, groups: 0 };
+  for (const g of groups) {
+    const b = bottom(g);
+    let floor = 0;
+    levels.forEach((level, i) => {
+      if (b <= level + TOL) floor = i;
+    });
+    if (floor) for (const o of g) lifts.set(o.id, floor * gap);
+  }
+  return { lifts, groups: levels.length };
+}
 export type SectionSpec = { axis: "x" | "y" | "z"; at: number; flip?: boolean };
 /** Renderer-world clipping plane for an LDraw-space section (world = (x, −y, −z)). */
 function sectionPlane(spec: SectionSpec) {
@@ -586,6 +659,9 @@ export class SceneAdapter {
             this.root.remove(g);
             this.handles.delete(id);
           }
+        this.explodeLift = this.explodeGap
+          ? explodeLifts(snapshot, this.explodeGap).lifts
+          : new Map();
         for (const { o, prototype } of loaded) {
           let group = this.handles.get(o.id);
           if (!group || group.userData.prototype !== prototype) {
@@ -616,6 +692,8 @@ export class SceneAdapter {
             0,
             1,
           );
+          const lift = this.explodeLift.get(o.id);
+          if (lift) group.matrix.elements[13] -= lift;
           group.visible = this.instructionVisibility
             ? this.instructionVisibility.has(o.id)
             : o.visible;
@@ -1283,6 +1361,36 @@ export class SceneAdapter {
     );
     return ray;
   }
+  private explodeGap = 0;
+  private explodeLift = new Map<string, number>();
+  /** Exploded view (spec §20.2): lift the model's floors apart by `gap` LDU each.
+   * Render-only; the document and exports are unchanged. Returns the group count. */
+  setExplode(gap: number) {
+    ensure(
+      Number.isFinite(gap) && gap >= 0 && gap <= 4000,
+      "INVALID_INPUT",
+      "Explode gap must be 0–4000 LDU.",
+    );
+    this.explodeGap = gap;
+    const next =
+      gap && this.project
+        ? explodeLifts(this.project, gap)
+        : { lifts: new Map<string, number>(), groups: 0 };
+    for (const [id, group] of this.handles) {
+      const before = this.explodeLift.get(id) ?? 0,
+        after = next.lifts.get(id) ?? 0;
+      if (before === after) continue;
+      group.matrix.elements[13] += before - after;
+      group.updateMatrixWorld(true);
+    }
+    this.explodeLift = next.lifts;
+    this.batches.rebuild(this.handles);
+    this.invalidate();
+    return next.groups;
+  }
+  get exploded() {
+    return this.explodeGap;
+  }
   private sectionSpec: SectionSpec | null = null;
   /** Section cut (spec §20.2) along one LDraw axis. The kept side is below a height
    * (y, LDraw −Y is up), or behind/left of a vertical cut (x, z); `flip` keeps the other
@@ -1344,6 +1452,34 @@ export class SceneAdapter {
     )) {
       if (this.aboveSection(hit.point)) continue;
       return conversion(hit.point.toArray() as Vec3);
+    }
+    return null;
+  }
+  /** First visible surface under a screen point: its occurrence, point and outward face
+   * normal, all in LDraw coordinates (−Y is up). */
+  pickSurface(
+    x: number,
+    y: number,
+  ): { occurrenceId: string; point: Vec3; normal: Vec3 } | null {
+    this.scene.updateMatrixWorld(true);
+    for (const hit of this.ray(x, y).intersectObjects(
+      [...this.handles.values()].filter((g) => g.visible),
+      true,
+    )) {
+      if (this.aboveSection(hit.point) || !hit.face) continue;
+      let object: THREE.Object3D | null = hit.object;
+      while (object && !object.userData.occurrenceId) object = object.parent;
+      if (!object) continue;
+      const normal = hit.face.normal
+        .clone()
+        .transformDirection(hit.object.matrixWorld);
+      // Face toward the viewer (double-sided or reversed winding reports either side).
+      if (normal.dot(this.ray(x, y).ray.direction) > 0) normal.negate();
+      return {
+        occurrenceId: object.userData.occurrenceId as string,
+        point: conversion(hit.point.toArray() as Vec3),
+        normal: conversion(normal.toArray() as Vec3),
+      };
     }
     return null;
   }

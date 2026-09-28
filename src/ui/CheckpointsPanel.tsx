@@ -53,11 +53,13 @@ export function CheckpointsPanel({
       })
       .catch((e: Error) => setError(e.message));
   };
+  // Re-list on project or revision changes: startup recovery can settle after mount, and a
+  // comparison is stale once the build changes.
   useEffect(() => {
     void refresh();
     setCompared(undefined);
     setConfirming(undefined);
-  }, [projectId]);
+  }, [projectId, revision]);
   const attempt = async (work: () => Promise<unknown>) => {
     setBusy(true);
     setError("");

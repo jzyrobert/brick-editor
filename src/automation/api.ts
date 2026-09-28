@@ -533,6 +533,14 @@ export function createAPI(
         ) => renderer().setQuality(name, controls),
       },
       image: captureImage,
+      /** Exploded view: lift floors (top-level submodels, else layers) apart. Render-only. */
+      explode: {
+        set: async (input: { gap: number }) => ({
+          groups: renderer().setExplode(input.gap),
+          gap: renderer().exploded,
+        }),
+        get: async () => ({ gap: renderer().exploded }),
+      },
       /** Section cut: hide everything above an LDraw height (authoring aid). */
       section: {
         /** `{ height }` cuts horizontally; `{ axis, at, flip }` cuts along x, y or z. */

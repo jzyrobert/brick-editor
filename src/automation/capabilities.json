@@ -220,6 +220,11 @@
       "connectorCoverage": "unverified"
     }
   },
+  "explodedView": {
+    "api": "render.explode.set({ gap }), render.explode.get()",
+    "grouping": "floor levels from top-level submodels (else layers) by geometry bounds",
+    "renderOnly": true
+  },
   "sectionCut": {
     "api": "render.section.set({ height } | { axis: x|y|z, at, flip? } | null), render.section.get()",
     "axis": "horizontal (y) or vertical (x, z), either side",
