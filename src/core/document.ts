@@ -11,7 +11,11 @@ import { identity, compose } from "./math";
 import { estimateExpansion } from "./expansion";
 import { isOccurrenceId } from "./occurrence-id";
 import { canonical } from "../ldraw/path";
-import { installedSource, libraryLock, mappingLock } from "../catalog/catalog";
+import {
+  installedSource,
+  mappingLock,
+  projectLibraryLock,
+} from "../catalog/catalog";
 import {
   expansionLimits,
   preflightExpansion,
@@ -27,7 +31,7 @@ export function createProject(title = "Untitled build"): Project {
     title,
     units: "LDU",
     rootModelId: "root",
-    library: structuredClone(libraryLock),
+    library: structuredClone(projectLibraryLock),
     marketplace: { ...mappingLock, overrides: {} },
     models: {
       root: {

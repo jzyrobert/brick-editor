@@ -44,7 +44,15 @@ import { Icon, type IconName } from "./icons";
 import { inspectSelection, sourceLabels } from "../edit/inspect";
 import { measure } from "../edit/measure";
 import { occurrenceBox, stackingTarget } from "../edit/stacking";
-import { sceneConnectors, snapPlacement, studWorkplane } from "../edit/snap";
+import {
+  chooseFit,
+  hingeCandidates,
+  orientedCandidates,
+  sceneConnectors,
+  snapCandidates,
+  studWorkplane,
+  type SnapCandidate,
+} from "../edit/snap";
 import { connectedAssembly } from "../core/connectivity";
 import {
   catalogCategories,
@@ -79,6 +87,7 @@ import { Editor } from "../core/commands";
 import { occurrences } from "../core/document";
 import {
   type Vec3,
+  type Basis,
   type Scope,
   type CameraSpec,
   uid,
@@ -92,6 +101,7 @@ import {
   type CatalogPart,
 } from "../catalog/catalog";
 import { template } from "../catalog/templates";
+import { connectorCoverage } from "../catalog/connectors";
 import { SceneAdapter, type SectionSpec } from "../render/adapter";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
 import { BrowserProjects } from "../persistence/browser-projects";
@@ -127,6 +137,32 @@ const knownSaveRevisions = new Map<string, number>();
 let sourceSaveTail: Promise<unknown> = Promise.resolve();
 /** Sections of the camera-views popover, one at a time. */
 type ViewTab = "Angle" | "Cut" | "Floors" | "Look";
+/** Connector fits for the placement preview: stud fits keep the workplane
+ * turn; side-stud and hinge fits carry their own orientation. */
+type PlaceFits = {
+  list: SnapCandidate[];
+  index: number;
+  mode: "stud" | "side" | "hinge";
+  /** The tapped surface, for re-fitting after a turn. */
+  tap?: { point: Vec3; normal: Vec3 };
+};
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+/** Status line for the fit on show. */
+function fitStatus(
+  mode: PlaceFits["mode"],
+  list: SnapCandidate[],
+  index: number,
+) {
+  const fit = list[index];
+  const of = list.length > 1 ? ` Fit ${index + 1} of ${list.length}.` : "";
+  const lead =
+    mode === "hinge"
+      ? `Seated in the frame: ${plural(fit.contacts, "hinge pin")}.`
+      : mode === "side"
+        ? `Turned onto the side studs: ${plural(fit.contacts, "stud connection")}.`
+        : `Snapped to ${plural(fit.contacts, "stud connection")}.`;
+  return lead + of + " Choose Place part to commit.";
+}
 
 function enqueueSourceSave<T>(action: () => Promise<T>): Promise<T> {
   const result = sourceSaveTail.then(action, action);
@@ -374,6 +410,10 @@ function Workspace() {
     [position, setPosition] = useState<Vec3>([0, -24, 0]),
     [angle, setAngle] = useState(0),
     [workplane, setWorkplane] = useState(defaultWorkplane),
+    /** Connector fits offered for the placement preview (cycled with Next fit). */
+    [placeFits, setPlaceFits] = useState<PlaceFits | null>(null),
+    /** Orientation from a side-stud or hinge fit; null keeps the workplane turn. */
+    [placeOrientation, setPlaceOrientation] = useState<Basis | null>(null),
     [pickingFace, setPickingFace] = useState<false | "face" | "stud">(false),
     [status, setStatus] = useState("Ready to build"),
     [statusFresh, setStatusFresh] = useState(false),
@@ -458,6 +498,9 @@ function Workspace() {
       pickingFace,
       angle,
       labelDraft,
+      position,
+      placeFits,
+      placeOrientation,
     });
   const ownsTransientView = () => {
     const playing = play.current?.getState(),
@@ -495,6 +538,24 @@ function Workspace() {
     pickingFace,
     angle,
     labelDraft,
+    position,
+    placeFits,
+    placeOrientation,
+  };
+  /** Shows one connector fit in the preview. */
+  const applyFit = (fits: PlaceFits) => {
+    const fit = fits.list[fits.index];
+    setPlaceFits(fits);
+    setPosition(fit.position);
+    setPlaceOrientation(fits.mode === "stud" ? null : fit.basis);
+  };
+  /** Next connector fit (the placement card's Next fit, keys N and Tab). */
+  const nextFit = () => {
+    const fits = interact.current.placeFits;
+    if (!fits || fits.list.length < 2) return;
+    const index = (fits.index + 1) % fits.list.length;
+    applyFit({ ...fits, index });
+    setStatus(fitStatus(fits.mode, fits.list, index));
   };
   const run = async (fn: () => unknown | Promise<unknown>) => {
     try {
@@ -882,10 +943,30 @@ function Workspace() {
   useEffect(() => {
     if (tool === "Place" && mode === "Build")
       void renderer.current
-        ?.previewPart(part, color, position, placeBasis(workplane, angle))
+        ?.previewPart(
+          part,
+          color,
+          position,
+          placeOrientation ?? placeBasis(workplane, angle),
+        )
         .catch((e) => setStatus(e.message));
     else renderer.current?.clearGhost();
-  }, [tool, part, color, position, angle, mode, project.revision, workplane]);
+  }, [
+    tool,
+    part,
+    color,
+    position,
+    angle,
+    mode,
+    project.revision,
+    workplane,
+    placeOrientation,
+  ]);
+  // Fits belong to one part, tool and workplane.
+  useEffect(() => {
+    setPlaceFits(null);
+    setPlaceOrientation(null);
+  }, [part, tool, workplane]);
   useEffect(() => {
     if (!inventoryOpen && !fillOpen) return;
     const previous = document.activeElement as HTMLElement;
@@ -1069,18 +1150,41 @@ function Workspace() {
               },
             );
           })();
+        const project = editor.project;
+        const scene = sceneConnectors(
+          project,
+          occurrences(project),
+          (o) => o.visible,
+        );
+        // A hinged leaf tapped onto a frame seats in its hinge sockets; a part
+        // tapped onto a face with sideways studs turns to them. The previous
+        // fit is kept (hysteresis) while it is still nearly the nearest.
+        if (surface) {
+          const hinge = hingeCandidates(s.part, surface, scene);
+          const list = hinge.length
+            ? hinge
+            : orientedCandidates(
+                s.part,
+                s.angle,
+                surface,
+                scene,
+                s.workplane.normal,
+              );
+          if (list.length) {
+            const mode = hinge.length ? "hinge" : "side";
+            const index = chooseFit(
+              list,
+              s.placeOrientation
+                ? { position: s.position, basis: s.placeOrientation }
+                : null,
+            );
+            applyFit({ list, index, mode, tap: surface });
+            setStatus(fitStatus(mode, list, index));
+            return;
+          }
+        }
         // Verified stud connectors refine the proposal so anti-studs sit on
         // studs (or studs in anti-studs); otherwise the proposal stands.
-        const snap = (proposal: Vec3) => {
-          const project = editor.project;
-          return snapPlacement(
-            s.part,
-            placeBasis(s.workplane, s.angle),
-            proposal,
-            sceneConnectors(project, occurrences(project), (o) => o.visible),
-            s.workplane.normal,
-          );
-        };
         const proposal = target
           ? placementOnPlane(
               target.point,
@@ -1103,8 +1207,24 @@ function Workspace() {
               );
             })();
         if (!proposal) return;
-        const snapped = snap(proposal);
-        setPosition(snapped?.position ?? proposal);
+        const basis = placeBasis(s.workplane, s.angle);
+        const list = snapCandidates(
+          s.part,
+          basis,
+          proposal,
+          scene,
+          s.workplane.normal,
+        );
+        const index = chooseFit(
+          list,
+          s.placeOrientation ? null : { position: s.position, basis },
+        );
+        if (index >= 0) applyFit({ list, index, mode: "stud" });
+        else {
+          setPlaceFits(null);
+          setPlaceOrientation(null);
+          setPosition(proposal);
+        }
         const where = !target
           ? "Placement preview ready."
           : surface!.normal[1] < -0.7
@@ -1114,10 +1234,8 @@ function Workspace() {
               : "Preview placed beside the part.";
         setStatus(
           where +
-            (snapped
-              ? ` Snapped to ${snapped.contacts} stud connection${snapped.contacts === 1 ? "" : "s"}.`
-              : "") +
-            " Choose Place part to commit.",
+            (index >= 0 ? " " + fitStatus("stud", list, index) : "") +
+            (index >= 0 ? "" : " Choose Place part to commit."),
         );
         return;
       }
@@ -1178,6 +1296,29 @@ function Workspace() {
         e.isComposing
       )
         return;
+      // Next connector fit: N (unless remapped to an action), or Tab while
+      // focus is on the page or canvas rather than a control.
+      const fits = interact.current.placeFits;
+      if (
+        interact.current.tool === "Place" &&
+        fits &&
+        fits.list.length > 1 &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        ((e.key.toLowerCase() === "n" &&
+          !e.shiftKey &&
+          !shortcutAction(e, shortcuts)) ||
+          (e.key === "Tab" &&
+            !e.shiftKey &&
+            (e.target === document.body ||
+              (e.target instanceof Node &&
+                !!viewport.current?.contains(e.target)))))
+      ) {
+        e.preventDefault();
+        nextFit();
+        return;
+      }
       const action = shortcutAction(e, shortcuts);
       if (!action) return;
       e.preventDefault();
@@ -2043,9 +2184,9 @@ function Workspace() {
         <div>
           <strong>Real LDraw geometry</strong>
           <p>
-            {catalogParts.length} official parts · Grid placement
+            {catalogParts.length} official parts · Grid and connector placement
             <br />
-            Connector snapping is unverified.
+            {connectorCoverage.verified} with verified connectors.
           </p>
         </div>
       </div>
@@ -3097,58 +3238,105 @@ function Workspace() {
                     label={"Place " + axis}
                     value={position[i]}
                     step={i === 1 ? 8 : 20}
-                    onChange={(n) =>
+                    onChange={(n) => {
+                      // Typed coordinates leave the offered fits behind.
+                      setPlaceFits(null);
                       setPosition(
                         (v) => v.map((x, j) => (j === i ? n : x)) as Vec3,
-                      )
-                    }
+                      );
+                    }}
                   />
                 ))}
               </div>
               <button
                 aria-label="Rotate placement"
                 onClick={() => {
+                  // A door in its frame turns by swapping the hinge side.
+                  if (placeFits?.mode === "hinge") {
+                    nextFit();
+                    return;
+                  }
                   const next = (angle + workplane.rotationIncrement) % 360;
                   setAngle(next);
+                  const p = editor.project;
+                  const scene = sceneConnectors(
+                    p,
+                    occurrences(p),
+                    (o) => o.visible,
+                  );
+                  // On side studs the part spins about the stud axis.
+                  if (placeFits?.mode === "side" && placeFits.tap) {
+                    const list = orientedCandidates(
+                      currentPart.id,
+                      next,
+                      placeFits.tap,
+                      scene,
+                      workplane.normal,
+                    );
+                    if (list.length) {
+                      const index = chooseFit(list, { position });
+                      applyFit({
+                        list,
+                        index,
+                        mode: "side",
+                        tap: placeFits.tap,
+                      });
+                      setStatus(fitStatus("side", list, index));
+                      return;
+                    }
+                  }
                   // A turn swaps which axis carries an odd stud count. The
                   // preview keeps its level (a stacked part stays stacked) and
                   // re-snaps to verified connectors where it can.
-                  setPosition((v) => {
-                    const n = workplane.normal,
-                      base = planeOrigin(workplane);
-                    const k =
-                      (v[0] - base[0]) * n[0] +
-                      (v[1] - base[1]) * n[1] +
-                      (v[2] - base[2]) * n[2] -
-                      currentPart.height;
-                    const level = {
-                      ...workplane,
-                      origin: workplane.origin.map(
-                        (o, i) => o + n[i] * k,
-                      ) as Vec3,
-                    };
-                    const turned = placementOnPlane(
-                      v,
-                      level,
-                      currentPart.height,
-                      next,
-                      currentPart.align,
-                    ).position;
-                    const p = editor.project;
-                    return (
-                      snapPlacement(
-                        currentPart.id,
-                        placeBasis(workplane, next),
-                        turned,
-                        sceneConnectors(p, occurrences(p), (o) => o.visible),
-                        workplane.normal,
-                      )?.position ?? turned
-                    );
-                  });
+                  const n = workplane.normal,
+                    base = planeOrigin(workplane);
+                  const k =
+                    (position[0] - base[0]) * n[0] +
+                    (position[1] - base[1]) * n[1] +
+                    (position[2] - base[2]) * n[2] -
+                    currentPart.height;
+                  const level = {
+                    ...workplane,
+                    origin: workplane.origin.map(
+                      (o, i) => o + n[i] * k,
+                    ) as Vec3,
+                  };
+                  const turned = placementOnPlane(
+                    position,
+                    level,
+                    currentPart.height,
+                    next,
+                    currentPart.align,
+                  ).position;
+                  const list = snapCandidates(
+                    currentPart.id,
+                    placeBasis(workplane, next),
+                    turned,
+                    scene,
+                    workplane.normal,
+                  );
+                  const index = chooseFit(list);
+                  if (index >= 0) applyFit({ list, index, mode: "stud" });
+                  else {
+                    setPlaceFits(null);
+                    setPlaceOrientation(null);
+                    setPosition(turned);
+                  }
                 }}
               >
                 <Icon name="rotate" size={16} /> {angle}°
               </button>
+              {placeFits && placeFits.list.length > 1 && (
+                <button
+                  className="placement-fit"
+                  aria-label="Next fit"
+                  title="Next fit (N or Tab)"
+                  onClick={nextFit}
+                >
+                  <Icon name="arrowRight" size={16} /> {placeFits.index + 1}/
+                  {placeFits.list.length}
+                </button>
+              )}
               <button
                 className="primary"
                 onClick={() =>
@@ -3161,11 +3349,14 @@ function Workspace() {
                           colorCode: color,
                           transform: {
                             position,
-                            basis: placeBasis(workplane, angle),
+                            basis:
+                              placeOrientation ?? placeBasis(workplane, angle),
                           },
                         },
                       ],
                     });
+                    // The part now fills that fit; the next tap finds new ones.
+                    setPlaceFits(null);
                     setStatus("Placed " + currentPart.name);
                     // Recently used means placed, not merely browsed.
                     setRecentParts((recent) => pushRecent(recent, part));

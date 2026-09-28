@@ -259,7 +259,7 @@ writeFileSync(
 // 5. Notices: every distributed file with its authors and licence.
 writeFileSync(
   "public/notices/LDRAW.txt",
-  `LDraw official library subset (${release}); originals retain author and licence headers.\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\nLDraw.org Parts Library agreement: see LDRAW-CAreadme.txt\nSource: https://library.ldraw.org/\nNo geometry modifications. See library manifest for individual authors and hashes.\nCatalogue thumbnails are renderings of these unmodified files.\nStud/anti-stud connector positions (connector pack ldraw-derived-studs-1, src/catalog/connectors.json) are derived from these files by scripts/build-connectors.ts and carry this attribution.\n` +
+  `LDraw official library subset (${release}); originals retain author and licence headers.\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\nLDraw.org Parts Library agreement: see LDRAW-CAreadme.txt\nSource: https://library.ldraw.org/\nNo geometry modifications. See library manifest for individual authors and hashes.\nCatalogue thumbnails are renderings of these unmodified files.\nConnectors (studs, side studs, jumper studs, anti-studs, hinge pins and sockets) and body occupancy boxes in connector pack ldraw-derived-connectors-2 (src/catalog/connectors.json) are derived from these files by scripts/build-connectors.ts and carry this attribution.\n` +
     manifest.files
       .map(
         (f: { path: string; authors: string[]; license: string[] }) =>

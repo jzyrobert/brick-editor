@@ -45,6 +45,16 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 1024
+        },
+        "connectorPackId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "connectorPackSha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
         }
       },
       "required": [

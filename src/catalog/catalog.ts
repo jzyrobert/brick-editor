@@ -3,6 +3,13 @@ import data from "./data.json";
 import type { Project } from "../core/types";
 export const libraryLock = data.libraryLock;
 export const mappingLock = data.mappingLock;
+/** Derived connector pack bound to the current library (see docs/CONNECTORS.md). */
+export const connectorLock = data.connectorLock;
+/** What a project records as its library lock: geometry plus connector pack. */
+export const projectLibraryLock: Project["library"] = {
+  ...libraryLock,
+  ...connectorLock,
+};
 /** Locks of superseded library releases whose every file is byte-identical in
  * the current pack (checked by `npm run library:validate`). */
 export const retiredLibraryLocks: (typeof libraryLock)[] =
@@ -71,6 +78,12 @@ export function installedSource(ref: string) {
  * byte-identical in the current pack, so no definition the project could resolve
  * changes. The previous locks are kept in `metadata.previousLocks` so the change
  * is visible and reversible. Returns true when the project was changed.
+ *
+ * A project on the current library also records the current connector pack
+ * (spec §5 `connectorPackSha256`). Projects saved before connector packs were
+ * recorded, or with an earlier pack, are re-pinned; the pack is derived data
+ * that never changes geometry, only snapping and connectivity reports, and the
+ * previous value (null when none was recorded) goes to `previousLocks`.
  */
 export function adoptCurrentLocks(p: Project): boolean {
   const previous: Record<string, unknown> = {};
@@ -85,7 +98,19 @@ export function adoptCurrentLocks(p: Project): boolean {
     )
   ) {
     previous.library = { ...lib };
-    p.library = { ...libraryLock };
+    p.library = { ...projectLibraryLock };
+  }
+  if (
+    p.library.manifestSha256 === libraryLock.manifestSha256 &&
+    p.library.connectorPackSha256 !== connectorLock.connectorPackSha256
+  ) {
+    previous.connector = p.library.connectorPackSha256
+      ? {
+          connectorPackId: p.library.connectorPackId,
+          connectorPackSha256: p.library.connectorPackSha256,
+        }
+      : null;
+    p.library = { ...p.library, ...connectorLock };
   }
   const market = p.marketplace;
   if (

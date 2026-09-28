@@ -11,6 +11,12 @@ import {
 } from "./types";
 import { validate } from "./validate";
 import { stable } from "./hash";
+/** The geometry part of a library lock (connector pack fields left out). */
+const geometryLock = (l: Project["library"]) => ({
+  releaseId: l.releaseId,
+  manifestSha256: l.manifestSha256,
+  colorConfigSha256: l.colorConfigSha256,
+});
 export type ClipboardFragment = { schemaVersion: 1; project: Project };
 export type CopyRequest = { occurrenceIds: string[]; includeHidden?: boolean };
 const MAX_BYTES = 16 * 1024 * 1024;
@@ -222,7 +228,10 @@ export function pasteFragment(
   validateDocument(source);
   sourceSafe(source);
   ensure(
-    stable(source.library) === stable(target.library),
+    // Geometry locks must agree; the derived connector pack does not change
+    // any definition, so a fragment from before it was recorded still pastes.
+    stable(geometryLock(source.library)) ===
+      stable(geometryLock(target.library)),
     "INVALID_INPUT",
     "Clipboard library snapshot differs; import its native project instead.",
   );

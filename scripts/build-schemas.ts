@@ -98,7 +98,16 @@ const project = obj({
   title: str,
   units: { const: "LDU" },
   rootModelId: id,
-  library: obj({ releaseId: id, manifestSha256: id, colorConfigSha256: id }),
+  library: obj(
+    {
+      releaseId: id,
+      manifestSha256: id,
+      colorConfigSha256: id,
+      connectorPackId: id,
+      connectorPackSha256: id,
+    },
+    ["releaseId", "manifestSha256", "colorConfigSha256"],
+  ),
   marketplace: obj({
     mappingPackId: id,
     mappingPackSha256: id,

@@ -124,12 +124,13 @@ export function modelHealth(project: Project): HealthReport {
     count: unsupported.length,
   });
 
-  // Connections from verified stud/anti-stud data (docs/CONNECTORS.md).
+  // Connections from verified stud and hinge data (docs/CONNECTORS.md).
   const graph = connectionGraph(project, all);
   const covered = graph.covered.length,
     uncovered = graph.uncovered.length;
   const connected = connectedGroups(graph);
   const floating = graph.covered.filter((id) => !graph.edges.get(id)!.size);
+  const studs = graph.contacts - graph.hingeContacts;
   const unverifiedNote = uncovered
     ? ` ${uncovered} part${uncovered === 1 ? " has" : "s have"} no verified connector data (custom, tilted or not yet verified); ${uncovered === 1 ? "it" : "they"} may join these groups.`
     : "";
@@ -155,7 +156,7 @@ export function modelHealth(project: Project): HealthReport {
               ? `${covered} part${covered === 1 ? "" : "s"} with verified connectors form ${connected.length} separately connected groups; ${floating.length} part${floating.length === 1 ? " is" : "s are"} not connected to anything.`
               : covered === 1
                 ? "One part with verified connectors."
-                : `All ${covered} parts with verified connectors are connected (${graph.contacts} stud connection${graph.contacts === 1 ? "" : "s"}).`) +
+                : `All ${covered} parts with verified connectors are connected (${studs} stud connection${studs === 1 ? "" : "s"}${graph.hingeContacts ? `, ${graph.hingeContacts} hinge pin${graph.hingeContacts === 1 ? "" : "s"}` : ""}).`) +
             unverifiedNote,
           // Uncovered parts can bridge groups, so only full coverage is exact.
           basis: uncovered ? "approximate" : "exact",

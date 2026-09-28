@@ -73,6 +73,9 @@ export type Project = {
     releaseId: string;
     manifestSha256: string;
     colorConfigSha256: string;
+    /** Connector pack the project's snapping and connectivity were derived with (spec §5). */
+    connectorPackId?: string;
+    connectorPackSha256?: string;
   };
   marketplace: {
     mappingPackId: string;

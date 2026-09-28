@@ -103,6 +103,26 @@ for (const viewport of [
     await check("idle");
     await button("Place").click();
     await check("placing");
+    // A tap on a brick offers several connector fits: the card gains Next fit.
+    await page.evaluate(() =>
+      window.brickEditor!.camera.set({
+        space: "ldraw",
+        projection: "perspective",
+        position: [0, -560, 120],
+        target: [0, -192, 0],
+        up: [0, -1, 0],
+        fovDeg: 40,
+        near: 1,
+        far: 5000,
+      }),
+    );
+    const canvas = (await page.locator(".viewport canvas").boundingBox())!;
+    await page.touchscreen.tap(
+      canvas.x + canvas.width / 2,
+      canvas.y + canvas.height / 2,
+    );
+    await expect(button("Next fit")).toBeVisible();
+    await check("placing with connector fits");
     await button("Place part").click();
     await expect(page.locator(".status-bar.fresh")).toBeVisible();
     await check("placing with a status message");

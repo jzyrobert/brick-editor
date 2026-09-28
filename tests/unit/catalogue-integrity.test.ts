@@ -4,6 +4,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import {
   adoptCurrentLocks,
+  connectorLock,
+  projectLibraryLock,
   catalog,
   catalogCategoryOrder,
   libraryLock,
@@ -145,7 +147,8 @@ describe("placeable catalogue integrity", () => {
     p.library = { ...retiredLibraryLocks[0] };
     p.marketplace = { ...p.marketplace, ...retiredMappingLocks[0] };
     expect(adoptCurrentLocks(p)).toBe(true);
-    expect(p.library).toEqual(libraryLock);
+    expect(p.library).toEqual(projectLibraryLock);
+    expect(p.library).toMatchObject(libraryLock);
     expect(p.marketplace.mappingPackSha256).toBe(mappingLock.mappingPackSha256);
     expect(p.metadata.previousLocks).toEqual([
       {
@@ -159,6 +162,45 @@ describe("placeable catalogue integrity", () => {
     q.library = { ...libraryLock, manifestSha256: "0".repeat(64) };
     expect(adoptCurrentLocks(q)).toBe(false);
     expect(q.library.manifestSha256).toBe("0".repeat(64));
+  });
+  it("records the connector pack in new projects and migrates older ones", () => {
+    const fresh = importLDraw(
+      "0 FILE c.ldr\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat",
+    );
+    expect(fresh.library).toEqual({ ...libraryLock, ...connectorLock });
+    expect(fresh.library.connectorPackSha256).toMatch(/^[0-9a-f]{64}$/);
+    expect(adoptCurrentLocks(fresh)).toBe(false);
+    // Saved before connector packs were recorded: the lock is added and the
+    // missing value is kept in previousLocks.
+    const old = importLDraw(
+      "0 FILE d.ldr\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat",
+    );
+    old.library = { ...libraryLock };
+    expect(adoptCurrentLocks(old)).toBe(true);
+    expect(old.library).toEqual(projectLibraryLock);
+    expect(old.metadata.previousLocks).toEqual([{ connector: null }]);
+    // An earlier pack of the same library is re-pinned and recorded.
+    const earlier = {
+      connectorPackId: "ldraw-derived-studs-1",
+      connectorPackSha256:
+        "985cf6fe062bb1982ff9eae80e5215f48cbd3293398b76e292351dc75982bc11",
+    };
+    old.library = { ...libraryLock, ...earlier };
+    expect(adoptCurrentLocks(old)).toBe(true);
+    expect(old.library.connectorPackSha256).toBe(
+      connectorLock.connectorPackSha256,
+    );
+    expect(old.metadata.previousLocks).toEqual([
+      { connector: null },
+      { connector: earlier },
+    ]);
+    // Another library's project keeps its own lock untouched.
+    const other = importLDraw(
+      "0 FILE e.ldr\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat",
+    );
+    other.library = { ...libraryLock, manifestSha256: "1".repeat(64) };
+    expect(adoptCurrentLocks(other)).toBe(false);
+    expect(other.library.connectorPackSha256).toBeUndefined();
   });
   it("ships the retired starter pack unchanged inside the current pack", () => {
     for (const lock of retiredLibraryLocks) {

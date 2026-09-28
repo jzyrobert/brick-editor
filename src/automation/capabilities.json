@@ -1,7 +1,7 @@
 {
   "apiVersion": "1.0",
   "release": "development",
-  "milestone": "Core editor with selected M2\u2013M5 features; remaining acceptance gates documented",
+  "milestone": "Core editor with selected M2–M5 features; remaining acceptance gates documented",
   "features": {
     "ldraw": {
       "parsed": [
@@ -175,7 +175,7 @@
       },
       "seatedVehicles": {
         "profile": "brick-figure-open-seat-v1",
-        "authoring": "Explicit chassis-local pelvis/access/approach and 1\u20134 ordered standing exits; metadata review and undoable save",
+        "authoring": "Explicit chassis-local pelvis/access/approach and 1–4 ordered standing exits; metadata review and undoable save",
         "body": "Independent compound boxes enclosing original rigid straight-leg seated visual; no mesh-derived physics",
         "entry": "Reach, access ray, supported approach, wheel-envelope clearance and swept raised transfer; refuse before mutation",
         "driving": "Conservative vehicle and rider sweeps; retain accepted poses when blocked",
@@ -251,7 +251,10 @@
     "roomLabels": "screen-facing text anchored at an LDraw point, optionally tied to a floor",
     "persistence": "native projects, autosave and checkpoints; omitted from LDraw/MPD export, share links and clipboard fragments",
     "captures": "honour floor focus and visible overlays; manifest records architecture.floorFocus and overlay counts; camera collections apply each bookmark's saved floor view",
-    "limits": { "floors": 64, "labels": 500 },
+    "limits": {
+      "floors": 64,
+      "labels": 500
+    },
     "play": "suspended"
   },
   "cameraCollections": {
@@ -262,25 +265,32 @@
     "manifest": "one shared manifest per collection; one revision"
   },
   "connectors": {
-    "pack": "ldraw-derived-studs-1 (derived from the pinned LDraw geometry at build time; CC BY 4.0 attribution)",
+    "pack": "ldraw-derived-connectors-2 (derived from the pinned LDraw geometry at build time; CC BY 4.0 attribution; recorded in each project library lock as connectorPackId/connectorPackSha256)",
     "families": {
-      "supported": ["stud", "antistud"],
-      "recordedNotValidated": ["side studs"],
+      "supported": [
+        "stud",
+        "antistud",
+        "side stud (side-stud and headlight bricks)",
+        "jumper stud",
+        "hinge pin and socket (doors, window panes, door frames)",
+        "body occupancy (clash tests)"
+      ],
+      "recordedNotValidated": ["side studs of brackets, doors and clip plates"],
       "unsupported": [
         "clips and bars",
-        "hinges",
+        "brick hinges and hinge plates",
         "Technic pins and axles",
-        "jumper (half-offset) studs",
         "side anti-studs"
       ]
     },
-    "api": "connectors.coverage(), connectors.part({ ref }), connectors.snap({ part, position, angle? | basis?, up? }), connectors.connected({ occurrenceIds }), connectors.groups()",
+    "api": "connectors.coverage(), connectors.part({ ref }) (with hinge/sockets), connectors.snap({ part, position, angle? | basis?, up?, previous? }), connectors.fits({ part, position, angle? | basis?, up? }), connectors.orient({ part, point, normal, angle?, up? }), connectors.connected({ occurrenceIds }), connectors.groups()",
     "cli": "brick-cli connectors --input file [--connected JSON-array-of-occurrence-IDs]",
-    "snapping": "Place previews move to the nearest position within one stud where the new part's anti-studs sit on verified studs (or its studs in anti-studs), keeping the chosen 90-degree turn and refusing positions whose body would pass through another part; otherwise bounds-based stacking",
-    "connectedSelection": "Selection tools > Select connected; follows verified stud connections only",
-    "connectorWorkplane": "Workplane and grid > Pick a stud: plane on the stud base, axes follow the part, grid on its stud lattice",
+    "snapping": "Place previews move to the nearest fit within one stud where the new part makes verified connections (anti-studs on studs, studs in anti-studs), keeping the chosen turn; tapping a face with sideways studs turns the part onto them (spun by Rotate); a door or window pane tapped onto a frame seats closed in its hinge sockets. Fits whose occupancy boxes would pass through another part are refused; otherwise bounds-based stacking",
+    "cycling": "Next fit on the placement card (keys N or Tab) cycles the ranked fits; a new tap keeps the previous fit while no other is nearer by more than 6 LDU (hysteresis)",
+    "connectedSelection": "Selection tools > Select connected; follows verified stud and hinge connections only",
+    "connectorWorkplane": "Workplane and grid > Pick a stud: plane on the stud base, axes follow the part, grid on its stud lattice (side studs included)",
     "tolerance": "0.5 LDU, opposed axes",
-    "verification": "whole-part rules: full-underside, matched-outline, solid-base (docs/CONNECTORS.md)"
+    "verification": "whole-part rules: full-underside, matched-outline, solid-base, jumper, side-studs, partial-underside, hinge-leaf (docs/CONNECTORS.md)"
   },
   "modelHealth": {
     "api": "health.check()",

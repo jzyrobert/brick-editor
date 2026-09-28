@@ -1,9 +1,11 @@
-// Stud connectivity from verified connector data (spec §11.2, §11.3, §20.3).
-// Two parts are connected when a stud of one sits in an anti-stud of the other:
-// positions coincide within TOLERANCE and the axes are opposed. Only official
+// Connectivity from verified connector data (spec §11.2, §11.3, §20.3).
+// Two parts are connected when a stud of one sits in an anti-stud of the other,
+// or a hinge pin in a hinge socket: positions coincide within TOLERANCE and the
+// axes are opposed. Only official
 // catalogue parts with verified connectors and rigid, unmirrored placements take
 // part; every other occurrence is reported as uncovered, never as floating.
 import { verifiedConnectors, type Connector } from "../catalog/connectors";
+import { isMale, mateKind } from "../catalog/connector-pack";
 import { occurrences } from "./document";
 import { add, mv, physical } from "./math";
 import type { Occurrence, Project } from "./types";
@@ -62,16 +64,18 @@ export type ConnectionGraph = {
   uncovered: string[];
   /** Adjacency between covered occurrences. */
   edges: Map<string, Set<string>>;
-  /** Stud-in-anti-stud contacts found. */
+  /** Stud-in-anti-stud and pin-in-socket contacts found. */
   contacts: number;
+  /** Of those, hinge pins in sockets. */
+  hingeContacts: number;
 };
 
 export function connectionGraph(
   project: Project,
   all: Occurrence[] = occurrences(project),
 ): ConnectionGraph {
-  const studs = new ConnectorIndex();
-  const receptors: WorldConnector[] = [];
+  const males = new ConnectorIndex();
+  const females: WorldConnector[] = [];
   const covered: string[] = [],
     uncovered: string[] = [];
   const edges = new Map<string, Set<string>>();
@@ -84,18 +88,20 @@ export function connectionGraph(
     covered.push(o.id);
     edges.set(o.id, new Set());
     for (const c of list)
-      if (c.kind === "stud") studs.add(c);
-      else receptors.push(c);
+      if (isMale(c.kind)) males.add(c);
+      else females.push(c);
   }
-  let contacts = 0;
-  for (const r of receptors)
-    for (const s of studs.mates(r, "stud")) {
+  let contacts = 0,
+    hingeContacts = 0;
+  for (const r of females)
+    for (const s of males.mates(r, mateKind(r.kind))) {
       if (s.occurrenceId === r.occurrenceId) continue;
       contacts++;
+      if (r.kind === "socket") hingeContacts++;
       edges.get(r.occurrenceId)!.add(s.occurrenceId);
       edges.get(s.occurrenceId)!.add(r.occurrenceId);
     }
-  return { covered, uncovered, edges, contacts };
+  return { covered, uncovered, edges, contacts, hingeContacts };
 }
 
 /** Connected groups of covered parts, largest first (ties by first ID). */
