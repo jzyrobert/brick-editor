@@ -246,36 +246,6 @@ summary:focus-visible {
   font-size: 13px;
   padding: 0 12px;
 }
-.views-toggle {
-  display: none !important;
-}
-
-/* Camera views: a slim strip under the actions on desktop, a popover on touch. */
-.view-controls {
-  position: absolute;
-  top: 74px;
-  right: 326px;
-  z-index: 14;
-  display: flex;
-  gap: 2px;
-  padding: 4px;
-  background: var(--hud);
-  border: 2px solid var(--hud-line);
-  border-radius: 12px;
-}
-.view-controls button {
-  min-height: 36px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--chalk);
-  font-size: 12px;
-  font-weight: 600;
-}
-.view-controls button:hover {
-  background: rgba(244, 241, 234, 0.1);
-}
 
 /* Floating chalk sheets: parts inventory left, layers/inspector right. */
 .left-sidebar,
@@ -443,27 +413,45 @@ summary:focus-visible {
   .workspace {
     position: absolute;
   }
+  /* The thumb column hangs under the top row and stops above the hotbar (and the
+   * placement card). When the screen is too short for one column of keys, the
+   * grid wraps them into a second column instead of running under other slots. */
   .canvas-toolbar {
-    top: 50%;
+    top: var(--hud-top-h);
     bottom: auto;
     left: auto;
     right: 10px;
-    transform: translateY(-50%);
-    flex-direction: column;
+    transform: none;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(auto-fit, 46px);
+    align-content: start;
     width: auto;
+    max-height: calc(
+      100dvh - var(--hud-top-h) - var(--hotbar-top) - 10px -
+        var(--placement-h, 0px)
+    );
     padding: 5px;
-    gap: 3px;
+    gap: 5px 4px;
   }
-  .tool-segment {
-    flex-direction: column;
-    gap: 3px;
-    padding: 0 0 5px;
-    border-right: 0;
-    border-bottom: 2px solid var(--hud-line);
-  }
+  .tool-segment,
   .tool-segment:last-of-type {
-    border-bottom: 0;
-    padding: 0;
+    display: contents;
+  }
+  /* Short screens (a phone with its address bar showing): two even columns. */
+  @media (max-height: 640px) {
+    .canvas-toolbar {
+      grid-template-rows: repeat(4, 46px);
+    }
+  }
+  /* A hairline above the first key of each group stands in for the divider. */
+  .tool-segment + .tool-segment > :first-child,
+  .canvas-toolbar .views-toggle {
+    box-shadow: 0 -4px 0 -2px var(--hud-line);
+  }
+  /* Fit lives in the camera views popover on touch, keeping the column to 8 keys. */
+  .canvas-toolbar .fit-key {
+    display: none;
   }
   .canvas-toolbar button,
   .tool-segment:last-of-type button {
@@ -482,23 +470,6 @@ summary:focus-visible {
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
     white-space: nowrap;
-  }
-  .views-toggle {
-    display: flex !important;
-  }
-  .view-controls {
-    display: none;
-    top: 50%;
-    right: 72px;
-    transform: translateY(-50%);
-    flex-direction: column;
-  }
-  .view-controls.open {
-    display: flex;
-  }
-  .view-controls button {
-    min-height: 44px;
-    min-width: 72px;
   }
   .header-actions .tool-label {
     position: absolute;
@@ -525,7 +496,7 @@ summary:focus-visible {
     right: 0;
     bottom: calc(82px + env(safe-area-inset-bottom));
     width: auto;
-    height: min(56dvh, calc(100dvh - 170px));
+    height: min(56dvh, calc(100dvh - 180px));
     padding: 6px 16px 18px;
     border-radius: 18px 18px 0 0;
     background: var(--paper);
@@ -533,7 +504,7 @@ summary:focus-visible {
     z-index: 18;
   }
   .sheet-full .mobile-panel {
-    height: calc(100dvh - 82px - 70px - env(safe-area-inset-bottom));
+    height: calc(100dvh - 82px - 98px - env(safe-area-inset-bottom));
   }
   .mobile-panel.mobile-open {
     display: block;
@@ -825,26 +796,6 @@ a .icon {
 }
 .status-bar > span:last-child {
   display: none;
-}
-
-/* One Fit control; the other camera views pop up from the tool dock. */
-.views-toggle {
-  display: flex !important;
-}
-.view-controls {
-  display: none;
-}
-.view-controls.open {
-  display: flex;
-}
-@media (min-width: 1101px) {
-  .view-controls {
-    top: auto;
-    right: auto;
-    left: 50%;
-    bottom: 88px;
-    transform: translateX(-50%);
-  }
 }
 
 .save-chip {
@@ -1202,81 +1153,6 @@ a .icon {
   font-weight: 600;
 }
 
-/* Section cut control inside the camera-views popover. */
-.view-controls {
-  flex-wrap: wrap;
-  align-items: center;
-  max-width: min(560px, calc(100vw - 24px));
-}
-.section-control {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding-left: 6px;
-  border-left: 2px solid var(--hud-line);
-  color: var(--chalk);
-  font-size: 12px;
-}
-.section-control button[aria-pressed="true"] {
-  background: var(--grass);
-  color: var(--grass-ink);
-}
-.section-control label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.section-control input[type="range"] {
-  width: 160px;
-  min-height: 36px;
-  accent-color: var(--grass);
-}
-@media (max-width: 1100px) {
-  .section-control {
-    border-left: 0;
-    border-top: 2px solid var(--hud-line);
-    padding: 6px 0 0;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .section-control label {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .section-control input[type="range"] {
-    width: 140px;
-  }
-}
-/* Render look: a labelled segmented choice at the end of the views popover. */
-.look-control .look-label {
-  font-weight: 700;
-  color: var(--chalk);
-  opacity: 0.75;
-}
-/* The views popover anchors under the top HUD so it never covers the model's lower floors. */
-@media (min-width: 1101px) {
-  .view-controls {
-    top: 74px;
-    bottom: auto;
-  }
-}
-@media (max-width: 1100px) {
-  .view-controls {
-    top: 70px;
-    right: 12px;
-    transform: none;
-  }
-}
-@media (max-width: 650px) {
-  .view-controls {
-    top: 66px;
-    right: 72px;
-    left: auto;
-    max-width: 200px;
-  }
-}
-
 /* Measure readout: centred above the tool dock / hotbar. */
 .measure-chip {
   position: absolute;
@@ -1306,123 +1182,6 @@ a .icon {
   }
 }
 
-/* Floors & rooms (spec §20.2) inside the camera-views popover. The popover scrolls
- * rather than growing past the screen, so phones keep the canvas in view. */
-.view-controls {
-  max-height: calc(100dvh - 180px);
-  overflow-y: auto;
-}
-.floor-control.open {
-  flex-basis: 100%;
-  align-items: stretch;
-}
-.floor-panel {
-  display: grid;
-  gap: 8px;
-  width: 100%;
-}
-.floor-hint {
-  margin: 0;
-  color: var(--hud-mute);
-  font-size: 12px;
-  line-height: 1.4;
-}
-.floor-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.view-controls .floor-chips button {
-  border: 2px solid var(--hud-line);
-}
-.floor-check {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
-  gap: 8px;
-  min-height: 36px;
-}
-.floor-check input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--grass);
-}
-.floor-edit > summary {
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-weight: 600;
-}
-.floor-row,
-.floor-actions,
-.label-form {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  margin: 4px 0;
-}
-.floor-row input,
-.floor-row select,
-.label-form input {
-  min-width: 0;
-  flex: 1 1 auto;
-  min-height: 36px;
-  padding: 0 8px;
-  border: 2px solid var(--hud-line);
-  border-radius: 8px;
-  background: rgba(244, 241, 234, 0.08);
-  color: var(--chalk);
-  font: inherit;
-}
-.floor-row input[type="number"] {
-  flex: 0 0 64px;
-}
-.floor-row select option {
-  color: #1d2230;
-}
-.floor-actions button,
-.label-form button {
-  flex: 1 1 auto;
-  border: 2px solid var(--hud-line) !important;
-}
-.floor-group {
-  display: grid;
-  align-content: start;
-  gap: 6px;
-  min-width: 0;
-}
-.floor-heading {
-  margin: 4px 0 0;
-  color: var(--hud-mute);
-  font-size: var(--text-label);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-@media (min-width: 1101px) {
-  .floor-panel {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-    column-gap: 16px;
-  }
-  .floor-group + .floor-group {
-    padding-left: 16px;
-    border-left: 2px solid var(--hud-line);
-  }
-}
-@media (max-width: 1100px) {
-  .floor-row {
-    flex-wrap: wrap;
-  }
-  .floor-row input:not([type="number"]),
-  .floor-row select {
-    flex-basis: 100%;
-  }
-  .label-form {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
 .label-pick-card {
   background: var(--hud);
   border: 2px solid var(--hud-line);
@@ -1440,34 +1199,525 @@ a .icon {
   align-items: center;
   gap: 8px;
 }
-/* The room form stacks (name above its button) so neither is squeezed. */
-.floor-panel .label-form {
+
+/* ---- Adapt pass: every HUD slot has its own ground at every screen size ---- */
+.app {
+  --hud-top-h: 74px;
+  --hotbar-top: 14px;
+}
+@media (max-width: 1100px) {
+  .app {
+    /* Free canvas starts under the top row and ends above the hotbar. */
+    --hud-top-h: calc(max(12px, env(safe-area-inset-top)) + 56px);
+    --hotbar-top: calc(max(10px, env(safe-area-inset-bottom)) + 64px);
+  }
+}
+.empty-inspector > span {
+  display: inline-flex;
+}
+
+/* More tools: Measure and Rectangular fill wait behind one key. */
+.tool-more {
+  position: relative;
+  display: flex;
+}
+.canvas-toolbar button.open {
+  background: rgba(244, 241, 234, 0.1);
+}
+.tool-more-menu {
+  position: absolute;
+  right: -6px;
+  bottom: calc(100% + 14px);
+  z-index: 2;
+  display: grid;
+  gap: 2px;
+  min-width: 210px;
+  padding: 6px;
+  background: var(--hud);
+  border: 2px solid var(--hud-line);
+  border-radius: var(--r-slab);
+  box-shadow: var(--shadow-dock);
+}
+.canvas-toolbar .tool-more-menu button {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  gap: 10px;
+  justify-content: flex-start;
+  box-shadow: none;
+}
+.canvas-toolbar .tool-more-menu button > span {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+}
+@media (max-width: 1100px) {
+  .tool-more-menu {
+    right: calc(100% + 14px);
+    bottom: -5px;
+  }
+}
+
+/* Camera views: one popover with four short tabs instead of a wall of switches. */
+.view-controls {
+  position: absolute;
+  z-index: 14;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  padding: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--hud);
+  border: 2px solid var(--hud-line);
+  border-radius: var(--r-slab);
+  box-shadow: var(--shadow-dock);
+  color: var(--chalk);
+}
+.view-controls.open {
+  display: flex;
+}
+@media (min-width: 1101px) {
+  .view-controls {
+    top: 74px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-height: calc(100dvh - 74px - 150px);
+  }
+}
+@media (max-width: 1100px) {
+  .view-controls {
+    top: var(--hud-top-h);
+    right: calc(18px + var(--tool-w, 60px));
+    width: min(340px, calc(100vw - 30px - var(--tool-w, 60px)));
+    max-height: calc(
+      100dvh - var(--hud-top-h) - var(--hotbar-top) - 54px -
+        var(--placement-h, 0px)
+    );
+  }
+}
+.view-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--r-key);
+  background: rgba(244, 241, 234, 0.08);
+}
+.view-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 2px solid var(--hud-line);
+  border-radius: var(--r-field);
+  background: transparent;
+  color: var(--chalk);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+.view-controls button:hover {
+  background: rgba(244, 241, 234, 0.1);
+}
+.view-controls button[aria-pressed="true"] {
+  background: var(--grass);
+  border-color: var(--grass);
+  color: var(--grass-ink);
+}
+.view-tabs button {
+  border: 0;
+  color: var(--hud-mute);
+  font-weight: 650;
+}
+.view-tabs button[aria-pressed="true"] {
+  background: var(--chalk);
+  color: var(--ink);
+}
+.view-tab-on {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--grass);
+}
+.view-pane {
+  display: grid;
+  gap: 10px;
+  padding: 4px 4px 6px;
+}
+.view-angles {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+.view-hint {
+  margin: 0;
+  color: var(--hud-mute);
+  font-size: var(--text-label);
+  line-height: 1.4;
+}
+.section-control {
+  display: grid;
+  gap: 8px;
+  font-size: var(--text-label);
+}
+.section-control + .section-control {
+  padding-top: 10px;
+  border-top: 2px solid var(--hud-line);
+}
+.section-axes,
+.look-control {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 4px;
+}
+.section-axes button {
+  padding: 0 4px;
+}
+.section-control label {
+  display: grid;
+  gap: 4px;
+}
+.section-control input[type="range"] {
+  width: 100%;
+  min-height: 36px;
+  accent-color: var(--grass);
+}
+@media (pointer: coarse) {
+  .view-controls button {
+    min-height: 44px;
+  }
+}
+
+/* Floors tab (spec §20.2). */
+.floor-control {
+  display: grid;
+  gap: 10px;
+}
+.floor-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.floor-checks {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 16px;
+}
+.floor-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  font-size: var(--text-body);
+}
+.floor-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--grass);
+}
+.floor-edit {
+  padding-top: 4px;
+  border-top: 2px solid var(--hud-line);
+}
+.floor-edit > summary {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  font-size: var(--text-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+.floor-row,
+.floor-actions,
+.label-form {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.floor-actions > button {
+  flex: 1 1 0;
+}
+.label-form {
   flex-direction: column;
   align-items: stretch;
 }
-.floor-panel button {
+.floor-row input,
+.floor-row select,
+.label-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 8px;
+  border: 2px solid var(--hud-line);
+  border-radius: var(--r-field);
+  background: rgba(244, 241, 234, 0.08);
+  color: var(--chalk);
+  font: inherit;
+  font-size: max(var(--text-body), 1em);
+}
+.floor-row input[type="number"] {
+  flex: 0 0 64px;
+}
+.floor-row select option {
+  color: var(--ink);
+}
+.floor-row > button {
+  flex: 0 0 40px;
+  padding: 0;
+}
+@media (max-width: 650px) {
+  .floor-row input,
+  .floor-row select,
+  .label-form input {
+    font-size: var(--text-field-touch);
+  }
+}
+
+/* Status: one toast slot that never sits on another control. On desktop it rises
+ * above the tool dock (and the placement card or measure readout). */
+@media (min-width: 1101px) {
+  .status-bar {
+    left: 50%;
+    right: auto;
+    bottom: calc(88px + var(--placement-h, 0px));
+    transform: translateX(-50%);
+    max-width: min(520px, calc(100% - 728px));
+  }
+  .app:has(.measure-chip) .status-bar {
+    bottom: 144px;
+  }
+}
+/* On touch it shares the row above the hotbar with the parts count, which steps
+ * aside while a message shows; with a sheet or card up it moves under the top row. */
+@media (max-width: 1100px) {
+  .status-bar {
+    left: 12px;
+    right: auto;
+    bottom: calc(var(--hotbar-top) + 12px + var(--placement-h, 0px));
+    max-width: calc(100% - 30px - var(--tool-w, 0px));
+  }
+  /* The count comes back only once the toast has gone, so the two never cross. */
+  .canvas-bottom {
+    bottom: calc(var(--hotbar-top) + 12px);
+    transition: opacity 0.15s ease-out 0.2s;
+  }
+  .app:has(.status-bar.fresh) .canvas-bottom {
+    opacity: 0;
+    pointer-events: none;
+    transition-delay: 0s;
+  }
+  .app:has(.placement-card) .canvas-bottom,
+  .app:has(.measure-chip) .canvas-bottom {
+    display: none;
+  }
+  .sheet-open .status-bar,
+  .app:has(.mode-card) .status-bar,
+  .app:has(.measure-chip) .status-bar {
+    top: var(--hud-top-h);
+    bottom: auto;
+  }
+
+  .measure-chip {
+    top: auto;
+    bottom: calc(var(--hotbar-top) + 12px);
+    left: 12px;
+    right: calc(18px + var(--tool-w, 0px));
+    transform: none;
+    text-align: left;
+  }
+  .sheet-open .measure-chip {
+    display: none;
+  }
+}
+/* A menu or popover in use owns the moment; its toast is still announced. */
+.app:has(.tool-more-menu) .status-bar {
+  opacity: 0;
+}
+
+/* Placement card on phones: what you hold, then rotate, cancel and place. Exact
+ * coordinates wait behind X Y Z. */
+.placement-exact {
+  display: none;
+}
+@media (max-width: 650px) {
+  .placement-card {
+    bottom: calc(var(--hotbar-top) + 10px);
+  }
+  .placement-card > div:first-child {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .placement-card > div:first-child span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .placement-card:not(.exact) .placement-values {
+    display: none;
+  }
+  .placement-card .placement-exact {
+    display: block;
+    flex: 0 0 auto;
+    order: 1;
+  }
+  .placement-card .placement-values {
+    order: 0;
+  }
+  .placement-card > button[aria-label="Rotate placement"] {
+    order: 1;
+  }
+  .placement-card > button.primary {
+    order: 3;
+    flex: 1 1 auto;
+  }
+  .placement-card > button:last-child {
+    order: 2;
+    flex: 0 0 auto;
+  }
+  .placement-card .placement-exact[aria-expanded="true"] {
+    border-color: var(--ink);
+  }
+}
+
+/* Right sheet: the few things you do most sit on top; everything advanced is a
+ * one-line drawer, and every drawer is drawn the same way. */
+.right-sidebar details.drawer,
+details.card-drawer,
+details.dialog-more {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+.right-sidebar details.drawer > summary,
+details.card-drawer > summary,
+details.dialog-more > summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-body);
+  font-weight: 650;
+  color: var(--ink);
+  cursor: pointer;
+}
+.right-sidebar details.drawer[open],
+details.card-drawer[open],
+details.dialog-more[open] {
+  padding-bottom: 14px;
+}
+details.card-drawer:last-of-type,
+details.dialog-more {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+.card-drawer .camera-collections {
+  margin-top: 0;
+}
+.card-drawer .camera-collections > h3 {
+  display: none;
+}
+.workplane-drawer.drawer > summary {
+  font-weight: 650;
+}
+.right-sidebar details.drawer + :not(details) {
+  margin-top: 12px;
+}
+.tool-drawers {
+  margin-top: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.tool-drawers > h3,
+.transform-panel > h3,
+.clipboard-tools > h3,
+.position-heading {
+  margin: 0 0 8px;
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--ink);
+}
+.transform-panel,
+.clipboard-tools {
+  margin-top: 22px;
+}
+.position-heading {
+  margin-top: 18px;
+}
+.position-heading small {
+  margin-left: 6px;
+  font-weight: 500;
+  font-size: var(--text-label);
+  color: var(--secondary);
+}
+.position-heading + .numeric-row {
+  margin-top: 0;
+}
+.prop-more:not([hidden]) {
+  display: contents;
+}
+.details-toggle {
+  display: block;
+  min-height: 36px;
+  margin: -4px 0 0;
+  padding: 0;
+  font-size: var(--text-label);
+  font-weight: 650;
+  color: var(--accent);
+}
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 10px 0 0;
+}
+.quick-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 6px;
+  font-size: var(--text-label);
   white-space: nowrap;
 }
-.view-controls:has(.floor-control.open) {
-  max-width: min(680px, calc(100vw - 24px));
+.quick-actions .quick-colour {
+  grid-column: 1 / -1;
 }
-@media (max-width: 1100px) {
-  /* A scrolling column must not wrap into a second column. */
-  .view-controls {
-    flex-wrap: nowrap;
-  }
-  .view-controls:has(.floor-control.open) {
-    width: min(320px, calc(100vw - 96px));
-    max-width: none;
-  }
-  .view-controls .floor-control.open {
-    align-self: stretch;
-    flex-shrink: 0;
-  }
-  .view-controls > * {
-    flex-shrink: 0;
-  }
+.quick-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-field);
+  box-shadow: inset 0 0 0 1px rgba(29, 34, 48, 0.25);
 }
-.floor-check input {
+.workplane-drawer .workplane {
   margin: 0;
+  padding: 0;
+  border: 0;
+}
+.workplane-drawer .workplane > h3 {
+  display: none;
+}
+.layer-folders.drawer .number-field:first-of-type {
+  margin-top: 0;
+}
+@media (max-width: 650px) {
+  /* Phone sheets stop 98px or more below the top edge, leaving the toast a strip
+   * of its own between the top row and the sheet. */
+  .sheet-open .status-bar {
+    top: calc(max(12px, env(safe-area-inset-top)) + 50px);
+  }
 }

@@ -35,6 +35,7 @@ test("exploded floors lift apart for viewing without changing the build", async 
     });
   const before = await state();
   await page.getByRole("button", { name: "Camera views" }).click();
+  await page.getByRole("button", { name: "Cut", exact: true }).click();
   await page.getByRole("button", { name: "Explode floors" }).click();
   await expect(
     page.getByRole("button", { name: "Select", exact: true }),

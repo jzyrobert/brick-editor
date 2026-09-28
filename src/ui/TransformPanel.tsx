@@ -146,7 +146,7 @@ export function TransformPanel({
   if (!enabled || !selection.length) return null;
   return (
     <section aria-label="Transform selection" className="transform-panel">
-      <h3>Transform selection</h3>
+      <h3>Move and rotate</h3>
       <div className="button-row">
         <button
           aria-pressed={mode === "translate"}
@@ -173,8 +173,7 @@ export function TransformPanel({
         Snap handles to 20 LDU / 15°
       </label>
       <p className="muted">
-        Drag a coloured axis or ring. Two fingers navigate and cancel the edit.
-        World axes preserve imported transforms.
+        Drag an arrow or ring on the model. Two fingers cancel.
       </p>
       {dragging && (
         <button onClick={() => binding.current?.cancel()}>
@@ -226,8 +225,7 @@ export function TransformPanel({
           Apply exact rotation
         </button>
         <p className="muted">
-          Exact rotation uses the selected part origins’ centre. Handle rotation
-          uses the visible bounds’ centre.
+          Exact rotation turns around the centre of the parts’ origins.
         </p>
       </details>
     </section>

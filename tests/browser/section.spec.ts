@@ -62,6 +62,7 @@ test("section cut hides parts above a height, is recorded in captures and pauses
   expect(whole.planes).toBe(0);
   // Turn the cut on from the camera-views popover and drag it to 2 bricks (6 plates) up.
   await page.getByRole("button", { name: "Camera views" }).click();
+  await page.getByRole("button", { name: "Cut", exact: true }).click();
   await page.getByRole("button", { name: "Section cut" }).click();
   await page.getByRole("slider", { name: "Section height" }).fill("6");
   await expect(page.locator(".section-label")).toHaveText("Cut 6 plates up");

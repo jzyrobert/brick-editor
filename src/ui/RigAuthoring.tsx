@@ -458,7 +458,7 @@ export function RigAuthoring({
     );
   };
   return (
-    <details className="rig-authoring">
+    <details className="rig-authoring drawer">
       <summary>Create or edit a rig</summary>
       {!!target && (
         <section className="rig-existing" aria-label="Existing rig editing">
@@ -548,15 +548,9 @@ export function RigAuthoring({
         </p>
       )}
 
-      <p>
-        Assign selected parts to separate rigid groups, then preview and create
-        one kinematic rig. Connections and wheel contact are not inferred or
-        physically validated.
-      </p>
-      <p>
-        World coordinates use LDU; negative Y points up. New group frames align
-        with world axes; existing frames are retained when editing. Current
-        selection: {selection.length} parts.
+      <p className="muted">
+        Put the fixed and moving parts in groups, then preview the rig. Nothing
+        is physically simulated. Selected: {selection.length} parts.
       </p>
       <details className="rig-picker">
         <summary>Choose parts for assignment</summary>

@@ -59,6 +59,7 @@ test("render looks switch from the views popover, persist, and captures request 
     (await page.evaluate(() => window.brickEditor!.render.look.get())).name,
   ).toBe("standard");
   await page.getByRole("button", { name: "Camera views" }).click();
+  await page.getByRole("button", { name: "Look", exact: true }).click();
   const looks = page.getByRole("group", { name: "Render look" });
   await expect(looks.getByRole("button", { name: "Standard" })).toHaveAttribute(
     "aria-pressed",
@@ -158,6 +159,7 @@ test("render looks switch from the views popover, persist, and captures request 
     (await page.evaluate(() => window.brickEditor!.render.look.get())).name,
   ).toBe("realistic");
   await page.getByRole("button", { name: "Camera views" }).click();
+  await page.getByRole("button", { name: "Look", exact: true }).click();
   await looks.getByRole("button", { name: "Standard" }).click();
   expect(
     await page.evaluate(() => localStorage.getItem("brick-editor-render-look")),

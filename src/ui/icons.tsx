@@ -162,6 +162,13 @@ const paths = {
       <path d="M7 13l2 2M10 10l1.5 1.5M13 7l2 2" />
     </>
   ),
+  more: (
+    <>
+      <circle cx="5.5" cy="12" r="1.2" />
+      <circle cx="12" cy="12" r="1.2" />
+      <circle cx="18.5" cy="12" r="1.2" />
+    </>
+  ),
   rotate: (
     <>
       <path d="M20 12a8 8 0 1 1-2.3-5.6" />

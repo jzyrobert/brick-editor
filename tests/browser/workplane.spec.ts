@@ -40,6 +40,15 @@ for (const size of [
             .getByRole("navigation", { name: "Mobile panels" })
             .getByRole("button", { name: "Inspector", exact: true })
             .click();
+        else
+          await page
+            .locator(".right-tabs")
+            .getByRole("button", { name: "Inspector", exact: true })
+            .click();
+        // Workplane settings live in a drawer under More tools.
+        const drawer = page.locator("details.workplane-drawer");
+        if (!(await drawer.evaluate((d) => (d as HTMLDetailsElement).open)))
+          await drawer.getByText("Workplane and grid", { exact: true }).click();
       };
       const tap = async (x: number, y: number) => {
         if (size.touch) await page.touchscreen.tap(x, y);

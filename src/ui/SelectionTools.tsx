@@ -23,7 +23,7 @@ export function SelectionTools({
   hasSelection: boolean;
 }) {
   return (
-    <details className="selection-tools">
+    <details className="selection-tools drawer">
       <summary>Selection tools</summary>
       <label>
         Gesture
@@ -64,9 +64,7 @@ export function SelectionTools({
             </select>
           </label>
           <p className="muted">
-            Drag on the canvas. Visible surfaces select the frontmost surface at
-            each CSS pixel. Through selects all intersecting part surfaces.
-            Escape or a second finger cancels.
+            Drag on the model. Escape or a second finger cancels.
           </p>
         </>
       )}
@@ -83,10 +81,7 @@ export function SelectionTools({
         <button onClick={() => onMatch("all")}>Select editable parts</button>
         <button onClick={onClear}>Clear selection</button>
       </div>
-      <p className="muted">
-        Hidden, locked and out-of-scope parts are excluded. Matching uses any
-        selected part.
-      </p>
+      <p className="muted">Hidden and locked parts are skipped.</p>
     </details>
   );
 }

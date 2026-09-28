@@ -87,8 +87,7 @@ test("floor guides, floor focus and room labels are view aids that never change 
 
   // Detect floors from the camera-views popover.
   await page.getByRole("button", { name: "Camera views" }).click();
-  await page.getByRole("button", { name: "Floors & rooms" }).click();
-  await page.getByText("Edit floors (0)").click();
+  await page.getByRole("button", { name: "Floors", exact: true }).click();
   await page.getByRole("button", { name: "Detect floors" }).click();
   const focus = page.getByRole("group", { name: "Floor focus" });
   await expect(focus.getByRole("button")).toHaveText([
@@ -110,6 +109,7 @@ test("floor guides, floor focus and room labels are view aids that never change 
   ).toMatchObject({ floorGuides: true, drawn: { guides: 3 } });
 
   // Rename the roof level through the floor editor (one undoable command).
+  await page.getByText("Edit floors (3)").click();
   const roofName = page.getByRole("textbox", { name: "Floor name" }).first();
   await roofName.fill("Roof");
   await roofName.press("Enter");
@@ -131,6 +131,7 @@ test("floor guides, floor focus and room labels are view aids that never change 
   expect(await source()).toBe(before);
 
   // Place a room label by tapping the model.
+  await page.getByText("Room labels (0)").click();
   await page.getByRole("textbox", { name: "Room label" }).fill("Bedroom");
   await page.getByRole("button", { name: "Place label" }).click();
   await expect(page.locator(".label-pick-card")).toContainText("Bedroom");

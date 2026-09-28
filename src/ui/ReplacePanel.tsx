@@ -43,7 +43,7 @@ export function ReplacePanel({
     <>
       <details
         ref={details}
-        className="replace-panel"
+        className="replace-panel drawer"
         open={open}
         onToggle={(e) => {
           setOpen(e.currentTarget.open);

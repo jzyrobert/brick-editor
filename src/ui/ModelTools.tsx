@@ -97,11 +97,10 @@ export function ModelTools({
     </div>
   );
   return (
-    <details className="model-tools">
+    <details className="model-tools drawer">
       <summary>Submodels and shared editing</summary>
       <p className="muted">
-        Ordinary edits affect only the selected instance. Shared edits
-        deliberately affect every instance of a definition.
+        Normal edits change only this copy. Shared edits change every copy.
       </p>
       <label>
         Submodel name
@@ -131,8 +130,7 @@ export function ModelTools({
         Make submodel
       </button>
       <p className="muted">
-        Select contiguous sibling parts. The pivot uses their parent’s LDraw
-        coordinates; source scope and world placement stay unchanged.
+        Select neighbouring parts from one submodel. Nothing moves.
       </p>
       <button
         disabled={!chosen.length || chosen.some((o) => o.path.length < 2)}

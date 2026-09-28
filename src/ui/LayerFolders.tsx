@@ -48,12 +48,8 @@ export function LayerFolders({
   };
   if (!layer) return null;
   return (
-    <details className="layer-folders">
+    <details className="layer-folders drawer">
       <summary>Organise with folders</summary>
-      <p className="muted">
-        Folders organise the layer list. Visibility and locks remain on each
-        layer.
-      </p>
       <label className="number-field">
         <span>Folder for active layer</span>
         <select

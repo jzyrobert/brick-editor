@@ -238,8 +238,8 @@ A night-navy and chalk pairing with two state colours, grass and sun, laid over 
 
 The canvas is absolutely full-bleed (100dvh) at every width; the HUD is a pointer-transparent layer whose slots opt back into pointer events. Every slot sits 12px from the viewport edge (safe-area aware at top and bottom), and slots in a row are spaced 8px apart.
 
-- **Desktop (>1100px):** top row of mode strip, project slab and, pushed right, save slab and Export. Parts inventory docks left (300px) and Layers/Inspector docks right (310px) as floating chalk sheets from 74px below the top to 90px above the bottom. The tool dock is centred at the bottom; camera views pop up from it on demand, and a single Fit view control stays in the dock. The counts chip sits bottom left. Between 1101px and 1400px the brand and save-state text drop out of the project slab.
-- **Tablet (651–1100px):** tools move to a vertical thumb column on the right edge (46px icon keys, labels visually hidden but named). A 64px hotbar runs along the bottom, capped at 680px wide. Panels open as floating sheets at most 680px wide, rounded on all corners and inset from the left edge, so the model stays visible beside them in portrait; the tool column remains usable next to an open sheet. Header actions become icon-only 48px keys.
+- **Desktop (>1100px):** top row of mode strip, project slab and, pushed right, save slab and Export. Parts inventory docks left (300px) and Layers/Inspector docks right (310px) as floating chalk sheets from 74px below the top to 90px above the bottom. The tool dock is centred at the bottom; the camera views popover opens under the top row, and a single Fit view control stays in the dock. The counts chip sits bottom left; the status toast rises centred just above the dock (and above the placement card or measure readout when they show). Between 1101px and 1400px the brand and save-state text drop out of the project slab.
+- **Tablet (651–1100px):** tools move to a thumb column on the right edge (46px icon keys, labels visually hidden but named) that hangs under the top row and always stops above the hotbar and placement card; on short screens (640px tall or less, such as a phone with its address bar showing) it becomes two even columns of four. Fit moves into the camera views popover to keep the column to eight keys. A 64px hotbar runs along the bottom, capped at 680px wide. Panels open as floating sheets at most 680px wide, rounded on all corners and inset from the left edge, so the model stays visible beside them in portrait; the tool column remains usable next to an open sheet. Header actions become icon-only 48px keys.
 - **Phone (≤650px):** one top row: a mode chip (current mode icon, name and a drawn chevron) that opens the full five-mode list, with save chip and Export at top right; the project slab is hidden. Sheets span the full width, rise at about half height above the hotbar and extend to full height from the handle. The tool column hides while a sheet is open.
 - **Rhythm:** 2px inside segmented groups, 4–6px inside docks, 8px between slots, 12px edge inset, 16–18px sheet padding, 24px between groups inside sheets.
 
@@ -283,7 +283,7 @@ Solid, key-like and bold.
 ### Chips
 
 - **Filter chips** (All, Bricks, Plates, Favourites and related parts): pill (18px) white chips on chalk; pressed state inverts to Ink Navy with chalk text. 36px tall on fine pointers, 44px on coarse pointers.
-- **Status toast:** a navy pill (34px, 30px on touch) in the bottom-right corner that appears for about 4 seconds after each change, then fades; its text is always in a live region, so it is announced even when hidden.
+- **Status toast:** a navy pill (34px, 30px on touch) that appears for about 4 seconds after each change, then fades; its text is always in a live region, so it is announced even when hidden. On desktop it rises centred above the tool dock. On touch it takes the counts chip's place above the hotbar (the chip fades out while it shows), clear of the tool column; with a sheet, mode card or measure readout up it moves under the top row.
 - **Counts chip:** navy pill bottom left with tabular part and selection counts.
 
 ### Cards / Containers
@@ -304,7 +304,11 @@ Solid, key-like and bold.
 
 ### Tool Dock (signature)
 
-A navy dock of labelled keys grouped by 2px dividers: Select/Place/Paint/Navigate, Undo/Redo, then Fit view, Camera views and Rectangular fill. The held tool is Lit Grass with dark ink. On touch it becomes a right-edge column of 46px icon keys whose names stay accessible.
+A navy dock of labelled keys grouped by 2px dividers: Select/Place/Paint/Navigate, Undo/Redo, then Fit view, Camera views and More tools (a small navy menu holding Measure and Rectangular fill; the More key lights when Measure is in hand). The held tool is Lit Grass with dark ink. On touch it becomes a right-edge column of 46px icon keys whose names stay accessible, with hairlines between groups.
+
+**Camera views popover:** one navy popover with four segmented tabs (Angle, Cut, Floors, Look) so only one small set of choices shows at a time; a grass dot on a tab means something there is switched on (a section cut, exploded floors, a focused floor).
+
+**Progressive disclosure in sheets and cards:** the few things done most sit on top (Inspector: colour, size, quick actions, position; Layers: the list, rename, solo, ghost). Everything advanced is a one-line drawer with a drawn chevron, 48px tall, separated by 1px Sheet Line rules, all drawn the same way. Mode cards and dialogs use the same drawer for secondary options (Photo: exact camera, camera collection; Export: More options).
 
 ### Hotbar (signature)
 

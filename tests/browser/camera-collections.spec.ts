@@ -70,6 +70,7 @@ test("camera collections render named bookmarks from one revision with a shared 
 
   // Photo mode: pick the collection and download a ZIP of PNGs plus manifest.
   await openMode(page, "Photo");
+  await page.locator("summary", { hasText: "Camera collection" }).click();
   await page
     .getByRole("combobox", { name: "Collection", exact: true })
     .selectOption("interior/");

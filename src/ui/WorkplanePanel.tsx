@@ -128,14 +128,13 @@ export function WorkplanePanel({
         Free placement
       </label>
       <p className="muted">
-        Grid {value.grid} LDU = {Number((value.grid / 20).toFixed(3))} studs. 8
-        LDU = 1 plate. Negative elevation moves toward the plane normal.
-        Imported transforms remain unchanged.
+        Grid {value.grid} LDU = {Number((value.grid / 20).toFixed(3))} studs · 8
+        LDU = 1 plate.
       </p>
       <details className="layer-folders">
         <summary>Numerical plane</summary>
         {(["X", "Y", "Z"] as const).map((axis, i) => (
-          <div key={axis}>
+          <div key={axis} className="numeric-row">
             {field(
               `Plane origin ${axis}`,
               origin[i],
@@ -161,11 +160,11 @@ export function WorkplanePanel({
         >
           Apply numerical plane
         </button>
+        <p className="muted">
+          Connector alignment is unavailable: no verified connector metadata is
+          installed.
+        </p>
       </details>
-      <p className="muted">
-        Connector alignment is unavailable: no verified connector metadata is
-        installed.
-      </p>
       <p role="status">{error}</p>
     </section>
   );

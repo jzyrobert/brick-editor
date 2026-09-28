@@ -116,8 +116,7 @@ export function ClipboardTools({
       <details>
         <summary>Portable clipboard</summary>
         <p className="muted">
-          Fragments keep referenced geometry and applicable metadata. Clipboard
-          stays in this tab; save a fragment to move it elsewhere.
+          Save a fragment to paste it in another tab or project.
         </p>
         <button
           disabled={!hasCopy}
@@ -228,8 +227,7 @@ export function ClipboardTools({
           </label>
         )}
         <p className="muted">
-          Circular arrays use the vertical axis through the placement cursor.
-          Original parts remain.
+          Circular copies turn around the placement cursor.
         </p>
         <button
           disabled={!selection.length}

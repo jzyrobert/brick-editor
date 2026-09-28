@@ -14,6 +14,7 @@ test("layer UI reorders and explicitly reassigns or deletes members with undo an
     async () => (await window.brickEditor!.query()).occurrences[0],
   );
   const actions = page.getByRole("region", { name: "Layer order and removal" });
+  await actions.getByText("Layer options", { exact: true }).click();
   await actions.getByRole("button", { name: "Move layer up" }).click();
   await expect(page.locator(".layer-name").first()).toContainText("Layer 2");
   await page.getByRole("button", { name: "Lock Layer 2", exact: true }).click();
@@ -71,6 +72,7 @@ test("layer duplication, folder promotion and ghosting preserve document content
     .getByRole("combobox", { name: "Folder for active layer", exact: true })
     .selectOption({ label: "Building" });
   const before = await page.evaluate(() => window.brickEditor!.query());
+  await actions.getByText("Layer options", { exact: true }).click();
   await actions
     .getByRole("button", { name: "Duplicate layer (1 parts)", exact: true })
     .click();

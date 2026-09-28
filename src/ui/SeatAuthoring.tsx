@@ -108,11 +108,11 @@ export function SeatAuthoring({
   );
   if (!vehicles.length) return null;
   return (
-    <details className="seat-authoring">
+    <details className="seat-authoring drawer">
       <summary>Driver seat coordinates</summary>
-      <p>
-        Declare one open-bench seat for a rigid figure with straight legs. All
-        positions are relative to the chassis group in LDU; negative Y is up.
+      <p className="muted">
+        One open bench seat, measured from the chassis in LDU (negative Y is
+        up).
       </p>
       <label>
         Vehicle

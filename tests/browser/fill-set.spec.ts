@@ -92,6 +92,7 @@ for (const width of [360, 1080, 1440]) {
           .locator(".mobile-panel.mobile-open .mobile-sheet-head")
           .getByRole("button", { name: "Close" })
           .click();
+      await page.getByRole("button", { name: "More tools" }).click();
       await page
         .getByRole("button", { name: "Rectangular fill", exact: true })
         .click();

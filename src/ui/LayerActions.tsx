@@ -68,27 +68,6 @@ export function LayerActions({
   }
   return (
     <section aria-label="Layer order and removal">
-      <button
-        className="wide"
-        disabled={busy}
-        onClick={() =>
-          void act(async () => {
-            const result = (await dispatch("layers.duplicate", {
-              layerId,
-              includeHidden: true,
-              maxAdditions: 10000,
-            })) as { addedLayerIds?: string[] };
-            if (result?.addedLayerIds?.[0])
-              onCreated?.(result.addedLayerIds[0]);
-          })
-        }
-      >
-        Duplicate layer ({count} parts)
-      </button>
-      <p className="muted">
-        Creates an unlocked copy, including hidden contents, at the same
-        positions. The original stays unchanged.
-      </p>
       {onGhostChange && (
         <label className="check">
           <input
@@ -99,113 +78,133 @@ export function LayerActions({
           Ghost other layers
         </label>
       )}
-      <LayerFolders project={project} layerId={layerId} dispatch={dispatch} />
-      <h3>Layer order</h3>
-      <div className="button-row">
-        <button disabled={busy || index <= 0} onClick={() => void reorder(-1)}>
-          Move layer up
-        </button>
+      <details className="drawer">
+        <summary>Layer options</summary>
         <button
-          disabled={busy || index >= layers.length - 1}
-          onClick={() => void reorder(1)}
+          className="wide"
+          disabled={busy}
+          onClick={() =>
+            void act(async () => {
+              const result = (await dispatch("layers.duplicate", {
+                layerId,
+                includeHidden: true,
+                maxAdditions: 10000,
+              })) as { addedLayerIds?: string[] };
+              if (result?.addedLayerIds?.[0])
+                onCreated?.(result.addedLayerIds[0]);
+            })
+          }
         >
-          Move layer down
+          Duplicate layer ({count} parts)
         </button>
-      </div>
-      <p className="muted">
-        Changes the layer list and future layer-generated sequences. Existing
-        plans keep their order.
-      </p>
-      {!confirm ? (
-        <button
-          className="wide danger"
-          disabled={busy || layer.locked || layers.length < 2 || !target}
-          onClick={() => setConfirm(true)}
-        >
-          Remove layer…
-        </button>
-      ) : (
-        <div className="layer-removal">
-          <h3>Remove “{layer.name}”?</h3>
-          <p>
-            {count} placed occurrences belong to this layer. Choose what happens
-            to them. You can undo this change.
-          </p>
-          <label className="check">
-            <input
-              type="radio"
-              name={group}
-              checked={mode === "reassign"}
-              onChange={() => setMode("reassign")}
-            />
-            Keep parts and move them to another layer
-          </label>
-          <label className="check">
-            <input
-              type="radio"
-              name={group}
-              checked={mode === "delete-contents"}
-              onChange={() => setMode("delete-contents")}
-            />
-            Delete this layer and its parts
-          </label>
-          <label className="number-field">
-            <span>
-              {mode === "reassign"
-                ? "Move parts to"
-                : "Use as remaining active layer"}
-            </span>
-            <select
-              value={target}
-              onChange={(e) => setDestination(e.target.value)}
-            >
-              {destinations.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {layerId === project.defaultLayerId && (
-            <p>The selected destination becomes the default layer.</p>
-          )}
+        <div className="button-row">
           <button
-            className="wide danger"
-            disabled={busy || layer.locked || !target}
-            onClick={() =>
-              void act(async () => {
-                await dispatch("layers.remove", {
-                  layerId,
-                  mode,
-                  destinationLayerId: target,
-                });
-                setConfirm(false);
-                onRemoved?.(target);
-              })
-            }
+            disabled={busy || index <= 0}
+            onClick={() => void reorder(-1)}
           >
-            {mode === "reassign"
-              ? `Move ${count} parts and remove layer`
-              : `Delete layer and ${count} parts`}
+            Move layer up
           </button>
           <button
-            className="wide"
-            disabled={busy}
-            onClick={() => setConfirm(false)}
+            disabled={busy || index >= layers.length - 1}
+            onClick={() => void reorder(1)}
           >
-            Keep layer
+            Move layer down
           </button>
         </div>
-      )}
-      {layer.locked && (
-        <p className="muted">Unlock this layer before removing it.</p>
-      )}
-      {layers.length < 2 && (
-        <p className="muted">Keep at least one layer in the build.</p>
-      )}
-      {layers.length > 1 && !target && (
-        <p className="muted">Unlock another layer to use as the destination.</p>
-      )}
+        {!confirm ? (
+          <button
+            className="wide danger"
+            disabled={busy || layer.locked || layers.length < 2 || !target}
+            onClick={() => setConfirm(true)}
+          >
+            Remove layer…
+          </button>
+        ) : (
+          <div className="layer-removal">
+            <h3>Remove “{layer.name}”?</h3>
+            <p>
+              {count} placed occurrences belong to this layer. Choose what
+              happens to them. You can undo this change.
+            </p>
+            <label className="check">
+              <input
+                type="radio"
+                name={group}
+                checked={mode === "reassign"}
+                onChange={() => setMode("reassign")}
+              />
+              Keep parts and move them to another layer
+            </label>
+            <label className="check">
+              <input
+                type="radio"
+                name={group}
+                checked={mode === "delete-contents"}
+                onChange={() => setMode("delete-contents")}
+              />
+              Delete this layer and its parts
+            </label>
+            <label className="number-field">
+              <span>
+                {mode === "reassign"
+                  ? "Move parts to"
+                  : "Use as remaining active layer"}
+              </span>
+              <select
+                value={target}
+                onChange={(e) => setDestination(e.target.value)}
+              >
+                {destinations.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {layerId === project.defaultLayerId && (
+              <p>The selected destination becomes the default layer.</p>
+            )}
+            <button
+              className="wide danger"
+              disabled={busy || layer.locked || !target}
+              onClick={() =>
+                void act(async () => {
+                  await dispatch("layers.remove", {
+                    layerId,
+                    mode,
+                    destinationLayerId: target,
+                  });
+                  setConfirm(false);
+                  onRemoved?.(target);
+                })
+              }
+            >
+              {mode === "reassign"
+                ? `Move ${count} parts and remove layer`
+                : `Delete layer and ${count} parts`}
+            </button>
+            <button
+              className="wide"
+              disabled={busy}
+              onClick={() => setConfirm(false)}
+            >
+              Keep layer
+            </button>
+          </div>
+        )}
+        {layer.locked && (
+          <p className="muted">Unlock this layer before removing it.</p>
+        )}
+        {layers.length < 2 && (
+          <p className="muted">Keep at least one layer in the build.</p>
+        )}
+        {layers.length > 1 && !target && (
+          <p className="muted">
+            Unlock another layer to use as the destination.
+          </p>
+        )}
+      </details>
+      <LayerFolders project={project} layerId={layerId} dispatch={dispatch} />
       <p role="status">{error}</p>
     </section>
   );

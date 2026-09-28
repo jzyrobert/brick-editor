@@ -12,6 +12,7 @@ test("measure tool reports the distance between two tapped points", async ({
       .brickEditor!.project.import({ format: "template", template: "wall" })
       .then(() => window.brickEditor!.ready()),
   );
+  await page.getByRole("button", { name: "More tools" }).click();
   await page.getByRole("button", { name: "Measure", exact: true }).click();
   const chip = page.locator(".measure-chip");
   await expect(chip).toHaveText("Tap two points on the model to measure");

@@ -65,6 +65,7 @@ import { BrowserPlay } from "../play/browser";
 import { PlayPanel } from "./PlayPanel";
 import {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -121,6 +122,9 @@ try {
 }
 const knownSaveRevisions = new Map<string, number>();
 let sourceSaveTail: Promise<unknown> = Promise.resolve();
+/** Sections of the camera-views popover, one at a time. */
+type ViewTab = "Angle" | "Cut" | "Floors" | "Look";
+
 function enqueueSourceSave<T>(action: () => Promise<T>): Promise<T> {
   const result = sourceSaveTail.then(action, action);
   sourceSaveTail = result.catch(() => {});
@@ -401,7 +405,10 @@ function Workspace() {
     [transparent, setTransparent] = useState(false),
     [bookmarkName, setBookmarkName] = useState(""),
     [bookmarkFloor, setBookmarkFloor] = useState(true),
-    [floorsOpen, setFloorsOpen] = useState(false),
+    [viewTab, setViewTab] = useState<ViewTab>("Angle"),
+    [moreOpen, setMoreOpen] = useState(false),
+    [placeExact, setPlaceExact] = useState(false),
+    [detailsOpen, setDetailsOpen] = useState(false),
     [focusFloorId, setFocusFloorId] = useState<string | null>(null),
     [ghostBelow, setGhostBelow] = useState(true),
     [floorGuides, setFloorGuides] = useState(false),
@@ -1578,6 +1585,27 @@ function Workspace() {
   }, [status]);
   // The HUD dims and lets pointers through while a finger or pointer drags the model.
   const appRoot = useRef<HTMLDivElement>(null);
+  // Slots that sit beside the tool column or above the placement card read their
+  // sizes from CSS variables, so no two HUD slots overlap at any screen size.
+  useLayoutEffect(() => {
+    const root = appRoot.current;
+    if (!root) return;
+    const measure = () => {
+      const bar = root.querySelector<HTMLElement>(".canvas-toolbar");
+      const card = root.querySelector<HTMLElement>(".placement-card");
+      root.style.setProperty("--tool-w", (bar?.offsetWidth ?? 0) + "px");
+      root.style.setProperty(
+        "--placement-h",
+        card ? card.offsetHeight + 10 + "px" : "0px",
+      );
+    };
+    const observer = new ResizeObserver(measure);
+    root
+      .querySelectorAll(".canvas-toolbar, .placement-card")
+      .forEach((el) => observer.observe(el));
+    measure();
+    return () => observer.disconnect();
+  }, [tool, mode]);
   const canvasGesture = useRef<
     { x: number; y: number; timer?: number } | undefined
   >(undefined);
@@ -1599,48 +1627,44 @@ function Workspace() {
       canvasGesture.current = undefined;
     }, 250);
   };
+  const pickTool = (t: string) => {
+    setTool(t);
+    setMoreOpen(false);
+    if (t === "Select")
+      setTransformModeRequest({ mode: "off", nonce: Date.now() });
+    if (t === "Place")
+      setPosition(
+        (v) =>
+          placementOnPlane(
+            v,
+            workplane,
+            currentPart.height,
+            angle,
+            currentPart.align,
+          ).position,
+      );
+  };
+  // Exploded positions are visual only: editing and measuring wait until assembled.
+  const toolLocked = (t: string) => explodeBricks > 0 && t !== "Navigate";
   const toolbar = (
     <>
       <div className="tool-segment">
-        {["Select", "Place", "Paint", "Navigate", "Measure"].map((t, i) => (
+        {(["Select", "Place", "Paint", "Navigate"] as const).map((t) => (
           <button
             key={t}
-            // Exploded positions are visual only: editing and measuring wait until assembled.
-            disabled={explodeBricks > 0 && t !== "Navigate"}
+            disabled={toolLocked(t)}
             className={tool === t ? "active" : ""}
-            onClick={() => {
-              setTool(t);
-              if (t === "Select")
-                setTransformModeRequest({ mode: "off", nonce: Date.now() });
-              if (t === "Place")
-                setPosition(
-                  (v) =>
-                    placementOnPlane(
-                      v,
-                      workplane,
-                      currentPart.height,
-                      angle,
-                      currentPart.align,
-                    ).position,
-                );
-            }}
+            onClick={() => pickTool(t)}
             title={
-              [
-                `Select · ${shortcuts.select || "unassigned"}`,
-                `Place · ${shortcuts.place || "unassigned"}`,
-                `Paint · ${shortcuts.paint || "unassigned"}`,
-                "Orbit and pan",
-                "Measure between two points",
-              ][i]
+              {
+                Select: `Select · ${shortcuts.select || "unassigned"}`,
+                Place: `Place · ${shortcuts.place || "unassigned"}`,
+                Paint: `Paint · ${shortcuts.paint || "unassigned"}`,
+                Navigate: "Orbit and pan",
+              }[t]
             }
           >
-            <Icon
-              name={
-                (["select", "place", "paint", "navigate", "measure"] as const)[
-                  i
-                ]
-              }
-            />
+            <Icon name={t.toLowerCase() as IconName} />
             <span className="tool-label">{t}</span>
           </button>
         ))}
@@ -1662,27 +1686,64 @@ function Workspace() {
         </button>
       </div>
       <div className="tool-segment">
-        <button onClick={() => renderer.current?.fit()}>
+        <button className="fit-key" onClick={() => renderer.current?.fit()}>
           <Icon name="view" />
           <span className="tool-label">Fit view</span>
         </button>
         <button
-          className="views-toggle"
+          className={"views-toggle" + (viewsOpen ? " open" : "")}
           aria-expanded={viewsOpen}
-          onClick={() => setViewsOpen((v) => !v)}
+          onClick={() => {
+            setMoreOpen(false);
+            setViewsOpen((v) => !v);
+          }}
         >
           <Icon name="canvas" />
           <span className="tool-label">Camera views</span>
         </button>
-        <button
-          onClick={() => {
-            setFillOpen(true);
-            setFill(null);
-          }}
-        >
-          <Icon name="fill" />
-          <span className="tool-label">Rectangular fill</span>
-        </button>
+        <div className="tool-more">
+          <button
+            className={
+              (tool === "Measure" ? "active" : "") + (moreOpen ? " open" : "")
+            }
+            aria-expanded={moreOpen}
+            aria-haspopup="true"
+            onClick={() => {
+              setViewsOpen(false);
+              setMoreOpen((v) => !v);
+            }}
+          >
+            <Icon name={tool === "Measure" ? "measure" : "more"} />
+            <span className="tool-label">More tools</span>
+          </button>
+          {moreOpen && (
+            <div
+              className="tool-more-menu"
+              role="group"
+              aria-label="More tools"
+            >
+              <button
+                className={tool === "Measure" ? "active" : ""}
+                disabled={toolLocked("Measure")}
+                title="Measure between two points"
+                onClick={() => pickTool("Measure")}
+              >
+                <Icon name="measure" />
+                <span>Measure</span>
+              </button>
+              <button
+                onClick={() => {
+                  setMoreOpen(false);
+                  setFillOpen(true);
+                  setFill(null);
+                }}
+              >
+                <Icon name="fill" />
+                <span>Rectangular fill</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
@@ -1946,7 +2007,7 @@ function Workspace() {
             )
           }
         >
-          + Add
+          Add
         </button>
       </div>
       <div className="layer-list">
@@ -1994,26 +2055,6 @@ function Workspace() {
             </div>
           ))}
       </div>
-      <label className="check">
-        <input
-          type="checkbox"
-          checked={crossLayer}
-          onChange={(e) => setCrossLayer(e.target.checked)}
-        />{" "}
-        Edit across layers
-      </label>
-      {selection.length > 0 && (
-        <button
-          className="wide"
-          onClick={() =>
-            void run(() =>
-              command("layers.assign", { ...scoped(), layerId: activeLayer }),
-            )
-          }
-        >
-          Move selection to active layer
-        </button>
-      )}
       <label className="number-field">
         <span>Active layer name</span>
         <input
@@ -2073,11 +2114,103 @@ function Workspace() {
           Show all
         </button>
       </div>
-      <p className="muted">
-        Locked layers cannot be edited. Hidden layers still count in whole-build
-        exports.
-      </p>
+      <label className="check">
+        <input
+          type="checkbox"
+          checked={crossLayer}
+          onChange={(e) => setCrossLayer(e.target.checked)}
+        />{" "}
+        Edit across layers
+      </label>
+      {selection.length > 0 && (
+        <button
+          className="wide"
+          onClick={() =>
+            void run(() =>
+              command("layers.assign", { ...scoped(), layerId: activeLayer }),
+            )
+          }
+        >
+          Move selection to active layer
+        </button>
+      )}
     </>
+  );
+  const selectionTools = (
+    <SelectionTools
+      shape={selectionShape}
+      operation={selectionOperation}
+      depth={selectionDepth}
+      onShape={(v) => {
+        setSelectionShape(v);
+        setTool("Select");
+      }}
+      onOperation={setSelectionOperation}
+      onDepth={setSelectionDepth}
+      hasSelection={selected.length > 0}
+      onClear={() => setSelectionSafe([])}
+      onMatch={(kind) => {
+        const matches = all.filter(
+          (o) =>
+            kind === "all" ||
+            selected.some((chosen) =>
+              kind === "part"
+                ? chosen.node.ref === o.node.ref &&
+                  chosen.namespace === o.namespace
+                : kind === "color"
+                  ? chosen.colorCode === o.colorCode
+                  : chosen.layerId === o.layerId,
+            ),
+        );
+        receiveSelection(matches.map((o) => o.id));
+      }}
+    />
+  );
+  const replaceTool = selected.length > 0 && (
+    <ReplacePanel
+      project={project}
+      all={all}
+      selected={selected}
+      activeLayerId={activeLayer}
+      crossLayer={crossLayer}
+      onReplace={(payloads) =>
+        run(() => {
+          const p = editor.project;
+          const commands = payloads.map((payload) => ({
+            schemaVersion: 1 as const,
+            commandId: uid(),
+            expectedRevision: p.revision,
+            type: "parts.replace",
+            payload: {
+              ...payload,
+              includeHidden: false,
+              ...(!crossLayer ? { activeLayerId: activeLayer } : {}),
+            },
+          }));
+          const result =
+            commands.length === 1
+              ? command(commands[0].type, commands[0].payload)
+              : editor.transaction({
+                  commandId: uid(),
+                  expectedRevision: p.revision,
+                  commands,
+                });
+          // Replaced parts inside shared submodels may get new IDs.
+          const remapped = (result as { idRemappings?: Record<string, string> })
+            .idRemappings;
+          if (remapped)
+            setSelection((ids) => ids.map((id) => remapped[id] ?? id));
+          const n = payloads.reduce(
+            (sum, x) => sum + x.occurrenceIds.length,
+            0,
+          );
+          setStatus(
+            `Replaced ${n} part${n === 1 ? "" : "s"} with ${catalog[payloads[0].ref]?.name ?? payloads[0].ref}. Undo restores ${n === 1 ? "it" : "them"}.`,
+          );
+          return true;
+        })
+      }
+    />
   );
   const inspectorPanel = (
     <>
@@ -2120,77 +2253,69 @@ function Workspace() {
             </small>
           </div>
           <dl className="inspector-properties">
-            <dt>Source</dt>
-            <dd>
-              {inspection.source.mixed
-                ? "Mixed"
-                : sourceLabels[inspection.source.value]}
-            </dd>
             <dt>Colour</dt>
             <dd>
               {inspection.color.mixed
                 ? "Mixed"
                 : `${inspection.color.value.name} (${inspection.color.value.code})`}
             </dd>
-            <dt>Layer</dt>
-            <dd>
-              {inspection.layer.mixed ? "Mixed" : inspection.layer.value.name}
-            </dd>
-            <dt>Submodel</dt>
-            <dd>
-              {inspection.parent.mixed
-                ? "Mixed"
-                : inspection.parent.value.root
-                  ? "Main model"
-                  : inspection.parent.value.name}
-            </dd>
-            <dt>Orientation</dt>
-            <dd>
-              {inspection.orientation.mixed
-                ? "Mixed"
-                : inspection.orientation.value}
-            </dd>
             <dt>{selected.length === 1 ? "Size" : "Selection size"}</dt>
             <dd>
               {inspection.dimensions ? inspection.dimensions.label : "Unknown"}
               {inspection.dimensions && (
-                <small className="muted size-ldu">
+                <small className="muted size-ldu" hidden={!detailsOpen}>
                   {inspection.dimensions.ldu.join(" × ")} LDU incl. studs
                 </small>
               )}
             </dd>
-            <dt>Checks</dt>
-            <dd>
-              {inspection.issues.length
-                ? inspection.issues.join("; ")
-                : "No problems found"}
-            </dd>
+            {(detailsOpen || inspection.issues.length > 0) && (
+              <>
+                <dt>Checks</dt>
+                <dd>
+                  {inspection.issues.length
+                    ? inspection.issues.join("; ")
+                    : "No problems found"}
+                </dd>
+              </>
+            )}
+            <div className="prop-more" hidden={!detailsOpen}>
+              <dt>Layer</dt>
+              <dd>
+                {inspection.layer.mixed ? "Mixed" : inspection.layer.value.name}
+              </dd>
+              <dt>Submodel</dt>
+              <dd>
+                {inspection.parent.mixed
+                  ? "Mixed"
+                  : inspection.parent.value.root
+                    ? "Main model"
+                    : inspection.parent.value.name}
+              </dd>
+              <dt>Orientation</dt>
+              <dd>
+                {inspection.orientation.mixed
+                  ? "Mixed"
+                  : inspection.orientation.value}
+              </dd>
+              <dt>Source</dt>
+              <dd>
+                {inspection.source.mixed
+                  ? "Mixed"
+                  : sourceLabels[inspection.source.value]}
+              </dd>
+            </div>
           </dl>
-          <h3>
-            Position <small>LDU · 20 = 1 stud, 8 = 1 plate</small>
-          </h3>
-          <div className="numeric-row">
-            {["X", "Y", "Z"].map((axis, i) => (
-              <NumberInput
-                key={axis}
-                label={"Position " + axis}
-                value={
-                  inspection.position[i].mixed
-                    ? undefined
-                    : inspection.position[i].value
-                }
-                step={i === 1 ? 8 : 20}
-                onChange={(n) => void run(() => setAxis(i, n))}
-              />
-            ))}
-          </div>
-          {inspection.matrix && (
+          <button
+            className="text-button details-toggle"
+            aria-expanded={detailsOpen}
+            onClick={() => setDetailsOpen((v) => !v)}
+          >
+            {detailsOpen ? "Fewer details" : "More details"}
+          </button>
+          {detailsOpen && inspection.matrix && (
             <details className="affine-matrix">
-              <summary>Advanced: placement matrix</summary>
-              <p className="muted">
-                Rotation/scale matrix (rows) and position, exactly as saved in
-                the LDraw file.
-              </p>
+              <summary>Placement matrix</summary>
+              <p className="muted">Exactly as saved in the LDraw file.</p>
               <table>
                 <thead>
                   <tr>
@@ -2213,7 +2338,34 @@ function Workspace() {
               </table>
             </details>
           )}
-          <div className="button-row">
+          <div className="quick-actions">
+            <button
+              onClick={() =>
+                void run(() => {
+                  ensure(
+                    selected.length === 1,
+                    "INVALID_INPUT",
+                    "Select one part to rotate",
+                  );
+                  command("parts.transform", {
+                    ...scoped(),
+                    space: "ldraw",
+                    transform: {
+                      position: selected[0].transform.position,
+                      basis: compose(
+                        { position: [0, 0, 0], basis: rotationY(90) },
+                        {
+                          position: [0, 0, 0],
+                          basis: selected[0].transform.basis,
+                        },
+                      ).basis,
+                    },
+                  });
+                })
+              }
+            >
+              <Icon name="rotate" size={16} /> Rotate 90°
+            </button>
             <button
               onClick={() =>
                 void run(() =>
@@ -2240,95 +2392,25 @@ function Workspace() {
             >
               <Icon name="arrowDown" size={16} /> 1 plate
             </button>
-          </div>
-          <button
-            className="wide"
-            onClick={() =>
-              void run(() => {
-                ensure(
-                  selected.length === 1,
-                  "INVALID_INPUT",
-                  "Select one part to rotate",
-                );
-                command("parts.transform", {
-                  ...scoped(),
-                  space: "ldraw",
-                  transform: {
-                    position: selected[0].transform.position,
-                    basis: compose(
-                      { position: [0, 0, 0], basis: rotationY(90) },
-                      {
-                        position: [0, 0, 0],
-                        basis: selected[0].transform.basis,
-                      },
-                    ).basis,
-                  },
-                });
-              })
-            }
-          >
-            Rotate 90°
-          </button>
-          <button
-            className="wide"
-            onClick={() =>
-              void run(() =>
-                command("parts.recolor", {
-                  ...scoped(),
-                  colorCode: color,
-                  preserveFixedColors: true,
-                }),
-              )
-            }
-          >
-            Apply current colour
-          </button>
-          <ReplacePanel
-            project={project}
-            all={all}
-            selected={selected}
-            activeLayerId={activeLayer}
-            crossLayer={crossLayer}
-            onReplace={(payloads) =>
-              run(() => {
-                const p = editor.project;
-                const commands = payloads.map((payload) => ({
-                  schemaVersion: 1 as const,
-                  commandId: uid(),
-                  expectedRevision: p.revision,
-                  type: "parts.replace",
-                  payload: {
-                    ...payload,
-                    includeHidden: false,
-                    ...(!crossLayer ? { activeLayerId: activeLayer } : {}),
-                  },
-                }));
-                const result =
-                  commands.length === 1
-                    ? command(commands[0].type, commands[0].payload)
-                    : editor.transaction({
-                        commandId: uid(),
-                        expectedRevision: p.revision,
-                        commands,
-                      });
-                // Replaced parts inside shared submodels may get new IDs.
-                const remapped = (
-                  result as { idRemappings?: Record<string, string> }
-                ).idRemappings;
-                if (remapped)
-                  setSelection((ids) => ids.map((id) => remapped[id] ?? id));
-                const n = payloads.reduce(
-                  (sum, x) => sum + x.occurrenceIds.length,
-                  0,
-                );
-                setStatus(
-                  `Replaced ${n} part${n === 1 ? "" : "s"} with ${catalog[payloads[0].ref]?.name ?? payloads[0].ref}. Undo restores ${n === 1 ? "it" : "them"}.`,
-                );
-                return true;
-              })
-            }
-          />
-          <div className="button-row">
+            <button
+              className="quick-colour"
+              onClick={() =>
+                void run(() =>
+                  command("parts.recolor", {
+                    ...scoped(),
+                    colorCode: color,
+                    preserveFixedColors: true,
+                  }),
+                )
+              }
+            >
+              <i
+                className="quick-swatch"
+                style={{ background: colorHex(color) }}
+                aria-hidden="true"
+              />
+              Apply current colour
+            </button>
             <button
               onClick={() =>
                 void run(() => command("parts.duplicate", scoped()))
@@ -2343,48 +2425,39 @@ function Workspace() {
               Delete
             </button>
           </div>
-          <p className="muted">
-            {selected.length > 1
-              ? "A position value applies to every selected part. "
-              : ""}
-            Shared submodels become unique when edited.
-          </p>
+          <h3 className="position-heading">
+            Position <small>20 = 1 stud · 8 = 1 plate</small>
+          </h3>
+          <div className="numeric-row">
+            {["X", "Y", "Z"].map((axis, i) => (
+              <NumberInput
+                key={axis}
+                label={"Position " + axis}
+                value={
+                  inspection.position[i].mixed
+                    ? undefined
+                    : inspection.position[i].value
+                }
+                step={i === 1 ? 8 : 20}
+                onChange={(n) => void run(() => setAxis(i, n))}
+              />
+            ))}
+          </div>
+          {selected.length > 1 && (
+            <p className="muted">
+              Position values apply to every selected part.
+            </p>
+          )}
         </>
       ) : (
         <div className="empty-inspector">
-          <span>↖</span>
+          <span>
+            <Icon name="select" size={28} />
+          </span>
           <h3>Select a part</h3>
-          <p>Inspect dimensions, move, rotate or recolour your build.</p>
+          <p>Tap a part on the model to move, turn or recolour it.</p>
         </div>
       )}
-      <SelectionTools
-        shape={selectionShape}
-        operation={selectionOperation}
-        depth={selectionDepth}
-        onShape={(v) => {
-          setSelectionShape(v);
-          setTool("Select");
-        }}
-        onOperation={setSelectionOperation}
-        onDepth={setSelectionDepth}
-        hasSelection={selected.length > 0}
-        onClear={() => setSelectionSafe([])}
-        onMatch={(kind) => {
-          const matches = all.filter(
-            (o) =>
-              kind === "all" ||
-              selected.some((chosen) =>
-                kind === "part"
-                  ? chosen.node.ref === o.node.ref &&
-                    chosen.namespace === o.namespace
-                  : kind === "color"
-                    ? chosen.colorCode === o.colorCode
-                    : chosen.layerId === o.layerId,
-              ),
-          );
-          receiveSelection(matches.map((o) => o.id));
-        }}
-      />
     </>
   );
   return (
@@ -2601,204 +2674,264 @@ function Workspace() {
             onPointerUp={endCanvasGesture}
             onPointerCancel={endCanvasGesture}
           />
-          <div className={"view-controls hud-el" + (viewsOpen ? " open" : "")}>
-            {["Top", "Front", "Side"].map((v) => (
-              <button
-                key={v}
-                onClick={() => {
-                  if (v === "Fit") {
-                    renderer.current?.fit();
-                    return;
-                  }
-                  renderer.current?.setCamera({
-                    ...camera,
-                    projection: "orthographic",
-                    position:
-                      v === "Top"
-                        ? [0, -1000, 0]
-                        : v === "Front"
-                          ? [0, -150, 1000]
-                          : [1000, -150, 0],
-                    target: [0, -50, 0],
-                    up: v === "Top" ? [0, 0, -1] : [0, -1, 0],
-                    span: 700,
-                  });
-                }}
-              >
-                {v}
-              </button>
-            ))}
-            <div className="section-control explode-control">
-              <button
-                aria-pressed={explodeBricks > 0}
-                onClick={() => {
-                  if (explodeBricks) {
-                    setExplodeBricks(0);
-                    setStatus("Floors assembled. Editing tools are back.");
-                    return;
-                  }
-                  setTool("Navigate");
-                  setExplodeBricks(4);
-                  setStatus(
-                    "Exploded view: floors are lifted apart for viewing; editing is paused until you assemble.",
-                  );
-                }}
-              >
-                {explodeBricks ? "Assemble floors" : "Explode floors"}
-              </button>
-              {explodeBricks > 0 && (
-                <label>
-                  <span className="section-label">
-                    {explodeBricks} brick{explodeBricks === 1 ? "" : "s"} apart
-                  </span>
-                  <input
-                    type="range"
-                    aria-label="Explode spread"
-                    min={1}
-                    max={20}
-                    step={1}
-                    value={explodeBricks}
-                    onChange={(e) => setExplodeBricks(Number(e.target.value))}
-                  />
-                </label>
-              )}
-            </div>
-            <div className="section-control">
-              <button
-                aria-pressed={section !== null}
-                onClick={() => {
-                  if (section !== null) {
-                    setSection(null);
-                    setStatus("Section cut off.");
-                    return;
-                  }
-                  startSection("y");
-                }}
-              >
-                Section cut
-              </button>
-              {section !== null && sectionRange && (
-                <>
-                  <div
-                    className="section-axes"
-                    role="group"
-                    aria-label="Cut direction"
-                  >
-                    {(
-                      [
-                        ["y", "Height"],
-                        ["z", "Front–back"],
-                        ["x", "Left–right"],
-                      ] as const
-                    ).map(([axis, label]) => (
-                      <button
-                        key={axis}
-                        aria-pressed={section.axis === axis}
-                        onClick={() => startSection(axis)}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                  <label>
-                    <span className="section-label">
-                      {section.axis === "y"
-                        ? `Cut ${Math.round((sectionRange.max - section.at) / 8)} plates up`
-                        : `Cut ${Math.round((section.at - sectionRange.min) / 20)} studs in`}
-                    </span>
-                    <input
-                      type="range"
-                      aria-label="Section height"
-                      min={0}
-                      max={Math.max(
-                        1,
-                        Math.ceil(
-                          (sectionRange.max - sectionRange.min) /
-                            (section.axis === "y" ? 8 : 20),
-                        ),
-                      )}
-                      step={1}
-                      value={
-                        section.axis === "y"
-                          ? Math.round((sectionRange.max - section.at) / 8)
-                          : Math.round((section.at - sectionRange.min) / 20)
-                      }
-                      onChange={(e) => {
-                        const n = Number(e.target.value);
-                        setSection({
-                          ...section,
-                          at:
-                            section.axis === "y"
-                              ? sectionRange.max - n * 8
-                              : sectionRange.min + n * 20,
-                        });
-                      }}
-                    />
-                  </label>
+          <div
+            className={"view-controls hud-el" + (viewsOpen ? " open" : "")}
+            aria-label="Camera views"
+            role="group"
+          >
+            <div className="view-tabs" role="group" aria-label="View options">
+              {(["Angle", "Cut", "Floors", "Look"] as const)
+                .filter((t) => t !== "Floors" || mode !== "Play")
+                .map((t) => (
                   <button
-                    aria-pressed={!!section.flip}
+                    key={t}
+                    aria-pressed={viewTab === t}
+                    onClick={() => {
+                      setViewTab(t);
+                      if (
+                        t === "Floors" &&
+                        architectureOf(project).floors.length
+                      )
+                        setFloorGuides(true);
+                    }}
+                  >
+                    {t}
+                    {((t === "Cut" &&
+                      (section !== null || explodeBricks > 0)) ||
+                      (t === "Floors" && focusFloorId !== null)) && (
+                      <i className="view-tab-on" aria-hidden="true" />
+                    )}
+                  </button>
+                ))}
+            </div>
+            {viewTab === "Angle" && (
+              <div className="view-pane view-angles">
+                <button
+                  title="Fit the whole model in a 3D view"
+                  onClick={() => renderer.current?.fit()}
+                >
+                  Fit
+                </button>
+                {(["Top", "Front", "Side"] as const).map((v) => (
+                  <button
+                    key={v}
                     onClick={() =>
-                      setSection({ ...section, flip: !section.flip })
+                      renderer.current?.setCamera({
+                        ...camera,
+                        projection: "orthographic",
+                        position:
+                          v === "Top"
+                            ? [0, -1000, 0]
+                            : v === "Front"
+                              ? [0, -150, 1000]
+                              : [1000, -150, 0],
+                        target: [0, -50, 0],
+                        up: v === "Top" ? [0, 0, -1] : [0, -1, 0],
+                        span: 700,
+                      })
                     }
                   >
-                    Show other side
+                    {v}
                   </button>
-                </>
-              )}
-            </div>
-            <div
-              className="section-control look-control"
-              role="group"
-              aria-label="Render look"
-            >
-              <span className="look-label">Look</span>
-              {LOOK_NAMES.map((name) => (
-                <button
-                  key={name}
-                  aria-pressed={renderLook === name}
-                  onClick={() => chooseLook(name)}
-                >
-                  {name === "standard"
-                    ? "Standard"
-                    : name === "realistic"
-                      ? "Realistic"
-                      : "Photo"}
-                </button>
-              ))}
-            </div>
-            {mode !== "Play" && (
-              <FloorControls
-                project={project}
-                command={command}
-                run={run}
-                open={floorsOpen}
-                setOpen={setFloorsOpen}
-                focusFloorId={focusFloorId}
-                setFocusFloorId={setFocusFloorId}
-                ghostBelow={ghostBelow}
-                setGhostBelow={setGhostBelow}
-                guides={floorGuides}
-                setGuides={setFloorGuides}
-                labels={roomLabels}
-                setLabels={setRoomLabels}
-                sectionHeight={
-                  section?.axis === "y" && !section.flip ? section.at : null
-                }
-                exploded={explodeBricks > 0}
-                modelBottom={() =>
-                  renderer.current?.modelHeightRange()?.bottom ?? null
-                }
-                onPlaceLabel={(text) => {
-                  if (mode !== "Build") {
-                    setStatus("Switch to Build to place a room label.");
-                    return;
+                ))}
+              </div>
+            )}
+            {viewTab === "Cut" && (
+              <div className="view-pane">
+                <div className="section-control">
+                  <button
+                    className="view-switch"
+                    aria-pressed={section !== null}
+                    onClick={() => {
+                      if (section !== null) {
+                        setSection(null);
+                        setStatus("Section cut off.");
+                        return;
+                      }
+                      startSection("y");
+                    }}
+                  >
+                    Section cut
+                  </button>
+                  {section !== null && sectionRange ? (
+                    <>
+                      <div
+                        className="section-axes"
+                        role="group"
+                        aria-label="Cut direction"
+                      >
+                        {(
+                          [
+                            ["y", "Height"],
+                            ["z", "Front–back"],
+                            ["x", "Left–right"],
+                          ] as const
+                        ).map(([axis, label]) => (
+                          <button
+                            key={axis}
+                            aria-pressed={section.axis === axis}
+                            onClick={() => startSection(axis)}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                      <label>
+                        <span className="section-label">
+                          {section.axis === "y"
+                            ? `Cut ${Math.round((sectionRange.max - section.at) / 8)} plates up`
+                            : `Cut ${Math.round((section.at - sectionRange.min) / 20)} studs in`}
+                        </span>
+                        <input
+                          type="range"
+                          aria-label="Section height"
+                          min={0}
+                          max={Math.max(
+                            1,
+                            Math.ceil(
+                              (sectionRange.max - sectionRange.min) /
+                                (section.axis === "y" ? 8 : 20),
+                            ),
+                          )}
+                          step={1}
+                          value={
+                            section.axis === "y"
+                              ? Math.round((sectionRange.max - section.at) / 8)
+                              : Math.round((section.at - sectionRange.min) / 20)
+                          }
+                          onChange={(e) => {
+                            const n = Number(e.target.value);
+                            setSection({
+                              ...section,
+                              at:
+                                section.axis === "y"
+                                  ? sectionRange.max - n * 8
+                                  : sectionRange.min + n * 20,
+                            });
+                          }}
+                        />
+                      </label>
+                      <button
+                        aria-pressed={!!section.flip}
+                        onClick={() =>
+                          setSection({ ...section, flip: !section.flip })
+                        }
+                      >
+                        Show other side
+                      </button>
+                    </>
+                  ) : (
+                    <p className="view-hint">Slice the model to see inside.</p>
+                  )}
+                </div>
+                <div className="section-control explode-control">
+                  <button
+                    className="view-switch"
+                    aria-pressed={explodeBricks > 0}
+                    onClick={() => {
+                      if (explodeBricks) {
+                        setExplodeBricks(0);
+                        setStatus("Floors assembled. Editing tools are back.");
+                        return;
+                      }
+                      setTool("Navigate");
+                      setExplodeBricks(4);
+                      setStatus(
+                        "Exploded view: floors are lifted apart for viewing; editing is paused until you assemble.",
+                      );
+                    }}
+                  >
+                    {explodeBricks ? "Assemble floors" : "Explode floors"}
+                  </button>
+                  {explodeBricks > 0 ? (
+                    <label>
+                      <span className="section-label">
+                        {explodeBricks} brick{explodeBricks === 1 ? "" : "s"}{" "}
+                        apart
+                      </span>
+                      <input
+                        type="range"
+                        aria-label="Explode spread"
+                        min={1}
+                        max={20}
+                        step={1}
+                        value={explodeBricks}
+                        onChange={(e) =>
+                          setExplodeBricks(Number(e.target.value))
+                        }
+                      />
+                    </label>
+                  ) : (
+                    <p className="view-hint">
+                      Lift the floors apart to look in.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+            {viewTab === "Floors" && mode !== "Play" && (
+              <div className="view-pane">
+                <FloorControls
+                  project={project}
+                  command={command}
+                  run={run}
+                  focusFloorId={focusFloorId}
+                  setFocusFloorId={setFocusFloorId}
+                  ghostBelow={ghostBelow}
+                  setGhostBelow={setGhostBelow}
+                  guides={floorGuides}
+                  setGuides={setFloorGuides}
+                  labels={roomLabels}
+                  setLabels={setRoomLabels}
+                  sectionHeight={
+                    section?.axis === "y" && !section.flip ? section.at : null
                   }
-                  setLabelDraft(text);
-                  setViewsOpen(false);
-                  setStatus(`Tap the model where “${text}” goes.`);
-                }}
-                onStatus={setStatus}
-              />
+                  exploded={explodeBricks > 0}
+                  modelBottom={() =>
+                    renderer.current?.modelHeightRange()?.bottom ?? null
+                  }
+                  onPlaceLabel={(text) => {
+                    if (mode !== "Build") {
+                      setStatus("Switch to Build to place a room label.");
+                      return;
+                    }
+                    setLabelDraft(text);
+                    setViewsOpen(false);
+                    setStatus(`Tap the model where “${text}” goes.`);
+                  }}
+                  onStatus={setStatus}
+                />
+              </div>
+            )}
+            {viewTab === "Look" && (
+              <div className="view-pane">
+                <div
+                  className="look-control"
+                  role="group"
+                  aria-label="Render look"
+                >
+                  {LOOK_NAMES.map((name) => (
+                    <button
+                      key={name}
+                      aria-pressed={renderLook === name}
+                      onClick={() => chooseLook(name)}
+                    >
+                      {name === "standard"
+                        ? "Standard"
+                        : name === "realistic"
+                          ? "Realistic"
+                          : "Photo"}
+                    </button>
+                  ))}
+                </div>
+                <p className="view-hint">
+                  {renderLook === "standard"
+                    ? "Flat colours with outlines. Fastest."
+                    : renderLook === "realistic"
+                      ? "Shiny plastic and soft shadows."
+                      : "Sharpens itself while the view is still."}
+                </p>
+              </div>
             )}
           </div>
           {labelDraft !== null && mode === "Build" && (
@@ -2845,7 +2978,7 @@ function Workspace() {
             </div>
           )}
           {tool === "Place" && mode === "Build" && (
-            <div className="placement-card">
+            <div className={"placement-card" + (placeExact ? " exact" : "")}>
               <div>
                 <strong>
                   {currentPart.name} ·{" "}
@@ -2858,6 +2991,14 @@ function Workspace() {
                     : `${workplane.grid} LDU grid`}
                 </span>
               </div>
+              <button
+                className="placement-exact"
+                aria-label="Exact position"
+                aria-expanded={placeExact}
+                onClick={() => setPlaceExact((v) => !v)}
+              >
+                X Y Z
+              </button>
               <div className="placement-values">
                 {["X", "Y", "Z"].map((axis, i) => (
                   <NumberInput
@@ -2891,7 +3032,7 @@ function Workspace() {
                   );
                 }}
               >
-                ↻ {angle}°
+                <Icon name="rotate" size={16} /> {angle}°
               </button>
               <button
                 className="primary"
@@ -2925,59 +3066,37 @@ function Workspace() {
             <div className="mode-card">
               <h2>A different perspective.</h2>
               <p>
-                Position the camera freely, or enter an exact interior view.
-                Exports contain only the build.
+                Frame your build, then save the picture. Only the build is in
+                it.
               </p>
               <div className="numeric-row">
-                {["X", "Y", "Z"].map((axis, i) => (
-                  <NumberInput
-                    key={axis}
-                    label={"Camera " + axis}
-                    value={camera.position[i]}
-                    onChange={(n) =>
-                      setCamera((c) => ({
-                        ...c,
-                        position: c.position.map((x, j) =>
-                          i === j ? n : x,
-                        ) as Vec3,
-                      }))
-                    }
-                  />
-                ))}
+                <NumberInput
+                  label="Width"
+                  value={photoSize[0]}
+                  onChange={(n) => setPhotoSize([n, photoSize[1]])}
+                />
+                <NumberInput
+                  label="Height"
+                  value={photoSize[1]}
+                  onChange={(n) => setPhotoSize([photoSize[0], n])}
+                />
               </div>
-              <div className="numeric-row">
-                {["X", "Y", "Z"].map((axis, i) => (
-                  <NumberInput
-                    key={axis}
-                    label={"Target " + axis}
-                    value={camera.target[i]}
-                    onChange={(n) =>
-                      setCamera((c) => ({
-                        ...c,
-                        target: c.target.map((x, j) =>
-                          i === j ? n : x,
-                        ) as Vec3,
-                      }))
-                    }
-                  />
-                ))}
-              </div>
-              <div className="button-row">
-                <button
-                  onClick={() =>
-                    void run(() => renderer.current?.setCamera(camera))
-                  }
-                >
-                  Apply exact camera
-                </button>
-                <button
-                  onClick={() =>
-                    setCamera(renderer.current?.currentCamera() || camera)
-                  }
-                >
-                  Read current view
-                </button>
-              </div>
+              <label className="check">
+                <input
+                  type="checkbox"
+                  checked={transparent}
+                  onChange={(e) => setTransparent(e.target.checked)}
+                />
+                Transparent background
+              </label>
+              <button
+                className="primary wide"
+                disabled={busy}
+                onClick={() => void capture()}
+              >
+                Download PNG + manifest <Icon name="arrowDown" size={16} />
+              </button>
+              <h3>Saved views</h3>
               <form
                 className="bookmark-form"
                 onSubmit={(e) => {
@@ -3025,7 +3144,7 @@ function Workspace() {
                     ) with this bookmark
                   </label>
                 )}
-                <button className="wide">Save current camera bookmark</button>
+                <button className="wide">Save this view</button>
               </form>
               {Object.entries(project.cameraBookmarks).map(([name, spec]) => {
                 const view = architectureOf(project).views[name];
@@ -3053,41 +3172,70 @@ function Workspace() {
                   </button>
                 );
               })}
-              <CameraCollections
-                api={api.current!}
-                bookmarks={Object.keys(project.cameraBookmarks)}
-                size={photoSize}
-                transparent={transparent}
-                download={download}
-                onStatus={setStatus}
-              />
-              <div className="numeric-row">
-                <NumberInput
-                  label="Width"
-                  value={photoSize[0]}
-                  onChange={(n) => setPhotoSize([n, photoSize[1]])}
+              <details className="card-drawer">
+                <summary>Exact camera position</summary>
+                <div className="numeric-row">
+                  {["X", "Y", "Z"].map((axis, i) => (
+                    <NumberInput
+                      key={axis}
+                      label={"Camera " + axis}
+                      value={camera.position[i]}
+                      onChange={(n) =>
+                        setCamera((c) => ({
+                          ...c,
+                          position: c.position.map((x, j) =>
+                            i === j ? n : x,
+                          ) as Vec3,
+                        }))
+                      }
+                    />
+                  ))}
+                </div>
+                <div className="numeric-row">
+                  {["X", "Y", "Z"].map((axis, i) => (
+                    <NumberInput
+                      key={axis}
+                      label={"Target " + axis}
+                      value={camera.target[i]}
+                      onChange={(n) =>
+                        setCamera((c) => ({
+                          ...c,
+                          target: c.target.map((x, j) =>
+                            i === j ? n : x,
+                          ) as Vec3,
+                        }))
+                      }
+                    />
+                  ))}
+                </div>
+                <div className="button-row">
+                  <button
+                    onClick={() =>
+                      void run(() => renderer.current?.setCamera(camera))
+                    }
+                  >
+                    Apply exact camera
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCamera(renderer.current?.currentCamera() || camera)
+                    }
+                  >
+                    Read current view
+                  </button>
+                </div>
+              </details>
+              <details className="card-drawer">
+                <summary>Camera collection</summary>
+                <CameraCollections
+                  api={api.current!}
+                  bookmarks={Object.keys(project.cameraBookmarks)}
+                  size={photoSize}
+                  transparent={transparent}
+                  download={download}
+                  onStatus={setStatus}
                 />
-                <NumberInput
-                  label="Height"
-                  value={photoSize[1]}
-                  onChange={(n) => setPhotoSize([photoSize[0], n])}
-                />
-              </div>
-              <label className="check">
-                <input
-                  type="checkbox"
-                  checked={transparent}
-                  onChange={(e) => setTransparent(e.target.checked)}
-                />
-                Transparent background
-              </label>
-              <button
-                className="primary wide"
-                disabled={busy}
-                onClick={() => void capture()}
-              >
-                Download PNG + manifest <Icon name="arrowDown" size={16} />
-              </button>
+              </details>
               <QualityPanel renderer={renderer.current} />
             </div>
           )}
@@ -3385,23 +3533,7 @@ function Workspace() {
             </button>
           </div>
           {panel === "Inspector" ? (
-            <>
-              {inspectorPanel}
-              <ModelTools
-                editor={editor}
-                selection={selection}
-                activeLayerId={crossLayer ? undefined : activeLayer}
-                onSelect={setSelectionSafe}
-              />
-              <ClipboardTools
-                editor={editor}
-                selection={selection}
-                layerId={activeLayer}
-                crossLayer={crossLayer}
-                position={position}
-                onSelect={setSelectionSafe}
-              />
-            </>
+            inspectorPanel
           ) : (
             <>
               {layersPanel}
@@ -3416,7 +3548,7 @@ function Workspace() {
               />
             </>
           )}
-          <div hidden={panel !== "Inspector"}>
+          <div hidden={panel !== "Inspector" || !selection.length}>
             <TransformPanel
               editor={editor}
               renderer={() => renderer.current}
@@ -3433,7 +3565,29 @@ function Workspace() {
               modeRequest={transformModeRequest}
             />
           </div>
-          <div hidden={panel !== "Inspector"}>
+          {panel === "Inspector" && (
+            <ClipboardTools
+              editor={editor}
+              selection={selection}
+              layerId={activeLayer}
+              crossLayer={crossLayer}
+              position={position}
+              onSelect={setSelectionSafe}
+            />
+          )}
+          {/* Advanced tools: one row each, opened on demand. */}
+          <div className="tool-drawers" hidden={panel !== "Inspector"}>
+            <h3>More tools</h3>
+            {panel === "Inspector" && replaceTool}
+            {selectionTools}
+            {panel === "Inspector" && (
+              <ModelTools
+                editor={editor}
+                selection={selection}
+                activeLayerId={crossLayer ? undefined : activeLayer}
+                onSelect={setSelectionSafe}
+              />
+            )}
             <RigAuthoring
               editor={editor}
               project={project}
@@ -3446,19 +3600,22 @@ function Workspace() {
               project={project}
               activeLayerId={crossLayer ? undefined : activeLayer}
             />
+            <details className="workplane-drawer drawer">
+              <summary>Workplane and grid</summary>
+              <WorkplanePanel
+                value={workplane}
+                onChange={updateWorkplane}
+                pickingFace={pickingFace}
+                onCancelPick={() => setPickingFace(false)}
+                onPickFace={() => {
+                  setPickingFace(true);
+                  setTool("Select");
+                  setPanel("Canvas");
+                  setStatus("Tap a visible model face to align the workplane.");
+                }}
+              />
+            </details>
           </div>
-          <WorkplanePanel
-            value={workplane}
-            onChange={updateWorkplane}
-            pickingFace={pickingFace}
-            onCancelPick={() => setPickingFace(false)}
-            onPickFace={() => {
-              setPickingFace(true);
-              setTool("Select");
-              setPanel("Canvas");
-              setStatus("Tap a visible model face to align the workplane.");
-            }}
-          />
         </aside>
       </main>
       <footer
@@ -3579,7 +3736,7 @@ function Workspace() {
                 aria-label="Close export"
                 onClick={() => setInventoryOpen(false)}
               >
-                ✕
+                <Icon name="close" />
               </button>
             </div>
             <div className="export-shortcuts">
@@ -3601,10 +3758,10 @@ function Workspace() {
                 <small>Open photo studio</small>
               </button>
             </div>
-            <h3>BrickLink Wanted List</h3>
+            <h3>Parts list for BrickLink</h3>
             <p>
-              Generate a parts list locally. No account or network connection
-              required.
+              Make a Wanted List of every brick you need. It is made on this
+              device.
             </p>
             <div className="form-row">
               <label>
@@ -3622,32 +3779,45 @@ function Workspace() {
                   <option value="selection">Selection</option>
                 </select>
               </label>
-              <label>
-                Condition
-                <select
-                  value={condition}
+            </div>
+            <details className="dialog-more">
+              <summary>More options</summary>
+              <div className="form-row">
+                <label>
+                  Condition
+                  <select
+                    value={condition}
+                    onChange={(e) => {
+                      setCondition(e.target.value);
+                      setPreview(null);
+                    }}
+                  >
+                    <option value="any">Any</option>
+                    <option value="new">New</option>
+                    <option value="used">Used</option>
+                  </select>
+                </label>
+              </div>
+              <label className="check">
+                <input
+                  type="checkbox"
+                  checked={acceptUnknown}
                   onChange={(e) => {
-                    setCondition(e.target.value);
+                    setAcceptUnknown(e.target.checked);
                     setPreview(null);
                   }}
-                >
-                  <option value="any">Any</option>
-                  <option value="new">New</option>
-                  <option value="used">Used</option>
-                </select>
+                />
+                Allow part and colour pairs that are not audited yet
               </label>
-            </div>
-            <label className="check">
-              <input
-                type="checkbox"
-                checked={acceptUnknown}
-                onChange={(e) => {
-                  setAcceptUnknown(e.target.checked);
-                  setPreview(null);
-                }}
-              />
-              I accept uncertainty for unaudited part/colour combinations.
-            </label>
+              <button className="wide" onClick={() => void perLayer()}>
+                One list per layer (ZIP)
+              </button>
+              <p className="muted">
+                Upload the XML to BrickLink’s Wanted List. Uploading into a list
+                that already has parts may add to it instead of replacing it.
+                Not yet checked against a live upload.
+              </p>
+            </details>
             <button className="wide" onClick={() => void previewInventory()}>
               Preview parts list
             </button>
@@ -3781,14 +3951,6 @@ function Workspace() {
                 )}
               </>
             )}
-            <button className="wide" onClick={() => void perLayer()}>
-              Export one complete list per nonempty layer (ZIP)
-            </button>
-            <p className="muted">
-              Use BrickLink’s Wanted List XML upload. Importing into a populated
-              list may add demand instead of replacing it. Live destination
-              validation has not been performed.
-            </p>
           </section>
         </div>
       )}
@@ -3810,7 +3972,7 @@ function Workspace() {
                   setFillOpen(false);
                 }}
               >
-                ✕
+                <Icon name="close" />
               </button>
             </div>
             <p>

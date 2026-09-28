@@ -9,6 +9,7 @@ test("200-part UI fill, edit/undo, native round trip, offline inventory and exac
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
   await page.evaluate(() => window.brickEditor!.ready());
+  await page.getByRole("button", { name: "More tools" }).click();
   await page.getByRole("button", { name: "Rectangular fill" }).click();
   await page.getByLabel("Columns", { exact: true }).fill("20");
   await page.getByLabel("Rows", { exact: true }).fill("10");
