@@ -73,8 +73,7 @@ export function createAPI(
         signal,
       );
       ensure(
-        editor.project.id === source.id &&
-          editor.project.revision === source.revision,
+        editor.projectId === source.id && editor.revision === source.revision,
         "REVISION_CONFLICT",
         "Fill preview is stale; request a new preview",
       );
@@ -291,7 +290,7 @@ export function createAPI(
           "INVALID_INPUT",
           "Unknown import format",
         );
-        const baseRevision = editor.project.revision;
+        const baseRevision = editor.revision;
         const p =
           input.format === "ldraw"
             ? await jobs.wait<Project>(
@@ -320,7 +319,7 @@ export function createAPI(
             "Strict import refuses missing references",
           );
         ensure(
-          editor.project.revision === baseRevision,
+          editor.revision === baseRevision,
           "REVISION_CONFLICT",
           "Document changed during import",
         );
@@ -385,7 +384,7 @@ export function createAPI(
       },
       image: async (input: RenderRequest) => {
         ensure(
-          input.revision === editor.project.revision,
+          input.revision === editor.revision,
           "REVISION_CONFLICT",
           "Capture revision is stale",
         );
@@ -424,7 +423,7 @@ export function createAPI(
             activePlay.pause(false);
         }
         ensure(
-          input.revision === editor.project.revision,
+          input.revision === editor.revision,
           "REVISION_CONFLICT",
           "Document changed during capture",
         );

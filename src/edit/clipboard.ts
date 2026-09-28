@@ -34,7 +34,7 @@ export function copyToClipboard(
   const value = cut
     ? editor.cut({
         occurrenceIds: ids,
-        expectedRevision: editor.project.revision,
+        expectedRevision: editor.revision,
         commandId: uid(),
       }).fragment
     : editor.copy({ occurrenceIds: ids });
@@ -53,7 +53,7 @@ export function pasteFromClipboard(
   return editor.dispatch({
     schemaVersion: 1,
     commandId: uid(),
-    expectedRevision: editor.project.revision,
+    expectedRevision: editor.revision,
     type: "clipboard.paste",
     payload: {
       fragment,

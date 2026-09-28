@@ -107,7 +107,15 @@ type Entry = {
 export class RenderBatches {
   readonly root = new THREE.Group();
   private handles = new Map<string, THREE.Group>();
-  private signature = "";
+  /** Handles drawn through the batches, in `handles` order. */
+  private batched: THREE.Group[] = [];
+  private batchedSet = new Set<THREE.Object3D>();
+  /** Occurrences drawn live from their own handles (moving transient poses). */
+  private dynamic = new Set<string>();
+  /** Visibility of `batched` when the batches were generated; undefined = stale. */
+  private builtVisibility?: Uint8Array;
+  private scratchVisibility = new Uint8Array(0);
+  private traversal: THREE.Object3D[] = [];
   private generated: THREE.BufferGeometry[] = [];
   private instances: THREE.InstancedMesh[] = [];
   constructor() {
@@ -115,8 +123,45 @@ export class RenderBatches {
   }
   rebuild(handles: ReadonlyMap<string, THREE.Group>) {
     this.handles = new Map(handles);
-    this.signature = "";
+    this.batched = [...this.handles]
+      .filter(([id]) => !this.dynamic.has(id))
+      .map(([, group]) => group);
+    this.batchedSet = new Set(this.batched);
+    this.builtVisibility = undefined;
     this.clear();
+  }
+  /**
+   * Draw these occurrences from their live handles instead of the merged batches, so
+   * a moving pose only updates their matrices. Changing the set rebuilds once.
+   */
+  setDynamic(ids: Iterable<string>) {
+    const next = new Set(ids);
+    if (
+      next.size === this.dynamic.size &&
+      [...next].every((id) => this.dynamic.has(id))
+    )
+      return false;
+    this.dynamic = next;
+    this.rebuild(this.handles);
+    return true;
+  }
+  get dynamicIds(): ReadonlySet<string> {
+    return this.dynamic;
+  }
+  /** Exact per-frame check without allocating: batches depend only on handle visibility. */
+  private visibilityChanged() {
+    const count = this.batched.length;
+    if (this.scratchVisibility.length !== count)
+      this.scratchVisibility = new Uint8Array(count);
+    const current = this.scratchVisibility,
+      built = this.builtVisibility;
+    let changed = !built || built.length !== count;
+    for (let i = 0; i < count; i++) {
+      const visible = this.batched[i].visible ? 1 : 0;
+      current[i] = visible;
+      if (!changed && built![i] !== visible) changed = true;
+    }
+    return changed;
   }
   private clear() {
     this.root.clear();
@@ -126,9 +171,11 @@ export class RenderBatches {
     this.instances = [];
   }
   private synchronize() {
-    const visible = [...this.handles].filter(([, group]) => group.visible);
-    const signature = JSON.stringify(visible.map(([id]) => id));
-    if (signature === this.signature) return;
+    if (!this.visibilityChanged()) return;
+    const visible = [...this.handles].filter(
+      ([id, group]) => group.visible && !this.dynamic.has(id),
+    );
+    const signature = this.scratchVisibility.slice();
     this.clear();
     this.root.parent?.updateMatrixWorld(true);
     const parentInverse = new THREE.Matrix4()
@@ -322,7 +369,7 @@ export class RenderBatches {
         this.root.add(lines);
       }
     }
-    this.signature = signature;
+    this.builtVisibility = signature;
   }
   private mergeRaw(entries: Entry[]) {
     const first = entries[0].object;
@@ -409,20 +456,35 @@ export class RenderBatches {
     camera: THREE.Camera,
   ) {
     this.synchronize();
-    const saved = [...this.handles.values()].map(
-      (group) => [group, group.visible] as const,
-    );
-    for (const [group] of saved) group.visible = false;
+    // Batched handles are represented by `root`, so leave them out of the draw's scene
+    // traversal entirely. Hiding them was not enough: three still walks and recomposes
+    // every hidden descendant's matrix each frame. Their parent links are untouched and
+    // their world matrices stay maintained by the explicit updates that move them.
+    const parent = this.root.parent;
+    if (!parent) {
+      renderer.render(scene, camera);
+      return;
+    }
+    const children = parent.children;
+    const traversal = this.traversal;
+    traversal.length = 0;
+    for (const child of children)
+      if (!this.batchedSet.has(child)) traversal.push(child);
+    parent.children = traversal;
     try {
       renderer.render(scene, camera);
     } finally {
-      for (const [group, visible] of saved) group.visible = visible;
+      parent.children = children;
+      traversal.length = 0;
     }
   }
   dispose() {
     this.clear();
     this.root.removeFromParent();
     this.handles.clear();
-    this.signature = "";
+    this.batched = [];
+    this.batchedSet.clear();
+    this.dynamic.clear();
+    this.builtVisibility = undefined;
   }
 }

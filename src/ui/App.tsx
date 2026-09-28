@@ -192,7 +192,9 @@ function NumberInput({
   );
 }
 export default function App() {
-  const [availability, setAvailability] = useState(editor.materialization);
+  const [availability, setAvailability] = useState(
+    () => editor.materialization,
+  );
   const [workspaceEpoch, setWorkspaceEpoch] = useState(0);
   useEffect(
     () =>
@@ -215,7 +217,7 @@ export default function App() {
   );
 }
 function Workspace() {
-  const [project, setProject] = useState(editor.project),
+  const [project, setProject] = useState(() => editor.project),
     [transientView, setTransientView] = useState(false),
     [saveConflict, setSaveConflict] = useState(false),
     [saveCoordinationUnavailable, setSaveCoordinationUnavailable] =
@@ -288,7 +290,7 @@ function Workspace() {
     autosave = useRef<AutosaveQueue | undefined>(undefined),
     loaded = useRef(false),
     operationEpoch = useRef(0),
-    observedProjectId = useRef(editor.project.id),
+    observedProjectId = useRef(editor.projectId),
     projectRef = useRef(project),
     selectionRef = useRef(selection),
     interact = useRef({
@@ -352,7 +354,7 @@ function Workspace() {
     editor.dispatch({
       schemaVersion: 1,
       commandId: uid(),
-      expectedRevision: editor.project.revision,
+      expectedRevision: editor.revision,
       type,
       payload,
     });
@@ -407,7 +409,7 @@ function Workspace() {
           shape: interact.current.selectionShape,
           depth: interact.current.selectionDepth,
           renderer: renderer.current,
-          revision: editor.project.revision,
+          revision: editor.revision,
         }),
         (ids) => receiveSelection(ids),
         setStatus,
@@ -469,23 +471,23 @@ function Workspace() {
     const save = (p: typeof project) =>
       enqueueSourceSave(async () => {
         try {
-          if (editor.project.id === p.id) setSaveStatus("Saving…");
+          if (editor.projectId === p.id) setSaveStatus("Saving…");
           const store = new BrowserProjects(localStorage);
           saveRevisions.current.set(
             p.id,
             await store.save(p, saveRevisions.current.get(p.id) ?? null),
           );
-          if (editor.project.id === p.id) {
+          if (editor.projectId === p.id) {
             localStorage.setItem("brick-editor-current", p.id);
             setSaveCoordinationUnavailable(false);
             setSaveStatus(
-              editor.project.revision === p.revision
+              editor.revision === p.revision
                 ? "Saved revision " + p.revision
                 : "Unsaved changes",
             );
           }
         } catch (e) {
-          if (editor.project.id !== p.id) return;
+          if (editor.projectId !== p.id) return;
           if (
             (e as { code?: string }).code === "STORAGE_COORDINATION_UNAVAILABLE"
           )
@@ -504,7 +506,7 @@ function Workspace() {
     };
     document.addEventListener("visibilitychange", flushSave);
     const notifySavedChange = (event: StorageEvent) => {
-      const id = editor.project.id;
+      const id = editor.projectId;
       if (
         event.key !== "brick-editor:" + encodeURIComponent(id) + ":head" &&
         event.key !== "brick-editor-project-change"
@@ -513,7 +515,7 @@ function Workspace() {
       void new BrowserProjects(localStorage)
         .load(id)
         .then((saved) => {
-          if (editor.project.id !== id || !loaded.current) return;
+          if (editor.projectId !== id || !loaded.current) return;
           const known = saveRevisions.current.get(id);
           if (known !== undefined && (saved?.revision ?? null) !== known) {
             setSaveConflict(true);
@@ -539,7 +541,7 @@ function Workspace() {
     mechanisms.current = new MechanismBrowser(editor, () => renderer.current);
     play.current = new BrowserPlay(
       () => renderer.current,
-      () => editor.project.revision,
+      () => editor.revision,
       () => mechanisms.current?.exit(),
       () => editor.project,
     );
@@ -563,8 +565,8 @@ function Workspace() {
         return;
       }
       recoveryStarted = true;
-      const initialRevision = editor.project.revision,
-        initialId = editor.project.id;
+      const initialRevision = editor.revision,
+        initialId = editor.projectId;
       let recovered = false;
       try {
         const id = localStorage.getItem("brick-editor-current");
@@ -573,8 +575,8 @@ function Workspace() {
           : null;
         if (
           saved &&
-          editor.project.revision === initialRevision &&
-          editor.project.id === initialId
+          editor.revision === initialRevision &&
+          editor.projectId === initialId
         ) {
           saveRevisions.current.set(saved.id, saved.revision);
           observedProjectId.current = saved.id;
@@ -590,8 +592,7 @@ function Workspace() {
       releaseStartupRecovery();
       if (
         !recovered &&
-        (editor.project.revision !== initialRevision ||
-          editor.project.id !== initialId)
+        (editor.revision !== initialRevision || editor.projectId !== initialId)
       )
         autosave.current?.schedule(editor.project);
     };
@@ -976,7 +977,7 @@ function Workspace() {
               ? { kind: "submodel", occurrenceId: selection[0] || "" }
               : { kind: inventoryScope };
       const result = await api.current!.inventory.preview({
-        expectedRevision: editor.project.revision,
+        expectedRevision: editor.revision,
         format: "bricklink-wanted-xml",
         scope,
         condition: condition as any,
@@ -1714,8 +1715,8 @@ function Workspace() {
             onClick={() =>
               void run(async () => {
                 await autosave.current?.flush();
-                const baseRevision = editor.project.revision,
-                  projectId = editor.project.id;
+                const baseRevision = editor.revision,
+                  projectId = editor.projectId;
                 const backup = await api.current!.project.export({
                   format: "native",
                 });
@@ -1724,8 +1725,8 @@ function Workspace() {
                   projectId,
                 );
                 ensure(
-                  editor.project.id === projectId &&
-                    editor.project.revision === baseRevision,
+                  editor.projectId === projectId &&
+                    editor.revision === baseRevision,
                   "REVISION_CONFLICT",
                   "Your draft changed while reloading; it has been kept in memory.",
                 );
@@ -2324,12 +2325,14 @@ function Workspace() {
           <div hidden={panel !== "Inspector"}>
             <RigAuthoring
               editor={editor}
+              project={project}
               selection={selection}
               activeLayerId={crossLayer ? undefined : activeLayer}
               onSelect={setSelectionSafe}
             />
             <SeatAuthoring
               editor={editor}
+              project={project}
               activeLayerId={crossLayer ? undefined : activeLayer}
             />
           </div>
@@ -2751,7 +2754,7 @@ function Workspace() {
                   onClick={() =>
                     void run(() => {
                       ensure(
-                        fill.revision === editor.project.revision,
+                        fill.revision === editor.revision,
                         "REVISION_CONFLICT",
                         "Fill preview is stale",
                       );

@@ -35,7 +35,12 @@ describe("render-only batching", () => {
     batches.render(
       {
         render: () => {
-          expect([...handles.values()].every((g) => !g.visible)).toBe(true);
+          // Batched handles are left out of the draw traversal (not merely hidden),
+          // so three neither draws them nor recomposes their matrices per frame.
+          const reached = new Set<THREE.Object3D>();
+          scene.traverse((o) => reached.add(o));
+          expect([...handles.values()].some((g) => reached.has(g))).toBe(false);
+          expect([...handles.values()].every((g) => !!g.parent)).toBe(true);
         },
       },
       scene,
@@ -72,6 +77,51 @@ describe("render-only batching", () => {
       ),
     ).toThrow("context failure");
     expect([...handles.values()].every((g) => g.visible)).toBe(true);
+    // The scene graph is restored too: every handle is reachable again.
+    const reached = new Set<THREE.Object3D>();
+    scene.traverse((o) => reached.add(o));
+    expect([...handles.values()].every((g) => reached.has(g))).toBe(true);
+    batches.dispose();
+  });
+  it("draws moving (dynamic) occurrences live so later poses do not re-merge", () => {
+    const { scene, handles, batches, camera } = fixture();
+    const draw = (check: (reached: Set<THREE.Object3D>) => void = () => {}) =>
+      batches.render(
+        {
+          render: () => {
+            const reached = new Set<THREE.Object3D>();
+            scene.traverse((o) => reached.add(o));
+            check(reached);
+          },
+        },
+        scene,
+        camera,
+      );
+    draw();
+    expect((batches.root.children[0] as THREE.InstancedMesh).count).toBe(3);
+    expect(batches.setDynamic(["1"])).toBe(true);
+    expect(batches.setDynamic(["1"])).toBe(false);
+    draw((reached) => {
+      expect(reached.has(handles.get("1")!)).toBe(true);
+      expect(reached.has(handles.get("0")!)).toBe(false);
+    });
+    const packed = batches.root.children[0] as THREE.InstancedMesh;
+    expect(packed.count).toBe(2);
+    expect(packed.userData.occurrenceIds).toEqual(["0", "2"]);
+    // Moving the live handle only needs its matrix; the batches are reused as-is.
+    handles.get("1")!.position.x = 55;
+    handles.get("1")!.updateMatrixWorld(true);
+    draw();
+    expect(batches.root.children[0]).toBe(packed);
+    // Visibility of batched handles is still detected without a rebuild call.
+    handles.get("2")!.visible = false;
+    draw();
+    expect(batches.root.children).toHaveLength(1);
+    expect(batches.root.children[0].userData.occurrenceId).toBe("0");
+    expect(batches.setDynamic([])).toBe(true);
+    handles.get("2")!.visible = true;
+    draw();
+    expect((batches.root.children[0] as THREE.InstancedMesh).count).toBe(3);
     batches.dispose();
   });
   it("keeps reflected, sheared and transparent meshes on the reference path", () => {

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { colors } from "../catalog/catalog";
 import type { Editor } from "../core/commands";
 import { occurrences } from "../core/document";
-import { uid, type Vec3, type Transform } from "../core/types";
+import { uid, type Project, type Vec3, type Transform } from "../core/types";
 import {
   buildJointRig,
   rigAuthoringRequest,
@@ -41,11 +41,15 @@ const wheel = (): WheelDraft => ({
 
 export function RigAuthoring({
   editor,
+  project,
   selection,
   activeLayerId,
   onSelect,
 }: {
   editor: Editor;
+  /** The workspace's current snapshot; reading `editor.project` here deep-copied
+   * the whole document on every workspace render. */
+  project: Project;
   selection: string[];
   activeLayerId?: string;
   onSelect: (ids: string[]) => void;
@@ -93,8 +97,8 @@ export function RigAuthoring({
       key: string;
       result: ReturnType<typeof buildJointRig>;
     }>();
-  const project = editor.project;
-  const available = occurrences(project)
+  const all = useMemo(() => occurrences(project), [project]);
+  const available = all
     .filter(
       (o) =>
         o.visible &&
@@ -256,9 +260,9 @@ export function RigAuthoring({
     attempt(() => {
       if (!selection.length)
         throw new Error("Select parts in the canvas before assigning a group.");
-      const all = new Map(occurrences(project).map((o) => [o.id, o]));
+      const byId = new Map(all.map((o) => [o.id, o]));
       for (const id of selection) {
-        const o = all.get(id);
+        const o = byId.get(id);
         if (
           !o ||
           project.layers[o.layerId].locked ||

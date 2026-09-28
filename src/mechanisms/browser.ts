@@ -24,7 +24,7 @@ export class MechanismBrowser {
     this.unsubscribe = editor.subscribe(() => {
       if (
         this.session &&
-        this.session.snapshot().sourceRevision !== editor.project.revision
+        this.session.snapshot().sourceRevision !== editor.revision
       ) {
         this.exit();
         this.emit({
@@ -56,7 +56,7 @@ export class MechanismBrowser {
   private current() {
     ensure(this.session, "INVALID_INPUT", "Enter a mechanism preview first.");
     ensure(
-      this.session.snapshot().sourceRevision === this.editor.project.revision,
+      this.session.snapshot().sourceRevision === this.editor.revision,
       "REVISION_CONFLICT",
       "Project changed; re-enter the mechanism.",
     );
@@ -77,7 +77,7 @@ export class MechanismBrowser {
         "Mechanism preview was cancelled.",
       );
       ensure(
-        this.editor.project.revision === project.revision,
+        this.editor.revision === project.revision,
         "REVISION_CONFLICT",
         "Project changed while preparing the mechanism.",
       );

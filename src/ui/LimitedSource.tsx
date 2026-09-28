@@ -16,7 +16,7 @@ export function LimitedSource({
   enqueueSave: <T>(action: () => Promise<T>) => Promise<T>;
   knownSaveRevisions: Map<string, number>;
 }) {
-  const [project, setProject] = useState(editor.project);
+  const [project, setProject] = useState(() => editor.project);
   const [message, setMessage] = useState("");
   const [saveStatus, setSaveStatus] = useState("Saving source…");
   const [busy, setBusy] = useState(false);
@@ -75,7 +75,7 @@ export function LimitedSource({
     )
       .then((revision) => {
         knownSaveRevisions.set(project.id, revision);
-        if (editor.project.id === project.id)
+        if (editor.projectId === project.id)
           localStorage.setItem("brick-editor-current", project.id);
         if (active)
           setSaveStatus(
