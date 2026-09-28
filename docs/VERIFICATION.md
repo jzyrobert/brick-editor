@@ -2,20 +2,20 @@
 
 The final production build, clean install and test suites pass. These results establish the implemented subset, not completion of the entire specification.
 
-| Check                      | Result                                                                                                     |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `npm ci`                   | Clean lockfile install passes                                                                              |
-| `npm run build`            | TypeScript and Vite 6.4.3 pass                                                                             |
-| `npm test`                 | **237 tests pass**, 52 files, 0 failures                                                                   |
-| `npm run test:browser`     | **98 tests pass**, 0 failures, against the production bundle                                               |
-| Browser engine             | Playwright 1.63.0, Chromium 153.0.8010.12, SwiftShader software WebGL2                                     |
-| Layouts                    | 1440×1000 desktop, 1080×1800 touch, 360×800 touch                                                          |
-| `npm run library:validate` | 23 files and six physical parts; dependency closure, licence metadata and library/mapping hashes pass      |
-| `npm audit`                | 0 known vulnerabilities at verification time                                                               |
-| Formatting                 | Prettier check passes                                                                                      |
-| Standalone CLI inventory   | 200-part fixture produces 100 white + 100 red 3001 units, without a browser                                |
-| Standalone CLI render      | Fixed interior camera exports 800×600 PNG and revision/camera/library manifest                             |
-| Subdirectory deployment    | `/brick-editor/` works on an ordinary Python static HTTP server, including library loading and PNG capture |
+| Check                      | Result                                                                                                                             |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `npm ci`                   | Clean lockfile install passes                                                                                                      |
+| `npm run build`            | TypeScript and Vite 6.4.3 pass                                                                                                     |
+| `npm test`                 | **237 tests pass**, 52 files, 0 failures                                                                                           |
+| `npm run test:browser`     | **98 tests pass**, 0 failures, against the production bundle                                                                       |
+| Browser engine             | Playwright 1.63.0, Chromium 153.0.8010.12, SwiftShader software WebGL2                                                             |
+| Layouts                    | 1440×1000 desktop, 1080×1800 touch, 360×800 touch                                                                                  |
+| `npm run library:validate` | 611 files and 214 catalogue parts; bundle, dependency closure, licences, thumbnails, retired locks and library/mapping hashes pass |
+| `npm audit`                | 0 known vulnerabilities at verification time                                                                                       |
+| Formatting                 | Prettier check passes                                                                                                              |
+| Standalone CLI inventory   | 200-part fixture produces 100 white + 100 red 3001 units, without a browser                                                        |
+| Standalone CLI render      | Fixed interior camera exports 800×600 PNG and revision/camera/library manifest                                                     |
+| Subdirectory deployment    | `/brick-editor/` works on an ordinary Python static HTTP server, including library loading and PNG capture                         |
 
 Browser tests exercise a 200-part UI fill, command recolour/undo, native round trip, inventory preview/download, exact camera/alpha PNG readback, real starter geometry, both touch layouts, texture strict-refusal, fixed-colour decoration surviving repaint, reflected custom geometry, two-pointer placement separation, locked-layer atomicity, offline inventory, Photo UI transparent capture and cancelled import isolation. The domain suite also covers source paths/cycles, affine math, local-name override protection, XML escaping/invalid characters, stale inventory previews, native checksums, quota recovery, layer disposition, occurrence-scoped metadata, bookmark history, imported steps, revision monotonicity, unsafe source-record injection and a 10,000-reference parser fixture.
 

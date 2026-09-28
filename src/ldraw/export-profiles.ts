@@ -123,9 +123,9 @@ async function officialClosure(text: string, options: ExportOptions) {
     const body = new TextDecoder().decode(bytes);
     needed.set(name, { file, text: body, bytes });
     ensure(
-      needed.size <= 256,
+      needed.size <= 1024,
       "LIMIT_EXCEEDED",
-      "Dependency closure exceeds 256 definitions.",
+      "Dependency closure exceeds 1,024 definitions.",
     );
     options.progress?.("Verified " + file.path);
     for (const line of body.split(/\r?\n/)) {

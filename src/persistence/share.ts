@@ -2,7 +2,7 @@ import { deflateSync, Inflate, strToU8, strFromU8 } from "fflate";
 import { ensure, type Project } from "../core/types";
 import { sha256 } from "../core/hash";
 import { exportLDraw, importLDraw } from "../ldraw/io";
-import { libraryLock } from "../catalog/catalog";
+import { libraryLock, retiredLibraryLocks } from "../catalog/catalog";
 export const SHARE_LIMITS = {
   soft: 8192,
   hard: 32768,
@@ -90,8 +90,11 @@ export async function previewShare(fragment: string) {
     "Unsupported share version or codec",
   );
   ensure(
-    params.get("library") === libraryLock.releaseId &&
-      params.get("libraryHash") === libraryLock.manifestSha256,
+    [libraryLock, ...retiredLibraryLocks].some(
+      (lock) =>
+        params.get("library") === lock.releaseId &&
+        params.get("libraryHash") === lock.manifestSha256,
+    ),
     "REFERENCE_MISSING",
     "This link requires an unavailable library version",
   );

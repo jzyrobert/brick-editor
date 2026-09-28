@@ -28,7 +28,37 @@ export function occurrenceBox(project: Project, o: Occurrence): Bounds | null {
 }
 
 export type Surface = { point: Vec3; normal: Vec3 };
-export type NewPart = { width: number; depth: number; angle: number };
+export type NewPart = {
+  width: number;
+  depth: number;
+  angle: number;
+  /** Local source box; places parts whose origin is off-centre (slopes) flush. */
+  bounds?: { min: readonly number[]; max: readonly number[] };
+};
+/** x/z range of a new part's footprint about its origin after its turn. */
+function turnedExtent(part: NewPart) {
+  if (!part.bounds) {
+    const turned = Math.round(((part.angle % 180) + 180) % 180) === 90;
+    const x = (turned ? part.depth : part.width) / 2,
+      z = (turned ? part.width : part.depth) / 2;
+    return { x: [-x, x], z: [-z, z] };
+  }
+  const a = (part.angle * Math.PI) / 180,
+    c = Math.round(Math.cos(a) * 1e9) / 1e9,
+    s = Math.round(Math.sin(a) * 1e9) / 1e9;
+  const xs: number[] = [],
+    zs: number[] = [];
+  for (const x of [part.bounds.min[0], part.bounds.max[0]])
+    for (const z of [part.bounds.min[2], part.bounds.max[2]]) {
+      // The same turn as placement (rotationY): x' = cx + sz, z' = −sx + cz.
+      xs.push(c * x + s * z);
+      zs.push(-s * x + c * z);
+    }
+  return {
+    x: [Math.min(...xs), Math.max(...xs)],
+    z: [Math.min(...zs), Math.max(...zs)],
+  };
+}
 
 /**
  * Where a tap on an existing part should put the new part (spec §11.1 placement):
@@ -58,25 +88,23 @@ export function stackingTarget(
     return { plane: level(top), point: surface.point };
   }
   if (Math.abs(ny) < 0.3 && box) {
-    // Side face: step out by half the new part's extent along the face normal.
-    const turned = Math.round(((part.angle % 180) + 180) % 180) === 90;
-    const alongX = (turned ? part.depth : part.width) / 2,
-      alongZ = (turned ? part.width : part.depth) / 2;
+    // Side face: step out so the new part's turned box touches the face.
+    const extent = turnedExtent(part);
     const horizontal = Math.hypot(nx, nz) || 1;
     const ux = nx / horizontal,
       uz = nz / horizontal;
-    const step = Math.abs(ux) >= Math.abs(uz) ? alongX : alongZ;
-    const faceX = Math.abs(ux) >= Math.abs(uz),
-      edge = faceX
-        ? ux > 0
-          ? box.max[0]
-          : box.min[0]
-        : uz > 0
-          ? box.max[2]
-          : box.min[2];
-    const point: Vec3 = faceX
-      ? [edge + Math.sign(ux) * step, surface.point[1], surface.point[2]]
-      : [surface.point[0], surface.point[1], edge + Math.sign(uz) * step];
+    const point: Vec3 =
+      Math.abs(ux) >= Math.abs(uz)
+        ? [
+            ux > 0 ? box.max[0] - extent.x[0] : box.min[0] - extent.x[1],
+            surface.point[1],
+            surface.point[2],
+          ]
+        : [
+            surface.point[0],
+            surface.point[1],
+            uz > 0 ? box.max[2] - extent.z[0] : box.min[2] - extent.z[1],
+          ];
     return { plane: level(box.max[1]), point };
   }
   return null;

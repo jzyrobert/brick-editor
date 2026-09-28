@@ -75,6 +75,8 @@ import {
 import { occurrences } from "../core/document";
 import { conversion } from "../core/math";
 import { libraryLock } from "../catalog/catalog";
+import installedBounds from "../catalog/bounds.json";
+import { canonical } from "../ldraw/path";
 import { sha256, stable } from "../core/hash";
 /** Play renders continuously; cap its drawing buffer below phone DPRs of 2-3. */
 export const PLAY_PIXEL_RATIO_CAP = 1.5;
@@ -225,7 +227,8 @@ export class SceneAdapter {
   private handles = new Map<string, THREE.Group>();
   private cache = new Map<string, Promise<THREE.Group>>();
   private allPrototypes = new Set<THREE.Group>();
-  private libraryText = "";
+  /** Pinned official definitions by canonical name, each as a `0 FILE` block. */
+  private libraryBlocks = new Map<string, string>();
   private colorText = "";
   private rawCompiler?: RawPrimitiveCompiler;
   private updateEpoch = 0;
@@ -475,30 +478,37 @@ export class SceneAdapter {
       "INVALID_INPUT",
       "Library manifest hash mismatch",
     );
-    const manifest = JSON.parse(manifestText);
-    const sources = await Promise.all(
-      manifest.files.map(async (f: any) => {
-        const r = await fetch(base + f.path);
-        ensure(
-          r.ok,
-          "REFERENCE_MISSING",
-          "Library file unavailable: " + f.path,
-        );
-        const text = await r.text();
-        ensure(
-          (await sha256(text)) === f.sha256,
-          "INVALID_INPUT",
-          "Library file hash mismatch",
-        );
-        return { path: f.path, text };
-      }),
+    const manifest = JSON.parse(manifestText) as {
+      files: { path: string; sha256: string; bytes: number }[];
+      bundle: { path: string; sha256: string; bytes: number };
+    };
+    // One request: the bundle is every listed file's exact bytes in manifest
+    // order, and its hash is pinned through the manifest hash checked above.
+    const r = await fetch(base + manifest.bundle.path);
+    ensure(r.ok, "REFERENCE_MISSING", "Library bundle unavailable");
+    const bundle = new Uint8Array(await r.arrayBuffer());
+    ensure(
+      bundle.length === manifest.bundle.bytes &&
+        bundle.length === manifest.files.reduce((sum, f) => sum + f.bytes, 0) &&
+        (await sha256(bundle)) === manifest.bundle.sha256,
+      "INVALID_INPUT",
+      "Library bundle hash mismatch",
     );
-    this.libraryText = sources
-      .filter((s) => s.path !== "LDConfig.ldr")
-      .map(
-        (s) => "0 FILE " + s.path.replace(/^(parts|p)\//, "") + "\n" + s.text,
-      )
-      .join("\n");
+    const decoder = new TextDecoder();
+    let offset = 0;
+    const sources = manifest.files.map((f) => {
+      const text = decoder.decode(bundle.subarray(offset, offset + f.bytes));
+      offset += f.bytes;
+      return { path: f.path, text };
+    });
+    this.libraryBlocks = new Map(
+      sources
+        .filter((s) => s.path !== "LDConfig.ldr")
+        .map((s) => {
+          const name = s.path.replace(/^(parts|p)\//, "");
+          return [name, "0 FILE " + name + "\n" + s.text];
+        }),
+    );
     this.colorText = sources
       .find((s) => s.path === "LDConfig.ldr")!
       .text.split(/\r?\n/)
@@ -509,6 +519,35 @@ export class SceneAdapter {
         .map((m) => m[1])
         .filter((c) => c !== "16" && c !== "24"),
     );
+  }
+  /**
+   * Official definitions one compile can reach: every file referenced by the
+   * source and its pinned transitive dependencies (bounds.json), minus names the
+   * project defines itself. Parsing only this closure keeps a part compile
+   * independent of the pack size; anything unresolved still fails loudly.
+   */
+  private libraryClosure(source: string, exclude: Set<string>) {
+    const direct = installedBounds.dependencies.direct as Record<
+      string,
+      string[]
+    >;
+    const keep = new Set<string>();
+    const visit = (name: string) => {
+      if (keep.has(name) || exclude.has(name) || !this.libraryBlocks.has(name))
+        return;
+      keep.add(name);
+      for (const dep of direct[name] ?? []) visit(dep);
+    };
+    for (const match of source.matchAll(
+      /^\s*1\s+\S+(?:\s+\S+){12}\s+(.+?)\s*$/gm,
+    )) {
+      try {
+        visit(canonical(match[1]));
+      } catch {
+        /* Unsafe names resolve nothing; the loader reports them. */
+      }
+    }
+    return [...keep].map((name) => this.libraryBlocks.get(name)).join("\n");
   }
   private compilationKey(project: Project, source: string) {
     let keys = this.compilationKeys.get(project);
@@ -588,18 +627,10 @@ export class SceneAdapter {
       const localNames = new Set(
         Object.values(p.models).map((m) => m.name.toLowerCase()),
       );
-      const library =
-        o.namespace === "project"
-          ? this.libraryText
-              .split(/(?=^0 FILE )/m)
-              .filter(
-                (block) =>
-                  !localNames.has(
-                    block.match(/^0 FILE (.+)/)?.[1].toLowerCase() || "",
-                  ),
-              )
-              .join("")
-          : this.libraryText;
+      const library = this.libraryClosure(
+        context + "\n" + line + "\n" + projectSource,
+        o.namespace === "project" ? localNames : new Set<string>(),
+      );
       const text = normalizeBfcSource(
         "0 FILE __render__.ldr\n" +
           this.colorText +

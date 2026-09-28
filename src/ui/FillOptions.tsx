@@ -13,6 +13,8 @@ export const defaultFillOptions: FillOptionsState = {
   orientations: [0, 90],
   maskText: "",
 };
+/** Plain rectangular bricks and plates: the parts a box-packing fill can use. */
+const fillable = Object.values(catalog).filter((p) => p.fillable);
 export function FillOptions({
   value,
   onChange,
@@ -47,13 +49,13 @@ export function FillOptions({
                 onChange({
                   ...value,
                   height: Number(e.target.value),
-                  allowedRefs: Object.values(catalog)
+                  allowedRefs: fillable
                     .filter((p) => p.height === Number(e.target.value))
                     .map((p) => p.id),
                 })
               }
             >
-              {[...new Set(Object.values(catalog).map((p) => p.height))]
+              {[...new Set(fillable.map((p) => p.height))]
                 .sort((a, b) => a - b)
                 .map((h) => (
                   <option key={h} value={h}>
@@ -64,7 +66,7 @@ export function FillOptions({
           </label>
           <fieldset>
             <legend>Allowed parts</legend>
-            {Object.values(catalog)
+            {fillable
               .filter((p) => p.height === height)
               .map((p) => (
                 <label key={p.id} className="check-row">

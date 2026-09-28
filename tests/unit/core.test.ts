@@ -323,7 +323,11 @@ describe("offline Wanted List", () => {
   it("marks nonphysical transforms and unknown colours as blockers unless acknowledged", async () => {
     const p = template("wall");
     p.models.root.nodes[0].transform.basis[0] = -1;
-    p.models.root.nodes[1].colorCode = "71";
+    // BrickLink lists no Trans-Brown (LDraw 40) Brick 1 × 2, so that
+    // combination stays unverified.
+    const node = p.models.root.nodes[1];
+    if (node.kind !== "geometry") node.ref = "3004.dat";
+    node.colorCode = "40";
     const v = await new InventoryService().preview(p, {
       expectedRevision: 0,
       format: "bricklink-wanted-xml",

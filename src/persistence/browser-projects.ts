@@ -1,6 +1,7 @@
 import { AppError, ensure, type Project } from "../core/types";
 import { validate } from "../core/validate";
 import { validateSourceDocument } from "../core/document";
+import { adoptCurrentLocks } from "../catalog/catalog";
 import { sha256 } from "../core/hash";
 import { encodeNative } from "./native";
 import { LocalProjects, type StorageAdapter } from "./storage";
@@ -76,6 +77,7 @@ async function validSnapshot(
       const project = JSON.parse(snapshot.json);
       validate("project", project);
       validateSourceDocument(project);
+      adoptCurrentLocks(project);
       if (project.id !== id || project.revision !== snapshot.revision) continue;
       return { project, snapshot };
     } catch {

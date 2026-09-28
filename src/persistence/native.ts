@@ -3,6 +3,7 @@ import { type Project, ensure } from "../core/types";
 import { canonical } from "../ldraw/path";
 import { validate } from "../core/validate";
 import { validateSourceDocument } from "../core/document";
+import { adoptCurrentLocks } from "../catalog/catalog";
 import { sha256, stable } from "../core/hash";
 import { exportLDraw } from "../ldraw/io";
 import { resourceLimits, type ResourceLimits } from "../core/resource-profile";
@@ -224,5 +225,6 @@ export async function decodeNative(
       );
     }
   }
+  adoptCurrentLocks(p);
   return p;
 }

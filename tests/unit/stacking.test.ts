@@ -3,6 +3,9 @@ import { importLDraw } from "../../src/ldraw/io";
 import { occurrences } from "../../src/core/document";
 import { defaultWorkplane, placementOnPlane } from "../../src/edit/workplane";
 import { occurrenceBox, stackingTarget } from "../../src/edit/stacking";
+import { catalog } from "../../src/catalog/catalog";
+import { transformBounds } from "../../src/core/spatial";
+import type { Vec3 } from "../../src/core/types";
 
 const brick = { width: 80, depth: 40, angle: 0 };
 
@@ -57,6 +60,39 @@ describe("stacking placement", () => {
     expect(
       placementOnPlane(turned.point, turned.plane, 24, 90).position[0],
     ).toBe(60);
+  });
+  it("places an off-centre part (a slope) flush using its real box", () => {
+    const slope = catalog["3040b.dat"];
+    const spec = {
+      width: slope.width,
+      depth: slope.depth,
+      angle: 0,
+      bounds: slope.bounds,
+    };
+    // In front of the brick: the slope's box runs z −30…10 about its origin.
+    const front = stackingTarget(
+      wp,
+      { point: [0, -12, -20], normal: [0, 0, -1] },
+      box,
+      true,
+      spec,
+    )!;
+    const placed = placementOnPlane(
+      front.point,
+      front.plane,
+      slope.height,
+      0,
+      slope.align,
+    );
+    expect(placed.position).toEqual([10, -24, -30]);
+    const slopeBox = transformBounds(
+      { min: slope.bounds.min as Vec3, max: slope.bounds.max as Vec3 },
+      placed,
+    );
+    expect(slopeBox.max[2]).toBe(-20); // touches the brick's front face
+    expect(slopeBox.max[1]).toBe(0); // rests on the same level
+    // Stacking on a tile ignores studs: tiles are flat.
+    expect(catalog["3070b.dat"].studded).toBe(false);
   });
   it("falls back to the workplane for undersides and tilted workplanes", () => {
     expect(

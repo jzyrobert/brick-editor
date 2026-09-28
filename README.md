@@ -111,18 +111,21 @@ Host `dist/` at that path on an ordinary static HTTPS host. No server-side route
 
 ## Library preparation and provenance
 
-The shipped pack `public/libraries/starter-2026-09-27` contains six official parts and their exact dependency closure: 23 files including `LDConfig.ldr`. Every file has a source URL and SHA-256 in its manifest; all geometry files retain authors and actual licence headers. See [LDraw notices](public/notices/LDRAW.txt), [dependency notices](public/notices/DEPENDENCIES.txt) and [mapping provenance](src/catalog/mappings.json).
+The shipped pack `public/libraries/catalogue-2026-09-28` contains the 214 curated official parts of the placeable catalogue ([scripts/catalog-parts.json](scripts/catalog-parts.json)) and their exact dependency closure: 611 files (1.66 MB, about 260 kB gzip) including `LDConfig.ldr`. Every file has a source URL and SHA-256 in its manifest; all geometry files retain authors and actual licence headers. The renderer loads the pack as one byte-exact `bundle.txt` (every listed file concatenated in manifest order, hash pinned by the manifest). The superseded `starter-2026-09-27` pack is kept unchanged as a retired lock; every one of its files is byte-identical in the current pack, so projects pinned to it are re-pinned on load with the previous lock recorded in `metadata.previousLocks`. See [LDraw notices](public/notices/LDRAW.txt), [dependency notices](public/notices/DEPENDENCIES.txt) and [mapping provenance](src/catalog/mappings.json).
 
-The ingestion script is maintainer-only, never runtime:
+The ingestion scripts are maintainer-only, never runtime:
 
 ```sh
-python3 scripts/fetch-library.py
-npx tsx scripts/build-parts.ts
+python3 scripts/fetch-library.py catalogue-2026-09-28 2026-09-28 complete.zip  # official archive optional
+python3 scripts/review-bricklink.py   # evidence only; item numbers are set by review
+npx tsx scripts/build-parts.ts        # catalogue, bundle, mapping pack, locks, notices
+npm run library:bounds
+npm run library:thumbnails            # renders public/thumbnails/<release>/*.webp
 npm run library:validate
 npm run notices
 ```
 
-It is intentionally a starter-subset pipeline, not a whole-library importer. A new snapshot must use a new release directory/ID, followed by explicit lock updates and conformance tests; do not republish changed bytes under an existing release ID. `build-marketplace-mappings.ts` rebuilds the original curated correspondence pack with its own version/hash. No manufacturer model files, Web Lic source, BrickStep implementation, LDCad data or Minebench textures were copied.
+The upstream server rate-limits single-file requests, so `fetch-library.py` can read missing files from a locally downloaded official `complete.zip` (its hash is recorded in the manifest). Catalogue dimensions, stud-grid phase and the studded flag are derived from real source bounds, with a few reviewed footprint overrides for parts whose handles or leaves widen the box. Thumbnails are 128 px WebP renderings (about 470 kB for all parts) produced by the app's own LDraw/three.js pipeline in headless Chromium: white bodies (glass clear) that the UI tints to the held colour with a mask and multiply blend. It is a curated-subset pipeline, not a whole-library importer. A new snapshot must use a new release directory/ID, followed by explicit lock updates and conformance tests; do not republish changed bytes under an existing release ID. `build-marketplace-mappings.ts` rebuilds the curated correspondence pack with its own version/hash from reviewed BrickLink evidence ([scripts/bricklink-review.json](scripts/bricklink-review.json)). No manufacturer model files, Web Lic source, BrickStep implementation, LDCad data or Minebench textures were copied.
 
 Architecture decisions, source limitations and unimplemented milestones are detailed in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/STATUS.md](docs/STATUS.md). Machine-readable feature support is in [src/automation/capabilities.json](src/automation/capabilities.json).
 

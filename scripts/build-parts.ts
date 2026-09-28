@@ -1,104 +1,274 @@
-import { readFileSync, writeFileSync } from "node:fs";
+// Builds the placeable catalogue, the library bundle, the curated marketplace
+// mapping pack, their locks and the LDraw notices from the fetched library pack
+// (scripts/fetch-library.py), the curated part list (scripts/catalog-parts.json)
+// and the reviewed BrickLink evidence (scripts/bricklink-review.json).
+// Run `npm run library:bounds` afterwards, then build-thumbnails.ts.
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
-const root = "public/libraries/starter-2026-09-27/";
+import { sourceBounds, sourceDependencies } from "../src/core/spatial";
+
+type Options = {
+  tags?: string[];
+  keywords?: string;
+  glass?: boolean;
+  /** Stud footprint when protrusions (handles, clips, leaves) widen the box. */
+  footprint?: [number, number];
+  /** Local x/z offset (0 or 10 LDU) that puts the body on the stud grid. */
+  align?: [number, number];
+};
+type Review = {
+  name: string;
+  itemId: string | null;
+  note?: string;
+  retrieved: string;
+  candidates: Record<
+    string,
+    {
+      title: string;
+      knownColors: number[];
+      source: string;
+      colorSource: string;
+    } | null
+  >;
+};
+const spec = JSON.parse(readFileSync("scripts/catalog-parts.json", "utf8")) as {
+  libraryRelease: string;
+  categories: string[];
+  parts: [string, string, string, Options][];
+};
+const reviews = JSON.parse(
+  readFileSync("scripts/bricklink-review.json", "utf8"),
+) as Record<string, Review>;
+const release = spec.libraryRelease;
+const root = `public/libraries/${release}/`;
 const digest = (s: string | Buffer) =>
   createHash("sha256").update(s).digest("hex");
+const previous = existsSync("src/catalog/data.json")
+  ? JSON.parse(readFileSync("src/catalog/data.json", "utf8"))
+  : undefined;
+
+// 1. Pack manifest: exact per-file hashes, plus one byte-exact bundle (every file
+// concatenated in manifest order) so the renderer loads the pack in one request.
 const manifest = JSON.parse(readFileSync(root + "manifest.json", "utf8"));
+const chunks: Buffer[] = [];
 for (const f of manifest.files) {
   const bytes = readFileSync(root + f.path);
   f.sha256 = digest(bytes);
   f.bytes = bytes.length;
+  chunks.push(bytes);
 }
+const bundle = Buffer.concat(chunks);
+writeFileSync(root + "bundle.txt", bundle);
+manifest.bundle = {
+  path: "bundle.txt",
+  sha256: digest(bundle),
+  bytes: bundle.length,
+  layout: "Concatenation of every file's exact bytes in manifest order",
+};
 writeFileSync(root + "manifest.json", JSON.stringify(manifest, null, 2) + "\n");
-const info = [
-  ["3001", "Brick 2 × 4", 80, 40, 24],
-  ["3003", "Brick 2 × 2", 40, 40, 24],
-  ["3004", "Brick 1 × 2", 40, 20, 24],
-  ["3005", "Brick 1 × 1", 20, 20, 24],
-  ["3020", "Plate 2 × 4", 80, 40, 8],
-  ["3022", "Plate 2 × 2", 40, 40, 8],
-];
-const catalog = Object.fromEntries(
-  info.map(([id, name, x, z, h]) => [
-    id + ".dat",
-    {
-      id: id + ".dat",
-      name,
-      width: x,
-      depth: z,
-      height: h,
-      category: h === 8 ? "Plates" : "Bricks",
-      source: "official",
-      snapVerified: false,
-      inventoryBoundary: true,
-      geometryHash: manifest.files.find(
-        (f: any) => f.path === `parts/${id}.dat`,
-      ).sha256,
-    },
+
+// 2. Dimensions from real source bounds (LDU, LDraw axes: −Y up, origin on the
+// body top for ordinary parts). Footprint snaps to whole studs.
+const sources: Record<string, string> = Object.fromEntries(
+  manifest.files
+    .filter((f: { path: string }) => f.path !== "LDConfig.ldr")
+    .map((f: { path: string }) => [
+      f.path.replace(/^(parts|p)\//, ""),
+      readFileSync(root + f.path, "utf8"),
+    ]),
+);
+const closure = sourceDependencies(sources).transitive;
+const fileHash = Object.fromEntries(
+  manifest.files.map((f: { path: string; sha256: string }) => [
+    f.path.replace(/^(parts|p)\//, ""),
+    f.sha256,
   ]),
 );
+const round = (n: number) => Math.round(n * 1000) / 1000;
+const studs = (extent: number) => Math.max(1, Math.round(extent / 20)) * 20;
+const rectangular = /^(Brick|Plate) \d+ × \d+$/;
+/** Grid phase of one axis: the body edge nearest a 10-LDU line must land on a
+ * stud-cell boundary (a multiple of 20), so the origin sits at 0 or 10 mod 20. */
+const phase = (min: number, max: number) => {
+  const off = (v: number) => Math.abs(v - Math.round(v / 10) * 10);
+  const edge = off(max) < off(min) ? max : min;
+  const r = (((-edge % 20) + 20) % 20) / 10;
+  return Math.round(r) % 2 ? 10 : 0;
+};
+const categories = new Set(spec.categories);
+
+// 3. Marketplace mapping: only individually reviewed BrickLink identities; each
+// palette colour is verified only if BrickLink lists it for that item.
+const paletteToBrickLink: Record<string, string> = {
+  "0": "11",
+  "1": "7",
+  "4": "5",
+  "14": "3",
+  "15": "1",
+  "2": "6",
+  "19": "2",
+  "71": "86",
+  "72": "85",
+  "40": "13",
+  "47": "12",
+};
+const mappedParts: Record<
+  string,
+  { itemId: string; verifiedColors: string[]; source: string }
+> = {};
+const unmapped: Record<string, string> = {};
+
+const catalog = Object.fromEntries(
+  spec.parts.map(([number, name, category, options]) => {
+    const id = number + ".dat";
+    if (!categories.has(category)) throw new Error("Unknown category " + id);
+    for (const tag of options.tags ?? [])
+      if (!categories.has(tag)) throw new Error("Unknown tag " + tag);
+    const box = sourceBounds(sources, id);
+    if (!box) throw new Error("No geometry " + id);
+    const review = reviews[number];
+    if (!review) throw new Error("No BrickLink review for " + id);
+    let aliases: string[] = [];
+    if (review.itemId) {
+      const evidence = review.candidates[review.itemId];
+      if (!evidence) throw new Error("Unreviewed item " + review.itemId);
+      mappedParts["official:" + id] = {
+        itemId: review.itemId,
+        verifiedColors: Object.entries(paletteToBrickLink)
+          .filter(([, bl]) => evidence.knownColors.includes(Number(bl)))
+          .map(([code]) => code),
+        source: evidence.source,
+      };
+      if (review.itemId !== number) aliases = [review.itemId];
+    } else unmapped["official:" + id] = review.note ?? "Not reviewed";
+    return [
+      id,
+      {
+        id,
+        name,
+        width: options.footprint
+          ? options.footprint[0] * 20
+          : studs(box.max[0] - box.min[0]),
+        depth: options.footprint
+          ? options.footprint[1] * 20
+          : studs(box.max[2] - box.min[2]),
+        align: options.align ?? [
+          phase(box.min[0], box.max[0]),
+          phase(box.min[2], box.max[2]),
+        ],
+        // Placement rests the part's lowest point on the plane.
+        height: round(box.max[1]),
+        category,
+        ...(options.tags?.length ? { tags: options.tags } : {}),
+        ...(options.keywords ? { keywords: options.keywords } : {}),
+        ...(aliases.length ? { aliases } : {}),
+        // A stud row rises 4 LDU above the body top at the origin.
+        studded: Math.abs(box.min[1] + 4) < 0.01,
+        fillable: rectangular.test(name),
+        ...(options.glass ? { glass: true } : {}),
+        bounds: {
+          min: box.min.map(round),
+          max: box.max.map(round),
+        },
+        source: "official",
+        snapVerified: false,
+        inventoryBoundary: true,
+        geometryHash: fileHash[id],
+        dependencyHash: digest(
+          [...closure[id]]
+            .sort()
+            .map((ref) => ref + ":" + fileHash[ref])
+            .join("\n"),
+        ),
+        thumbnail: `thumbnails/${release}/${number}.webp`,
+      },
+    ];
+  }),
+);
 const mapping = {
-  id: "curated-starter-1",
-  version: 1,
+  id: "curated-catalogue-2",
+  version: 2,
   license: "CC0-1.0 (original curated factual correspondences)",
-  verifiedDate: "2026-09-27",
+  verifiedDate: "2026-09-28",
   source:
-    "Individually reviewed public catalogue identities; no bulk catalogue copied",
-  sources: info.map(
-    ([id]) => "https://www.bricklink.com/v2/catalog/catalogitem.page?P=" + id,
-  ),
-  colorSource: "https://www.bricklink.com/catalogColors.asp",
-  parts: Object.fromEntries(
-    info.map(([id]) => [
-      "official:" + id + ".dat",
-      { itemId: String(id), verifiedColors: ["0", "1", "4", "14", "15"] },
-    ]),
-  ),
-  colors: {
-    "0": "11",
-    "1": "7",
-    "4": "5",
-    "14": "3",
-    "15": "1",
-    "2": "6",
-    "19": "2",
-    "71": "86",
-    "72": "85",
-    "40": "12",
-  },
+    "Individually reviewed public BrickLink catalogue pages (title and known colours per item, scripts/bricklink-review.json); no bulk catalogue copied",
+  colorSource: "https://v2.bricklink.com/catalog/color-guide",
+  parts: mappedParts,
+  unmapped,
+  colors: paletteToBrickLink,
 };
 writeFileSync(
   "src/catalog/mappings.json",
   JSON.stringify(mapping, null, 2) + "\n",
 );
+
+// 4. Locks. A superseded release's lock is retained (never silently dropped) so
+// projects pinned to it can be checked against this pack and re-pinned with a
+// record of the previous lock. Rebuilding the same release just replaces it.
 const lock = {
   releaseId: manifest.releaseId,
   manifestSha256: digest(readFileSync(root + "manifest.json")),
   colorConfigSha256: digest(readFileSync(root + "LDConfig.ldr")),
 };
+const mappingLock = {
+  mappingPackId: mapping.id,
+  mappingPackSha256: digest(readFileSync("src/catalog/mappings.json")),
+};
+const retire = <T extends Record<string, string>>(
+  list: T[] | undefined,
+  old: T | undefined,
+  key: keyof T,
+  current: T,
+) =>
+  [...(list ?? []), ...(old && old[key] !== current[key] ? [old] : [])].filter(
+    (l, i, all) =>
+      l[key] !== current[key] && all.findIndex((m) => m[key] === l[key]) === i,
+  );
 writeFileSync(
   "src/catalog/data.json",
   JSON.stringify(
     {
+      categories: spec.categories,
       catalog,
       libraryLock: lock,
-      mappingLock: {
-        mappingPackId: mapping.id,
-        mappingPackSha256: digest(readFileSync("src/catalog/mappings.json")),
-      },
+      retiredLibraryLocks: retire(
+        previous?.retiredLibraryLocks,
+        previous?.libraryLock,
+        "releaseId",
+        lock,
+      ),
+      mappingLock,
+      retiredMappingLocks: retire(
+        previous?.retiredMappingLocks,
+        previous?.mappingLock,
+        "mappingPackId",
+        mappingLock,
+      ),
     },
     null,
     2,
   ) + "\n",
 );
+
+// 5. Notices: every distributed file with its authors and licence.
 writeFileSync(
   "public/notices/LDRAW.txt",
-  "LDraw starter subset; originals retain author and licence headers.\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\nSource: https://library.ldraw.org/\nNo geometry modifications. See library manifest for individual authors and hashes.\n" +
+  `LDraw official library subset (${release}); originals retain author and licence headers.\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\nLDraw.org Parts Library agreement: see LDRAW-CAreadme.txt\nSource: https://library.ldraw.org/\nNo geometry modifications. See library manifest for individual authors and hashes.\nCatalogue thumbnails are renderings of these unmodified files.\n` +
     manifest.files
       .map(
-        (f: any) =>
+        (f: { path: string; authors: string[]; license: string[] }) =>
           `${f.path}: ${f.authors.join("; ")} — ${f.license.join("; ")}`,
       )
       .join("\n") +
     "\n",
+);
+console.log(
+  JSON.stringify({
+    release,
+    parts: Object.keys(catalog).length,
+    files: manifest.files.length,
+    bundleBytes: bundle.length,
+    mapped: Object.keys(mappedParts).length,
+    unmapped: Object.keys(unmapped).length,
+  }),
 );

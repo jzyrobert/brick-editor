@@ -150,6 +150,8 @@ export function placementOnPlane(
   p: Workplane,
   height: number,
   angle: number,
+  /** Local x/z origin phase in LDU (catalogue `align`); 0 keeps plain grid snapping. */
+  align?: readonly number[],
 ): Transform {
   validateWorkplane(p);
   ensure(
@@ -160,12 +162,20 @@ export function placementOnPlane(
   const origin = planeOrigin(p),
     d = plus(hit, scale(origin, -1)),
     v = planeV(p),
-    snap = (n: number) => (p.free ? n : Math.round(n / p.grid) * p.grid);
+    // A part's origin may sit on a stud centre (odd stud counts) rather than a
+    // cell corner: its local x/z phase, turned with the part, shifts the grid.
+    a = ((angle % 360) + 360) % 360,
+    turned = Math.abs(a - 90) < 1e-6 || Math.abs(a - 270) < 1e-6,
+    studGrid = align && Math.abs(p.grid / 20 - Math.round(p.grid / 20)) < 1e-9,
+    phaseU = studGrid ? (turned ? align[1] : align[0]) : 0,
+    phaseV = studGrid ? (turned ? align[0] : align[1]) : 0,
+    snap = (n: number, phase: number) =>
+      p.free ? n : Math.round((n - phase) / p.grid) * p.grid + phase;
   return {
     position: plus(
       plus(
-        plus(origin, scale(p.u, snap(dot(d, p.u)))),
-        scale(v, snap(dot(d, v))),
+        plus(origin, scale(p.u, snap(dot(d, p.u), phaseU))),
+        scale(v, snap(dot(d, v), phaseV)),
       ),
       scale(p.normal, height),
     ),

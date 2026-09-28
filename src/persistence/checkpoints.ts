@@ -1,6 +1,7 @@
 import { sha256 } from "../core/hash";
 import { validate } from "../core/validate";
 import { validateSourceDocument } from "../core/document";
+import { adoptCurrentLocks } from "../catalog/catalog";
 import { ensure, uid, type Project } from "../core/types";
 
 /** Named checkpoints: explicit, independent recovery points for one project (spec §10.4).
@@ -131,6 +132,7 @@ export async function loadCheckpoint(id: string): Promise<{
   const project = JSON.parse(record.json) as Project;
   validate("project", project);
   validateSourceDocument(project);
+  adoptCurrentLocks(project);
   const { json: _json, hash: _hash, ...summary } = record;
   return { summary, project };
 }

@@ -3,6 +3,7 @@ import { type Project, ensure, AppError } from "../core/types";
 import { sha256 } from "../core/hash";
 import { validate } from "../core/validate";
 import { validateSourceDocument } from "../core/document";
+import { adoptCurrentLocks } from "../catalog/catalog";
 import { encodeNative } from "./native";
 export interface StorageAdapter {
   getItem(key: string): string | null;
@@ -37,6 +38,7 @@ export class LocalProjects {
           const p = JSON.parse(entry.json);
           validate("project", p);
           validateSourceDocument(p);
+          adoptCurrentLocks(p);
           ensure(
             p.id === id,
             "INVALID_INPUT",

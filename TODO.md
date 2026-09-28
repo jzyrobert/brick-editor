@@ -24,7 +24,9 @@ Suggested order for the next implementation pass:
 - [ ] Close M0 conformance gaps: whole-library BFC coverage beyond the new ancestor/internal dependency fixtures, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.
 - [ ] Complete M2 editing: connected-assembly selection, general structural regrouping, connector workplanes. Transform handles, visible/through box and lasso selection, clipboard, arrays, layer duplication, folders and ghosting now work.
 - [ ] Complete M3 reliability: fully portable library packs, native migrations, broader storage recovery coverage and graphics recovery across more drivers. Bounded autosave and conflict-fork UI are implemented.
-- [ ] Extend inventory coverage and resolution UI beyond the curated starter mappings.
+- [x] Expand the placeable catalogue (214 official parts, 12 categories) with rendered thumbnails, a scalable picker and bounds-derived placement. See STATUS "Catalogue expansion".
+- [ ] Catalogue follow-ups: connector data for snapping, decoration/print variants, per-colour thumbnails for glass, and a second library pack loaded progressively beyond the curated set.
+- [ ] Extend inventory coverage and resolution UI beyond the curated catalogue mappings (five catalogue parts are unmapped; see `mappings.json` `unmapped`).
 - [ ] Measure the specified performance gates, including repeated 5,000-part trials and reference hardware (the current single-run software benchmark is recorded).
 - [x] Revision review (spec §20.3): named checkpoints, occurrence-level change reports (UI/API/CLI), model-health panel and camera collections.
 - [x] Architectural aids (spec §20.2): horizontal and vertical section cuts, measure tool, exploded floors, floor guides with floor focus (upper floors hidden, lower floors ghosted, saved per camera bookmark) and room labels. Follow-up: room outlines/areas and dimension-string overlays. See STATUS "Floor guides, floor focus and room labels".

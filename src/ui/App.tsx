@@ -68,6 +68,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { Editor } from "../core/commands";
@@ -80,7 +81,12 @@ import {
   ensure,
 } from "../core/types";
 import { identity, rotationY, compose } from "../core/math";
-import { catalog, colors } from "../catalog/catalog";
+import {
+  catalog,
+  catalogCategoryOrder,
+  colors,
+  type CatalogPart,
+} from "../catalog/catalog";
 import { template } from "../catalog/templates";
 import { SceneAdapter, type SectionSpec } from "../render/adapter";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
@@ -102,6 +108,7 @@ import {
 import { LOOK_NAMES, lookControls, type LookName } from "../render/look";
 import "./styles.css";
 import "./hud.css";
+import "./parts-picker.css";
 const editor = new Editor();
 // A stored preference was acknowledged when chosen; otherwise the device decides.
 try {
@@ -163,6 +170,56 @@ function download(
   a.download = name;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+/** Static rendering of the part (white, glass clear), tinted to the held colour. */
+function PartThumb({ part, color }: { part: CatalogPart; color?: string }) {
+  const src = import.meta.env.BASE_URL + part.thumbnail;
+  // The tint mask reuses the image only once the lazy <img> has loaded it, so
+  // off-screen cards fetch nothing.
+  const [loaded, setLoaded] = useState<string>();
+  return (
+    <span
+      className={"part-thumb" + (loaded === src ? " loaded" : "")}
+      style={
+        {
+          "--tint": color ?? "#bac4cb",
+          ...(loaded === src
+            ? { "--thumb": `url("${new URL(src, location.href).href}")` }
+            : {}),
+        } as CSSProperties
+      }
+    >
+      <img
+        src={src}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+        onLoad={() => setLoaded(src)}
+      />
+    </span>
+  );
+}
+/** A part name whose sizes ("2 × 4", "1 × 2 × ⅔") never break across lines. */
+function PartName({ name }: { name: string }) {
+  return (
+    <>
+      {name.split(/(\d+(?: × [\d⅓⅔]+)+)/).map((piece, i) =>
+        i % 2 ? (
+          <span key={i} className="nowrap">
+            {piece}
+          </span>
+        ) : (
+          piece
+        ),
+      )}
+    </>
+  );
+}
+/** Compact hotbar label: the stud size ("2×4"), else the first word. */
+function shortPartLabel(name: string) {
+  const size = name.match(/\d+ × \d+/)?.[0];
+  return size ? size.replace(/ /g, "") : name.split(" ")[0];
 }
 function BrickIcon({
   width = 4,
@@ -490,7 +547,9 @@ function Workspace() {
   const updateWorkplane = (next: Workplane) => {
     setWorkplane(next);
     setPosition(
-      (v) => placementOnPlane(v, next, currentPart.height, angle).position,
+      (v) =>
+        placementOnPlane(v, next, currentPart.height, angle, currentPart.align)
+          .position,
     );
     setFill(null);
   };
@@ -892,8 +951,13 @@ function Workspace() {
           setWorkplane(face.plane);
           setPosition(
             (v) =>
-              placementOnPlane(v, face.plane, catalog[s.part].height, s.angle)
-                .position,
+              placementOnPlane(
+                v,
+                face.plane,
+                catalog[s.part].height,
+                s.angle,
+                catalog[s.part].align,
+              ).position,
           );
           setPickingFace(false);
           setFill(null);
@@ -951,8 +1015,13 @@ function Workspace() {
               s.workplane,
               surface,
               occurrenceBox(project, hit),
-              hit.namespace === "official" && !!catalog[hit.node.ref],
-              { width: spec.width, depth: spec.depth, angle: s.angle },
+              hit.namespace === "official" && !!catalog[hit.node.ref]?.studded,
+              {
+                width: spec.width,
+                depth: spec.depth,
+                angle: s.angle,
+                bounds: spec.bounds,
+              },
             );
           })();
         if (target) {
@@ -962,6 +1031,7 @@ function Workspace() {
               target.plane,
               catalog[s.part].height,
               s.angle,
+              catalog[s.part].align,
             ).position,
           );
           setStatus(
@@ -974,8 +1044,13 @@ function Workspace() {
         const v = r.planeIntersection(e.clientX, e.clientY, s.workplane);
         if (v) {
           setPosition(
-            placementOnPlane(v, s.workplane, catalog[s.part].height, s.angle)
-              .position,
+            placementOnPlane(
+              v,
+              s.workplane,
+              catalog[s.part].height,
+              s.angle,
+              catalog[s.part].align,
+            ).position,
           );
           setStatus("Placement preview ready. Choose Place part to commit.");
         }
@@ -1540,8 +1615,13 @@ function Workspace() {
               if (t === "Place")
                 setPosition(
                   (v) =>
-                    placementOnPlane(v, workplane, currentPart.height, angle)
-                      .position,
+                    placementOnPlane(
+                      v,
+                      workplane,
+                      currentPart.height,
+                      angle,
+                      currentPart.align,
+                    ).position,
                 );
             }}
             title={
@@ -1607,17 +1687,37 @@ function Workspace() {
     </>
   );
   const catalogParts = Object.values(catalog);
+  const partCategories = catalogCategories(catalogParts, catalogCategoryOrder);
   const visibleParts = searchCatalog(catalogParts, {
     query: search,
     category: partCategory,
     favouritesOnly: partCategory === undefined && favouritesOnly,
     favourites: new Set(favourites),
   });
+  // Browsing everything groups the palette by category; a search or filter is one ranked list.
+  const groupedParts =
+    !search.trim() && !partCategory && !favouritesOnly
+      ? partCategories
+          .map((category) => ({
+            category,
+            parts: visibleParts.filter((p) => p.category === category),
+          }))
+          .filter((g) => g.parts.length)
+      : [
+          {
+            category: favouritesOnly
+              ? "Favourites"
+              : partCategory
+                ? partCategory
+                : "Search results",
+            parts: visibleParts,
+          },
+        ];
   const choosePart = (id: string) => {
     const p = catalog[id];
     setPart(id);
     setPosition(
-      (v) => placementOnPlane(v, workplane, p.height, angle).position,
+      (v) => placementOnPlane(v, workplane, p.height, angle, p.align).position,
     );
     setTool("Place");
   };
@@ -1633,7 +1733,42 @@ function Workspace() {
       return next;
     });
   const related = relatedParts(catalogParts, currentPart);
-  const partsPanel = (
+  const heldHex = colorHex(color) ?? "#bac4cb";
+  const partCard = (p: (typeof catalogParts)[number]) => {
+    const favourite = favourites.includes(p.id);
+    return (
+      <div key={p.id} className="part-card-wrap">
+        <button
+          id={"part-" + p.id}
+          className={"part-card " + (part === p.id ? "chosen" : "")}
+          aria-pressed={part === p.id}
+          title={p.name + " · " + p.id.replace(".dat", "")}
+          onClick={() => choosePart(p.id)}
+        >
+          <PartThumb part={p} color={heldHex} />
+          <strong>
+            <PartName name={p.name} />
+          </strong>
+          <small>{p.id.replace(".dat", "")}</small>
+          {part === p.id && (
+            <span className="part-check">
+              <Icon name="check" size={16} />
+            </span>
+          )}
+        </button>
+        <button
+          className="part-favourite"
+          aria-label={"Favourite " + p.name}
+          aria-pressed={favourite}
+          title={favourite ? "Remove from favourites" : "Add to favourites"}
+          onClick={() => toggleFavourite(p.id)}
+        >
+          <Icon name="star" size={20} filled={favourite} />
+        </button>
+      </div>
+    );
+  };
+  const partsToolbar = (
     <>
       <div className="panel-title">
         <h2>Parts library</h2>
@@ -1647,6 +1782,7 @@ function Workspace() {
       <label className="search">
         <Icon name="search" size={18} />
         <input
+          type="search"
           placeholder="Search parts, sizes or numbers"
           aria-label="Search parts"
           value={search}
@@ -1655,126 +1791,40 @@ function Workspace() {
         <kbd>/</kbd>
       </label>
       <div className="part-filters" role="group" aria-label="Filter parts">
-        {[undefined, ...catalogCategories(catalogParts)].map((category) => (
-          <button
-            key={category ?? "all"}
-            aria-pressed={partCategory === category && !favouritesOnly}
-            onClick={() => {
-              setPartCategory(category);
-              setFavouritesOnly(false);
-            }}
-          >
-            {category ?? "All"}
-          </button>
-        ))}
-        <button
-          aria-pressed={favouritesOnly}
-          onClick={() => {
-            setPartCategory(undefined);
-            setFavouritesOnly((v) => !v);
-          }}
-        >
-          <Icon name="star" size={14} filled /> Favourites
-        </button>
-      </div>
-      {!search &&
-        !favouritesOnly &&
-        !partCategory &&
-        recentParts.length > 0 && (
-          <>
-            <h3 className="parts-heading">Recently used</h3>
-            <div className="part-chips">
-              {recentParts.map((id) => (
-                <button
-                  key={id}
-                  aria-pressed={part === id}
-                  onClick={() => choosePart(id)}
-                >
-                  {catalog[id].name}
-                </button>
-              ))}
-            </div>
-          </>
+        {[undefined, "Favourites", ...partCategories].map((category) =>
+          category === "Favourites" ? (
+            <button
+              key="favourites"
+              aria-pressed={favouritesOnly}
+              onClick={() => {
+                setPartCategory(undefined);
+                setFavouritesOnly((v) => !v);
+              }}
+            >
+              <Icon name="star" size={14} filled /> Favourites
+            </button>
+          ) : (
+            <button
+              key={category ?? "all"}
+              aria-pressed={partCategory === category && !favouritesOnly}
+              onClick={(e) => {
+                setPartCategory(category);
+                setFavouritesOnly(false);
+                e.currentTarget.scrollIntoView({
+                  block: "nearest",
+                  inline: "nearest",
+                });
+              }}
+            >
+              {category ?? "All"}
+            </button>
+          ),
         )}
-      <h3 className="parts-heading">
-        {favouritesOnly
-          ? "Favourites"
-          : partCategory
-            ? partCategory
-            : "Starter collection"}
-        <span className="offline-tag">Offline</span>
-      </h3>
-      {visibleParts.length === 0 && (
-        <div className="empty-parts" role="status">
-          <p>
-            {favouritesOnly && !favourites.length
-              ? "No favourites yet. Use the star on a part to keep it here."
-              : `No parts match${search ? ` “${search}”` : ""}.`}
-          </p>
-          <button
-            onClick={() => {
-              setSearch("");
-              setPartCategory(undefined);
-              setFavouritesOnly(false);
-            }}
-          >
-            Show all parts
-          </button>
-        </div>
-      )}
-      <div className="part-grid">
-        {visibleParts.map((p) => {
-          const favourite = favourites.includes(p.id);
-          return (
-            <div key={p.id} className="part-card-wrap">
-              <button
-                id={"part-" + p.id}
-                className={"part-card " + (part === p.id ? "chosen" : "")}
-                aria-pressed={part === p.id}
-                onClick={() => choosePart(p.id)}
-              >
-                <BrickIcon width={p.width / 20} depth={p.depth / 20} />
-                <strong>{p.name}</strong>
-                <small>{p.id.replace(".dat", "")}</small>
-                {part === p.id && (
-                  <span className="part-check">
-                    <Icon name="check" size={16} />
-                  </span>
-                )}
-              </button>
-              <button
-                className="part-favourite"
-                aria-label={"Favourite " + p.name}
-                aria-pressed={favourite}
-                title={
-                  favourite ? "Remove from favourites" : "Add to favourites"
-                }
-                onClick={() => toggleFavourite(p.id)}
-              >
-                <Icon name="star" size={20} filled={favourite} />
-              </button>
-            </div>
-          );
-        })}
       </div>
-      {related.length > 0 &&
-        visibleParts.length > 0 &&
-        !search &&
-        !partCategory &&
-        !favouritesOnly && (
-          <>
-            <h3 className="parts-heading related-title">
-              Related to {currentPart.name}
-            </h3>
-            <div className="part-chips">
-              {related.map((r) => (
-                <button key={r.id} onClick={() => choosePart(r.id)}>
-                  {r.name}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+    </>
+  );
+  const partsPanel = (
+    <>
       <div className="panel-title color-title">
         <h2>Colour</h2>
         <span>{colors.find((c) => c.code === color)?.name}</span>
@@ -1794,16 +1844,87 @@ function Workspace() {
           </button>
         ))}
       </div>
+      {!search &&
+        !favouritesOnly &&
+        !partCategory &&
+        recentParts.length > 0 && (
+          <>
+            <h3 className="parts-heading">Recently used</h3>
+            <div className="part-chips recent-parts">
+              {recentParts.map((id) => (
+                <button
+                  key={id}
+                  aria-pressed={part === id}
+                  onClick={() => choosePart(id)}
+                >
+                  <PartThumb part={catalog[id]} color={heldHex} />
+                  {catalog[id].name}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      {related.length > 0 &&
+        visibleParts.length > 0 &&
+        !search &&
+        !partCategory &&
+        !favouritesOnly && (
+          <>
+            <h3 className="parts-heading related-title">
+              Related to {currentPart.name}
+            </h3>
+            <div className="part-chips recent-parts related-parts">
+              {related.map((r) => (
+                <button key={r.id} onClick={() => choosePart(r.id)}>
+                  {r.name}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      {visibleParts.length === 0 && (
+        <div className="empty-parts" role="status">
+          <p>
+            {favouritesOnly && !favourites.length
+              ? "No favourites yet. Use the star on a part to keep it here."
+              : `No parts match${search ? ` “${search}”` : ""}.`}
+          </p>
+          <button
+            onClick={() => {
+              setSearch("");
+              setPartCategory(undefined);
+              setFavouritesOnly(false);
+            }}
+          >
+            Show all parts
+          </button>
+        </div>
+      )}
+      {visibleParts.length > 0 &&
+        groupedParts.map((group) => (
+          <section key={group.category} className="part-group">
+            <h3 className="parts-heading">
+              {group.category}
+              <span className="parts-heading-count">
+                {group.parts.length}
+                {group === groupedParts[0] && (
+                  <span className="offline-tag"> · Offline</span>
+                )}
+              </span>
+            </h3>
+            <div className="part-grid">{group.parts.map(partCard)}</div>
+          </section>
+        ))}
       <p className="muted">
-        Red, blue, yellow, white and black combinations are audited. Other
-        colours require inventory review.
+        Colours BrickLink lists for a part are audited for it; other
+        combinations need inventory review.
       </p>
       <div className="library-note">
         <Icon name="info" size={18} />
         <div>
           <strong>Real LDraw geometry</strong>
           <p>
-            6 audited parts · Grid placement
+            {catalogParts.length} official parts · Grid placement
             <br />
             Connector snapping is unverified.
           </p>
@@ -1967,13 +2088,24 @@ function Workspace() {
       {selected.length ? (
         <>
           <div className="selection-summary">
-            <BrickIcon
-              color={
-                inspection.color.mixed
-                  ? undefined
-                  : colorHex(inspection.color.value.code)
-              }
-            />
+            {!inspection.part.mixed && catalog[inspection.part.value.ref] ? (
+              <PartThumb
+                part={catalog[inspection.part.value.ref]}
+                color={
+                  inspection.color.mixed
+                    ? undefined
+                    : colorHex(inspection.color.value.code)
+                }
+              />
+            ) : (
+              <BrickIcon
+                color={
+                  inspection.color.mixed
+                    ? undefined
+                    : colorHex(inspection.color.value.code)
+                }
+              />
+            )}
             <strong>
               {inspection.part.mixed
                 ? `${selected.length} mixed parts`
@@ -2430,28 +2562,32 @@ function Workspace() {
             (panel === "Parts" ? "mobile-open" : "")
           }
         >
-          <div className="mobile-sheet-head">
-            <button
-              className="sheet-handle"
-              aria-label={sheetFull ? "Collapse panel" : "Expand panel"}
-              onClick={() => setSheetFull((v) => !v)}
-            />
-            <strong>
-              Parts
-              <small className="selected-colour">
-                {colors.find((c) => c.code === color)?.name}
-              </small>
-            </strong>
-            <button
-              className="primary"
-              onClick={() => {
-                setTool("Place");
-                setPanel("Canvas");
-              }}
-            >
-              Place selected part <Icon name="arrowRight" size={16} />
-            </button>
-            <button onClick={() => setPanel("Canvas")}>Close</button>
+          {/* Search and filters stay in reach while hundreds of parts scroll. */}
+          <div className="parts-sticky">
+            <div className="mobile-sheet-head">
+              <button
+                className="sheet-handle"
+                aria-label={sheetFull ? "Collapse panel" : "Expand panel"}
+                onClick={() => setSheetFull((v) => !v)}
+              />
+              <strong>
+                Parts
+                <small className="selected-colour">
+                  {colors.find((c) => c.code === color)?.name}
+                </small>
+              </strong>
+              <button
+                className="primary"
+                onClick={() => {
+                  setTool("Place");
+                  setPanel("Canvas");
+                }}
+              >
+                Place selected part <Icon name="arrowRight" size={16} />
+              </button>
+              <button onClick={() => setPanel("Canvas")}>Close</button>
+            </div>
+            {partsToolbar}
           </div>
           {partsPanel}
         </aside>
@@ -2739,9 +2875,21 @@ function Workspace() {
               </div>
               <button
                 aria-label="Rotate placement"
-                onClick={() =>
-                  setAngle((a) => (a + workplane.rotationIncrement) % 360)
-                }
+                onClick={() => {
+                  const next = (angle + workplane.rotationIncrement) % 360;
+                  setAngle(next);
+                  // A turn swaps which axis carries an odd stud count.
+                  setPosition(
+                    (v) =>
+                      placementOnPlane(
+                        v,
+                        workplane,
+                        currentPart.height,
+                        next,
+                        currentPart.align,
+                      ).position,
+                  );
+                }}
               >
                 ↻ {angle}°
               </button>
@@ -3379,16 +3527,8 @@ function Workspace() {
                 setPanel("Canvas");
               }}
             >
-              <BrickIcon
-                width={catalog[id].width / 20}
-                depth={catalog[id].depth / 20}
-                color={colors.find((c) => c.code === color)?.hex}
-              />
-              <span>
-                {catalog[id].name
-                  .replace(/^(Brick|Plate) /, "")
-                  .replace(/ /g, "")}
-              </span>
+              <PartThumb part={catalog[id]} color={heldHex} />
+              <span>{shortPartLabel(catalog[id].name)}</span>
             </button>
           ))}
         {(["Parts", "Layers", "Inspector"] as const).map((p) => (
