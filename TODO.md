@@ -26,6 +26,9 @@ Suggested order for the next implementation pass:
 - [ ] Complete M3 reliability: fully portable library packs, native migrations, broader storage recovery coverage and graphics recovery across more drivers. Bounded autosave and conflict-fork UI are implemented.
 - [ ] Extend inventory coverage and resolution UI beyond the curated starter mappings.
 - [ ] Measure the specified performance gates, including repeated 5,000-part trials and reference hardware (the current single-run software benchmark is recorded).
+- [x] Revision review (spec §20.3): named checkpoints, occurrence-level change reports (UI/API/CLI), model-health panel and camera collections.
+- [x] Architectural aids (spec §20.2), first slice: horizontal section cut and measure tool. Vertical cuts, exploded views, floor guides and room labels remain.
+- [x] Creative-mode HUD redesign for phone/tablet/desktop (see DESIGN.md). Follow-up: migrate legacy panel-content styles (slate tones, 11px help text) to the DESIGN.md scale.
 - [ ] Finish broader M4 exploration acceptance, connectors and advanced instruction editing. Play, publishing, sharing and pose application now work; user reprioritized exploration ahead of the remaining P0 gates.
 - [ ] Complete M5/M6 dynamic physics, advanced rig authoring and planning in the order specified.
 
