@@ -42,6 +42,7 @@ import {
 } from "../persistence/checkpoints";
 import { compareProjects } from "../core/compare";
 import { modelHealth } from "../core/health";
+import { connectorService } from "./connectors";
 import {
   applyResourcePreference,
   resourceStatus,
@@ -288,6 +289,11 @@ export function createAPI(
         return modelHealth(editor.project);
       },
     },
+    /** Verified stud/anti-stud connectors (docs/CONNECTORS.md). */
+    connectors: connectorService(() => {
+      editor.requireMaterialization();
+      return editor.project;
+    }),
     checkpoints: {
       list: async () => listCheckpoints(editor.projectId),
       create: async (input: { name: string }) =>

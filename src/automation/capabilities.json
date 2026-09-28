@@ -45,7 +45,7 @@
       "undoRedo": true,
       "occurrenceCopyOnWrite": true,
       "gridPlacement": true,
-      "snapVerified": false,
+      "snapVerified": "per part: 128 of 214 catalogue parts (stud/anti-stud only); see connectors.coverage()",
       "physicsSupported": false,
       "sourcePrimitiveDuplication": true,
       "projectReplacementUndo": false,
@@ -221,7 +221,7 @@
       "intersectionCandidates": "bounded broad-phase only; no verified collision or connectivity claim",
       "headlessWithoutWebGL": true,
       "cli": true,
-      "connectorCoverage": "unverified"
+      "connectorCoverage": "per occurrence: query({connectivity}) and connectivity.coveredIds / missingConnectorCoverageIds"
     }
   },
   "explodedView": {
@@ -261,13 +261,34 @@
     "maxViews": 24,
     "manifest": "one shared manifest per collection; one revision"
   },
+  "connectors": {
+    "pack": "ldraw-derived-studs-1 (derived from the pinned LDraw geometry at build time; CC BY 4.0 attribution)",
+    "families": {
+      "supported": ["stud", "antistud"],
+      "recordedNotValidated": ["side studs"],
+      "unsupported": [
+        "clips and bars",
+        "hinges",
+        "Technic pins and axles",
+        "jumper (half-offset) studs",
+        "side anti-studs"
+      ]
+    },
+    "api": "connectors.coverage(), connectors.part({ ref }), connectors.snap({ part, position, angle? | basis?, up? }), connectors.connected({ occurrenceIds }), connectors.groups()",
+    "cli": "brick-cli connectors --input file [--connected JSON-array-of-occurrence-IDs]",
+    "snapping": "Place previews move to the nearest position within one stud where the new part's anti-studs sit on verified studs (or its studs in anti-studs), keeping the chosen 90-degree turn and refusing positions whose body would pass through another part; otherwise bounds-based stacking",
+    "connectedSelection": "Selection tools > Select connected; follows verified stud connections only",
+    "connectorWorkplane": "Workplane and grid > Pick a stud: plane on the stud base, axes follow the part, grid on its stud lattice",
+    "tolerance": "0.5 LDU, opposed axes",
+    "verification": "whole-part rules: full-underside, matched-outline, solid-base (docs/CONNECTORS.md)"
+  },
   "modelHealth": {
     "api": "health.check()",
     "cli": "brick-cli health --input file",
     "checks": {
       "missingDefinitions": "exact",
       "unsupportedRendering": "exact",
-      "connectivity": "not-verified",
+      "connectivity": "exact when every part has verified connectors; approximate when some parts lack them; not-verified when none have them",
       "collisions": "approximate (upright catalogue parts, stud rows allowed)",
       "separateGroups": "approximate (touching boxes, not verified connections)",
       "instructionOmissions": "exact"
@@ -334,7 +355,6 @@
     "bytes": 8388608
   },
   "unimplemented": [
-    "connector snapping",
     "path tracing",
     "collaboration",
     "geometry sharing across colour variants",
@@ -344,7 +364,9 @@
     "dynamic mechanisms and suspension",
     "instruction annotations and callouts",
     "advanced material/texture fidelity",
-    "connected-assembly selection without connector coverage",
+    "connector snapping beyond stud/anti-stud (clips, hinges, pins, side studs)",
+    "connected-assembly selection through parts without verified connector data",
+    "snap-candidate cycling",
     "general structural regrouping",
     "whole-library BFC conformance beyond audited fixtures"
   ]

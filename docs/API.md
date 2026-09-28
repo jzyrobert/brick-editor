@@ -118,7 +118,7 @@ Rig creation UI supports fixed/moving hinge groups and a chassis with up to eigh
 
 ### Structured queries
 
-`query` retains the original colour/ref/layer/occurrence-ID filters and adds `scope` (all, visible, layers, explicit selection, or a submodel occurrence), `selection:true` for the current editor selection, and `connectivity:"unverified"|"verified"`. No verified connector pack is installed, so verified connectivity returns no matches; every returned occurrence is listed under missing connector coverage. CLI callers use an explicit selection scope instead of browser selection state.
+`query` retains the original colour/ref/layer/occurrence-ID filters and adds `scope` (all, visible, layers, explicit selection, or a submodel occurrence), `selection:true` for the current editor selection, and `connectivity:"unverified"|"verified"`, which filters by verified stud-connector coverage. Every result reports `connectivity.status` (`verified`, `partial` or `unverified`), `coveredIds` and `missingConnectorCoverageIds`. CLI callers use an explicit selection scope instead of browser selection state.
 
 Every result includes matched/project occurrence counts, counts by reference, unresolved reference names with affected occurrence IDs, and IDs whose affine transforms cannot represent physical rigid bodies. Reflections/shears remain valid authored geometry; that diagnostic does not say they are unrenderable.
 
@@ -176,3 +176,15 @@ if (eligibility.eligible) {
 While occupied, `positionAnchor` is `seated-avatar-root`, `avatar.state` is `seated`, and `occupancy` contains `rigId`, `seatId`, `profile`, `pelvisWorldLdu`, `avatarRootWorldLdu`, `effectiveEyeWorldLdu`, `localLookYaw` and `localLookPitch`. The last two are radians. Movement input controls the vehicle while look remains relative to it. The eye is fixed by the explicit seated profile; standing eye-height settings apply again after exit. Fly, teleport and spawn changes require leaving the seat first. Entry, exit and movement obey the capture mutation lock.
 
 See [vehicle profile and boundaries](PLAY-VEHICLES.md) for collision policy and supported geometry. These seats use upright unarticulated kinematics and rigid straight-leg figures; they do not imply inferred seats, arbitrary cabin fit, general moving-platform support or dynamic suspension.
+
+## Connectors
+
+Verified stud/anti-stud connectors ([method and coverage](CONNECTORS.md)):
+
+- `connectors.coverage()` returns the pack ID, part counts by verification rule, the supported/unsupported families and the verified part IDs.
+- `connectors.part({ ref })` returns one catalogue part's verification status, rule or reasons, and its connectors in LDraw space.
+- `connectors.snap({ part, position, angle? | basis?, up? })` snaps a proposed placement to the visible parts' verified connectors exactly as the Place tool does: `{ position, basis, contacts, targetIds }`, or `null` when nothing connects within one stud. The orientation is never changed; commit the result with `parts.add`.
+- `connectors.connected({ occurrenceIds })` returns every occurrence joined to them by verified stud connections, plus the seeds without verified data (`uncoveredSeeds`).
+- `connectors.groups()` returns connected groups (largest first), uncovered occurrence IDs and the number of stud contacts.
+
+`health.check()` reports the Connections check from the same data.

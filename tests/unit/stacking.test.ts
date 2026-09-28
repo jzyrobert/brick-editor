@@ -94,7 +94,19 @@ describe("stacking placement", () => {
     // Stacking on a tile ignores studs: tiles are flat.
     expect(catalog["3070b.dat"].studded).toBe(false);
   });
-  it("falls back to the workplane for undersides and tilted workplanes", () => {
+  it("hangs a part under a tapped bottom face, its body top on the part's base", () => {
+    const t = stackingTarget(
+      wp,
+      { point: [10, 0, 5], normal: [0, 1, 0] },
+      box,
+      true,
+      { ...brick, height: 24 },
+    )!;
+    const placed = placementOnPlane(t.point, t.plane, 24, 0);
+    // The existing brick spans y −24…0; the new one hangs at 0…24.
+    expect(placed.position[1]).toBe(0);
+  });
+  it("falls back to the workplane for undersides without a height and tilted workplanes", () => {
     expect(
       stackingTarget(
         wp,

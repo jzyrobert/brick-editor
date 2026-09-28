@@ -22,10 +22,12 @@ Suggested order for the next implementation pass:
 - [ ] Bound remaining compiler work across valid project graphs; occurrence guards alone do not prove those limits.
 
 - [ ] Close M0 conformance gaps: whole-library BFC coverage beyond the new ancestor/internal dependency fixtures, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.
-- [ ] Complete M2 editing: connected-assembly selection, general structural regrouping, connector workplanes. Transform handles, visible/through box and lasso selection, clipboard, arrays, layer duplication, folders and ghosting now work.
+- [x] Connectors (M2/M4 slice): stud/anti-stud connectors derived from the pinned LDraw geometry for 128 of 214 verified parts, connector snapping in Place (off-grid and turned targets, underside taps, clash refusal), verified connectivity in model health, Select connected, Pick a stud workplanes, API/CLI. See [connectors](docs/CONNECTORS.md).
+- [ ] Connector follow-ups: side studs/anti-studs, clips, hinges, pins and jumpers (LDCad shadow data needs its own licence review); snap-candidate cycling and hysteresis; occupancy beyond body boxes; record the connector pack in project library locks.
+- [ ] Complete M2 editing: general structural regrouping. Connected-assembly selection and connector workplanes now work for verified stud connections. Transform handles, visible/through box and lasso selection, clipboard, arrays, layer duplication, folders and ghosting now work.
 - [ ] Complete M3 reliability: fully portable library packs, native migrations, broader storage recovery coverage and graphics recovery across more drivers. Bounded autosave and conflict-fork UI are implemented.
 - [x] Expand the placeable catalogue (214 official parts, 12 categories) with rendered thumbnails, a scalable picker and bounds-derived placement. See STATUS "Catalogue expansion".
-- [ ] Catalogue follow-ups: connector data for snapping, decoration/print variants, per-colour thumbnails for glass, and a second library pack loaded progressively beyond the curated set.
+- [ ] Catalogue follow-ups: decoration/print variants, per-colour thumbnails for glass, and a second library pack loaded progressively beyond the curated set.
 - [ ] Extend inventory coverage and resolution UI beyond the curated catalogue mappings (five catalogue parts are unmapped; see `mappings.json` `unmapped`).
 - [ ] Measure the specified performance gates, including repeated 5,000-part trials and reference hardware (the current single-run software benchmark is recorded).
 - [x] Revision review (spec §20.3): named checkpoints, occurrence-level change reports (UI/API/CLI), model-health panel and camera collections.
@@ -33,7 +35,7 @@ Suggested order for the next implementation pass:
 - [x] Photorealistic rendering investigation: Standard (default), Realistic (IBL, tuned finishes, GTAO, fitted soft shadows, no outlines) and Photo (still accumulation) looks in Camera views, API and CLI. See [rendering looks](docs/RENDERING.md).
 - [ ] Rendering follow-ups: measure the Realistic/Photo looks on real phone GPUs; route Standard captures through the tone-mapping pipeline (they are currently not tone-mapped); consider logo-on-stud primitives once the library includes them.
 - [x] Creative-mode HUD redesign for phone/tablet/desktop (see DESIGN.md). Follow-up: migrate legacy panel-content styles (slate tones, 11px help text) to the DESIGN.md scale.
-- [ ] Finish broader M4 exploration acceptance, connectors and advanced instruction editing. Play, publishing, sharing and pose application now work; user reprioritized exploration ahead of the remaining P0 gates.
+- [ ] Finish broader M4 exploration acceptance, connector families beyond studs and advanced instruction editing. Play, publishing, sharing and pose application now work; user reprioritized exploration ahead of the remaining P0 gates.
 - [ ] Complete M5/M6 dynamic physics, advanced rig authoring and planning in the order specified.
 
 Use [docs/VERIFICATION.md](docs/VERIFICATION.md) for the existing test evidence and its limits. Update the status report and capability declarations when closing items; keep remaining compatibility and acceptance gaps explicit.
@@ -46,6 +48,6 @@ Latest additions: session Play layer exclusions independent of editor visibility
 
 Allowed-part masked fills and hinge/planar-vehicle creation are now implemented with preview and undo. Remaining: global packing optimization, connector-aware fill, compound-rig editing and arbitrary-frame authoring UI. Representable single-joint/vehicle rigs now support edit/removal with preserved imported data. Play strafing is camera-relative in both views and locomotion modes; keyboard and touch regressions cover the corrected left/right directions.
 
-Structured browser/CLI queries now cover submodel/current-selection scopes, conservative source bounds, candidate overlaps and actionable dependency/physical-transform diagnostics without WebGL. Verified connectivity remains unavailable pending connector coverage.
+Structured browser/CLI queries now cover submodel/current-selection scopes, conservative source bounds, candidate overlaps and actionable dependency/physical-transform diagnostics without WebGL. Verified stud connectivity is now reported per occurrence where connector data is verified.
 
 Nearby Play interaction now supports E/touch joint open/close and on-foot vehicle control using movement keys/joystick. Multiple active rigs now share the Play world. Contextual doors/sliders now animate on fixed ticks, support reversal and report blocked retries. Supported chassis/wheel vehicles now have conservative world/other-rig collision protection with persistent stop reasons and reverse retry; see [driving profile](docs/PLAY-VEHICLES.md). Follow-up: scene picking/line-of-sight, authored seats and collision-safe entry/exit, riding, articulated driving and dynamic collision response. These require an explicit simulation/authoring contract; the current vehicle action is labeled Control vehicle rather than Enter vehicle.

@@ -2,7 +2,8 @@
 // mapping pack, their locks and the LDraw notices from the fetched library pack
 // (scripts/fetch-library.py), the curated part list (scripts/catalog-parts.json)
 // and the reviewed BrickLink evidence (scripts/bricklink-review.json).
-// Run `npm run library:bounds` afterwards, then build-thumbnails.ts.
+// Run `npm run library:bounds` afterwards, then `npm run library:connectors`
+// (connector pack and snapVerified flags), then build-thumbnails.ts.
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { sourceBounds, sourceDependencies } from "../src/core/spatial";
@@ -171,6 +172,7 @@ const catalog = Object.fromEntries(
           max: box.max.map(round),
         },
         source: "official",
+        // Set by build-connectors.ts (npm run library:connectors).
         snapVerified: false,
         inventoryBoundary: true,
         geometryHash: fileHash[id],
@@ -238,6 +240,10 @@ writeFileSync(
         lock,
       ),
       mappingLock,
+      // Rewritten by build-connectors.ts, which must run after this script.
+      ...(previous?.connectorLock
+        ? { connectorLock: previous.connectorLock }
+        : {}),
       retiredMappingLocks: retire(
         previous?.retiredMappingLocks,
         previous?.mappingLock,
@@ -253,7 +259,7 @@ writeFileSync(
 // 5. Notices: every distributed file with its authors and licence.
 writeFileSync(
   "public/notices/LDRAW.txt",
-  `LDraw official library subset (${release}); originals retain author and licence headers.\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\nLDraw.org Parts Library agreement: see LDRAW-CAreadme.txt\nSource: https://library.ldraw.org/\nNo geometry modifications. See library manifest for individual authors and hashes.\nCatalogue thumbnails are renderings of these unmodified files.\n` +
+  `LDraw official library subset (${release}); originals retain author and licence headers.\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\nLDraw.org Parts Library agreement: see LDRAW-CAreadme.txt\nSource: https://library.ldraw.org/\nNo geometry modifications. See library manifest for individual authors and hashes.\nCatalogue thumbnails are renderings of these unmodified files.\nStud/anti-stud connector positions (connector pack ldraw-derived-studs-1, src/catalog/connectors.json) are derived from these files by scripts/build-connectors.ts and carry this attribution.\n` +
     manifest.files
       .map(
         (f: { path: string; authors: string[]; license: string[] }) =>

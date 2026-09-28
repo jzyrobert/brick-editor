@@ -26,8 +26,16 @@ it("spatial queries include studs, return candidate IDs and respect region conta
       bounds: { min: [-1, -4, -1], max: [1, -3, 1], mode: "contained" },
     }).count,
   ).toBe(0);
-  expect(q.connectivity.missingConnectorCoverageIds).toHaveLength(3);
-  expect(queryProject(p, { connectivity: "verified" }).count).toBe(0);
+  // 3001 has verified stud connectors, so every occurrence is covered.
+  expect(q.connectivity.status).toBe("verified");
+  expect(q.connectivity.missingConnectorCoverageIds).toHaveLength(0);
+  expect(q.connectivity.coveredIds).toHaveLength(3);
+  expect(queryProject(p, { connectivity: "verified" }).count).toBe(3);
+  expect(queryProject(p, { connectivity: "unverified" }).count).toBe(0);
+  const mixed = importLDraw([brick(0), brick(70, "mystery.dat")].join("\n"));
+  const partial = queryProject(mixed);
+  expect(partial.connectivity.status).toBe("partial");
+  expect(partial.connectivity.missingConnectorCoverageIds).toHaveLength(1);
 });
 it("scopes distinguish repeated submodel instances and explicit/current selections", () => {
   const p = importLDraw(

@@ -45,10 +45,15 @@ describe("model health", () => {
       basis: "exact",
     });
     expect(byId["missing-definitions"].detail).toContain("mystery.dat");
+    // Verified stud data: the stacked bricks connect, the lifted 1 × 1 floats;
+    // the missing part has no data, so the result is not exact.
     expect(byId.connectivity).toMatchObject({
-      status: "unknown",
-      basis: "not-verified",
+      status: "warning",
+      basis: "approximate",
+      count: 1,
     });
+    expect(byId.connectivity.occurrenceIds).toEqual([all[2].id]);
+    expect(byId.connectivity.detail).toContain("1 part has no verified");
     expect(byId["instruction-omissions"].status).toBe("warning");
     expect(byId["instruction-omissions"].occurrenceIds).toHaveLength(3);
     expect(byId["instruction-omissions"].detail).toContain(

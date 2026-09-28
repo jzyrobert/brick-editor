@@ -9,6 +9,7 @@ export function SelectionTools({
   onOperation,
   onDepth,
   onMatch,
+  onConnected,
   onClear,
   hasSelection,
 }: {
@@ -19,6 +20,8 @@ export function SelectionTools({
   onOperation: (v: SelectionOperation) => void;
   onDepth: (v: RegionMode) => void;
   onMatch: (v: "part" | "color" | "layer" | "all") => void;
+  /** Adds every part joined to the selection by verified stud connections. */
+  onConnected: () => void;
   onClear: () => void;
   hasSelection: boolean;
 }) {
@@ -78,10 +81,16 @@ export function SelectionTools({
             Match {kind}
           </button>
         ))}
+        <button disabled={!hasSelection} onClick={onConnected}>
+          Select connected
+        </button>
         <button onClick={() => onMatch("all")}>Select editable parts</button>
         <button onClick={onClear}>Clear selection</button>
       </div>
-      <p className="muted">Hidden and locked parts are skipped.</p>
+      <p className="muted">
+        Hidden and locked parts are skipped. Select connected follows verified
+        stud connections only.
+      </p>
     </details>
   );
 }

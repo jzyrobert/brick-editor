@@ -12,12 +12,17 @@ export function WorkplanePanel({
   onChange,
   onPickFace,
   pickingFace,
+  onPickStud,
+  pickingStud = false,
   onCancelPick,
 }: {
   value: Workplane;
   onChange: (plane: Workplane) => void;
   onPickFace: () => void;
   pickingFace: boolean;
+  /** Puts the workplane on a verified stud (connector workplane). */
+  onPickStud?: () => void;
+  pickingStud?: boolean;
   onCancelPick: () => void;
 }) {
   const [origin, setOrigin] = useState<Vec3>(value.origin),
@@ -95,10 +100,24 @@ export function WorkplanePanel({
       >
         {pickingFace ? "Cancel face picking" : "Pick a model face"}
       </button>
+      {onPickStud && (
+        <button
+          className="wide"
+          onClick={pickingStud ? onCancelPick : onPickStud}
+        >
+          {pickingStud ? "Cancel stud picking" : "Pick a stud"}
+        </button>
+      )}
       {pickingFace && (
         <p role="status">
           Tap a visible model face. Its actual triangle defines the plane; this
           does not certify a connector.
+        </p>
+      )}
+      {pickingStud && (
+        <p role="status">
+          Tap a stud of a part with verified connectors. The plane sits on the
+          stud and its grid follows that part.
         </p>
       )}
       {field(
@@ -161,8 +180,8 @@ export function WorkplanePanel({
           Apply numerical plane
         </button>
         <p className="muted">
-          Connector alignment is unavailable: no verified connector metadata is
-          installed.
+          For a connector-aligned plane, use Pick a stud; only parts with
+          verified stud data qualify.
         </p>
       </details>
       <p role="status">{error}</p>

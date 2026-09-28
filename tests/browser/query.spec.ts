@@ -80,7 +80,8 @@ test("spatial queries and actionable diagnostics work without WebGL", async ({
     selected: 1,
     min: [-40, -4, -20],
     inStud: 1,
-    connection: "unverified",
+    // One verified 3001 and one missing part: partial connector coverage.
+    connection: "partial",
   });
 });
 test("current selection queries follow the editor selection tools", async ({

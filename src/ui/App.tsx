@@ -15,6 +15,7 @@ import { WorkplanePanel } from "./WorkplanePanel";
 import {
   defaultWorkplane,
   placementOnPlane,
+  planeOrigin,
   placeBasis,
   type Workplane,
 } from "../edit/workplane";
@@ -43,6 +44,8 @@ import { Icon, type IconName } from "./icons";
 import { inspectSelection, sourceLabels } from "../edit/inspect";
 import { measure } from "../edit/measure";
 import { occurrenceBox, stackingTarget } from "../edit/stacking";
+import { sceneConnectors, snapPlacement, studWorkplane } from "../edit/snap";
+import { connectedAssembly } from "../core/connectivity";
 import {
   catalogCategories,
   relatedParts,
@@ -371,7 +374,7 @@ function Workspace() {
     [position, setPosition] = useState<Vec3>([0, -24, 0]),
     [angle, setAngle] = useState(0),
     [workplane, setWorkplane] = useState(defaultWorkplane),
-    [pickingFace, setPickingFace] = useState(false),
+    [pickingFace, setPickingFace] = useState<false | "face" | "stud">(false),
     [status, setStatus] = useState("Ready to build"),
     [statusFresh, setStatusFresh] = useState(false),
     [saveStatus, setSaveStatus] = useState("Not yet saved"),
@@ -947,6 +950,40 @@ function Workspace() {
       const r = renderer.current,
         s = interact.current;
       if (!r) return;
+      if (s.pickingFace === "stud") {
+        void run(() => {
+          const surface = r.pickSurface(e.clientX, e.clientY);
+          const hit =
+            surface &&
+            occurrences(editor.project).find(
+              (o) => o.id === surface.occurrenceId,
+            );
+          ensure(hit, "INVALID_INPUT", "Tap a stud of a part.");
+          const found = studWorkplane(hit!, surface!.point, s.workplane);
+          ensure(
+            found,
+            "INVALID_INPUT",
+            "That part has no verified stud near the tap; pick another part or use a face.",
+          );
+          setWorkplane(found!.plane);
+          setPosition(
+            (v) =>
+              placementOnPlane(
+                v,
+                found!.plane,
+                catalog[s.part].height,
+                s.angle,
+                catalog[s.part].align,
+              ).position,
+          );
+          setPickingFace(false);
+          setFill(null);
+          setStatus(
+            "Workplane set on the stud; its grid follows that part's studs.",
+          );
+        });
+        return;
+      }
       if (s.pickingFace) {
         void run(() => {
           const face = r.pickFace(e.clientX, e.clientY, undefined, s.workplane);
@@ -1028,39 +1065,60 @@ function Workspace() {
                 depth: spec.depth,
                 angle: s.angle,
                 bounds: spec.bounds,
+                height: spec.height,
               },
             );
           })();
-        if (target) {
-          setPosition(
-            placementOnPlane(
+        // Verified stud connectors refine the proposal so anti-studs sit on
+        // studs (or studs in anti-studs); otherwise the proposal stands.
+        const snap = (proposal: Vec3) => {
+          const project = editor.project;
+          return snapPlacement(
+            s.part,
+            placeBasis(s.workplane, s.angle),
+            proposal,
+            sceneConnectors(project, occurrences(project), (o) => o.visible),
+            s.workplane.normal,
+          );
+        };
+        const proposal = target
+          ? placementOnPlane(
               target.point,
               target.plane,
               catalog[s.part].height,
               s.angle,
               catalog[s.part].align,
-            ).position,
-          );
-          setStatus(
-            surface!.normal[1] < -0.7
-              ? "Preview stacked on top. Choose Place part to commit."
-              : "Preview placed beside the part. Choose Place part to commit.",
-          );
-          return;
-        }
-        const v = r.planeIntersection(e.clientX, e.clientY, s.workplane);
-        if (v) {
-          setPosition(
-            placementOnPlane(
-              v,
-              s.workplane,
-              catalog[s.part].height,
-              s.angle,
-              catalog[s.part].align,
-            ).position,
-          );
-          setStatus("Placement preview ready. Choose Place part to commit.");
-        }
+            ).position
+          : (() => {
+              const v = r.planeIntersection(e.clientX, e.clientY, s.workplane);
+              return (
+                v &&
+                placementOnPlane(
+                  v,
+                  s.workplane,
+                  catalog[s.part].height,
+                  s.angle,
+                  catalog[s.part].align,
+                ).position
+              );
+            })();
+        if (!proposal) return;
+        const snapped = snap(proposal);
+        setPosition(snapped?.position ?? proposal);
+        const where = !target
+          ? "Placement preview ready."
+          : surface!.normal[1] < -0.7
+            ? "Preview stacked on top."
+            : surface!.normal[1] > 0.7
+              ? "Preview placed underneath."
+              : "Preview placed beside the part.";
+        setStatus(
+          where +
+            (snapped
+              ? ` Snapped to ${snapped.contacts} stud connection${snapped.contacts === 1 ? "" : "s"}.`
+              : "") +
+            " Choose Place part to commit.",
+        );
         return;
       }
       const id = r.pick(e.clientX, e.clientY);
@@ -1185,7 +1243,7 @@ function Workspace() {
       if (action === "cancel") {
         if (interact.current.pickingFace) {
           setPickingFace(false);
-          setStatus("Face picking cancelled.");
+          setStatus("Picking cancelled.");
           return;
         }
         setSelectionSafe([]);
@@ -2164,6 +2222,35 @@ function Workspace() {
         );
         receiveSelection(matches.map((o) => o.id));
       }}
+      onConnected={() => {
+        const p = editor.project,
+          s = interact.current,
+          seeds = selectionRef.current;
+        const everything = occurrences(p);
+        const { occurrenceIds, uncoveredSeeds } = connectedAssembly(
+          p,
+          seeds,
+          everything,
+        );
+        const chosen = eligibleSelection(
+          p,
+          everything,
+          occurrenceIds,
+          s.activeLayer,
+          s.crossLayer,
+        );
+        setSelectionSafe(chosen);
+        const skipped = occurrenceIds.length - chosen.length;
+        setStatus(
+          `Selected ${chosen.length} connected part${chosen.length === 1 ? "" : "s"}.` +
+            (skipped > 0
+              ? ` ${skipped} connected part${skipped === 1 ? " is" : "s are"} hidden, locked or outside the editable layer.`
+              : "") +
+            (uncoveredSeeds.length
+              ? ` ${uncoveredSeeds.length} selected part${uncoveredSeeds.length === 1 ? " has" : "s have"} no verified connector data.`
+              : ""),
+        );
+      }}
     />
   );
   const replaceTool = selected.length > 0 && (
@@ -2942,9 +3029,13 @@ function Workspace() {
           )}
           {pickingFace && mode === "Build" && (
             <div className="face-pick-card">
-              <span>Tap a model face to align the workplane.</span>
+              <span>
+                {pickingFace === "stud"
+                  ? "Tap a stud to put the workplane on it."
+                  : "Tap a model face to align the workplane."}
+              </span>
               <button onClick={() => setPickingFace(false)}>
-                Cancel face picking
+                Cancel picking
               </button>
             </div>
           )}
@@ -3019,17 +3110,41 @@ function Workspace() {
                 onClick={() => {
                   const next = (angle + workplane.rotationIncrement) % 360;
                   setAngle(next);
-                  // A turn swaps which axis carries an odd stud count.
-                  setPosition(
-                    (v) =>
-                      placementOnPlane(
-                        v,
-                        workplane,
-                        currentPart.height,
-                        next,
-                        currentPart.align,
-                      ).position,
-                  );
+                  // A turn swaps which axis carries an odd stud count. The
+                  // preview keeps its level (a stacked part stays stacked) and
+                  // re-snaps to verified connectors where it can.
+                  setPosition((v) => {
+                    const n = workplane.normal,
+                      base = planeOrigin(workplane);
+                    const k =
+                      (v[0] - base[0]) * n[0] +
+                      (v[1] - base[1]) * n[1] +
+                      (v[2] - base[2]) * n[2] -
+                      currentPart.height;
+                    const level = {
+                      ...workplane,
+                      origin: workplane.origin.map(
+                        (o, i) => o + n[i] * k,
+                      ) as Vec3,
+                    };
+                    const turned = placementOnPlane(
+                      v,
+                      level,
+                      currentPart.height,
+                      next,
+                      currentPart.align,
+                    ).position;
+                    const p = editor.project;
+                    return (
+                      snapPlacement(
+                        currentPart.id,
+                        placeBasis(workplane, next),
+                        turned,
+                        sceneConnectors(p, occurrences(p), (o) => o.visible),
+                        workplane.normal,
+                      )?.position ?? turned
+                    );
+                  });
                 }}
               >
                 <Icon name="rotate" size={16} /> {angle}°
@@ -3605,10 +3720,17 @@ function Workspace() {
               <WorkplanePanel
                 value={workplane}
                 onChange={updateWorkplane}
-                pickingFace={pickingFace}
+                pickingFace={pickingFace === "face"}
+                pickingStud={pickingFace === "stud"}
+                onPickStud={() => {
+                  setPickingFace("stud");
+                  setTool("Select");
+                  setPanel("Canvas");
+                  setStatus("Tap a stud to put the workplane on it.");
+                }}
                 onCancelPick={() => setPickingFace(false)}
                 onPickFace={() => {
-                  setPickingFace(true);
+                  setPickingFace("face");
                   setTool("Select");
                   setPanel("Canvas");
                   setStatus("Tap a visible model face to align the workplane.");

@@ -51,3 +51,12 @@ npm run cli -- export-profile --input model.mpd --profile portable --include-off
 Use `--layer ID` (repeatable), `--scope selection --selection '["occurrence-id"]'`, or `--scope submodel --submodel 'occurrence-path-id'` for explicit scopes. Native profiles require `--scope all`. Unknown source metadata in filtered exports requires `--acknowledge-scoped-metadata`. Every operation writes a manifest report beside its output unless `--report` is supplied.
 
 A portable official-library ZIP contains `model.mpd` with unchanged official references, exact licensed dependency files under `ldraw/parts` and `ldraw/p`, hashes and attribution. Extract it and configure the receiving LDraw editor to search that `ldraw` directory. This editor opens the extracted MPD, not the ZIP. Use the recipient's colour configuration; the package does not embed `LDConfig.ldr`. Project-local replacements keep their custom identity. Native backups remain necessary for layers, groups, purchasing overrides, assets and rigs.
+
+## Connectors
+
+```sh
+npm run cli -- connectors --input build.ldr --output connectors.json
+npm run cli -- connectors --input build.ldr --connected '["[\"n1\"]"]'
+```
+
+Reports the connector pack coverage, the verified stud-connected groups (largest first), parts without verified connector data and the number of stud contacts. `--connected` takes a JSON array of occurrence IDs and adds the connected assembly of those parts. See [connectors](CONNECTORS.md).

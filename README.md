@@ -27,7 +27,7 @@ The browser suite uses pinned Playwright Chromium with **SwiftShader software We
 
 ## Build and export
 
-Choose a part and colour, tap the grid to position its translucent preview, then press **Place part**. Position fields use **LDraw units (LDU)**: 20 per stud, 8 per plate, negative Y upward. Numeric edits retain full affine precision. Grid placement makes no claim of connector compatibility.
+Choose a part and colour, tap the grid to position its translucent preview, then press **Place part**. Position fields use **LDraw units (LDU)**: 20 per stud, 8 per plate, negative Y upward. Numeric edits retain full affine precision. Tapping an existing part stacks the preview on, beside or under it; for parts with verified stud data it snaps so studs and anti-studs mate (see [connectors](docs/CONNECTORS.md)). Grid placement alone makes no claim of connector compatibility.
 
 Use Select to pick a part and Inspector to move, rotate, recolour, duplicate or delete it. Shift-click toggles a desktop selection. Inspector’s Selection tools also provide touch-accessible add/remove/toggle, matching part/colour/layer, and box/lasso with visible-surface or through-selection modes. Move/Rotate handles preview a gesture and commit one undo item; Escape or a second finger cancels. Navigate enables one-finger orbit; two-finger navigation never commits a placement. Undo/redo, numeric controls and exports are accessible without a keyboard. Shortcuts: `V` select, `B` place, `C` paint, `F` fit, Escape cancel, Delete remove, Ctrl/Cmd+Z undo, Shift+Ctrl/Cmd+Z redo, Ctrl/Cmd+D duplicate.
 

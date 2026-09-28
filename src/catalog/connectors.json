@@ -1,0 +1,7229 @@
+{
+ "id": "ldraw-derived-studs-1",
+ "schemaVersion": 1,
+ "library": {
+  "releaseId": "catalogue-2026-09-28",
+  "manifestSha256": "d4068ddde012c956562b73214018fa8d668cf3a17630108870d729a641ab663b"
+ },
+ "licence": "Derived by an automated pipeline from the official LDraw parts library geometry (CC BY 4.0, see public/notices/LDRAW.txt); the derived positions are distributed under the same licence with that attribution. No LDCad shadow-library data is used.",
+ "method": {
+  "studs": "Official stud primitives (stud.dat, stud2.dat, stud2a.dat, stud10.dat) found through the subfile tree; position = primitive origin (stud base), axis = transformed local −Y.",
+  "antistuds": "Each stud-lattice cell of the part's lowest plane is tested against the flattened triangles: a stud cylinder (radius 5.8, depth 3.8 LDU) must be free of geometry, the part must close over it and walls/tubes must surround it. Tube primitives (stud3.dat, stud3a.dat, stud4.dat, stud4a.dat, stud4o.dat, stud4od.dat, stud4s.dat, stud4s2.dat, stud18a.dat) are counted as corroborating evidence only.",
+  "verification": "full-underside: every footprint cell is a receptor, the lattice matches the catalogue footprint and the name's stud dimensions, and every stud stands over a receptor. matched-outline: receptors sit exactly under the studs and no cell is obstructed (round and shaped parts). solid-base: no cavity, full stud grid (baseplates). All rules also require upright studs on one level, a 4 LDU base grid and no unrecognised stud-sized cylinders."
+ },
+ "families": {
+  "supported": [
+   "stud",
+   "antistud"
+  ],
+  "recordedNotValidated": [
+   "side studs (studs not pointing up)"
+  ],
+  "unsupported": [
+   "clips and bars",
+   "hinges",
+   "Technic pins and axles",
+   "jumper (half-offset) studs",
+   "side anti-studs"
+  ]
+ },
+ "coverage": {
+  "parts": 214,
+  "verified": 128,
+  "unverified": 86,
+  "byRule": {
+   "full-underside": 115,
+   "matched-outline": 9,
+   "solid-base": 4
+  }
+ },
+ "parts": {
+  "3005.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3004.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3622.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     0,
+     -20,
+     3
+    ]
+   ],
+   "tubes": 2
+  },
+  "3010.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "3009.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -50,
+     6
+    ],
+    [
+     "a",
+     24,
+     0,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 5
+  },
+  "3008.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -70,
+     8
+    ],
+    [
+     "a",
+     24,
+     0,
+     -70,
+     8
+    ]
+   ],
+   "tubes": 7
+  },
+  "6111.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -90,
+     10
+    ],
+    [
+     "a",
+     24,
+     0,
+     -90,
+     10
+    ]
+   ],
+   "tubes": 9
+  },
+  "6112.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -110,
+     12
+    ],
+    [
+     "a",
+     24,
+     0,
+     -110,
+     12
+    ]
+   ],
+   "tubes": 11
+  },
+  "2465.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -150,
+     16
+    ],
+    [
+     "a",
+     24,
+     0,
+     -150,
+     16
+    ]
+   ],
+   "tubes": 15
+  },
+  "3003.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3002.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -20,
+     3
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     -10,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     10,
+     -20,
+     3
+    ]
+   ],
+   "tubes": 2
+  },
+  "3001.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     10,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "2456.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -50,
+     6
+    ],
+    [
+     "a",
+     24,
+     -10,
+     -50,
+     6
+    ],
+    [
+     "a",
+     24,
+     10,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 5
+  },
+  "3007.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     24,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     24,
+     10,
+     -70,
+     8
+    ]
+   ],
+   "tubes": 7
+  },
+  "3006.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -90,
+     10
+    ],
+    [
+     "a",
+     24,
+     -10,
+     -90,
+     10
+    ],
+    [
+     "a",
+     24,
+     10,
+     -90,
+     10
+    ]
+   ],
+   "tubes": 9
+  },
+  "2357.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     2
+    ],
+    [
+     "s",
+     0,
+     20,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     2
+    ],
+    [
+     "a",
+     24,
+     20,
+     0,
+     1
+    ]
+   ],
+   "tubes": 2
+  },
+  "14716.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     72,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "2453b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     120,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3245c.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0
+  },
+  "22886.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     72,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0
+  },
+  "2454b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     120,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0
+  },
+  "3754.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -50,
+     6
+    ],
+    [
+     "a",
+     120,
+     0,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 0
+  },
+  "30145.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     72,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     72,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "98283.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "30136.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0
+  },
+  "2877.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3700.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3701.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "3024.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3023b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3623.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -20,
+     3
+    ],
+    [
+     "a",
+     8,
+     0,
+     -20,
+     3
+    ]
+   ],
+   "tubes": 2
+  },
+  "3710.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "3666.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     0,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 5
+  },
+  "3460.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     0,
+     -70,
+     8
+    ]
+   ],
+   "tubes": 7
+  },
+  "4477.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     0,
+     -90,
+     10
+    ]
+   ],
+   "tubes": 9
+  },
+  "60479.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     0,
+     -110,
+     12
+    ]
+   ],
+   "tubes": 11
+  },
+  "3022.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3021.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -20,
+     3
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -20,
+     3
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -20,
+     3
+    ],
+    [
+     "a",
+     8,
+     10,
+     -20,
+     3
+    ]
+   ],
+   "tubes": 2
+  },
+  "3020.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     10,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "3795.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     10,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 5
+  },
+  "3034.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     10,
+     -70,
+     8
+    ]
+   ],
+   "tubes": 7
+  },
+  "3832.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     10,
+     -90,
+     10
+    ]
+   ],
+   "tubes": 9
+  },
+  "2445.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     10,
+     -110,
+     12
+    ]
+   ],
+   "tubes": 11
+  },
+  "4282.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     10,
+     -150,
+     16
+    ]
+   ],
+   "tubes": 15
+  },
+  "3031.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     30,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     30,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 9
+  },
+  "3032.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     30,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     10,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     10,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     30,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 15
+  },
+  "3035.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     30,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     10,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     30,
+     -70,
+     8
+    ]
+   ],
+   "tubes": 21
+  },
+  "3030.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     30,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     10,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     10,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     30,
+     -90,
+     10
+    ]
+   ],
+   "tubes": 27
+  },
+  "3029.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     30,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     10,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     10,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     30,
+     -110,
+     12
+    ]
+   ],
+   "tubes": 33
+  },
+  "3958.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     -50,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     10,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     30,
+     -50,
+     6
+    ],
+    [
+     "s",
+     0,
+     50,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     -50,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     10,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     30,
+     -50,
+     6
+    ],
+    [
+     "a",
+     8,
+     50,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 25
+  },
+  "3036.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     50,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     30,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     10,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -50,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     30,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     50,
+     -70,
+     8
+    ]
+   ],
+   "tubes": 35
+  },
+  "3033.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     50,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     30,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     10,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -90,
+     10
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     -50,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     10,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     30,
+     -90,
+     10
+    ],
+    [
+     "a",
+     8,
+     50,
+     -90,
+     10
+    ]
+   ],
+   "tubes": 45
+  },
+  "3028.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     50,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     30,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     10,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -110,
+     12
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     -50,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     10,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     30,
+     -110,
+     12
+    ],
+    [
+     "a",
+     8,
+     50,
+     -110,
+     12
+    ]
+   ],
+   "tubes": 55
+  },
+  "3027.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     50,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     30,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     10,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     -50,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     10,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     30,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     50,
+     -150,
+     16
+    ]
+   ],
+   "tubes": 75
+  },
+  "41539.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     70,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     50,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     30,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     10,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -70,
+     8
+    ],
+    [
+     "s",
+     0,
+     -70,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -70,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -50,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     10,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     30,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     50,
+     -70,
+     8
+    ],
+    [
+     "a",
+     8,
+     70,
+     -70,
+     8
+    ]
+   ],
+   "tubes": 49
+  },
+  "92438.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     -70,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     10,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     30,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     50,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     70,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     -70,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     -50,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     10,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     30,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     50,
+     -150,
+     16
+    ],
+    [
+     "a",
+     8,
+     70,
+     -150,
+     16
+    ]
+   ],
+   "tubes": 105
+  },
+  "2420.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     2
+    ],
+    [
+     "s",
+     0,
+     20,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     2
+    ],
+    [
+     "a",
+     8,
+     20,
+     0,
+     1
+    ]
+   ],
+   "tubes": 2
+  },
+  "2450.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     20,
+     -20,
+     3
+    ],
+    [
+     "s",
+     0,
+     0,
+     -20,
+     2
+    ],
+    [
+     "s",
+     0,
+     -20,
+     -20,
+     1
+    ],
+    [
+     "a",
+     8,
+     20,
+     -20,
+     1
+    ]
+   ],
+   "tubes": 3,
+   "reasons": [
+    "No whole-part rule holds (6 studs; underside cells: 1 receptor, 1 open, 0 blocked, 7 unenclosed)"
+   ]
+  },
+  "51739.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "41769a.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     -30,
+     10,
+     1
+    ],
+    [
+     "s",
+     0,
+     -10,
+     10,
+     1
+    ],
+    [
+     "s",
+     0,
+     10,
+     10,
+     1
+    ],
+    [
+     "s",
+     0,
+     30,
+     10,
+     1
+    ],
+    [
+     "a",
+     8,
+     -30,
+     10,
+     1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (4 studs; underside cells: 1 receptor, 1 open, 0 blocked, 6 unenclosed)"
+   ]
+  },
+  "41770a.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     -30,
+     -10,
+     1
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     1
+    ],
+    [
+     "s",
+     0,
+     10,
+     -10,
+     1
+    ],
+    [
+     "s",
+     0,
+     30,
+     -10,
+     1
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -10,
+     1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (4 studs; underside cells: 1 receptor, 1 open, 0 blocked, 6 unenclosed)"
+   ]
+  },
+  "43722a.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     -20,
+     10,
+     1
+    ],
+    [
+     "s",
+     0,
+     0,
+     10,
+     1
+    ],
+    [
+     "s",
+     0,
+     20,
+     10,
+     1
+    ],
+    [
+     "a",
+     8,
+     -20,
+     10,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Stud-sized cylinder outside stud primitives at 0 4 10"
+   ]
+  },
+  "43723a.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     -20,
+     -10,
+     1
+    ],
+    [
+     "s",
+     0,
+     0,
+     -10,
+     1
+    ],
+    [
+     "s",
+     0,
+     20,
+     -10,
+     1
+    ],
+    [
+     "a",
+     8,
+     -20,
+     -10,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Stud-sized cylinder outside stud primitives at 0 4 10"
+   ]
+  },
+  "3070b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3069b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0
+  },
+  "63864.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     -20,
+     3
+    ]
+   ],
+   "tubes": 2
+  },
+  "2431.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "6636.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 5
+  },
+  "4162.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     -70,
+     8
+    ]
+   ],
+   "tubes": 7
+  },
+  "3068b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "26603.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     -10,
+     -20,
+     3
+    ],
+    [
+     "a",
+     8,
+     10,
+     -20,
+     3
+    ]
+   ],
+   "tubes": 2
+  },
+  "87079.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     10,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "2412b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0
+  },
+  "2555.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3040b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "3039.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -20,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3038.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     -20,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     0,
+     -20,
+     3
+    ]
+   ],
+   "tubes": 2
+  },
+  "3037.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     -20,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "3044b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     24,
+     -10,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     10,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3043.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 0 receptor, 0 open, 0 blocked, 4 unenclosed)"
+   ]
+  },
+  "3045.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -20,
+     0,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3046.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     2
+    ],
+    [
+     "s",
+     0,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -20,
+     0,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3048b.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "3049b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 2 receptor, 0 open, 0 blocked, 2 unenclosed)"
+   ]
+  },
+  "3665a.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     4,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Studs on more than one level"
+   ]
+  },
+  "3660b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -20,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Stud-sized cylinder outside stud primitives at 10 0 -20",
+    "Stud-sized cylinder outside stud primitives at -10 0 -20"
+   ]
+  },
+  "3676.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     2
+    ],
+    [
+     "s",
+     0,
+     -20,
+     0,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Stud-sized cylinder outside stud primitives at 0 0 -20",
+    "Stud-sized cylinder outside stud primitives at 20 0 -20",
+    "Stud-sized cylinder outside stud primitives at 20 0 0"
+   ]
+  },
+  "4286.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -40,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "3298.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -40,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -20,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 3
+  },
+  "4161.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     -40,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     -20,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     0,
+     -20,
+     3
+    ]
+   ],
+   "tubes": 8
+  },
+  "3297.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     -40,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     -20,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 9
+  },
+  "3299.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     24,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     10,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "4287a.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     12,
+     -20,
+     0,
+     1
+    ],
+    [
+     "s",
+     2,
+     -40,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Studs on more than one level"
+   ]
+  },
+  "3747b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -20,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -40,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (6 studs; underside cells: 2 receptor, 0 open, 0 blocked, 4 unenclosed)"
+   ]
+  },
+  "54200.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     0,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "85984.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     0,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "60477.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -60,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -40,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 3
+  },
+  "30363.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -60,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -40,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -20,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 5
+  },
+  "60481a.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     48,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     48,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3678b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     -20,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "4460b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     72,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     72,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3684a.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     72,
+     -20,
+     -10,
+     2
+    ],
+    [
+     "a",
+     72,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "2449.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     0,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     72,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 2,
+   "reasons": [
+    "No whole-part rule holds (2 studs; underside cells: 1 receptor, 0 open, 0 blocked, 1 unenclosed)"
+   ]
+  },
+  "11477.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "15068.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 2,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "24309.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "a",
+     24,
+     -20,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 2,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 4 receptor, 0 open, 0 blocked, 2 unenclosed)"
+   ]
+  },
+  "50950.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "a",
+     24,
+     -20,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 2 receptor, 0 open, 0 blocked, 1 unenclosed)"
+   ]
+  },
+  "61678.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "a",
+     24,
+     -30,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     -10,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 2 receptor, 0 open, 0 blocked, 2 unenclosed)"
+   ]
+  },
+  "93273.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 1,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "88930.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 3,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "24201.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     8,
+     20,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Studs on more than one level",
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "13547.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     8,
+     -20,
+     0,
+     1
+    ],
+    [
+     "s",
+     8,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     0,
+     -40,
+     0,
+     1
+    ],
+    [
+     "s",
+     0,
+     -60,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Studs on more than one level"
+   ]
+  },
+  "6091.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     8,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     32,
+     -20,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (1 studs; underside cells: 1 receptor, 0 open, 0 blocked, 1 unenclosed)"
+   ]
+  },
+  "3062b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "3941.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "87081.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     30,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     -30,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     30,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 5
+  },
+  "3063b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -20,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (2 studs; underside cells: 0 receptor, 0 open, 1 blocked, 3 unenclosed)"
+   ]
+  },
+  "6141.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "4032b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "60474.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     30,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     30,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 5
+  },
+  "30357.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     40,
+     0,
+     2
+    ],
+    [
+     "s",
+     0,
+     20,
+     0,
+     3
+    ],
+    [
+     "s",
+     0,
+     0,
+     0,
+     3
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     2
+    ],
+    [
+     "a",
+     8,
+     20,
+     0,
+     2
+    ]
+   ],
+   "tubes": 4,
+   "reasons": [
+    "No whole-part rule holds (8 studs; underside cells: 4 receptor, 0 open, 0 blocked, 5 unenclosed)"
+   ]
+  },
+  "30565.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     30,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     10,
+     -30,
+     3
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -30,
+     3
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -30,
+     1
+    ],
+    [
+     "a",
+     8,
+     -30,
+     -30,
+     1
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -30,
+     1
+    ],
+    [
+     "a",
+     8,
+     -10,
+     10,
+     1
+    ],
+    [
+     "a",
+     8,
+     30,
+     -30,
+     1
+    ],
+    [
+     "a",
+     8,
+     30,
+     10,
+     2
+    ]
+   ],
+   "tubes": 6,
+   "reasons": [
+    "No whole-part rule holds (11 studs; underside cells: 6 receptor, 3 open, 0 blocked, 7 unenclosed)"
+   ]
+  },
+  "98138.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "14769.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     8,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "25269.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 0 receptor, 0 open, 0 blocked, 1 unenclosed)"
+   ]
+  },
+  "4589.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3942c.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     48,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "3943b.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 5
+  },
+  "4490.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -20,
+     3
+    ],
+    [
+     "a",
+     24,
+     0,
+     -20,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     20,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (3 studs; underside cells: 2 receptor, 0 open, 0 blocked, 1 unenclosed)"
+   ]
+  },
+  "3659.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "3455.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -50,
+     6
+    ],
+    [
+     "a",
+     24,
+     0,
+     -50,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     50,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (6 studs; underside cells: 2 receptor, 0 open, 0 blocked, 4 unenclosed)"
+   ]
+  },
+  "92950.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -50,
+     6
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "6005.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     8,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     48,
+     -40,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (1 studs; underside cells: 1 receptor, 0 open, 0 blocked, 2 unenclosed)"
+   ]
+  },
+  "6182.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     48,
+     0,
+     -30,
+     1
+    ],
+    [
+     "a",
+     48,
+     0,
+     30,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (4 studs; underside cells: 2 receptor, 0 open, 0 blocked, 2 unenclosed)"
+   ]
+  },
+  "3307.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -50,
+     6
+    ],
+    [
+     "a",
+     48,
+     0,
+     -50,
+     1
+    ],
+    [
+     "a",
+     48,
+     0,
+     50,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (6 studs; underside cells: 2 receptor, 0 open, 0 blocked, 4 unenclosed)"
+   ]
+  },
+  "6183.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     0,
+     -50,
+     1
+    ],
+    [
+     "a",
+     48,
+     0,
+     50,
+     1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (2 studs; underside cells: 2 receptor, 0 open, 0 blocked, 4 unenclosed)"
+   ]
+  },
+  "2339.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     48,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     24,
+     20,
+     0,
+     1
+    ],
+    [
+     "s",
+     0,
+     40,
+     0,
+     1
+    ],
+    [
+     "s",
+     8,
+     60,
+     0,
+     1
+    ],
+    [
+     "s",
+     8,
+     80,
+     0,
+     1
+    ],
+    [
+     "a",
+     96,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Studs on more than one level"
+   ]
+  },
+  "14395.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     48,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     24,
+     20,
+     0,
+     1
+    ],
+    [
+     "s",
+     0,
+     40,
+     0,
+     1
+    ],
+    [
+     "s",
+     8,
+     60,
+     0,
+     1
+    ],
+    [
+     "s",
+     8,
+     80,
+     0,
+     1
+    ],
+    [
+     "a",
+     96,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Studs on more than one level"
+   ]
+  },
+  "60592.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0
+  },
+  "60601.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "60593.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     72,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0
+  },
+  "60602.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "60594.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     72,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "60603.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 0 receptor, 0 open, 0 blocked, 0 unenclosed)"
+   ]
+  },
+  "60608.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "60607.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "60598.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     72,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     72,
+     10,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "60596.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     144,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "60616a.dat": {
+   "verified": false,
+   "runs": [],
+   "other": [
+    [
+     "s",
+     57,
+     70,
+     -3.75,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     57,
+     70,
+     3.75,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "2 stud(s) not pointing up; side connections are not validated",
+    "Base plane is off the 4 LDU grid",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "60623.dat": {
+   "verified": false,
+   "runs": [],
+   "other": [
+    [
+     "s",
+     58,
+     68,
+     -3,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     58,
+     68,
+     3,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "2 stud(s) not pointing up; side connections are not validated",
+    "Base plane is off the 4 LDU grid",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "60599.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     144,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     144,
+     10,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "4865b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "87552.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     48,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "87544.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     72,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "4215b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     72,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "60581.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     72,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "3633.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     24,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "3185.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     48,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "30055.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     1
+    ],
+    [
+     "s",
+     0,
+     0,
+     30,
+     1
+    ],
+    [
+     "a",
+     48,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3,
+   "reasons": [
+    "Stud-sized cylinder outside stud primitives at -30 36 0",
+    "Stud-sized cylinder outside stud primitives at -10 36 0",
+    "Stud-sized cylinder outside stud primitives at 10 36 0",
+    "Stud-sized cylinder outside stud primitives at 30 36 0"
+   ]
+  },
+  "33303.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "a",
+     48,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "3794b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "87580.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "92593.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     1
+    ],
+    [
+     "s",
+     0,
+     0,
+     30,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3
+  },
+  "33909.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "3176.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (4 studs; underside cells: 4 receptor, 0 open, 2 blocked, 0 unenclosed)"
+   ]
+  },
+  "3709b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -30,
+     4
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     -10,
+     -30,
+     4
+    ],
+    [
+     "a",
+     8,
+     10,
+     -30,
+     4
+    ]
+   ],
+   "tubes": 3,
+   "reasons": [
+    "Stud-sized cylinder outside stud primitives at 20 0 0",
+    "Stud-sized cylinder outside stud primitives at 0 0 0",
+    "Stud-sized cylinder outside stud primitives at -20 0 0"
+   ]
+  },
+  "4081b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     10,
+     0,
+     0,
+     1
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     4,
+     2,
+     -20,
+     1,
+     0,
+     0
+    ],
+    [
+     "s",
+     -4,
+     2,
+     -20,
+     -1,
+     0,
+     0
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "2 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "Base plane is off the 4 LDU grid",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "4085c.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "3839b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "48336.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (2 studs; underside cells: 2 receptor, 0 open, 2 blocked, 0 unenclosed)"
+   ]
+  },
+  "60478.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (2 studs; underside cells: 2 receptor, 0 open, 1 blocked, 0 unenclosed)"
+   ]
+  },
+  "32028.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1
+  },
+  "87087.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "1 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "47905.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     0,
+     10,
+     10,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "2 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "4733.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     10,
+     10,
+     0,
+     1,
+     0,
+     0
+    ],
+    [
+     "s",
+     0,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     10,
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     "s",
+     0,
+     10,
+     10,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "4 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "4070.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     0,
+     10,
+     -6,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "1 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "11211.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     -10,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     10,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "2 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "30414.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -30,
+     4
+    ],
+    [
+     "a",
+     24,
+     0,
+     -30,
+     4
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     -30,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     10,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     30,
+     10,
+     -10,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 3,
+   "reasons": [
+    "4 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "2921.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0
+  },
+  "99781.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     10,
+     10,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     10,
+     -14,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection",
+    "2 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "99780.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     10,
+     -2,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     -2,
+     -14,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection",
+    "2 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "44728.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     10,
+     10,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     10,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     30,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     10,
+     30,
+     -14,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection",
+    "4 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice",
+    "Duplicate studs"
+   ]
+  },
+  "99207.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     10,
+     -2,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     -2,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     10,
+     -22,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     -22,
+     -14,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection",
+    "4 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice",
+    "Duplicate studs"
+   ]
+  },
+  "2436b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "other": [
+    [
+     "s",
+     30,
+     10,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     10,
+     10,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -10,
+     10,
+     -14,
+     0,
+     0,
+     -1
+    ],
+    [
+     "s",
+     -30,
+     10,
+     -14,
+     0,
+     0,
+     -1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection",
+    "4 stud(s) not pointing up; side connections are not validated",
+    "Studs on more than one level",
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "3937.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "a",
+     24,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection"
+   ]
+  },
+  "3938.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection"
+   ]
+  },
+  "4275b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection"
+   ]
+  },
+  "4276b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     -10,
+     2
+    ],
+    [
+     "a",
+     8,
+     0,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection"
+   ]
+  },
+  "2429.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -30,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     -30,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection"
+   ]
+  },
+  "2430.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     10,
+     2
+    ],
+    [
+     "a",
+     8,
+     10,
+     10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Its principal connection (bracket or hinge) is not a stud connection"
+   ]
+  },
+  "3867.dat": {
+   "verified": true,
+   "rule": "solid-base",
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     30,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     50,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     70,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     90,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     110,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     130,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     150,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -150,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -130,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -110,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -90,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -70,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -150,
+     16
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -150,
+     16
+    ]
+   ],
+   "tubes": 0
+  },
+  "3857.dat": {
+   "verified": true,
+   "rule": "solid-base",
+   "runs": [
+    [
+     "s",
+     0,
+     -10,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -70,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -90,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -110,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -130,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -150,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     150,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     130,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     110,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     90,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     70,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     50,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     30,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     10,
+     -310,
+     32
+    ]
+   ],
+   "tubes": 0
+  },
+  "3811.dat": {
+   "verified": true,
+   "rule": "solid-base",
+   "runs": [
+    [
+     "s",
+     0,
+     170,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     190,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     210,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     230,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     250,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     270,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     290,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     310,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     10,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     30,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     50,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     70,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     90,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     110,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     130,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     150,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -150,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -130,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -110,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -90,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -70,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -310,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -290,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -270,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -250,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -230,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -210,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -190,
+     -310,
+     32
+    ],
+    [
+     "s",
+     0,
+     -170,
+     -310,
+     32
+    ]
+   ],
+   "tubes": 0
+  },
+  "4186.dat": {
+   "verified": true,
+   "rule": "solid-base",
+   "runs": [
+    [
+     "s",
+     0,
+     330,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     350,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     370,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     390,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     410,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     430,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     450,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     470,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     170,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     190,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     210,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     230,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     250,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     270,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     290,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     310,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     10,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     30,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     50,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     70,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     90,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     110,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     130,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     150,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -150,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -130,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -110,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -90,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -70,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -50,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -30,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -310,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -290,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -270,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -250,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -230,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -210,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -190,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -170,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -470,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -450,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -430,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -410,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -390,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -370,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -350,
+     -470,
+     48
+    ],
+    [
+     "s",
+     0,
+     -330,
+     -470,
+     48
+    ]
+   ],
+   "tubes": 0
+  },
+  "3741a.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     12,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 0,
+   "reasons": [
+    "Stud level is not a whole number of plate heights (8 LDU) above the base"
+   ]
+  },
+  "3742.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "Stud-sized cylinder outside stud primitives at 0 -4 0",
+    "Base plane is off the 4 LDU grid"
+   ]
+  },
+  "4728.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "4727.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "24866.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "33291.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "32607.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "6255.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     16,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "30176.dat": {
+   "verified": true,
+   "rule": "matched-outline",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "2423.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     0,
+     -20,
+     -20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -20,
+     20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -40,
+     -20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -40,
+     20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -60,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     -60,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (6 studs; underside cells: 2 receptor, 4 open, 0 blocked, 6 unenclosed)"
+   ]
+  },
+  "2417.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     40,
+     -40,
+     2
+    ],
+    [
+     "s",
+     0,
+     40,
+     20,
+     2
+    ],
+    [
+     "s",
+     0,
+     20,
+     -40,
+     1
+    ],
+    [
+     "s",
+     0,
+     20,
+     40,
+     1
+    ],
+    [
+     "s",
+     0,
+     0,
+     -40,
+     1
+    ],
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "s",
+     0,
+     0,
+     40,
+     1
+    ],
+    [
+     "s",
+     0,
+     -20,
+     -20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -20,
+     20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -40,
+     -20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -40,
+     20,
+     1
+    ],
+    [
+     "s",
+     0,
+     -60,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     -40,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     8,
+     0,
+     40,
+     1
+    ],
+    [
+     "a",
+     8,
+     40,
+     -40,
+     1
+    ],
+    [
+     "a",
+     8,
+     40,
+     40,
+     1
+    ],
+    [
+     "a",
+     8,
+     -60,
+     0,
+     1
+    ]
+   ],
+   "tubes": 6,
+   "reasons": [
+    "No whole-part rule holds (14 studs; underside cells: 6 receptor, 10 open, 0 blocked, 14 unenclosed)"
+   ]
+  },
+  "2435.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 0 receptor, 0 open, 4 blocked, 0 unenclosed)"
+   ]
+  },
+  "3470.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 0 receptor, 2 open, 4 blocked, 10 unenclosed)"
+   ]
+  },
+  "3471.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 1,
+   "reasons": [
+    "No whole-part rule holds (0 studs; underside cells: 0 receptor, 0 open, 4 blocked, 12 unenclosed)"
+   ]
+  },
+  "4740.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "3960.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     16,
+     -10,
+     -10,
+     2
+    ],
+    [
+     "a",
+     16,
+     10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "3957a.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "a",
+     8,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "Stud-sized cylinder outside stud primitives at 0 -4 0"
+   ]
+  },
+  "4599b.dat": {
+   "verified": true,
+   "rule": "full-underside",
+   "runs": [
+    [
+     "s",
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     "a",
+     24,
+     0,
+     0,
+     1
+    ]
+   ],
+   "tubes": 1
+  },
+  "4345b.dat": {
+   "verified": false,
+   "runs": [
+    [
+     "s",
+     0,
+     10,
+     -10,
+     2
+    ],
+    [
+     "s",
+     0,
+     -10,
+     -10,
+     2
+    ]
+   ],
+   "tubes": 1,
+   "reasons": [
+    "A stud lies off the part's stud lattice"
+   ]
+  },
+  "4346.dat": {
+   "verified": false,
+   "runs": [],
+   "tubes": 0,
+   "reasons": [
+    "Base plane is off the 4 LDU grid"
+   ]
+  }
+ }
+}

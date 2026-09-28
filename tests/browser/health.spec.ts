@@ -23,9 +23,12 @@ test("model health reports overlaps with their certainty and selects the parts",
     .filter({ hasText: "Overlapping parts" });
   await expect(overlap).toContainText("Approximate");
   await expect(overlap).toContainText("2 parts overlap in 1 place");
-  await expect(
-    panel.getByRole("listitem").filter({ hasText: /^Connections/ }),
-  ).toContainText("Not verified");
+  // Verified stud data: the clashing 2 × 2 does not sit on studs, the 1 × 1 floats.
+  const connections = panel
+    .getByRole("listitem")
+    .filter({ hasText: /^Connections/ });
+  await expect(connections).toContainText("3 separately connected groups");
+  await expect(connections).not.toContainText("Not verified");
   await overlap.getByRole("button", { name: "Select 2 parts" }).click();
   await expect(page.locator(".canvas-bottom")).toContainText("2 selected");
   expect(errors).toEqual([]);

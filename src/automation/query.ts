@@ -11,6 +11,7 @@ import {
 import { resolveScope } from "../inventory/service";
 import { libraryLock, installedSource } from "../catalog/catalog";
 import installedBounds from "../catalog/bounds.json";
+import { worldConnectors } from "../core/connectivity";
 export type QueryRequest = {
   colorCode?: string;
   ref?: string;
@@ -86,6 +87,8 @@ export function queryProject(
       "Current selection is unavailable in this host; supply an explicit selection scope",
     );
   const scoped = input.scope ? resolveScope(project, input.scope) : all;
+  // Verified stud/anti-stud connector coverage (rigid official catalogue parts).
+  const covered = (o: (typeof all)[number]) => worldConnectors(o) !== null;
   let result = scoped.filter(
     (o) =>
       (!input.colorCode || o.colorCode === input.colorCode) &&
@@ -93,7 +96,8 @@ export function queryProject(
       (!input.layerId || o.layerId === input.layerId) &&
       (!requestedIds || requestedIds.has(o.id)) &&
       (!input.selection || selectedIds.has(o.id)) &&
-      input.connectivity !== "verified",
+      (!input.connectivity ||
+        (input.connectivity === "verified") === covered(o)),
   );
   const spatial = input.spatial || input.bounds || input.intersectingCandidates;
   const boxes: Record<string, Bounds | null> = {};
@@ -229,10 +233,23 @@ export function queryProject(
     unsupportedPhysicalTransformIds: result
       .filter((o) => !physical(o.transform))
       .map((o) => o.id),
-    connectivity: {
-      status: "unverified" as const,
-      missingConnectorCoverageIds: result.map((o) => o.id),
-    },
+    connectivity: (() => {
+      const coveredIds = result.filter(covered).map((o) => o.id);
+      const coveredSet = new Set(coveredIds);
+      return {
+        status: !result.length
+          ? ("unverified" as const)
+          : coveredIds.length === result.length
+            ? ("verified" as const)
+            : coveredIds.length
+              ? ("partial" as const)
+              : ("unverified" as const),
+        coveredIds,
+        missingConnectorCoverageIds: result
+          .filter((o) => !coveredSet.has(o.id))
+          .map((o) => o.id),
+      };
+    })(),
     ...(spatial
       ? {
           spatial: {

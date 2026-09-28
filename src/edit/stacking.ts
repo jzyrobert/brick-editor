@@ -34,6 +34,8 @@ export type NewPart = {
   angle: number;
   /** Local source box; places parts whose origin is off-centre (slopes) flush. */
   bounds?: { min: readonly number[]; max: readonly number[] };
+  /** Distance from the origin down to the lowest point (catalogue `height`). */
+  height?: number;
 };
 /** x/z range of a new part's footprint about its origin after its turn. */
 function turnedExtent(part: NewPart) {
@@ -63,8 +65,10 @@ function turnedExtent(part: NewPart) {
 /**
  * Where a tap on an existing part should put the new part (spec §11.1 placement):
  * on a top face it rests on the part's body top (studs allowed for); on a side face it
- * sits flush beside the part at the same level. Returns the placement plane and the point
- * to snap, or null to fall back to the workplane. Only for horizontal workplanes.
+ * sits flush beside the part at the same level; on a bottom face it hangs underneath with
+ * its origin plane (the body top of an ordinary part) on the part's lowest point. Returns
+ * the placement plane and the point to snap, or null to fall back to the workplane. Only
+ * for horizontal workplanes.
  */
 export function stackingTarget(
   workplane: Workplane,
@@ -87,6 +91,9 @@ export function stackingTarget(
       : Math.ceil(surface.point[1] / 8) * 8;
     return { plane: level(top), point: surface.point };
   }
+  if (ny > 0.7 && box && part.height !== undefined)
+    // Bottom face: the new part's own studs rise into the tapped part.
+    return { plane: level(box.max[1] + part.height), point: surface.point };
   if (Math.abs(ny) < 0.3 && box) {
     // Side face: step out so the new part's turned box touches the face.
     const extent = turnedExtent(part);

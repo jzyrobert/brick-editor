@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { connectorStatus } from "../../src/catalog/connectors";
 import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import {
@@ -78,7 +79,8 @@ describe("placeable catalogue integrity", () => {
         p.id,
       ).toBe(true);
       expect(p.studded).toBe(Math.abs(p.bounds.min[1] + 4) < 0.01);
-      expect(p.snapVerified).toBe(false);
+      // snapVerified mirrors the connector pack's verification result.
+      expect(p.snapVerified, p.id).toBe(connectorStatus(p.id).verified);
     }
     expect(catalog["3001.dat"]).toMatchObject({ height: 24, studded: true });
     expect(catalog["3024.dat"]).toMatchObject({ height: 8, studded: true });

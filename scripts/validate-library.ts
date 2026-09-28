@@ -11,6 +11,10 @@ import {
   retiredMappingLocks,
 } from "../src/catalog/catalog";
 import mappings from "../src/catalog/mappings.json";
+import {
+  connectorLock,
+  connectorPackMatchesLibrary,
+} from "../src/catalog/connectors";
 const root = `public/libraries/${libraryLock.releaseId}/`,
   hash = (b: Buffer) => createHash("sha256").update(b).digest("hex"),
   raw = readFileSync(root + "manifest.json"),
@@ -67,6 +71,15 @@ if (
   mappingLock.mappingPackSha256
 )
   throw new Error("Mapping lock mismatch");
+// The derived connector pack is locked and bound to this library release.
+if (
+  hash(readFileSync("src/catalog/connectors.json")) !==
+    connectorLock.connectorPackSha256 ||
+  !connectorPackMatchesLibrary
+)
+  throw new Error(
+    "Connector pack lock mismatch; run npm run library:connectors",
+  );
 // Retired library locks stay satisfiable: the retired pack is still shipped
 // unchanged and every one of its files is byte-identical in the current pack,
 // so re-pinning such a project cannot change any definition it could resolve.

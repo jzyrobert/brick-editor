@@ -183,3 +183,10 @@ Measured with `santorini_v2_complete.mpd` (user file; not committed) on software
 - **Still expensive:** character-controller ticks while pressing into dense decorative geometry (flowers, vines) cost about 20–65 ms here, against under 1 ms in the open. Realtime catch-up now stops after 10 ms of ticks per frame and drops the whole-tick backlog, so the world slows instead of each frame getting longer. Individual ticks are unchanged.
 - The first switch to third person compiles the avatar shaders once (a one-off stall of hundreds of ms on software GL).
 - Phone FPS, GPU time and battery use were not measured on a physical device.
+
+## Connectors checkpoint (28 September 2026)
+
+- `npm test`: **84 files, 389 tests pass**. `tests/unit/connectors.test.ts` pins extraction for a 2 × 4 brick, 1 × 1 plate/brick, tiles, a 45° slope, round bricks and plates and a baseplate against hand-checked positions; re-derives all 214 parts from the pinned library and requires the committed pack, its hash lock and every `snapVerified` flag to match; and covers snapping (off-grid targets, 90° turns, underside placement, clash refusal, no snap without verified data), connectivity groups/assemblies and stud workplanes.
+- Full Playwright suite against the production bundle (private config, own preview port): **136 tests; 134 passed on the first run**, the two failures were expectations of the old "no connector data" state (health Connections label, query connectivity status); both were updated and pass. New `connectors.spec.ts` taps a brick onto an off-grid brick (desktop and 390 px phone), turns it, checks the health report, **Select connected**, `connectors.groups/connected` and **Pick a stud**.
+- `npm run library:validate` checks the connector pack hash and library binding; Prettier and TypeScript pass.
+- Not established: other connector families, candidate cycling, real clutch or buildability, physical-device behaviour.
