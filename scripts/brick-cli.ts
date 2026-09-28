@@ -15,6 +15,8 @@ import {
   resourceLimits,
 } from "../src/core/resource-profile";
 import { assessMaterialization } from "../src/core/materialization";
+import { compareProjects } from "../src/core/compare";
+import { modelHealth } from "../src/core/health";
 import {
   InventoryService,
   type InventoryRequest,
@@ -41,12 +43,14 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      "brick-cli validate|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nQuery: --request query.json [--output query-result.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
+      "brick-cli validate|health|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nQuery: --request query.json [--output query-result.json]\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
     );
     return;
   }
   const allowed: Record<string, string[]> = {
     validate: [],
+    compare: ["against"],
+    health: [],
     query: ["request"],
     apply: ["commands"],
     export: ["format"],
@@ -80,6 +84,7 @@ export async function main(argv: string[]) {
       "height",
     ],
     render: ["camera", "width", "height"],
+    "render-collection": ["collection", "width", "height"],
     play: [
       "ticks",
       "move-forward",
@@ -164,7 +169,13 @@ export async function main(argv: string[]) {
   ensure(input, "INVALID_INPUT", "--input is required");
   if (
     output &&
-    ["play", "render", "instructions", "export-profile"].includes(operation)
+    [
+      "play",
+      "render",
+      "render-collection",
+      "instructions",
+      "export-profile",
+    ].includes(operation)
   ) {
     ensure(
       resolve(output) !== resolve(input!),
@@ -218,6 +229,33 @@ export async function main(argv: string[]) {
     const result = JSON.stringify(queryProject(p, request), null, 2) + "\n";
     if (output) await writeFile(output, result);
     else console.log(result.trimEnd());
+    return;
+  }
+  if (operation === "health") {
+    const report = JSON.stringify(modelHealth(p), null, 2);
+    if (output) await writeFile(output, report);
+    else console.log(report);
+    return;
+  }
+  if (operation === "compare") {
+    const against = flag("against");
+    ensure(against, "INVALID_INPUT", "--against file is required");
+    ensure(
+      (await stat(against!)).size <= resources.importBytes,
+      "LIMIT_EXCEEDED",
+      "Comparison input exceeds the import budget",
+    );
+    const otherBytes = new Uint8Array(await readFile(against!));
+    const after = against!.endsWith(".brickproj")
+      ? await decodeNative(otherBytes, resources)
+      : importLDraw(
+          new TextDecoder().decode(otherBytes),
+          against!.split("/").at(-1),
+          { profile: resourceProfile },
+        );
+    const report = JSON.stringify(compareProjects(p, after), null, 2);
+    if (output) await writeFile(output, report);
+    else console.log(report);
     return;
   }
   if (operation === "validate") {
@@ -481,6 +519,49 @@ export async function main(argv: string[]) {
       output,
       flag("format") === "native" ? await encodeNative(p) : exportLDraw(p),
     );
+    return;
+  }
+  if (operation === "render-collection") {
+    ensure(output, "INVALID_INPUT", "--output collection.zip is required");
+    const width = numberFlag("width", 1280, 1, 4096, true),
+      height = numberFlag("height", 960, 1, 4096, true);
+    ensure(
+      width * height <= resources.imagePixels,
+      "LIMIT_EXCEEDED",
+      `Capture exceeds ${resources.imagePixels / 1e6} megapixels (${resourceProfile} profile)`,
+    );
+    const prefix = flag("collection");
+    const result = await withHeadlessPage(p, (page) =>
+      page.evaluate(
+        async ({ prefix, width, height }) => {
+          const r = await window.brickEditor!.render.collection({
+            prefix,
+            width,
+            height,
+            quality: "photo",
+          });
+          return {
+            manifest: r.manifest,
+            images: await Promise.all(
+              r.images.map(async (image) => ({
+                file: image.file,
+                bytes: Array.from(
+                  new Uint8Array(await image.blob.arrayBuffer()),
+                ),
+              })),
+            ),
+          };
+        },
+        { prefix, width, height },
+      ),
+    );
+    const files: Record<string, Uint8Array> = {
+      "manifest.json": strToU8(JSON.stringify(result.manifest, null, 2)),
+    };
+    for (const image of result.images)
+      files[image.file] = new Uint8Array(image.bytes);
+    await writeFile(output!, zipSync(files, { level: 0 }));
+    await writeFile(reportPath, JSON.stringify(result.manifest, null, 2));
     return;
   }
   if (operation === "render" || operation === "play") {

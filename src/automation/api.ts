@@ -34,6 +34,14 @@ import {
   type ResourcePreference,
 } from "../core/resource-profile";
 import {
+  createCheckpoint,
+  deleteCheckpoint,
+  listCheckpoints,
+  loadCheckpoint,
+} from "../persistence/checkpoints";
+import { compareProjects } from "../core/compare";
+import { modelHealth } from "../core/health";
+import {
   applyResourcePreference,
   resourceStatus,
 } from "../persistence/resource-preference";
@@ -87,6 +95,60 @@ export function createAPI(
       );
       return result;
     });
+  };
+  const captureImage = async (input: RenderRequest) => {
+    const pixels = resourceLimits(editor.resourceProfile).imagePixels;
+    ensure(
+      input.width * input.height <= pixels,
+      "LIMIT_EXCEEDED",
+      `Capture exceeds ${pixels / 1e6} megapixels (${editor.resourceProfile} profile)`,
+      { resource: "imagePixels", limit: pixels },
+    );
+    ensure(
+      input.revision === editor.revision,
+      "REVISION_CONFLICT",
+      "Capture revision is stale",
+    );
+    const activePlay = play?.();
+    const playState = activePlay?.getState();
+    const resumePlay = playState?.active && !playState.paused;
+    if (resumePlay) activePlay!.pause(true);
+    const pauseRevision = activePlay?.pauseRevision;
+    const sessionEpoch = activePlay?.sessionEpoch;
+    let result;
+    let restorePlayCamera: (() => void) | undefined;
+    try {
+      if (playState?.active)
+        restorePlayCamera = activePlay!.prepareCapture(
+          input.width / input.height,
+        );
+      const image = await renderer().image(input);
+      result = {
+        ...image,
+        manifest: {
+          ...image.manifest,
+          ...(playState?.active ? { play: activePlay!.snapshot() } : {}),
+          ...(mechanisms?.()?.active
+            ? { mechanism: mechanisms!()!.snapshot() }
+            : {}),
+        },
+      };
+    } finally {
+      restorePlayCamera?.();
+      if (
+        resumePlay &&
+        activePlay?.getState().active &&
+        activePlay.pauseRevision === pauseRevision &&
+        activePlay.sessionEpoch === sessionEpoch
+      )
+        activePlay.pause(false);
+    }
+    ensure(
+      input.revision === editor.revision,
+      "REVISION_CONFLICT",
+      "Document changed during capture",
+    );
+    return result;
   };
   return {
     fill: {
@@ -205,6 +267,66 @@ export function createAPI(
     },
     apiVersion: "1.0" as const,
     capabilities: async () => capabilities,
+    health: {
+      check: async () => {
+        editor.requireMaterialization();
+        return modelHealth(editor.project);
+      },
+    },
+    checkpoints: {
+      list: async () => listCheckpoints(editor.projectId),
+      create: async (input: { name: string }) =>
+        createCheckpoint(
+          editor.project,
+          input?.name ?? "",
+          editor.materialization.estimate.metrics.leafCount,
+        ),
+      /** Structured change report from a checkpoint (before) to the current project (after). */
+      compare: async (input: { checkpointId: string; maxChanges?: number }) => {
+        editor.requireMaterialization();
+        const { summary, project } = await loadCheckpoint(input.checkpointId);
+        ensure(
+          summary.projectId === editor.projectId,
+          "INVALID_INPUT",
+          "That checkpoint belongs to a different project.",
+        );
+        return {
+          checkpoint: summary,
+          report: compareProjects(project, editor.project, {
+            maxChanges: input.maxChanges,
+          }),
+        };
+      },
+      /** Replace the current document with a checkpoint. Undo history is cleared, so the
+       * caller should keep a backup of the current state first. */
+      restore: async (input: {
+        checkpointId: string;
+        expectedRevision: number;
+      }) => {
+        const { summary, project } = await loadCheckpoint(input.checkpointId);
+        ensure(
+          summary.projectId === editor.projectId,
+          "INVALID_INPUT",
+          "That checkpoint belongs to a different project.",
+        );
+        ensure(
+          input.expectedRevision === editor.revision,
+          "REVISION_CONFLICT",
+          "The project changed; review the checkpoint again before restoring.",
+        );
+        return editor.replace({ ...project, revision: editor.revision });
+      },
+      export: async (input: { checkpointId: string }) => {
+        const { summary, project } = await loadCheckpoint(input.checkpointId);
+        return {
+          name: `${project.title} - ${summary.name}.brickproj`,
+          mimeType: "application/zip",
+          bytes: await encodeNative(project),
+        };
+      },
+      delete: async (input: { checkpointId: string }) =>
+        deleteCheckpoint(input.checkpointId),
+    },
     resources: {
       status: async () => resourceStatus(editor),
       setProfile: async (input: {
@@ -410,59 +532,95 @@ export function createAPI(
           controls: Partial<QualityControls> = {},
         ) => renderer().setQuality(name, controls),
       },
-      image: async (input: RenderRequest) => {
-        const pixels = resourceLimits(editor.resourceProfile).imagePixels;
-        ensure(
-          input.width * input.height <= pixels,
-          "LIMIT_EXCEEDED",
-          `Capture exceeds ${pixels / 1e6} megapixels (${editor.resourceProfile} profile)`,
-          { resource: "imagePixels", limit: pixels },
-        );
-        ensure(
-          input.revision === editor.revision,
-          "REVISION_CONFLICT",
-          "Capture revision is stale",
-        );
-        const activePlay = play?.();
-        const playState = activePlay?.getState();
-        const resumePlay = playState?.active && !playState.paused;
-        if (resumePlay) activePlay!.pause(true);
-        const pauseRevision = activePlay?.pauseRevision;
-        const sessionEpoch = activePlay?.sessionEpoch;
-        let result;
-        let restorePlayCamera: (() => void) | undefined;
-        try {
-          if (playState?.active)
-            restorePlayCamera = activePlay!.prepareCapture(
-              input.width / input.height,
-            );
-          const image = await renderer().image(input);
-          result = {
-            ...image,
-            manifest: {
-              ...image.manifest,
-              ...(playState?.active ? { play: activePlay!.snapshot() } : {}),
-              ...(mechanisms?.()?.active
-                ? { mechanism: mechanisms!()!.snapshot() }
-                : {}),
-            },
-          };
-        } finally {
-          restorePlayCamera?.();
-          if (
-            resumePlay &&
-            activePlay?.getState().active &&
-            activePlay.pauseRevision === pauseRevision &&
-            activePlay.sessionEpoch === sessionEpoch
+      image: captureImage,
+      /** Render every camera bookmark in a collection (a name prefix such as "exterior/")
+       * against one revision, with one shared manifest (spec §20.3). */
+      collection: async (input: {
+        prefix?: string;
+        names?: string[];
+        width: number;
+        height: number;
+        quality?: RenderRequest["quality"];
+        background?: RenderRequest["background"];
+        visibility?: RenderRequest["visibility"];
+      }) => {
+        const r = renderer();
+        const p = editor.project;
+        const revision = p.revision;
+        const names = (
+          input.names ??
+          Object.keys(p.cameraBookmarks).filter(
+            (name) => !input.prefix || name.startsWith(input.prefix),
           )
-            activePlay.pause(false);
-        }
+        ).sort();
         ensure(
-          input.revision === editor.revision,
-          "REVISION_CONFLICT",
-          "Document changed during capture",
+          names.length > 0,
+          "INVALID_INPUT",
+          input.prefix
+            ? `No camera bookmarks start with “${input.prefix}”.`
+            : "This project has no camera bookmarks.",
         );
-        return result;
+        ensure(
+          names.length <= 24,
+          "LIMIT_EXCEEDED",
+          "A camera collection renders at most 24 views at once.",
+        );
+        for (const name of names)
+          ensure(
+            Object.hasOwn(p.cameraBookmarks, name),
+            "INVALID_INPUT",
+            "Unknown camera bookmark: " + name,
+          );
+        const previous = r.currentCamera();
+        const shots: Array<{ name: string; blob: Blob; file: string }> = [];
+        let first:
+          | Awaited<ReturnType<typeof captureImage>>["manifest"]
+          | undefined;
+        try {
+          for (const name of names) {
+            r.setCamera(p.cameraBookmarks[name]);
+            const shot = await captureImage({
+              revision,
+              width: input.width,
+              height: input.height,
+              format: "png",
+              visibility: input.visibility ?? { mode: "all" },
+              background: input.background ?? {
+                type: "solid",
+                color: "#ffffff",
+              },
+              quality: input.quality ?? "balanced",
+            });
+            first ??= shot.manifest;
+            shots.push({
+              name,
+              blob: shot.blob,
+              file:
+                name.replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "") +
+                ".png",
+            });
+          }
+        } finally {
+          r.setCamera(previous);
+        }
+        return {
+          manifest: {
+            schemaVersion: 1 as const,
+            collection: input.prefix ?? null,
+            revision,
+            documentHash: first?.documentHash,
+            renderer: first?.renderer,
+            appVersion: first?.appVersion,
+            width: input.width,
+            height: input.height,
+            images: shots.map((shot) => ({
+              name: shot.name,
+              file: shot.file,
+              camera: p.cameraBookmarks[shot.name],
+            })),
+          },
+          images: shots,
+        };
       },
     },
   };

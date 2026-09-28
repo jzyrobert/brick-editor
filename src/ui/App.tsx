@@ -34,6 +34,9 @@ import { MechanismPanel } from "./MechanismPanel";
 import { ProjectLibrary } from "./ProjectLibrary";
 import { ResourceProfilePanel } from "./ResourceProfilePanel";
 import { ReplacePanel } from "./ReplacePanel";
+import { CheckpointsPanel } from "./CheckpointsPanel";
+import { HealthPanel } from "./HealthPanel";
+import { CameraCollections } from "./CameraCollections";
 import { Icon, type IconName } from "./icons";
 import { inspectSelection, sourceLabels } from "../edit/inspect";
 import {
@@ -322,6 +325,7 @@ function Workspace() {
     [activePlanId, setActivePlanId] = useState(""),
     [photoSize, setPhotoSize] = useState([1600, 1200]),
     [transparent, setTransparent] = useState(false),
+    [bookmarkName, setBookmarkName] = useState(""),
     [camera, setCamera] = useState<CameraSpec>({
       space: "ldraw",
       projection: "perspective",
@@ -2429,21 +2433,33 @@ function Workspace() {
                   Read current view
                 </button>
               </div>
-              <button
-                className="wide"
-                onClick={() =>
-                  void run(() =>
+              <form
+                className="bookmark-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void run(() => {
                     command("camera.bookmark", {
                       name:
+                        bookmarkName.trim() ||
                         "View " +
-                        (Object.keys(project.cameraBookmarks).length + 1),
+                          (Object.keys(project.cameraBookmarks).length + 1),
                       camera: renderer.current?.currentCamera() || camera,
-                    }),
-                  )
-                }
+                    });
+                    setBookmarkName("");
+                  });
+                }}
               >
-                Save current camera bookmark
-              </button>
+                <label>
+                  Bookmark name
+                  <input
+                    value={bookmarkName}
+                    placeholder="e.g. exterior/front"
+                    maxLength={120}
+                    onChange={(e) => setBookmarkName(e.target.value)}
+                  />
+                </label>
+                <button className="wide">Save current camera bookmark</button>
+              </form>
               {Object.entries(project.cameraBookmarks).map(([name, spec]) => (
                 <button
                   key={name}
@@ -2457,6 +2473,14 @@ function Workspace() {
                   {name}
                 </button>
               ))}
+              <CameraCollections
+                api={api.current!}
+                bookmarks={Object.keys(project.cameraBookmarks)}
+                size={photoSize}
+                transparent={transparent}
+                download={download}
+                onStatus={setStatus}
+              />
               <div className="numeric-row">
                 <NumberInput
                   label="Width"
@@ -2632,6 +2656,34 @@ function Workspace() {
                   setPanel("Canvas");
                   await renderer.current?.ready();
                   renderer.current?.fit();
+                }}
+              />
+              <CheckpointsPanel
+                api={api.current!}
+                projectId={project.id}
+                revision={project.revision}
+                download={download}
+                backupCurrent={() => exportFile("native")}
+                showChanges={(ids) => {
+                  setMode("Build");
+                  setPanel("Canvas");
+                  setSelectionSafe(ids);
+                  setStatus(
+                    `${ids.length} changed part${ids.length === 1 ? "" : "s"} selected.`,
+                  );
+                }}
+                onStatus={setStatus}
+              />
+              <HealthPanel
+                api={api.current!}
+                revision={project.revision}
+                select={(ids) => {
+                  setMode("Build");
+                  setPanel("Canvas");
+                  setSelectionSafe(ids);
+                  setStatus(
+                    `${ids.length} part${ids.length === 1 ? "" : "s"} selected from the health check.`,
+                  );
                 }}
               />
               <OfflinePanel />

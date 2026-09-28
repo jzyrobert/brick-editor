@@ -220,6 +220,33 @@
       "connectorCoverage": "unverified"
     }
   },
+  "cameraCollections": {
+    "grouping": "bookmark name prefix, e.g. exterior/",
+    "api": "render.collection({ prefix | names, width, height, quality?, background?, visibility? })",
+    "cli": "brick-cli render-collection --collection exterior/ --output views.zip",
+    "maxViews": 24,
+    "manifest": "one shared manifest per collection; one revision"
+  },
+  "modelHealth": {
+    "api": "health.check()",
+    "cli": "brick-cli health --input file",
+    "checks": {
+      "missingDefinitions": "exact",
+      "unsupportedRendering": "exact",
+      "connectivity": "not-verified",
+      "collisions": "approximate (upright catalogue parts, stud rows allowed)",
+      "separateGroups": "approximate (touching boxes, not verified connections)",
+      "instructionOmissions": "exact"
+    }
+  },
+  "checkpoints": {
+    "storage": "IndexedDB on this device, separate from autosave snapshots",
+    "perProject": 20,
+    "api": "checkpoints.list/create/compare/restore/export/delete",
+    "compare": "occurrence-level: added, removed, moved, recoloured, relayered, replaced; identity by source path",
+    "cli": "brick-cli compare --input before --against after [--output report.json]",
+    "portable": "export as native .brickproj"
+  },
   "resourceProfiles": {
     "profiles": ["desktop", "mobile"],
     "selection": "automatic by device (phone-class touch screens or <=2 GB reported memory use mobile), or chosen per device",

@@ -1101,3 +1101,123 @@ a .icon {
     top: 66px;
   }
 }
+
+/* Checkpoints (Project mode). */
+.checkpoint-form {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+.checkpoint-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.checkpoint-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.checkpoint-list li {
+  padding: 10px 12px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.checkpoint-list li > div:first-child {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.checkpoint-list small {
+  font-size: 12px;
+  color: var(--secondary);
+}
+.checkpoint-list .button-row button[aria-label] {
+  flex: 0 0 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+.checkpoint-confirm {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid #eed6bc;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.checkpoint-report {
+  padding: 12px;
+  border-radius: 12px;
+  background: #e9e4d8;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.checkpoint-report p {
+  color: var(--ink);
+}
+
+/* Model health (Project mode). */
+.health-list {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.health-list li {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px solid var(--line);
+}
+.health-list p {
+  margin: 2px 0 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--secondary);
+}
+.health-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.health-ok .health-mark {
+  background: #dff1e3;
+  color: var(--accent);
+}
+.health-warning .health-mark {
+  background: #fdecd2;
+  color: #9a5b12;
+}
+.health-unknown .health-mark {
+  background: #e7e9ef;
+  color: var(--secondary);
+}
+.health-basis {
+  font-weight: 500;
+  color: var(--secondary);
+}
+
+/* Photo mode: named bookmarks and camera collections. */
+.bookmark-form,
+.camera-collections {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.bookmark-form label,
+.camera-collections label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
