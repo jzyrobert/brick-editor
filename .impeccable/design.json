@@ -273,6 +273,66 @@
           "#f3dcb9",
           "#fbf4e9"
         ]
+      },
+      "caution-wash": {
+        "role": "tertiary",
+        "displayName": "Caution Wash",
+        "canonical": "#fbf4e9",
+        "tonalRamp": [
+          "#412b0b",
+          "#714b13",
+          "#a16b1b",
+          "#d18a23",
+          "#e1a651",
+          "#eac185",
+          "#f3dcb9",
+          "#fbf4e9"
+        ]
+      },
+      "caution-line": {
+        "role": "tertiary",
+        "displayName": "Caution Line",
+        "canonical": "#f3dcb9",
+        "tonalRamp": [
+          "#412b0b",
+          "#714b13",
+          "#a16b1b",
+          "#d18a23",
+          "#e1a651",
+          "#eac185",
+          "#f3dcb9",
+          "#fbf4e9"
+        ]
+      },
+      "caution-ink": {
+        "role": "tertiary",
+        "displayName": "Caution Ink",
+        "canonical": "#714b13",
+        "tonalRamp": [
+          "#412b0b",
+          "#714b13",
+          "#a16b1b",
+          "#d18a23",
+          "#e1a651",
+          "#eac185",
+          "#f3dcb9",
+          "#fbf4e9"
+        ]
+      },
+      "danger-rust": {
+        "role": "tertiary",
+        "displayName": "Danger Rust",
+        "canonical": "#a74c20",
+        "tonalRamp": [
+          "#3c1b0b",
+          "#672f14",
+          "#92421c",
+          "#c15825",
+          "#dd7b4b",
+          "#e6a07f",
+          "#f1c9b6",
+          "#fbefea"
+        ]
       }
     },
     "typographyMeta": {
@@ -282,7 +342,11 @@
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Mode-card and dialog titles; 22px on touch sheets, 25px on desktop mode cards."
+        "purpose": "Mode-card and dialog titles on touch sheets; export stat figures."
+      },
+      "headline-large": {
+        "displayName": "Headline Large",
+        "purpose": "Desktop mode-card and dialog titles (25px)."
       },
       "title": {
         "displayName": "Title",
@@ -299,6 +363,10 @@
       "label": {
         "displayName": "Label",
         "purpose": "Status toast, counts chip, view strip, hotbar slot names, save state."
+      },
+      "field-touch": {
+        "displayName": "Field Touch",
+        "purpose": "Input and select text on phones (16px) so browsers do not zoom on focus."
       }
     },
     "shadows": [

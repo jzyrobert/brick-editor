@@ -2,20 +2,6 @@
  * Creative-mode HUD. The build fills the screen; controls live in slots at its
  * edges and dim while you work the model. Layered after styles.css.
  */
-:root {
-  --paper: #f4f1ea;
-  --ink: #1d2230;
-  --secondary: #4f5a6e;
-  --line: #e2dccf;
-  --accent: #2e7d43;
-  --hud: rgba(29, 34, 48, 0.92);
-  --hud-line: rgba(244, 241, 234, 0.16);
-  --chalk: #f4f1ea;
-  --grass: #5bb56a;
-  --sun: #ffd166;
-  --hud-mute: #b9c0cf;
-  --scene: #dfe6ea;
-}
 ::selection {
   background: #ffd16688;
   color: var(--ink);
@@ -23,13 +9,7 @@
 body {
   background: var(--scene);
   color: var(--ink);
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 button:focus-visible,
@@ -43,11 +23,11 @@ summary:focus-visible {
 .primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--card);
 }
 .primary:hover {
-  background: #266a38;
-  border-color: #266a38;
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
 }
 .icon {
   flex-shrink: 0;
@@ -76,7 +56,7 @@ summary:focus-visible {
   background: var(--hud);
   border: 2px solid var(--hud-line);
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(20, 24, 36, 0.24);
+  box-shadow: var(--shadow-slab);
   color: var(--chalk);
 }
 .hud-el {
@@ -207,14 +187,14 @@ summary:focus-visible {
   font-weight: 650;
 }
 .header-actions .hud-slab:hover {
-  background: #2a3044;
+  background: var(--hud-hover);
   border-color: var(--hud-line);
 }
 .header-actions .primary {
   min-width: 0;
   justify-content: center;
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(20, 24, 36, 0.24);
+  box-shadow: var(--shadow-slab);
 }
 
 /* Tool dock (desktop): bottom centre. */
@@ -229,7 +209,7 @@ summary:focus-visible {
   background: var(--hud);
   border: 2px solid var(--hud-line);
   border-radius: 16px;
-  box-shadow: 0 8px 22px rgba(20, 24, 36, 0.26);
+  box-shadow: var(--shadow-dock);
 }
 .canvas-toolbar button {
   display: flex;
@@ -248,7 +228,7 @@ summary:focus-visible {
 }
 .canvas-toolbar button.active {
   background: var(--grass);
-  color: #10240f;
+  color: var(--grass-ink);
 }
 .canvas-toolbar button:disabled {
   opacity: 0.35;
@@ -310,7 +290,7 @@ summary:focus-visible {
   background: var(--paper);
   border: 0;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(20, 24, 36, 0.22);
+  box-shadow: var(--shadow-sheet);
   overscroll-behavior: contain;
 }
 .left-sidebar {
@@ -321,13 +301,13 @@ summary:focus-visible {
   width: 310px;
 }
 .part-card {
-  background: #fff;
+  background: var(--card);
   border: 2px solid var(--line);
   border-radius: 12px;
 }
 .part-card.chosen {
   border-color: var(--grass);
-  background: #fff;
+  background: var(--card);
   box-shadow: inset 0 0 0 1px var(--grass);
 }
 .part-check {
@@ -341,7 +321,7 @@ summary:focus-visible {
   color: var(--chalk);
 }
 .part-favourite[aria-pressed="true"] {
-  color: #b7791f;
+  color: var(--amber);
 }
 .parts-heading {
   display: flex;
@@ -428,7 +408,7 @@ summary:focus-visible {
   left: 12px;
   background: var(--paper);
   border: 0;
-  box-shadow: 0 10px 30px rgba(20, 24, 36, 0.22);
+  box-shadow: var(--shadow-sheet);
 }
 .mode-build .mode-card {
   display: none;
@@ -549,7 +529,7 @@ summary:focus-visible {
     padding: 6px 16px 18px;
     border-radius: 18px 18px 0 0;
     background: var(--paper);
-    box-shadow: 0 -10px 30px rgba(20, 24, 36, 0.24);
+    box-shadow: var(--shadow-rise);
     z-index: 18;
   }
   .sheet-full .mobile-panel {
@@ -589,7 +569,7 @@ summary:focus-visible {
     width: 44px;
     height: 5px;
     border-radius: 3px;
-    background: #c9c4b8;
+    background: var(--sheet-handle);
   }
   .sheet-open .canvas-bottom,
   .sheet-open .view-controls {
@@ -741,7 +721,7 @@ summary:focus-visible {
   padding: 4px;
   margin: 0 0 16px;
   border-radius: 12px;
-  background: #e9e4d8;
+  background: var(--tab-well);
 }
 .right-tabs button {
   flex: 1;
@@ -876,7 +856,7 @@ a .icon {
   .app .mobile-nav button.active,
   .app .mobile-nav button.chosen {
     border-color: var(--sun);
-    background: rgba(255, 209, 102, 0.14);
+    background: var(--sun-wash);
     color: var(--chalk);
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(10, 12, 20, 0.35);
@@ -920,7 +900,7 @@ a .icon {
     overflow: auto;
     border-radius: 18px 18px 0 0;
     padding: 26px 20px calc(20px + env(safe-area-inset-bottom));
-    box-shadow: 0 -10px 30px rgba(20, 24, 36, 0.24);
+    box-shadow: var(--shadow-rise);
   }
   .app .mode-card::before {
     content: "";
@@ -931,7 +911,7 @@ a .icon {
     height: 5px;
     margin-left: -22px;
     border-radius: 3px;
-    background: #c9c4b8;
+    background: var(--sheet-handle);
   }
   .app .mode-card h2 {
     font-size: 22px;
@@ -1062,7 +1042,7 @@ a .icon {
 }
 /* Diagnostics rows: a quiet full outline instead of a thick side stripe. */
 .diagnostics button {
-  border: 1px solid #eed6bc;
+  border: 1px solid var(--caution-line);
   border-radius: 8px;
   font-size: 12px;
   padding: 8px 10px;
@@ -1125,7 +1105,7 @@ a .icon {
   padding: 10px 12px;
   border: 2px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--card);
 }
 .checkpoint-list li > div:first-child {
   display: grid;
@@ -1145,14 +1125,14 @@ a .icon {
 .checkpoint-confirm {
   margin-top: 10px;
   padding: 10px 12px;
-  border: 1px solid #eed6bc;
+  border: 1px solid var(--caution-line);
   border-radius: 10px;
   font-size: 12px;
 }
 .checkpoint-report {
   padding: 12px;
   border-radius: 12px;
-  background: #e9e4d8;
+  background: var(--tab-well);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -1174,7 +1154,7 @@ a .icon {
   gap: 8px;
   padding: 10px 12px;
   border-radius: 12px;
-  background: #fff;
+  background: var(--card);
   border: 2px solid var(--line);
 }
 .health-list p {
@@ -1240,7 +1220,7 @@ a .icon {
 }
 .section-control button[aria-pressed="true"] {
   background: var(--grass);
-  color: #10240f;
+  color: var(--grass-ink);
 }
 .section-control label {
   display: flex;

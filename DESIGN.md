@@ -20,6 +20,10 @@ colors:
   lit-grass-ink: "#10240f"
   sun-gold: "#ffd166"
   favourite-amber: "#b7791f"
+  caution-wash: "#fbf4e9"
+  caution-line: "#f3dcb9"
+  caution-ink: "#714b13"
+  danger-rust: "#a74c20"
 typography:
   display:
     fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
@@ -32,6 +36,12 @@ typography:
     fontSize: "22px"
     fontWeight: 550
     lineHeight: 1.25
+  headline-large:
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    fontSize: "25px"
+    fontWeight: 550
+    lineHeight: 1.25
+    letterSpacing: "-0.7px"
   title:
     fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "17px"
@@ -51,6 +61,10 @@ typography:
     fontSize: "12px"
     fontWeight: 600
     fontFeature: "tnum"
+  field-touch:
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
 rounded:
   field: "8px"
   key: "10px"
@@ -150,6 +164,7 @@ Two materials carry everything. Controls are deep ink-navy slabs at high opacity
 The mood is playful and sturdy without being toy trade dress or a cold CAD cockpit. Density is low on touch (44–48px keys) and moderate on desktop, where the parts inventory and properties dock as floating chalk sheets beside the model rather than framing it.
 
 **Key Characteristics:**
+
 - Full-bleed canvas; every control floats in an edge slot, 12px from the viewport edge.
 - Navy HUD slabs (controls) and chalk sheets (content): two materials, never mixed on one surface.
 - Grass marks the tool in hand; darker grass commits; sun gold rings focus and the held hotbar slot.
@@ -162,16 +177,22 @@ The mood is playful and sturdy without being toy trade dress or a cold CAD cockp
 A night-navy and chalk pairing with two state colours, grass and sun, laid over a pale blue-grey scene haze.
 
 ### Primary
+
 - **Commit Grass** (commit-grass): the only filled button colour for commits: Export, Place selected part, Explore the studio template. It is a darker grass than the lit tool so white text passes contrast; hover deepens to Commit Grass Deep. Also the ink for small success text on chalk (Offline tag, part check, library note icons).
 - **Lit Grass** (lit-grass): the tool currently in hand in the tool dock, the chosen part-card outline, the save dot, and the save icon on the phone save chip. Always carries Lit Grass Ink text, never white.
 
 ### Secondary
+
 - **Sun Gold** (sun-gold): the 3px focus ring on every interactive element, the ring and 12–14% gold wash on the selected or active hotbar slot, and the text-selection highlight. It rings and outlines; it is not a panel fill.
 
 ### Tertiary
+
 - **Favourite Amber** (favourite-amber): the pressed favourite star on part cards. Nothing else.
+- **Caution** (caution-wash, caution-line, caution-ink): drawn from the Favourite Amber ramp for notices that need attention but are not errors: save conflicts, import diagnostics, resource warnings, replace warnings. Wash fills, line outlines, ink carries the text.
+- **Danger Rust** (danger-rust): destructive actions (remove a layer, delete a saved project) as text, and the fill of an armed risk confirmation with white text. Nothing else.
 
 ### Neutral
+
 - **Ink Navy** (ink-navy): body ink on chalk sheets; the fill of pressed filter chips and the active Layers/Inspector segment.
 - **HUD Slab** (hud-slab): 92% navy for every floating control surface: mode strip, project slab, save slab, tool dock, view strip, status toast, counts chip, hotbar. Hover on slab buttons lifts to HUD Slab Hover.
 - **HUD Line** (hud-line): the 2px outline on slabs and the dividers between tool segments.
@@ -183,6 +204,7 @@ A night-navy and chalk pairing with two state colours, grass and sun, laid over 
 - **Scene Haze** (scene-haze): the canvas ground behind the model and the app background.
 
 ### Named Rules
+
 **The Lit Slot Rule.** Lit Grass means "the tool you are holding" and nothing else on the HUD. It always takes dark Lit Grass Ink text; white on Lit Grass fails contrast.
 
 **The Commit Grass Rule.** Anything that commits (export, place, start) is Commit Grass with white text. One commit per slot group; everything else on navy is a slab button.
@@ -198,14 +220,18 @@ A night-navy and chalk pairing with two state colours, grass and sun, laid over 
 **Character:** One sturdy platform sans, no webfont (strict CSP and a self-hosted-or-system constraint). Weight does the work: bold HUD labels read like game keys, regular body text stays quiet inside sheets.
 
 ### Hierarchy
+
 - **Display** (550, 43px, 1.15, -1.8px): the empty-canvas welcome headline only.
-- **Headline** (550, 22px on touch sheets, 25px on desktop mode cards, 1.25): mode-card and dialog titles.
+- **Headline** (550, 22px on touch sheets, 1.25): mode-card and dialog titles on touch; export stat figures.
+- **Headline Large** (550, 25px, 1.25, -0.7px): desktop mode-card and dialog titles.
 - **Title** (700, 17px): touch sheet heads (Parts, Layers, Inspector); 13px 700 for section headings inside sheets (Starter collection).
 - **HUD Label** (600–650, 13px, tabular): mode tabs, tool dock, slab buttons, project name. The brand's second word and emphasis go to 750.
 - **Body** (400, 13px, tabular): sheet content and help text.
-- **Label** (600, 12px, tabular): status toast, counts chip, view strip, hotbar slot names, save state.
+- **Label** (600, 12px, tabular): status toast, counts chip, view strip, hotbar slot names, save state. It is also the floor: no UI text is set below 12px.
+- **Field Touch** (400, 16px): text inside inputs and selects on phones, so mobile browsers do not zoom on focus.
 
 ### Named Rules
+
 **The Tabular Rule.** `font-variant-numeric: tabular-nums` is set on the body; part counts, selection counts and revision numbers never shift width as they change.
 
 ## Layout
@@ -226,6 +252,7 @@ The canvas is absolutely full-bleed (100dvh) at every width; the HUD is a pointe
 Depth is ambient and navy-tinted: floating things cast soft, low-contrast shadows onto the scene haze so they read as held above the model. There are no hard or offset shadows. Chalk sheets cast more than navy slabs because they cover more of the model.
 
 ### Shadow Vocabulary
+
 - **Slab** (`0 6px 18px rgba(20, 24, 36, 0.24)`): HUD slabs and the Export button.
 - **Dock** (`0 8px 22px rgba(20, 24, 36, 0.26)`): the tool dock.
 - **Sheet** (`0 10px 30px rgba(20, 24, 36, 0.22)`): docked desktop sheets, mode cards, save alerts (0.24).
@@ -234,6 +261,7 @@ Depth is ambient and navy-tinted: floating things cast soft, low-contrast shadow
 - **Swatch bevel** (`inset 0 -3px 0 rgba(0, 0, 0, 0.18)`): the hotbar colour swatch, giving it a moulded underside.
 
 ### Named Rules
+
 **The Recede Rule.** While a pointer or finger drags on the canvas, every HUD element fades to 0.18 opacity and becomes click-through (150ms ease-out), then restores after release. New HUD elements must join this behaviour.
 
 ## Shapes
@@ -243,7 +271,9 @@ Friendly, chunky rounding that scales with surface size: 8px for fields and smal
 ## Components
 
 ### Buttons
+
 Solid, key-like and bold.
+
 - **Shape:** slab rounding (14px) in the top row; key rounding (10px) inside docks; phone header keys 12px.
 - **Primary:** Commit Grass with white 650-weight text, 48px tall in the top row, slab shadow.
 - **Slab button:** HUD Slab fill, 2px HUD Line outline, chalk text and icon; hover to HUD Slab Hover.
@@ -251,35 +281,43 @@ Solid, key-like and bold.
 - **Inside chalk sheets:** white buttons with a 1px Sheet Line border, 44px minimum.
 
 ### Chips
+
 - **Filter chips** (All, Bricks, Plates, Favourites and related parts): pill (18px) white chips on chalk; pressed state inverts to Ink Navy with chalk text. 36px tall on fine pointers, 44px on coarse pointers.
 - **Status toast:** a navy pill (34px, 30px on touch) in the bottom-right corner that appears for about 4 seconds after each change, then fades; its text is always in a live region, so it is announced even when hidden.
 - **Counts chip:** navy pill bottom left with tabular part and selection counts.
 
 ### Cards / Containers
+
 - **Sheets:** chalk ground, ink text, no border, sheet shadow; 300–310px docks on desktop, rising sheets with a 44×5px handle on touch.
 - **Part cards:** white, 2px Sheet Line border, 12px rounding; chosen state takes a Lit Grass border plus a 1px inset grass ring and a Commit Grass check.
 - **Welcome card:** chalk, 18px rounding, 28px padding, centred on the empty canvas with one Commit Grass action.
 
 ### Inputs / Fields
+
 - **Style:** on sheets, white fields with a 1px Sheet Line border, 6–8px rounding, 44px tall. The project name on the navy slab is borderless and transparent, showing an 8% chalk wash on hover and focus.
 - **Focus:** the Sun Gold ring.
 
 ### Navigation
+
 - **Mode switcher:** a navy slab with 40px tabs in HUD Mute that turn chalk-filled with ink text when active. On phones only the active tab shows, with a chevron; tapping opens a vertical list of all five modes with 46px rows.
 - **Segmented tabs (Layers / Inspector):** a recessed Tab Well track with the active segment in Ink Navy.
 
 ### Tool Dock (signature)
+
 A navy dock of labelled keys grouped by 2px dividers: Select/Place/Paint/Navigate, Undo/Redo, then Fit view, Camera views and Rectangular fill. The held tool is Lit Grass with dark ink. On touch it becomes a right-edge column of 46px icon keys whose names stay accessible.
 
 ### Hotbar (signature)
+
 A 64px navy bar of 48px keys along the bottom on touch: a colour slot (a bevelled swatch), recently held parts, then Parts, Layers and Inspect. Keys have a 2px chalk-tinted outline over a 5% chalk wash. The active or held key takes a Sun Gold border, a gold wash, a 3px lift and the hotbar lift shadow (180ms ease-out).
 
 ### Icons
+
 Authored set on a 24px grid, 2px stroke, round caps and joins, currentColor, `aria-hidden`; 20px by default, 16px inside part cards. Icons inside text buttons sit on the baseline (-3px).
 
 ## Do's and Don'ts
 
 ### Do:
+
 - **Do** keep the canvas full-bleed and put every new control in a floating edge slot 12px from the viewport edge.
 - **Do** use HUD Slab navy with a 2px HUD Line outline for controls and chalk sheets for content.
 - **Do** give the held tool Lit Grass with Lit Grass Ink text, and every commit Commit Grass with white text.
@@ -290,6 +328,7 @@ Authored set on a 24px grid, 2px stroke, round caps and joins, currentColor, `ar
 - **Do** show status as a transient toast (about 4s) while keeping it permanently in a live region.
 
 ### Don't:
+
 - **Don't** frame the canvas with a header bar, fixed sidebars or a permanent status bar.
 - **Don't** put white text on Lit Grass, or use Lit Grass for commit buttons.
 - **Don't** fill panels or large areas with Sun Gold; it rings and outlines.
