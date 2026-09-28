@@ -57,9 +57,21 @@ import {
 import { connectedAssembly } from "../core/connectivity";
 import {
   catalogCategories,
+  displayTitle,
   relatedParts,
   searchCatalog,
+  searchFullLibrary,
 } from "../catalog/search";
+import { partSpec } from "../catalog/extended";
+import {
+  fullCatalog,
+  fullLibraryGeneration,
+  onFullLibraryChange,
+} from "../catalog/full-library";
+import {
+  loadFullCatalog,
+  loadFullSources,
+} from "../catalog/full-library-loader";
 import {
   loadFavourites,
   loadRecent,
@@ -81,6 +93,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
@@ -221,6 +234,9 @@ function PartThumb({ part, color }: { part: CatalogPart; color?: string }) {
   // The tint mask reuses the image only once the lazy <img> has loaded it, so
   // off-screen cards fetch nothing.
   const [loaded, setLoaded] = useState<string>();
+  // Parts from the complete library have no rendering: a neutral outline box,
+  // never a picture of some other part.
+  if (!part.thumbnail) return <GenericThumb />;
   return (
     <span
       className={"part-thumb" + (loaded === src ? " loaded" : "")}
@@ -241,6 +257,17 @@ function PartThumb({ part, color }: { part: CatalogPart; color?: string }) {
         draggable={false}
         onLoad={() => setLoaded(src)}
       />
+    </span>
+  );
+}
+/** Neutral outline for parts without a rendering (complete library): never a
+ * picture of some other part. */
+function GenericThumb() {
+  return (
+    <span className="part-thumb generic" aria-hidden="true">
+      <svg viewBox="0 0 48 48">
+        <path d="M8 16 24 8l16 8v16l-16 8-16-8Z M8 16l16 8 16-8 M24 24v16" />
+      </svg>
     </span>
   );
 }
@@ -392,6 +419,9 @@ function Workspace() {
     [part, setPart] = useState("3001.dat"),
     [color, setColor] = useState("4"),
     [search, setSearch] = useState(""),
+    // "All LDraw parts" scope: opt-in per session, loads the full part list.
+    [fullScope, setFullScope] = useState(false),
+    [fullScopeError, setFullScopeError] = useState(""),
     [partCategory, setPartCategory] = useState<string>(),
     [favouritesOnly, setFavouritesOnly] = useState(false),
     [favourites, setFavourites] = useState(() =>
@@ -513,12 +543,17 @@ function Workspace() {
       moving?.loading
     );
   };
+  // Re-derive the scene when complete-library names, bounds or sources arrive.
+  const fullLibraryVersion = useSyncExternalStore(
+    onFullLibraryChange,
+    fullLibraryGeneration,
+  );
   const all =
       editor.materialization.status === "available" ? occurrences(project) : [],
     // The parent unmounts this entire derived workspace on limited replacement.
 
     selected = all.filter((o) => selection.includes(o.id)),
-    currentPart = catalog[part],
+    currentPart = partSpec(part) ?? catalog["3001.dat"],
     currentPlanId = project.instructionPlans[activePlanId]
       ? activePlanId
       : (Object.keys(project.instructionPlans)[0] ?? ""),
@@ -582,8 +617,8 @@ function Workspace() {
   const colorHex = (code: string) => colors.find((c) => c.code === code)?.hex;
   const inspection = useMemo(
     () => inspectSelection(project, selected),
-    // `selected` derives from these two.
-    [project, selection],
+    // `selected` derives from these two (and resolved library names).
+    [project, selection, fullLibraryVersion],
   );
   /** Set one world axis on every selected part: one undoable transaction, one
    * command per distinct current value. */
@@ -1053,9 +1088,9 @@ function Workspace() {
               placementOnPlane(
                 v,
                 found!.plane,
-                catalog[s.part].height,
+                partSpec(s.part)!.height,
                 s.angle,
-                catalog[s.part].align,
+                partSpec(s.part)!.align,
               ).position,
           );
           setPickingFace(false);
@@ -1080,9 +1115,9 @@ function Workspace() {
               placementOnPlane(
                 v,
                 face.plane,
-                catalog[s.part].height,
+                partSpec(s.part)!.height,
                 s.angle,
-                catalog[s.part].align,
+                partSpec(s.part)!.align,
               ).position,
           );
           setPickingFace(false);
@@ -1136,12 +1171,12 @@ function Workspace() {
               (o) => o.id === surface.occurrenceId,
             );
             if (!hit) return null;
-            const spec = catalog[s.part];
+            const spec = partSpec(s.part)!;
             return stackingTarget(
               s.workplane,
               surface,
               occurrenceBox(project, hit),
-              hit.namespace === "official" && !!catalog[hit.node.ref]?.studded,
+              hit.namespace === "official" && !!partSpec(hit.node.ref)?.studded,
               {
                 width: spec.width,
                 depth: spec.depth,
@@ -1190,9 +1225,9 @@ function Workspace() {
           ? placementOnPlane(
               target.point,
               target.plane,
-              catalog[s.part].height,
+              partSpec(s.part)!.height,
               s.angle,
-              catalog[s.part].align,
+              partSpec(s.part)!.align,
             ).position
           : (() => {
               const v = r.planeIntersection(e.clientX, e.clientY, s.workplane);
@@ -1201,9 +1236,9 @@ function Workspace() {
                 placementOnPlane(
                   v,
                   s.workplane,
-                  catalog[s.part].height,
+                  partSpec(s.part)!.height,
                   s.angle,
-                  catalog[s.part].align,
+                  partSpec(s.part)!.align,
                 ).position
               );
             })();
@@ -1975,12 +2010,70 @@ function Workspace() {
           },
         ];
   const choosePart = (id: string) => {
-    const p = catalog[id];
+    const p = partSpec(id)!;
     setPart(id);
     setPosition(
       (v) => placementOnPlane(v, workplane, p.height, angle, p.align).position,
     );
     setTool("Place");
+  };
+  const fullEntries = fullScope ? fullCatalog() : undefined;
+  const fullResults = fullEntries
+    ? searchFullLibrary(fullEntries, search, {
+        limit: 60,
+        exclude: (id) => Object.hasOwn(catalog, id),
+      })
+    : [];
+  const searchAllParts = () => {
+    setFullScope(true);
+    setFullScopeError("");
+    loadFullCatalog().catch((e) =>
+      setFullScopeError(
+        "The complete part list is unavailable" +
+          (navigator.onLine ? "" : " offline") +
+          ": " +
+          (e instanceof Error ? e.message : String(e)),
+      ),
+    );
+  };
+  /** A complete-library part: load its verified definition, then hold it. */
+  const chooseFullPart = (id: string) =>
+    void run(async () => {
+      setStatus("Loading " + id.replace(/\.dat$/, "") + "…");
+      await loadFullSources([id]);
+      const spec = partSpec(id);
+      ensure(spec, "REFERENCE_MISSING", "This part has no geometry to place.");
+      choosePart(id);
+      setStatus(
+        spec!.name +
+          " is ready to place. It is outside the curated catalogue: no marketplace mapping or verified connectors.",
+      );
+    });
+  const fullCard = (entry: readonly [string, string, string, string?]) => {
+    const [id, title] = entry,
+      name = displayTitle(title);
+    return (
+      <div key={id} className="part-card-wrap">
+        <button
+          id={"part-" + id}
+          className={"part-card " + (part === id ? "chosen" : "")}
+          aria-pressed={part === id}
+          title={name + " · " + id.replace(".dat", "")}
+          onClick={() => chooseFullPart(id)}
+        >
+          <GenericThumb />
+          <strong>
+            <PartName name={name} />
+          </strong>
+          <small>{id.replace(".dat", "")}</small>
+          {part === id && (
+            <span className="part-check">
+              <Icon name="check" size={16} />
+            </span>
+          )}
+        </button>
+      </div>
+    );
   };
   const toggleFavourite = (id: string) =>
     setFavourites((current) => {
@@ -2118,8 +2211,8 @@ function Workspace() {
                   aria-pressed={part === id}
                   onClick={() => choosePart(id)}
                 >
-                  <PartThumb part={catalog[id]} color={heldHex} />
-                  {catalog[id].name}
+                  <PartThumb part={partSpec(id)!} color={heldHex} />
+                  {partSpec(id)!.name}
                 </button>
               ))}
             </div>
@@ -2176,6 +2269,41 @@ function Workspace() {
             <div className="part-grid">{group.parts.map(partCard)}</div>
           </section>
         ))}
+      {search.trim() && (
+        <section
+          className="part-group full-library"
+          aria-label="All LDraw parts"
+        >
+          <h3 className="parts-heading">
+            All LDraw parts
+            {fullEntries && (
+              <span className="parts-heading-count">
+                {fullResults.length}
+                {fullResults.length === 60 ? "+" : ""}
+              </span>
+            )}
+          </h3>
+          {!fullScope ? (
+            <button className="full-library-search" onClick={searchAllParts}>
+              <Icon name="search" size={16} /> Search every official LDraw part
+            </button>
+          ) : fullScopeError ? (
+            <p className="muted" role="status">
+              {fullScopeError}
+            </p>
+          ) : !fullEntries ? (
+            <p className="muted" role="status">
+              Loading the official part list…
+            </p>
+          ) : fullResults.length ? (
+            <div className="part-grid">{fullResults.map(fullCard)}</div>
+          ) : (
+            <p className="muted" role="status">
+              No other official parts match “{search.trim()}”.
+            </p>
+          )}
+        </section>
+      )}
       <p className="muted">
         Colours BrickLink lists for a part are audited for it; other
         combinations need inventory review.
@@ -4003,14 +4131,14 @@ function Workspace() {
             <button
               key={id}
               className={"hotbar-part" + (part === id ? " chosen" : "")}
-              aria-label={"Place " + catalog[id].name}
+              aria-label={"Place " + partSpec(id)!.name}
               onClick={() => {
                 choosePart(id);
                 setPanel("Canvas");
               }}
             >
-              <PartThumb part={catalog[id]} color={heldHex} />
-              <span>{shortPartLabel(catalog[id].name)}</span>
+              <PartThumb part={partSpec(id)!} color={heldHex} />
+              <span>{shortPartLabel(partSpec(id)!.name)}</span>
             </button>
           ))}
         {(["Parts", "Layers", "Inspector"] as const).map((p) => (

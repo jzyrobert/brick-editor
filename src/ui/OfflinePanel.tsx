@@ -79,7 +79,9 @@ export function OfflinePanel() {
       <h3>Use this device offline</h3>
       <p className="muted">
         Download the app and starter parts for offline use. Older installed
-        versions are retained so saved projects keep their library files.
+        versions are retained so saved projects keep their library files. Other
+        official LDraw parts stay available offline once a model on this device
+        has used them.
       </p>
       <button disabled={busy} onClick={() => void prepare()}>
         {busy ? "Downloading…" : "Download / check for updates"}

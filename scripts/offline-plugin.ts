@@ -9,14 +9,22 @@ function publicFiles(path = "public", prefix = ""): string[] {
       : [prefix + e.name],
   );
 }
-/** Emits an opt-in, immutable app/library snapshot. Old snapshots are never silently evicted. */
+/** Emits an opt-in, immutable app/library snapshot. Old snapshots are never
+ * silently evicted. The complete LDraw pack is excluded (cached on demand). */
 export function offlinePlugin(): Plugin {
   return {
     name: "offline-snapshot",
     apply: "build",
     enforce: "post",
     generateBundle(_options, bundle) {
-      const files = publicFiles();
+      // The complete LDraw pack (~90 MB) is never precached: the app loads and
+      // caches the parts a model uses on demand (src/catalog/full-library-loader.ts).
+      // Its content-addressed files are all pinned by its manifest, so hashing
+      // the manifest alone versions it.
+      const full = /^libraries\/ldraw-full-[^/]+\//;
+      const files = publicFiles().filter(
+        (f) => !full.test(f) || f.endsWith("/manifest.json"),
+      );
       const assets = Object.keys(bundle);
       const hash = createHash("sha256");
       for (const key of assets.sort()) {
@@ -29,7 +37,13 @@ export function offlinePlugin(): Plugin {
         hash.update(readFileSync(join("public", file)));
       }
       const version = hash.digest("hex").slice(0, 20),
-        paths = [...new Set(["index.html", ...assets, ...files])];
+        paths = [
+          ...new Set([
+            "index.html",
+            ...assets,
+            ...files.filter((f) => !full.test(f)),
+          ]),
+        ];
       const source = `const VERSION=${JSON.stringify(version)};\nconst PATHS=${JSON.stringify(paths)};\nconst CACHE='brick-editor-offline:'+self.registration.scope+':'+VERSION;\nself.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);try{await cache.addAll(PATHS.map(p=>new URL(p,self.registration.scope).href));}catch(error){await caches.delete(CACHE);throw error;}})());});\nself.addEventListener('activate',event=>{event.waitUntil(self.clients.claim());});\nself.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_OFFLINE_UPDATE')self.skipWaiting();});\nself.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(!url.href.startsWith(self.registration.scope))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);const key=event.request.mode==='navigate'?new URL('index.html',self.registration.scope).href:event.request;return await cache.match(key,{ignoreVary:true})||fetch(event.request);})());});\n`;
       this.emitFile({ type: "asset", fileName: "service-worker.js", source });
       this.emitFile({

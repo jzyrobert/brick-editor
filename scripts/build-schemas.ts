@@ -105,6 +105,8 @@ const project = obj({
       colorConfigSha256: id,
       connectorPackId: id,
       connectorPackSha256: id,
+      // Complete official library pack used for parts outside the curated pack.
+      full: obj({ releaseId: id, manifestSha256: id }),
     },
     ["releaseId", "manifestSha256", "colorConfigSha256"],
   ),

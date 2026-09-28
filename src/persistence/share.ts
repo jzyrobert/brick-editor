@@ -2,6 +2,10 @@ import { deflateSync, Inflate, strToU8, strFromU8 } from "fflate";
 import { ensure, type Project } from "../core/types";
 import { sha256 } from "../core/hash";
 import { exportLDraw, importLDraw } from "../ldraw/io";
+import {
+  loadFullLibraryIndex,
+  sourceNeedsFullLibrary,
+} from "../catalog/full-library-loader";
 import { libraryLock, retiredLibraryLocks } from "../catalog/catalog";
 export const SHARE_LIMITS = {
   soft: 8192,
@@ -135,6 +139,10 @@ export async function previewShare(fragment: string) {
     "INVALID_INPUT",
     "Share checksum mismatch",
   );
-  const project = importLDraw(strFromU8(bytes), "Shared model");
+  const text = strFromU8(bytes);
+  // Parts outside the curated pack resolve against the complete pack's index.
+  if (sourceNeedsFullLibrary(text))
+    await loadFullLibraryIndex().catch(() => {});
+  const project = importLDraw(text, "Shared model");
   return { project, sourceBytes: size };
 }

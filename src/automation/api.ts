@@ -22,6 +22,10 @@ import type {
 import { type Editor } from "../core/commands";
 import { type CameraSpec, type Command, ensure } from "../core/types";
 import { importLDraw, exportLDraw, scopedLDraw } from "../ldraw/io";
+import {
+  loadFullLibraryIndex,
+  unresolvedCuratedRefs,
+} from "../catalog/full-library-loader";
 import { encodeNative, decodeNative } from "../persistence/native";
 import {
   InventoryService,
@@ -516,6 +520,10 @@ export function createAPI(
                   ),
                 )
               : template(input.template || "blank");
+        // Register the complete official pack's index before the document
+        // replaces the current one, so its parts resolve as official at once.
+        if (unresolvedCuratedRefs(p).size)
+          await loadFullLibraryIndex().catch(() => {});
         if (input.strict)
           ensure(
             !p.diagnostics.some((d) => d.code === "REFERENCE_MISSING"),

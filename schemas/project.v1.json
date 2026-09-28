@@ -55,6 +55,26 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 1024
+        },
+        "full": {
+          "type": "object",
+          "properties": {
+            "releaseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "manifestSha256": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "releaseId",
+            "manifestSha256"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [

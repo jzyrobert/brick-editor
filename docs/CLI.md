@@ -4,6 +4,8 @@ Run commands from the repository with Node 22.14 or later after `npm ci` and `np
 
 Inventory, validation, native/LDraw conversion, command application, and instruction JSON run directly in Node. PNG capture, Play capture, and PDF/PNG/HTML publication launch a temporary loopback server and local Chromium, then close both. No remote renderer or keyboard emulation is used.
 
+Every official LDraw part resolves offline: the CLI registers the committed complete library pack (`public/libraries/ldraw-full-*`, verified against its lock) before any operation, and the local render server serves the same files. For example, `npm run cli -- health --input fixtures/ldraw/full-library.ldr` reports no missing definitions for its non-catalogue doors, dome and fences.
+
 ## Still renders and render looks
 
 ```sh

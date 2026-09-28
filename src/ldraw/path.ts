@@ -1,8 +1,10 @@
 import { ensure } from "../core/types";
+/** Canonical reference name. `#` is allowed: the official library has a
+ * primitive named `box3#8p.dat`. */
 export function canonical(input: string) {
   ensure(
     input.length < 1024 &&
-      !/[\x00-\x1f:?#]/.test(input) &&
+      !/[\x00-\x1f:?]/.test(input) &&
       !/^[/\\]/.test(input),
     "INVALID_INPUT",
     "Unsafe reference path",

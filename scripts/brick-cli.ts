@@ -27,12 +27,16 @@ import { Editor } from "../src/core/commands";
 import { occurrences } from "../src/core/document";
 import { AppError, ensure, uid, type Scope } from "../src/core/types";
 import { withHeadlessPage } from "./headless";
+import { registerFullLibraryFromDisk } from "./full-library-node";
 import type { CameraSpec } from "../src/core/types";
 import type { PlayCameraMode, PlayLocomotion } from "../src/play/types";
 import type { PublishFormat } from "../src/instructions/publish";
 import { isLookName } from "../src/render/look";
 export async function main(argv: string[]) {
   const [operation, ...args] = argv;
+  // Official parts outside the curated pack resolve from the built complete
+  // pack on disk (verified against its lock); no network is used.
+  registerFullLibraryFromDisk();
   const flag = (key: string) => {
     const i = args.indexOf("--" + key);
     return i < 0 ? undefined : args[i + 1];

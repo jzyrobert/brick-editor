@@ -167,18 +167,22 @@ describe("placeable catalogue integrity", () => {
     const fresh = importLDraw(
       "0 FILE c.ldr\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat",
     );
-    expect(fresh.library).toEqual({ ...libraryLock, ...connectorLock });
+    expect(fresh.library).toEqual(projectLibraryLock);
+    expect(fresh.library).toMatchObject({ ...libraryLock, ...connectorLock });
     expect(fresh.library.connectorPackSha256).toMatch(/^[0-9a-f]{64}$/);
     expect(adoptCurrentLocks(fresh)).toBe(false);
-    // Saved before connector packs were recorded: the lock is added and the
-    // missing value is kept in previousLocks.
+    // Saved before connector packs (and the complete library pack) were
+    // recorded: the locks are added and the missing values are kept in
+    // previousLocks.
     const old = importLDraw(
       "0 FILE d.ldr\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat",
     );
     old.library = { ...libraryLock };
     expect(adoptCurrentLocks(old)).toBe(true);
     expect(old.library).toEqual(projectLibraryLock);
-    expect(old.metadata.previousLocks).toEqual([{ connector: null }]);
+    expect(old.metadata.previousLocks).toEqual([
+      { connector: null, full: null },
+    ]);
     // An earlier pack of the same library is re-pinned and recorded.
     const earlier = {
       connectorPackId: "ldraw-derived-studs-1",
@@ -191,8 +195,8 @@ describe("placeable catalogue integrity", () => {
       connectorLock.connectorPackSha256,
     );
     expect(old.metadata.previousLocks).toEqual([
-      { connector: null },
-      { connector: earlier },
+      { connector: null, full: null },
+      { connector: earlier, full: null },
     ]);
     // Another library's project keeps its own lock untouched.
     const other = importLDraw(

@@ -6,6 +6,13 @@ import { resolveScope } from "../inventory/service";
 import { exportLDraw, scopedLDraw, importLDraw } from "./io";
 import { canonical } from "./path";
 import { libraryLock } from "../catalog/catalog";
+import { gunzipSync } from "fflate";
+import {
+  fullLibraryLock,
+  registeredFullLibrary,
+} from "../catalog/full-library";
+import { loadFullLibraryIndex } from "../catalog/full-library-loader";
+import { chunkPath } from "../catalog/full-pack";
 import { sha256 } from "../core/hash";
 import { encodeNative } from "../persistence/native";
 export type ExportProfile = "standard" | "portable" | "layers" | "native";
@@ -93,10 +100,50 @@ async function officialClosure(text: string, options: ExportOptions) {
       { file: LibraryFile; text: string; bytes: Uint8Array }
     >();
   let total = manifestBytes.length;
+  // Files outside the curated pack come from the complete official pack: its
+  // verified chunk bytes, sliced to the exact file.
+  const fullBase = "libraries/" + fullLibraryLock.releaseId + "/";
+  const chunks = new Map<number, Uint8Array>();
+  const fromFullPack = async (name: string) => {
+    if (!registeredFullLibrary() && !options.readAsset)
+      await loadFullLibraryIndex().catch(() => {});
+    const state = registeredFullLibrary(),
+      at = state?.where.get(name);
+    if (!state || !at) return undefined;
+    let raw = chunks.get(at.chunk);
+    if (!raw) {
+      const [sha, length] = state.index.chunks[at.chunk];
+      const gz = await read(fullBase + chunkPath(sha), options);
+      ensure(
+        gz.length === length && (await sha256(gz)) === sha,
+        "INVALID_INPUT",
+        "Dependency hash mismatch: " + chunkPath(sha),
+      );
+      raw = gunzipSync(gz);
+      chunks.set(at.chunk, raw);
+    }
+    const bytes = raw.slice(at.offset, at.offset + at.length),
+      text = new TextDecoder().decode(bytes),
+      path =
+        Object.hasOwn(state.index.parts, name) || name.startsWith("s/")
+          ? "parts/" + name
+          : "p/" + name;
+    const file: LibraryFile = {
+      path,
+      sha256: await sha256(bytes),
+      bytes: bytes.length,
+      source: "https://library.ldraw.org/library/official/" + path,
+      license: [...text.matchAll(/^0 !LICENSE (.+)$/gm)].map((m) => m[1]),
+      authors: [...text.matchAll(/^0 Author: (.+)$/gm)].map((m) => m[1]),
+    };
+    files.set(name, file);
+    return { file, bytes };
+  };
   const visit = async (ref: string) => {
     check(options);
     const name = canonical(ref);
     if (embedded.has(name) || needed.has(name)) return;
+    const full = files.has(name) ? undefined : await fromFullPack(name);
     const file = files.get(name);
     ensure(
       file,
@@ -108,7 +155,7 @@ async function officialClosure(text: string, options: ExportOptions) {
       "INVALID_INPUT",
       "Dependency has no audited redistribution license: " + ref,
     );
-    const bytes = await read(base + file.path, options);
+    const bytes = full?.bytes ?? (await read(base + file.path, options));
     total += bytes.length;
     ensure(
       total <= MAX_BYTES,
@@ -143,6 +190,7 @@ async function officialClosure(text: string, options: ExportOptions) {
   const attribution =
     "Official LDraw dependency closure\nSource library: " +
     libraryLock.releaseId +
+    (chunks.size ? " and " + fullLibraryLock.releaseId : "") +
     "\nLicense: Creative Commons Attribution 4.0 International\nhttps://creativecommons.org/licenses/by/4.0/\nNo source geometry modifications. Original author and license headers retained.\n\n" +
     notices
       .map(

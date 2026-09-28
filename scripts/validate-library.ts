@@ -11,6 +11,7 @@ import {
   retiredMappingLocks,
 } from "../src/catalog/catalog";
 import mappings from "../src/catalog/mappings.json";
+import { validateFullLibrary } from "./validate-full-library";
 import {
   connectorLock,
   connectorPackMatchesLibrary,
@@ -135,6 +136,12 @@ for (const ref of Object.keys(boundsSources))
     JSON.parse(JSON.stringify(sourceBounds(boundsSources, ref))),
     "Stale source bounds: " + ref,
   );
+// The complete official pack (on-demand parts beyond the curated catalogue).
+const full = validateFullLibrary({
+  root,
+  files: manifest.files,
+  colorConfigSha256: libraryLock.colorConfigSha256,
+});
 console.log(
   JSON.stringify(
     {
@@ -147,6 +154,7 @@ console.log(
       mappingPackSha256: mappingLock.mappingPackSha256,
       retiredLibraryLocks: retiredLibraryLocks.map((l) => l.releaseId),
       retiredMappingLocks: retiredMappingLocks.map((l) => l.mappingPackId),
+      full,
     },
     null,
     2,

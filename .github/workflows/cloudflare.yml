@@ -29,6 +29,10 @@ jobs:
       - run: npm run library:validate
       - name: Browser acceptance tests
         run: npm run test:browser
+      # dist includes the committed complete LDraw pack (~3,100 content-addressed
+      # chunks); keep the deployment within Cloudflare Pages file limits.
+      - name: Check Cloudflare Pages limits
+        run: npm run deploy:check
       - uses: actions/upload-artifact@v4
         with:
           name: cloudflare-static-site

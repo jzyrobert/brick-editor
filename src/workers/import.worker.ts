@@ -1,8 +1,16 @@
 import { importLDraw } from "../ldraw/io";
 import { AppError } from "../core/types";
 import { isResourceProfile } from "../core/resource-profile";
-self.onmessage = (e) => {
+import {
+  loadFullLibraryIndex,
+  sourceNeedsFullLibrary,
+} from "../catalog/full-library-loader";
+self.onmessage = async (e) => {
   try {
+    // References outside the curated pack resolve against the complete
+    // official pack's index; if it is unavailable they stay unresolved.
+    if (sourceNeedsFullLibrary(e.data.text))
+      await loadFullLibraryIndex().catch(() => {});
     self.postMessage({
       result: importLDraw(
         e.data.text,

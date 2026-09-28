@@ -19,7 +19,9 @@
     "fixtures": "tsx scripts/generate-fixtures.ts",
     "library:bounds": "tsx scripts/build-query-bounds.ts",
     "library:thumbnails": "tsx scripts/build-thumbnails.ts",
-    "library:connectors": "tsx scripts/build-connectors.ts"
+    "library:connectors": "tsx scripts/build-connectors.ts",
+    "library:full": "tsx scripts/build-full-library.ts",
+    "deploy:check": "tsx scripts/check-deploy-limits.ts"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "0.21.0",

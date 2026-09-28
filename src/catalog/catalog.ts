@@ -1,18 +1,22 @@
 import sources from "./bounds.json";
 import data from "./data.json";
 import type { Project } from "../core/types";
+import { curatedHas, fullLibraryHas, fullLibraryLock } from "./full-library";
 export const libraryLock = data.libraryLock;
 export const mappingLock = data.mappingLock;
 /** Derived connector pack bound to the current library (see docs/CONNECTORS.md). */
 export const connectorLock = data.connectorLock;
-/** What a project records as its library lock: geometry plus connector pack. */
+/** What a project records as its library lock: curated geometry, connector
+ * pack and the complete official pack (`full`) that resolves every other
+ * official part on demand. */
 export const projectLibraryLock: Project["library"] = {
   ...libraryLock,
   ...connectorLock,
+  full: { ...fullLibraryLock },
 };
 /** Locks of superseded library releases whose every file is byte-identical in
  * the current pack (checked by `npm run library:validate`). */
-export const retiredLibraryLocks: (typeof libraryLock)[] =
+export const retiredLibraryLocks: Project["library"][] =
   data.retiredLibraryLocks;
 /** Superseded mapping packs whose item identities the current pack keeps. */
 export const retiredMappingLocks: (typeof mappingLock)[] =
@@ -48,6 +52,9 @@ export type CatalogPart = {
   snapVerified: boolean;
   inventoryBoundary: boolean;
   source: string;
+  /** Official part from the complete pack, outside the curated catalogue
+   * (derived spec, no thumbnail; see extended.ts). */
+  extended?: boolean;
 };
 export const catalog: Record<string, CatalogPart> = data.catalog;
 /** Palette order of categories for filter chips and grouped browsing. */
@@ -64,11 +71,14 @@ export const colors = [
   { code: "47", name: "Clear", hex: "#eef3f5" },
 ];
 
-/** Installed source definitions include primitives; purchasing identities remain in catalog. */
+/** Installed source definitions include primitives; purchasing identities
+ * remain in catalog. Beyond the curated pack, any file of the complete official
+ * pack counts once its index is registered (full-library.ts). */
 export function installedSource(ref: string) {
   return (
-    sources.manifestSha256 === libraryLock.manifestSha256 &&
-    Object.hasOwn(sources.bounds, ref)
+    (sources.manifestSha256 === libraryLock.manifestSha256 &&
+      curatedHas(ref)) ||
+    fullLibraryHas(ref)
   );
 }
 
@@ -111,6 +121,16 @@ export function adoptCurrentLocks(p: Project): boolean {
         }
       : null;
     p.library = { ...p.library, ...connectorLock };
+  }
+  // A project saved before the complete official pack existed: recording it
+  // changes no definition that resolved before; it only resolves previously
+  // missing official parts. A project pinned to another complete pack keeps it.
+  if (
+    p.library.manifestSha256 === libraryLock.manifestSha256 &&
+    !p.library.full
+  ) {
+    previous.full = null;
+    p.library = { ...p.library, full: { ...fullLibraryLock } };
   }
   const market = p.marketplace;
   if (

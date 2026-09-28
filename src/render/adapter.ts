@@ -75,6 +75,9 @@ import {
 import { occurrences } from "../core/document";
 import { conversion } from "../core/math";
 import { libraryLock } from "../catalog/catalog";
+import { fullSource } from "../catalog/full-library";
+import { prepareFullLibrary } from "../catalog/full-library-loader";
+import { directReferences } from "../catalog/full-pack";
 import installedBounds from "../catalog/bounds.json";
 import { canonical } from "../ldraw/path";
 import { sha256, stable } from "../core/hash";
@@ -531,12 +534,20 @@ export class SceneAdapter {
       string,
       string[]
     >;
-    const keep = new Set<string>();
+    const keep = new Map<string, string>();
     const visit = (name: string) => {
-      if (keep.has(name) || exclude.has(name) || !this.libraryBlocks.has(name))
+      if (keep.has(name) || exclude.has(name)) return;
+      const curated = this.libraryBlocks.get(name);
+      if (curated) {
+        keep.set(name, curated);
+        for (const dep of direct[name] ?? []) visit(dep);
         return;
-      keep.add(name);
-      for (const dep of direct[name] ?? []) visit(dep);
+      }
+      // Complete official pack: definitions loaded on demand (full-library.ts).
+      const text = fullSource(name);
+      if (text === undefined) return;
+      keep.set(name, "0 FILE " + name + "\n" + text);
+      for (const dep of directReferences(text)) visit(dep);
     };
     for (const match of source.matchAll(
       /^\s*1\s+\S+(?:\s+\S+){12}\s+(.+?)\s*$/gm,
@@ -547,7 +558,7 @@ export class SceneAdapter {
         /* Unsafe names resolve nothing; the loader reports them. */
       }
     }
-    return [...keep].map((name) => this.libraryBlocks.get(name)).join("\n");
+    return [...keep.values()].join("\n");
   }
   private compilationKey(project: Project, source: string) {
     let keys = this.compilationKeys.get(project);
@@ -700,6 +711,11 @@ export class SceneAdapter {
           "REFERENCE_MISSING",
           "Pinned library is unavailable",
         );
+        // Official parts outside the curated pack: fetch (or read from the
+        // offline cache) and verify their definitions before compiling.
+        const fullLibraryProblem = await prepareFullLibrary(snapshot);
+        if (fullLibraryProblem) this.report(fullLibraryProblem);
+        if (this.disposed || epoch !== this.updateEpoch) return;
         const all = occurrences(snapshot),
           keep = new Set(all.map((o) => o.id));
         const physical = all.filter((o) => o.node.kind !== "geometry");

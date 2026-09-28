@@ -196,3 +196,34 @@
     height: 40px;
   }
 }
+
+/* Complete-library parts have no rendering: a neutral outline box. */
+.part-thumb.generic {
+  display: grid;
+  place-items: center;
+}
+.part-thumb.generic svg {
+  width: 56%;
+  height: 56%;
+  fill: none;
+  stroke: var(--sheet-handle);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.full-library-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px dashed var(--sheet-handle);
+  border-radius: var(--r-field);
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--text-label);
+  text-align: left;
+}
+.full-library-search:hover {
+  border-color: var(--secondary);
+}

@@ -108,6 +108,64 @@ export function catalogCategories(
     ...[...used].filter((c) => !order.includes(c)).sort(),
   ];
 }
+/** LDraw title spacing ("Brick  2 x  4") in the catalogue's style ("Brick 2 × 4"). */
+export function displayTitle(title: string) {
+  return title
+    .replace(/\s+/g, " ")
+    .replace(/(\d) x (?=\d)/g, "$1 × ")
+    .trim();
+}
+type FullEntry = readonly [string, string, string, string?];
+const fullIndex = new WeakMap<FullEntry, Indexed>();
+/**
+ * Ranked search over the complete official library's part list (the "All LDraw
+ * parts" scope): the same token rules as the catalogue, over number, title,
+ * category and keywords. Moved-to redirects are left out (their targets are
+ * listed); `exclude` drops parts the caller already shows.
+ */
+export function searchFullLibrary(
+  entries: readonly FullEntry[],
+  query: string,
+  {
+    limit = 60,
+    exclude,
+  }: { limit?: number; exclude?: (id: string) => boolean } = {},
+) {
+  const q = tokens(query);
+  if (!q.length) return [];
+  const hits: { entry: FullEntry; score: number; order: number }[] = [];
+  entries.forEach((entry, order) => {
+    if (entry[1].startsWith("~Moved") || exclude?.(entry[0])) return;
+    let idx = fullIndex.get(entry);
+    if (!idx) {
+      idx = {
+        numbers: tokens(entry[0]),
+        name: tokens(entry[1].replace(/^[~=_|]+/, "")),
+        other: tokens(entry[2] + " " + (entry[3] ?? "")),
+      };
+      fullIndex.set(entry, idx);
+    }
+    let total = 0;
+    for (const t of q) {
+      let best = 0;
+      for (const n of idx.numbers)
+        best = Math.max(best, n === t ? 100 : n.startsWith(t) ? 30 : 0);
+      idx.name.forEach((w, i) => {
+        if (w === t) best = Math.max(best, 12 - Math.min(i, 4));
+        else if (w.startsWith(t)) best = Math.max(best, 8 - Math.min(i, 4));
+      });
+      for (const w of idx.other)
+        best = Math.max(best, w === t ? 4 : w.startsWith(t) ? 2 : 0);
+      if (!best) return;
+      total += best;
+    }
+    // Obsolete (~), alias (=) and similar variants rank after plain parts.
+    if (/^[~=_|]/.test(entry[1])) total -= 3;
+    hits.push({ entry, score: total, order });
+  });
+  hits.sort((a, b) => b.score - a.score || a.order - b.order);
+  return hits.slice(0, limit).map((h) => h.entry);
+}
 /** Same footprint in other categories, then same category with a shared side. */
 export function relatedParts(
   parts: readonly CatalogPart[],

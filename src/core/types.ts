@@ -76,6 +76,8 @@ export type Project = {
     /** Connector pack the project's snapping and connectivity were derived with (spec §5). */
     connectorPackId?: string;
     connectorPackSha256?: string;
+    /** Complete official library pack resolving parts outside the curated pack. */
+    full?: { releaseId: string; manifestSha256: string };
   };
   marketplace: {
     mappingPackId: string;

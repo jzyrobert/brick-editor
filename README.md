@@ -115,6 +115,8 @@ Host `dist/` at that path on an ordinary static HTTPS host. No server-side route
 
 The shipped pack `public/libraries/catalogue-2026-09-28` contains the 214 curated official parts of the placeable catalogue ([scripts/catalog-parts.json](scripts/catalog-parts.json)) and their exact dependency closure: 611 files (1.66 MB, about 260 kB gzip) including `LDConfig.ldr`. Every file has a source URL and SHA-256 in its manifest; all geometry files retain authors and actual licence headers. The renderer loads the pack as one byte-exact `bundle.txt` (every listed file concatenated in manifest order, hash pinned by the manifest). The superseded `starter-2026-09-27` pack is kept unchanged as a retired lock; every one of its files is byte-identical in the current pack, so projects pinned to it are re-pinned on load with the previous lock recorded in `metadata.previousLocks`. See [LDraw notices](public/notices/LDRAW.txt), [dependency notices](public/notices/DEPENDENCIES.txt) and [mapping provenance](src/catalog/mappings.json).
 
+**Complete official library.** Every other official part resolves on demand from `public/libraries/ldraw-full-2026-09-28`, the whole official library (all 24,735 parts, 9,235 subparts and 2,835 primitives including `8/` and `48/`, plus `LDConfig.ldr`; textures and models are not included) built from the official `complete.zip` pinned by SHA-256 (`d2a69586…`, latest update 2026-08) in [scripts/full-library.json](scripts/full-library.json). Files are stored unmodified in 3,122 content-addressed gzip chunks (86 MB; 501 MB raw), with `index.json` (chunk table and, per part, its dependency-closure chunks and conservative bounds), `catalog.json` (searchable part list), `NOTICE.txt`, `CAreadme.txt` and `CAlicense4.txt`. A project's library lock records the pack (`library.full`); the manifest pins index, catalogue and colour file, and the index pins every chunk. When a model references a part outside the curated pack, the app fetches only the chunks of that part's closure in one batch, verifies each hash, and keeps them in Cache Storage for offline use; the CLI reads the same pack from disk. The pack is committed (generated output), so CI needs no network access; `npm run deploy:check` keeps the deployment within Cloudflare Pages limits (about 4,000 files). See [status](docs/STATUS.md#complete-official-library-2026-09-28).
+
 The ingestion scripts are maintainer-only, never runtime:
 
 ```sh
@@ -123,7 +125,8 @@ python3 scripts/review-bricklink.py   # evidence only; item numbers are set by r
 npx tsx scripts/build-parts.ts        # catalogue, bundle, mapping pack, locks, notices
 npm run library:bounds
 npm run library:thumbnails            # renders public/thumbnails/<release>/*.webp
-npm run library:validate
+npm run library:full                  # complete pack from the pinned complete.zip (downloads to .cache/ldraw/)
+npm run library:validate              # curated and complete packs
 npm run notices
 ```
 
