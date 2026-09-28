@@ -1433,6 +1433,8 @@ th {
     top: 192px;
     padding: 20px;
     max-height: calc(100% - 253px);
+    /* Opaque on phones: the scene behind otherwise shows through dense forms. */
+    background: #fff;
   }
   .mode-card h2 {
     font-size: 24px;
@@ -2276,8 +2278,8 @@ summary:focus-visible {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #9aa7ae;
-  font-size: 17px;
+  color: #5f707a;
+  font-size: 19px;
   line-height: 1;
 }
 .part-favourite[aria-pressed="true"] {
@@ -2368,4 +2370,53 @@ summary:focus-visible {
 }
 .warning-text {
   color: #a2662e;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+.resource-warning p {
+  color: #5a3a1c;
+}
+.confirm-risk:not(:disabled) {
+  background: #b5561f;
+  border-color: #b5561f;
+  color: #fff;
+}
+.replace-panel > summary,
+.affine-matrix > summary,
+.limited-source details > summary {
+  gap: 8px;
+}
+.replace-panel > summary {
+  justify-content: center;
+}
+.replace-panel > summary::before,
+.affine-matrix > summary::before,
+.limited-source details > summary::before {
+  content: "▸";
+}
+.replace-panel[open] > summary::before,
+.affine-matrix[open] > summary::before,
+.limited-source details[open] > summary::before {
+  content: "▾";
+}
+.replace-done {
+  font-size: 12px;
+  color: #2f6b45;
+  margin: 4px 0 10px;
+}
+.inspector-properties dd small {
+  display: block;
+}
+.affine-matrix th {
+  font-weight: 600;
+  color: var(--secondary);
+  padding: 6px;
+}
+.inspector-properties dd small.size-ldu {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.3;
 }

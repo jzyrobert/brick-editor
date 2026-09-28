@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { Editor } from "../core/commands";
 import {
   RESOURCE_PROFILES,
@@ -12,7 +12,7 @@ import {
 const number = (n: number) => n.toLocaleString("en");
 const rows = [
   [
-    "Parts per project",
+    "Parts and shapes per project",
     (l: typeof RESOURCE_PROFILES.desktop) => number(l.occurrences),
   ],
   [
@@ -41,10 +41,15 @@ export function ResourceProfilePanel({
   editor,
   onStatus,
   headingLevel = 3,
+  desktopRequest = 0,
+  onBackup,
 }: {
   editor: Editor;
   onStatus?: (message: string) => void;
   headingLevel?: 2 | 3;
+  /** Incrementing opens the desktop-limits confirmation and scrolls to it. */
+  desktopRequest?: number;
+  onBackup?: () => unknown;
 }) {
   const id = useId();
   const [status, setStatus] = useState(() => resourceStatus(editor));
@@ -55,6 +60,16 @@ export function ResourceProfilePanel({
     () => editor.subscribe(() => setStatus(resourceStatus(editor))),
     [editor],
   );
+  const warning = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!desktopRequest) return;
+    setPending("desktop");
+    setUnderstood(false);
+  }, [desktopRequest]);
+  useEffect(() => {
+    if (pending === "desktop")
+      warning.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [pending, desktopRequest]);
   const choose = (
     preference: ResourcePreference,
     acknowledgeImpact = false,
@@ -68,7 +83,7 @@ export function ResourceProfilePanel({
       setPending(undefined);
       setUnderstood(false);
       onStatus?.(
-        `${labels[preference]} applied: up to ${number(next.limits.occurrences)} parts per project` +
+        `${labels[preference]} on: up to ${number(next.limits.occurrences)} parts and shapes per project` +
           (next.saved
             ? "."
             : " for this session; the choice could not be saved."),
@@ -95,7 +110,7 @@ export function ResourceProfilePanel({
         {status.preference === "auto"
           ? " (automatic)"
           : " (chosen on this device)"}
-        . This project has {number(parts)} parts.
+        . This project has {number(parts)} parts and shapes.
       </p>
       <div className="table-scroll">
         <table>
@@ -133,17 +148,23 @@ export function ResourceProfilePanel({
         ))}
       </fieldset>
       {pending === "desktop" && (
-        <div role="alert" className="resource-warning warning">
+        <div role="alert" className="resource-warning warning" ref={warning}>
           <p>
             <strong>Desktop limits on a phone.</strong> Projects of up to{" "}
-            {number(RESOURCE_PROFILES.desktop.occurrences)} parts will open
+            {number(RESOURCE_PROFILES.desktop.occurrences)} parts and shapes
+            will open
             {parts > RESOURCE_PROFILES.mobile.occurrences
-              ? `, including this one (${number(parts)} parts)`
+              ? `, including this one (${number(parts)})`
               : ""}
             . Large builds can run slowly, stop responding, or make the browser
             close the tab and lose changes that are not yet saved. Download a
-            native backup first.
+            backup first.
           </p>
+          {onBackup && (
+            <button className="wide" onClick={() => void onBackup()}>
+              Download backup
+            </button>
+          )}
           <label className="check">
             <input
               type="checkbox"
@@ -154,6 +175,7 @@ export function ResourceProfilePanel({
           </label>
           <div className="button-row">
             <button
+              className="confirm-risk"
               disabled={!understood}
               onClick={() => choose("desktop", true)}
             >

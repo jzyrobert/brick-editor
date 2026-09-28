@@ -61,21 +61,38 @@ export function describeOrientation(b: Basis): string {
 }
 
 export type Dimensions = {
+  /** Exact world box, including studs. */
   ldu: [number, number, number];
-  /** Width/depth in studs (20 LDU) and height in plates (8 LDU). */
+  /** Width/depth in studs (20 LDU). */
   studs: [number, number];
+  /** Body height in plates (8 LDU), excluding a 4 LDU stud row when present. */
   plates: number;
+  /** Plain-language size, e.g. "4 × 2 studs, 1 brick (3 plates) tall". */
+  label: string;
 };
+function plural(n: number, word: string) {
+  return `${n} ${word}${n === 1 ? "" : "s"}`;
+}
 function dimensions(b: Bounds): Dimensions {
   const size = [0, 1, 2].map((i) => round(b.max[i] - b.min[i])) as [
     number,
     number,
     number,
   ];
+  // Studs add 4 LDU above whole plates; only discount them when that explains the height.
+  const studded = size[1] >= 12 && (size[1] - 4) % 8 === 0;
+  const plates = round((studded ? size[1] - 4 : size[1]) / 8);
+  const studs: [number, number] = [round(size[0] / 20), round(size[2] / 20)];
+  const height = !plates
+    ? "flat"
+    : plates % 3 === 0
+      ? `${plural(plates / 3, "brick")} (${plates} plates) tall`
+      : `${plural(plates, "plate")} tall`;
   return {
     ldu: size,
-    studs: [round(size[0] / 20), round(size[2] / 20)],
-    plates: round(size[1] / 8),
+    studs,
+    plates,
+    label: `${studs[0]} × ${studs[1]} studs, ${height}`,
   };
 }
 

@@ -73,23 +73,42 @@ test.describe("phone", () => {
       flat(25001),
     );
     await expect(
-      page.getByRole("heading", { name: "Source retained" }),
+      page.getByRole("heading", { name: "Too big for phone limits" }),
     ).toBeVisible();
+    await expect(page.locator("main")).toContainText(
+      "25,001 parts and shapes; phone limits allow 25,000",
+    );
     const panel = page.getByRole("region", { name: "Device limits" });
     await expect(panel).toContainText("This project has 25,001 parts");
-    await panel.getByLabel("Desktop limits").check();
+    // The primary action opens the confirmation directly.
+    await page
+      .getByRole("button", { name: "Open with desktop limits…" })
+      .click();
+    await expect(panel.getByLabel("Desktop limits")).toBeChecked();
     const warning = panel.getByRole("alert");
-    await expect(warning).toContainText("including this one (25,001 parts)");
+    await expect(warning).toContainText("including this one (25,001)");
+    await expect(
+      warning.getByRole("button", { name: "Download backup" }),
+    ).toBeVisible();
     const apply = warning.getByRole("button", { name: "Use desktop limits" });
     await expect(apply).toBeDisabled();
     await warning.getByLabel("I understand the risk").check();
     await apply.click();
     await expect(
-      page.getByRole("heading", { name: "Source retained" }),
+      page.getByRole("heading", { name: "Too big for phone limits" }),
     ).toBeHidden();
     await expect(page.locator(".canvas-bottom")).toContainText("25,001 parts", {
       timeout: 60000,
     });
+    // The model is shown (not the catalogue sheet) and the change is announced.
+    await expect(
+      page.getByText(
+        "Desktop limits on. Project opened: 25,001 parts and shapes.",
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Place selected part →" }),
+    ).toBeHidden();
     expect(
       await page.evaluate(() => window.brickEditor!.resources.status()),
     ).toMatchObject({
@@ -113,7 +132,7 @@ test.describe("phone", () => {
       window.brickEditor!.resources.setProfile({ profile: "auto" }),
     );
     await expect(
-      page.getByRole("heading", { name: "Source retained" }),
+      page.getByRole("heading", { name: "Too big for phone limits" }),
     ).toBeVisible();
     expect(errors).toEqual([]);
   });

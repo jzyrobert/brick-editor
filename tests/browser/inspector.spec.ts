@@ -79,7 +79,7 @@ test("inspector shows mixed batch values and sets one axis for every selected pa
   await page.getByRole("button", { name: "Select editable parts" }).click();
   await expect(page.locator(".selection-summary")).toContainText("3001");
   await expect(props).toContainText("OrientationUpright, turned 90°");
-  await expect(props).toContainText("2 × 4 studs, 3.5 plates tall");
+  await expect(props).toContainText("2 × 4 studs, 1 brick (3 plates) tall");
   await expect(props).toContainText("ChecksNo problems found");
   await expect(page.getByLabel("Position X")).toHaveValue("20");
   await page.getByText("Advanced: placement matrix").click();

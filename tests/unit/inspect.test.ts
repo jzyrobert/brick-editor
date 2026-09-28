@@ -52,7 +52,8 @@ describe("inspector batch properties", () => {
     expect(one.dimensions).toEqual({
       ldu: [80, 28, 40],
       studs: [4, 2],
-      plates: 3.5,
+      plates: 3,
+      label: "4 × 2 studs, 1 brick (3 plates) tall",
     });
     expect(one.matrix?.basis).toEqual([1, 0, 0, 0, 1, 0, 0, 0, 1]);
     expect(one.parent).toMatchObject({ mixed: false, value: { root: true } });

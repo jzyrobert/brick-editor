@@ -4,7 +4,8 @@ import type { BrickEditorAPI } from "../automation/api";
 import { BrowserProjects } from "../persistence/browser-projects";
 import { ProjectLibrary } from "./ProjectLibrary";
 import { ResourceProfilePanel } from "./ResourceProfilePanel";
-import { RESOURCE_PROFILES } from "../core/resource-profile";
+import { RESOURCE_PROFILES, resourceLimits } from "../core/resource-profile";
+import { assessMaterialization } from "../core/materialization";
 import { ensure } from "../core/types";
 
 export function LimitedSource({
@@ -24,6 +25,13 @@ export function LimitedSource({
   const [busy, setBusy] = useState(false);
   const availability = editor.materialization;
   const diagnostic = availability.diagnostic;
+  const [desktopRequest, setDesktopRequest] = useState(0);
+  const leaves = availability.estimate.metrics.leafCount;
+  // Phone limits alone refuse this project: it would open under desktop limits.
+  const phoneLimited =
+    availability.profile === "mobile" &&
+    assessMaterialization(project, { profile: "desktop" }).status ===
+      "available";
   const attempt = async (action: () => Promise<unknown>) => {
     setBusy(true);
     try {
@@ -104,20 +112,47 @@ export function LimitedSource({
         overflowWrap: "anywhere",
       }}
     >
-      <h1>Source retained</h1>
-      <h2>{project.title}</h2>
-      <p>
-        Revision {project.revision}. Your complete project source is retained.
-        3D editing is unavailable under the current limit.
-      </p>
-      <p>
-        The expanded model needs more memory than this editor currently allows.
-        Your source is safe; download a backup or open another project.
-        {availability.profile === "mobile" &&
-          availability.estimate.metrics.leafCount <=
-            RESOURCE_PROFILES.desktop.occurrences &&
-          " This device is using phone limits; you can choose desktop limits under Device limits below."}
-      </p>
+      {phoneLimited ? (
+        <>
+          <h1>Too big for phone limits</h1>
+          <h2>Project: {project.title}</h2>
+          <p>
+            This project has {leaves.toLocaleString("en")} parts and shapes;
+            phone limits allow{" "}
+            {RESOURCE_PROFILES.mobile.occurrences.toLocaleString("en")}. It is
+            saved on this device and nothing has been lost.
+          </p>
+          <div className="button-row">
+            <button
+              className="primary"
+              disabled={busy}
+              onClick={() => setDesktopRequest((n) => n + 1)}
+            >
+              Open with desktop limits…
+            </button>
+            <button
+              disabled={busy}
+              onClick={() => void attempt(() => download("native"))}
+            >
+              Download backup
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <h1>Source retained</h1>
+          <h2>{project.title}</h2>
+          <p>
+            Revision {project.revision}. Your complete project source is
+            retained. 3D editing is unavailable under the current limit.
+          </p>
+          <p>
+            The expanded model needs more memory than this editor currently
+            allows. Your source is safe; download a backup or open another
+            project.
+          </p>
+        </>
+      )}
       <details>
         <summary
           style={{
@@ -136,34 +171,50 @@ export function LimitedSource({
           source-graph estimate does not allocate the expanded scene. Resource
           profile: {availability.profile}.
         </p>
+        {phoneLimited && (
+          <button
+            disabled={busy}
+            onClick={() => void attempt(() => download("ldraw"))}
+          >
+            Export complete LDraw source
+          </button>
+        )}
       </details>
       {availability.profile === "mobile" && (
         <ResourceProfilePanel
           editor={editor}
           onStatus={setMessage}
           headingLevel={2}
+          desktopRequest={desktopRequest}
+          onBackup={() => attempt(() => download("native"))}
         />
       )}
-      <p>{saveStatus}</p>
-      <div className="button-row">
-        <button
-          disabled={busy}
-          onClick={() => void attempt(() => download("native"))}
-        >
-          Download native backup
-        </button>
-        <button
-          disabled={busy}
-          onClick={() => void attempt(() => download("ldraw"))}
-        >
-          Export complete LDraw source
-        </button>
-      </div>
-      <p>
-        Backups preserve source and metadata. Complete LDraw export preserves
-        the model source; native files also preserve application metadata.
-        Archive size and device storage limits still apply.
-      </p>
+      {phoneLimited ? (
+        <p>{saveStatus.replace(/ · revision \d+$/, "")}</p>
+      ) : (
+        <>
+          <p>{saveStatus}</p>
+          <div className="button-row">
+            <button
+              disabled={busy}
+              onClick={() => void attempt(() => download("native"))}
+            >
+              Download native backup
+            </button>
+            <button
+              disabled={busy}
+              onClick={() => void attempt(() => download("ldraw"))}
+            >
+              Export complete LDraw source
+            </button>
+          </div>
+          <p>
+            Backups preserve source and metadata. Complete LDraw export
+            preserves the model source; native files also preserve application
+            metadata. Archive size and device storage limits still apply.
+          </p>
+        </>
+      )}
       <label style={{ display: "grid", gap: 8, margin: "24px 0" }}>
         Open another project
         <input
@@ -176,10 +227,13 @@ export function LimitedSource({
             if (!file) return;
             void attempt(async () => {
               const assertCurrent = guardSource();
+              const importBytes = resourceLimits(
+                editor.resourceProfile,
+              ).importBytes;
               ensure(
-                file.size <= 25 * 1024 * 1024,
+                file.size <= importBytes,
                 "LIMIT_EXCEEDED",
-                "Import file exceeds 25 MiB",
+                `Import file exceeds ${importBytes / 1024 / 1024} MiB`,
               );
               const input = file.name.toLowerCase().endsWith(".brickproj")
                 ? {

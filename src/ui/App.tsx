@@ -74,6 +74,7 @@ import { BrowserProjects } from "../persistence/browser-projects";
 import {
   applyResourcePreference,
   loadResourcePreference,
+  resourceStatus,
 } from "../persistence/resource-preference";
 import { resourceLimits } from "../core/resource-profile";
 import { type Preview } from "../inventory/service";
@@ -473,7 +474,7 @@ function Workspace() {
       eligibleSelection(p, all, next, s.activeLayer, s.crossLayer),
     );
     setStatus(
-      `${eligible.length} matching editable parts${ids.length > eligible.length ? `; ${ids.length - eligible.length} excluded by scope` : ""}`,
+      `${eligible.length} matching editable part${eligible.length === 1 ? "" : "s"}${ids.length > eligible.length ? `; ${ids.length - eligible.length} excluded by scope` : ""}`,
     );
   };
   useEffect(
@@ -639,8 +640,23 @@ function Workspace() {
     const init = async () => {
       if (recoveryStarted) {
         loaded.current = true;
-        renderer.current?.update(editor.project).catch(() => {});
-        autosave.current?.schedule(editor.project);
+        const reopened = editor.project;
+        renderer.current?.update(reopened).catch(() => {});
+        autosave.current?.schedule(reopened);
+        // Returning from the source-only view (e.g. after raising device limits):
+        // show the model itself rather than an empty catalogue sheet.
+        const count = editor.materialization.estimate.metrics.leafCount;
+        if (count) {
+          setPanel("Canvas");
+          void renderer.current
+            ?.ready()
+            .then(() => renderer.current?.fit())
+            .catch(() => {});
+          const raised = resourceStatus(editor).raisedAboveDevice;
+          setStatus(
+            `${raised ? "Desktop limits on. " : ""}Project opened: ${count.toLocaleString("en")} parts and shapes.`,
+          );
+        }
         return;
       }
       recoveryStarted = true;
@@ -1317,7 +1333,6 @@ function Workspace() {
       (v) => placementOnPlane(v, workplane, p.height, angle).position,
     );
     setTool("Place");
-    setRecentParts((recent) => pushRecent(recent, id));
   };
   const toggleFavourite = (id: string) =>
     setFavourites((current) => {
@@ -1395,7 +1410,12 @@ function Workspace() {
           </>
         )}
       <div className="eyebrow">
-        STARTER COLLECTION <span>OFFLINE</span>
+        {favouritesOnly
+          ? "★ FAVOURITES"
+          : partCategory
+            ? partCategory.toUpperCase()
+            : "STARTER COLLECTION"}{" "}
+        <span>OFFLINE</span>
       </div>
       {visibleParts.length === 0 && (
         <div className="empty-parts" role="status">
@@ -1433,8 +1453,7 @@ function Workspace() {
               </button>
               <button
                 className="part-favourite"
-                aria-label="Favourite"
-                aria-describedby={"part-" + p.id}
+                aria-label={"Favourite " + p.name}
                 aria-pressed={favourite}
                 title={
                   favourite ? "Remove from favourites" : "Add to favourites"
@@ -1447,20 +1466,24 @@ function Workspace() {
           );
         })}
       </div>
-      {related.length > 0 && (
-        <>
-          <div className="eyebrow related-title">
-            RELATED TO {currentPart.name.toUpperCase()}
-          </div>
-          <div className="part-chips">
-            {related.map((r) => (
-              <button key={r.id} onClick={() => choosePart(r.id)}>
-                {r.name}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+      {related.length > 0 &&
+        visibleParts.length > 0 &&
+        !search &&
+        !partCategory &&
+        !favouritesOnly && (
+          <>
+            <div className="eyebrow related-title">
+              RELATED TO {currentPart.name.toUpperCase()}
+            </div>
+            <div className="part-chips">
+              {related.map((r) => (
+                <button key={r.id} onClick={() => choosePart(r.id)}>
+                  {r.name}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       <div className="panel-title color-title">
         <h2>Colour</h2>
         <span>{colors.find((c) => c.code === color)?.name}</span>
@@ -1650,34 +1673,6 @@ function Workspace() {
         <h2>Inspector</h2>
         <span>{selection.length} selected</span>
       </div>
-      <SelectionTools
-        shape={selectionShape}
-        operation={selectionOperation}
-        depth={selectionDepth}
-        onShape={(v) => {
-          setSelectionShape(v);
-          setTool("Select");
-        }}
-        onOperation={setSelectionOperation}
-        onDepth={setSelectionDepth}
-        hasSelection={selected.length > 0}
-        onClear={() => setSelectionSafe([])}
-        onMatch={(kind) => {
-          const matches = all.filter(
-            (o) =>
-              kind === "all" ||
-              selected.some((chosen) =>
-                kind === "part"
-                  ? chosen.node.ref === o.node.ref &&
-                    chosen.namespace === o.namespace
-                  : kind === "color"
-                    ? chosen.colorCode === o.colorCode
-                    : chosen.layerId === o.layerId,
-              ),
-          );
-          receiveSelection(matches.map((o) => o.id));
-        }}
-      />
       {selected.length ? (
         <>
           <div className="selection-summary">
@@ -1734,9 +1729,12 @@ function Workspace() {
             </dd>
             <dt>{selected.length === 1 ? "Size" : "Selection size"}</dt>
             <dd>
-              {inspection.dimensions
-                ? `${inspection.dimensions.studs[0]} × ${inspection.dimensions.studs[1]} studs, ${inspection.dimensions.plates} plates tall · ${inspection.dimensions.ldu.join(" × ")} LDU incl. studs`
-                : "Unknown"}
+              {inspection.dimensions ? inspection.dimensions.label : "Unknown"}
+              {inspection.dimensions && (
+                <small className="muted size-ldu">
+                  {inspection.dimensions.ldu.join(" × ")} LDU incl. studs
+                </small>
+              )}
             </dd>
             <dt>Checks</dt>
             <dd>
@@ -1746,7 +1744,7 @@ function Workspace() {
             </dd>
           </dl>
           <h3>
-            Position <small>LDU · world</small>
+            Position <small>LDU · 20 = 1 stud, 8 = 1 plate</small>
           </h3>
           <div className="numeric-row">
             {["X", "Y", "Z"].map((axis, i) => (
@@ -1767,10 +1765,18 @@ function Workspace() {
             <details className="affine-matrix">
               <summary>Advanced: placement matrix</summary>
               <p className="muted">
-                LDraw row-major basis and position, as written to the source
-                file.
+                Rotation/scale matrix (rows) and position, exactly as saved in
+                the LDraw file.
               </p>
               <table>
+                <thead>
+                  <tr>
+                    <th scope="colgroup" colSpan={3}>
+                      Rotation / scale
+                    </th>
+                    <th scope="col">Position</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {[0, 1, 2].map((row) => (
                     <tr key={row}>
@@ -1888,9 +1894,14 @@ function Workspace() {
                 ).idRemappings;
                 if (remapped)
                   setSelection((ids) => ids.map((id) => remapped[id] ?? id));
-                setStatus(
-                  `Replaced ${payloads.reduce((n, x) => n + x.occurrenceIds.length, 0)} parts. Undo restores them.`,
+                const n = payloads.reduce(
+                  (sum, x) => sum + x.occurrenceIds.length,
+                  0,
                 );
+                setStatus(
+                  `Replaced ${n} part${n === 1 ? "" : "s"} with ${catalog[payloads[0].ref]?.name ?? payloads[0].ref}. Undo restores ${n === 1 ? "it" : "them"}.`,
+                );
+                return true;
               })
             }
           />
@@ -1923,6 +1934,34 @@ function Workspace() {
           <p>Inspect dimensions, move, rotate or recolour your build.</p>
         </div>
       )}
+      <SelectionTools
+        shape={selectionShape}
+        operation={selectionOperation}
+        depth={selectionDepth}
+        onShape={(v) => {
+          setSelectionShape(v);
+          setTool("Select");
+        }}
+        onOperation={setSelectionOperation}
+        onDepth={setSelectionDepth}
+        hasSelection={selected.length > 0}
+        onClear={() => setSelectionSafe([])}
+        onMatch={(kind) => {
+          const matches = all.filter(
+            (o) =>
+              kind === "all" ||
+              selected.some((chosen) =>
+                kind === "part"
+                  ? chosen.node.ref === o.node.ref &&
+                    chosen.namespace === o.namespace
+                  : kind === "color"
+                    ? chosen.colorCode === o.colorCode
+                    : chosen.layerId === o.layerId,
+              ),
+          );
+          receiveSelection(matches.map((o) => o.id));
+        }}
+      />
     </>
   );
   return (
@@ -2218,6 +2257,8 @@ function Workspace() {
                       ],
                     });
                     setStatus("Placed " + currentPart.name);
+                    // Recently used means placed, not merely browsed.
+                    setRecentParts((recent) => pushRecent(recent, part));
                   })
                 }
               >
@@ -2602,35 +2643,6 @@ function Workspace() {
               Inspector
             </button>
           </div>
-          <div hidden={panel !== "Inspector"}>
-            <TransformPanel
-              editor={editor}
-              renderer={() => renderer.current}
-              selection={selection}
-              revision={project.revision}
-              enabled={
-                mode === "Build" &&
-                tool === "Select" &&
-                selectionShape === "click" &&
-                !pickingFace
-              }
-              activeLayerId={crossLayer ? undefined : activeLayer}
-              report={setStatus}
-              modeRequest={transformModeRequest}
-            />
-          </div>
-          <div hidden={panel !== "Inspector"}>
-            <RigAuthoring
-              editor={editor}
-              selection={selection}
-              activeLayerId={crossLayer ? undefined : activeLayer}
-              onSelect={setSelectionSafe}
-            />
-            <SeatAuthoring
-              editor={editor}
-              activeLayerId={crossLayer ? undefined : activeLayer}
-            />
-          </div>
           {panel === "Inspector" ? (
             <>
               {inspectorPanel}
@@ -2663,6 +2675,35 @@ function Workspace() {
               />
             </>
           )}
+          <div hidden={panel !== "Inspector"}>
+            <TransformPanel
+              editor={editor}
+              renderer={() => renderer.current}
+              selection={selection}
+              revision={project.revision}
+              enabled={
+                mode === "Build" &&
+                tool === "Select" &&
+                selectionShape === "click" &&
+                !pickingFace
+              }
+              activeLayerId={crossLayer ? undefined : activeLayer}
+              report={setStatus}
+              modeRequest={transformModeRequest}
+            />
+          </div>
+          <div hidden={panel !== "Inspector"}>
+            <RigAuthoring
+              editor={editor}
+              selection={selection}
+              activeLayerId={crossLayer ? undefined : activeLayer}
+              onSelect={setSelectionSafe}
+            />
+            <SeatAuthoring
+              editor={editor}
+              activeLayerId={crossLayer ? undefined : activeLayer}
+            />
+          </div>
           <WorkplanePanel
             value={workplane}
             onChange={updateWorkplane}
