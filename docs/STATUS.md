@@ -58,7 +58,7 @@ Scoped LDraw export now retains the selected paths through parent definitions, m
 
 ## Section cut
 
-A horizontal section cut (spec §20.2) hides everything above a chosen height so floor interiors are visible, set from the Camera views popover in plates above the model's base (`render.section.set/get` for agents). Parts above the cut cannot be picked, captures include the cut and record the clipping plane in their manifest, and Play suspends it because it shares the renderer. A Measure tool gives the distance between two tapped points (model surfaces, or the workplane where there is none) in studs, plates and straight LDU, drawn as an overlay that is never part of the model. Vertical cuts, exploded views, floor guides and room labels remain open.
+A section cut (spec §20.2) hides everything above a chosen height (in plates) or one side of a vertical front–back or left–right cut (in studs), so floor interiors and dollhouse cutaways are visible. It is set from the Camera views popover or `render.section.set({ height } | { axis, at, flip })`; vertical cuts start by hiding the half facing the camera, and "Show other side" flips it. Parts above the cut cannot be picked, captures include the cut and record the clipping plane in their manifest, and Play suspends it because it shares the renderer. A Measure tool gives the distance between two tapped points (model surfaces, or the workplane where there is none) in studs, plates and straight LDU, drawn as an overlay that is never part of the model. Exploded views, floor guides and room labels remain open.
 
 ## Named checkpoints and change reports
 

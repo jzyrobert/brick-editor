@@ -79,7 +79,7 @@ import {
 import { identity, rotationY, compose } from "../core/math";
 import { catalog, colors } from "../catalog/catalog";
 import { template } from "../catalog/templates";
-import { SceneAdapter } from "../render/adapter";
+import { SceneAdapter, type SectionSpec } from "../render/adapter";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
 import { BrowserProjects } from "../persistence/browser-projects";
 import {
@@ -310,11 +310,11 @@ function Workspace() {
     [sheetFull, setSheetFull] = useState(false),
     [viewsOpen, setViewsOpen] = useState(false),
     [modesOpen, setModesOpen] = useState(false),
-    [section, setSection] = useState<number | null>(null),
+    [section, setSection] = useState<SectionSpec | null>(null),
     [measurePoints, setMeasurePoints] = useState<Vec3[]>([]),
     [sectionRange, setSectionRange] = useState<{
-      top: number;
-      bottom: number;
+      min: number;
+      max: number;
     } | null>(null),
     [inventoryOpen, setInventoryOpen] = useState(false),
     [inventoryScope, setInventoryScope] = useState<Scope["kind"]>("all"),
@@ -1306,6 +1306,33 @@ function Workspace() {
       }
     });
   }
+  /** Start (or switch) the section cut along an axis, halfway through the model. */
+  const startSection = (axis: SectionSpec["axis"]) => {
+    const range = renderer.current?.modelRange(axis) ?? null;
+    setSectionRange(range);
+    if (!range) {
+      setStatus("Add parts before cutting a section.");
+      return;
+    }
+    const unit = axis === "y" ? 8 : 20;
+    const mid = (range.min + range.max) / 2;
+    // Vertical cuts hide the half facing the viewer, so the cut opens toward the camera.
+    const eye = renderer.current?.currentCamera().position;
+    const index = axis === "x" ? 0 : 2;
+    setSection({
+      axis,
+      at:
+        axis === "y"
+          ? range.max - Math.round((range.max - mid) / unit) * unit
+          : range.min + Math.round((mid - range.min) / unit) * unit,
+      flip: axis !== "y" && !!eye && eye[index] < mid,
+    });
+    setStatus(
+      axis === "y"
+        ? "Section cut on: everything above the cut is hidden."
+        : "Vertical section on: one side of the model is hidden.",
+    );
+  };
   // Measurements exist only while the Measure tool is in hand.
   useEffect(() => {
     if (tool !== "Measure" && measurePoints.length) setMeasurePoints([]);
@@ -1317,7 +1344,7 @@ function Workspace() {
   }, [measurePoints, tool, mode]);
   // The section cut is an editing aid; Play shares the renderer, so it is suspended there.
   useEffect(() => {
-    renderer.current?.setSection(mode === "Play" ? null : section);
+    renderer.current?.setSectionPlane(mode === "Play" ? null : section);
   }, [section, mode]);
   // On touch layouts the status toast shows briefly after each change.
   useEffect(() => {
@@ -2323,50 +2350,78 @@ function Workspace() {
                     setStatus("Section cut off.");
                     return;
                   }
-                  const range = renderer.current?.modelHeightRange() ?? null;
-                  setSectionRange(range);
-                  if (!range) {
-                    setStatus("Add parts before cutting a section.");
-                    return;
-                  }
-                  // Start halfway up the model.
-                  setSection(
-                    Math.round((range.top + range.bottom) / 2 / 8) * 8,
-                  );
-                  setStatus(
-                    "Section cut on: everything above the cut is hidden.",
-                  );
+                  startSection("y");
                 }}
               >
                 Section cut
               </button>
               {section !== null && sectionRange && (
-                <label>
-                  <span className="section-label">
-                    Cut{" "}
-                    {Math.max(
-                      0,
-                      Math.round((sectionRange.bottom - section) / 8),
-                    )}{" "}
-                    plates up
-                  </span>
-                  <input
-                    type="range"
-                    aria-label="Section height"
-                    min={0}
-                    max={Math.max(
-                      8,
-                      Math.ceil((sectionRange.bottom - sectionRange.top) / 8),
-                    )}
-                    step={1}
-                    value={Math.round((sectionRange.bottom - section) / 8)}
-                    onChange={(e) =>
-                      setSection(
-                        sectionRange.bottom - Number(e.target.value) * 8,
-                      )
+                <>
+                  <div
+                    className="section-axes"
+                    role="group"
+                    aria-label="Cut direction"
+                  >
+                    {(
+                      [
+                        ["y", "Height"],
+                        ["z", "Front–back"],
+                        ["x", "Left–right"],
+                      ] as const
+                    ).map(([axis, label]) => (
+                      <button
+                        key={axis}
+                        aria-pressed={section.axis === axis}
+                        onClick={() => startSection(axis)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <label>
+                    <span className="section-label">
+                      {section.axis === "y"
+                        ? `Cut ${Math.round((sectionRange.max - section.at) / 8)} plates up`
+                        : `Cut ${Math.round((section.at - sectionRange.min) / 20)} studs in`}
+                    </span>
+                    <input
+                      type="range"
+                      aria-label="Section height"
+                      min={0}
+                      max={Math.max(
+                        1,
+                        Math.ceil(
+                          (sectionRange.max - sectionRange.min) /
+                            (section.axis === "y" ? 8 : 20),
+                        ),
+                      )}
+                      step={1}
+                      value={
+                        section.axis === "y"
+                          ? Math.round((sectionRange.max - section.at) / 8)
+                          : Math.round((section.at - sectionRange.min) / 20)
+                      }
+                      onChange={(e) => {
+                        const n = Number(e.target.value);
+                        setSection({
+                          ...section,
+                          at:
+                            section.axis === "y"
+                              ? sectionRange.max - n * 8
+                              : sectionRange.min + n * 20,
+                        });
+                      }}
+                    />
+                  </label>
+                  <button
+                    aria-pressed={!!section.flip}
+                    onClick={() =>
+                      setSection({ ...section, flip: !section.flip })
                     }
-                  />
-                </label>
+                  >
+                    Show other side
+                  </button>
+                </>
               )}
             </div>
           </div>

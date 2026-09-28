@@ -85,3 +85,71 @@ test("section cut hides parts above a height, is recorded in captures and pauses
   ).toBe(-24);
   expect(errors).toEqual([]);
 });
+
+test("vertical section cuts keep one side and flip to the other", async ({
+  page,
+}) => {
+  await page.goto("./?automation=1");
+  await page.waitForFunction(() => !!window.brickEditor);
+  const counts = (cut: object | null) =>
+    page.evaluate(async (cut) => {
+      const a = window.brickEditor!;
+      await a.render.section.set(cut as never);
+      const q = await a.query();
+      await a.camera.set({
+        space: "ldraw",
+        projection: "orthographic",
+        position: [60, -12, -400],
+        target: [60, -12, 0],
+        up: [0, -1, 0],
+        fovDeg: 45,
+        near: 0.5,
+        far: 5000,
+        span: 120,
+      });
+      const r = await a.render.image({
+        revision: q.revision,
+        width: 200,
+        height: 120,
+        format: "png",
+        visibility: { mode: "all" },
+        background: { type: "solid", color: "#ffffff" },
+        quality: "fast",
+      });
+      const bitmap = await createImageBitmap(r.blob),
+        canvas = document.createElement("canvas");
+      canvas.width = 200;
+      canvas.height = 120;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(bitmap, 0, 0);
+      const d = ctx.getImageData(0, 0, 200, 120).data;
+      let red = 0,
+        blue = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        const [rr, g, b] = [d[i], d[i + 1], d[i + 2]];
+        if (rr > g * 1.5 && rr > b * 1.5) red++;
+        if (b > rr * 1.4 && b > g * 1.1) blue++;
+      }
+      return { red, blue };
+    }, cut);
+  await page.evaluate(() =>
+    window
+      .brickEditor!.project.import({
+        format: "ldraw",
+        text: "0 FILE v.ldr\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3003.dat\n1 1 120 0 0 1 0 0 0 1 0 0 0 1 3003.dat",
+      })
+      .then(() => window.brickEditor!.ready()),
+  );
+  const both = await counts(null);
+  expect(both.red).toBeGreaterThan(200);
+  expect(both.blue).toBeGreaterThan(200);
+  const left = await counts({ axis: "x", at: 60 });
+  expect(left.red).toBeGreaterThan(200);
+  expect(left.blue).toBeLessThan(20);
+  const right = await counts({ axis: "x", at: 60, flip: true });
+  expect(right.red).toBeLessThan(20);
+  expect(right.blue).toBeGreaterThan(200);
+  expect(
+    (await page.evaluate(() => window.brickEditor!.render.section.get())).plane,
+  ).toEqual({ axis: "x", at: 60, flip: true });
+});

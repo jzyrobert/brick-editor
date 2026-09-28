@@ -73,6 +73,21 @@ export type RenderRequest = {
   instructionNewIds?: string[];
   strict?: boolean;
 };
+export type SectionSpec = { axis: "x" | "y" | "z"; at: number; flip?: boolean };
+/** Renderer-world clipping plane for an LDraw-space section (world = (x, −y, −z)). */
+function sectionPlane(spec: SectionSpec) {
+  // Kept side: LDraw y ≥ at (below), x ≤ at, z ≤ at; flip keeps the opposite side.
+  const normal =
+    spec.axis === "y"
+      ? new THREE.Vector3(0, -1, 0)
+      : spec.axis === "x"
+        ? new THREE.Vector3(-1, 0, 0)
+        : new THREE.Vector3(0, 0, 1);
+  const constant = spec.axis === "y" ? -spec.at : spec.at;
+  return spec.flip
+    ? new THREE.Plane(normal.negate(), -constant)
+    : new THREE.Plane(normal, constant);
+}
 export class SceneAdapter {
   renderer: THREE.WebGLRenderer;
   scene = new THREE.Scene();
@@ -1268,36 +1283,57 @@ export class SceneAdapter {
     );
     return ray;
   }
-  private sectionHeight: number | null = null;
-  /** Section cut (spec §20.2): hide everything above LDraw height `h` (LDraw −Y is up).
-   * An authoring aid only; captures record it in their clipping manifest. */
-  setSection(h: number | null) {
+  private sectionSpec: SectionSpec | null = null;
+  /** Section cut (spec §20.2) along one LDraw axis. The kept side is below a height
+   * (y, LDraw −Y is up), or behind/left of a vertical cut (x, z); `flip` keeps the other
+   * side. An authoring aid only; captures record the plane in their clipping manifest. */
+  setSectionPlane(spec: SectionSpec | null) {
     ensure(
-      h === null || Number.isFinite(h),
+      spec === null ||
+        (["x", "y", "z"].includes(spec.axis) && Number.isFinite(spec.at)),
       "INVALID_INPUT",
-      "Section height must be a finite LDU value.",
+      "A section needs an axis (x, y or z) and a finite LDU position.",
     );
-    this.sectionHeight = h;
-    // World y is −(LDraw y): keep points with world y ≤ −h.
-    this.renderer.clippingPlanes =
-      h === null ? [] : [new THREE.Plane(new THREE.Vector3(0, -1, 0), -h)];
+    this.sectionSpec = spec && { ...spec, flip: !!spec.flip };
+    this.renderer.clippingPlanes = spec ? [sectionPlane(spec)] : [];
     this.invalidate();
   }
-  get section() {
-    return this.sectionHeight;
+  /** Horizontal cut: hide everything above LDraw height `h`. */
+  setSection(h: number | null) {
+    this.setSectionPlane(h === null ? null : { axis: "y", at: h });
   }
-  /** LDraw heights of the model's top and bottom (top < bottom, since −Y is up). */
-  modelHeightRange(): { top: number; bottom: number } | null {
+  get section() {
+    return this.sectionSpec?.axis === "y" && !this.sectionSpec.flip
+      ? this.sectionSpec.at
+      : null;
+  }
+  get sectionPlane() {
+    return this.sectionSpec;
+  }
+  /** LDraw extent of the visible model along an axis. */
+  modelRange(axis: "x" | "y" | "z"): { min: number; max: number } | null {
     this.scene.updateMatrixWorld(true);
     const box = new THREE.Box3();
     for (const g of this.handles.values()) if (g.visible) box.expandByObject(g);
+    if (box.isEmpty()) return null;
     const round = (v: number) => Math.round(v * 1e4) / 1e4 || 0;
-    return box.isEmpty()
-      ? null
-      : { top: round(-box.max.y), bottom: round(-box.min.y) };
+    // World → LDraw: (x, −y, −z).
+    const [lo, hi] =
+      axis === "x"
+        ? [box.min.x, box.max.x]
+        : axis === "y"
+          ? [-box.max.y, -box.min.y]
+          : [-box.max.z, -box.min.z];
+    return { min: round(lo), max: round(hi) };
+  }
+  /** LDraw heights of the model's top and bottom (top < bottom, since −Y is up). */
+  modelHeightRange(): { top: number; bottom: number } | null {
+    const r = this.modelRange("y");
+    return r && { top: r.min, bottom: r.max };
   }
   private aboveSection(point: THREE.Vector3) {
-    return this.sectionHeight !== null && point.y > -this.sectionHeight + 1e-3;
+    const plane = this.renderer.clippingPlanes[0];
+    return !!plane && plane.distanceToPoint(point) < -1e-3;
   }
   /** First visible model surface under a screen point, in LDraw coordinates. */
   pickPoint(x: number, y: number): Vec3 | null {

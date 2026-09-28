@@ -535,14 +535,31 @@ export function createAPI(
       image: captureImage,
       /** Section cut: hide everything above an LDraw height (authoring aid). */
       section: {
-        set: async (input: { height: number | null }) => {
-          renderer().setSection(input.height);
-          return { height: renderer().section };
+        /** `{ height }` cuts horizontally; `{ axis, at, flip }` cuts along x, y or z. */
+        set: async (
+          input:
+            | { height: number | null }
+            | { axis: "x" | "y" | "z"; at: number; flip?: boolean }
+            | null,
+        ) => {
+          const r = renderer();
+          if (input === null) r.setSectionPlane(null);
+          else if ("height" in input) r.setSection(input.height);
+          else r.setSectionPlane(input);
+          return { height: r.section, plane: r.sectionPlane };
         },
-        get: async () => ({
-          height: renderer().section,
-          range: renderer().modelHeightRange(),
-        }),
+        get: async () => {
+          const r = renderer();
+          return {
+            height: r.section,
+            plane: r.sectionPlane,
+            range: {
+              x: r.modelRange("x"),
+              y: r.modelRange("y"),
+              z: r.modelRange("z"),
+            },
+          };
+        },
       },
       /** Render every camera bookmark in a collection (a name prefix such as "exterior/")
        * against one revision, with one shared manifest (spec §20.3). */

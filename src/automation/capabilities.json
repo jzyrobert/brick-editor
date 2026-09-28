@@ -221,8 +221,8 @@
     }
   },
   "sectionCut": {
-    "api": "render.section.set({ height: ldrawY | null }), render.section.get()",
-    "axis": "horizontal (LDraw Y); vertical cuts not yet available",
+    "api": "render.section.set({ height } | { axis: x|y|z, at, flip? } | null), render.section.get()",
+    "axis": "horizontal (y) or vertical (x, z), either side",
     "captures": "included and recorded as clipping planes in the manifest",
     "play": "suspended"
   },
