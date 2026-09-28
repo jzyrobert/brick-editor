@@ -170,6 +170,10 @@ test("tap-to-place on a phone shows the snapped preview", async ({
   });
   const page = await context.newPage();
   const errors = await setup(page);
+  await page
+    .getByRole("navigation", { name: "Mobile panels" })
+    .getByRole("button", { name: "Parts", exact: true })
+    .click();
   await page.getByRole("button", { name: /Brick 2 × 4 3001/ }).click();
   const close = page
     .locator(".mobile-sheet-head")

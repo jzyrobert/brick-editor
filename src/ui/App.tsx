@@ -378,7 +378,7 @@ function Workspace() {
     [status, setStatus] = useState("Ready to build"),
     [statusFresh, setStatusFresh] = useState(false),
     [saveStatus, setSaveStatus] = useState("Not yet saved"),
-    [panel, setPanel] = useState("Parts"),
+    [panel, setPanel] = useState("Canvas"),
     [sheetFull, setSheetFull] = useState(false),
     [viewsOpen, setViewsOpen] = useState(false),
     [modesOpen, setModesOpen] = useState(false),

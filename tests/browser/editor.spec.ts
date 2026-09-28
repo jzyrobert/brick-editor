@@ -157,6 +157,10 @@ for (const viewport of [
     await page.goto("/?automation=1");
     await page.waitForFunction(() => !!window.brickEditor);
     await page.evaluate(() => window.brickEditor!.ready());
+    await page
+      .getByRole("navigation", { name: "Mobile panels" })
+      .getByRole("button", { name: "Parts", exact: true })
+      .click();
     await page.getByRole("button", { name: /Brick 2 × 4 3001/ }).click();
     await page
       .locator(".mobile-sheet-head")
