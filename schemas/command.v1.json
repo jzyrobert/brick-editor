@@ -2016,11 +2016,362 @@
                 "far"
               ],
               "additionalProperties": false
+            },
+            "floorFocus": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "floorId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1024
+                    },
+                    "ghostBelow": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "floorId",
+                    "ghostBelow"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [
             "name",
             "camera"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "camera.bookmark.focus"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "floorFocus": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "floorId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1024
+                    },
+                    "ghostBelow": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "floorId",
+                    "ghostBelow"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "floorFocus"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "floors.set"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "floors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "y": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "name",
+                  "y"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 64
+            }
+          },
+          "required": [
+            "floors"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "labels.add"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "position": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "floorId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "text",
+            "position"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "labels.update"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "labelId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "position": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "floorId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "labelId"
+          ],
+          "additionalProperties": false
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "labels.remove"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "labelId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "labelId"
           ],
           "additionalProperties": false
         },

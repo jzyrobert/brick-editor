@@ -182,6 +182,8 @@ export function copyFragment(
       plan.stepMetadata = retained.map((step) => step.metadata ?? {});
   }
   p.cameraBookmarks = {};
+  // Floor guides and room labels are whole-project authoring aids, not fragment content.
+  delete p.architecture;
   p.diagnostics = p.diagnostics.filter(
     (d) =>
       d.occurrenceIds.length === 0 ||
@@ -237,6 +239,11 @@ export function pasteFragment(
     Object.keys(source.cameraBookmarks).length === 0,
     "INVALID_INPUT",
     "Clipboard fragments do not contain photo bookmarks. Use a native project to preserve them.",
+  );
+  ensure(
+    source.architecture === undefined,
+    "INVALID_INPUT",
+    "Clipboard fragments do not contain floor guides or room labels. Use a native project to preserve them.",
   );
   const metadataIds = [
     ...Object.keys(source.layerAssignments),

@@ -231,6 +231,25 @@
     "captures": "included and recorded as clipping planes in the manifest",
     "play": "suspended"
   },
+  "floorGuides": {
+    "api": "architecture.get(), architecture.detectFloors(), render.floors.set({ focus: { floorId, ghostBelow } | null, floorGuides?, roomLabels? }), render.floors.get()",
+    "commands": [
+      "floors.set",
+      "labels.add",
+      "labels.update",
+      "labels.remove",
+      "camera.bookmark (floorFocus)",
+      "camera.bookmark.focus"
+    ],
+    "cli": "brick-cli floors --input file [--output floors.json]",
+    "detection": "floor levels from top-level submodels (else layers) by geometry bounds; otherwise one ground floor",
+    "focus": "floors above hidden, floors below optionally ghosted; view only, never deletes or reorders parts",
+    "roomLabels": "screen-facing text anchored at an LDraw point, optionally tied to a floor",
+    "persistence": "native projects, autosave and checkpoints; omitted from LDraw/MPD export, share links and clipboard fragments",
+    "captures": "honour floor focus and visible overlays; manifest records architecture.floorFocus and overlay counts; camera collections apply each bookmark's saved floor view",
+    "limits": { "floors": 64, "labels": 500 },
+    "play": "suspended"
+  },
   "cameraCollections": {
     "grouping": "bookmark name prefix, e.g. exterior/",
     "api": "render.collection({ prefix | names, width, height, quality?, background?, visibility? })",

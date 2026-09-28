@@ -66,6 +66,12 @@ const camera = obj(
   },
   ["space", "projection", "position", "target", "up", "fovDeg", "near", "far"],
 );
+const floorGuide = obj({ id, name: { type: "string", maxLength: 60 }, y: num });
+const roomLabel = obj(
+  { id, text: { type: "string", maxLength: 80 }, position: vec, floorId: id },
+  ["id", "text", "position"],
+);
+const floorFocus = obj({ floorId: id, ghostBelow: { type: "boolean" } });
 const diagnostic = obj(
   {
     code: id,
@@ -148,13 +154,18 @@ const project = obj({
     ),
   ),
   cameraBookmarks: dictionary(camera),
+  architecture: obj({
+    floors: arr(floorGuide, 64),
+    labels: arr(roomLabel, 500),
+    views: dictionary(floorFocus),
+  }),
   motionRigs: dictionary({}),
   metadata: dictionary({}),
   assets: dictionary(str),
   diagnostics: arr(diagnostic),
 });
 project.required = project.required.filter(
-  (key: string) => key !== "layerFolders",
+  (key: string) => key !== "layerFolders" && key !== "architecture",
 );
 const scoped = {
   occurrenceIds: { ...arr(occurrenceId), minItems: 1, uniqueItems: true },
@@ -486,7 +497,42 @@ const payloads: Record<string, any> = {
     name: id,
     occurrenceIds: { ...arr(occurrenceId), uniqueItems: true },
   }),
-  "camera.bookmark": obj({ name: id, camera }),
+  "camera.bookmark": obj(
+    { name: id, camera, floorFocus: { anyOf: [floorFocus, { type: "null" }] } },
+    ["name", "camera"],
+  ),
+  "camera.bookmark.focus": obj({
+    name: id,
+    floorFocus: { anyOf: [floorFocus, { type: "null" }] },
+  }),
+  "floors.set": obj({
+    floors: arr(
+      obj({ id, name: { type: "string", maxLength: 60 }, y: num }, [
+        "name",
+        "y",
+      ]),
+      64,
+    ),
+  }),
+  "labels.add": obj(
+    {
+      id,
+      text: { type: "string", maxLength: 80 },
+      position: vec,
+      floorId: { anyOf: [id, { type: "null" }] },
+    },
+    ["text", "position"],
+  ),
+  "labels.update": obj(
+    {
+      labelId: id,
+      text: { type: "string", maxLength: 80 },
+      position: vec,
+      floorId: { anyOf: [id, { type: "null" }] },
+    },
+    ["labelId"],
+  ),
+  "labels.remove": obj({ labelId: id }),
   "layers.assign": obj({ ...scoped, layerId: id }, [
     "occurrenceIds",
     "layerId",

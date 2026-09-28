@@ -46,6 +46,7 @@ import {
 } from "./document";
 import { identity, compose, inverse, add, mv } from "./math";
 import { validate } from "./validate";
+import { applyArchitectureCommand } from "./architecture";
 import { canonical } from "../ldraw/path";
 import { stable } from "./hash";
 type Patch = { path: string[]; before: unknown; after: unknown };
@@ -639,8 +640,15 @@ function mutate(
         p.groups[v.name] = [...new Set(v.occurrenceIds as string[])];
       }
       break;
+    case "floors.set":
+    case "labels.add":
+    case "labels.update":
+    case "labels.remove":
+    case "camera.bookmark.focus":
+      applyArchitectureCommand(p, c.type, v);
+      break;
     case "camera.bookmark":
-      fields(v, ["name", "camera"]);
+      fields(v, ["name", "camera", "floorFocus"]);
       validate("camera", v.camera);
       ensure(
         typeof v.name === "string" &&
@@ -649,6 +657,12 @@ function mutate(
         "Invalid bookmark name",
       );
       p.cameraBookmarks[v.name] = v.camera;
+      // Optional floor focus saved with the view ("hide the roof in this camera").
+      if (v.floorFocus !== undefined)
+        applyArchitectureCommand(p, "camera.bookmark.focus", {
+          name: v.name,
+          floorFocus: v.floorFocus,
+        });
       break;
     case "layers.assign":
       fields(v, [...scopeFields, "layerId"]);

@@ -591,6 +591,112 @@
         }
       }
     },
+    "architecture": {
+      "type": "object",
+      "properties": {
+        "floors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 60
+              },
+              "y": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "y"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "text": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "position": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "floorId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              }
+            },
+            "required": [
+              "id",
+              "text",
+              "position"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 500
+        },
+        "views": {
+          "type": "object",
+          "maxProperties": 10000,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "floorId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "ghostBelow": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "floorId",
+              "ghostBelow"
+            ],
+            "additionalProperties": false
+          },
+          "propertyNames": {
+            "not": {
+              "enum": [
+                "__proto__",
+                "constructor",
+                "prototype"
+              ]
+            }
+          }
+        }
+      },
+      "required": [
+        "floors",
+        "labels",
+        "views"
+      ],
+      "additionalProperties": false
+    },
     "motionRigs": {
       "type": "object",
       "maxProperties": 10000,

@@ -37,6 +37,8 @@ import { ReplacePanel } from "./ReplacePanel";
 import { CheckpointsPanel } from "./CheckpointsPanel";
 import { HealthPanel } from "./HealthPanel";
 import { CameraCollections } from "./CameraCollections";
+import { FloorControls } from "./FloorControls";
+import { architectureOf } from "../core/architecture";
 import { Icon, type IconName } from "./icons";
 import { inspectSelection, sourceLabels } from "../edit/inspect";
 import { measure } from "../edit/measure";
@@ -335,6 +337,13 @@ function Workspace() {
     [photoSize, setPhotoSize] = useState([1600, 1200]),
     [transparent, setTransparent] = useState(false),
     [bookmarkName, setBookmarkName] = useState(""),
+    [bookmarkFloor, setBookmarkFloor] = useState(true),
+    [floorsOpen, setFloorsOpen] = useState(false),
+    [focusFloorId, setFocusFloorId] = useState<string | null>(null),
+    [ghostBelow, setGhostBelow] = useState(true),
+    [floorGuides, setFloorGuides] = useState(false),
+    [roomLabels, setRoomLabels] = useState(true),
+    [labelDraft, setLabelDraft] = useState<string | null>(null),
     [camera, setCamera] = useState<CameraSpec>({
       space: "ldraw",
       projection: "perspective",
@@ -375,6 +384,7 @@ function Workspace() {
       workplane,
       pickingFace,
       angle,
+      labelDraft,
     });
   const ownsTransientView = () => {
     const playing = play.current?.getState(),
@@ -411,6 +421,7 @@ function Workspace() {
     workplane,
     pickingFace,
     angle,
+    labelDraft,
   };
   const run = async (fn: () => unknown | Promise<unknown>) => {
     try {
@@ -878,6 +889,21 @@ function Workspace() {
           setPickingFace(false);
           setFill(null);
           setStatus("Workplane aligned to the selected face.");
+        });
+        return;
+      }
+      if (s.labelDraft !== null) {
+        const text = s.labelDraft;
+        const point =
+          r.pickPoint(e.clientX, e.clientY) ??
+          r.planeIntersection(e.clientX, e.clientY, s.workplane);
+        if (!point) return;
+        void run(() => {
+          command("labels.add", { text, position: point });
+          setLabelDraft(null);
+          setStatus(
+            `Label “${text}” placed. Edit or remove it under Floors & rooms.`,
+          );
         });
         return;
       }
@@ -1392,6 +1418,42 @@ function Workspace() {
       mode === "Build" && tool === "Measure" ? measurePoints : [],
     );
   }, [measurePoints, tool, mode]);
+  // Floor focus and floor/room overlays are viewing aids, suspended in Play like the cut.
+  const floorIds = (project.architecture?.floors ?? []).map((f) => f.id).join();
+  useEffect(() => {
+    if (focusFloorId && !floorIds.split(",").includes(focusFloorId))
+      setFocusFloorId(null);
+  }, [floorIds, focusFloorId]);
+  useEffect(() => {
+    const r = renderer.current;
+    if (!r) return;
+    const focus =
+      mode === "Play" || !focusFloorId
+        ? null
+        : { floorId: focusFloorId, ghostBelow };
+    let current = true;
+    try {
+      r.setFloorFocus(focus);
+    } catch {
+      // The renderer may still hold the previous document: retry once it is drawn.
+      void r
+        .ready()
+        .then(() => current && r.setFloorFocus(focus))
+        .catch(() => {});
+    }
+    return () => {
+      current = false;
+    };
+  }, [focusFloorId, ghostBelow, mode, floorIds]);
+  useEffect(() => {
+    renderer.current?.setAnnotations({
+      floorGuides: mode !== "Play" && floorGuides,
+      roomLabels: mode !== "Play" && roomLabels,
+    });
+  }, [floorGuides, roomLabels, mode]);
+  useEffect(() => {
+    if (mode !== "Build") setLabelDraft(null);
+  }, [mode]);
   // The section cut is an editing aid; Play shares the renderer, so it is suspended there.
   useEffect(() => {
     renderer.current?.setSectionPlane(mode === "Play" ? null : section);
@@ -2511,7 +2573,47 @@ function Workspace() {
                 </>
               )}
             </div>
+            {mode !== "Play" && (
+              <FloorControls
+                project={project}
+                command={command}
+                run={run}
+                open={floorsOpen}
+                setOpen={setFloorsOpen}
+                focusFloorId={focusFloorId}
+                setFocusFloorId={setFocusFloorId}
+                ghostBelow={ghostBelow}
+                setGhostBelow={setGhostBelow}
+                guides={floorGuides}
+                setGuides={setFloorGuides}
+                labels={roomLabels}
+                setLabels={setRoomLabels}
+                sectionHeight={
+                  section?.axis === "y" && !section.flip ? section.at : null
+                }
+                exploded={explodeBricks > 0}
+                modelBottom={() =>
+                  renderer.current?.modelHeightRange()?.bottom ?? null
+                }
+                onPlaceLabel={(text) => {
+                  if (mode !== "Build") {
+                    setStatus("Switch to Build to place a room label.");
+                    return;
+                  }
+                  setLabelDraft(text);
+                  setViewsOpen(false);
+                  setStatus(`Tap the model where “${text}” goes.`);
+                }}
+                onStatus={setStatus}
+              />
+            )}
           </div>
+          {labelDraft !== null && mode === "Build" && (
+            <div className="face-pick-card label-pick-card" role="status">
+              <span>Tap the model where “{labelDraft}” goes.</span>
+              <button onClick={() => setLabelDraft(null)}>Cancel label</button>
+            </div>
+          )}
           {pickingFace && mode === "Build" && (
             <div className="face-pick-card">
               <span>Tap a model face to align the workplane.</span>
@@ -2682,6 +2784,14 @@ function Workspace() {
                         "View " +
                           (Object.keys(project.cameraBookmarks).length + 1),
                       camera: renderer.current?.currentCamera() || camera,
+                      // "Hide the roof in this camera": keep the floor focus with it.
+                      ...(focusFloorId
+                        ? {
+                            floorFocus: bookmarkFloor
+                              ? { floorId: focusFloorId, ghostBelow }
+                              : null,
+                          }
+                        : {}),
                     });
                     setBookmarkName("");
                   });
@@ -2696,21 +2806,48 @@ function Workspace() {
                     onChange={(e) => setBookmarkName(e.target.value)}
                   />
                 </label>
+                {focusFloorId && (
+                  <label className="check-row">
+                    <input
+                      type="checkbox"
+                      checked={bookmarkFloor}
+                      onChange={(e) => setBookmarkFloor(e.target.checked)}
+                    />
+                    Save floor focus (
+                    {architectureOf(project).floors.find(
+                      (f) => f.id === focusFloorId,
+                    )?.name ?? "floor"}
+                    ) with this bookmark
+                  </label>
+                )}
                 <button className="wide">Save current camera bookmark</button>
               </form>
-              {Object.entries(project.cameraBookmarks).map(([name, spec]) => (
-                <button
-                  key={name}
-                  onClick={() =>
-                    void run(() => {
-                      renderer.current?.setCamera(spec);
-                      setCamera(spec);
-                    })
-                  }
-                >
-                  {name}
-                </button>
-              ))}
+              {Object.entries(project.cameraBookmarks).map(([name, spec]) => {
+                const view = architectureOf(project).views[name];
+                return (
+                  <button
+                    key={name}
+                    onClick={() =>
+                      void run(() => {
+                        renderer.current?.setCamera(spec);
+                        setCamera(spec);
+                        // A bookmark with a saved floor view restores it.
+                        if (view) {
+                          setFocusFloorId(view.floorId);
+                          setGhostBelow(view.ghostBelow);
+                        }
+                      })
+                    }
+                  >
+                    {name}
+                    {view &&
+                      " · " +
+                        (architectureOf(project).floors.find(
+                          (f) => f.id === view.floorId,
+                        )?.name ?? "")}
+                  </button>
+                );
+              })}
               <CameraCollections
                 api={api.current!}
                 bookmarks={Object.keys(project.cameraBookmarks)}

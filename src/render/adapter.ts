@@ -17,8 +17,18 @@ import {
   type TransformHandleOptions,
 } from "../edit/transform-handles";
 import { LayerGhost } from "./layerGhost";
-import installedBounds from "../catalog/bounds.json";
-import { projectBounds, transformBounds, type Bounds } from "../core/spatial";
+import {
+  explodeLifts,
+  floorFocusSets,
+  liftAt,
+  occurrenceBottoms,
+  type BottomCache,
+} from "../edit/floors";
+import {
+  architectureOf,
+  sortedFloors,
+  type FloorFocus,
+} from "../core/architecture";
 import { occurrenceRenderContext, occurrenceRawRecord } from "./source-context";
 import { RawPrimitiveCompiler, repairFaceNormals } from "./raw-primitives";
 import { dependencySource } from "./dependency-source";
@@ -75,77 +85,7 @@ export type RenderRequest = {
   instructionNewIds?: string[];
   strict?: boolean;
 };
-/** Group occurrences into floors for an exploded view. Candidate groups are the root's
- * top-level submodels (else layers). Floor levels come from the bottoms of significant
- * groups (≥ 2% of parts), merged within a brick; every group is lifted by the index of the
- * highest level it rests on × gap, so walls, windows and furniture travel with their floor.
- * LDraw −Y is up, so a larger y is lower. */
-export function explodeLifts(project: Project, gap: number) {
-  const all = occurrences(project);
-  const byNode = new Map<string, typeof all>();
-  for (const o of all) {
-    if (o.path.length < 2) continue;
-    const key = o.path[0];
-    byNode.set(key, [...(byNode.get(key) ?? []), o]);
-  }
-  let groups = [...byNode.values()];
-  if (groups.length < 2) {
-    const byLayer = new Map<string, typeof all>();
-    for (const o of all)
-      byLayer.set(o.layerId, [...(byLayer.get(o.layerId) ?? []), o]);
-    groups = [...byLayer.values()];
-  }
-  const lifts = new Map<string, number>();
-  if (groups.length < 2) return { lifts, groups: 0 };
-  // Lowest point of each group from conservative source bounds (raw faces carry their
-  // geometry in vertices, so placement positions alone say nothing about height).
-  const sources = projectBounds(
-    project,
-    installedBounds.bounds as unknown as Record<string, Bounds | null>,
-    installedBounds.dependencies.transitive,
-  );
-  const records = new Map<string, Map<string, string>>();
-  const lowest = (o: (typeof all)[number]) => {
-    let local: Bounds | null = null;
-    try {
-      if (o.node.kind === "geometry") {
-        let map = records.get(o.modelId);
-        if (!map) {
-          map = new Map(
-            project.models[o.modelId]?.records.map((r) => [r.id, r.raw]) ?? [],
-          );
-          records.set(o.modelId, map);
-        }
-        local = sources.primitive(map.get(o.node.sourceRecordId ?? "") ?? "");
-      } else local = sources.model(o.node.ref);
-    } catch {
-      local = null;
-    }
-    return local
-      ? transformBounds(local, o.transform).max[1]
-      : o.transform.position[1];
-  };
-  const bottoms = new Map(groups.map((g) => [g, Math.max(...g.map(lowest))]));
-  const bottom = (g: typeof all) => bottoms.get(g)!;
-  const significant = Math.max(1, Math.ceil(all.length * 0.02));
-  const TOL = 24;
-  const levels: number[] = [];
-  for (const y of groups
-    .filter((g) => g.length >= significant)
-    .map(bottom)
-    .sort((x, y) => y - x))
-    if (!levels.length || levels.at(-1)! - y > TOL) levels.push(y);
-  if (levels.length < 2) return { lifts, groups: 0 };
-  for (const g of groups) {
-    const b = bottom(g);
-    let floor = 0;
-    levels.forEach((level, i) => {
-      if (b <= level + TOL) floor = i;
-    });
-    if (floor) for (const o of g) lifts.set(o.id, floor * gap);
-  }
-  return { lifts, groups: levels.length };
-}
+export { explodeLifts };
 export type SectionSpec = { axis: "x" | "y" | "z"; at: number; flip?: boolean };
 /** Renderer-world clipping plane for an LDraw-space section (world = (x, −y, −z)). */
 function sectionPlane(spec: SectionSpec) {
@@ -160,6 +100,88 @@ function sectionPlane(spec: SectionSpec) {
   return spec.flip
     ? new THREE.Plane(normal.negate(), -constant)
     : new THREE.Plane(normal, constant);
+}
+type TextStyle = "guide" | "focus" | "label" | "dim";
+const TEXT_STYLES: Record<TextStyle, { bg: string; fg: string; line: string }> =
+  {
+    guide: { bg: "rgba(29,34,48,0.78)", fg: "#cfe8ff", line: "#8ec9ff" },
+    focus: { bg: "rgba(29,34,48,0.9)", fg: "#f4f1ea", line: "#5bb56a" },
+    label: {
+      bg: "rgba(29,34,48,0.9)",
+      fg: "#f4f1ea",
+      line: "rgba(244,241,234,0.35)",
+    },
+    dim: {
+      bg: "rgba(29,34,48,0.45)",
+      fg: "rgba(244,241,234,0.6)",
+      line: "rgba(244,241,234,0.2)",
+    },
+  };
+/** Screen-facing text for guides and room labels, kept at a constant on-screen size. */
+function textSprite(text: string, style: TextStyle) {
+  const scale = 2,
+    cssHeight = 24,
+    font = `600 ${13 * scale}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+  const canvas = document.createElement("canvas"),
+    ctx = canvas.getContext("2d")!;
+  ctx.font = font;
+  const height = cssHeight * scale,
+    width = Math.ceil(ctx.measureText(text).width + 20 * scale);
+  canvas.width = width;
+  canvas.height = height;
+  const colors = TEXT_STYLES[style];
+  ctx.font = font;
+  ctx.fillStyle = colors.bg;
+  ctx.strokeStyle = colors.line;
+  ctx.lineWidth = 2 * scale;
+  ctx.beginPath();
+  ctx.roundRect(scale, scale, width - 2 * scale, height - 2 * scale, 8 * scale);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = colors.fg;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, width / 2, height / 2 + scale);
+  const map = new THREE.CanvasTexture(canvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      toneMapped: false,
+    }),
+  );
+  sprite.center.set(0.5, 0); // stands on its anchor point
+  sprite.renderOrder = 1001;
+  sprite.frustumCulled = false;
+  sprite.userData = { text };
+  const aspect = width / height,
+    at = new THREE.Vector3();
+  sprite.onBeforeRender = (renderer, _scene, camera) => {
+    const target = renderer.getRenderTarget();
+    // Live labels keep a fixed CSS size; captures scale as on a 900px-tall view.
+    const viewCss = target
+      ? 900
+      : renderer.domElement.height / renderer.getPixelRatio();
+    let viewHeight: number;
+    if ((camera as THREE.PerspectiveCamera).isPerspectiveCamera) {
+      const c = camera as THREE.PerspectiveCamera;
+      sprite.getWorldPosition(at).applyMatrix4(c.matrixWorldInverse);
+      viewHeight =
+        2 *
+        Math.max(-at.z, 1e-3) *
+        Math.tan(THREE.MathUtils.degToRad(c.fov) / 2);
+    } else {
+      const c = camera as THREE.OrthographicCamera;
+      viewHeight = (c.top - c.bottom) / c.zoom;
+    }
+    const h = (cssHeight / Math.max(1, viewCss)) * viewHeight;
+    sprite.scale.set(h * aspect, h, 1);
+    sprite.updateMatrixWorld(true);
+  };
+  return sprite;
 }
 export class SceneAdapter {
   renderer: THREE.WebGLRenderer;
@@ -253,6 +275,8 @@ export class SceneAdapter {
     this.grid = new THREE.GridHelper(2000, 100, 0xaab6bd, 0xd1d9de);
     this.grid.position.y = -0.1;
     this.scene.add(this.grid);
+    this.annotations.name = "architectural-annotations";
+    this.scene.add(this.annotations);
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.5, 50000);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = false;
@@ -659,9 +683,12 @@ export class SceneAdapter {
             this.root.remove(g);
             this.handles.delete(id);
           }
-        this.explodeLift = this.explodeGap
-          ? explodeLifts(snapshot, this.explodeGap).lifts
-          : new Map();
+        const exploded = this.explodeGap
+          ? explodeLifts(snapshot, this.explodeGap)
+          : { lifts: new Map<string, number>(), levels: [] };
+        this.explodeLift = exploded.lifts;
+        this.explodeLevels = exploded.levels;
+        this.computeFloorFocus(snapshot);
         for (const { o, prototype } of loaded) {
           let group = this.handles.get(o.id);
           if (!group || group.userData.prototype !== prototype) {
@@ -694,9 +721,10 @@ export class SceneAdapter {
           );
           const lift = this.explodeLift.get(o.id);
           if (lift) group.matrix.elements[13] -= lift;
-          group.visible = this.instructionVisibility
-            ? this.instructionVisibility.has(o.id)
-            : o.visible;
+          group.visible =
+            (this.instructionVisibility
+              ? this.instructionVisibility.has(o.id)
+              : o.visible) && !this.floorHidden.has(o.id);
           group.updateMatrixWorld(true);
         }
         const inUse = new Set(
@@ -722,6 +750,7 @@ export class SceneAdapter {
         }
         this.project = snapshot;
         this.applyLayerGhost();
+        this.rebuildAnnotations();
         this.applyQuality(this.qualityProfile, true);
         this.root.visible = true;
         this.revision = snapshot.revision;
@@ -1258,9 +1287,11 @@ export class SceneAdapter {
     const grid = this.grid.visible,
       selection = this.selection.visible,
       transformVisible = this.transformHandles?.helper.visible;
+    const annotations = this.annotations.visible;
     this.controls.enabled = false;
     this.grid.visible = false;
     this.selection.visible = false;
+    this.annotations.visible = false;
     if (this.transformHandles) this.transformHandles.helper.visible = false;
     this.clearGhost();
     for (const [id, group] of this.handles) group.visible = included.has(id);
@@ -1271,6 +1302,7 @@ export class SceneAdapter {
       }
       this.grid.visible = grid;
       this.selection.visible = selection;
+      this.annotations.visible = annotations;
       if (this.transformHandles && transformVisible !== undefined)
         this.transformHandles.helper.visible = transformVisible;
       this.playViewActive = false;
@@ -1384,7 +1416,9 @@ export class SceneAdapter {
       group.updateMatrixWorld(true);
     }
     this.explodeLift = next.lifts;
+    this.explodeLevels = "levels" in next ? next.levels : [];
     this.batches.rebuild(this.handles);
+    this.rebuildAnnotations();
     this.invalidate();
     return next.groups;
   }
@@ -1482,6 +1516,217 @@ export class SceneAdapter {
       };
     }
     return null;
+  }
+  private explodeLevels: number[] = [];
+  private floorFocusSpec: FloorFocus | null = null;
+  private floorHidden = new Set<string>();
+  private floorGhosted = new Set<string>();
+  private bottomsCache?: { project: Project; bottoms: Map<string, number> };
+  private bottomParts: BottomCache = new Map();
+  private guidesShown = false;
+  private labelsShown = false;
+  private annotations = new THREE.Group();
+  private computeFloorFocus(p = this.project) {
+    this.floorHidden = new Set();
+    this.floorGhosted = new Set();
+    const focus = this.floorFocusSpec;
+    if (!p || !focus) return;
+    if (this.bottomsCache?.project !== p)
+      this.bottomsCache = {
+        project: p,
+        bottoms: occurrenceBottoms(p, undefined, this.bottomParts),
+      };
+    const sets = floorFocusSets(p, focus, this.bottomsCache.bottoms);
+    // A focused floor that was removed from the document releases the focus.
+    if (sets.index < 0) {
+      this.floorFocusSpec = null;
+      return;
+    }
+    this.floorHidden = sets.hidden;
+    this.floorGhosted = sets.ghosted;
+  }
+  /** Editor visibility: the instruction step (or layer visibility) minus hidden floors. */
+  private applyVisibility() {
+    if (!this.project || this.playViewActive) return;
+    const base =
+      this.instructionVisibility ??
+      new Set(
+        occurrences(this.project)
+          .filter((o) => o.visible)
+          .map((o) => o.id),
+      );
+    for (const [id, group] of this.handles)
+      group.visible = base.has(id) && !this.floorHidden.has(id);
+  }
+  /** Floor focus (spec §20.2): show one floor, hide the floors above it (such as the
+   * roof) and ghost the floors below. A view setting: nothing is deleted or reordered,
+   * and editing still applies to the whole document. */
+  setFloorFocus(focus: FloorFocus | null) {
+    ensure(
+      focus === null ||
+        (typeof focus?.floorId === "string" &&
+          typeof focus.ghostBelow === "boolean" &&
+          Object.keys(focus).every(
+            (k) => k === "floorId" || k === "ghostBelow",
+          )),
+      "INVALID_INPUT",
+      "Floor focus needs { floorId, ghostBelow } or null.",
+    );
+    if (focus && this.project)
+      ensure(
+        architectureOf(this.project).floors.some((f) => f.id === focus.floorId),
+        "INVALID_INPUT",
+        "Unknown floor: " + focus.floorId,
+      );
+    this.floorFocusSpec = focus && { ...focus };
+    // A running capture keeps its materials; its cleanup applies the latest focus.
+    if (this.captureActive) return this.floorFocus;
+    this.computeFloorFocus();
+    this.applyVisibility();
+    this.applyLayerGhost();
+    this.batches.rebuild(this.handles);
+    this.rebuildAnnotations();
+    this.invalidate();
+    return this.floorFocus;
+  }
+  get floorFocus() {
+    return {
+      focus: this.floorFocusSpec && { ...this.floorFocusSpec },
+      hidden: this.floorHidden.size,
+      ghosted: this.floorGhosted.size,
+    };
+  }
+  /** Show floor-height guide planes and/or room labels (overlays, never geometry). */
+  setAnnotations(options: { floorGuides?: boolean; roomLabels?: boolean }) {
+    ensure(
+      options &&
+        Object.entries(options).every(
+          ([k, v]) =>
+            ["floorGuides", "roomLabels"].includes(k) && typeof v === "boolean",
+        ),
+      "INVALID_INPUT",
+      "Annotations take floorGuides and roomLabels booleans.",
+    );
+    if (options.floorGuides !== undefined)
+      this.guidesShown = options.floorGuides;
+    if (options.roomLabels !== undefined) this.labelsShown = options.roomLabels;
+    this.rebuildAnnotations();
+    this.invalidate();
+    return this.annotationState;
+  }
+  get annotationState() {
+    return {
+      floorGuides: this.guidesShown,
+      roomLabels: this.labelsShown,
+      drawn: this.annotationCounts(),
+    };
+  }
+  private annotationCounts() {
+    let guides = 0,
+      labels = 0;
+    if (this.annotations.visible)
+      for (const child of this.annotations.children) {
+        if (child.userData.kind === "floor-guide") guides++;
+        if (child.userData.kind === "room-label") labels++;
+      }
+    return { guides, labels };
+  }
+  private clearAnnotations() {
+    for (const child of [...this.annotations.children]) {
+      this.annotations.remove(child);
+      child.traverse((o) => {
+        const d = o as THREE.Mesh;
+        d.geometry?.dispose();
+        const materials = d.material
+          ? Array.isArray(d.material)
+            ? d.material
+            : [d.material]
+          : [];
+        for (const m of materials) {
+          (m as THREE.SpriteMaterial).map?.dispose();
+          m.dispose();
+        }
+      });
+    }
+  }
+  /** Rebuild guide planes and labels for the rendered document and current view aids. */
+  private rebuildAnnotations() {
+    this.clearAnnotations();
+    const p = this.project;
+    if (!p || (!this.guidesShown && !this.labelsShown)) return;
+    const a = architectureOf(p),
+      floors = sortedFloors(a.floors);
+    const focus = this.floorFocusSpec,
+      focusIndex = focus ? floors.findIndex((f) => f.id === focus.floorId) : -1;
+    const lift = (y: number) =>
+      this.explodeGap ? liftAt(y, this.explodeLevels, this.explodeGap) : 0;
+    if (this.guidesShown && floors.length) {
+      this.root.updateMatrixWorld(true);
+      const box = new THREE.Box3();
+      for (const g of this.handles.values()) box.expandByObject(g);
+      if (box.isEmpty())
+        box.set(
+          new THREE.Vector3(-200, 0, -200),
+          new THREE.Vector3(200, 0, 200),
+        );
+      const margin = 40,
+        width = box.max.x - box.min.x + margin * 2,
+        depth = box.max.z - box.min.z + margin * 2,
+        cx = (box.min.x + box.max.x) / 2,
+        cz = (box.min.z + box.max.z) / 2;
+      floors.forEach((floor, i) => {
+        if (focusIndex >= 0 && i > focusIndex) return;
+        const current = i === focusIndex,
+          color = current ? 0x5bb56a : 0x8ec9ff;
+        const worldY = -(floor.y - lift(floor.y));
+        const guide = new THREE.Group();
+        guide.userData = { kind: "floor-guide", floorId: floor.id };
+        const plane = new THREE.Mesh(
+          new THREE.PlaneGeometry(width, depth).rotateX(-Math.PI / 2),
+          new THREE.MeshBasicMaterial({
+            color,
+            transparent: true,
+            opacity: current ? 0.16 : 0.08,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+            toneMapped: false,
+          }),
+        );
+        const edge = new THREE.LineSegments(
+          new THREE.EdgesGeometry(plane.geometry),
+          new THREE.LineBasicMaterial({
+            color,
+            transparent: true,
+            opacity: 0.85,
+            toneMapped: false,
+          }),
+        );
+        plane.renderOrder = edge.renderOrder = 900;
+        guide.add(plane, edge);
+        guide.position.set(cx, worldY, cz);
+        const tag = textSprite(floor.name, current ? "focus" : "guide");
+        tag.position.set(box.min.x - margin, worldY, box.max.z + margin);
+        this.annotations.add(guide, tag);
+      });
+    }
+    if (this.labelsShown)
+      for (const label of a.labels) {
+        // Untied labels (index −2) stay visible whatever floor is in focus.
+        const index = label.floorId
+          ? floors.findIndex((f) => f.id === label.floorId)
+          : -2;
+        if (focusIndex >= 0 && index > focusIndex) continue;
+        const dim = focusIndex >= 0 && index >= -1 && index < focusIndex;
+        const [x, y, z] = label.position;
+        const sprite = textSprite(label.text, dim ? "dim" : "label");
+        sprite.userData = {
+          ...sprite.userData,
+          kind: "room-label",
+          id: label.id,
+        };
+        sprite.position.fromArray(conversion([x, y - lift(y), z]));
+        this.annotations.add(sprite);
+      }
   }
   private measureOverlay?: THREE.Group;
   /** Draw a measurement between LDraw points (an overlay, never part of the model). */
@@ -1648,6 +1893,7 @@ export class SceneAdapter {
             .map((o) => o.id)
         : [],
     );
+    if (!this.playViewActive) for (const id of this.floorGhosted) ids.add(id);
     this.layerGhost.apply(this.handles, ids);
     if (!this.playViewActive && this.instructionNewIds)
       this.instructionDimming.apply(
@@ -1674,15 +1920,7 @@ export class SceneAdapter {
     if (this.captureActive) return;
     this.applyLayerGhost();
     this.batches.rebuild(this.handles);
-    const visible = new Set(
-      ids ??
-        (this.project
-          ? occurrences(this.project)
-              .filter((o) => o.visible)
-              .map((o) => o.id)
-          : []),
-    );
-    for (const [id, obj] of this.handles) obj.visible = visible.has(id);
+    this.applyVisibility();
     this.invalidate();
   }
   async previewPart(
@@ -1812,7 +2050,6 @@ export class SceneAdapter {
     );
     const p = this.project!,
       camera = this.currentCamera(),
-      savedInstructionVisibility = this.instructionVisibility,
       savedVisible = new Map(
         [...this.handles].map(([id, g]) => [id, g.visible]),
       ),
@@ -1829,6 +2066,8 @@ export class SceneAdapter {
     );
     let captureLighting: ReturnType<SceneAdapter["lightingManifest"]>;
     let captureStats: typeof this.renderer.info.render;
+    let capturedFloorFocus: FloorFocus | null = null,
+      capturedAnnotations = { guides: 0, labels: 0 };
     const rt = new THREE.WebGLRenderTarget(request.width, request.height, {
       format: THREE.RGBAFormat,
       type: THREE.UnsignedByteType,
@@ -1862,6 +2101,9 @@ export class SceneAdapter {
         const obj = this.handles.get(o.id)!;
         obj.visible =
           (!this.playIncludedIds || this.playIncludedIds.has(o.id)) &&
+          // Floor focus (spec §20.2) hides upper floors unless IDs are explicit.
+          (request.visibility.mode === "occurrences" ||
+            !this.floorHidden.has(o.id)) &&
           (request.visibility.mode === "all" ||
             (request.visibility.mode === "current"
               ? this.playViewActive || o.visible
@@ -1869,6 +2111,8 @@ export class SceneAdapter {
                 ? selectedOccurrences.has(o.id)
                 : !!request.visibility.layerIds?.includes(o.layerId)));
       }
+      if (this.floorGhosted.size && !this.playViewActive)
+        this.layerGhost.apply(this.handles, this.floorGhosted);
       if (request.instructionNewIds) {
         const additions = new Set(request.instructionNewIds);
         ensure(
@@ -1907,6 +2151,8 @@ export class SceneAdapter {
       this.renderer.setRenderTarget(rt);
       this.drawScene();
       captureStats = { ...this.renderer.info.render };
+      capturedFloorFocus = this.floorFocusSpec && { ...this.floorFocusSpec };
+      capturedAnnotations = this.annotationCounts();
       this.renderer.readRenderTargetPixels(
         rt,
         0,
@@ -1922,6 +2168,7 @@ export class SceneAdapter {
       );
     } finally {
       this.captureActive = false;
+      this.computeFloorFocus();
       this.applyLayerGhost();
       this.batches.rebuild(this.handles);
       this.applyQuality(savedQuality);
@@ -1932,19 +2179,10 @@ export class SceneAdapter {
         const g = this.handles.get(id);
         if (g) g.visible = visible;
       }
-      if (
-        !this.playViewActive &&
-        this.instructionVisibility !== savedInstructionVisibility
-      ) {
-        const latestVisible =
-          this.instructionVisibility ??
-          new Set(
-            occurrences(this.project!)
-              .filter((o) => o.visible)
-              .map((o) => o.id),
-          );
-        for (const [id, group] of this.handles)
-          group.visible = latestVisible.has(id);
+      if (!this.playViewActive) {
+        // Pick up step or floor-focus changes requested while the capture ran.
+        this.applyVisibility();
+        this.rebuildAnnotations();
       }
       this.scene.background = background;
       this.grid.visible = grid;
@@ -2009,6 +2247,11 @@ export class SceneAdapter {
           })),
           localClippingEnabled: this.renderer.localClippingEnabled,
         },
+        architecture: {
+          floorFocus: capturedFloorFocus,
+          floorGuides: capturedAnnotations.guides,
+          roomLabels: capturedAnnotations.labels,
+        },
         output: {
           width: request.width,
           height: request.height,
@@ -2032,6 +2275,7 @@ export class SceneAdapter {
     this.instructionDimming.restore();
     this.layerGhost.restore();
     this.clearGhost();
+    this.clearAnnotations();
     cancelAnimationFrame(this.raf);
     this.resizeObserver.disconnect();
     this.controls.dispose();

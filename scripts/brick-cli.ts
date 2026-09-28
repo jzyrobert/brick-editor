@@ -17,6 +17,7 @@ import {
 import { assessMaterialization } from "../src/core/materialization";
 import { compareProjects } from "../src/core/compare";
 import { modelHealth } from "../src/core/health";
+import { floorReport } from "../src/edit/floors";
 import {
   InventoryService,
   type InventoryRequest,
@@ -43,7 +44,7 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      "brick-cli validate|health|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nQuery: --request query.json [--output query-result.json]\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
+      "brick-cli validate|health|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nQuery: --request query.json [--output query-result.json]\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
     );
     return;
   }
@@ -51,6 +52,7 @@ export async function main(argv: string[]) {
     validate: [],
     compare: ["against"],
     health: [],
+    floors: [],
     query: ["request"],
     apply: ["commands"],
     export: ["format"],
@@ -229,6 +231,12 @@ export async function main(argv: string[]) {
     const result = JSON.stringify(queryProject(p, request), null, 2) + "\n";
     if (output) await writeFile(output, result);
     else console.log(result.trimEnd());
+    return;
+  }
+  if (operation === "floors") {
+    const report = JSON.stringify(floorReport(p), null, 2);
+    if (output) await writeFile(output, report);
+    else console.log(report);
     return;
   }
   if (operation === "health") {

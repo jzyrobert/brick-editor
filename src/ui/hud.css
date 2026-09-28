@@ -1299,3 +1299,169 @@ a .icon {
     transform: none;
   }
 }
+
+/* Floors & rooms (spec §20.2) inside the camera-views popover. The popover scrolls
+ * rather than growing past the screen, so phones keep the canvas in view. */
+.view-controls {
+  max-height: calc(100dvh - 180px);
+  overflow-y: auto;
+}
+.floor-control.open {
+  flex-basis: 100%;
+  align-items: stretch;
+}
+.floor-panel {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+.floor-hint {
+  margin: 0;
+  color: var(--hud-mute);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.floor-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.view-controls .floor-chips button {
+  border: 2px solid var(--hud-line);
+}
+.floor-check {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+}
+.floor-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--grass);
+}
+.floor-edit > summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+.floor-row,
+.floor-actions,
+.label-form {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.floor-row input,
+.floor-row select,
+.label-form input {
+  min-width: 0;
+  flex: 1 1 auto;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 2px solid var(--hud-line);
+  border-radius: 8px;
+  background: rgba(244, 241, 234, 0.08);
+  color: var(--chalk);
+  font: inherit;
+}
+.floor-row input[type="number"] {
+  flex: 0 0 64px;
+}
+.floor-row select option {
+  color: #1d2230;
+}
+.floor-actions button,
+.label-form button {
+  flex: 1 1 auto;
+  border: 2px solid var(--hud-line) !important;
+}
+.floor-group {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+}
+.floor-heading {
+  margin: 4px 0 0;
+  color: var(--hud-mute);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+@media (min-width: 1101px) {
+  .floor-panel {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    column-gap: 16px;
+  }
+  .floor-group + .floor-group {
+    padding-left: 16px;
+    border-left: 2px solid var(--hud-line);
+  }
+}
+@media (max-width: 1100px) {
+  .floor-row {
+    flex-wrap: wrap;
+  }
+  .floor-row input:not([type="number"]),
+  .floor-row select {
+    flex-basis: 100%;
+  }
+  .label-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+.label-pick-card {
+  background: var(--hud);
+  border: 2px solid var(--hud-line);
+  color: var(--chalk);
+  z-index: 17;
+}
+.label-pick-card button {
+  border-radius: 10px;
+  background: var(--grass);
+  color: #10240f;
+  font-weight: 650;
+}
+.bookmark-form label.check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* The room form stacks (name above its button) so neither is squeezed. */
+.floor-panel .label-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+.floor-panel button {
+  white-space: nowrap;
+}
+.view-controls:has(.floor-control.open) {
+  max-width: min(680px, calc(100vw - 24px));
+}
+@media (max-width: 1100px) {
+  /* A scrolling column must not wrap into a second column. */
+  .view-controls {
+    flex-wrap: nowrap;
+  }
+  .view-controls:has(.floor-control.open) {
+    width: min(320px, calc(100vw - 96px));
+    max-width: none;
+  }
+  .view-controls .floor-control.open {
+    align-self: stretch;
+    flex-shrink: 0;
+  }
+  .view-controls > * {
+    flex-shrink: 0;
+  }
+}
+.floor-check input {
+  margin: 0;
+}

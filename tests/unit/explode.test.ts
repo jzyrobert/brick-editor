@@ -26,7 +26,11 @@ describe("exploded view grouping", () => {
     const flat = importLDraw(
       "0 FILE f.ldr\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat\n1 4 0 -96 0 1 0 0 0 1 0 0 0 1 3001.dat",
     );
-    expect(explodeLifts(flat, 50)).toEqual({ lifts: new Map(), groups: 0 });
+    expect(explodeLifts(flat, 50)).toEqual({
+      lifts: new Map(),
+      groups: 0,
+      levels: [],
+    });
     const layered = structuredClone(flat);
     const [a, b] = occurrences(layered);
     layered.layers.roof = {

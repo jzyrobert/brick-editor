@@ -48,6 +48,8 @@ import {
 import { JobRegistry, runWorker } from "./jobs";
 import type { Project } from "../core/types";
 import { validate } from "../core/validate";
+import { detectFloors, floorReport } from "../edit/floors";
+import { architectureOf, type FloorFocus } from "../core/architecture";
 export function createAPI(
   editor: Editor,
   render: () => SceneAdapter | undefined,
@@ -267,6 +269,18 @@ export function createAPI(
     },
     apiVersion: "1.0" as const,
     capabilities: async () => capabilities,
+    /** Floor guides, room labels and camera floor views (spec §20.2). Edit them with the
+     * floors.set, labels.add/update/remove and camera.bookmark.focus commands. */
+    architecture: {
+      get: async () => {
+        editor.requireMaterialization();
+        return floorReport(editor.project);
+      },
+      detectFloors: async () => {
+        editor.requireMaterialization();
+        return { floors: detectFloors(editor.project) };
+      },
+    },
     health: {
       check: async () => {
         editor.requireMaterialization();
@@ -541,6 +555,33 @@ export function createAPI(
         }),
         get: async () => ({ gap: renderer().exploded }),
       },
+      /** Floor focus and architectural overlays: show one floor with the floors above
+       * hidden and those below ghosted; draw floor guides and room labels. View only. */
+      floors: {
+        set: async (input: {
+          focus?: FloorFocus | null;
+          floorGuides?: boolean;
+          roomLabels?: boolean;
+        }) => {
+          ensure(
+            input &&
+              Object.keys(input).every((k) =>
+                ["focus", "floorGuides", "roomLabels"].includes(k),
+              ),
+            "INVALID_INPUT",
+            "render.floors.set takes focus, floorGuides and roomLabels.",
+          );
+          const r = renderer();
+          const { focus, ...overlays } = input;
+          if (Object.keys(overlays).length) r.setAnnotations(overlays);
+          if (focus !== undefined) r.setFloorFocus(focus);
+          return { ...r.floorFocus, ...r.annotationState };
+        },
+        get: async () => {
+          const r = renderer();
+          return { ...r.floorFocus, ...r.annotationState };
+        },
+      },
       /** Section cut: hide everything above an LDraw height (authoring aid). */
       section: {
         /** `{ height }` cuts horizontally; `{ axis, at, flip }` cuts along x, y or z. */
@@ -607,7 +648,9 @@ export function createAPI(
             "INVALID_INPUT",
             "Unknown camera bookmark: " + name,
           );
-        const previous = r.currentCamera();
+        const previous = r.currentCamera(),
+          previousFocus = r.floorFocus.focus,
+          views = architectureOf(p).views;
         const shots: Array<{ name: string; blob: Blob; file: string }> = [];
         let first:
           | Awaited<ReturnType<typeof captureImage>>["manifest"]
@@ -615,6 +658,9 @@ export function createAPI(
         try {
           for (const name of names) {
             r.setCamera(p.cameraBookmarks[name]);
+            // A bookmark's saved floor view ("hide the roof in this camera") applies to
+            // its image only; bookmarks without one show every floor.
+            r.setFloorFocus(views[name] ?? null);
             const shot = await captureImage({
               revision,
               width: input.width,
@@ -638,6 +684,11 @@ export function createAPI(
           }
         } finally {
           r.setCamera(previous);
+          try {
+            r.setFloorFocus(previousFocus);
+          } catch {
+            r.setFloorFocus(null);
+          }
         }
         return {
           manifest: {
@@ -653,6 +704,7 @@ export function createAPI(
               name: shot.name,
               file: shot.file,
               camera: p.cameraBookmarks[shot.name],
+              floorFocus: views[shot.name] ?? null,
             })),
           },
           images: shots,

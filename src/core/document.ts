@@ -1,3 +1,4 @@
+import { validateArchitecture } from "./architecture";
 import { validateInstructionCamera } from "../instructions/edit";
 import {
   type Project,
@@ -162,6 +163,7 @@ export function occurrences(
 }
 /** Validate authoritative source without allocating its expanded scene. */
 export function validateSourceDocument(p: Project): void {
+  validateArchitecture(p);
   if (p.metadata.preamble !== undefined) {
     ensure(
       Array.isArray(p.metadata.preamble) &&
