@@ -39,6 +39,7 @@ import { HealthPanel } from "./HealthPanel";
 import { CameraCollections } from "./CameraCollections";
 import { Icon, type IconName } from "./icons";
 import { inspectSelection, sourceLabels } from "../edit/inspect";
+import { measure } from "../edit/measure";
 import {
   catalogCategories,
   relatedParts,
@@ -309,6 +310,12 @@ function Workspace() {
     [sheetFull, setSheetFull] = useState(false),
     [viewsOpen, setViewsOpen] = useState(false),
     [modesOpen, setModesOpen] = useState(false),
+    [section, setSection] = useState<number | null>(null),
+    [measurePoints, setMeasurePoints] = useState<Vec3[]>([]),
+    [sectionRange, setSectionRange] = useState<{
+      top: number;
+      bottom: number;
+    } | null>(null),
     [inventoryOpen, setInventoryOpen] = useState(false),
     [inventoryScope, setInventoryScope] = useState<Scope["kind"]>("all"),
     [condition, setCondition] = useState("any"),
@@ -873,6 +880,22 @@ function Workspace() {
         return;
       }
       if (s.tool === "Navigate") return;
+      if (s.tool === "Measure") {
+        const point =
+          r.pickPoint(e.clientX, e.clientY) ??
+          r.planeIntersection(e.clientX, e.clientY, s.workplane);
+        if (!point) return;
+        setMeasurePoints((points) => {
+          const next = points.length === 1 ? [points[0], point] : [point];
+          setStatus(
+            next.length === 1
+              ? "First point set. Tap a second point to measure."
+              : "Measured: " + measure(next[0], next[1]).label,
+          );
+          return next;
+        });
+        return;
+      }
       const p = editor.project;
       if (s.tool === "Place") {
         const v = r.planeIntersection(e.clientX, e.clientY, s.workplane);
@@ -1283,6 +1306,19 @@ function Workspace() {
       }
     });
   }
+  // Measurements exist only while the Measure tool is in hand.
+  useEffect(() => {
+    if (tool !== "Measure" && measurePoints.length) setMeasurePoints([]);
+  }, [tool]);
+  useEffect(() => {
+    renderer.current?.setMeasurement(
+      mode === "Build" && tool === "Measure" ? measurePoints : [],
+    );
+  }, [measurePoints, tool, mode]);
+  // The section cut is an editing aid; Play shares the renderer, so it is suspended there.
+  useEffect(() => {
+    renderer.current?.setSection(mode === "Play" ? null : section);
+  }, [section, mode]);
   // On touch layouts the status toast shows briefly after each change.
   useEffect(() => {
     setStatusFresh(true);
@@ -1315,7 +1351,7 @@ function Workspace() {
   const toolbar = (
     <>
       <div className="tool-segment">
-        {["Select", "Place", "Paint", "Navigate"].map((t, i) => (
+        {["Select", "Place", "Paint", "Navigate", "Measure"].map((t, i) => (
           <button
             key={t}
             className={tool === t ? "active" : ""}
@@ -1336,11 +1372,16 @@ function Workspace() {
                 `Place · ${shortcuts.place || "unassigned"}`,
                 `Paint · ${shortcuts.paint || "unassigned"}`,
                 "Orbit and pan",
+                "Measure between two points",
               ][i]
             }
           >
             <Icon
-              name={(["select", "place", "paint", "navigate"] as const)[i]}
+              name={
+                (["select", "place", "paint", "navigate", "measure"] as const)[
+                  i
+                ]
+              }
             />
             <span className="tool-label">{t}</span>
           </button>
@@ -2273,6 +2314,61 @@ function Workspace() {
                 {v}
               </button>
             ))}
+            <div className="section-control">
+              <button
+                aria-pressed={section !== null}
+                onClick={() => {
+                  if (section !== null) {
+                    setSection(null);
+                    setStatus("Section cut off.");
+                    return;
+                  }
+                  const range = renderer.current?.modelHeightRange() ?? null;
+                  setSectionRange(range);
+                  if (!range) {
+                    setStatus("Add parts before cutting a section.");
+                    return;
+                  }
+                  // Start halfway up the model.
+                  setSection(
+                    Math.round((range.top + range.bottom) / 2 / 8) * 8,
+                  );
+                  setStatus(
+                    "Section cut on: everything above the cut is hidden.",
+                  );
+                }}
+              >
+                Section cut
+              </button>
+              {section !== null && sectionRange && (
+                <label>
+                  <span className="section-label">
+                    Cut{" "}
+                    {Math.max(
+                      0,
+                      Math.round((sectionRange.bottom - section) / 8),
+                    )}{" "}
+                    plates up
+                  </span>
+                  <input
+                    type="range"
+                    aria-label="Section height"
+                    min={0}
+                    max={Math.max(
+                      8,
+                      Math.ceil((sectionRange.bottom - sectionRange.top) / 8),
+                    )}
+                    step={1}
+                    value={Math.round((sectionRange.bottom - section) / 8)}
+                    onChange={(e) =>
+                      setSection(
+                        sectionRange.bottom - Number(e.target.value) * 8,
+                      )
+                    }
+                  />
+                </label>
+              )}
+            </div>
           </div>
           {pickingFace && mode === "Build" && (
             <div className="face-pick-card">
@@ -2750,6 +2846,15 @@ function Workspace() {
                   <Icon name="external" size={14} />
                 </a>
               </details>
+            </div>
+          )}
+          {mode === "Build" && tool === "Measure" && (
+            <div className="measure-chip hud-el hud-slab" role="status">
+              {measurePoints.length === 2
+                ? measure(measurePoints[0], measurePoints[1]).label
+                : measurePoints.length === 1
+                  ? "Tap a second point"
+                  : "Tap two points on the model to measure"}
             </div>
           )}
           <div className="canvas-bottom hud-el hud-slab">

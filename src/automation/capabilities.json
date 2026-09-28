@@ -220,6 +220,12 @@
       "connectorCoverage": "unverified"
     }
   },
+  "sectionCut": {
+    "api": "render.section.set({ height: ldrawY | null }), render.section.get()",
+    "axis": "horizontal (LDraw Y); vertical cuts not yet available",
+    "captures": "included and recorded as clipping planes in the manifest",
+    "play": "suspended"
+  },
   "cameraCollections": {
     "grouping": "bookmark name prefix, e.g. exterior/",
     "api": "render.collection({ prefix | names, width, height, quality?, background?, visibility? })",

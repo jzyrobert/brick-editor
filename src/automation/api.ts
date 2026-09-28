@@ -533,6 +533,17 @@ export function createAPI(
         ) => renderer().setQuality(name, controls),
       },
       image: captureImage,
+      /** Section cut: hide everything above an LDraw height (authoring aid). */
+      section: {
+        set: async (input: { height: number | null }) => {
+          renderer().setSection(input.height);
+          return { height: renderer().section };
+        },
+        get: async () => ({
+          height: renderer().section,
+          range: renderer().modelHeightRange(),
+        }),
+      },
       /** Render every camera bookmark in a collection (a name prefix such as "exterior/")
        * against one revision, with one shared manifest (spec §20.3). */
       collection: async (input: {

@@ -56,6 +56,10 @@ Nested folders organize layers while global layer order, visibility and locks re
 
 Scoped LDraw export now retains the selected paths through parent definitions, material/BFC records and embedded dependencies. Deleting a reference removes its orphaned INVERTNEXT directive; reflected raw polygon export reverses winding. These source/semantic regressions do not establish universal rendered ancestor-BFC equivalence.
 
+## Section cut
+
+A horizontal section cut (spec §20.2) hides everything above a chosen height so floor interiors are visible, set from the Camera views popover in plates above the model's base (`render.section.set/get` for agents). Parts above the cut cannot be picked, captures include the cut and record the clipping plane in their manifest, and Play suspends it because it shares the renderer. A Measure tool gives the distance between two tapped points (model surfaces, or the workplane where there is none) in studs, plates and straight LDU, drawn as an overlay that is never part of the model. Vertical cuts, exploded views, floor guides and room labels remain open.
+
 ## Named checkpoints and change reports
 
 Project mode keeps up to 20 named checkpoints per project on this device (IndexedDB, checksummed, independent of autosave snapshots). A checkpoint can be compared with the current project at occurrence level (added, removed, moved, recoloured, moved to another layer, replaced), the changed parts selected on the canvas, the structured report downloaded as JSON, the checkpoint downloaded as a native backup, or restored after an inline confirmation that offers a backup first. The same comparison is available to agents through `checkpoints.compare()` and `brick-cli compare`. Occurrence identity is the source path, so parts in submodels that are made unique or regrouped read as removed and added; temporary visual diff overlays beyond selection highlighting remain open.

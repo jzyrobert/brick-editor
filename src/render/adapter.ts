@@ -1268,6 +1268,84 @@ export class SceneAdapter {
     );
     return ray;
   }
+  private sectionHeight: number | null = null;
+  /** Section cut (spec §20.2): hide everything above LDraw height `h` (LDraw −Y is up).
+   * An authoring aid only; captures record it in their clipping manifest. */
+  setSection(h: number | null) {
+    ensure(
+      h === null || Number.isFinite(h),
+      "INVALID_INPUT",
+      "Section height must be a finite LDU value.",
+    );
+    this.sectionHeight = h;
+    // World y is −(LDraw y): keep points with world y ≤ −h.
+    this.renderer.clippingPlanes =
+      h === null ? [] : [new THREE.Plane(new THREE.Vector3(0, -1, 0), -h)];
+    this.invalidate();
+  }
+  get section() {
+    return this.sectionHeight;
+  }
+  /** LDraw heights of the model's top and bottom (top < bottom, since −Y is up). */
+  modelHeightRange(): { top: number; bottom: number } | null {
+    this.scene.updateMatrixWorld(true);
+    const box = new THREE.Box3();
+    for (const g of this.handles.values()) if (g.visible) box.expandByObject(g);
+    const round = (v: number) => Math.round(v * 1e4) / 1e4 || 0;
+    return box.isEmpty()
+      ? null
+      : { top: round(-box.max.y), bottom: round(-box.min.y) };
+  }
+  private aboveSection(point: THREE.Vector3) {
+    return this.sectionHeight !== null && point.y > -this.sectionHeight + 1e-3;
+  }
+  /** First visible model surface under a screen point, in LDraw coordinates. */
+  pickPoint(x: number, y: number): Vec3 | null {
+    this.scene.updateMatrixWorld(true);
+    for (const hit of this.ray(x, y).intersectObjects(
+      [...this.handles.values()].filter((g) => g.visible),
+      true,
+    )) {
+      if (this.aboveSection(hit.point)) continue;
+      return conversion(hit.point.toArray() as Vec3);
+    }
+    return null;
+  }
+  private measureOverlay?: THREE.Group;
+  /** Draw a measurement between LDraw points (an overlay, never part of the model). */
+  setMeasurement(points: Vec3[]) {
+    if (this.measureOverlay) {
+      this.scene.remove(this.measureOverlay);
+      this.measureOverlay.traverse((o) => {
+        const d = o as THREE.Line;
+        d.geometry?.dispose();
+        (d.material as THREE.Material | undefined)?.dispose();
+      });
+      this.measureOverlay = undefined;
+    }
+    if (points.length) {
+      const world = points.map((p) => new THREE.Vector3(...conversion(p)));
+      const group = new THREE.Group();
+      const line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(world),
+        new THREE.LineBasicMaterial({ color: 0xffb020, depthTest: false }),
+      );
+      const dots = new THREE.Points(
+        new THREE.BufferGeometry().setFromPoints(world),
+        new THREE.PointsMaterial({
+          color: 0xffd166,
+          size: 10,
+          sizeAttenuation: false,
+          depthTest: false,
+        }),
+      );
+      line.renderOrder = dots.renderOrder = 1000;
+      group.add(line, dots);
+      this.measureOverlay = group;
+      this.scene.add(group);
+    }
+    this.invalidate();
+  }
   pick(x: number, y: number) {
     this.scene.updateMatrixWorld(true);
     const intersections = this.ray(x, y).intersectObjects(
@@ -1275,6 +1353,7 @@ export class SceneAdapter {
       true,
     );
     for (const hit of intersections) {
+      if (this.aboveSection(hit.point)) continue;
       let obj: THREE.Object3D | null = hit.object;
       while (obj && !obj.userData.occurrenceId) obj = obj.parent;
       if (obj?.userData.occurrenceId)
@@ -1298,7 +1377,7 @@ export class SceneAdapter {
       .map(([, g]) => g);
     for (const hit of ray.intersectObjects(handles, true)) {
       const mesh = hit.object as THREE.Mesh;
-      if (!mesh.isMesh || !hit.face) continue;
+      if (!mesh.isMesh || !hit.face || this.aboveSection(hit.point)) continue;
       let object: THREE.Object3D | null = mesh,
         occurrenceId: string | undefined,
         visible = true;
