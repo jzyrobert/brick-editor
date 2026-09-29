@@ -756,6 +756,10 @@ export class BrowserPlay {
     this.emit();
     return report;
   }
+  /** Static collision size after compaction (diagnostics, not the snapshot contract). */
+  collisionStats() {
+    return this.current().collisionStats();
+  }
   snapshot() {
     return this.current().snapshot();
   }

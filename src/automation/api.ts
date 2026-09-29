@@ -302,6 +302,8 @@ export function createAPI(
       },
       stepTicks: async (count: number) => player().stepTicks(count),
       snapshot: async () => player().snapshot(),
+      /** Diagnostics: static collider triangles/vertices after compaction. */
+      collisionStats: async () => player().collisionStats(),
       pause: async (paused = true) => player().pause(paused),
     },
     apiVersion: "1.0" as const,
@@ -388,10 +390,15 @@ export function createAPI(
       setProfile: async (input: {
         profile: ResourcePreference;
         acknowledgeImpact?: boolean;
-      }) =>
-        applyResourcePreference(editor, input?.profile, {
+      }) => {
+        const result = applyResourcePreference(editor, input?.profile, {
           acknowledgeImpact: input?.acknowledgeImpact === true,
-        }),
+        });
+        // Renderer budgets follow the profile; re-assess before a following
+        // ready() rather than after the UI's next effect.
+        render()?.setLookResourceProfile(editor.resourceProfile);
+        return result;
+      },
     },
     jobs: {
       list: async () => jobs.list(),
@@ -602,6 +609,9 @@ export function createAPI(
           renderer().setLook(name, controls),
       },
       image: captureImage,
+      /** Renderer budget of the active resource profile and the last rendered
+       * model's measured use (part occurrences, variants, triangles). */
+      budget: async () => renderer().renderBudgetStatus(),
       /** Exploded view: lift floors (top-level submodels, else layers) apart. Render-only. */
       explode: {
         set: async (input: { gap: number }) => ({

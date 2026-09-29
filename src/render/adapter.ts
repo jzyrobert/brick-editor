@@ -58,6 +58,13 @@ import {
   removeFlakes,
 } from "./look-pipeline";
 import type { ResourceProfileName } from "../core/resource-profile";
+import { checkRenderBudget, renderBudget } from "./render-budget";
+import {
+  boxProxy,
+  collisionProxy,
+  keepsOpenings,
+  partTitle,
+} from "../play/collision-proxy";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -215,6 +222,56 @@ function textSprite(text: string, style: TextStyle) {
   };
   return sprite;
 }
+/** Sentinel main colour for shared part geometry. It is not an LDConfig code, so
+ * no official part draws it as a fixed colour: every material in this code is
+ * exactly the inherited main colour (16) or its edges (24). */
+const SHARED_MAIN_CODE = "9900016";
+const SHARED_MAIN_COLOUR = `0 !COLOUR Brick_Editor_Shared_Main CODE ${SHARED_MAIN_CODE} VALUE #808080 EDGE #333333`;
+type MainMaterials = {
+  face?: THREE.Material;
+  edge?: THREE.Material;
+  conditional?: THREE.Material;
+};
+/** Face, edge and conditional-line materials drawn in `code` (any code when
+ * omitted), classified by the loader's object and material kinds. */
+function mainMaterials(group: THREE.Object3D, code?: string): MainMaterials {
+  const found: MainMaterials = {};
+  group.traverse((object) => {
+    const drawable = object as THREE.Mesh | THREE.LineSegments;
+    if (!drawable.material) return;
+    for (const material of Array.isArray(drawable.material)
+      ? drawable.material
+      : [drawable.material]) {
+      if (code !== undefined && material.userData.code !== code) continue;
+      if ((drawable as THREE.Mesh).isMesh) found.face ??= material;
+      else if ((material as THREE.ShaderMaterial).isShaderMaterial)
+        found.conditional ??= material;
+      else if ((drawable as THREE.LineSegments).isLineSegments)
+        found.edge ??= material;
+    }
+  });
+  return found;
+}
+const triangleCounts = new WeakMap<THREE.Object3D, number>();
+/** Surface triangles one occurrence of this prototype draws (memoized). */
+function prototypeTriangleCount(prototype: THREE.Object3D) {
+  let count = triangleCounts.get(prototype);
+  if (count === undefined) {
+    count = 0;
+    prototype.traverse((object) => {
+      const mesh = object as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const geometry = mesh.geometry;
+      count! += Math.floor(
+        (geometry.index?.count ??
+          geometry.getAttribute("position")?.count ??
+          0) / 3,
+      );
+    });
+    triangleCounts.set(prototype, count);
+  }
+  return count;
+}
 export class SceneAdapter {
   renderer: THREE.WebGLRenderer;
   scene = new THREE.Scene();
@@ -241,6 +298,17 @@ export class SceneAdapter {
   >();
   private knownColors = new Set<string>();
   private resolvedCache = new Map<string, THREE.Group>();
+  /** The last project passed to update(), rendered or refused. */
+  private requested?: Project;
+  private reducedNotice = false;
+  private renderUsage?: {
+    profile: ResourceProfileName;
+    partOccurrences: number;
+    rawOccurrences: number;
+    variants: number;
+    prototypeTriangles: number;
+    sceneTriangles: number;
+  };
   private load: Promise<void>;
   private raf = 0;
   private resizeObserver: ResizeObserver;
@@ -512,6 +580,7 @@ export class SceneAdapter {
           return [name, "0 FILE " + name + "\n" + s.text];
         }),
     );
+    this.colourLines = undefined;
     this.colorText = sources
       .find((s) => s.path === "LDConfig.ldr")!
       .text.split(/\r?\n/)
@@ -522,6 +591,32 @@ export class SceneAdapter {
         .map((m) => m[1])
         .filter((c) => c !== "16" && c !== "24"),
     );
+  }
+  private colourLines?: Map<string, string>;
+  /**
+   * The LDConfig `!COLOUR` definitions a compile can use: codes referenced by
+   * any type 1–5 line of its source, plus main (16) and edge (24). The loader
+   * builds face, edge and conditional-line materials for every definition it
+   * reads, so passing all ~320 colours to each part compile dominated the cost
+   * of loading many part/colour variants. Undefined codes still fall back to
+   * the loader's missing-colour material, exactly as before.
+   */
+  private colourDefinitions(source: string) {
+    if (!this.colourLines) {
+      this.colourLines = new Map();
+      for (const l of this.colorText.split("\n")) {
+        const code = /\sCODE\s+(\d+)/.exec(l)?.[1];
+        if (code) this.colourLines.set(code, l);
+      }
+    }
+    const used = new Set(["16", "24"]);
+    for (const m of source.matchAll(/^\s*[1-5]\s+(\d+)\s/gm)) used.add(m[1]);
+    const out: string[] = [];
+    for (const code of used) {
+      const l = this.colourLines.get(code);
+      if (l) out.push(l);
+    }
+    return out.join("\n");
   }
   /**
    * Official definitions one compile can reach: every file referenced by the
@@ -617,81 +712,20 @@ export class SceneAdapter {
         this.resolvedCache.set(key, g);
         return g;
       }
-      let dependencyFailure: string | undefined;
-      const manager = new THREE.LoadingManager();
-      const loader = new LDrawLoader(manager);
-      loader.setConditionalLineMaterial(LDrawConditionalLineMaterial);
-      loader.setMaterials([]);
-      manager.setURLModifier((url) => {
-        dependencyFailure = url;
-        throw new AppError(
-          "REFERENCE_MISSING",
-          "Unresolved dependency (network resolution disabled): " + url,
-        );
-      });
-      const ref =
-        o.namespace === "project"
-          ? p.models[o.node.ref]?.name || o.node.ref
-          : o.node.ref;
-      const line = `1 ${o.colorCode} 0 0 0 1 0 0 0 1 0 0 0 1 ${ref}`;
-      const projectSource = source.replace(/\n0 NOFILE\s*$/, "");
-      const localNames = new Set(
-        Object.values(p.models).map((m) => m.name.toLowerCase()),
-      );
-      const library = this.libraryClosure(
-        context + "\n" + line + "\n" + projectSource,
-        o.namespace === "project" ? localNames : new Set<string>(),
-      );
-      const text = normalizeBfcSource(
-        "0 FILE __render__.ldr\n" +
-          this.colorText +
-          "\n" +
-          context +
-          "\n" +
-          line +
-          "\n" +
-          projectSource +
-          "\n" +
-          library,
-      );
-      loader.setFileMap(
-        Object.fromEntries(
-          [...text.matchAll(/^0 FILE (.+)$/gm)].map((m) => [m[1], m[1]]),
-        ),
-      );
-      const group = await new Promise<THREE.Group>((resolve, reject) =>
-        (
-          loader.parse as unknown as (
-            text: string,
-            resolve: (g: THREE.Group) => void,
-            reject: (e: unknown) => void,
-          ) => void
-        )(text, resolve, reject),
-      );
-      ensure(
-        !dependencyFailure,
-        "REFERENCE_MISSING",
-        "Unresolved dependency: " + dependencyFailure,
-      );
-      ensure(
-        o.namespace !== "official" || group.children.length > 0,
-        "REFERENCE_MISSING",
-        "Part compilation produced no geometry: " + o.node.ref,
-      );
-      repairFaceNormals(group);
-      group.traverse((object) => {
-        if ((object as THREE.Mesh).isMesh) {
-          if (renderContext.forceDoubleSided) {
-            const mesh = object as THREE.Mesh;
-            for (const material of Array.isArray(mesh.material)
-              ? mesh.material
-              : [mesh.material])
-              material.side = THREE.DoubleSide;
-          }
-          object.castShadow = true;
-          object.receiveShadow = true;
-        }
-      });
+      // Official parts share one compiled geometry across colours (spec §13.2):
+      // the part compiles once with a sentinel main colour, and each colour
+      // variant is a clone that binds that colour's loader materials.
+      const group =
+        o.namespace === "official" && !renderContext.forceDoubleSided
+          ? await this.colourVariant(o, context, fingerprint)
+          : await this.compilePart(
+              o,
+              p,
+              source,
+              context,
+              o.colorCode,
+              renderContext.forceDoubleSided,
+            );
       this.allPrototypes.add(group);
       this.resolvedCache.set(key, group);
       return group;
@@ -699,8 +733,285 @@ export class SceneAdapter {
     this.cache.set(key, promise);
     return promise;
   }
+  /** Compile one part (or project submodel) reference in `colorCode`. */
+  private async compilePart(
+    o: Occurrence,
+    p: Project | undefined,
+    source: string,
+    context: string,
+    colorCode: string,
+    forceDoubleSided: boolean,
+  ) {
+    let dependencyFailure: string | undefined;
+    const manager = new THREE.LoadingManager();
+    const loader = new LDrawLoader(manager);
+    loader.setConditionalLineMaterial(LDrawConditionalLineMaterial);
+    loader.setMaterials([]);
+    manager.setURLModifier((url) => {
+      dependencyFailure = url;
+      throw new AppError(
+        "REFERENCE_MISSING",
+        "Unresolved dependency (network resolution disabled): " + url,
+      );
+    });
+    const ref =
+      o.namespace === "project"
+        ? p?.models[o.node.ref]?.name || o.node.ref
+        : o.node.ref;
+    const line = `1 ${colorCode} 0 0 0 1 0 0 0 1 0 0 0 1 ${ref}`;
+    const projectSource = source.replace(/\n0 NOFILE\s*$/, "");
+    const localNames = new Set(
+      Object.values(p?.models ?? {}).map((m) => m.name.toLowerCase()),
+    );
+    const library = this.libraryClosure(
+      context + "\n" + line + "\n" + projectSource,
+      o.namespace === "project" ? localNames : new Set<string>(),
+    );
+    const text = normalizeBfcSource(
+      "0 FILE __render__.ldr\n" +
+        (colorCode === SHARED_MAIN_CODE ? SHARED_MAIN_COLOUR + "\n" : "") +
+        this.colourDefinitions(
+          context + "\n" + line + "\n" + projectSource + "\n" + library,
+        ) +
+        "\n" +
+        context +
+        "\n" +
+        line +
+        "\n" +
+        projectSource +
+        "\n" +
+        library,
+    );
+    loader.setFileMap(
+      Object.fromEntries(
+        [...text.matchAll(/^0 FILE (.+)$/gm)].map((m) => [m[1], m[1]]),
+      ),
+    );
+    const group = await new Promise<THREE.Group>((resolve, reject) =>
+      (
+        loader.parse as unknown as (
+          text: string,
+          resolve: (g: THREE.Group) => void,
+          reject: (e: unknown) => void,
+        ) => void
+      )(text, resolve, reject),
+    );
+    ensure(
+      !dependencyFailure,
+      "REFERENCE_MISSING",
+      "Unresolved dependency: " + dependencyFailure,
+    );
+    ensure(
+      o.namespace !== "official" || group.children.length > 0,
+      "REFERENCE_MISSING",
+      "Part compilation produced no geometry: " + o.node.ref,
+    );
+    repairFaceNormals(group);
+    group.traverse((object) => {
+      if ((object as THREE.Mesh).isMesh) {
+        if (forceDoubleSided) {
+          const mesh = object as THREE.Mesh;
+          for (const material of Array.isArray(mesh.material)
+            ? mesh.material
+            : [mesh.material])
+            material.side = THREE.DoubleSide;
+        }
+        object.castShadow = true;
+        object.receiveShadow = true;
+      }
+    });
+    return group;
+  }
+  /** Compiled once per official part and render context, in the sentinel colour. */
+  private sharedBases = new Map<
+    string,
+    Promise<{ group: THREE.Group; main: MainMaterials }>
+  >();
+  /** Loader materials of one colour in one render context. */
+  private palettes = new Map<string, Promise<MainMaterials>>();
+  private resolvedBases = new Map<string, THREE.Group>();
+  private resolvedPalettes = new Set<MainMaterials>();
+  private async colourVariant(
+    o: Occurrence,
+    context: string,
+    fingerprint: string,
+  ) {
+    const baseKey = JSON.stringify([o.node.ref, fingerprint]);
+    let base = this.sharedBases.get(baseKey);
+    if (!base) {
+      base = this.compilePart(
+        o,
+        undefined,
+        "",
+        context,
+        SHARED_MAIN_CODE,
+        false,
+      ).then((group) => {
+        this.resolvedBases.set(baseKey, group);
+        return { group, main: mainMaterials(group, SHARED_MAIN_CODE) };
+      });
+      this.sharedBases.set(baseKey, base);
+      base.catch(() => this.sharedBases.delete(baseKey));
+    }
+    const paletteKey = JSON.stringify([o.colorCode, fingerprint]);
+    let palette = this.palettes.get(paletteKey);
+    if (!palette) {
+      palette = this.compilePalette(o.colorCode, context).then((m) => {
+        this.resolvedPalettes.add(m);
+        return m;
+      });
+      this.palettes.set(paletteKey, palette);
+      palette.catch(() => this.palettes.delete(paletteKey));
+    }
+    const [{ group: compiled, main }, colour] = await Promise.all([
+      base,
+      palette,
+    ]);
+    const swap = new Map<THREE.Material, THREE.Material>();
+    if (main.face && colour.face) swap.set(main.face, colour.face);
+    if (main.edge && colour.edge) swap.set(main.edge, colour.edge);
+    if (main.conditional && colour.conditional)
+      swap.set(main.conditional, colour.conditional);
+    const group = compiled.clone(true);
+    group.traverse((object) => {
+      const drawable = object as THREE.Mesh;
+      if (!drawable.material) return;
+      drawable.material = Array.isArray(drawable.material)
+        ? drawable.material.map((m) => swap.get(m) ?? m)
+        : (swap.get(drawable.material) ?? drawable.material);
+    });
+    return group;
+  }
+  /** The face, edge and conditional-line materials the loader builds for
+   * `colorCode` (a one-triangle swatch referenced in that colour). */
+  private async compilePalette(colorCode: string, context: string) {
+    const loader = new LDrawLoader(new THREE.LoadingManager());
+    loader.setConditionalLineMaterial(LDrawConditionalLineMaterial);
+    loader.setMaterials([]);
+    const line = `1 ${colorCode} 0 0 0 1 0 0 0 1 0 0 0 1 __swatch__.dat`;
+    const text = [
+      "0 FILE __palette__.ldr",
+      this.colourDefinitions(context + "\n" + line),
+      context,
+      line,
+      "0 FILE __swatch__.dat",
+      "0 BFC CERTIFY CCW",
+      "3 16 0 0 0 1 0 0 0 0 1",
+      "2 24 0 0 0 1 0 0",
+      "5 24 0 0 0 0 0 1 1 0 0 0 1 1",
+    ].join("\n");
+    loader.setFileMap({
+      "__palette__.ldr": "__palette__.ldr",
+      "__swatch__.dat": "__swatch__.dat",
+    });
+    const group = await new Promise<THREE.Group>((resolve, reject) =>
+      (
+        loader.parse as unknown as (
+          text: string,
+          resolve: (g: THREE.Group) => void,
+          reject: (e: unknown) => void,
+        ) => void
+      )(text, resolve, reject),
+    );
+    const found = mainMaterials(group);
+    ensure(
+      !!found.face && !!found.edge && !!found.conditional,
+      "REFERENCE_MISSING",
+      "Colour materials could not be built for colour " + colorCode,
+    );
+    // Only the materials are kept; the swatch geometry is discarded.
+    group.traverse((object) => (object as THREE.Mesh).geometry?.dispose());
+    return found;
+  }
+  /** Dispose compiled prototypes no handle (or the ghost) uses, keeping the
+   * newest few (the profile's retained count) so undo/redo and colour toggles
+   * do not recompile. After a refusal, the refused model's own prototypes are
+   * not retained. Colour variants share geometry and palette materials, so a
+   * resource is disposed only once nothing retained still draws with it. */
+  private evictPrototypes(refused?: ReadonlySet<THREE.Group>) {
+    const inUse = new Set(
+      [...this.handles.values()].map((g) => g.userData.prototype),
+    );
+    if (this.ghost.userData.prototype) inUse.add(this.ghost.userData.prototype);
+    const budget = renderBudget(this.lookResourceProfile);
+    const retain = budget.retainedUnusedPrototypes;
+    let unused = 0;
+    for (const proto of this.resolvedCache.values())
+      if (!inUse.has(proto)) unused++;
+    const evicted: THREE.Object3D[] = [];
+    // Oldest first: Map iteration follows insertion order.
+    for (const [key, proto] of this.resolvedCache) {
+      if (unused <= retain && !refused?.size) break;
+      if (inUse.has(proto)) continue;
+      if (unused <= retain && !refused?.has(proto)) continue;
+      unused--;
+      evicted.push(proto);
+      this.resolvedCache.delete(key);
+      this.cache.delete(key);
+      this.allPrototypes.delete(proto);
+    }
+    // Shared bases are bounded like variants; each variant keeps its own
+    // references, so dropping a base never removes what is drawn.
+    const bases = [...this.resolvedBases];
+    for (const [key, group] of bases.slice(
+      0,
+      Math.max(0, bases.length - budget.variants),
+    )) {
+      this.resolvedBases.delete(key);
+      this.sharedBases.delete(key);
+      evicted.push(group);
+    }
+    if (!evicted.length) return;
+    const live = new Set<unknown>();
+    const collect = (group: THREE.Object3D) =>
+      group.traverse((object) => {
+        const drawable = object as THREE.Mesh;
+        if (drawable.geometry) live.add(drawable.geometry);
+        if (drawable.material)
+          for (const m of Array.isArray(drawable.material)
+            ? drawable.material
+            : [drawable.material])
+            live.add(m);
+      });
+    for (const proto of this.resolvedCache.values()) collect(proto);
+    for (const base of this.resolvedBases.values()) collect(base);
+    for (const colour of this.resolvedPalettes)
+      for (const m of Object.values(colour)) live.add(m);
+    for (const proto of evicted)
+      proto.traverse((obj) => {
+        const mesh = obj as THREE.Mesh;
+        if (mesh.geometry && !live.has(mesh.geometry)) mesh.geometry.dispose();
+        if (mesh.material)
+          for (const mat of Array.isArray(mesh.material)
+            ? mesh.material
+            : [mesh.material])
+            if (!mat.userData.rawPrimitiveShared && !live.has(mat))
+              mat.dispose();
+      });
+  }
+  /** Interactive views of a very large scene on the phone profile draw without
+   * conditional edges and at ≤ 1.5× pixel density; captures are unaffected. */
+  private get reducedQuality() {
+    return (
+      !this.captureActive &&
+      (this.renderUsage?.sceneTriangles ?? 0) >
+        renderBudget(this.lookResourceProfile).reducedQualityTriangles
+    );
+  }
+  /** Measured size of the last rendered model against its profile budget. */
+  renderBudgetStatus() {
+    return {
+      profile: this.lookResourceProfile,
+      reducedQuality: this.reducedQuality,
+      budget: renderBudget(this.lookResourceProfile),
+      usage: this.renderUsage,
+      lastFrame: this.lastFrameStats,
+      batches: this.batches.stats(),
+    };
+  }
   update(p: Project) {
     const snapshot = structuredClone(p);
+    this.requested = snapshot;
     const epoch = ++this.updateEpoch;
     this.pending = this.pending
       .catch(() => {})
@@ -719,16 +1030,11 @@ export class SceneAdapter {
         const all = occurrences(snapshot),
           keep = new Set(all.map((o) => o.id));
         const physical = all.filter((o) => o.node.kind !== "geometry");
-        ensure(
-          physical.length <= 5000,
-          "LIMIT_EXCEEDED",
-          "Reference renderer budget is 5,000 part occurrences; document and exports remain available.",
-        );
-        ensure(
-          all.length - physical.length <= 100000,
-          "LIMIT_EXCEEDED",
-          "Raw primitive rendering exceeds 100,000 source occurrences",
-        );
+        const profile = this.lookResourceProfile;
+        checkRenderBudget(profile, {
+          partOccurrences: physical.length,
+          rawOccurrences: all.length - physical.length,
+        });
         const variants = new Map<string, Occurrence>();
         for (const o of physical) {
           const context = occurrenceRenderContext(snapshot, o);
@@ -737,11 +1043,7 @@ export class SceneAdapter {
             o,
           );
         }
-        ensure(
-          variants.size <= 128,
-          "LIMIT_EXCEEDED",
-          "Reference renderer budget is 128 part/material variants.",
-        );
+        checkRenderBudget(profile, { variants: variants.size });
         let sourceBytes = 0;
         const encoder = new TextEncoder();
         const contexts = new Set<string>();
@@ -775,6 +1077,7 @@ export class SceneAdapter {
         const loaded: Array<{ o: Occurrence; prototype: THREE.Group }> = [];
         // Bound concurrent loader work and let input/source replacement interrupt
         // large raw-geometry imports without discarding any source occurrences.
+        let slice = performance.now();
         for (let offset = 0; offset < all.length; offset += 128) {
           if (this.disposed || epoch !== this.updateEpoch) return;
           loaded.push(
@@ -785,10 +1088,55 @@ export class SceneAdapter {
               })),
             )),
           );
-          if (offset + 128 < all.length)
+          // Yield by elapsed time, not per chunk: at 20,000 parts a yield per
+          // 128 cached lookups cost ~160 clamped timer waits.
+          if (offset + 128 < all.length && performance.now() - slice > 12) {
             await new Promise((resolve) => setTimeout(resolve, 0));
+            slice = performance.now();
+          }
         }
         if (this.disposed || epoch !== this.updateEpoch) return;
+        // Geometry budgets need compiled prototypes; refuse before touching the
+        // scene so an over-budget model is never drawn partially.
+        let sceneTriangles = 0,
+          prototypeTriangles = 0;
+        const counted = new Set<THREE.Group>();
+        const geometries = new Set<THREE.BufferGeometry>();
+        for (const { prototype } of loaded) {
+          sceneTriangles += prototypeTriangleCount(prototype);
+          if (counted.has(prototype)) continue;
+          counted.add(prototype);
+          // Colour variants share geometry: count each geometry once.
+          prototype.traverse((object) => {
+            const mesh = object as THREE.Mesh;
+            if (!mesh.isMesh || geometries.has(mesh.geometry)) return;
+            geometries.add(mesh.geometry);
+            prototypeTriangles += Math.floor(
+              (mesh.geometry.index?.count ??
+                mesh.geometry.getAttribute("position")?.count ??
+                0) / 3,
+            );
+          });
+        }
+        const usage = {
+          partOccurrences: physical.length,
+          rawOccurrences: all.length - physical.length,
+          variants: variants.size,
+          prototypeTriangles,
+          sceneTriangles,
+        };
+        try {
+          checkRenderBudget(profile, usage);
+        } catch (e) {
+          this.evictPrototypes(counted);
+          throw e;
+        }
+        this.renderUsage = { profile, ...usage };
+        if (this.reducedQuality && !this.reducedNotice)
+          this.report(
+            "Large model on a phone: conditional edge lines are hidden and pixel density is reduced while viewing. Every part is drawn; captures keep full quality.",
+          );
+        this.reducedNotice = this.reducedQuality;
         this.instructionDimming.restore();
         this.layerGhost.restore();
         for (const [id, g] of this.handles)
@@ -840,27 +1188,7 @@ export class SceneAdapter {
               : o.visible) && !this.floorHidden.has(o.id);
           group.updateMatrixWorld(true);
         }
-        const inUse = new Set(
-          [...this.handles.values()].map((g) => g.userData.prototype),
-        );
-        if (this.ghost.userData.prototype)
-          inUse.add(this.ghost.userData.prototype);
-        for (const [key, proto] of this.resolvedCache) {
-          if (this.resolvedCache.size <= 128) break;
-          if (inUse.has(proto)) continue;
-          proto.traverse((obj) => {
-            const mesh = obj as THREE.Mesh;
-            mesh.geometry?.dispose();
-            if (mesh.material)
-              for (const mat of Array.isArray(mesh.material)
-                ? mesh.material
-                : [mesh.material])
-                if (!mat.userData.rawPrimitiveShared) mat.dispose();
-          });
-          this.resolvedCache.delete(key);
-          this.cache.delete(key);
-          this.allPrototypes.delete(proto);
-        }
+        this.evictPrototypes();
         this.project = snapshot;
         this.tuneMaterials();
         this.applyLayerGhost();
@@ -970,6 +1298,9 @@ export class SceneAdapter {
   setLookResourceProfile(profile: ResourceProfileName) {
     if (profile === this.lookResourceProfile) return;
     this.lookResourceProfile = profile;
+    // Renderer budgets follow the profile: re-assess the current model, so a
+    // stricter profile refuses it (nothing drawn) and a looser one draws it.
+    if (this.requested) this.update(this.requested).catch(() => {});
     if (this.captureActive) return;
     this.applyLook(resolveLook(this.look.name, {}, profile));
   }
@@ -1127,7 +1458,10 @@ export class SceneAdapter {
             this.look.resourceProfile === "mobile" ? 1024 : 2048,
           )
         : profile.shadowMapSize;
-    const edges = this.look.edges === "hidden" ? "none" : profile.edges;
+    let edges = this.look.edges === "hidden" ? "none" : profile.edges;
+    // Very large scenes on phones: conditional lines cost four projections per
+    // vertex and are about half of all edge segments. Captures keep them.
+    if (edges === "all" && this.reducedQuality) edges = "ordinary";
     this.renderer.shadowMap.enabled = shadows === "soft";
     // Phones filter forced look shadows with plain PCF (fewer taps per pixel).
     this.renderer.shadowMap.type =
@@ -1156,7 +1490,9 @@ export class SceneAdapter {
     const ratio = Math.min(
       devicePixelRatio,
       this.qualityProfile.pixelRatioCap,
-      this.playViewActive ? PLAY_PIXEL_RATIO_CAP : Infinity,
+      this.playViewActive || this.reducedQuality
+        ? PLAY_PIXEL_RATIO_CAP
+        : Infinity,
     );
     if (this.renderer.getPixelRatio() !== ratio)
       this.renderer.setPixelRatio(ratio);
@@ -1236,7 +1572,36 @@ export class SceneAdapter {
           : this.look.ambientOcclusion,
     };
   }
+  /** Last interactive frame: main-thread submission time and draw statistics. */
+  private frameStats = {
+    frames: 0,
+    cpuMs: 0,
+    calls: 0,
+    triangles: 0,
+    lines: 0,
+  };
+  get lastFrameStats() {
+    return { ...this.frameStats };
+  }
   private drawScene() {
+    const info = this.renderer.info;
+    info.autoReset = false;
+    info.reset();
+    const start = performance.now();
+    try {
+      this.drawSceneFrame();
+    } finally {
+      this.frameStats = {
+        frames: this.frameStats.frames + 1,
+        cpuMs: performance.now() - start,
+        calls: info.render.calls,
+        triangles: info.render.triangles,
+        lines: info.render.lines,
+      };
+      info.autoReset = true;
+    }
+  }
+  private drawSceneFrame() {
     const look = this.interactiveLook();
     if (!lookUsesPipeline(look)) {
       this.lookStats = { passes: 1, samples: 0 };
@@ -1416,6 +1781,41 @@ export class SceneAdapter {
     };
   }
   /** A bounded, opening-preserving collision snapshot in public LDraw coordinates. */
+  private occurrenceList?: { project: Project; list: Occurrence[] };
+  /** Expanded occurrences of the rendered project (computed once per update). */
+  private projectOccurrences() {
+    if (!this.project) return [];
+    if (this.occurrenceList?.project !== this.project)
+      this.occurrenceList = {
+        project: this.project,
+        list: occurrences(this.project),
+      };
+    return this.occurrenceList.list;
+  }
+  private collisionProxies = new Map<
+    string,
+    { detail: Float32Array; box: Float32Array; openings: boolean } | null
+  >();
+  /** Simplified part-space collision shapes of an official part (cached per
+   * part; null when it cannot be expanded, so the rendered mesh is used):
+   * stud-free polygons, and its bounding box for the coarsest level. */
+  private collisionProxy(ref: string) {
+    let proxy = this.collisionProxies.get(ref);
+    if (proxy === undefined) {
+      const read = (name: string) =>
+        this.libraryBlocks.get(name) ?? fullSource(name);
+      const detail = collisionProxy(read, ref);
+      proxy = detail
+        ? {
+            detail,
+            box: boxProxy(detail),
+            openings: keepsOpenings(partTitle(read(ref) ?? "")),
+          }
+        : null;
+      this.collisionProxies.set(ref, proxy);
+    }
+    return proxy ?? undefined;
+  }
   async playGeometry(selection?: { include?: string[]; exclude?: string[] }) {
     ensure(
       !this.transformDragging,
@@ -1423,7 +1823,9 @@ export class SceneAdapter {
       "Finish or cancel the transform gesture before entering Play",
     );
     await this.ready();
-    this.root.updateMatrixWorld(true);
+    // Only the included handles need fresh world matrices (a door rig asks for
+    // one part; walking the whole scene per request made entry quadratic).
+    this.root.updateWorldMatrix(true, false);
     // Typed, amortised-growth buffers: large worlds have millions of corners, and
     // per-corner arrays/vectors made entering Play allocation-bound.
     let vertices = new Float32Array(1 << 16),
@@ -1453,8 +1855,113 @@ export class SceneAdapter {
         "INVALID_INPUT",
         "Unknown moving collider occurrence",
       );
-    for (const [id, group] of this.handles) {
-      if ((include && !include.has(id)) || exclude.has(id)) continue;
+    const append = (
+      e: ArrayLike<number>,
+      vertexCount: number,
+      read: (i: number, axis: number) => number,
+      count: number,
+      index: THREE.BufferAttribute | null,
+    ) => {
+      if (indexCount + count > 3_000_000) {
+        overBudget = true;
+        return;
+      }
+      const offset = vertexFloats / 3;
+      vertices = grow(vertices, vertexFloats + vertexCount * 3);
+      for (let i = 0; i < vertexCount; i++) {
+        const x = read(i, 0),
+          y = read(i, 1),
+          z = read(i, 2);
+        const w = 1 / (e[3] * x + e[7] * y + e[11] * z + e[15]);
+        // Three world space to public LDraw coordinates (conversion()).
+        const px = (e[0] * x + e[4] * y + e[8] * z + e[12]) * w,
+          py = -(e[1] * x + e[5] * y + e[9] * z + e[13]) * w,
+          pz = -(e[2] * x + e[6] * y + e[10] * z + e[14]) * w;
+        vertices[vertexFloats++] = px;
+        vertices[vertexFloats++] = py;
+        vertices[vertexFloats++] = pz;
+        if (px < min[0]) min[0] = px;
+        if (px > max[0]) max[0] = px;
+        if (py < min[1]) min[1] = py;
+        if (py > max[1]) max[1] = py;
+        if (pz < min[2]) min[2] = pz;
+        if (pz > max[2]) max[2] = pz;
+      }
+      const m = e;
+      const mirrored =
+        m[0] * (m[5] * m[10] - m[6] * m[9]) -
+          m[4] * (m[1] * m[10] - m[2] * m[9]) +
+          m[8] * (m[1] * m[6] - m[2] * m[5]) <
+        0;
+      indices = grow(indices, indexCount + count);
+      for (let i = 0; i + 2 < count; i += 3) {
+        const a = index ? index.getX(i) : i;
+        const b = index ? index.getX(i + 1) : i + 1;
+        const c = index ? index.getX(i + 2) : i + 2;
+        indices[indexCount++] = offset + a;
+        indices[indexCount++] = offset + (mirrored ? c : b);
+        indices[indexCount++] = offset + (mirrored ? b : c);
+      }
+    };
+    const selected = [...this.handles].filter(
+      ([id]) => !((include && !include.has(id)) || exclude.has(id)),
+    );
+    for (const [, group] of selected) group.updateMatrixWorld(true);
+    // A world whose rendered surface exceeds the collision budget collides with
+    // simplified official parts instead of refusing to walk (collision-proxy.ts):
+    // first without studs and underside tubes; if that is still over budget,
+    // parts without openings (not doors or arches) become their bounding boxes.
+    const BUDGET = 1_000_000;
+    let surface = 0;
+    for (const [, group] of selected)
+      surface += prototypeTriangleCount(group.userData.prototype ?? group);
+    const byId =
+      surface > BUDGET && this.project
+        ? new Map(this.projectOccurrences().map((o) => [o.id, o]))
+        : undefined;
+    const proxyOf = (id: string) => {
+      const occurrence = byId?.get(id);
+      return occurrence?.namespace === "official" &&
+        occurrence.node.kind !== "geometry"
+        ? this.collisionProxy(occurrence.node.ref)
+        : undefined;
+    };
+    let boxes = false;
+    if (byId) {
+      let detailed = 0;
+      for (const [id, group] of selected) {
+        const proxy = proxyOf(id);
+        detailed += proxy
+          ? proxy.detail.length / 9
+          : prototypeTriangleCount(group.userData.prototype ?? group);
+      }
+      boxes = detailed > BUDGET;
+    }
+    let simplified = 0,
+      boxed = 0;
+    for (const [id, group] of selected) {
+      if (overBudget) break;
+      const found = proxyOf(id);
+      const proxy =
+        found && (boxes && !found.openings ? found.box : found.detail);
+      if (found && proxy) {
+        let frame: THREE.Object3D | undefined;
+        group.traverse((object) => {
+          if (!frame && (object as THREE.Mesh).isMesh) frame = object;
+        });
+        if (frame) {
+          simplified++;
+          if (proxy === found.box) boxed++;
+          append(
+            frame.matrixWorld.elements,
+            proxy.length / 3,
+            (i, axis) => proxy[i * 3 + axis],
+            proxy.length / 3,
+            null,
+          );
+          continue;
+        }
+      }
       group.traverse((object) => {
         const mesh = object as THREE.Mesh;
         if (!mesh.isMesh || overBudget) return;
@@ -1462,43 +1969,18 @@ export class SceneAdapter {
           position = geometry.getAttribute("position");
         if (!position) return;
         const index = geometry.index;
-        const count = index ? index.count : position.count;
-        if (indexCount + count > 3_000_000) {
-          overBudget = true;
-          return;
-        }
-        const offset = vertexFloats / 3;
-        vertices = grow(vertices, vertexFloats + position.count * 3);
-        const e = mesh.matrixWorld.elements;
-        for (let i = 0; i < position.count; i++) {
-          const x = position.getX(i),
-            y = position.getY(i),
-            z = position.getZ(i);
-          const w = 1 / (e[3] * x + e[7] * y + e[11] * z + e[15]);
-          // Three world space to public LDraw coordinates (conversion()).
-          const px = (e[0] * x + e[4] * y + e[8] * z + e[12]) * w,
-            py = -(e[1] * x + e[5] * y + e[9] * z + e[13]) * w,
-            pz = -(e[2] * x + e[6] * y + e[10] * z + e[14]) * w;
-          vertices[vertexFloats++] = px;
-          vertices[vertexFloats++] = py;
-          vertices[vertexFloats++] = pz;
-          if (px < min[0]) min[0] = px;
-          if (px > max[0]) max[0] = px;
-          if (py < min[1]) min[1] = py;
-          if (py > max[1]) max[1] = py;
-          if (pz < min[2]) min[2] = pz;
-          if (pz > max[2]) max[2] = pz;
-        }
-        const mirrored = mesh.matrixWorld.determinant() < 0;
-        indices = grow(indices, indexCount + count);
-        for (let i = 0; i + 2 < count; i += 3) {
-          const a = index ? index.getX(i) : i;
-          const b = index ? index.getX(i + 1) : i + 1;
-          const c = index ? index.getX(i + 2) : i + 2;
-          indices[indexCount++] = offset + a;
-          indices[indexCount++] = offset + (mirrored ? c : b);
-          indices[indexCount++] = offset + (mirrored ? b : c);
-        }
+        append(
+          mesh.matrixWorld.elements,
+          position.count,
+          (i, axis) =>
+            axis === 0
+              ? position.getX(i)
+              : axis === 1
+                ? position.getY(i)
+                : position.getZ(i),
+          index ? index.count : position.count,
+          index,
+        );
       });
     }
     if (overBudget) {
@@ -1509,7 +1991,7 @@ export class SceneAdapter {
     }
     if (
       this.project &&
-      occurrences(this.project).some(
+      this.projectOccurrences().some(
         (o) =>
           (!include || include.has(o.id)) &&
           !exclude.has(o.id) &&
@@ -1522,11 +2004,17 @@ export class SceneAdapter {
       vertexFloats = indexCount = 0;
     }
     const empty = min[0] > max[0];
+    const unsupported = warnings.length > 0;
+    // Informational: the world stays walkable with simplified parts.
+    if (simplified && !unsupported)
+      warnings.push(
+        `This large world collides with simplified shapes for ${simplified.toLocaleString("en-US")} official parts (studs and underside tubes omitted${boxed ? `; ${boxed.toLocaleString("en-US")} parts without doorways or arches as their bounding boxes` : ""}) to stay within the collision budget.`,
+      );
     return {
       revision: this.revision,
       vertices: vertices.slice(0, vertexFloats),
       indices: indices.slice(0, indexCount),
-      unsupported: warnings.length > 0,
+      unsupported,
       bounds: {
         min: (empty ? [0, 0, 0] : min) as Vec3,
         max: (empty ? [0, 0, 0] : max) as Vec3,

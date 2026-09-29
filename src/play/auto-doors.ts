@@ -154,6 +154,45 @@ export function deriveDoorRigs(
   const holders = present.filter(
     (o) => !doorIds.has(o.id) && !options.reserved.has(o.id),
   );
+  // Uniform grid over holder boxes: large worlds have hundreds of doors and
+  // tens of thousands of parts, so each door only tests holders near it.
+  const CELL = 64;
+  const grid = new Map<string, Occurrence[]>();
+  const oversize: Occurrence[] = [];
+  const cellRange = (min: number[], max: number[]) =>
+    [0, 1, 2].map((k) => [
+      Math.floor(min[k] / CELL),
+      Math.floor(max[k] / CELL),
+    ]);
+  for (const holder of holders) {
+    const b = box(holder);
+    if (!b) continue;
+    const r = cellRange(b.min, b.max);
+    if (r.reduce((n, [lo, hi]) => n * (hi - lo + 1), 1) > 512) {
+      oversize.push(holder);
+      continue;
+    }
+    for (let x = r[0][0]; x <= r[0][1]; x++)
+      for (let y = r[1][0]; y <= r[1][1]; y++)
+        for (let z = r[2][0]; z <= r[2][1]; z++) {
+          const key = `${x},${y},${z}`;
+          const cell = grid.get(key);
+          if (cell) cell.push(holder);
+          else grid.set(key, [holder]);
+        }
+  }
+  const nearby = (p: Vec3, radius: number) => {
+    const r = cellRange(
+      p.map((v) => v - radius),
+      p.map((v) => v + radius),
+    );
+    const found = new Set<Occurrence>(oversize);
+    for (let x = r[0][0]; x <= r[0][1]; x++)
+      for (let y = r[1][0]; y <= r[1][1]; y++)
+        for (let z = r[2][0]; z <= r[2][1]; z++)
+          for (const o of grid.get(`${x},${y},${z}`) ?? []) found.add(o);
+    return found;
+  };
   const byAnchor = new Map<
     string,
     Array<{
@@ -208,8 +247,16 @@ export function deriveDoorRigs(
             );
           }),
       );
+    // A seated holder's box contains its sockets, each within 1.5 LDU of a
+    // pin, so no holder farther than this from the pivot can win.
+    const reach = Math.max(
+      DOOR_ANCHOR_REACH,
+      ...(pins ?? []).map(
+        (p) => Math.hypot(...p.map((v, k) => v - pivot[k])) + 1.5,
+      ),
+    );
     let best: { id: string; d: number } | undefined;
-    for (const holder of holders) {
+    for (const holder of nearby(pivot, reach)) {
       const b = box(holder);
       if (!b || !physical(holder.transform)) continue;
       const d = seated(holder) ? -1 : distanceToBox(pivot, b);

@@ -227,3 +227,9 @@ await api.play.exit();
 - `mechanisms.list()` returns authored rigs with their joints, motors and optional `dynamics` settings.
 
 Rig `dynamics` settings (optional, schema `motionRig`): `groups` keyed by group ID with `massKg` (0.001–100,000) and `anchored`; `friction` (0–4); `suspension` for vehicles, with `restLength` and `travel` in LDU (0.5–200), `stiffness` (1–500) and `damping` (0.05–50); and `engineForce` in simulation N. A dynamic vehicle chassis or wheel cannot be anchored.
+
+## Renderer budgets
+
+- `render.budget()` returns the active resource profile, its renderer budget (part occurrences, raw occurrences, part/colour variants, unique geometry triangles, scene triangles, retained prototypes, reduced-quality threshold), the last rendered model's measured `usage`, whether interactive quality is reduced (`reducedQuality`), the last interactive frame (`lastFrame`: main-thread submission time, draw calls, triangles, lines) and what the batches draw (`batches`: instanced meshes/lines, merged batches, single objects and `occurrencesDrawn`). A model over any budget is refused with `LIMIT_EXCEEDED` (details name the resource, used amount, budget and profile); nothing is drawn, and the document, source exports and inventory stay available. See [resource limits](RESOURCE-LIMITS.md#renderer-budgets).
+- `resources.setProfile(...)` re-assesses the current model against the new profile's renderer budget before its next `ready()`.
+- `play.collisionStats()` returns the static collider's triangle and vertex counts after compaction (diagnostics). Worlds whose rendered surface exceeds one million triangles collide with simplified official parts (studs and underside tubes omitted), reported in the Play warnings.

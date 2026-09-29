@@ -15,6 +15,7 @@
     "format": "prettier --write src scripts tests schemas docs/*.md README.md *.ts *.json index.html",
     "format:check": "prettier --check src scripts tests schemas docs/*.md README.md *.ts *.json index.html",
     "test:performance": "tsx scripts/benchmark.ts",
+    "test:stress": "tsx scripts/stress-benchmark.ts",
     "notices": "tsx scripts/dependency-notices.ts",
     "fixtures": "tsx scripts/generate-fixtures.ts",
     "library:bounds": "tsx scripts/build-query-bounds.ts",

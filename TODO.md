@@ -18,7 +18,9 @@ Suggested order for the next implementation pass:
 - [x] Guard aggregate expanded path storage/work before and during occurrence collection; preserve native backup and local recovery without materializing the scene.
 - [x] Open over-budget projects in a source-only recovery view with native/full-source backups; defer imported STEP derivation without dropping source records.
 - [x] Effective resource profiles: automatic phone/desktop selection, acknowledged desktop override on phones, Editor/import/archive/capture/CLI enforcement. See [resource limits](docs/RESOURCE-LIMITS.md).
-- [ ] Remaining resource work: geometry/GPU memory budgets, output pagination, cancellable instruction derivation and a user-facing derive-again control.
+- [x] Profile-driven renderer budgets (part occurrences, variants, unique and scene triangles), shared part geometry across colours, instanced edge/conditional lines and simplified large-world Play collision; generated 20,000-part stress model and benchmark (`npm run test:stress`). See [resource limits](docs/RESOURCE-LIMITS.md#renderer-budgets).
+- [ ] Renderer follow-ups for very large models: instance transparent parts (glass is still one draw per occurrence), lighter per-occurrence handles (~10 KB JS heap each), culling/LOD for 10M+ triangle scenes, physical-phone measurements.
+- [ ] Remaining resource work: output pagination, cancellable instruction derivation and a user-facing derive-again control.
 - [ ] Bound remaining compiler work across valid project graphs; occurrence guards alone do not prove those limits.
 
 - [ ] Close M0 conformance gaps: whole-library BFC coverage beyond the new ancestor/internal dependency fixtures, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.
@@ -29,7 +31,7 @@ Suggested order for the next implementation pass:
 - [ ] Complete M3 reliability: fully portable library packs, native migrations, broader storage recovery coverage and graphics recovery across more drivers. Bounded autosave and conflict-fork UI are implemented.
 - [x] Expand the placeable catalogue (214 official parts, 12 categories) with rendered thumbnails, a scalable picker and bounds-derived placement. See STATUS "Catalogue expansion".
 - [x] Complete official library pack (`ldraw-full-2026-09-28`, 36,805 files in 3,122 hash-pinned chunks) loaded on demand beyond the curated set: verified, cached offline, recorded in project locks, resolved by the CLI from disk, with build-time bounds and an "All LDraw parts" search scope. See STATUS "Complete official library".
-- [ ] Complete-library follow-ups: rendered thumbnails for non-catalogue parts (currently a neutral outline); marketplace mappings and verified connectors beyond the curated 214; `!TEXMAP` textures (not packed); raise the renderer's 128 part/colour variant budget so large architectural models with hundreds of distinct parts can render; a pack-update path when LDraw publishes a new `complete.zip` (new release ID, old pack kept as a retired lock).
+- [ ] Complete-library follow-ups: rendered thumbnails for non-catalogue parts (currently a neutral outline); marketplace mappings and verified connectors beyond the curated 214; `!TEXMAP` textures (not packed); a pack-update path when LDraw publishes a new `complete.zip` (new release ID, old pack kept as a retired lock).
 - [ ] Catalogue follow-ups: decoration/print variants and per-colour thumbnails for glass.
 - [ ] Extend inventory coverage and resolution UI beyond the curated catalogue mappings (five catalogue parts are unmapped; see `mappings.json` `unmapped`).
 - [ ] Measure the specified performance gates, including repeated 5,000-part trials and reference hardware (the current single-run software benchmark is recorded).

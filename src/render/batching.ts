@@ -50,6 +50,93 @@ export function transformTriangleGeometry(
   return geometry;
 }
 
+/**
+ * LDraw conditional lines test their control points in clip space. Instanced
+ * drawing must move the endpoints, direction and control points with the same
+ * instance matrix, so the shader applies `instanceMatrix` to each point before
+ * `modelViewMatrix` when (and only when) three compiles it for an instanced
+ * object. Non-instanced draws of the same material are unchanged. Returns false
+ * when the shader is not the expected loader shader (callers then merge).
+ */
+export function supportsInstancedLines(material: THREE.Material): boolean {
+  const shader = material as THREE.ShaderMaterial;
+  if (!shader.isShaderMaterial)
+    return !!(material as THREE.LineBasicMaterial).isLineBasicMaterial;
+  if (shader.userData.instancedLines !== undefined)
+    return shader.userData.instancedLines;
+  const source = shader.vertexShader;
+  const pattern = /modelViewMatrix \* vec4\( ([^;]*?), 1\.0 \)/g;
+  const matches = source.match(pattern)?.length ?? 0;
+  const ok =
+    source.includes("attribute vec3 control0;") &&
+    source.includes("void main()") &&
+    matches === 5 &&
+    !/\bmodelViewMatrix\b(?! \* vec4\()/.test(source.split("void main()")[1]);
+  shader.userData.instancedLines = ok;
+  if (!ok) return false;
+  shader.vertexShader = source
+    .replace(
+      "void main()",
+      [
+        "#ifdef USE_INSTANCING",
+        "#define LDRAW_INSTANCE( v ) ( instanceMatrix * ( v ) )",
+        "#else",
+        "#define LDRAW_INSTANCE( v ) ( v )",
+        "#endif",
+        "void main()",
+      ].join("\n"),
+    )
+    .replace(pattern, "modelViewMatrix * LDRAW_INSTANCE( vec4( $1, 1.0 ) )");
+  shader.needsUpdate = true;
+  return true;
+}
+
+/**
+ * A LineSegments drawn with three's instanced path: the renderer binds
+ * `instanceMatrix` and issues one instanced draw for objects flagged
+ * `isInstancedMesh`, whatever their primitive mode. Line materials apply the
+ * instance matrix through three's `project_vertex` chunk (basic line material)
+ * or `supportsInstancedLines` (conditional lines).
+ */
+export type InstancedLineSegments = THREE.LineSegments & {
+  isInstancedMesh: true;
+  instanceMatrix: THREE.InstancedBufferAttribute;
+  instanceColor: null;
+  morphTexture: null;
+  count: number;
+  boundingSphere: THREE.Sphere;
+};
+export function instancedLineSegments(
+  geometry: THREE.BufferGeometry,
+  material: THREE.Material | THREE.Material[],
+  matrices: THREE.Matrix4[],
+): InstancedLineSegments {
+  const lines = new THREE.LineSegments(
+    geometry,
+    material,
+  ) as InstancedLineSegments;
+  const array = new Float32Array(matrices.length * 16);
+  matrices.forEach((m, i) => m.toArray(array, i * 16));
+  if (!geometry.boundingSphere) geometry.computeBoundingSphere();
+  const local = geometry.boundingSphere!;
+  const bounds = new THREE.Box3();
+  const sphere = new THREE.Sphere();
+  for (const m of matrices) {
+    sphere.copy(local).applyMatrix4(m);
+    bounds.expandByPoint(sphere.center.clone().addScalar(sphere.radius));
+    bounds.expandByPoint(sphere.center.clone().subScalar(sphere.radius));
+  }
+  Object.assign(lines, {
+    isInstancedMesh: true,
+    instanceMatrix: new THREE.InstancedBufferAttribute(array, 16),
+    instanceColor: null,
+    morphTexture: null,
+    count: matrices.length,
+    boundingSphere: bounds.getBoundingSphere(new THREE.Sphere()),
+  });
+  return lines;
+}
+
 export const RAW_BATCH_LIMITS = Object.freeze({
   chunkVertices: 65536,
   vertices: 2_000_000,
@@ -118,6 +205,7 @@ export class RenderBatches {
   private traversal: THREE.Object3D[] = [];
   private generated: THREE.BufferGeometry[] = [];
   private instances: THREE.InstancedMesh[] = [];
+  private instancedLines: InstancedLineSegments[] = [];
   constructor() {
     this.root.name = "render-only occurrence batches";
   }
@@ -167,8 +255,12 @@ export class RenderBatches {
     this.root.clear();
     for (const geometry of this.generated) geometry.dispose();
     for (const mesh of this.instances) mesh.dispose();
+    // Releases each instance buffer; the geometry is the prototype's own.
+    for (const lines of this.instancedLines)
+      lines.dispatchEvent({ type: "dispose" } as never);
     this.generated = [];
     this.instances = [];
+    this.instancedLines = [];
   }
   private synchronize() {
     if (!this.visibilityChanged()) return;
@@ -327,6 +419,23 @@ export class RenderBatches {
         mesh.receiveShadow = first.receiveShadow;
         this.instances.push(mesh);
         this.root.add(mesh);
+      } else if (
+        (Array.isArray(first.material) ? first.material : [first.material])
+          .map(supportsInstancedLines)
+          .every(Boolean)
+      ) {
+        // One instanced draw per line bucket: memory stays one copy of the
+        // part's lines plus a matrix per occurrence, instead of a baked copy
+        // of every occurrence's (conditional) lines.
+        const lines = instancedLineSegments(
+          first.geometry,
+          first.material,
+          entries.map((entry) => entry.matrix),
+        );
+        lines.renderOrder = first.renderOrder;
+        lines.userData.occurrenceIds = entries.map((e) => e.occurrenceId);
+        this.instancedLines.push(lines);
+        this.root.add(lines);
       } else {
         const geometries = entries.map((entry) =>
           transformLineGeometry(entry.object.geometry, entry.matrix),
@@ -477,6 +586,34 @@ export class RenderBatches {
       parent.children = children;
       traversal.length = 0;
     }
+  }
+  /** What the last built batches draw (diagnostics and budget tests). */
+  stats() {
+    const drawn = new Set<string>();
+    let instancedMeshes = 0,
+      instancedLines = 0,
+      merged = 0,
+      single = 0;
+    for (const child of this.root.children) {
+      const data = child.userData;
+      if (data.occurrenceIds)
+        for (const id of data.occurrenceIds as string[]) drawn.add(id);
+      else if (data.occurrenceId) drawn.add(data.occurrenceId);
+      if ((child as THREE.InstancedMesh).isInstancedMesh) {
+        if ((child as THREE.LineSegments).isLineSegments) instancedLines++;
+        else instancedMeshes++;
+      } else if (data.occurrenceIds) merged++;
+      else single++;
+    }
+    return {
+      objects: this.root.children.length,
+      instancedMeshes,
+      instancedLines,
+      merged,
+      single,
+      occurrencesDrawn: drawn.size,
+      dynamic: this.dynamic.size,
+    };
   }
   dispose() {
     this.clear();

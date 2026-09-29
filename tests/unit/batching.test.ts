@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import * as THREE from "three";
+import { LDrawConditionalLineMaterial } from "three/examples/jsm/materials/LDrawConditionalLineMaterial.js";
 import {
   canInstanceMatrix,
   RenderBatches,
   transformLineGeometry,
+  supportsInstancedLines,
+  type InstancedLineSegments,
 } from "../../src/render/batching";
 
 function fixture() {
@@ -188,7 +191,7 @@ describe("render-only batching", () => {
     transformed.dispose();
     geometry.dispose();
   });
-  it("merges repeated line material groups without losing vertices", () => {
+  function lineFixture(material: THREE.Material | THREE.Material[]) {
     const scene = new THREE.Scene(),
       parent = new THREE.Group();
     scene.add(parent);
@@ -198,10 +201,6 @@ describe("render-only batching", () => {
     );
     geometry.addGroup(0, 2, 0);
     geometry.addGroup(2, 2, 1);
-    const material = [
-      new THREE.LineBasicMaterial(),
-      new THREE.LineBasicMaterial(),
-    ];
     const handles = new Map<string, THREE.Group>();
     for (let i = 0; i < 2; i++) {
       const group = new THREE.Group();
@@ -214,6 +213,43 @@ describe("render-only batching", () => {
     parent.add(batches.root);
     batches.rebuild(handles);
     batches.render({ render: () => {} }, scene, new THREE.Camera());
+    return { batches, geometry };
+  }
+  it("instances repeated lines, sharing the part's geometry and material groups", () => {
+    const { batches, geometry } = lineFixture([
+      new THREE.LineBasicMaterial(),
+      new THREE.LineBasicMaterial(),
+    ]);
+    expect(batches.root.children).toHaveLength(1);
+    const lines = batches.root.children[0] as InstancedLineSegments;
+    expect(lines.isLineSegments).toBe(true);
+    expect(lines.isInstancedMesh).toBe(true);
+    // No baked copy: one geometry, one matrix per occurrence.
+    expect(lines.geometry).toBe(geometry);
+    expect(lines.count).toBe(2);
+    expect(lines.userData.occurrenceIds).toEqual(["0", "1"]);
+    const second = new THREE.Matrix4().fromArray(
+      lines.instanceMatrix.array as Float32Array,
+      16,
+    );
+    expect(new THREE.Vector3().setFromMatrixPosition(second).toArray()).toEqual(
+      [10, 0, 0],
+    );
+    // Culling uses the union of all instances.
+    expect(
+      lines.boundingSphere.containsPoint(new THREE.Vector3(11, 1, 0)),
+    ).toBe(true);
+    expect(lines.boundingSphere.containsPoint(new THREE.Vector3(0, 0, 0))).toBe(
+      true,
+    );
+    batches.dispose();
+  });
+  it("still merges lines whose shader cannot take an instance matrix", () => {
+    const custom = () =>
+      new THREE.ShaderMaterial({
+        vertexShader: "void main() { gl_Position = vec4(position, 1.0); }",
+      });
+    const { batches } = lineFixture([custom(), custom()]);
     const merged = (batches.root.children[0] as THREE.LineSegments).geometry;
     expect(merged.getAttribute("position").count).toBe(8);
     expect(
@@ -225,5 +261,22 @@ describe("render-only batching", () => {
       [6, 2, 1],
     ]);
     batches.dispose();
+  });
+  it("moves conditional-line control points with the instance matrix only when instanced", () => {
+    const material = new LDrawConditionalLineMaterial();
+    const before = material.vertexShader;
+    expect(supportsInstancedLines(material)).toBe(true);
+    const after = material.vertexShader;
+    // Endpoints, direction end and both control points.
+    expect(after.match(/LDRAW_INSTANCE\( vec4\(/g)).toHaveLength(5);
+    expect(after).toContain("instanceMatrix * ( v )");
+    expect(after).toContain("#define LDRAW_INSTANCE( v ) ( v )");
+    expect(after).toContain(
+      "modelViewMatrix * LDRAW_INSTANCE( vec4( position + direction, 1.0 ) )",
+    );
+    // Idempotent: a second batch build does not patch again.
+    expect(supportsInstancedLines(material)).toBe(true);
+    expect(material.vertexShader).toBe(after);
+    expect(before).not.toContain("LDRAW_INSTANCE");
   });
 });
