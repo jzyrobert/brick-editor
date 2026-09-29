@@ -77,6 +77,8 @@ export class BrowserPlay {
   }
   private realtime = false;
   private lastVisual = "";
+  /** Mechanism pose last applied (rounded), to skip unchanged re-poses. */
+  private lastScene = "";
   private held: PlayInput = {};
   private last = 0;
   private notifyAt = 0;
@@ -325,6 +327,7 @@ export class BrowserPlay {
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
       this.lastVisual = "";
+      this.lastScene = "";
       r.scene.add(this.avatar.group);
       this.realtime = request.realtime === true;
       this.emit({ active: true, paused: false, loading: false });
@@ -401,11 +404,19 @@ export class BrowserPlay {
         : "");
     if (visual !== this.lastVisual) {
       this.lastVisual = visual;
-      if (transforms) r.applyTransientPose(transforms);
+      // Shadows depend on the scene, not the camera: a frame where only the
+      // camera (or the figure, which casts no shadow) moved reuses the cached
+      // shadow map of the Realistic/Photo looks. Moving parts re-render it.
+      const scene = JSON.stringify(transforms ?? null, (_, value) =>
+        typeof value === "number" ? Math.round(value * 1000) / 1000 : value,
+      );
+      const sceneChanged = scene !== this.lastScene;
+      this.lastScene = scene;
+      if (transforms && sceneChanged) r.applyTransientPose(transforms);
       r.playCamera(camera);
       // camera() is read-only, so one snapshot serves the avatar, pose and UI.
       this.avatar?.update(report, view);
-      r.invalidate();
+      r.invalidate({ cameraOnly: !sceneChanged });
     }
     this.trace(camera.position, view);
     this.state = {
@@ -655,6 +666,7 @@ export class BrowserPlay {
     this.captureSession = session;
     this.captureInputClear = false;
     this.lastVisual = "";
+    this.lastScene = "";
     let restore: (() => void) | undefined;
     try {
       restore = session.beginCameraCapture(aspectRatio);
@@ -676,6 +688,7 @@ export class BrowserPlay {
       finished = true;
       // The capture camera replaced the live one; the next draw must restore it.
       this.lastVisual = "";
+      this.lastScene = "";
       if (this.session !== session) return;
       try {
         restore!();
@@ -859,6 +872,7 @@ export class BrowserPlay {
     this.captureSession = undefined;
     this.captureInputClear = false;
     this.lastVisual = "";
+    this.lastScene = "";
     this.frames = [];
     ++this.epoch;
     cancelAnimationFrame(this.raf);

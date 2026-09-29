@@ -41,15 +41,16 @@ Source-only browser checks cover 360 × 800 and 1080 × 1800, exact-model native
 
 The renderer's budgets follow the effective resource profile (`src/render/render-budget.ts`). They replace the early reference-renderer caps of 5,000 part occurrences and 128 part/colour variants.
 
-| Resource                                       | Desktop    | Phone      | Why                                                                                                                 |
-| ---------------------------------------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
-| Physical part occurrences                      | 100,000    | 25,000     | The profile's expanded-occurrence limit (spec §21.2): anything the document admits can be drawn.                    |
-| Raw type 2–5 source occurrences                | 100,000    | 25,000     | Same.                                                                                                               |
-| Distinct part/colour/context variants          | 2,048      | 768        | Each variant is one prototype and one or three instanced draws. See the measurements below.                         |
-| Unique geometry triangles (all compiled parts) | 2,000,000  | 600,000    | About 72 bytes per non-indexed triangle with normals, kept on the CPU and the GPU: ≈ 144 MB / 43 MB.                |
-| Scene triangles (every occurrence)             | 60,000,000 | 16,000,000 | Per-frame draw cost: about 600 triangles per part at the occurrence limit. Beyond this a frame risks a GPU timeout. |
-| Unused prototypes kept for undo/colour toggles | 256        | 64         | Previously every unused prototype was evicted once more than 128 existed, so larger models recompiled on undo.      |
-| Reduced interactive quality above (scene tris) | —          | 4,000,000  | Phones then hide conditional edge lines and cap pixel density at 1.5× while viewing (reported; captures unchanged). |
+| Resource                                       | Desktop    | Phone      | Why                                                                                                                  |
+| ---------------------------------------------- | ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| Physical part occurrences                      | 100,000    | 25,000     | The profile's expanded-occurrence limit (spec §21.2): anything the document admits can be drawn.                     |
+| Raw type 2–5 source occurrences                | 100,000    | 25,000     | Same.                                                                                                                |
+| Distinct part/colour/context variants          | 2,048      | 768        | Each variant is one prototype and one or three instanced draws. See the measurements below.                          |
+| Unique geometry triangles (all compiled parts) | 2,000,000  | 600,000    | About 72 bytes per non-indexed triangle with normals before indexing, kept on the CPU and the GPU: ≈ 144 MB / 43 MB. |
+| Scene triangles (every occurrence)             | 60,000,000 | 16,000,000 | Per-frame draw cost: about 600 triangles per part at the occurrence limit. Beyond this a frame risks a GPU timeout.  |
+| Unused prototypes kept for undo/colour toggles | 256        | 64         | Previously every unused prototype was evicted once more than 128 existed, so larger models recompiled on undo.       |
+| Reduced interactive quality above (scene tris) | —          | 4,000,000  | Phones then hide conditional edge lines and cap pixel density at 1.5× while viewing (reported; captures unchanged).  |
+| Moving-view reduction above (scene tris)       | 4,000,000  | 500,000    | Frames drawn while the view moves leave out edge lines; phones also draw at ≤ 1.25× density. Full quality at rest.   |
 
 - **Refusal is whole-model.** Counts are checked before compiling, and triangle budgets after compiling but before the scene changes. An over-budget model draws nothing (the previous view is hidden), `ready({ strict: true })` fails with `LIMIT_EXCEEDED` naming the resource, its size and the budget, and the document, query, health, source exports and inventory keep working. A phone refusal points to Project → Device limits. `render.budget()` reports the budget and the last model's measured use.
 - **Changing the profile re-assesses the model**, so switching to desktop limits draws a model the phone profile refused, and back.

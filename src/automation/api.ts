@@ -784,5 +784,8 @@ export type BrickEditorAPI = ReturnType<typeof createAPI>;
 declare global {
   interface Window {
     brickEditor?: BrickEditorAPI;
+    /** The scene adapter itself, exposed only with ?automation=1 for
+     * benchmarks (scripts/stress-benchmark.ts). Not a supported API. */
+    __brickScene?: unknown;
   }
 }

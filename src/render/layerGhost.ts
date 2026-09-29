@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { registerTreatment } from "./batching";
 /** Temporary per-object materials. Shared prototype materials are never mutated. */
 export class LayerGhost {
   constructor(private readonly opacity = 0.18) {}
@@ -29,6 +30,8 @@ export class LayerGhost {
         copy.transparent = true;
         copy.opacity = material.opacity * this.opacity;
         copy.depthWrite = false;
+        // Batches keep the base material's buckets and only refill them.
+        registerTreatment(copy, material);
         this.clones.set(material, copy);
       }
       return copy;

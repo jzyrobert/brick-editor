@@ -19,7 +19,8 @@ Suggested order for the next implementation pass:
 - [x] Open over-budget projects in a source-only recovery view with native/full-source backups; defer imported STEP derivation without dropping source records.
 - [x] Effective resource profiles: automatic phone/desktop selection, acknowledged desktop override on phones, Editor/import/archive/capture/CLI enforcement. See [resource limits](docs/RESOURCE-LIMITS.md).
 - [x] Profile-driven renderer budgets (part occurrences, variants, unique and scene triangles), shared part geometry across colours, instanced edge/conditional lines and simplified large-world Play collision; generated 20,000-part stress model and benchmark (`npm run test:stress`). See [resource limits](docs/RESOURCE-LIMITS.md#renderer-budgets).
-- [ ] Renderer follow-ups for very large models: instance transparent parts (glass is still one draw per occurrence), lighter per-occurrence handles (~10 KB JS heap each), culling/LOD for 10M+ triangle scenes, physical-phone measurements.
+- [x] Frame cost for large real-parts models: instanced transparent parts and ghost/dim treatments, visibility/treatment/explode/section changes refill instance arrays instead of rebuilding, edges hidden and phone pixel density lowered while the view moves, cached shadow maps in Play, indexed part geometry, broadphase picking. See [rendering](docs/RENDERING.md#frame-cost-on-large-models).
+- [ ] Renderer follow-ups for very large models: lighter per-occurrence handles (~10 KB JS heap each), culling/LOD for 10M+ triangle scenes (spatial cells exist behind `?batchCells=` but multiply draws in whole-model views; a Play-only or distance-based split is untested), physical-phone measurements of the adaptive quality.
 - [ ] Remaining resource work: output pagination, cancellable instruction derivation and a user-facing derive-again control.
 - [ ] Bound remaining compiler work across valid project graphs; occurrence guards alone do not prove those limits.
 

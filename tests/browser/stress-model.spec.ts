@@ -65,6 +65,35 @@ test("a 6,000-part, 200-variant official-parts model renders completely and is w
   expectComplete(result);
   expect(result.budget.usage!.variants).toBeGreaterThan(128);
   expect(result.budget.usage!.partOccurrences).toBeGreaterThan(5000);
+  // View changes refill the existing instance arrays instead of rebuilding
+  // the batches; a section cut leaves out parts wholly above it.
+  const views = await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    const frame = async () => {
+      const before = (await a.render.budget()).lastFrame.frames;
+      for (let i = 0; i < 300; i++) {
+        await new Promise((r) => requestAnimationFrame(r));
+        if ((await a.render.budget()).lastFrame.frames > before) break;
+      }
+      return (await a.render.budget()).batches;
+    };
+    const start = await frame();
+    await a.render.explode.set({ gap: 200 });
+    const exploded = await frame();
+    await a.render.explode.set({ gap: 0 });
+    await a.render.section.set({ height: -40 });
+    const cut = await frame();
+    await a.render.section.set(null);
+    const whole = await frame();
+    return { start, exploded, cut, whole };
+  });
+  expect(views.exploded.structures).toBe(views.start.structures);
+  expect(views.whole.structures).toBe(views.start.structures);
+  expect(views.exploded.fills).toBeGreaterThan(views.start.fills);
+  expect(views.exploded.occurrencesDrawn).toBe(6000);
+  expect(views.cut.occurrencesDrawn).toBeGreaterThan(0);
+  expect(views.cut.occurrencesDrawn).toBeLessThan(6000);
+  expect(views.whole.occurrencesDrawn).toBe(6000);
   const play = await page.evaluate(async () => {
     const a = window.brickEditor!;
     const snapshot = await a.play.enter({
@@ -102,5 +131,43 @@ test.describe("phone", () => {
     expect(result.profile).toBe("mobile");
     expect(result.budget.budget.variants).toBe(768);
     expectComplete(result);
+    // Orbiting a large scene on a phone draws without edge lines at a lower
+    // pixel density, and the view redraws in full once it comes to rest.
+    expect(result.budget.motion.reducible).toBe(true);
+    const canvas = page.getByLabel("3D build viewport");
+    const box = (await canvas.boundingBox())!;
+    const x = box.x + box.width / 2,
+      y = box.y + box.height * 0.45;
+    const lastFrame = () =>
+      page.evaluate(async () => {
+        const a = window.brickEditor!;
+        const budget = await a.render.budget();
+        return {
+          ...budget.lastFrame,
+          ...budget.motion,
+          ratio: (
+            window.__brickScene as { renderer: { getPixelRatio(): number } }
+          ).renderer.getPixelRatio(),
+        };
+      });
+    const rest = await lastFrame();
+    expect(rest.lines).toBeGreaterThan(0);
+    await page.mouse.move(x, y);
+    await page.mouse.down({ button: "right" });
+    for (let i = 1; i <= 4; i++) await page.mouse.move(x + i * 12, y);
+    await expect
+      .poll(async () => (await lastFrame()).reducedFrame, { timeout: 30000 })
+      .toBe(true);
+    const moving = await lastFrame();
+    // Only the editor grid's lines remain.
+    expect(moving.lines).toBeLessThan(rest.lines / 1000);
+    expect(moving.ratio).toBeLessThanOrEqual(1.25);
+    await page.mouse.up({ button: "right" });
+    await expect
+      .poll(async () => (await lastFrame()).reducedFrame, { timeout: 30000 })
+      .toBe(false);
+    const settled = await lastFrame();
+    expect(settled.lines).toBeGreaterThan(0);
+    expect(settled.ratio).toBe(rest.ratio);
   });
 });

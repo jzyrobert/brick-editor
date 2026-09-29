@@ -191,3 +191,34 @@ test("the photo look refines a still view, then stops drawing; Play never accumu
   expect(await drawsOver(page, 10)).toBe(0);
   await page.evaluate(() => window.brickEditor!.play.exit());
 });
+
+test("Play re-renders the cached shadow map only when the scene changes, not when the camera moves", async ({
+  page,
+}) => {
+  await load(page);
+  await page.evaluate(() => window.brickEditor!.render.look.set("realistic"));
+  await page.evaluate(() =>
+    window.brickEditor!.play.enter({
+      realtime: true,
+      locomotion: "fly-noclip",
+      position: [0, -120, 300],
+    }),
+  );
+  const stats = () =>
+    page.evaluate(
+      async () => (await window.brickEditor!.render.budget()).lastFrame,
+    );
+  // Let entry settle (it changes the scene once), then fly forward.
+  await page.waitForTimeout(500);
+  const before = await stats();
+  expect(before.shadowPasses).toBeGreaterThan(0);
+  await page.evaluate(() => window.brickEditor!.play.setInput({ moveZ: 1 }));
+  await expect
+    .poll(async () => (await stats()).frames - before.frames, {
+      timeout: 30000,
+    })
+    .toBeGreaterThan(3);
+  await page.evaluate(() => window.brickEditor!.play.setInput({}));
+  expect((await stats()).shadowPasses).toBe(before.shadowPasses);
+  await page.evaluate(() => window.brickEditor!.play.exit());
+});

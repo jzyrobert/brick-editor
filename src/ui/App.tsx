@@ -841,8 +841,10 @@ function Workspace() {
     runtime.selection = () => [...selectionRef.current];
     api.current = applicationAPI;
     releaseRendererMount();
-    if (new URLSearchParams(location.search).get("automation") === "1")
+    if (new URLSearchParams(location.search).get("automation") === "1") {
       window.brickEditor = api.current;
+      window.__brickScene = renderer.current;
+    }
     const init = async () => {
       if (recoveryStarted) {
         loaded.current = true;
@@ -916,6 +918,7 @@ function Workspace() {
       document.removeEventListener("visibilitychange", flushSave);
       window.removeEventListener("storage", notifySavedChange);
       delete window.brickEditor;
+      delete window.__brickScene;
     };
   }, []);
   useEffect(() => {

@@ -177,46 +177,132 @@ export function canInstanceMatrix(matrix: THREE.Matrix4) {
 }
 
 type Drawable = THREE.Mesh | THREE.LineSegments;
-type Entry = {
+type Materials = THREE.Material | THREE.Material[];
+
+/**
+ * View treatments (layer ghosting, instruction dimming) swap a handle's shared
+ * material for a temporary clone. The batches key their structure on the
+ * clone's base material, so applying or removing a treatment only refills
+ * instance arrays instead of rebuilding every batch.
+ */
+const treatmentBases = new WeakMap<THREE.Material, THREE.Material>();
+export function registerTreatment(
+  clone: THREE.Material,
+  original: THREE.Material,
+) {
+  treatmentBases.set(clone, treatmentBase(original));
+}
+export function treatmentBase(material: THREE.Material): THREE.Material {
+  return treatmentBases.get(material) ?? material;
+}
+const firstMaterial = (materials: Materials) =>
+  Array.isArray(materials) ? materials[0] : materials;
+const materialList = (materials: Materials) =>
+  Array.isArray(materials) ? materials : [materials];
+
+/** A drawable of an occurrence handle, as the batches classified it. */
+type Slot = {
   object: Drawable;
-  matrix: THREE.Matrix4;
+  group: THREE.Group;
   occurrenceId: string;
   /** Baked only as a draw-call optimization; may still render unmerged. */
   optional?: boolean;
 };
 
+/** Instanced draw of one bucket under one treatment (material set). */
+type InstancedDraw = (THREE.InstancedMesh | InstancedLineSegments) & {
+  userData: { occurrenceIds: string[] };
+};
+
+/**
+ * Repeated geometry + base material(s) + render order (+ spatial cell). Its
+ * draws are allocated once with room for every slot; visibility, treatment,
+ * transform and section changes only rewrite instance matrices and counts.
+ */
+type Bucket = {
+  lines: boolean;
+  slots: Slot[];
+  /** One draw per treatment in use (untreated, ghosted, dimmed …). */
+  draws: InstancedDraw[];
+  /** A bucket of one slot draws a plain copy instead (exact sorting). */
+  single?: Drawable;
+};
+
+export type BatchOptions = {
+  /** Split buckets that span several cells of this size (parent-space units,
+   * LDU) into one draw per cell, so frustum culling and transparent sorting
+   * work per region. 0 disables. */
+  cellSize: number;
+  /** Only buckets with at least this many slots are split into cells. */
+  cellMinSlots: number;
+};
+
+export const DEFAULT_BATCH_OPTIONS: Readonly<BatchOptions> = Object.freeze({
+  cellSize: 0,
+  cellMinSlots: 64,
+});
+
+const scratchMatrix = new THREE.Matrix4();
+const scratchSphere = new THREE.Sphere();
+const scratchPlane = new THREE.Plane();
+const scratchVector = new THREE.Vector3();
+
 /**
  * A render-only cache. Authoritative occurrence handles remain available unchanged
  * to picking, selection, collider extraction and source export. Add `root` beside
  * the handles under their common parent, and use render() for every draw/capture.
- * rebuild() is required after handles, transforms, prototypes or materials change.
+ *
+ * rebuild() is required after the handle set, prototypes or the dynamic set
+ * change. Everything else — handle and child-drawable visibility (steps, floor
+ * focus, edge modes), treatment materials (ghosting, dimming) and handle
+ * transforms (explode) — is applied by refilling the existing instance arrays:
+ * call refresh(), or just change handle visibility, which is detected per frame.
  */
 export class RenderBatches {
   readonly root = new THREE.Group();
   private handles = new Map<string, THREE.Group>();
   /** Handles drawn through the batches, in `handles` order. */
-  private batched: THREE.Group[] = [];
+  private batched: Array<[string, THREE.Group]> = [];
   private batchedSet = new Set<THREE.Object3D>();
   /** Occurrences drawn live from their own handles (moving transient poses). */
   private dynamic = new Set<string>();
-  /** Visibility of `batched` when the batches were generated; undefined = stale. */
+  /** Visibility of `batched` when the batches were last filled; undefined = stale. */
   private builtVisibility?: Uint8Array;
   private scratchVisibility = new Uint8Array(0);
   private traversal: THREE.Object3D[] = [];
+  private structureStale = true;
+  private fillStale = true;
+  private buckets: Bucket[] = [];
+  /** Instanced line draws (hidden, without a refill, while the view moves). */
+  private lineDraws: InstancedDraw[] = [];
+  /** Single-copy lines; `userData.filled` is their visibility at rest. */
+  private lineSingles: Drawable[] = [];
+  /** Baked section: raw primitives and sheared/reflected opaque drawables. */
+  private rawSlots: Slot[] = [];
+  private rawState = new Float32Array(0);
+  private rawMaterials: Materials[] = [];
+  private rawObjects: THREE.Object3D[] = [];
   private generated: THREE.BufferGeometry[] = [];
-  private instances: THREE.InstancedMesh[] = [];
-  private instancedLines: InstancedLineSegments[] = [];
-  constructor() {
+  private linesSuppressed = false;
+  private clipPlane: THREE.Plane | null = null;
+  private options: BatchOptions;
+  private counters = { structures: 0, fills: 0, rawMerges: 0, drawables: 0 };
+  constructor(options: Partial<BatchOptions> = {}) {
     this.root.name = "render-only occurrence batches";
+    this.options = { ...DEFAULT_BATCH_OPTIONS, ...options };
   }
   rebuild(handles: ReadonlyMap<string, THREE.Group>) {
     this.handles = new Map(handles);
-    this.batched = [...this.handles]
-      .filter(([id]) => !this.dynamic.has(id))
-      .map(([, group]) => group);
-    this.batchedSet = new Set(this.batched);
+    this.batched = [...this.handles].filter(([id]) => !this.dynamic.has(id));
+    this.batchedSet = new Set(this.batched.map(([, group]) => group));
     this.builtVisibility = undefined;
+    this.structureStale = true;
     this.clear();
+  }
+  /** Visibility, treatment materials or transforms of existing handles changed:
+   * refill the instance arrays on the next draw (no new GPU objects). */
+  refresh() {
+    this.fillStale = true;
   }
   /**
    * Draw these occurrences from their live handles instead of the merged batches, so
@@ -236,7 +322,27 @@ export class RenderBatches {
   get dynamicIds(): ReadonlySet<string> {
     return this.dynamic;
   }
-  /** Exact per-frame check without allocating: batches depend only on handle visibility. */
+  /** Hide (or restore) instanced lines without refilling anything: the
+   * interactive view drops edges while it moves. Captures never set this. */
+  setLinesSuppressed(suppressed: boolean) {
+    this.linesSuppressed = suppressed;
+  }
+  get linesHidden() {
+    return this.linesSuppressed;
+  }
+  /** Skip instances wholly on the clipped side of a world-space section plane
+   * (the renderer's clipping still cuts the parts that straddle it). */
+  setClipPlane(plane: THREE.Plane | null) {
+    const same =
+      plane && this.clipPlane
+        ? plane.normal.equals(this.clipPlane.normal) &&
+          plane.constant === this.clipPlane.constant
+        : plane === this.clipPlane;
+    if (same) return;
+    this.clipPlane = plane && plane.clone();
+    this.fillStale = true;
+  }
+  /** Exact per-frame check without allocating: handle visibility drives the fill. */
   private visibilityChanged() {
     const count = this.batched.length;
     if (this.scratchVisibility.length !== count)
@@ -245,37 +351,46 @@ export class RenderBatches {
       built = this.builtVisibility;
     let changed = !built || built.length !== count;
     for (let i = 0; i < count; i++) {
-      const visible = this.batched[i].visible ? 1 : 0;
+      const visible = this.batched[i][1].visible ? 1 : 0;
       current[i] = visible;
       if (!changed && built![i] !== visible) changed = true;
     }
     return changed;
   }
-  private clear() {
-    this.root.clear();
+  private clearRaw() {
+    for (const object of this.rawObjects) object.removeFromParent();
     for (const geometry of this.generated) geometry.dispose();
-    for (const mesh of this.instances) mesh.dispose();
-    // Releases each instance buffer; the geometry is the prototype's own.
-    for (const lines of this.instancedLines)
-      lines.dispatchEvent({ type: "dispose" } as never);
+    this.rawObjects = [];
     this.generated = [];
-    this.instances = [];
-    this.instancedLines = [];
   }
-  private synchronize() {
-    if (!this.visibilityChanged()) return;
-    const visible = [...this.handles].filter(
-      ([id, group]) => group.visible && !this.dynamic.has(id),
-    );
-    const signature = this.scratchVisibility.slice();
+  private clear() {
+    this.clearRaw();
+    // Releases each instance buffer; the geometry is the prototype's own.
+    for (const bucket of this.buckets)
+      for (const draw of bucket.draws)
+        (draw as THREE.Object3D).dispatchEvent({ type: "dispose" } as never);
+    this.root.clear();
+    this.buckets = [];
+    this.lineDraws = [];
+    this.lineSingles = [];
+    this.rawSlots = [];
+    this.rawState = new Float32Array(0);
+    this.rawMaterials = [];
+  }
+  /** Classify every drawable of every batched handle, visible or not. */
+  private buildStructure() {
+    this.structureStale = false;
+    this.fillStale = true;
+    this.counters.structures++;
     this.clear();
-    this.root.parent?.updateMatrixWorld(true);
+    const parent = this.root.parent;
+    parent?.updateMatrixWorld(true);
     const parentInverse = new THREE.Matrix4()
-      .copy(this.root.parent?.matrixWorld || new THREE.Matrix4())
+      .copy(parent?.matrixWorld || new THREE.Matrix4())
       .invert();
-    const buckets = new Map<string, Entry[]>();
-    const rawBuckets = new Map<string, Entry[]>();
-    for (const [occurrenceId, group] of visible) {
+    const keyed = new Map<string, Slot[]>();
+    const cellSize = this.options.cellSize;
+    for (const [occurrenceId, group] of this.batched) {
       group.updateMatrixWorld(true);
       group.traverse((object) => {
         const drawable = object as Drawable;
@@ -284,31 +399,19 @@ export class RenderBatches {
           !(drawable as THREE.LineSegments).isLineSegments
         )
           return;
-        let ancestor: THREE.Object3D | null = object;
-        while (ancestor && ancestor !== group) {
-          if (!ancestor.visible) return;
-          ancestor = ancestor.parent;
-        }
-        const matrix = new THREE.Matrix4().multiplyMatrices(
+        const slot: Slot = { object: drawable, group, occurrenceId };
+        const matrix = scratchMatrix.multiplyMatrices(
           parentInverse,
           object.matrixWorld,
         );
-        const materials = Array.isArray(drawable.material)
-          ? drawable.material
-          : [drawable.material];
+        const bases = materialList(drawable.material).map(treatmentBase);
+        const mesh = !!(drawable as THREE.Mesh).isMesh;
         const raw = !!(
           group.userData.rawPrimitive ||
           group.userData.prototype?.userData.rawPrimitive
         );
-        const opaque = materials.every((m) => !m.transparent);
-        // Raw primitives, and opaque meshes whose sheared/reflected placement instancing
-        // cannot represent, are baked into merged batches instead of one draw each.
-        const rawEligible =
-          (raw ||
-            (opaque &&
-              (drawable as THREE.Mesh).isMesh &&
-              !canInstanceMatrix(matrix))) &&
-          opaque &&
+        const bakeable =
+          bases.every((m) => !m.transparent) &&
           Math.abs(matrix.determinant()) > 1e-12 &&
           Object.values(drawable.geometry.attributes).every(
             (a) =>
@@ -318,43 +421,315 @@ export class RenderBatches {
           Object.keys(drawable.geometry.morphAttributes).length === 0 &&
           drawable.geometry.drawRange.start === 0 &&
           drawable.geometry.drawRange.count === Infinity;
-        if (rawEligible) {
-          const key = [
-            (drawable as THREE.Mesh).isMesh ? "mesh" : "line",
-            rawLayout(drawable.geometry),
-            ...materials.map((m) => m.uuid),
-            drawable.renderOrder,
-            drawable.castShadow,
-            drawable.receiveShadow,
-          ].join(":");
-          const entries = rawBuckets.get(key) || [];
-          entries.push({
-            object: drawable,
-            matrix,
-            occurrenceId,
-            optional: !raw,
-          });
-          rawBuckets.set(key, entries);
+        const instanceable = mesh
+          ? canInstanceMatrix(matrix)
+          : bases.every(supportsInstancedLines);
+        // Raw primitives, and opaque drawables instancing cannot represent
+        // (sheared/reflected meshes, custom line shaders), are baked into
+        // merged batches instead of one draw each.
+        if (bakeable && (raw || !instanceable)) {
+          slot.optional = !raw;
+          this.rawSlots.push(slot);
           return;
         }
-        const eligible =
-          materials.every((m) => !m.transparent) &&
-          (!(drawable as THREE.Mesh).isMesh || canInstanceMatrix(matrix));
-        if (!eligible) {
-          this.fallback(drawable, matrix, occurrenceId);
-          return;
+        let key = !instanceable
+          ? "single:" + drawable.uuid
+          : [
+              mesh ? "mesh" : "line",
+              drawable.geometry.uuid,
+              ...bases.map((m) => m.uuid),
+              drawable.renderOrder,
+            ].join(":");
+        if (instanceable && cellSize > 0) {
+          const e = matrix.elements;
+          key +=
+            "@" +
+            Math.floor(e[12] / cellSize) +
+            "," +
+            Math.floor(e[13] / cellSize) +
+            "," +
+            Math.floor(e[14] / cellSize);
         }
-        const key = [
-          (drawable as THREE.Mesh).isMesh ? "mesh" : "line",
-          drawable.geometry.uuid,
-          ...materials.map((m) => m.uuid),
-          drawable.renderOrder,
-        ].join(":");
-        const entries = buckets.get(key) || [];
-        entries.push({ object: drawable, matrix, occurrenceId });
-        buckets.set(key, entries);
+        const slots = keyed.get(key);
+        if (slots) slots.push(slot);
+        else keyed.set(key, [slot]);
       });
     }
+    // Cells only for large buckets: small ones stay one draw however spread.
+    const wholes = new Map<string, Slot[]>();
+    if (cellSize > 0)
+      for (const [key, slots] of keyed) {
+        const at = key.lastIndexOf("@");
+        if (at < 0) continue;
+        const base = key.slice(0, at);
+        const whole = wholes.get(base);
+        if (whole) whole.push(...slots);
+        else wholes.set(base, [...slots]);
+      }
+    const groups: Slot[][] = [];
+    for (const [key, slots] of keyed) {
+      const at = cellSize > 0 ? key.lastIndexOf("@") : -1;
+      if (at < 0) {
+        groups.push(slots);
+        continue;
+      }
+      const base = key.slice(0, at);
+      const whole = wholes.get(base);
+      if (!whole) continue;
+      if (whole.length >= this.options.cellMinSlots) groups.push(slots);
+      else {
+        groups.push(whole);
+        wholes.delete(base);
+      }
+    }
+    for (const slots of groups) {
+      const lines = !(slots[0].object as THREE.Mesh).isMesh;
+      const bucket: Bucket = { lines, slots, draws: [] };
+      if (slots.length === 1) {
+        const copy = slots[0].object.clone(false) as Drawable;
+        copy.matrixAutoUpdate = false;
+        copy.userData = {
+          ...copy.userData,
+          occurrenceId: slots[0].occurrenceId,
+        };
+        copy.visible = false;
+        if (lines) this.lineSingles.push(copy);
+        bucket.single = copy;
+        this.root.add(copy);
+      }
+      this.buckets.push(bucket);
+    }
+    this.rawState = new Float32Array(this.rawSlots.length * 17).fill(NaN);
+    this.rawMaterials = new Array(this.rawSlots.length);
+  }
+  /** Whether a drawable and its ancestors up to its handle are visible. */
+  private static shown(slot: Slot) {
+    let object: THREE.Object3D | null = slot.object;
+    while (object && object !== slot.group) {
+      if (!object.visible) return false;
+      object = object.parent;
+    }
+    return slot.group.visible;
+  }
+  private newDraw(bucket: Bucket, materials: Materials): InstancedDraw {
+    const source = bucket.slots[0].object;
+    const capacity = bucket.slots.length;
+    let draw: InstancedDraw;
+    if (!bucket.lines) {
+      draw = new THREE.InstancedMesh(
+        source.geometry,
+        materials,
+        capacity,
+      ) as unknown as InstancedDraw;
+    } else {
+      draw = instancedLineSegments(
+        source.geometry,
+        materials,
+        [],
+      ) as InstancedDraw;
+      draw.instanceMatrix = new THREE.InstancedBufferAttribute(
+        new Float32Array(capacity * 16),
+        16,
+      );
+      this.lineDraws.push(draw);
+    }
+    draw.count = 0;
+    draw.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    draw.renderOrder = source.renderOrder;
+    draw.userData = { occurrenceIds: [] };
+    this.root.add(draw);
+    return draw;
+  }
+  /** Rewrite every bucket's instance arrays from the handles' current state. */
+  private fill() {
+    this.fillStale = false;
+    this.counters.fills++;
+    const parent = this.root.parent;
+    const parentInverse = new THREE.Matrix4()
+      .copy(parent?.matrixWorld || new THREE.Matrix4())
+      .invert();
+    // The world-space section plane in the batches' (parent) space.
+    const clip = this.clipPlane
+      ? scratchPlane.copy(this.clipPlane).applyMatrix4(parentInverse)
+      : null;
+    const culled = (sphere: THREE.Sphere) =>
+      !!clip && clip.distanceToPoint(sphere.center) < -sphere.radius;
+    const matrix = new THREE.Matrix4();
+    let written = 0;
+    for (const bucket of this.buckets) {
+      const geometry = bucket.slots[0].object.geometry;
+      if (!geometry.boundingSphere) geometry.computeBoundingSphere();
+      const local = geometry.boundingSphere!;
+      if (bucket.single) {
+        const slot = bucket.slots[0],
+          copy = bucket.single;
+        matrix.multiplyMatrices(parentInverse, slot.object.matrixWorld);
+        const visible =
+          RenderBatches.shown(slot) &&
+          !culled(scratchSphere.copy(local).applyMatrix4(matrix));
+        copy.visible = visible;
+        copy.userData.filled = visible;
+        copy.matrix.copy(matrix);
+        copy.matrixWorldNeedsUpdate = true;
+        copy.material = slot.object.material;
+        copy.castShadow = slot.object.castShadow;
+        copy.receiveShadow = slot.object.receiveShadow;
+        if (visible) written++;
+        continue;
+      }
+      for (const draw of bucket.draws) {
+        draw.count = 0;
+        draw.userData.occurrenceIds = [];
+      }
+      let used = 0;
+      const bounds: number[][] = [];
+      for (const slot of bucket.slots) {
+        if (!RenderBatches.shown(slot)) continue;
+        matrix.multiplyMatrices(parentInverse, slot.object.matrixWorld);
+        scratchSphere.copy(local).applyMatrix4(matrix);
+        if (culled(scratchSphere)) continue;
+        const materials = slot.object.material;
+        const representative = firstMaterial(materials);
+        // Treatments are few (untreated, ghosted, dimmed): a linear scan.
+        let index = 0;
+        while (
+          index < used &&
+          firstMaterial(bucket.draws[index].material as Materials) !==
+            representative
+        )
+          index++;
+        if (index === used) {
+          if (index === bucket.draws.length)
+            bucket.draws.push(this.newDraw(bucket, materials));
+          const draw = bucket.draws[index];
+          draw.material = materials;
+          if (bucket.lines)
+            materialList(materials).forEach(supportsInstancedLines);
+          draw.castShadow = slot.object.castShadow;
+          draw.receiveShadow = slot.object.receiveShadow;
+          bounds[index] = [
+            Infinity,
+            Infinity,
+            Infinity,
+            -Infinity,
+            -Infinity,
+            -Infinity,
+          ];
+          used++;
+        }
+        const draw = bucket.draws[index];
+        matrix.toArray(draw.instanceMatrix.array, draw.count * 16);
+        draw.count++;
+        draw.userData.occurrenceIds.push(slot.occurrenceId);
+        const b = bounds[index],
+          c = scratchSphere.center,
+          r = scratchSphere.radius;
+        if (c.x - r < b[0]) b[0] = c.x - r;
+        if (c.y - r < b[1]) b[1] = c.y - r;
+        if (c.z - r < b[2]) b[2] = c.z - r;
+        if (c.x + r > b[3]) b[3] = c.x + r;
+        if (c.y + r > b[4]) b[4] = c.y + r;
+        if (c.z + r > b[5]) b[5] = c.z + r;
+        written++;
+      }
+      bucket.draws.forEach((draw, i) => {
+        draw.visible = draw.count > 0;
+        if (!draw.count) return;
+        const attribute = draw.instanceMatrix;
+        attribute.clearUpdateRanges();
+        attribute.addUpdateRange(0, draw.count * 16);
+        attribute.needsUpdate = true;
+        const b = bounds[i];
+        const sphere = (draw.boundingSphere ??= new THREE.Sphere());
+        sphere.center.set(
+          (b[0] + b[3]) / 2,
+          (b[1] + b[4]) / 2,
+          (b[2] + b[5]) / 2,
+        );
+        sphere.radius = scratchVector
+          .set(b[3] - b[0], b[4] - b[1], b[5] - b[2])
+          .multiplyScalar(0.5)
+          .length();
+        if ((draw as THREE.InstancedMesh).isMesh)
+          (draw as THREE.InstancedMesh).boundingBox = null;
+      });
+    }
+    written += this.fillRaw(parentInverse, culled);
+    this.counters.drawables = written;
+  }
+  /** Re-merge the baked section only when one of its slots changed. */
+  private fillRaw(
+    parentInverse: THREE.Matrix4,
+    culled: (sphere: THREE.Sphere) => boolean,
+  ) {
+    const state = this.rawState;
+    let changed = false,
+      count = 0;
+    const matrix = new THREE.Matrix4();
+    const visible: boolean[] = [];
+    this.rawSlots.forEach((slot, i) => {
+      matrix.multiplyMatrices(parentInverse, slot.object.matrixWorld);
+      let shown = RenderBatches.shown(slot);
+      if (shown) {
+        const geometry = slot.object.geometry;
+        if (!geometry.boundingSphere) geometry.computeBoundingSphere();
+        if (
+          culled(
+            scratchSphere.copy(geometry.boundingSphere!).applyMatrix4(matrix),
+          )
+        )
+          shown = false;
+      }
+      visible.push(shown);
+      if (shown) count++;
+      const offset = i * 17;
+      if (state[offset] !== (shown ? 1 : 0)) changed = true;
+      state[offset] = shown ? 1 : 0;
+      for (let k = 0; k < 16; k++) {
+        const value = Math.fround(matrix.elements[k]);
+        if (state[offset + 1 + k] !== value) {
+          changed = true;
+          state[offset + 1 + k] = value;
+        }
+      }
+      if (this.rawMaterials[i] !== slot.object.material) {
+        changed = true;
+        this.rawMaterials[i] = slot.object.material;
+      }
+    });
+    if (!changed) return count;
+    this.counters.rawMerges++;
+    this.clearRaw();
+    type Entry = Slot & { matrix: THREE.Matrix4 };
+    const rawBuckets = new Map<string, Entry[]>();
+    this.rawSlots.forEach((slot, i) => {
+      if (!visible[i]) return;
+      const drawable = slot.object;
+      const materials = materialList(drawable.material);
+      const entry: Entry = {
+        ...slot,
+        matrix: new THREE.Matrix4().multiplyMatrices(
+          parentInverse,
+          drawable.matrixWorld,
+        ),
+      };
+      // A treated (ghosted/dimmed) raw drawable is transparent: drawn alone.
+      if (materials.some((m) => m.transparent)) {
+        this.single(drawable, entry.matrix, slot.occurrenceId);
+        return;
+      }
+      const key = [
+        (drawable as THREE.Mesh).isMesh ? "mesh" : "line",
+        rawLayout(drawable.geometry),
+        ...materials.map((m) => m.uuid),
+        drawable.renderOrder,
+        drawable.castShadow,
+        drawable.receiveShadow,
+      ].join(":");
+      const entries = rawBuckets.get(key) || [];
+      entries.push(entry);
+      rawBuckets.set(key, entries);
+    });
     let rawVertices = 0,
       rawBytes = 0;
     for (const entries of rawBuckets.values()) {
@@ -373,7 +748,7 @@ export class RenderBatches {
           (rawVertices + vertices > RAW_BATCH_LIMITS.vertices ||
             rawBytes + bytes > RAW_BATCH_LIMITS.bytes)
         ) {
-          this.fallback(entry.object, entry.matrix, entry.occurrenceId);
+          this.single(entry.object, entry.matrix, entry.occurrenceId);
           continue;
         }
         rawVertices += vertices;
@@ -397,90 +772,16 @@ export class RenderBatches {
       }
       if (chunk.length) this.mergeRaw(chunk);
     }
-    for (const entries of buckets.values()) {
-      const first = entries[0].object;
-      if (entries.length < 2) {
-        this.fallback(first, entries[0].matrix, entries[0].occurrenceId);
-        continue;
-      }
-      if ((first as THREE.Mesh).isMesh) {
-        const mesh = new THREE.InstancedMesh(
-          first.geometry,
-          first.material,
-          entries.length,
-        );
-        entries.forEach((entry, i) => mesh.setMatrixAt(i, entry.matrix));
-        mesh.instanceMatrix.needsUpdate = true;
-        mesh.userData.occurrenceIds = entries.map((e) => e.occurrenceId);
-        mesh.computeBoundingBox();
-        mesh.computeBoundingSphere();
-        mesh.renderOrder = first.renderOrder;
-        mesh.castShadow = first.castShadow;
-        mesh.receiveShadow = first.receiveShadow;
-        this.instances.push(mesh);
-        this.root.add(mesh);
-      } else if (
-        (Array.isArray(first.material) ? first.material : [first.material])
-          .map(supportsInstancedLines)
-          .every(Boolean)
-      ) {
-        // One instanced draw per line bucket: memory stays one copy of the
-        // part's lines plus a matrix per occurrence, instead of a baked copy
-        // of every occurrence's (conditional) lines.
-        const lines = instancedLineSegments(
-          first.geometry,
-          first.material,
-          entries.map((entry) => entry.matrix),
-        );
-        lines.renderOrder = first.renderOrder;
-        lines.userData.occurrenceIds = entries.map((e) => e.occurrenceId);
-        this.instancedLines.push(lines);
-        this.root.add(lines);
-      } else {
-        const geometries = entries.map((entry) =>
-          transformLineGeometry(entry.object.geometry, entry.matrix),
-        );
-        const merged = mergeGeometries(geometries, false);
-        geometries.forEach((g) => g.dispose());
-        if (!merged) {
-          for (const entry of entries)
-            this.fallback(entry.object, entry.matrix, entry.occurrenceId);
-          continue;
-        }
-        // Repeated geometry may contain multiple material groups.
-        const stride =
-          first.geometry.index?.count ||
-          first.geometry.getAttribute("position").count;
-        merged.clearGroups();
-        const groups = first.geometry.groups;
-        if (
-          groups.length === 1 &&
-          groups[0].start === 0 &&
-          groups[0].count === stride
-        ) {
-          merged.addGroup(0, stride * entries.length, groups[0].materialIndex);
-        } else {
-          entries.forEach((_, i) =>
-            groups.forEach((group) =>
-              merged.addGroup(
-                i * stride + group.start,
-                group.count,
-                group.materialIndex,
-              ),
-            ),
-          );
-        }
-        merged.computeBoundingSphere();
-        const lines = new THREE.LineSegments(merged, first.material);
-        lines.renderOrder = first.renderOrder;
-        lines.userData.occurrenceIds = entries.map((e) => e.occurrenceId);
-        this.generated.push(merged);
-        this.root.add(lines);
-      }
-    }
-    this.builtVisibility = signature;
+    return count;
   }
-  private mergeRaw(entries: Entry[]) {
+  private synchronize() {
+    if (this.structureStale) this.buildStructure();
+    if (this.visibilityChanged()) this.fillStale = true;
+    if (!this.fillStale) return;
+    this.builtVisibility = this.scratchVisibility.slice();
+    this.fill();
+  }
+  private mergeRaw(entries: Array<Slot & { matrix: THREE.Matrix4 }>) {
     const first = entries[0].object;
     const mesh = !!(first as THREE.Mesh).isMesh;
     const geometries = entries.map((entry) =>
@@ -496,7 +797,7 @@ export class RenderBatches {
     }
     if (!merged) {
       entries.forEach((entry) =>
-        this.fallback(entry.object, entry.matrix, entry.occurrenceId),
+        this.single(entry.object, entry.matrix, entry.occurrenceId),
       );
       return;
     }
@@ -545,9 +846,10 @@ export class RenderBatches {
       rawPrimitiveBatch: true,
     };
     this.generated.push(merged);
+    this.rawObjects.push(drawable);
     this.root.add(drawable);
   }
-  private fallback(
+  private single(
     source: Drawable,
     matrix: THREE.Matrix4,
     occurrenceId: string,
@@ -557,6 +859,7 @@ export class RenderBatches {
     copy.matrix.copy(matrix);
     copy.visible = true;
     copy.userData = { ...copy.userData, occurrenceId };
+    this.rawObjects.push(copy);
     this.root.add(copy);
   }
   render(
@@ -565,6 +868,11 @@ export class RenderBatches {
     camera: THREE.Camera,
   ) {
     this.synchronize();
+    const suppressed = this.linesSuppressed;
+    for (const draw of this.lineDraws)
+      draw.visible = draw.count > 0 && !suppressed;
+    for (const copy of this.lineSingles)
+      copy.visible = copy.userData.filled && !suppressed;
     // Batched handles are represented by `root`, so leave them out of the draw's scene
     // traversal entirely. Hiding them was not enough: three still walks and recomposes
     // every hidden descendant's matrix each frame. Their parent links are untouched and
@@ -587,32 +895,45 @@ export class RenderBatches {
       traversal.length = 0;
     }
   }
-  /** What the last built batches draw (diagnostics and budget tests). */
+  /** What the last filled batches draw (diagnostics and budget tests). */
   stats() {
     const drawn = new Set<string>();
     let instancedMeshes = 0,
       instancedLines = 0,
       merged = 0,
-      single = 0;
+      single = 0,
+      objects = 0;
     for (const child of this.root.children) {
+      const lineDraw =
+        (child as THREE.InstancedMesh).isInstancedMesh &&
+        (child as THREE.LineSegments).isLineSegments;
+      // Suppressed lines still count: they are drawn again at rest.
+      const filled = lineDraw
+        ? (child as InstancedDraw).count > 0
+        : (child.userData.filled ?? child.visible);
+      if (!filled) continue;
+      objects++;
       const data = child.userData;
       if (data.occurrenceIds)
         for (const id of data.occurrenceIds as string[]) drawn.add(id);
       else if (data.occurrenceId) drawn.add(data.occurrenceId);
       if ((child as THREE.InstancedMesh).isInstancedMesh) {
-        if ((child as THREE.LineSegments).isLineSegments) instancedLines++;
+        if (lineDraw) instancedLines++;
         else instancedMeshes++;
       } else if (data.occurrenceIds) merged++;
       else single++;
     }
     return {
-      objects: this.root.children.length,
+      objects,
       instancedMeshes,
       instancedLines,
       merged,
       single,
       occurrencesDrawn: drawn.size,
       dynamic: this.dynamic.size,
+      linesSuppressed: this.linesSuppressed,
+      buckets: this.buckets.length,
+      ...this.counters,
     };
   }
   dispose() {
@@ -623,5 +944,6 @@ export class RenderBatches {
     this.batchedSet.clear();
     this.dynamic.clear();
     this.builtVisibility = undefined;
+    this.structureStale = true;
   }
 }

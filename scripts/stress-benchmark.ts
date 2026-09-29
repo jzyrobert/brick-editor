@@ -7,6 +7,7 @@
  *   npm run build && npx vite preview --port 4190 --strictPort --host 127.0.0.1 &
  *   BRICK_BENCH_URL=http://127.0.0.1:4190/ npm run test:stress -- [--parts N]
  *     [--variants N] [--profiles desktop,mobile] [--label name] [--no-play]
+ *     [--play-frames N] [--query key=value]
  *
  * Software WebGL (SwiftShader) numbers are only meaningful relative to each other.
  * Results go to .local/perf/stress-<label>.json.
@@ -25,6 +26,9 @@ const variants = Number(arg("variants", "300"));
 const profiles = arg("profiles", "desktop,mobile").split(",");
 const label = arg("label", `${parts}-${variants}`);
 const play = !process.argv.includes("--no-play");
+const playFrames = Number(arg("play-frames", "10"));
+/** Extra page query, e.g. `batchCells=640`. */
+const query = arg("query", "");
 const url = process.env.BRICK_BENCH_URL || "http://127.0.0.1:4173/";
 const model = architecturalStressModel({ parts, variants });
 
@@ -72,7 +76,7 @@ async function measure(context: BrowserContext, profile: string) {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
   page.on("crash", () => errors.push("page crashed"));
-  await page.goto(url + "?automation=1");
+  await page.goto(url + "?automation=1" + (query ? "&" + query : ""));
   await page.waitForFunction(() => !!window.brickEditor);
   const active = await page.evaluate(async () => {
     await window.brickEditor!.ready();
@@ -163,10 +167,194 @@ async function measure(context: BrowserContext, profile: string) {
           lines: last.lines,
         };
       });
+  const interaction = load.failure ? undefined : await measureInteraction();
+  async function measureInteraction() {
+    // Scene-adapter operations the editor UI drives directly (instruction steps,
+    // floor focus, picking), timed as the call plus its next drawn frame.
+    type Scene = {
+      showStep(ids: string[] | null, newIds?: string[]): void;
+      setFloorFocus(focus: unknown): unknown;
+      pick(x: number, y: number): string | null;
+      renderer: { domElement: HTMLCanvasElement; getPixelRatio(): number };
+    };
+    const center = await page.evaluate(() => {
+      const scene = window.__brickScene as Scene;
+      const r = scene.renderer.domElement.getBoundingClientRect();
+      // A point over the canvas that no overlay covers, near the model centre.
+      for (const [fx, fy] of [
+        [0.5, 0.5],
+        [0.5, 0.4],
+        [0.4, 0.5],
+        [0.6, 0.6],
+      ]) {
+        const x = r.left + r.width * fx,
+          y = r.top + r.height * fy;
+        if (document.elementFromPoint(x, y) === scene.renderer.domElement)
+          return { x, y };
+      }
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
+    const nextFrame = () =>
+      page.evaluate(async () => {
+        const a = window.brickEditor!;
+        const before = (await a.render.budget()).lastFrame.frames;
+        const frame = () => new Promise((r) => requestAnimationFrame(r));
+        let stats = (await a.render.budget()).lastFrame;
+        for (let f = 0; f < 600 && stats.frames <= before; f++) {
+          await frame();
+          stats = (await a.render.budget()).lastFrame;
+        }
+        return {
+          ...stats,
+          pixelRatio: (window.__brickScene as Scene).renderer.getPixelRatio(),
+        };
+      });
+    // Drag the view with the right button (OrbitControls pan; the left button
+    // orbits only with the Navigate tool), frame by frame.
+    await page.evaluate(() =>
+      window.brickEditor!.camera.set({
+        space: "ldraw",
+        projection: "perspective",
+        position: [4200, -2200, 4200],
+        target: [1000, -300, 1000],
+        up: [0, -1, 0],
+        fovDeg: 45,
+        near: 1,
+        far: 20000,
+      }),
+    );
+    const idleBefore = await nextFrame();
+    await page.mouse.move(center.x, center.y);
+    await page.mouse.down({ button: "right" });
+    const drag: Awaited<ReturnType<typeof nextFrame>>[] = [];
+    for (let i = 1; i <= 14; i++) {
+      await page.mouse.move(center.x + i * 6, center.y + (i % 3));
+      drag.push(await nextFrame());
+    }
+    await page.mouse.up({ button: "right" });
+    // The idle redraw after the gesture (full quality again).
+    let idleAfter = await nextFrame();
+    for (let i = 0; i < 30 && idleAfter.lines < idleBefore.lines; i++)
+      idleAfter = await nextFrame();
+    const sorted = (x: number[]) => [...x].sort((p, q) => p - q);
+    const median = (x: number[]) =>
+      x.length ? sorted(x)[Math.floor(x.length / 2)] : 0;
+    const moving = drag.slice(2);
+    const orbitDrag = {
+      frames: moving.length,
+      frameCpuMedianMs: +median(moving.map((f) => f.cpuMs)).toFixed(1),
+      drawCalls: median(moving.map((f) => f.calls)),
+      triangles: median(moving.map((f) => f.triangles)),
+      lines: median(moving.map((f) => f.lines)),
+      pixelRatio: median(moving.map((f) => f.pixelRatio)),
+      idle: {
+        drawCalls: idleAfter.calls,
+        lines: idleAfter.lines,
+        pixelRatio: idleAfter.pixelRatio,
+      },
+    };
+    const picks = await page.evaluate(({ x, y }) => {
+      const scene = window.__brickScene as Scene;
+      const times: number[] = [];
+      let hit: string | null = null;
+      for (let i = 0; i < 12; i++) {
+        const t = performance.now();
+        hit = scene.pick(x + (i % 4) * 7, y + Math.floor(i / 4) * 7);
+        times.push(performance.now() - t);
+      }
+      times.sort((p, q) => p - q);
+      return {
+        medianMs: +times[Math.floor(times.length / 2)].toFixed(1),
+        maxMs: +times[times.length - 1].toFixed(1),
+        hit: !!hit,
+      };
+    }, center);
+    const timed = async (work: () => Promise<number>) => {
+      const callMs = await work();
+      const frame = await nextFrame();
+      return {
+        callMs: Math.round(callMs),
+        frameCpuMs: +frame.cpuMs.toFixed(1),
+        drawCalls: frame.calls,
+        triangles: frame.triangles,
+        lines: frame.lines,
+      };
+    };
+    // Instruction step: the first 90% of parts built, the last 10% new (the
+    // rest dimmed), then a later step, then back to the full model.
+    const steps = await (async () => {
+      const ids = await page.evaluate(async () =>
+        (await window.brickEditor!.query()).occurrences.map((o) => o.id),
+      );
+      const step = (built: number, fresh: number) =>
+        timed(() =>
+          page.evaluate(
+            ({ ids, built, fresh }) => {
+              const t = performance.now();
+              (window.__brickScene as Scene).showStep(
+                ids.slice(0, built),
+                ids.slice(built - fresh, built),
+              );
+              return performance.now() - t;
+            },
+            { ids, built, fresh },
+          ),
+        );
+      const n = ids.length;
+      const first = await step(Math.round(n * 0.9), Math.round(n * 0.1));
+      const next = await step(Math.round(n * 0.95), Math.round(n * 0.05));
+      const exit = await timed(() =>
+        page.evaluate(() => {
+          const t = performance.now();
+          (window.__brickScene as Scene).showStep(null);
+          return performance.now() - t;
+        }),
+      );
+      return { first, next, exit };
+    })();
+    const floors = await (async () => {
+      const list = await page.evaluate(async () => {
+        const a = window.brickEditor!;
+        return (await a.architecture.detectFloors()).floors;
+      });
+      if (list.length < 2) return undefined;
+      await page.evaluate(async (floors) => {
+        const a = window.brickEditor!;
+        const r = await a.dispatch({
+          schemaVersion: 1,
+          commandId: crypto.randomUUID(),
+          expectedRevision: (await a.query()).revision,
+          type: "floors.set",
+          payload: { floors },
+        } as never);
+        await a.ready({ minRevision: (r as { revision: number }).revision });
+      }, list);
+      await nextFrame();
+      const focus = (floorId: string | null) =>
+        timed(() =>
+          page.evaluate(async (floorId) => {
+            const t = performance.now();
+            (window.__brickScene as Scene).setFloorFocus(
+              floorId ? { floorId, ghostBelow: true } : null,
+            );
+            return performance.now() - t;
+          }, floorId),
+        );
+      const middle = list[Math.floor(list.length / 2)].id;
+      const top = list[list.length - 1].id;
+      return {
+        floors: list.length,
+        focusMiddle: await focus(middle),
+        focusTop: await focus(top),
+        clear: await focus(null),
+      };
+    })();
+    return { orbitDrag, picks, steps, floors };
+  }
   const playResult =
     load.failure || !play
       ? undefined
-      : await page.evaluate(async () => {
+      : await page.evaluate(async (playFrames) => {
           const a = window.brickEditor!;
           const frame = () => new Promise((r) => requestAnimationFrame(r));
           // Stand on the ground just outside the village and walk into it.
@@ -196,24 +384,46 @@ async function measure(context: BrowserContext, profile: string) {
           t = performance.now();
           await a.play.enter({ ...request, realtime: true });
           const reenterMs = performance.now() - t;
-          await a.play.setInput({ moveZ: 1 });
-          const cpu: number[] = [],
-            intervals: number[] = [];
-          let prev = performance.now(),
-            before = (await a.render.budget()).lastFrame.frames;
-          for (let i = 0; i < 40; i++) {
-            await frame();
-            const now = performance.now();
-            intervals.push(now - prev);
-            prev = now;
-            const stats = (await a.render.budget()).lastFrame;
-            if (stats.frames > before) cpu.push(stats.cpuMs);
-            before = stats.frames;
-          }
-          await a.play.exit();
           const sorted = (x: number[]) => [...x].sort((p, q) => p - q);
           const median = (x: number[]) =>
             x.length ? sorted(x)[Math.floor(x.length / 2)] : 0;
+          // Walk for a few drawn frames (SwiftShader rasterises each for
+          // seconds, so the count is small) and report the median frame.
+          const walk = async () => {
+            await a.play.setInput({ moveZ: 1 });
+            const frames: Array<{
+              cpuMs: number;
+              calls: number;
+              triangles: number;
+              lines: number;
+            }> = [];
+            const intervals: number[] = [];
+            let prev = performance.now(),
+              before = (await a.render.budget()).lastFrame.frames;
+            for (let i = 0; i < playFrames; i++) {
+              await frame();
+              const now = performance.now();
+              intervals.push(now - prev);
+              prev = now;
+              const stats = (await a.render.budget()).lastFrame;
+              if (stats.frames > before) frames.push(stats);
+              before = stats.frames;
+            }
+            await a.play.setInput({});
+            const moving = frames.slice(2);
+            return {
+              frameCpuMedianMs: +median(moving.map((f) => f.cpuMs)).toFixed(1),
+              frameIntervalMedianMs: Math.round(median(intervals.slice(2))),
+              drawCalls: median(moving.map((f) => f.calls)),
+              triangles: median(moving.map((f) => f.triangles)),
+              lines: median(moving.map((f) => f.lines)),
+            };
+          };
+          const standard = await walk();
+          await a.render.look.set("realistic");
+          const realistic = await walk();
+          await a.render.look.set("standard");
+          await a.play.exit();
           return {
             enterMs: Math.round(enterMs),
             reenterMs: Math.round(reenterMs),
@@ -222,11 +432,13 @@ async function measure(context: BrowserContext, profile: string) {
             tickMeanMs: +(
               ticks.reduce((s, v) => s + v, 0) / ticks.length
             ).toFixed(2),
-            frameCpuMedianMs: +median(cpu.slice(5)).toFixed(1),
-            frameIntervalMedianMs: Math.round(median(intervals.slice(5))),
+            frameCpuMedianMs: standard.frameCpuMedianMs,
+            frameIntervalMedianMs: standard.frameIntervalMedianMs,
+            standard,
+            realistic,
             warnings: snapshot.warnings,
           };
-        });
+        }, playFrames);
   const heapAfterPlay = await heapMb();
   const rssAfterPlay = await rssMb();
   await page.close();
@@ -243,6 +455,7 @@ async function measure(context: BrowserContext, profile: string) {
       afterPlay: rssAfterPlay,
     },
     orbit,
+    interaction,
     play: playResult,
     errors,
   };

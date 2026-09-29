@@ -88,7 +88,11 @@ it.each([false, true])(
       drawDirect: draw,
       resize: vi.fn(),
       invalidate: vi.fn(),
-      batches: { rebuild: vi.fn() },
+      batches: {
+        rebuild: vi.fn(),
+        refresh: vi.fn(),
+        setLinesSuppressed: vi.fn(),
+      },
     }) as SceneAdapter;
     const capture = adapter.image({
       ...(dimPrevious ? { instructionNewIds: [] } : {}),

@@ -30,6 +30,11 @@ export type RenderBudget = {
    * conditional edge lines and at no more than 1.5× pixel density (a visible,
    * reported degradation; captures keep full quality). */
   reducedQualityTriangles: number;
+  /** Above this many scene triangles, frames drawn while the view moves
+   * (orbit, zoom, transform drags, Play motion) leave out edge lines and, on
+   * phones, draw at ≤ 1.25× pixel density; the view redraws in full as soon
+   * as it comes to rest. Captures are unaffected. */
+  motionReductionTriangles: number;
 };
 
 export const RENDER_BUDGETS: Readonly<
@@ -43,6 +48,7 @@ export const RENDER_BUDGETS: Readonly<
     sceneTriangles: 60_000_000,
     retainedUnusedPrototypes: 256,
     reducedQualityTriangles: 60_000_000,
+    motionReductionTriangles: 4_000_000,
   }),
   mobile: Object.freeze({
     partOccurrences: RESOURCE_PROFILES.mobile.occurrences,
@@ -52,6 +58,7 @@ export const RENDER_BUDGETS: Readonly<
     sceneTriangles: 16_000_000,
     retainedUnusedPrototypes: 64,
     reducedQualityTriangles: 4_000_000,
+    motionReductionTriangles: 500_000,
   }),
 });
 

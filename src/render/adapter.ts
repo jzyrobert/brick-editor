@@ -17,6 +17,7 @@ import {
   type TransformHandleOptions,
 } from "../edit/transform-handles";
 import { LayerGhost } from "./layerGhost";
+import { indexPrototypeGeometry } from "./geometry-index";
 import {
   explodeLifts,
   floorFocusSets,
@@ -90,6 +91,10 @@ import { canonical } from "../ldraw/path";
 import { sha256, stable } from "../core/hash";
 /** Play renders continuously; cap its drawing buffer below phone DPRs of 2-3. */
 export const PLAY_PIXEL_RATIO_CAP = 1.5;
+/** Phones draw a large moving view at this density and restore it at rest. */
+export const MOTION_PIXEL_RATIO_CAP = 1.25;
+/** A view counts as at rest this long after its last motion event. */
+export const MOTION_IDLE_MS = 180;
 const defaultCamera: CameraSpec = {
   space: "ldraw",
   projection: "perspective",
@@ -319,7 +324,14 @@ export class SceneAdapter {
   private ghostToken = 0;
   private disposed = false;
   private captureActive = false;
-  private batches = new RenderBatches();
+  /** `?batchCells=<LDU>` splits large buckets into spatial cells (a
+   * diagnostic for measuring culling granularity; off by default). */
+  private batches = new RenderBatches({
+    cellSize: Math.max(
+      0,
+      Number(new URLSearchParams(location.search).get("batchCells")) || 0,
+    ),
+  });
   private layerGhost = new LayerGhost();
   private instructionDimming = new LayerGhost(0.3);
   private instructionNewIds: Set<string> | null = null;
@@ -411,9 +423,18 @@ export class SceneAdapter {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = false;
     // Orbiting moves only the camera, so a cached shadow map stays valid.
-    this.controls.addEventListener("change", () =>
-      this.invalidate({ cameraOnly: true }),
-    );
+    this.controls.addEventListener("change", () => {
+      // A programmatic camera jump (setCamera) is one still frame, not motion.
+      if (!this.cameraJump) this.noteMotion();
+      this.invalidate({ cameraOnly: true });
+    });
+    this.controls.addEventListener("start", () => {
+      this.motionHeld = true;
+    });
+    this.controls.addEventListener("end", () => {
+      this.motionHeld = false;
+      if (this.moving) this.noteMotion();
+    });
     this.setCamera(defaultCamera);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(element);
@@ -998,14 +1019,74 @@ export class SceneAdapter {
         renderBudget(this.lookResourceProfile).reducedQualityTriangles
     );
   }
+  /** Whether frames drawn while the view moves may leave out edges and (on
+   * phones) pixel density: a large scene, and never during a capture. */
+  private get motionReducible() {
+    return (
+      !this.captureActive &&
+      (this.renderUsage?.sceneTriangles ?? 0) >
+        renderBudget(this.lookResourceProfile).motionReductionTriangles
+    );
+  }
+  /** Pointer held on the orbit controls (a drag in progress). */
+  private motionHeld = false;
+  private cameraJump = false;
+  private moving = false;
+  private motionTimer?: ReturnType<typeof setTimeout>;
+  /** The last interactive frame was drawn reduced (edges/density). */
+  private reducedFrame = false;
+  /** Something moved the view: draw reduced until it has been still for
+   * MOTION_IDLE_MS, then redraw once at full quality. */
+  private noteMotion() {
+    this.moving = true;
+    clearTimeout(this.motionTimer);
+    this.motionTimer = setTimeout(() => this.settleMotion(), MOTION_IDLE_MS);
+  }
+  private settleMotion() {
+    this.motionTimer = undefined;
+    // A drag in progress stays reduced even if it pauses; releasing it
+    // restarts the idle timer.
+    if (this.motionHeld) return;
+    this.moving = false;
+    if (this.reducedFrame) this.invalidate({ cameraOnly: true });
+  }
+  /** Vertices before/after indexing new prototypes, and the time it took. */
+  private geometryIndexStats = { ms: 0, before: 0, after: 0 };
+  private indexedPrototypes = new WeakSet<THREE.Object3D>();
+  private indexPrototypes(prototypes: Iterable<THREE.Object3D>) {
+    const start = performance.now();
+    let before = 0,
+      after = 0;
+    for (const prototype of prototypes) {
+      if (this.indexedPrototypes.has(prototype)) continue;
+      this.indexedPrototypes.add(prototype);
+      // Raw primitives are baked into merged batches; leave them as compiled.
+      if (prototype.userData.rawPrimitive) continue;
+      const result = indexPrototypeGeometry(prototype);
+      before += result.before;
+      after += result.after;
+    }
+    if (before)
+      this.geometryIndexStats = {
+        ms: Math.round(performance.now() - start),
+        before,
+        after,
+      };
+  }
   /** Measured size of the last rendered model against its profile budget. */
   renderBudgetStatus() {
     return {
       profile: this.lookResourceProfile,
       reducedQuality: this.reducedQuality,
+      motion: {
+        reducible: this.motionReducible,
+        moving: this.moving,
+        reducedFrame: this.reducedFrame,
+      },
       budget: renderBudget(this.lookResourceProfile),
       usage: this.renderUsage,
       lastFrame: this.lastFrameStats,
+      geometryIndex: { ...this.geometryIndexStats },
       batches: this.batches.stats(),
     };
   }
@@ -1132,6 +1213,9 @@ export class SceneAdapter {
           throw e;
         }
         this.renderUsage = { profile, ...usage };
+        // Render-side post-process (frame cost, not compilation): index each
+        // new prototype's triangles once, before any handle clones it.
+        this.indexPrototypes(loaded.map(({ prototype }) => prototype));
         if (this.reducedQuality && !this.reducedNotice)
           this.report(
             "Large model on a phone: conditional edge lines are hidden and pixel density is reduced while viewing. Every part is drawn; captures keep full quality.",
@@ -1189,6 +1273,9 @@ export class SceneAdapter {
           group.updateMatrixWorld(true);
         }
         this.evictPrototypes();
+        // The handle set and prototypes changed: reclassify the batches once.
+        // Later view changes (quality, look, treatments, steps) only refill them.
+        this.batches.rebuild(this.handles);
         this.project = snapshot;
         this.tuneMaterials();
         this.applyLayerGhost();
@@ -1483,15 +1570,19 @@ export class SceneAdapter {
         object.visible =
           edges === "all" || (edges === "ordinary" && !conditional);
       });
-    this.batches.rebuild(this.handles);
+    this.batches.refresh();
   }
-  /** Continuous Play frames cap the backing store; phones report DPR 3. */
-  private applyPixelRatio() {
+  /** Continuous Play frames cap the backing store; phones report DPR 3. A
+   * large scene on a phone drops further while its view moves. */
+  private applyPixelRatio(reduceMotion = this.reducedFrame) {
     const ratio = Math.min(
       devicePixelRatio,
       this.qualityProfile.pixelRatioCap,
       this.playViewActive || this.reducedQuality
         ? PLAY_PIXEL_RATIO_CAP
+        : Infinity,
+      reduceMotion && this.lookResourceProfile === "mobile"
+        ? MOTION_PIXEL_RATIO_CAP
         : Infinity,
     );
     if (this.renderer.getPixelRatio() !== ratio)
@@ -1545,12 +1636,19 @@ export class SceneAdapter {
   }
   /** Draw the scene into the current render target (the canvas when none). */
   private drawDirect() {
-    // Looks with forced shadows re-render the shadow map only after a scene change,
-    // not for every orbit frame (the shadow pass doubles the draw calls).
+    // Shadows (a look's forced shadows or the photo quality profile) re-render
+    // the shadow map only after a scene change, not for every orbit or Play
+    // camera frame (the shadow pass doubles the draw calls).
     const shadowMap = this.renderer.shadowMap;
-    const cached = this.look.shadows === "soft";
-    shadowMap.autoUpdate = !cached;
-    if (cached && this.shadowDirty) shadowMap.needsUpdate = true;
+    shadowMap.autoUpdate = false;
+    if (
+      shadowMap.enabled &&
+      this.keyLight.castShadow &&
+      (this.shadowDirty || !this.keyLight.shadow.map)
+    ) {
+      shadowMap.needsUpdate = true;
+      this.shadowPasses++;
+    }
     this.shadowDirty = false;
     if (this.batchingEnabled)
       this.batches.render(this.renderer, this.scene, this.camera);
@@ -1573,17 +1671,29 @@ export class SceneAdapter {
     };
   }
   /** Last interactive frame: main-thread submission time and draw statistics. */
+  /** Shadow-map renders requested so far (diagnostics: camera-only frames
+   * reuse the cached map). */
+  private shadowPasses = 0;
   private frameStats = {
     frames: 0,
     cpuMs: 0,
     calls: 0,
     triangles: 0,
     lines: 0,
+    shadowPasses: 0,
   };
   get lastFrameStats() {
     return { ...this.frameStats };
   }
   private drawScene() {
+    // Adaptive quality while the view moves: edges (ordinary and conditional)
+    // are left out by toggling their batch objects, and phones lower the
+    // pixel density; the next still frame restores both. Captures never pass
+    // through here.
+    const reduce = this.moving && this.motionReducible;
+    this.reducedFrame = reduce;
+    this.batches.setLinesSuppressed(reduce);
+    this.applyPixelRatio(reduce);
     const info = this.renderer.info;
     info.autoReset = false;
     info.reset();
@@ -1597,6 +1707,7 @@ export class SceneAdapter {
         calls: info.render.calls,
         triangles: info.render.triangles,
         lines: info.render.lines,
+        shadowPasses: this.shadowPasses,
       };
       info.autoReset = true;
     }
@@ -1767,7 +1878,12 @@ export class SceneAdapter {
     this.controls.object = this.camera;
     this.controls.target.fromArray(conversion(spec.target));
     this.camera.lookAt(this.controls.target);
-    this.controls.update();
+    this.cameraJump = true;
+    try {
+      this.controls.update();
+    } finally {
+      this.cameraJump = false;
+    }
     this.camera.position.fromArray(conversion(spec.position));
     this.camera.lookAt(this.controls.target);
     this.resize();
@@ -2083,7 +2199,10 @@ export class SceneAdapter {
       this.controls,
       pivot,
       options,
-      () => this.invalidate(),
+      () => {
+        if (this.transformHandles?.dragging) this.noteMotion();
+        this.invalidate();
+      },
     );
     this.transformHandles = handles;
     return {
@@ -2112,7 +2231,7 @@ export class SceneAdapter {
           group.updateMatrixWorld(true);
         }
       }
-      if (!this.batches.setDynamic([])) this.batches.rebuild(this.handles);
+      if (!this.batches.setDynamic([])) this.batches.refresh();
       this.invalidate();
     };
   }
@@ -2175,7 +2294,7 @@ export class SceneAdapter {
       this.instructionDimming.active || this.layerGhost.active;
     this.instructionDimming.restore();
     this.layerGhost.restore();
-    if (materialsChanged) this.batches.rebuild(this.handles);
+    if (materialsChanged) this.batches.refresh();
     const camera = this.currentCamera();
     const visible = new Map(
       [...this.handles].map(([id, g]) => [id, g.visible]),
@@ -2206,7 +2325,7 @@ export class SceneAdapter {
       this.applyPixelRatio();
       this.applyLayerGhost();
       if (this.layerGhost.active || this.instructionDimming.active)
-        this.batches.rebuild(this.handles);
+        this.batches.refresh();
       this.controls.enabled = true;
       this.setCamera(camera);
     };
@@ -2225,7 +2344,10 @@ export class SceneAdapter {
     this.controls.target.fromArray(conversion(spec.target));
     camera.lookAt(this.controls.target);
     camera.updateProjectionMatrix();
-    this.invalidate();
+    // Only the camera moved: a cached shadow map stays valid. Play marks pose
+    // and figure changes itself (invalidate without cameraOnly).
+    this.noteMotion();
+    this.invalidate({ cameraOnly: true });
   }
   fit() {
     const box = new THREE.Box3().setFromObject(this.root);
@@ -2313,7 +2435,7 @@ export class SceneAdapter {
     }
     this.explodeLift = next.lifts;
     this.explodeLevels = "levels" in next ? next.levels : [];
-    this.batches.rebuild(this.handles);
+    this.batches.refresh();
     this.rebuildAnnotations();
     this.invalidate();
     return next.groups;
@@ -2334,6 +2456,8 @@ export class SceneAdapter {
     );
     this.sectionSpec = spec && { ...spec, flip: !!spec.flip };
     this.renderer.clippingPlanes = spec ? [sectionPlane(spec)] : [];
+    // Parts wholly beyond the cut are left out of the instance arrays.
+    this.batches.setClipPlane(this.renderer.clippingPlanes[0] ?? null);
     this.invalidate();
   }
   /** Horizontal cut: hide everything above LDraw height `h`. */
@@ -2373,17 +2497,98 @@ export class SceneAdapter {
     const plane = this.renderer.clippingPlanes[0];
     return !!plane && plane.distanceToPoint(point) < -1e-3;
   }
+  /** Handle-local bounds of each prototype's meshes (shared by its clones). */
+  private pickBounds = new WeakMap<THREE.Object3D, THREE.Box3 | null>();
+  private pickRootMatrix?: THREE.Matrix4;
+  /** Handles keep their world matrices current as they move (see RenderBatches);
+   * a pick only needs the camera and, once, the model root. Forcing a
+   * scene-wide matrix update per pick cost milliseconds at 20,000 parts. */
+  private syncPickMatrices() {
+    this.camera.updateMatrixWorld();
+    this.root.updateWorldMatrix(true, false);
+    if (!this.pickRootMatrix?.equals(this.root.matrixWorld)) {
+      this.root.updateMatrixWorld(true);
+      this.pickRootMatrix = this.root.matrixWorld.clone();
+    }
+  }
+  private handleBounds(group: THREE.Group) {
+    const key =
+      (group.userData.prototype as THREE.Object3D | undefined) ?? group;
+    if (this.pickBounds.has(key)) return this.pickBounds.get(key)!;
+    const inverse = group.matrixWorld.clone().invert();
+    const box = new THREE.Box3(),
+      part = new THREE.Box3(),
+      relative = new THREE.Matrix4();
+    group.traverse((object) => {
+      const mesh = object as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+      relative.multiplyMatrices(inverse, mesh.matrixWorld);
+      box.union(part.copy(mesh.geometry.boundingBox!).applyMatrix4(relative));
+    });
+    const bounds = box.isEmpty() ? null : box;
+    this.pickBounds.set(key, bounds);
+    return bounds;
+  }
+  /**
+   * Nearest accepted triangle-mesh hit among the handles `include` admits.
+   * Broadphase: each handle's cached local box, entered along the ray; handles
+   * are then tested nearest-first and the search stops once the best hit lies
+   * before the next box. Lines are never tested (they are drawn over faces).
+   */
+  private raycastHandles(
+    ray: THREE.Raycaster,
+    include: (id: string, group: THREE.Group) => boolean,
+    accept: (hit: THREE.Intersection, id: string) => boolean = () => true,
+  ): { hit: THREE.Intersection; id: string } | null {
+    this.syncPickMatrices();
+    const inverse = new THREE.Matrix4(),
+      local = new THREE.Ray(),
+      entry = new THREE.Vector3();
+    const candidates: Array<{ id: string; group: THREE.Group; near: number }> =
+      [];
+    for (const [id, group] of this.handles) {
+      if (!include(id, group)) continue;
+      const box = this.handleBounds(group);
+      if (!box) continue;
+      local
+        .copy(ray.ray)
+        .applyMatrix4(inverse.copy(group.matrixWorld).invert());
+      if (!local.intersectBox(box, entry)) continue;
+      candidates.push({
+        id,
+        group,
+        near: entry.applyMatrix4(group.matrixWorld).distanceTo(ray.ray.origin),
+      });
+    }
+    candidates.sort((a, b) => a.near - b.near);
+    let best: { hit: THREE.Intersection; id: string } | null = null;
+    const hits: THREE.Intersection[] = [];
+    for (const candidate of candidates) {
+      if (best && best.hit.distance <= candidate.near) break;
+      hits.length = 0;
+      candidate.group.traverse((object) => {
+        if ((object as THREE.Mesh).isMesh) object.raycast(ray, hits);
+      });
+      hits.sort((a, b) => a.distance - b.distance);
+      for (const hit of hits) {
+        if (best && hit.distance >= best.hit.distance) break;
+        if (accept(hit, candidate.id)) {
+          best = { hit, id: candidate.id };
+          break;
+        }
+      }
+    }
+    return best;
+  }
   /** First visible model surface under a screen point, in LDraw coordinates. */
   pickPoint(x: number, y: number): Vec3 | null {
-    this.scene.updateMatrixWorld(true);
-    for (const hit of this.ray(x, y).intersectObjects(
-      [...this.handles.values()].filter((g) => g.visible),
-      true,
-    )) {
-      if (this.aboveSection(hit.point)) continue;
-      return conversion(hit.point.toArray() as Vec3);
-    }
-    return null;
+    const found = this.raycastHandles(
+      this.ray(x, y),
+      (_, group) => group.visible,
+      (hit) => !this.aboveSection(hit.point),
+    );
+    return found && conversion(found.hit.point.toArray() as Vec3);
   }
   /** First visible surface under a screen point: its occurrence, point and outward face
    * normal, all in LDraw coordinates (−Y is up). */
@@ -2391,27 +2596,24 @@ export class SceneAdapter {
     x: number,
     y: number,
   ): { occurrenceId: string; point: Vec3; normal: Vec3 } | null {
-    this.scene.updateMatrixWorld(true);
-    for (const hit of this.ray(x, y).intersectObjects(
-      [...this.handles.values()].filter((g) => g.visible),
-      true,
-    )) {
-      if (this.aboveSection(hit.point) || !hit.face) continue;
-      let object: THREE.Object3D | null = hit.object;
-      while (object && !object.userData.occurrenceId) object = object.parent;
-      if (!object) continue;
-      const normal = hit.face.normal
-        .clone()
-        .transformDirection(hit.object.matrixWorld);
-      // Face toward the viewer (double-sided or reversed winding reports either side).
-      if (normal.dot(this.ray(x, y).ray.direction) > 0) normal.negate();
-      return {
-        occurrenceId: object.userData.occurrenceId as string,
-        point: conversion(hit.point.toArray() as Vec3),
-        normal: conversion(normal.toArray() as Vec3),
-      };
-    }
-    return null;
+    const ray = this.ray(x, y);
+    const found = this.raycastHandles(
+      ray,
+      (_, group) => group.visible,
+      (hit) => !this.aboveSection(hit.point) && !!hit.face,
+    );
+    if (!found) return null;
+    const { hit } = found;
+    const normal = hit
+      .face!.normal.clone()
+      .transformDirection(hit.object.matrixWorld);
+    // Face toward the viewer (double-sided or reversed winding reports either side).
+    if (normal.dot(ray.ray.direction) > 0) normal.negate();
+    return {
+      occurrenceId: found.id,
+      point: conversion(hit.point.toArray() as Vec3),
+      normal: conversion(normal.toArray() as Vec3),
+    };
   }
   private explodeLevels: number[] = [];
   private floorFocusSpec: FloorFocus | null = null;
@@ -2480,7 +2682,7 @@ export class SceneAdapter {
     this.computeFloorFocus();
     this.applyVisibility();
     this.applyLayerGhost();
-    this.batches.rebuild(this.handles);
+    this.batches.refresh();
     this.rebuildAnnotations();
     this.invalidate();
     return this.floorFocus;
@@ -2660,19 +2862,13 @@ export class SceneAdapter {
     this.invalidate();
   }
   pick(x: number, y: number) {
-    this.scene.updateMatrixWorld(true);
-    const intersections = this.ray(x, y).intersectObjects(
-      [...this.handles.values()].filter((g) => g.visible),
-      true,
+    return (
+      this.raycastHandles(
+        this.ray(x, y),
+        (_, group) => group.visible,
+        (hit) => !this.aboveSection(hit.point),
+      )?.id ?? null
     );
-    for (const hit of intersections) {
-      if (this.aboveSection(hit.point)) continue;
-      let obj: THREE.Object3D | null = hit.object;
-      while (obj && !obj.userData.occurrenceId) obj = obj.parent;
-      if (obj?.userData.occurrenceId)
-        return obj.userData.occurrenceId as string;
-    }
-    return null;
   }
   /** Intersects only authored triangle meshes, preserving their complete world affine transform. */
   pickFace(
@@ -2681,50 +2877,43 @@ export class SceneAdapter {
     selectedIds?: ReadonlySet<string>,
     settings?: Workplane,
   ): { occurrenceId: string; plane: Workplane } | null {
-    this.scene.updateMatrixWorld(true);
     const ray = this.ray(x, y);
-    const handles = [...this.handles]
-      .filter(
-        ([id, g]) => g.visible && (!selectedIds?.size || selectedIds.has(id)),
-      )
-      .map(([, g]) => g);
-    for (const hit of ray.intersectObjects(handles, true)) {
-      const mesh = hit.object as THREE.Mesh;
-      if (!mesh.isMesh || !hit.face || this.aboveSection(hit.point)) continue;
-      let object: THREE.Object3D | null = mesh,
-        occurrenceId: string | undefined,
-        visible = true;
-      while (object) {
-        if (!object.visible) visible = false;
-        if (object.userData.occurrenceId)
-          occurrenceId = object.userData.occurrenceId;
-        object = object.parent;
-      }
-      if (!visible || !occurrenceId) continue;
-      const positions = mesh.geometry.getAttribute("position");
-      const point = (index: number) =>
-        conversion(
-          new THREE.Vector3()
-            .fromBufferAttribute(positions, index)
-            .applyMatrix4(mesh.matrixWorld)
-            .toArray() as Vec3,
-        );
-      try {
-        return {
-          occurrenceId,
-          plane: planeFromTriangle(
+    let plane: Workplane | undefined;
+    const found = this.raycastHandles(
+      ray,
+      (id, g) => g.visible && (!selectedIds?.size || selectedIds.has(id)),
+      (hit) => {
+        const mesh = hit.object as THREE.Mesh;
+        if (!hit.face || this.aboveSection(hit.point)) return false;
+        for (
+          let object: THREE.Object3D | null = mesh;
+          object;
+          object = object.parent
+        )
+          if (!object.visible) return false;
+        const positions = mesh.geometry.getAttribute("position");
+        const point = (index: number) =>
+          conversion(
+            new THREE.Vector3()
+              .fromBufferAttribute(positions, index)
+              .applyMatrix4(mesh.matrixWorld)
+              .toArray() as Vec3,
+          );
+        try {
+          plane = planeFromTriangle(
             point(hit.face.a),
             point(hit.face.b),
             point(hit.face.c),
             conversion(ray.ray.origin.toArray() as Vec3),
             settings,
-          ),
-        };
-      } catch {
-        continue;
-      }
-    }
-    return null;
+          );
+          return true;
+        } catch {
+          return false;
+        }
+      },
+    );
+    return found && plane ? { occurrenceId: found.id, plane } : null;
   }
   planeIntersection(x: number, y: number, plane: Workplane): Vec3 | null {
     validateWorkplane(plane);
@@ -2807,7 +2996,7 @@ export class SceneAdapter {
     // Keep capture materials frozen; its finally block applies the latest value.
     if (this.captureActive) return;
     this.applyLayerGhost();
-    this.batches.rebuild(this.handles);
+    this.batches.refresh();
     this.invalidate();
   }
   showStep(ids: string[] | null, newIds?: string[]) {
@@ -2815,7 +3004,7 @@ export class SceneAdapter {
     this.instructionNewIds = ids && newIds ? new Set(newIds) : null;
     if (this.captureActive) return;
     this.applyLayerGhost();
-    this.batches.rebuild(this.handles);
+    this.batches.refresh();
     this.applyVisibility();
     this.invalidate();
   }
@@ -2985,6 +3174,8 @@ export class SceneAdapter {
     );
     this.captureActive = true;
     this.controls.enabled = false;
+    // Captures keep full detail whatever the interactive view last drew.
+    this.batches.setLinesSuppressed(false);
     try {
       this.instructionDimming.restore();
       this.layerGhost.restore();
@@ -3028,7 +3219,7 @@ export class SceneAdapter {
           new Set([...this.handles.keys()].filter((id) => !additions.has(id))),
         );
       }
-      this.batches.rebuild(this.handles);
+      this.batches.refresh();
       this.grid.visible = false;
       this.selection.visible = false;
       if (this.transformHandles) this.transformHandles.helper.visible = false;
@@ -3106,7 +3297,7 @@ export class SceneAdapter {
       this.computeFloorFocus();
       this.applyLook(savedLook, false);
       this.applyLayerGhost();
-      this.batches.rebuild(this.handles);
+      this.batches.refresh();
       this.applyQuality(savedQuality);
       this.controls.enabled = controlsEnabled;
       this.renderer.setRenderTarget(target);
@@ -3211,6 +3402,7 @@ export class SceneAdapter {
   }
   dispose() {
     this.disposed = true;
+    clearTimeout(this.motionTimer);
     this.contextWork.abort();
     this.transformHandles?.dispose();
     this.transformHandles = undefined;

@@ -4,6 +4,8 @@ import { LDrawConditionalLineMaterial } from "three/examples/jsm/materials/LDraw
 import {
   canInstanceMatrix,
   RenderBatches,
+  registerTreatment,
+  treatmentBase,
   transformLineGeometry,
   supportsInstancedLines,
   type InstancedLineSegments,
@@ -116,15 +118,169 @@ describe("render-only batching", () => {
     handles.get("1")!.updateMatrixWorld(true);
     draw();
     expect(batches.root.children[0]).toBe(packed);
-    // Visibility of batched handles is still detected without a rebuild call.
+    // Visibility of batched handles is still detected without a rebuild call,
+    // and refills the same draw in place.
     handles.get("2")!.visible = false;
     draw();
-    expect(batches.root.children).toHaveLength(1);
-    expect(batches.root.children[0].userData.occurrenceId).toBe("0");
+    expect(batches.root.children).toEqual([packed]);
+    expect(packed.count).toBe(1);
+    expect(packed.userData.occurrenceIds).toEqual(["0"]);
     expect(batches.setDynamic([])).toBe(true);
     handles.get("2")!.visible = true;
     draw();
     expect((batches.root.children[0] as THREE.InstancedMesh).count).toBe(3);
+    batches.dispose();
+  });
+  it("refills instance arrays in place for visibility, treatments and transforms", () => {
+    const { scene, handles, batches, camera, material } = fixture();
+    const draw = () => batches.render({ render: () => {} }, scene, camera);
+    draw();
+    const packed = batches.root.children[0] as THREE.InstancedMesh;
+    const structures = batches.stats().structures;
+    // A ghost/dimming clone of the shared material: same bucket, second draw.
+    const ghost = material.clone();
+    ghost.transparent = true;
+    ghost.opacity = 0.18;
+    registerTreatment(ghost, material);
+    expect(treatmentBase(ghost)).toBe(material);
+    const mesh = handles.get("1")!.children[0] as THREE.Mesh;
+    mesh.material = ghost;
+    batches.refresh();
+    draw();
+    expect(batches.stats().structures).toBe(structures);
+    const draws = batches.root.children.filter(
+      (o) => o.visible,
+    ) as THREE.InstancedMesh[];
+    expect(draws).toHaveLength(2);
+    expect(draws[0]).toBe(packed);
+    expect(packed.count).toBe(2);
+    expect(draws[1].material).toBe(ghost);
+    expect(draws[1].count).toBe(1);
+    expect(draws[1].userData.occurrenceIds).toEqual(["1"]);
+    // A transform-only change (explode) moves the instance without a rebuild.
+    handles.get("0")!.position.y = 50;
+    handles.get("0")!.updateMatrixWorld(true);
+    mesh.material = material;
+    batches.refresh();
+    draw();
+    expect(batches.stats().structures).toBe(structures);
+    expect(packed.count).toBe(3);
+    expect(batches.root.children[1].visible).toBe(false);
+    const matrix = new THREE.Matrix4();
+    packed.getMatrixAt(0, matrix);
+    expect(new THREE.Vector3().setFromMatrixPosition(matrix).y).toBe(50);
+    // Culling spheres follow the filled instances.
+    expect(
+      packed.boundingSphere!.containsPoint(new THREE.Vector3(0, 50, 0)),
+    ).toBe(true);
+    batches.dispose();
+    ghost.dispose();
+  });
+  it("instances repeated transparent meshes", () => {
+    const { scene, batches, camera, material } = fixture();
+    material.transparent = true;
+    material.opacity = 0.5;
+    batches.rebuild(new Map(batches["handles"]));
+    batches.render({ render: () => {} }, scene, camera);
+    const visible = batches.root.children.filter((o) => o.visible);
+    expect(visible).toHaveLength(1);
+    expect((visible[0] as THREE.InstancedMesh).isInstancedMesh).toBe(true);
+    expect((visible[0] as THREE.InstancedMesh).count).toBe(3);
+    batches.dispose();
+  });
+  it("culls instances wholly beyond a section plane and splits large buckets into cells", () => {
+    const { scene, parent, handles, batches, camera } = fixture();
+    const draw = () => batches.render({ render: () => {} }, scene, camera);
+    draw();
+    const packed = batches.root.children[0] as THREE.InstancedMesh;
+    // World space: the parent is rotated by π about X, so parent x is world x.
+    batches.setClipPlane(new THREE.Plane(new THREE.Vector3(-1, 0, 0), 5));
+    draw();
+    // Only x = 0 lies on the kept side (x ≤ 5); x = 10 and 20 are wholly beyond.
+    expect(packed.count).toBe(1);
+    expect(packed.userData.occurrenceIds).toEqual(["0"]);
+    batches.setClipPlane(null);
+    draw();
+    expect(packed.count).toBe(3);
+    batches.dispose();
+    const cells = new RenderBatches({ cellSize: 15, cellMinSlots: 2 });
+    parent.add(cells.root);
+    cells.rebuild(handles);
+    cells.render({ render: () => {} }, scene, camera);
+    // x = 0 and 10 share cell 0; x = 20 is in cell 1.
+    const counts = cells.root.children
+      .map((o) =>
+        (o as THREE.InstancedMesh).isInstancedMesh
+          ? (o as THREE.InstancedMesh).count
+          : 1,
+      )
+      .sort();
+    expect(counts).toEqual([1, 2]);
+    cells.dispose();
+    const small = new RenderBatches({ cellSize: 15, cellMinSlots: 4 });
+    parent.add(small.root);
+    small.rebuild(handles);
+    small.render({ render: () => {} }, scene, camera);
+    expect(small.root.children).toHaveLength(1);
+    small.dispose();
+  });
+  it("suppresses instanced lines while moving without refilling", () => {
+    const scene = new THREE.Scene(),
+      parent = new THREE.Group();
+    scene.add(parent);
+    const lineGeometry = new THREE.BufferGeometry().setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute([0, 0, 0, 1, 0, 0], 3),
+    );
+    const box = new THREE.BoxGeometry(),
+      surface = new THREE.MeshBasicMaterial(),
+      edge = new THREE.LineBasicMaterial();
+    const handles = new Map<string, THREE.Group>();
+    for (let i = 0; i < 3; i++) {
+      const group = new THREE.Group();
+      group.position.x = i * 10;
+      group.add(new THREE.Mesh(box, surface));
+      // The third occurrence's lines use their own material: a single copy.
+      group.add(
+        new THREE.LineSegments(
+          lineGeometry,
+          i < 2 ? edge : new THREE.LineBasicMaterial(),
+        ),
+      );
+      parent.add(group);
+      handles.set(String(i), group);
+    }
+    const batches = new RenderBatches();
+    parent.add(batches.root);
+    batches.rebuild(handles);
+    const draw = () =>
+      batches.render({ render: () => {} }, scene, new THREE.Camera());
+    draw();
+    const fills = batches.stats().fills;
+    const lines = batches.root.children.filter(
+      (o) => (o as THREE.LineSegments).isLineSegments,
+    );
+    expect(lines).toHaveLength(2);
+    expect(lines.every((o) => o.visible)).toBe(true);
+    batches.setLinesSuppressed(true);
+    draw();
+    expect(lines.some((o) => o.visible)).toBe(false);
+    expect(batches.stats()).toMatchObject({
+      fills,
+      linesSuppressed: true,
+      instancedLines: 1,
+      single: 1,
+      occurrencesDrawn: 3,
+    });
+    batches.setLinesSuppressed(false);
+    draw();
+    expect(lines.every((o) => o.visible)).toBe(true);
+    // Edge-mode changes hide child lines on the handles: a refill, no rebuild.
+    for (const group of handles.values()) group.children[1].visible = false;
+    batches.refresh();
+    draw();
+    expect(lines.some((o) => o.visible)).toBe(false);
+    expect(batches.stats().structures).toBe(1);
     batches.dispose();
   });
   it("keeps reflected, sheared and transparent meshes on the reference path", () => {
