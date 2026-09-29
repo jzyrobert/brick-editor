@@ -1,4 +1,5 @@
 import type { BrowserPlay } from "../play/browser";
+import { Icon } from "./icons";
 import type { MotionRig } from "../mechanisms/types";
 import type { PlaySnapshotReport } from "../play/types";
 
@@ -23,30 +24,41 @@ export function PlaySeatEntry({
     ?.vehicleCollision;
   return (
     <>
-      <button
-        className="primary"
-        disabled={!eligibility.eligible}
-        onClick={() =>
-          action(() => play.enterVehicle({ rigId: rig.id, seatId: seat.id }))
-        }
-      >
-        Enter driver seat
-      </button>
-      <small>{rig.name} · open-bench seat. Entry checks clearance.</small>
-      {message && <small role="status">{message}</small>}
-      {eligibility.reason && <small role="status">{eligibility.reason}</small>}
-      <button
-        className="play-seat-remote"
-        disabled={collision?.supported === false}
-        onClick={() => action(() => play.controlVehicle(rig.id))}
-      >
-        Control vehicle from here
-      </button>
-      <small>
+      {message && (
+        <small className="play-note" role="status">
+          {message}
+        </small>
+      )}
+      {eligibility.reason && (
+        <small className="play-note" role="status">
+          {eligibility.reason}
+        </small>
+      )}
+      <small className="play-caption">
         {collision?.supported === false
           ? collision.reason
-          : "Remote control keeps you on foot."}
+          : `${rig.name} · open-bench seat`}
       </small>
+      <div className="play-prompt-row">
+        <button
+          className="play-prompt play-seat-remote"
+          disabled={collision?.supported === false}
+          onClick={() => action(() => play.controlVehicle(rig.id))}
+        >
+          <Icon name="wheel" />
+          Control vehicle from here
+        </button>
+        <button
+          className="play-prompt is-commit"
+          disabled={!eligibility.eligible}
+          onClick={() =>
+            action(() => play.enterVehicle({ rigId: rig.id, seatId: seat.id }))
+          }
+        >
+          <Icon name="seat" />
+          Enter driver seat
+        </button>
+      </div>
     </>
   );
 }

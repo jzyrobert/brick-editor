@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { unzipSync, strFromU8 } from "fflate";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
+import { exitPlay, fromPauseMenu } from "./helpers/play";
 
 for (const width of [360, 1080, 1440])
   test(`open-bench entry driving and exit at ${width}px`, async ({
@@ -81,9 +82,7 @@ for (const width of [360, 1080, 1440])
       await expect(
         page.getByRole("button", { name: "Fly through walls", exact: true }),
       ).toHaveCount(0);
-      await page
-        .getByRole("button", { name: "Third person", exact: true })
-        .click();
+      await fromPauseMenu(page, "Third person");
       const third = await page.evaluate(() =>
         window.brickEditor!.play.snapshot(),
       );
@@ -199,9 +198,7 @@ for (const width of [360, 1080, 1440])
       );
       expect(outside.occupancy).toBeUndefined();
       expect(outside.positionAnchor).toBe("standing-feet");
-      await page
-        .getByRole("button", { name: "Exit Play", exact: true })
-        .click();
+      await exitPlay(page);
       expect(await page.evaluate(() => window.brickEditor!.query())).toEqual(
         authored,
       );
@@ -397,7 +394,11 @@ test("blocked seat exits retain the driver and become usable after reversing cle
   const stickBox = (await page
     .getByRole("group", { name: "Movement joystick" })
     .boundingBox())!;
-  expect(actionBox.y + actionBox.height).toBeLessThan(stickBox.y);
+  // The blocked-exit note and its action sit clear of the stick.
+  expect(
+    actionBox.x >= stickBox.x + stickBox.width ||
+      actionBox.y + actionBox.height <= stickBox.y,
+  ).toBe(true);
   await page.screenshot({
     path: test.info().outputPath("blocked-exit-360.png"),
   });

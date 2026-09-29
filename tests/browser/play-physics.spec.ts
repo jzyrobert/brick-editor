@@ -3,6 +3,7 @@ import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
+import { enterPlay } from "./helpers/play";
 
 const shots = fileURLToPath(
   new URL("../../.local/screenshots/", import.meta.url),
@@ -137,7 +138,7 @@ for (const viewport of [desktop, phone])
       await expect(page.getByText("Dynamic · gravity")).toBeHidden();
       await drawer.click();
       await page.getByText("Dynamic · gravity").click();
-      await page.getByRole("button", { name: "Enter Play" }).click();
+      await enterPlay(page);
       await expect(page.locator(".play-overlay")).toBeVisible({
         timeout: 30000,
       });
@@ -158,7 +159,9 @@ for (const viewport of [desktop, phone])
       ).toBeLessThan(30);
       // Motor toggle lives in the existing remote-controls drawer.
       await page.evaluate(() => window.brickEditor!.play.pause(false));
-      await page.getByText("Remote mechanism controls").click();
+      await page
+        .getByRole("button", { name: "Remote mechanism controls" })
+        .click();
       await page
         .getByRole("combobox", { name: "Remote mechanism" })
         .selectOption("spinner");

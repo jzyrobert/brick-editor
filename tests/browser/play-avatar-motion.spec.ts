@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { openMode } from "./helpers/mode";
+import { exitPlay } from "./helpers/play";
 
 type Frame = {
   t: number;
@@ -261,5 +262,5 @@ test("mouse look falls back to dragging when pointer lock is refused", async ({
   const still = await yaw();
   await page.mouse.move(900, 500, { steps: 3 });
   expect(await yaw()).toBe(still);
-  await page.getByRole("button", { name: "Exit Play" }).click();
+  await exitPlay(page);
 });

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
+import { exitPlay } from "./helpers/play";
 for (const viewport of [
   { width: 1440, height: 1000 },
   { width: 360, height: 800 },
@@ -196,9 +197,7 @@ for (const viewport of [
       await page.screenshot({
         path: test.info().outputPath(`interaction-${viewport.width}.png`),
       });
-      await page
-        .getByRole("button", { name: "Exit Play", exact: true })
-        .click();
+      await exitPlay(page);
       expect(
         await page.evaluate(() =>
           window.brickEditor!.project.export({ format: "ldraw" }),

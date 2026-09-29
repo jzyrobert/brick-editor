@@ -212,6 +212,7 @@ test("PL08 repeated third-person entry releases GL objects and global listeners 
       await api.play.enter({ cameraMode: "third-person", realtime: false });
       await api.play.setInput({ moveZ: 1 });
       await api.play.stepTicks(6);
+      await api.play.pause(true);
       await frame();
       [...document.querySelectorAll("button")]
         .find((button) => button.textContent === "Exit Play")!

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { openMode } from "./helpers/mode";
+import { enterPlay, exitPlay } from "./helpers/play";
 for (const viewport of [
   { width: 360, height: 800 },
   { width: 1080, height: 1800 },
@@ -46,9 +47,7 @@ for (const viewport of [
           exact: true,
         }),
       ).toBeChecked();
-      await page
-        .getByRole("button", { name: "Enter Play", exact: true })
-        .click();
+      await enterPlay(page);
       await expect(
         page.getByRole("button", { name: "Pause", exact: true }),
       ).toBeVisible();
@@ -57,17 +56,13 @@ for (const viewport of [
       );
       expect(defaultProfile.excludedLayerIds).toEqual([]);
       expect(defaultProfile.includedOccurrenceIds).toHaveLength(40);
-      await page
-        .getByRole("button", { name: "Exit Play", exact: true })
-        .click();
+      await exitPlay(page);
       await openMode(page, "Play");
       await page.getByText("World included in Play", { exact: true }).click();
       await page
         .getByRole("checkbox", { name: "Wall · hidden in editor", exact: true })
         .uncheck();
-      await page
-        .getByRole("button", { name: "Enter Play", exact: true })
-        .click();
+      await enterPlay(page);
       await expect(
         page.getByRole("button", { name: "Pause", exact: true }),
       ).toBeVisible();
@@ -76,9 +71,7 @@ for (const viewport of [
       );
       expect(excluded.excludedLayerIds).toEqual([layerId]);
       expect(excluded.includedOccurrenceIds).toEqual([]);
-      await page
-        .getByRole("button", { name: "Exit Play", exact: true })
-        .click();
+      await exitPlay(page);
       expect(await page.evaluate(() => window.brickEditor!.query())).toEqual(
         before,
       );

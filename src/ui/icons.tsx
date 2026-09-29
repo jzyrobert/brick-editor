@@ -175,6 +175,47 @@ const paths = {
       <path d="M20 4v5h-5" />
     </>
   ),
+  /* Play HUD. */
+  pause: <path d="M9 5v14M15 5v14" />,
+  resume: <path d="M8 5.5v13l10.5-6.5z" />,
+  jump: <path d="M12 16V4.5M7 9.5l5-5 5 5M5 20h14" />,
+  run: <path d="M5 6l6 6-6 6M13 6l6 6-6 6" />,
+  fly: (
+    <>
+      <path d="M6 20.5V11a6 6 0 0 1 12 0v9.5l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5z" />
+      <path d="M10 10.5v1M14 10.5v1" />
+    </>
+  ),
+  door: (
+    <>
+      <path d="M6 21V4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21M3.5 21h17" />
+      <path d="M14.5 11.5v1.5" />
+    </>
+  ),
+  hand: (
+    <path d="M9 11.5V5a1.5 1.5 0 0 1 3 0v5.5V4a1.5 1.5 0 0 1 3 0v6.5-4a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.6a6 6 0 0 1-4.6-2.2L4 14.5a1.6 1.6 0 0 1 2.4-2.1L9 15" />
+  ),
+  wheel: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="2" />
+      <path d="M3.5 12H10M14 12h6.5M12 14v6.5" />
+    </>
+  ),
+  seat: <path d="M8 3.5V13h8.5l1.5 7.5M8 13l-1.5 7.5M8 9h5" />,
+  exit: (
+    <>
+      <path d="M13 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H13" />
+      <path d="M10.5 12H20M16.5 8.5 20 12l-3.5 3.5" />
+    </>
+  ),
+  sliders: (
+    <>
+      <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+      <circle cx="15" cy="7" r="2" />
+      <circle cx="9" cy="17" r="2" />
+    </>
+  ),
 };
 export type IconName = keyof typeof paths;
 export function Icon({

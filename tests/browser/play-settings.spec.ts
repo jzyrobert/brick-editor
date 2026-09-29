@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { openMode } from "./helpers/mode";
+import { enterPlay } from "./helpers/play";
 for (const viewport of [
   { width: 360, height: 800 },
   { width: 1080, height: 1800 },
@@ -26,9 +27,7 @@ for (const viewport of [
         window.brickEditor!.query(),
       );
       await openMode(page, "Play");
-      await page
-        .getByRole("button", { name: "Enter Play", exact: true })
-        .click();
+      await enterPlay(page);
       await expect(
         page.getByRole("button", { name: "Pause", exact: true }),
       ).toBeVisible();

@@ -13,9 +13,16 @@ test("Play buttons retain WASD and Escape while Enter and Space activate native 
       realtime: false,
     }),
   );
+  // Camera and movement switches live in the pause menu.
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page.getByRole("button", { name: "Third person", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "First person", exact: true }),
+  ).toBeFocused();
+  await page.getByRole("button", { name: "Resume", exact: true }).click();
+  // The menu key keeps focus after resuming; movement keys still reach Play.
+  await expect(
+    page.getByRole("button", { name: "Pause", exact: true }),
   ).toBeFocused();
   const before = await page.evaluate(() => window.brickEditor!.play.snapshot());
   await page.keyboard.down("w");

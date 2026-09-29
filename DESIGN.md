@@ -245,7 +245,7 @@ The canvas is absolutely full-bleed (100dvh) at every width; the HUD is a pointe
 
 **The Canvas Owns the Ground Rule.** Nothing frames the canvas. A new control goes into an existing edge slot or a new floating slot; it never becomes a bar that shrinks the viewport.
 
-**The Play Steps Aside Rule.** In active Play the whole build HUD (top row, tool dock, hotbar, counts chip, views, status) is removed; Play brings its own controls.
+**The Play Steps Aside Rule.** In active Play the whole build HUD (top row, tool dock, hotbar, counts chip, views, status) is removed; Play brings its own controls (see Play HUD). Play controls do not follow the Recede Rule: thumbs rest on them, so they stay translucent instead of fading.
 
 ## Elevation & Depth
 
@@ -313,6 +313,20 @@ A navy dock of labelled keys grouped by 2px dividers: Select/Place/Paint/Navigat
 ### Hotbar (signature)
 
 A 64px navy bar of 48px keys along the bottom on touch: a colour slot (a bevelled swatch), recently held parts, then Parts, Layers and Inspect. Keys have a 2px chalk-tinted outline over a 5% chalk wash. The active or held key takes a Sun Gold border, a gold wash, a 3px lift and the hotbar lift shadow (180ms ease-out).
+
+### Play HUD (signature)
+
+A game-style touch HUD in the same two materials, built so the world shows through it. Everything sits in the thumb zones, 16px from the edges (safe-area aware on all four sides, so a notch in landscape never covers a control).
+
+- **Menu key and state chip (top left):** one navy slab holding a 44px pause key and, after a 2px HUD Line divider, the current state in 12px chalk with a 16px icon (Walking, Flying · through walls, Controlling vehicle · on foot, Driving · name). The key is named Pause, or Resume while paused, when the chip hides.
+- **Floating stick (left half):** a 120px ring (112px on small or short screens) at 26% navy with a 2px chalk-tinted outline and a 54px navy knob labelled Move or Drive. A touch inside the ring steers from its centre; a touch anywhere else in the left half moves the ring under the thumb and steers from there. Full deflection is 44px of thumb travel. While held, the ring firms up and the knob takes a Sun Gold ring.
+- **Look (right half and everywhere else):** a drag anywhere outside the controls turns the view. A small "Drag to look" chip fades in and out once, for about 6 seconds, until the first drag.
+- **Action cluster (bottom right):** round translucent keys at 62% navy with icon over a 12px label: Jump (68px), Run (54px, a toggle that turns Lit Grass while on) and, when flying, Up (68px) and Down (54px). Vehicles swap the cluster for their own action.
+- **Contextual prompt:** a 48px chalk key with ink text and a 16px icon (door, hand or wheel) rising just above the cluster when something is in reach (Open door, Control vehicle, Release vehicle, Exit vehicle). Out of reach it turns translucent navy with HUD Mute text (Move closer to interact). Entering a driver seat is the one Commit Grass prompt. Reasons and progress sit above it as small caution or navy notes. On a computer the bound key shows as a small key cap.
+- **Pause menu:** a chalk sheet docked right (392px) on wide and landscape screens, and rising from the bottom with a handle on phones held upright. Order: title and paused state, a Commit Grass Resume, a 2×2 grid of white tiles (Fly through walls or Switch to Walk, First or Third person, Recover last safe position, Save this view to Photo), then the Camera settings, Safe spawn and keyboard/mouse drawers, then Exit Play last.
+- **Remote mechanism controls:** a 48px navy key at top right (Lit Grass while open) that drops a chalk panel beneath it; the world keeps running, the stick stays usable and the action cluster steps aside.
+- **Rotate prompt:** entering Play on a phone held upright dims the world and shows a chalk card with an animated phone turning sideways, "Rotate your phone for the best view" and one choice, Play in portrait anyway. It closes by itself when the phone turns. On Android Chrome, Enter Play also asks for fullscreen and a landscape lock; iOS has neither, so the card does the asking. Exiting Play releases both.
+- **Desktop:** the same slots. The mouse captures for look, a navy hint pill sits under the crosshair until it does, and a key hint pill runs along the bottom while captured. The first-person crosshair is a 6px chalk dot with a navy ring.
 
 ### Icons
 

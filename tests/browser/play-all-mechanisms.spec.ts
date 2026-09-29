@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
+import { enterPlay } from "./helpers/play";
 for (const width of [360, 1080, 1440]) {
   test(`all mechanisms default and separated remote controls at ${width}px`, async ({
     browser,
@@ -32,9 +33,7 @@ for (const width of [360, 1080, 1440]) {
       await expect(
         page.getByLabel("Explore with mechanism").locator("option:checked"),
       ).toHaveText("All mechanisms (2)");
-      await page
-        .getByRole("button", { name: "Enter Play", exact: true })
-        .click();
+      await enterPlay(page);
       await expect(page.locator(".play-overlay")).toBeVisible({
         timeout: 20000,
       });
@@ -66,7 +65,7 @@ for (const width of [360, 1080, 1440]) {
         )
         .toBeGreaterThan(90);
       await page
-        .getByText("Remote mechanism controls", { exact: true })
+        .getByRole("button", { name: "Remote mechanism controls" })
         .click();
       await expect(page.locator(".play-interaction")).toHaveCount(0);
       const remote = page.locator(".play-mechanism"),
@@ -132,7 +131,7 @@ for (const width of [360, 1080, 1440]) {
         .getByRole("button", { name: "Back to nearby actions", exact: true })
         .click();
       await expect(page.locator(".play-interaction")).toBeVisible();
-      await expect(remote).not.toHaveAttribute("open", "");
+      await expect(remote).toHaveCount(0);
       await page.evaluate(async () => {
         const api = window.brickEditor!,
           report = await api.play.snapshot(),
@@ -152,9 +151,7 @@ for (const width of [360, 1080, 1440]) {
         before,
       );
       await page.getByLabel("Explore with mechanism").selectOption("");
-      await page
-        .getByRole("button", { name: "Enter Play", exact: true })
-        .click();
+      await enterPlay(page);
       await expect(page.locator(".play-overlay")).toBeVisible({
         timeout: 20000,
       });

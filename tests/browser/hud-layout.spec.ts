@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { openMode } from "./helpers/mode";
+import { dismissRotatePrompt } from "./helpers/play";
 
 // Three storeys as submodels, so floors, explode and the section cut all have work to do.
 const house = `0 FILE house.ldr
@@ -31,7 +32,7 @@ const SLOTS = [
 ];
 
 /** Pairs of visible HUD slots whose boxes intersect, plus slots cut off by the screen edge. */
-const collisions = (page: Page) =>
+const collisions = (page: Page, list: string[] = SLOTS) =>
   page.evaluate((selectors) => {
     const shown = (el: Element | null): boolean => {
       for (; el; el = el.parentElement) {
@@ -65,7 +66,7 @@ const collisions = (page: Page) =>
       }),
     );
     return found;
-  }, SLOTS);
+  }, list);
 
 for (const viewport of [
   { width: 360, height: 600 },
@@ -175,6 +176,117 @@ for (const viewport of [
       await openMode(page, mode);
       await check(`${mode} card`);
     }
+    expect(errors).toEqual([]);
+    await context.close();
+  });
+
+// Every Play control slot. The look layer and the stick's thumb zone are
+// full-area touch surfaces behind them, so they are not slots.
+const PLAY_SLOTS = [
+  ".play-status-slab",
+  ".play-mechanism-key",
+  ".play-mechanism",
+  ".play-stick",
+  ".play-actions",
+  ".play-interaction",
+  ".play-menu",
+  ".play-message",
+  ".play-look-hint",
+];
+
+for (const viewport of [
+  { width: 360, height: 600 },
+  { width: 600, height: 360 },
+  { width: 800, height: 360 },
+])
+  test(`Play controls never overlap at ${viewport.width}x${viewport.height}`, async ({
+    browser,
+  }) => {
+    test.setTimeout(120000);
+    const context = await browser.newContext({
+      viewport,
+      hasTouch: true,
+      isMobile: true,
+    });
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto("./?automation=1");
+    await page.waitForFunction(() => !!window.brickEditor);
+    await page.evaluate(async () => {
+      const a = window.brickEditor!;
+      await a.project.import({ format: "template", template: "mechanisms" });
+      await a.ready();
+    });
+    const button = (name: string) =>
+      page.getByRole("button", { name, exact: true });
+    const check = async (state: string, list = PLAY_SLOTS) => {
+      await page.waitForTimeout(300);
+      expect(await collisions(page, list), state).toEqual([]);
+    };
+    const portrait = viewport.height > viewport.width;
+    await openMode(page, "Play");
+    await button("Enter Play").click();
+    await expect(button("Pause")).toBeVisible({ timeout: 30000 });
+    const rotate = page.getByRole("dialog", {
+      name: "Rotate your phone for the best view",
+    });
+    // Only a phone held upright is asked to rotate.
+    await expect(rotate).toHaveCount(portrait ? 1 : 0);
+    if (portrait) {
+      await check("rotate prompt", [".play-rotate-card"]);
+      await dismissRotatePrompt(page);
+      await expect(rotate).toHaveCount(0);
+    }
+    await check("walking");
+    // Beside the door: its action appears above the action cluster.
+    await page.evaluate(() =>
+      window.brickEditor!.play.teleport({
+        position: [20, -0.3, 45],
+        policy: "safe",
+      }),
+    );
+    await expect(
+      page.getByRole("button", { name: "Open joint" }),
+    ).toBeVisible();
+    await check("near a door");
+    await page.evaluate(() =>
+      window.brickEditor!.play.setLocomotion("fly-noclip"),
+    );
+    await expect(button("Down")).toBeVisible();
+    await check("flying");
+    await page.evaluate(() => window.brickEditor!.play.setLocomotion("walk"));
+    await page
+      .getByRole("button", { name: "Remote mechanism controls" })
+      .click();
+    await expect(page.locator(".play-mechanism")).toBeVisible();
+    await check("remote mechanism controls");
+    await button("Back to nearby actions").click();
+    await button("Pause").click();
+    await expect(page.locator(".play-menu")).toBeVisible();
+    await check("pause menu");
+    await button("Resume exploring").click();
+    // Remote vehicle control swaps the actions for the vehicle's own.
+    await page.evaluate(async () => {
+      const api = window.brickEditor!,
+        report = await api.play.snapshot(),
+        frame = report.mechanisms!.vehicle.groupFrames.chassis;
+      return api.play.teleport({
+        position: [frame.position[0], -0.3, frame.position[2] + 60],
+        policy: "safe",
+      });
+    });
+    await page.getByRole("button", { name: "Control vehicle" }).click();
+    await expect(
+      page.getByRole("button", { name: "Release vehicle" }),
+    ).toBeVisible();
+    await check("controlling a vehicle");
+    await page.screenshot({
+      path: test
+        .info()
+        .outputPath(`play-hud-${viewport.width}x${viewport.height}.png`),
+    });
+    await page.evaluate(() => window.brickEditor!.play.exit());
     expect(errors).toEqual([]);
     await context.close();
   });

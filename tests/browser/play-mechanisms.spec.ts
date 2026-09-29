@@ -121,12 +121,11 @@ test("1080×1800 touch UI selects an authored door rig and controls its live col
   await openMode(page, "Play");
   await page.getByLabel("Explore with mechanism").selectOption("door");
   await page.getByRole("button", { name: "Enter Play", exact: true }).click();
-  await expect(
-    page.getByText("Original hinged door controls", { exact: true }),
-  ).toBeVisible();
-  await page
-    .getByText("Original hinged door controls", { exact: true })
-    .click();
+  const doorControls = page.getByRole("button", {
+    name: "Original hinged door controls",
+  });
+  await expect(doorControls).toBeVisible();
+  await doorControls.click();
   const slider = await page.getByLabel("Explore joint hinge").boundingBox();
   await page.touchscreen.tap(
     slider!.x + slider!.width / 2,

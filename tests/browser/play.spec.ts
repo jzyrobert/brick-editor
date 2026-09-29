@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { openMode } from "./helpers/mode";
+import { enterPlay } from "./helpers/play";
 
 async function ready(page: Page) {
   await page.goto("/?automation=1");
@@ -117,12 +118,7 @@ for (const viewport of [
       await page.waitForFunction(() => !!window.brickEditor?.play);
       await page.evaluate(() => window.brickEditor!.ready());
       await openMode(page, "Play");
-      await page
-        .getByRole("button", { name: "Enter Play", exact: true })
-        .click();
-      await expect(
-        page.getByRole("button", { name: "Exit Play", exact: true }),
-      ).toBeVisible();
+      await enterPlay(page);
       const client = await context.newCDPSession(page);
       const liveBefore = await page.evaluate(() =>
         window.brickEditor!.play.snapshot(),

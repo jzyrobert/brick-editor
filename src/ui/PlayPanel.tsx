@@ -27,6 +27,18 @@ const finePointerQuery = "(hover: hover) and (pointer: fine)";
 const hasFinePointer = () =>
   typeof matchMedia === "function" && matchMedia(finePointerQuery).matches;
 import { PlayMechanismControls } from "./PlayMechanismControls";
+import { Icon, type IconName } from "./icons";
+import {
+  choosePortrait,
+  enterPlayScreen,
+  isPlayPhone,
+  isPortrait,
+  leavePlayScreen,
+  portraitWasChosen,
+} from "./play-screen";
+
+/** Full stick deflection, in CSS px from where the thumb landed. */
+const STICK_TRAVEL = 44;
 
 export function PlayPanel({
   play,
@@ -99,6 +111,13 @@ export function PlayPanel({
   const runRef = useRef(run);
   runRef.current = run;
   const [stick, setStick] = useState([0, 0]);
+  const [floating, setFloating] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const stickRing = useRef<HTMLDivElement>(null),
+    stickOrigin = useRef<{ x: number; y: number } | null>(null);
+  const [rotateAsk, setRotateAsk] = useState(false);
+  const [looked, setLooked] = useState(false);
   const keys = useRef(new Set<PlayKeyAction>()),
     move = useRef({ x: 0, z: 0 }),
     jump = useRef(false),
@@ -300,18 +319,47 @@ export function PlayPanel({
       requestLock();
     }
   }, [state.active]);
+  // Phones: ask to rotate to landscape once Play is running in portrait.
+  useEffect(() => {
+    if (!state.active) {
+      setRotateAsk(false);
+      leavePlayScreen();
+    }
+  }, [state.active]);
+  useEffect(() => () => leavePlayScreen(), []);
+  useEffect(() => {
+    if (!rotateAsk || typeof matchMedia !== "function") return;
+    const landscape = matchMedia("(orientation: landscape)");
+    const turned = () => {
+      if (landscape.matches) setRotateAsk(false);
+    };
+    turned();
+    landscape.addEventListener?.("change", turned);
+    return () => landscape.removeEventListener?.("change", turned);
+  }, [rotateAsk]);
+  // The look hint shows until the first look drag, or a few seconds.
+  useEffect(() => {
+    if (!state.active || looked) return;
+    const timer = setTimeout(() => setLooked(true), 6000);
+    return () => clearTimeout(timer);
+  }, [state.active, looked]);
+  /** Floating stick: a touch inside the resting ring steers from its centre;
+   * a touch anywhere else in the left thumb zone moves the ring under the
+   * thumb and steers from there. */
   const releaseStick = (e: React.PointerEvent) => {
     if (stickPointer.current !== e.pointerId) return;
     stickPointer.current = null;
+    stickOrigin.current = null;
     move.current = { x: 0, z: 0 };
     setStick([0, 0]);
+    setFloating(null);
     input();
   };
   const stickMove = (e: React.PointerEvent) => {
-    if (stickPointer.current !== e.pointerId) return;
-    const b = e.currentTarget.getBoundingClientRect();
-    let x = (e.clientX - b.left - b.width / 2) / (b.width * 0.32),
-      z = -(e.clientY - b.top - b.height / 2) / (b.height * 0.32);
+    const origin = stickOrigin.current;
+    if (stickPointer.current !== e.pointerId || !origin) return;
+    let x = (e.clientX - origin.x) / STICK_TRAVEL,
+      z = -(e.clientY - origin.y) / STICK_TRAVEL;
     const length = Math.max(1, Math.hypot(x, z));
     x /= length;
     z /= length;
@@ -319,6 +367,65 @@ export function PlayPanel({
     setStick([x, z]);
     input();
   };
+  const stickDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const ring = stickRing.current;
+    if (stickPointer.current !== null || !ring) return;
+    const r = ring.getBoundingClientRect(),
+      zone = e.currentTarget.getBoundingClientRect(),
+      radius = r.width / 2;
+    let x = r.left + radius,
+      y = r.top + radius;
+    if (Math.hypot(e.clientX - x, e.clientY - y) > radius) {
+      // Keep the moved ring inside the zone.
+      x = Math.min(
+        zone.right - radius,
+        Math.max(zone.left + radius, e.clientX),
+      );
+      y = Math.min(
+        zone.bottom - radius,
+        Math.max(zone.top + radius, e.clientY),
+      );
+      setFloating({ x: x - zone.left, y: y - zone.top });
+    }
+    stickPointer.current = e.pointerId;
+    stickOrigin.current = { x, y };
+    ring.setPointerCapture?.(e.pointerId);
+    stickMove(e);
+  };
+  const toggleCamera = () =>
+    attempt(() =>
+      play.setCameraMode(
+        play.snapshot().cameraMode === "first-person"
+          ? "third-person"
+          : "first-person",
+      ),
+    );
+  const toggleFly = () =>
+    attempt(() =>
+      play.setLocomotion(
+        play.snapshot().locomotion === "walk" ? "fly-noclip" : "walk",
+      ),
+    );
+  /** A hold-to-act round key (Jump/Up, Down) that works with several fingers. */
+  const hold = (flag: React.MutableRefObject<boolean>) => ({
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+      flag.current = true;
+      input();
+    },
+    onPointerUp: () => {
+      flag.current = false;
+      input();
+    },
+    onPointerCancel: () => {
+      flag.current = false;
+      input();
+    },
+    onLostPointerCapture: () => {
+      flag.current = false;
+      input();
+    },
+  });
   if (!state.active)
     return (
       <div className="mode-card play-intro">
@@ -415,6 +522,11 @@ export function PlayPanel({
           disabled={state.loading}
           onClick={() => {
             wantLock.current = true;
+            setLooked(false);
+            if (isPlayPhone()) {
+              enterPlayScreen();
+              setRotateAsk(isPortrait() && !portraitWasChosen());
+            }
             attempt(() =>
               play
                 .enter({
@@ -487,51 +599,45 @@ export function PlayPanel({
         ? mechanisms[nearbyRigId]
         : report.mechanism;
 
+  const walking = report.locomotion === "walk";
+  const firstPerson = report.cameraMode === "first-person";
+  const inVehicle = !!(state.vehicleControl || occupied);
+  const status: { icon: IconName; text: string } = occupied
+    ? {
+        icon: "wheel",
+        text: "Driving · " + (rigs[occupied.rigId]?.name ?? "driver seat"),
+      }
+    : state.vehicleControl
+      ? { icon: "wheel", text: "Controlling vehicle · on foot" }
+      : walking
+        ? { icon: "play", text: "Walking" }
+        : { icon: "fly", text: "Flying · through walls" };
+  const interactIcon: IconName =
+    state.vehicleControl || state.interaction?.kind === "vehicle"
+      ? "wheel"
+      : /door/i.test(state.interaction?.label ?? "")
+        ? "door"
+        : "hand";
+  const keyHint = (key: string) =>
+    finePointer && key ? <kbd aria-hidden="true">{key}</kbd> : null;
+  const showRemote =
+    !state.paused &&
+    !inVehicle &&
+    !!activeRigId &&
+    !!rigs[activeRigId] &&
+    !!mechanisms[activeRigId];
+
   return (
     <div
       className={
         "play-overlay" +
         (state.paused ? " is-paused" : "") +
         (occupied ? " is-seated" : "") +
+        (inVehicle ? " is-vehicle" : "") +
         (finePointer ? " has-mouse" : "") +
         (locked ? " is-locked" : "")
       }
     >
-      <div className="play-top">
-        <div>
-          <strong>
-            {occupied
-              ? "Driving · " + (rigs[occupied.rigId]?.name ?? "driver seat")
-              : state.vehicleControl
-                ? "Controlling vehicle · on foot"
-                : report.locomotion === "walk"
-                  ? "Walking"
-                  : "Flying · pass through walls"}
-          </strong>
-          <small>
-            {report.cameraMode === "first-person"
-              ? "First person"
-              : "Third person"}{" "}
-            · build unchanged
-          </small>
-        </div>
-        <button
-          onClick={() => {
-            clear();
-            play.pause(!state.paused);
-          }}
-        >
-          {state.paused ? "Resume" : "Pause"}
-        </button>
-        <button
-          onClick={() => {
-            play.exit();
-            exit();
-          }}
-        >
-          Exit Play
-        </button>
-      </div>
       <div
         ref={lookLayer}
         className="play-look"
@@ -542,6 +648,7 @@ export function PlayPanel({
         }
         onPointerDown={(e) => {
           if (state.paused || lookPointer.current) return;
+          setLooked(true);
           // Desktop: a click captures the mouse; dragging still works if the
           // browser refuses pointer lock.
           if (e.pointerType === "mouse") requestLock();
@@ -573,36 +680,111 @@ export function PlayPanel({
             lookPointer.current = null;
         }}
       />
-      <span className="play-crosshair" aria-hidden="true">
-        +
-      </span>
-      {state.paused ? (
-        <div className="play-menu">
-          <h2>Take a breather.</h2>
-          <p>Movement is paused.</p>
+      {firstPerson && <span className="play-crosshair" aria-hidden="true" />}
+      <div className="play-top">
+        <div className="play-status-slab">
           <button
-            className="primary"
+            className="play-key play-menu-key"
+            aria-label={state.paused ? "Resume" : "Pause"}
+            title={state.paused ? "Resume" : "Pause and menu"}
+            onClick={() => {
+              clear();
+              play.pause(!state.paused);
+            }}
+          >
+            <Icon name={state.paused ? "resume" : "pause"} />
+          </button>
+          <span className="play-status">
+            <Icon name={status.icon} size={16} />
+            <span>{status.text}</span>
+          </span>
+        </div>
+        {showRemote && (
+          <PlayMechanismControls
+            play={play}
+            rig={rigs[activeRigId!]}
+            report={mechanisms[activeRigId!]}
+            choices={activeRigs}
+            onOpenChange={setRemoteOpen}
+            onRigChange={(id) => {
+              clear();
+              setRemoteRigId(id);
+            }}
+            onError={setMessage}
+          />
+        )}
+      </div>
+      {state.paused ? (
+        <div
+          className="play-menu"
+          role="dialog"
+          aria-labelledby="play-menu-title"
+        >
+          <span className="play-menu-handle" aria-hidden="true" />
+          <div className="play-menu-head">
+            <h2 id="play-menu-title">Take a breather.</h2>
+            <p>Movement is paused.</p>
+            <p className="play-menu-state">
+              <Icon name={status.icon} size={16} />
+              {status.text} · {firstPerson ? "first person" : "third person"}
+            </p>
+          </div>
+          <button
+            className="primary play-resume"
             onClick={() => {
               play.pause(false);
               requestLock();
             }}
           >
+            <Icon name="resume" />
             {occupied ? "Resume driving" : "Resume exploring"}
           </button>
-          <button
-            disabled={!!occupied}
-            onClick={() =>
-              attempt(() => {
-                play.respawn();
-                play.pause(false);
-              })
-            }
-          >
-            Recover last safe position
-          </button>
-          <button onClick={() => attempt(bookmark)}>
-            Save this view to Photo
-          </button>
+          <div className="play-menu-grid">
+            {!occupied && (
+              <button
+                className="play-tile"
+                aria-keyshortcuts={bindings.fly || undefined}
+                onClick={toggleFly}
+              >
+                <Icon name={walking ? "fly" : "play"} size={24} />
+                <span>{walking ? "Fly through walls" : "Switch to Walk"}</span>
+                {keyHint(bindings.fly)}
+              </button>
+            )}
+            <button
+              className="play-tile"
+              aria-keyshortcuts={bindings.camera || undefined}
+              onClick={toggleCamera}
+            >
+              <Icon name={firstPerson ? "play" : "eye"} size={24} />
+              <span>{firstPerson ? "Third person" : "First person"}</span>
+              {keyHint(bindings.camera)}
+            </button>
+            <button
+              className="play-tile"
+              disabled={!!occupied}
+              onClick={() =>
+                attempt(() => {
+                  play.respawn();
+                  play.pause(false);
+                })
+              }
+            >
+              <Icon name="rotate" size={24} />
+              <span>Recover last safe position</span>
+            </button>
+            <button className="play-tile" onClick={() => attempt(bookmark)}>
+              <Icon name="photo" size={24} />
+              <span>Save this view to Photo</span>
+            </button>
+          </div>
+          {inVehicle && (
+            <p className="play-menu-note">
+              {occupied
+                ? "Seated driver: the joystick or movement keys drive and steer."
+                : "The joystick or movement keys drive and steer. You stay on foot; included walls and other rigs can stop the vehicle."}
+            </p>
+          )}
           <PlaySettings play={play} report={report} />
           <PlayKeySettings
             value={bindings}
@@ -610,7 +792,7 @@ export function PlayPanel({
             look={look}
             onLookChange={changeLook}
           />
-          <p role="status">
+          <p role="status" className="play-menu-note">
             {message ||
               report.warnings
                 .map((w) =>
@@ -620,6 +802,16 @@ export function PlayPanel({
                 )
                 .join(" ")}
           </p>
+          <button
+            className="play-exit"
+            onClick={() => {
+              play.exit();
+              exit();
+            }}
+          >
+            <Icon name="exit" />
+            Exit Play
+          </button>
         </div>
       ) : (
         <>
@@ -646,32 +838,47 @@ export function PlayPanel({
             {bindings.camera || "—"} camera · {bindings.interact || "—"}{" "}
             interact
           </div>
+          {!finePointer && !looked && !remoteOpen && (
+            <div className="play-look-hint" aria-hidden="true">
+              <Icon name="hand" size={16} />
+              Drag to look
+            </div>
+          )}
           <div
-            className="play-stick"
-            role="group"
-            aria-label="Movement joystick"
-            onPointerDown={(e) => {
-              if (stickPointer.current !== null) return;
-              stickPointer.current = e.pointerId;
-              e.currentTarget.setPointerCapture(e.pointerId);
-              stickMove(e);
-            }}
+            className="play-stick-zone"
+            onPointerDown={stickDown}
             onPointerMove={stickMove}
             onPointerUp={releaseStick}
             onPointerCancel={releaseStick}
             onLostPointerCapture={releaseStick}
           >
-            <span
-              style={{
-                transform: `translate(${stick[0] * 30}px,${-stick[1] * 30}px)`,
-              }}
+            <div
+              ref={stickRing}
+              className={
+                "play-stick" +
+                (floating ? " is-floating" : "") +
+                (floating || stick[0] || stick[1] ? " is-held" : "")
+              }
+              role="group"
+              aria-label="Movement joystick"
+              style={
+                floating ? { left: floating.x, top: floating.y } : undefined
+              }
             >
-              {state.vehicleControl || occupied ? "Drive" : "Move"}
-            </span>
+              <span
+                className="play-stick-knob"
+                style={{
+                  transform: `translate(${stick[0] * 34}px,${-stick[1] * 34}px)`,
+                }}
+              >
+                {inVehicle ? "Drive" : "Move"}
+              </span>
+            </div>
           </div>
-          {!state.vehicleControl && !occupied && (
+          {!inVehicle && !remoteOpen && (
             <div className="play-actions">
               <button
+                className="play-round play-run"
                 aria-pressed={run}
                 onPointerDown={(e) => {
                   e.preventDefault();
@@ -681,109 +888,49 @@ export function PlayPanel({
                   if (e.detail === 0) setRun((value) => !value);
                 }}
               >
-                Run
+                <Icon name="run" />
+                <span>Run</span>
               </button>
-              <button
-                onPointerDown={(e) => {
-                  e.currentTarget.setPointerCapture(e.pointerId);
-                  jump.current = true;
-                  input();
-                }}
-                onPointerUp={() => {
-                  jump.current = false;
-                  input();
-                }}
-                onPointerCancel={() => {
-                  jump.current = false;
-                  input();
-                }}
-                onLostPointerCapture={() => {
-                  jump.current = false;
-                  input();
-                }}
-              >
-                {report.locomotion === "walk" ? "Jump" : "Up"}
-              </button>
-              {report.locomotion === "fly-noclip" && (
-                <button
-                  onPointerDown={(e) => {
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                    down.current = true;
-                    input();
-                  }}
-                  onPointerUp={() => {
-                    down.current = false;
-                    input();
-                  }}
-                  onPointerCancel={() => {
-                    down.current = false;
-                    input();
-                  }}
-                  onLostPointerCapture={() => {
-                    down.current = false;
-                    input();
-                  }}
-                >
-                  Down
+              {!walking && (
+                <button className="play-round play-down" {...hold(down)}>
+                  <Icon name="arrowDown" />
+                  <span>Down</span>
                 </button>
               )}
+              <button className="play-round play-jump" {...hold(jump)}>
+                <Icon name={walking ? "jump" : "arrowUp"} size={24} />
+                <span>{walking ? "Jump" : "Up"}</span>
+              </button>
             </div>
           )}
         </>
       )}
-      <div className="play-bottom">
-        {!occupied && (
-          <button
-            onClick={() =>
-              attempt(() =>
-                play.setLocomotion(
-                  report.locomotion === "walk" ? "fly-noclip" : "walk",
-                ),
-              )
-            }
-          >
-            {report.locomotion === "walk"
-              ? "Fly through walls"
-              : "Switch to Walk"}
-          </button>
-        )}
-        <button
-          onClick={() =>
-            attempt(() =>
-              play.setCameraMode(
-                report.cameraMode === "first-person"
-                  ? "third-person"
-                  : "first-person",
-              ),
-            )
-          }
-        >
-          {report.cameraMode === "first-person"
-            ? "Third person"
-            : "First person"}
-        </button>
-      </div>
       {!state.paused &&
-        (!remoteOpen || state.vehicleControl || occupied) &&
-        (state.interaction || state.vehicleControl || occupied) && (
+        (!remoteOpen || inVehicle) &&
+        (state.interaction || inVehicle) && (
           <div className="play-interaction">
             {occupied ? (
               <>
+                {message && (
+                  <small className="play-note" role="status">
+                    {message}
+                  </small>
+                )}
+                {nearbyReport?.blocked && (
+                  <small className="play-note" role="status">
+                    {nearbyReport.blockedReason}
+                  </small>
+                )}
                 <button
+                  className="play-prompt"
                   onClick={() => {
                     clear();
                     attempt(() => play.exitVehicle({}));
                   }}
                 >
+                  <Icon name="exit" />
                   Exit vehicle
                 </button>
-                <small>
-                  Seated driver · use the joystick to drive and steer.
-                </small>
-                {message && <small role="status">{message}</small>}
-                {nearbyReport?.blocked && (
-                  <small role="status">{nearbyReport.blockedReason}</small>
-                )}
               </>
             ) : !state.vehicleControl && seatRig ? (
               <PlaySeatEntry
@@ -802,15 +949,42 @@ export function PlayPanel({
               />
             ) : (
               <>
+                {!state.vehicleControl && state.interaction?.blockedReason ? (
+                  <small className="play-note" role="status">
+                    {state.interaction.blockedReason}
+                  </small>
+                ) : (
+                  nearbyReport?.blocked && (
+                    <small className="play-note" role="status">
+                      {nearbyReport.blockedReason}
+                    </small>
+                  )
+                )}
+                {!state.vehicleControl && state.interaction?.progress && (
+                  <small className="play-caption">
+                    {state.interaction.progress}
+                  </small>
+                )}
                 <button
+                  className={
+                    "play-prompt" +
+                    (!state.vehicleControl && !state.interaction?.available
+                      ? " is-far"
+                      : "")
+                  }
                   disabled={
                     !state.vehicleControl && !state.interaction?.available
                   }
+                  title={
+                    state.vehicleControl ? undefined : state.interaction?.name
+                  }
+                  aria-keyshortcuts={bindings.interact || undefined}
                   onClick={() => {
                     clear();
                     attempt(() => play.interact());
                   }}
                 >
+                  <Icon name={interactIcon} />
                   {state.vehicleControl
                     ? "Release vehicle"
                     : state.interaction?.available
@@ -819,53 +993,61 @@ export function PlayPanel({
                           state.interaction.blockedReason
                         ? "Vehicle unavailable"
                         : "Move closer to interact"}
-                  {bindings.interact && <kbd>{bindings.interact}</kbd>}
+                  {keyHint(bindings.interact)}
                 </button>
-                <small>
-                  {state.vehicleControl
-                    ? "Joystick or movement keys drive and steer. You stay on foot; included walls and other rigs can stop the vehicle."
-                    : state.interaction?.name}
-                </small>
-                {!state.vehicleControl && state.interaction?.progress && (
-                  <small>{state.interaction.progress}</small>
-                )}
-                {!state.vehicleControl && state.interaction?.blockedReason ? (
-                  <small role="status">{state.interaction.blockedReason}</small>
-                ) : (
-                  nearbyReport?.blocked && (
-                    <small role="status">{nearbyReport.blockedReason}</small>
-                  )
-                )}
               </>
             )}
           </div>
         )}
-      {!state.paused &&
-        !state.vehicleControl &&
-        !occupied &&
-        activeRigId &&
-        rigs[activeRigId] &&
-        mechanisms[activeRigId] && (
-          <PlayMechanismControls
-            play={play}
-            rig={rigs[activeRigId]}
-            report={mechanisms[activeRigId]}
-            choices={activeRigs}
-            onOpenChange={setRemoteOpen}
-            onRigChange={(id) => {
-              clear();
-              setRemoteRigId(id);
-            }}
-            onError={setMessage}
-          />
-        )}
       {message &&
+        !state.paused &&
         !occupied &&
         !(seatRig && !state.vehicleControl && !remoteOpen) && (
           <div className="play-message" role="status">
             {message}
           </div>
         )}
+      {rotateAsk && (
+        <div
+          className="play-rotate"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="play-rotate-title"
+        >
+          <div className="play-rotate-card">
+            <svg
+              className="play-rotate-art"
+              viewBox="0 0 96 96"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                className="play-rotate-arrow"
+                d="M18 44a30 30 0 0 1 22-25"
+              />
+              <path className="play-rotate-arrow" d="M34 14l6 5-5 6" />
+              <g className="play-rotate-phone">
+                <rect x="34" y="26" width="28" height="50" rx="5" />
+                <path d="M44 70h8" />
+              </g>
+            </svg>
+            <h2 id="play-rotate-title">Rotate your phone for the best view</h2>
+            <p>
+              Play fits best sideways: more of your build on screen, and a thumb
+              on each side.
+            </p>
+            <button
+              autoFocus
+              onClick={() => {
+                choosePortrait();
+                setRotateAsk(false);
+              }}
+            >
+              Play in portrait anyway
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
