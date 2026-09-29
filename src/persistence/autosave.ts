@@ -32,6 +32,16 @@ export class AutosaveQueue {
       this.tail = this.tail.then(() => this.write(next)).catch(this.onError);
     return this.tail;
   }
+  /** Drops this project's unwritten snapshot; resolves once earlier writes finish. */
+  discard(projectId: string) {
+    if (this.pending?.id === projectId) {
+      clearTimeout(this.debounce);
+      clearTimeout(this.deadline);
+      this.debounce = this.deadline = undefined;
+      this.pending = undefined;
+    }
+    return this.tail;
+  }
   dispose() {
     this.disposed = true;
     clearTimeout(this.debounce);

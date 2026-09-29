@@ -97,6 +97,7 @@ import {
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { flushSync } from "react-dom";
 import { Editor } from "../core/commands";
 import { occurrences } from "../core/document";
 import {
@@ -104,6 +105,8 @@ import {
   type Basis,
   type Scope,
   type CameraSpec,
+  type Project,
+  AppError,
   uid,
   ensure,
 } from "../core/types";
@@ -114,7 +117,13 @@ import {
   colors,
   type CatalogPart,
 } from "../catalog/catalog";
-import { template } from "../catalog/templates";
+import { loadTemplate } from "../catalog/template-loader";
+import {
+  TEMPLATE_CARDS,
+  templatePreview,
+  type TemplateName,
+} from "../catalog/template-names";
+import { ReplaceProjectDialog } from "./ReplaceProjectDialog";
 import { connectorCoverage } from "../catalog/connectors";
 import { SceneAdapter, type SectionSpec } from "../render/adapter";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
@@ -500,7 +509,14 @@ function Workspace() {
     }),
     [overridePart, setOverridePart] = useState(""),
     [overrideColor, setOverrideColor] = useState(""),
-    [overrideId, setOverrideId] = useState("");
+    [overrideId, setOverrideId] = useState(""),
+    [replacePrompt, setReplacePrompt] = useState<{
+      action: string;
+      title: string;
+      storedBefore: boolean;
+      proceed: () => Promise<void>;
+      resolve: (proceeded: boolean) => void;
+    } | null>(null);
   const viewport = useRef<HTMLDivElement>(null),
     renderer = useRef<SceneAdapter | undefined>(undefined),
     api = useRef<BrickEditorAPI | undefined>(undefined),
@@ -514,6 +530,19 @@ function Workspace() {
     loaded = useRef(false),
     operationEpoch = useRef(0),
     observedProjectId = useRef(editor.projectId),
+    /** The project as it was when opened (the save/discard prompt's baseline). */
+    opened = useRef<{
+      id: string;
+      revision: number;
+      snapshot: Project | null;
+      stored: boolean;
+    }>({
+      id: editor.projectId,
+      revision: editor.revision,
+      snapshot: null,
+      stored: false,
+    }),
+    nextOpenStored = useRef(false),
     projectRef = useRef(project),
     selectionRef = useRef(selection),
     interact = useRef({
@@ -728,6 +757,13 @@ function Workspace() {
       if (observedProjectId.current !== p.id) {
         observedProjectId.current = p.id;
         setSaveConflict(false);
+        opened.current = {
+          id: p.id,
+          revision: p.revision,
+          snapshot: p,
+          stored: nextOpenStored.current,
+        };
+        nextOpenStored.current = false;
       }
       if (editor.materialization.status === "limited") {
         setSelection([]);
@@ -889,6 +925,12 @@ function Workspace() {
           saveRevisions.current.set(saved.id, saved.revision);
           observedProjectId.current = saved.id;
           editor.replace(saved);
+          opened.current = {
+            id: saved.id,
+            revision: editor.revision,
+            snapshot: saved,
+            stored: true,
+          };
           recovered = true;
           setStatus("Recovered local project");
         } else renderer.current?.update(editor.project).catch(() => {});
@@ -1475,23 +1517,98 @@ function Workspace() {
       setStatus("Downloaded " + a.name);
     });
   }
-  async function useTemplate(name: Parameters<typeof template>[0]) {
+  async function useTemplate(name: TemplateName) {
     await run(async () => {
-      if (all.length) {
-        const backup = await api.current!.project.export({ format: "native" });
-        download(backup.name, backup.bytes, backup.mimeType);
-      }
-      editor.replace(template(name));
+      const next = await loadTemplate(name);
+      editor.replace(next);
       setActiveLayer("base");
       setSelectionSafe([]);
+      // Show the new build (on phones the Project sheet would cover it).
+      setMode("Build");
+      setPanel("Canvas");
       await renderer.current?.ready();
       renderer.current?.fit();
       setStatus(
-        name === "blank"
-          ? "New blank project"
-          : "Original template loaded; previous build downloaded as backup",
+        name === "blank" ? "New blank project" : `Opened “${next.title}”`,
       );
     });
+  }
+  /** Whether replacing the open project would lose work: it has parts and
+   * has changed since it was opened (a pristine template or an unchanged
+   * saved project has nothing to lose). */
+  function hasUnsavedWork() {
+    if (editor.materialization.status !== "available") return false;
+    const o = opened.current;
+    if (o.id === editor.projectId && o.revision === editor.revision)
+      return false;
+    return occurrences(editor.project).length > 0;
+  }
+  /** Runs `proceed` now, or after the save/discard prompt when needed.
+   * Resolves false when the person cancels and keeps their build. */
+  function replaceProject(
+    action: string,
+    proceed: () => Promise<void>,
+  ): Promise<boolean> {
+    if (!hasUnsavedWork()) return proceed().then(() => true);
+    return new Promise((resolve) =>
+      setReplacePrompt({
+        action,
+        proceed,
+        resolve,
+        title: editor.project.title,
+        storedBefore:
+          opened.current.id === editor.projectId && opened.current.stored,
+      }),
+    );
+  }
+  /** Replacement for panels that must stay open when the person cancels. */
+  async function replaceOrKeep(action: string, proceed: () => Promise<void>) {
+    if (!(await replaceProject(action, proceed)))
+      throw new AppError("CANCELLED", "Kept your current build.");
+  }
+  /** Saves the open project to this device's list and confirms it landed. */
+  async function saveOpenProject() {
+    const p = editor.project;
+    autosave.current?.schedule(p);
+    await autosave.current?.flush();
+    const saved = await new BrowserProjects(localStorage).load(p.id);
+    ensure(
+      saved?.revision === p.revision,
+      "STORAGE_UNAVAILABLE",
+      "Could not save on this device. Download a copy, or cancel.",
+    );
+  }
+  /** Drops the open project's changes: a project that was already saved goes
+   * back to how it was opened; a new one leaves the saved list. */
+  async function discardOpenProject() {
+    const id = editor.projectId,
+      o = opened.current;
+    await autosave.current?.discard(id);
+    const store = new BrowserProjects(localStorage);
+    const saved = await store.load(id);
+    if (!saved) return;
+    if (o.id === id && o.stored && o.snapshot) {
+      if (saved.revision !== o.snapshot.revision)
+        saveRevisions.current.set(
+          id,
+          await store.save(
+            { ...structuredClone(o.snapshot), revision: saved.revision + 1 },
+            saved.revision,
+          ),
+        );
+    } else {
+      await store.delete(id, saved.revision);
+      saveRevisions.current.delete(id);
+    }
+  }
+  function chooseTemplate(name: TemplateName) {
+    const card = TEMPLATE_CARDS.find((c) => c.name === name);
+    void replaceProject(
+      name === "blank"
+        ? "a blank canvas"
+        : `the ${card?.title ?? name} template`,
+      () => useTemplate(name),
+    );
   }
   async function previewInventory() {
     await run(async () => {
@@ -3323,7 +3440,7 @@ function Workspace() {
               </p>
               <button
                 className="primary"
-                onClick={() => void useTemplate("room")}
+                onClick={() => chooseTemplate("room")}
               >
                 Explore the studio template <Icon name="arrowRight" size={16} />
               </button>
@@ -3793,33 +3910,64 @@ function Workspace() {
               <button className="wide" onClick={() => void exportFile("ldraw")}>
                 Export LDraw MPD <Icon name="arrowDown" size={16} />
               </button>
+              <h3>Start from a template</h3>
+              <p className="muted">
+                If your current build has changes, you can save or discard it
+                first.
+              </p>
+              <div className="template-grid">
+                {TEMPLATE_CARDS.map((card) => {
+                  const preview = templatePreview(card.name);
+                  return (
+                    <button
+                      key={card.name}
+                      className="template-card"
+                      onClick={() => chooseTemplate(card.name)}
+                    >
+                      {preview ? (
+                        <img
+                          src={import.meta.env.BASE_URL + preview}
+                          alt=""
+                          width={160}
+                          height={120}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="template-blank" aria-hidden="true" />
+                      )}
+                      <span>{card.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
               <ExportProfiles project={project} selection={selection} />
               <SharePanel
                 project={project}
-                open={async (shared) => {
-                  if (occurrences(editor.project).length)
-                    await exportFile("native");
-                  editor.replace(shared);
-                  await renderer.current?.ready();
-                  renderer.current?.fit();
-                  setPanel("Canvas");
-                  setMode("Build");
-                }}
+                open={(shared) =>
+                  replaceOrKeep("the shared model", async () => {
+                    editor.replace(shared);
+                    await renderer.current?.ready();
+                    renderer.current?.fit();
+                    setPanel("Canvas");
+                    setMode("Build");
+                  })
+                }
               />
               <ProjectLibrary
                 currentId={project.id}
-                open={async (saved) => {
-                  if (occurrences(editor.project).length)
-                    await exportFile("native");
-                  await autosave.current?.flush();
-                  saveRevisions.current.set(saved.id, saved.revision);
-                  editor.replace(saved);
-                  setSaveConflict(false);
-                  setMode("Build");
-                  setPanel("Canvas");
-                  await renderer.current?.ready();
-                  renderer.current?.fit();
-                }}
+                open={(saved) =>
+                  replaceOrKeep(`“${saved.title}”`, async () => {
+                    await autosave.current?.flush();
+                    saveRevisions.current.set(saved.id, saved.revision);
+                    nextOpenStored.current = true;
+                    editor.replace(saved);
+                    setSaveConflict(false);
+                    setMode("Build");
+                    setPanel("Canvas");
+                    await renderer.current?.ready();
+                    renderer.current?.fit();
+                  })
+                }
               />
               <CheckpointsPanel
                 api={api.current!}
@@ -3851,45 +3999,6 @@ function Workspace() {
               />
               <OfflinePanel />
               <ResourceProfilePanel editor={editor} onStatus={setStatus} />
-              <h3>Start from an original template</h3>
-              <p className="muted">
-                Your current build is downloaded before a template replaces it.
-              </p>
-              <div className="template-grid">
-                {(
-                  [
-                    "blank",
-                    "room",
-                    "wall",
-                    "200",
-                    "explore",
-                    "mechanisms",
-                    "seated-vehicle",
-                    "door-room",
-                    "physics",
-                  ] as const
-                ).map((t) => (
-                  <button key={t} onClick={() => void useTemplate(t)}>
-                    {t === "door-room"
-                      ? "Door room"
-                      : t === "physics"
-                        ? "Physics playground"
-                        : t === "seated-vehicle"
-                          ? "Open-bench vehicle"
-                          : t === "mechanisms"
-                            ? "Door & vehicle"
-                            : t === "explore"
-                              ? "Exploration room"
-                              : t === "blank"
-                                ? "Blank canvas"
-                                : t === "room"
-                                  ? "Courtyard studio"
-                                  : t === "wall"
-                                    ? "Simple wall"
-                                    : "200-part build"}
-                  </button>
-                ))}
-              </div>
               <ShortcutSettings
                 value={shortcuts}
                 onChange={(value) => {
@@ -4169,10 +4278,36 @@ function Workspace() {
         accept=".ldr,.mpd,.dat,.brickproj"
         onChange={(e) => {
           const f = e.target.files?.[0];
-          if (f) void openFile(f);
+          if (f) void replaceProject(`“${f.name}”`, () => openFile(f));
           e.target.value = "";
         }}
       />
+      {replacePrompt && (
+        <ReplaceProjectDialog
+          title={replacePrompt.title}
+          action={replacePrompt.action}
+          storedBefore={replacePrompt.storedBefore}
+          onSave={async () => {
+            await saveOpenProject();
+            // Close the prompt before the (possibly slow) replacement starts.
+            flushSync(() => setReplacePrompt(null));
+            await replacePrompt.proceed();
+            replacePrompt.resolve(true);
+          }}
+          onDiscard={async () => {
+            await discardOpenProject();
+            flushSync(() => setReplacePrompt(null));
+            await replacePrompt.proceed();
+            replacePrompt.resolve(true);
+          }}
+          onDownload={() => exportFile("native")}
+          onCancel={() => {
+            setReplacePrompt(null);
+            replacePrompt.resolve(false);
+            setStatus("Kept your current build.");
+          }}
+        />
+      )}
       {inventoryOpen && (
         <div className="modal-backdrop">
           <section

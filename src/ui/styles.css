@@ -674,6 +674,51 @@ small {
 .template-grid button {
   font-size: var(--text-label);
 }
+.template-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 6px 6px 10px;
+  text-align: left;
+}
+.template-card img,
+.template-card .template-blank {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--r-field);
+  background: var(--card);
+}
+.template-card > span:last-child {
+  padding: 0 4px;
+}
+.replace-dialog h2 {
+  font-size: var(--text-headline);
+  font-weight: 550;
+  letter-spacing: -0.4px;
+  margin: 0 0 10px;
+}
+.replace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 10px;
+}
+.replace-actions button {
+  min-height: 44px;
+}
+.replace-actions .primary {
+  flex: 1 1 100%;
+}
+.replace-actions button:not(.primary) {
+  flex: 1 1 0;
+}
+.replace-error {
+  color: var(--danger);
+}
 .saved-project {
   padding: 12px 0;
   border-bottom: 1px solid var(--line);

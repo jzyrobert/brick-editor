@@ -2,6 +2,8 @@ import installedBounds from "../catalog/bounds.json";
 import { connectedGroups, connectionGraph } from "./connectivity";
 import { occurrences } from "./document";
 import { transformBounds, type Bounds } from "./spatial";
+import { compose, inverse } from "./math";
+import { partOccupancy } from "../catalog/connectors";
 import type { Occurrence, Project } from "./types";
 
 /** Model-health report (spec §20.3). Each check says how certain it is. */
@@ -31,6 +33,30 @@ export type HealthReport = {
 
 const STUD = 4; // LDU a stud row rises above a brick or plate top.
 const TOLERANCE = 0.5; // LDU of overlap ignored as numeric noise.
+// Derived occupancy widens faces thinner than 0.6 LDU to 0.6 (CONNECTORS.md).
+const OCCUPANCY_TOLERANCE = 0.65;
+/** Window glass sits in its frame's groove, sharing the frame's origin. */
+const GLAZING: Record<string, string> = {
+  "60601.dat": "60592.dat",
+  "60602.dat": "60593.dat",
+  "60603.dat": "60594.dat",
+};
+/** Door frames' hinge collars stand a stud high above the top face and sit
+ * in the underside of the part above, as studs do. */
+const COLLARS = new Set(["60596.dat", "60599.dat"]);
+/** Derived occupancy boxes of a catalogue part, when the pack has them. */
+function occupancy(ref: string) {
+  const boxes = partOccupancy(ref);
+  return boxes && COLLARS.has(ref) ? boxes.filter((b) => b.max[1] > 0) : boxes;
+}
+const glazed = (a: Occurrence, b: Occurrence) => {
+  const pair = (x: Occurrence, y: Occurrence) =>
+    GLAZING[x.node.ref] === y.node.ref &&
+    x.transform.position.every(
+      (v, i) => Math.abs(v - y.transform.position[i]) < 1e-3,
+    );
+  return pair(a, b) || pair(b, a);
+};
 const MAX_BOX_PARTS = 20000;
 
 function isUprightAxisAligned(o: Occurrence) {
@@ -180,14 +206,34 @@ export function modelHealth(project: Project): HealthReport {
   const noneChecked = boxed.length === 0 && all.length > 0;
   const bodies = boxed.map((o) => bodyBox(o)!);
   const full = boxed.map((o) => fullBox(o)!);
+  const shapes = boxed.map((o) => occupancy(o.node.ref));
+  /** Bodies meet: by derived occupancy when both parts have it (exact for
+   * these quarter-turn placements), else by their boxes. */
+  const clash = (i: number, j: number) => {
+    if (!overlaps(bodies[i], bodies[j], TOLERANCE)) return false;
+    if (glazed(boxed[i], boxed[j])) return false;
+    // Parts joined by a verified connection (a door's pins in its frame's
+    // sockets, a stud in its receptor) are seated, not intersecting.
+    if (graph.edges.get(boxed[i].id)?.has(boxed[j].id)) return false;
+    const a = shapes[i],
+      b = shapes[j];
+    if (!a || !b) return true;
+    const rel = compose(inverse(boxed[j].transform), boxed[i].transform);
+    return a.some((box) => {
+      const t = transformBounds(box, rel);
+      return b.some((other) => overlaps(t, other, OCCUPANCY_TOLERANCE));
+    });
+  };
   const colliding = new Set<number>();
   const parent = boxed.map((_, i) => i);
   const find = (i: number): number =>
     parent[i] === i ? i : (parent[i] = find(parent[i]));
-  let collisionPairs = 0;
+  let collisionPairs = 0,
+    boxedPairs = 0;
   for (const [i, j] of candidatePairs(full)) {
-    if (overlaps(bodies[i], bodies[j], TOLERANCE)) {
+    if (clash(i, j)) {
       collisionPairs++;
+      if (!shapes[i] || !shapes[j]) boxedPairs++;
       colliding.add(i).add(j);
     }
     // Touching (including a stud row resting in the part above) joins a group.
@@ -203,7 +249,10 @@ export function modelHealth(project: Project): HealthReport {
     title: "Overlapping parts",
     detail:
       (collisionPairs
-        ? `${colliding.size} parts overlap in ${collisionPairs} place${collisionPairs === 1 ? "" : "s"} (part bodies intersect; studs sitting in the part above are allowed).`
+        ? `${colliding.size} parts overlap in ${collisionPairs} place${collisionPairs === 1 ? "" : "s"} (part bodies intersect; studs sitting in the part above are allowed).` +
+          (boxedPairs
+            ? ` ${boxedPairs === collisionPairs ? "All" : boxedPairs} of these involve parts without derived shape data, compared by their outer boxes; parts that nest by design, such as wheels under a mudguard or a flag on its pole, show up this way.`
+            : "")
         : noneChecked
           ? "Not checked."
           : "No overlapping part bodies.") + scope,

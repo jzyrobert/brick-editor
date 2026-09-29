@@ -1,9 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { readFile } from "node:fs/promises";
-import { unzipSync, strFromU8 } from "fflate";
 import { openMode } from "./helpers/mode";
 
-test("shared links preview safely, dismiss without replacement and back up before confirmed opening", async ({
+test("shared links preview safely, dismiss without replacement and keep the saved build when opening", async ({
   page,
 }) => {
   await page.goto("./?automation=1");
@@ -55,17 +53,16 @@ test("shared links preview safely, dismiss without replacement and back up befor
   ).toHaveLength(40);
   await page.goto(url.href);
   await expect(dialog).toBeVisible();
-  const event = page.waitForEvent("download");
+  // The recovered wall is saved and unchanged, so opening the shared model
+  // neither asks nor downloads anything; the wall stays in the saved list.
+  let downloads = 0;
+  page.on("download", () => downloads++);
   await dialog
     .getByRole("button", { name: "Open shared model", exact: true })
     .click();
-  const download = await event;
-  const backup = JSON.parse(
-    strFromU8(
-      unzipSync(await readFile((await download.path())!))["project.json"],
-    ),
-  );
-  expect(backup.models[backup.rootModelId].nodes).toHaveLength(40);
+  await expect(
+    page.getByRole("dialog", { name: "Save your current build first?" }),
+  ).toHaveCount(0);
   await expect
     .poll(() =>
       page.evaluate(
@@ -74,6 +71,12 @@ test("shared links preview safely, dismiss without replacement and back up befor
     )
     .toBe(74);
   expect(new URL(page.url()).hash).toBe("");
+  expect(downloads).toBe(0);
+  await openMode(page, "Project");
+  await page.getByRole("button", { name: "Refresh saved projects" }).click();
+  await expect(
+    page.locator(".saved-project").filter({ hasText: "Brick wall" }),
+  ).toBeVisible();
 });
 test("a damaged share checksum is rejected without changing the recovered project", async ({
   page,

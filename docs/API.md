@@ -4,7 +4,7 @@ The actual contract is the exported TypeScript API in `src/automation/api.ts` pl
 
 - `capabilities()` returns the machine-readable support report.
 - `ready({minRevision?, strict?})` awaits staged renderer updates and refuses missing/unsupported resources in strict mode.
-- `project.import({format:'ldraw', text, name?, strict?})`, `{format:'native', bytes:number[]}` or `{format:'template', template:'blank'|'room'|'wall'|'200'|'explore'|'mechanisms'|'seated-vehicle'}` stages a new project and returns its revision. No user file is uploaded. A concurrent edit rejects the import.
+- `project.import({format:'ldraw', text, name?, strict?})`, `{format:'native', bytes:number[]}` or `{format:'template', template:'blank'|'house'|'castle'|'car'|'room'|'wall'|'200'|'explore'|'mechanisms'|'seated-vehicle'|'door-room'|'physics'}` stages a new project and returns its revision (templates that use parts outside the curated catalogue, such as the castle and the car, load the complete library's index first). No user file is uploaded. A concurrent edit rejects the import.
 - `project.export({format:'native'|'ldraw', scope?})` returns `{name,mimeType,bytes:Uint8Array}`. Native exports preserve the whole project. LDraw scope uses the inventory scope shape.
 - `query({ref?,colorCode?,layerId?,occurrenceIds?})` returns revision, semantic occurrences and diagnostics. Unimplemented spatial/connectivity queries are not advertised.
 - `dispatch({schemaVersion:1,commandId,expectedRevision,type,payload,dryRun?})` atomically changes the document. `dryRun` validates and returns counts without mutation/history/ledger entry.

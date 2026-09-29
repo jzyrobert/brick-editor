@@ -4,23 +4,23 @@ import {
   physicsFixture,
 } from "../mechanisms/fixtures";
 import { doorRoomSource } from "./door-room";
+import { houseSource } from "./builds/house";
+import { castleProject } from "./builds/castle";
+import { carProject } from "./builds/car";
+import type { TemplateName } from "./template-names";
 import { explorationSource } from "./exploration";
 import { importLDraw } from "../ldraw/io";
 import { createProject } from "../core/document";
 import { identity, rotationY } from "../core/math";
 import { uid, type Vec3 } from "../core/types";
-export function template(
-  name:
-    | "blank"
-    | "room"
-    | "wall"
-    | "200"
-    | "explore"
-    | "mechanisms"
-    | "seated-vehicle"
-    | "door-room"
-    | "physics",
-) {
+export function template(name: TemplateName) {
+  if (name === "house") {
+    const project = importLDraw(houseSource(), "house-with-garden.mpd");
+    project.title = "House with garden";
+    return project;
+  }
+  if (name === "castle") return castleProject();
+  if (name === "car") return carProject();
   if (name === "seated-vehicle") return openBenchFixture();
   if (name === "physics") return physicsFixture();
   if (name === "door-room") {

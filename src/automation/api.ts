@@ -33,7 +33,8 @@ import {
   resolveScope,
 } from "../inventory/service";
 import type { SceneAdapter, RenderRequest } from "../render/adapter";
-import { template } from "../catalog/templates";
+import { loadTemplate } from "../catalog/template-loader";
+import type { TemplateName } from "../catalog/template-names";
 import capabilities from "./capabilities.json";
 import {
   resourceLimits,
@@ -480,16 +481,7 @@ export function createAPI(
         bytes?: number[];
         name?: string;
         strict?: boolean;
-        template?:
-          | "blank"
-          | "room"
-          | "wall"
-          | "200"
-          | "explore"
-          | "mechanisms"
-          | "seated-vehicle"
-          | "door-room"
-          | "physics";
+        template?: TemplateName;
       }) => {
         validate("importRequest", input);
         ensure(
@@ -528,7 +520,7 @@ export function createAPI(
                     decodeNative(new Uint8Array(input.bytes || []), limits),
                   ),
                 )
-              : template(input.template || "blank");
+              : await loadTemplate(input.template || "blank");
         // Register the complete official pack's index before the document
         // replaces the current one, so its parts resolve as official at once.
         if (unresolvedCuratedRefs(p).size)

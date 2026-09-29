@@ -1,6 +1,7 @@
 import Ajv from "ajv";
 import standaloneCode from "ajv/dist/standalone/index.js";
 import { writeFileSync } from "node:fs";
+import { TEMPLATE_NAMES } from "../src/catalog/template-names";
 import { _Code } from "ajv/dist/compile/codegen/code.js";
 import {
   isOccurrenceId,
@@ -757,17 +758,7 @@ const importRequest = {
       {
         format: { const: "template" },
         template: {
-          enum: [
-            "blank",
-            "room",
-            "wall",
-            "200",
-            "explore",
-            "mechanisms",
-            "seated-vehicle",
-            "door-room",
-            "physics",
-          ],
+          enum: [...TEMPLATE_NAMES],
         },
       },
       ["format", "template"],

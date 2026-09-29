@@ -8,6 +8,8 @@ import { occurrences } from "../../src/core/document";
 import type { Project } from "../../src/core/types";
 import type { CollisionSnapshot } from "../../src/play/types";
 import type { DynamicRigSource } from "../../src/play/dynamics";
+import type { Bounds } from "../../src/core/spatial";
+import { fullLibrarySources } from "../../scripts/full-library-node";
 
 export const PACK = "public/libraries/catalogue-2026-09-28";
 /** Read one pinned pack file by LDraw reference (parts/, parts/s, p/, p/48). */
@@ -26,7 +28,8 @@ function closure(text: string, local: Set<string>) {
     for (const m of source.matchAll(/^\s*1\s+(?:\S+\s+){13}(.+?)\s*$/gm)) {
       const name = m[1].toLowerCase().replaceAll("\\", "/");
       if (local.has(name) || blocks.has(name)) continue;
-      const body = readPack(name);
+      // Parts outside the pinned pack come from the complete library pack.
+      const body = readPack(name) ?? fullLibrarySources([name])[name];
       if (body === undefined) continue;
       blocks.set(name, `0 FILE ${name}\n${body}`);
       visit(body);
@@ -39,6 +42,7 @@ function closure(text: string, local: Set<string>) {
 export async function officialMesh(
   project: Project,
   ids: string[],
+  bounds: Bounds = { min: [-400, -300, -500], max: [400, 0, 300] },
 ): Promise<CollisionSnapshot> {
   const vertices: number[] = [],
     indices: number[] = [];
@@ -91,13 +95,15 @@ export async function officialMesh(
     revision: project.revision,
     vertices: new Float32Array(vertices),
     indices: new Uint32Array(indices),
-    bounds: { min: [-400, -300, -500], max: [400, 0, 300] },
+    bounds,
   };
 }
 /** Static world minus the given rigs, plus each rig's group/member meshes. */
 export async function officialSources(
   project: Project,
   rigs: Project["motionRigs"],
+  /** World bounds reported with the static geometry (default: the door room's). */
+  bounds?: Bounds,
 ) {
   const withRigs = {
     ...project,
@@ -113,6 +119,7 @@ export async function officialSources(
     occurrences(project)
       .filter((o) => !members.has(o.id))
       .map((o) => o.id),
+    bounds,
   );
   const sources: DynamicRigSource[] = [];
   for (const rig of Object.values(rigs)) {

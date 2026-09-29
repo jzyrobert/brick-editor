@@ -9,8 +9,57 @@ function publicFiles(path = "public", prefix = ""): string[] {
       : [prefix + e.name],
   );
 }
+/**
+ * Files of the complete LDraw pack that the built-in template builds need
+ * (fixtures/ldraw/templates/*.mpd): the pack index and the chunks holding the
+ * closure of every referenced part outside the curated catalogue. Precaching
+ * them lets the templates open offline like the rest of the app.
+ */
+export function templateLibraryFiles(root = "public") {
+  const dir = "fixtures/ldraw/templates";
+  const refs = new Set<string>();
+  for (const file of readdirSync(dir))
+    if (file.endsWith(".mpd") || file.endsWith(".ldr"))
+      for (const m of readFileSync(join(dir, file), "utf8").matchAll(
+        /^\s*1\s+\S+(?:\s+\S+){12}\s+(.+?)\s*$/gm,
+      ))
+        refs.add(m[1].toLowerCase());
+  const curated = new Set(
+    Object.keys(
+      JSON.parse(readFileSync("src/catalog/data.json", "utf8")).catalog,
+    ),
+  );
+  const libraries = join(root, "libraries");
+  const release = readdirSync(libraries).find((d) =>
+    d.startsWith("ldraw-full-"),
+  );
+  if (!release) return [];
+  const manifest = JSON.parse(
+    readFileSync(join(libraries, release, "manifest.json"), "utf8"),
+  );
+  const index = JSON.parse(
+    readFileSync(join(libraries, release, manifest.index.path), "utf8"),
+  ) as {
+    chunks: [string, number, string[], number[]][];
+    parts: Record<string, [number[], unknown]>;
+  };
+  const chunks = new Set<number>();
+  for (const ref of refs)
+    if (!curated.has(ref))
+      for (const c of index.parts[ref]?.[0] ?? []) chunks.add(c);
+  if (!chunks.size) return [];
+  const base = `libraries/${release}/`;
+  return [
+    base + manifest.index.path,
+    ...[...chunks]
+      .sort((a, b) => a - b)
+      .map((c) => `${base}chunks/${index.chunks[c][0]}.bin`),
+  ];
+}
+
 /** Emits an opt-in, immutable app/library snapshot. Old snapshots are never
- * silently evicted. The complete LDraw pack is excluded (cached on demand). */
+ * silently evicted. The complete LDraw pack is excluded (cached on demand),
+ * except the few files the built-in templates need. */
 export function offlinePlugin(): Plugin {
   return {
     name: "offline-snapshot",
@@ -36,12 +85,15 @@ export function offlinePlugin(): Plugin {
         hash.update(file);
         hash.update(readFileSync(join("public", file)));
       }
+      const templateFiles = templateLibraryFiles();
+      hash.update(templateFiles.join("\n"));
       const version = hash.digest("hex").slice(0, 20),
         paths = [
           ...new Set([
             "index.html",
             ...assets,
             ...files.filter((f) => !full.test(f)),
+            ...templateFiles,
           ]),
         ];
       const source = `const VERSION=${JSON.stringify(version)};\nconst PATHS=${JSON.stringify(paths)};\nconst CACHE='brick-editor-offline:'+self.registration.scope+':'+VERSION;\nself.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);try{await cache.addAll(PATHS.map(p=>new URL(p,self.registration.scope).href));}catch(error){await caches.delete(CACHE);throw error;}})());});\nself.addEventListener('activate',event=>{event.waitUntil(self.clients.claim());});\nself.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_OFFLINE_UPDATE')self.skipWaiting();});\nself.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(!url.href.startsWith(self.registration.scope))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);const key=event.request.mode==='navigate'?new URL('index.html',self.registration.scope).href:event.request;return await cache.match(key,{ignoreVary:true})||fetch(event.request);})());});\n`;
