@@ -142,6 +142,7 @@ const paths = {
     </>
   ),
   arrowRight: <path d="M4.5 12h15M14 6.5l5.5 5.5-5.5 5.5" />,
+  arrowLeft: <path d="M19.5 12h-15M10 6.5L4.5 12l5.5 5.5" />,
   arrowUp: <path d="M12 19.5v-15M6.5 10L12 4.5 17.5 10" />,
   arrowDown: <path d="M12 4.5v15M6.5 14l5.5 5.5 5.5-5.5" />,
   external: (

@@ -16,6 +16,7 @@ import { fullConnectorLock } from "../src/catalog/full-connectors";
 import { validateFullConnectors } from "./validate-full-connectors";
 import mappings from "../src/catalog/mappings.json";
 import { validateFullLibrary } from "./validate-full-library";
+import { validatePartThumbnails } from "./validate-part-thumbnails";
 import {
   connectorLock,
   connectorPackMatchesLibrary,
@@ -161,6 +162,8 @@ for (const l of retiredFullLibraryLocks)
     throw new Error(
       "A retired complete-library lock names the current release",
     );
+// Sprite-sheet thumbnails of the complete library (hash-locked like the packs).
+const partThumbnails = validatePartThumbnails();
 console.log(
   JSON.stringify(
     {
@@ -176,6 +179,7 @@ console.log(
       full,
       fullConnectors,
       retiredFullLibraryLocks: retiredFullLibraryLocks.map((l) => l.releaseId),
+      partThumbnails,
     },
     null,
     2,

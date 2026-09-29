@@ -227,3 +227,95 @@
 .full-library-search:hover {
   border-color: var(--secondary);
 }
+
+/* Complete-library parts: one cell of a sprite sheet (sized in percent, so it
+   scales with the card). The tint layer is masked to the cell's body: its
+   silhouette, or for printed parts everything but the print. */
+.part-thumb.atlas::before {
+  -webkit-mask: var(--thumb) var(--cell-pos) / var(--cell-size) no-repeat;
+  mask: var(--thumb) var(--cell-pos) / var(--cell-size) no-repeat;
+}
+.part-thumb.atlas i {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--sheet) var(--cell-pos) / var(--cell-size) no-repeat;
+  mix-blend-mode: multiply;
+}
+.part-thumb.atlas:not(.loaded) i {
+  background: none;
+}
+/* A transparent held colour shows the part as glass, whatever its usual
+   colour: a light, cool see-through body whose edges stay readable. */
+.part-thumb.glass::before {
+  background: color-mix(in srgb, var(--tint) 65%, #6f9fb8);
+  opacity: 0.45;
+}
+.part-thumb.glass img,
+.part-thumb.glass i {
+  opacity: 0.75;
+}
+
+/* Switch between the curated catalogue and the complete LDraw library. */
+.part-filters .library-scope {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-style: dashed;
+}
+/* "+N" on a complete-library card: its print and sticker variants. */
+.part-variants {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  min-width: 32px;
+  min-height: 24px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 22px;
+}
+.part-variants:hover {
+  border-color: var(--secondary);
+}
+.variants-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--secondary);
+}
+.variants-head span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.variants-back {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+}
+.full-library-more {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 4px;
+}
+.full-library-more button {
+  min-height: 40px;
+}
+@media (pointer: coarse) {
+  .part-variants {
+    min-width: 40px;
+    min-height: 32px;
+    line-height: 30px;
+  }
+}

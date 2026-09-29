@@ -80,8 +80,8 @@ export function templateLibraryFiles(root = "public") {
 }
 
 /** Emits an opt-in, immutable app/library snapshot. Old snapshots are never
- * silently evicted. The complete LDraw pack is excluded (cached on demand),
- * except the few files the built-in templates need. */
+ * silently evicted. The complete LDraw pack and its thumbnails are excluded
+ * (cached on demand), except the few files the built-in templates need. */
 export function offlinePlugin(): Plugin {
   return {
     name: "offline-snapshot",
@@ -93,8 +93,13 @@ export function offlinePlugin(): Plugin {
       // Its content-addressed files are all pinned by its manifest, so hashing
       // the manifest alone versions it.
       const full = /^libraries\/(connectors-)?ldraw-full-[^/]+\//;
+      // Its sprite-sheet thumbnails (~25 MB) likewise load and cache on demand
+      // (src/catalog/part-thumbnails-loader.ts); the bundle pins their index.
+      const thumbnails = /^thumbnails\/ldraw-full-[^/]+\//;
       const files = publicFiles().filter(
-        (f) => !full.test(f) || f.endsWith("/manifest.json"),
+        (f) =>
+          !thumbnails.test(f) &&
+          (!full.test(f) || f.endsWith("/manifest.json")),
       );
       const assets = Object.keys(bundle);
       const hash = createHash("sha256");

@@ -153,6 +153,17 @@ for (const viewport of [
       await check(`${sheet} sheet`);
       await hotbar.getByRole("button", { name: sheet, exact: true }).click();
     }
+    // Browsing every LDraw part (rendered thumbnails, variant buttons) keeps
+    // the same sheet layout.
+    await hotbar.getByRole("button", { name: "Parts", exact: true }).click();
+    const partsSheet = page.locator(".mobile-panel.mobile-open");
+    await partsSheet.getByRole("button", { name: /^All LDraw parts/ }).click();
+    await expect(
+      partsSheet.locator(".full-library .part-thumb.atlas.loaded").first(),
+    ).toBeVisible({ timeout: 20000 });
+    await check("Parts sheet browsing every LDraw part");
+    await partsSheet.getByRole("button", { name: "Catalogue" }).click();
+    await hotbar.getByRole("button", { name: "Parts", exact: true }).click();
     await hotbar
       .getByRole("button", { name: "Inspector", exact: true })
       .click();

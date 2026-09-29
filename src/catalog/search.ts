@@ -121,7 +121,9 @@ const fullIndex = new WeakMap<FullEntry, Indexed>();
  * Ranked search over the complete official library's part list (the "All LDraw
  * parts" scope): the same token rules as the catalogue, over number, title,
  * category and keywords. Moved-to redirects are left out (their targets are
- * listed); `exclude` drops parts the caller already shows.
+ * listed); `exclude` drops parts the caller already shows; `category` keeps
+ * one LDraw category. Without a query, `browse` lists every part (of the
+ * category) in library order; otherwise an empty query finds nothing.
  */
 export function searchFullLibrary(
   entries: readonly FullEntry[],
@@ -129,13 +131,21 @@ export function searchFullLibrary(
   {
     limit = 60,
     exclude,
-  }: { limit?: number; exclude?: (id: string) => boolean } = {},
+    category,
+    browse = false,
+  }: {
+    limit?: number;
+    exclude?: (id: string) => boolean;
+    category?: string;
+    browse?: boolean;
+  } = {},
 ) {
   const q = tokens(query);
-  if (!q.length) return [];
+  if (!q.length && !browse) return [];
   const hits: { entry: FullEntry; score: number; order: number }[] = [];
   entries.forEach((entry, order) => {
     if (entry[1].startsWith("~Moved") || exclude?.(entry[0])) return;
+    if (category !== undefined && entry[2] !== category) return;
     let idx = fullIndex.get(entry);
     if (!idx) {
       idx = {
@@ -165,6 +175,17 @@ export function searchFullLibrary(
   });
   hits.sort((a, b) => b.score - a.score || a.order - b.order);
   return hits.slice(0, limit).map((h) => h.entry);
+}
+/** LDraw categories of the complete library with their part counts, largest
+ * first (moved-to redirects are not parts). */
+export function fullLibraryCategories(entries: readonly FullEntry[]) {
+  const counts = new Map<string, number>();
+  for (const e of entries)
+    if (!e[1].startsWith("~Moved"))
+      counts.set(e[2], (counts.get(e[2]) ?? 0) + 1);
+  return [...counts]
+    .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
+    .map(([name, count]) => ({ name, count }));
 }
 /** Same footprint in other categories, then same category with a shared side. */
 export function relatedParts(

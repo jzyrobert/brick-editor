@@ -1,7 +1,8 @@
 // Renders every catalogue part with the app's own LDraw/three.js pipeline into a
 // small static WebP (public/thumbnails/<release>/<part>.webp). Parts are drawn
-// in white (glass in clear) so the UI can tint them to the chosen colour with a
-// multiply blend. Run after build-parts.ts and build-query-bounds.ts:
+// in opaque white (glass parts too) so the UI can tint them to the held colour
+// with a multiply blend, and show them as glass when that colour is
+// transparent. Run after build-parts.ts and build-query-bounds.ts:
 //   npx tsx scripts/build-thumbnails.ts [--only 3001,3003] [--size 128]
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -110,7 +111,7 @@ try {
       placed
         .map(
           ({ part, offset }) =>
-            `1 ${part.glass ? 47 : 15} ${offset.join(" ")} 1 0 0 0 1 0 0 0 1 ${part.id}`,
+            `1 15 ${offset.join(" ")} 1 0 0 0 1 0 0 0 1 ${part.id}`,
         )
         .join("\n") +
       "\n";

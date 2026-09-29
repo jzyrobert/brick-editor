@@ -57,10 +57,9 @@ import {
 import { connectedAssembly } from "../core/connectivity";
 import {
   catalogCategories,
-  displayTitle,
   relatedParts,
   searchCatalog,
-  searchFullLibrary,
+  fullLibraryCategories,
 } from "../catalog/search";
 import { partSpec } from "../catalog/extended";
 import {
@@ -79,6 +78,8 @@ import {
   saveFavourites,
 } from "../persistence/catalog-preferences";
 import { OfflinePanel } from "./OfflinePanel";
+import { PartThumb } from "./PartThumbs";
+import { FullLibraryResults, fullResultCount } from "./FullLibraryPicker";
 import { LayerActions } from "./LayerActions";
 import { ClipboardTools } from "./ClipboardTools";
 import { InstructionEditor } from "./InstructionEditor";
@@ -94,7 +95,6 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
-  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { flushSync } from "react-dom";
@@ -111,12 +111,7 @@ import {
   ensure,
 } from "../core/types";
 import { identity, rotationY, compose } from "../core/math";
-import {
-  catalog,
-  catalogCategoryOrder,
-  colors,
-  type CatalogPart,
-} from "../catalog/catalog";
+import { catalog, catalogCategoryOrder, colors } from "../catalog/catalog";
 import { loadTemplate } from "../catalog/template-loader";
 import {
   TEMPLATE_CARDS,
@@ -237,49 +232,8 @@ function download(
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-/** Static rendering of the part (white, glass clear), tinted to the held colour. */
-function PartThumb({ part, color }: { part: CatalogPart; color?: string }) {
-  const src = import.meta.env.BASE_URL + part.thumbnail;
-  // The tint mask reuses the image only once the lazy <img> has loaded it, so
-  // off-screen cards fetch nothing.
-  const [loaded, setLoaded] = useState<string>();
-  // Parts from the complete library have no rendering: a neutral outline box,
-  // never a picture of some other part.
-  if (!part.thumbnail) return <GenericThumb />;
-  return (
-    <span
-      className={"part-thumb" + (loaded === src ? " loaded" : "")}
-      style={
-        {
-          "--tint": color ?? "#bac4cb",
-          ...(loaded === src
-            ? { "--thumb": `url("${new URL(src, location.href).href}")` }
-            : {}),
-        } as CSSProperties
-      }
-    >
-      <img
-        src={src}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        draggable={false}
-        onLoad={() => setLoaded(src)}
-      />
-    </span>
-  );
-}
-/** Neutral outline for parts without a rendering (complete library): never a
- * picture of some other part. */
-function GenericThumb() {
-  return (
-    <span className="part-thumb generic" aria-hidden="true">
-      <svg viewBox="0 0 48 48">
-        <path d="M8 16 24 8l16 8v16l-16 8-16-8Z M8 16l16 8 16-8 M24 24v16" />
-      </svg>
-    </span>
-  );
-}
+/** Curated parts are listed by the catalogue, so complete-library results skip them. */
+const excludeCurated = (id: string) => Object.hasOwn(catalog, id);
 /** A part name whose sizes ("2 × 4", "1 × 2 × ⅔") never break across lines. */
 function PartName({ name }: { name: string }) {
   return (
@@ -431,6 +385,9 @@ function Workspace() {
     // "All LDraw parts" scope: opt-in per session, loads the full part list.
     [fullScope, setFullScope] = useState(false),
     [fullScopeError, setFullScopeError] = useState(""),
+    // Browsing the complete library by LDraw category instead of the catalogue.
+    [browseAll, setBrowseAll] = useState(false),
+    [fullCategory, setFullCategory] = useState<string>(),
     [partCategory, setPartCategory] = useState<string>(),
     [favouritesOnly, setFavouritesOnly] = useState(false),
     [favourites, setFavourites] = useState(() =>
@@ -2137,12 +2094,28 @@ function Workspace() {
     setTool("Place");
   };
   const fullEntries = fullScope ? fullCatalog() : undefined;
-  const fullResults = fullEntries
-    ? searchFullLibrary(fullEntries, search, {
-        limit: 60,
-        exclude: (id) => Object.hasOwn(catalog, id),
-      })
-    : [];
+  /** Cards the complete-library section shows (variants folded). */
+  const fullCount = useMemo(
+    () =>
+      fullEntries
+        ? fullResultCount(fullEntries, search, {
+            exclude: excludeCurated,
+            category: browseAll ? fullCategory : undefined,
+            browse: browseAll,
+          })
+        : 0,
+    [fullEntries, search, browseAll, fullCategory],
+  );
+  const fullCategories = useMemo(
+    () => (fullEntries ? fullLibraryCategories(fullEntries) : []),
+    [fullEntries],
+  );
+  /** Switches the picker to (or from) browsing the complete library. */
+  const browseFullLibrary = (on: boolean) => {
+    setBrowseAll(on);
+    setFullCategory(undefined);
+    if (on) searchAllParts();
+  };
   const searchAllParts = () => {
     setFullScope(true);
     setFullScopeError("");
@@ -2172,32 +2145,6 @@ function Workspace() {
           "; no reviewed marketplace mapping.",
       );
     });
-  const fullCard = (entry: readonly [string, string, string, string?]) => {
-    const [id, title] = entry,
-      name = displayTitle(title);
-    return (
-      <div key={id} className="part-card-wrap">
-        <button
-          id={"part-" + id}
-          className={"part-card " + (part === id ? "chosen" : "")}
-          aria-pressed={part === id}
-          title={name + " · " + id.replace(".dat", "")}
-          onClick={() => chooseFullPart(id)}
-        >
-          <GenericThumb />
-          <strong>
-            <PartName name={name} />
-          </strong>
-          <small>{id.replace(".dat", "")}</small>
-          {part === id && (
-            <span className="part-check">
-              <Icon name="check" size={16} />
-            </span>
-          )}
-        </button>
-      </div>
-    );
-  };
   const toggleFavourite = (id: string) =>
     setFavourites((current) => {
       const next = current.includes(id)
@@ -2251,9 +2198,9 @@ function Workspace() {
         <h2>Parts library</h2>
         <span
           className="count"
-          aria-label={`${visibleParts.length} parts shown`}
+          aria-label={`${browseAll ? fullCount : visibleParts.length} parts shown`}
         >
-          {visibleParts.length}
+          {(browseAll ? fullCount : visibleParts.length).toLocaleString("en")}
         </span>
       </div>
       <label className="search">
@@ -2267,26 +2214,24 @@ function Workspace() {
         />
         <kbd>/</kbd>
       </label>
-      <div className="part-filters" role="group" aria-label="Filter parts">
-        {[undefined, "Favourites", ...partCategories].map((category) =>
-          category === "Favourites" ? (
-            <button
-              key="favourites"
-              aria-pressed={favouritesOnly}
-              onClick={() => {
-                setPartCategory(undefined);
-                setFavouritesOnly((v) => !v);
-              }}
-            >
-              <Icon name="star" size={14} filled /> Favourites
-            </button>
-          ) : (
+      {browseAll ? (
+        <div
+          className="part-filters"
+          role="group"
+          aria-label="Filter LDraw parts"
+        >
+          <button
+            className="library-scope"
+            onClick={() => browseFullLibrary(false)}
+          >
+            <Icon name="arrowLeft" size={14} /> Catalogue
+          </button>
+          {[undefined, ...fullCategories.map((c) => c.name)].map((category) => (
             <button
               key={category ?? "all"}
-              aria-pressed={partCategory === category && !favouritesOnly}
+              aria-pressed={fullCategory === category}
               onClick={(e) => {
-                setPartCategory(category);
-                setFavouritesOnly(false);
+                setFullCategory(category);
                 e.currentTarget.scrollIntoView({
                   block: "nearest",
                   inline: "nearest",
@@ -2295,9 +2240,52 @@ function Workspace() {
             >
               {category ?? "All"}
             </button>
-          ),
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="part-filters" role="group" aria-label="Filter parts">
+          {[undefined, "Favourites", "LDraw", ...partCategories].map(
+            (category) =>
+              category === "LDraw" ? (
+                <button
+                  key="ldraw"
+                  className="library-scope"
+                  aria-pressed={false}
+                  title="Browse every official LDraw part by category"
+                  onClick={() => browseFullLibrary(true)}
+                >
+                  All LDraw parts <Icon name="arrowRight" size={14} />
+                </button>
+              ) : category === "Favourites" ? (
+                <button
+                  key="favourites"
+                  aria-pressed={favouritesOnly}
+                  onClick={() => {
+                    setPartCategory(undefined);
+                    setFavouritesOnly((v) => !v);
+                  }}
+                >
+                  <Icon name="star" size={14} filled /> Favourites
+                </button>
+              ) : (
+                <button
+                  key={category ?? "all"}
+                  aria-pressed={partCategory === category && !favouritesOnly}
+                  onClick={(e) => {
+                    setPartCategory(category);
+                    setFavouritesOnly(false);
+                    e.currentTarget.scrollIntoView({
+                      block: "nearest",
+                      inline: "nearest",
+                    });
+                  }}
+                >
+                  {category ?? "All"}
+                </button>
+              ),
+          )}
+        </div>
+      )}
     </>
   );
   const partsPanel = (
@@ -2321,7 +2309,8 @@ function Workspace() {
           </button>
         ))}
       </div>
-      {!search &&
+      {!browseAll &&
+        !search &&
         !favouritesOnly &&
         !partCategory &&
         recentParts.length > 0 && (
@@ -2341,7 +2330,8 @@ function Workspace() {
             </div>
           </>
         )}
-      {related.length > 0 &&
+      {!browseAll &&
+        related.length > 0 &&
         visibleParts.length > 0 &&
         !search &&
         !partCategory &&
@@ -2359,7 +2349,7 @@ function Workspace() {
             </div>
           </>
         )}
-      {visibleParts.length === 0 && (
+      {!browseAll && visibleParts.length === 0 && (
         <div className="empty-parts" role="status">
           <p>
             {favouritesOnly && !favourites.length
@@ -2377,7 +2367,8 @@ function Workspace() {
           </button>
         </div>
       )}
-      {visibleParts.length > 0 &&
+      {!browseAll &&
+        visibleParts.length > 0 &&
         groupedParts.map((group) => (
           <section key={group.category} className="part-group">
             <h3 className="parts-heading">
@@ -2392,17 +2383,18 @@ function Workspace() {
             <div className="part-grid">{group.parts.map(partCard)}</div>
           </section>
         ))}
-      {search.trim() && (
+      {(browseAll || search.trim()) && (
         <section
           className="part-group full-library"
           aria-label="All LDraw parts"
         >
           <h3 className="parts-heading">
-            All LDraw parts
+            {browseAll
+              ? (fullCategory ?? "All LDraw parts")
+              : "All LDraw parts"}
             {fullEntries && (
               <span className="parts-heading-count">
-                {fullResults.length}
-                {fullResults.length === 60 ? "+" : ""}
+                {fullCount.toLocaleString("en")}
               </span>
             )}
           </h3>
@@ -2418,12 +2410,17 @@ function Workspace() {
             <p className="muted" role="status">
               Loading the official part list…
             </p>
-          ) : fullResults.length ? (
-            <div className="part-grid">{fullResults.map(fullCard)}</div>
           ) : (
-            <p className="muted" role="status">
-              No other official parts match “{search.trim()}”.
-            </p>
+            <FullLibraryResults
+              entries={fullEntries}
+              query={search}
+              category={browseAll ? fullCategory : undefined}
+              exclude={excludeCurated}
+              browse={browseAll}
+              chosen={part}
+              color={heldHex}
+              onChoose={chooseFullPart}
+            />
           )}
         </section>
       )}
@@ -2701,9 +2698,9 @@ function Workspace() {
       {selected.length ? (
         <>
           <div className="selection-summary">
-            {!inspection.part.mixed && catalog[inspection.part.value.ref] ? (
+            {!inspection.part.mixed && partSpec(inspection.part.value.ref) ? (
               <PartThumb
-                part={catalog[inspection.part.value.ref]}
+                part={partSpec(inspection.part.value.ref)!}
                 color={
                   inspection.color.mixed
                     ? undefined

@@ -148,9 +148,14 @@ test("the parts picker searches every official LDraw part on request", async ({
     .click();
   const dome = scope.getByRole("button", { name: /Dome 4 × 4 Smooth 86500/ });
   await expect(dome).toBeVisible({ timeout: 20000 });
-  // No rendering exists for it: a neutral outline, never another part's image.
-  await expect(dome.locator(".part-thumb.generic")).toBeVisible();
-  await expect(dome.locator("img")).toHaveCount(0);
+  // Its own rendering, from the complete library's sprite sheets.
+  await expect(dome.locator(".part-thumb.atlas.loaded")).toBeVisible({
+    timeout: 20000,
+  });
+  await expect(dome.locator(".part-thumb.atlas")).toHaveAttribute(
+    "data-part",
+    "86500.dat",
+  );
   await dome.click();
   await expect(page.locator(".status-bar")).toContainText(
     "Dome 4 × 4 Smooth is ready to place",

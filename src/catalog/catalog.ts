@@ -77,7 +77,13 @@ export type CatalogPart = {
 export const catalog: Record<string, CatalogPart> = data.catalog;
 /** Palette order of categories for filter chips and grouped browsing. */
 export const catalogCategoryOrder: readonly string[] = data.categories;
-export const colors = [
+export const colors: {
+  code: string;
+  name: string;
+  hex: string;
+  /** Drawn see-through (LDConfig ALPHA). */
+  transparent?: boolean;
+}[] = [
   { code: "4", name: "Red", hex: "#c91a09" },
   { code: "1", name: "Blue", hex: "#0055bf" },
   { code: "14", name: "Yellow", hex: "#f2cd37" },
@@ -86,7 +92,7 @@ export const colors = [
   { code: "71", name: "Light grey", hex: "#a0a5a9" },
   { code: "2", name: "Green", hex: "#237841" },
   { code: "19", name: "Tan", hex: "#e4cd9e" },
-  { code: "47", name: "Clear", hex: "#eef3f5" },
+  { code: "47", name: "Clear", hex: "#eef3f5", transparent: true },
 ];
 
 /** Installed source definitions include primitives; purchasing identities
