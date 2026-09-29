@@ -110,6 +110,18 @@ export const clean = (n: number) => {
 };
 
 type Tri = [Vec3, Vec3, Vec3];
+/** Minimum/maximum of a list without spreading it into arguments (large
+ * parts have more points than the engine accepts as call arguments). */
+const minOf = (list: readonly number[]) => {
+  let m = Infinity;
+  for (const v of list) if (v < m) m = v;
+  return m;
+};
+const maxOf = (list: readonly number[]) => {
+  let m = -Infinity;
+  for (const v of list) if (v > m) m = v;
+  return m;
+};
 /** Sign that turns a CCW polygon's cross product into its outward normal in
  * LDraw's axes (pinned against a brick's top face in the unit tests). */
 const WINDING = 1;
@@ -278,26 +290,49 @@ export function flatten(sources: Record<string, string>, ref: string) {
 export class TriIndex {
   cell = 10;
   map = new Map<string, number[]>();
+  /** Cell index range covered by any triangle. */
+  lo = [Infinity, Infinity];
+  hi = [-Infinity, -Infinity];
   constructor(public tris: Tri[]) {
     tris.forEach((t, i) => {
       const xs = t.map((p) => p[0]),
         zs = t.map((p) => p[2]);
-      for (
-        let x = Math.floor(Math.min(...xs) / this.cell);
-        x <= Math.floor(Math.max(...xs) / this.cell);
-        x++
-      )
-        for (
-          let z = Math.floor(Math.min(...zs) / this.cell);
-          z <= Math.floor(Math.max(...zs) / this.cell);
-          z++
-        ) {
+      const x0 = Math.floor(Math.min(...xs) / this.cell),
+        x1 = Math.floor(Math.max(...xs) / this.cell),
+        z0 = Math.floor(Math.min(...zs) / this.cell),
+        z1 = Math.floor(Math.max(...zs) / this.cell);
+      this.lo = [Math.min(this.lo[0], x0), Math.min(this.lo[1], z0)];
+      this.hi = [Math.max(this.hi[0], x1), Math.max(this.hi[1], z1)];
+      for (let x = x0; x <= x1; x++)
+        for (let z = z0; z <= z1; z++) {
           const k = x + "," + z;
           const list = this.map.get(k);
           if (list) list.push(i);
           else this.map.set(k, [i]);
         }
     });
+  }
+  /** Whether a horizontal ray (along ±x or ±z) from `o` meets any triangle.
+   * Walks only the grid cells the ray crosses: a triangle it meets covers
+   * the hit point, so it is registered in that point's cell. */
+  horizontalHit(o: Vec3, d: Vec3) {
+    const axis = d[0] !== 0 ? 0 : 1;
+    const sign = axis === 0 ? d[0] : d[2];
+    const fixed = Math.floor((axis === 0 ? o[2] : o[0]) / this.cell);
+    const seen = new Set<number>();
+    for (
+      let c = Math.floor((axis === 0 ? o[0] : o[2]) / this.cell);
+      sign > 0 ? c <= this.hi[axis] : c >= this.lo[axis];
+      c += sign > 0 ? 1 : -1
+    ) {
+      const list = this.map.get(axis === 0 ? c + "," + fixed : fixed + "," + c);
+      for (const i of list ?? []) {
+        if (seen.has(i)) continue;
+        seen.add(i);
+        if (ray(o, d, this.tris[i]) !== null) return true;
+      }
+    }
+    return false;
   }
   near(x0: number, z0: number, x1: number, z1: number) {
     const out = new Set<number>();
@@ -475,14 +510,62 @@ export function receptorTest(
       [0, 0, 1],
       [0, 0, -1],
     ] as Vec3[]
-  ).every((d) =>
-    index.tris.some((t) => ray([x + 0.013, y, z + 0.007], d, t) !== null),
-  );
+  ).every((d) => index.horizontalHit([x + 0.013, y, z + 0.007], d));
   return { clear, ceiling, enclosed };
 }
 
 /** Room a stud needs above its base: one stud cell across, one plate high. */
 export const STUD_ROOM = { half: 9.5, height: 8, lift: 0.3 };
+/** Every point a stud's seat rays (radius 9, reaching 1.3 LDU below the lifted
+ * origin) or its room box (9.5 across, 8 high) can touch lies within this
+ * distance of the stud's base along each axis. */
+const STUD_REACH = 16;
+
+/** 3D grid of triangle boxes: the triangles whose box meets a cube. */
+export class BoxIndex {
+  cell = 20;
+  map = new Map<string, number[]>();
+  boxes: Float64Array;
+  constructor(public tris: Tri[]) {
+    this.boxes = new Float64Array(tris.length * 6);
+    tris.forEach((t, i) => {
+      for (let a = 0; a < 3; a++) {
+        this.boxes[i * 6 + a] = Math.min(t[0][a], t[1][a], t[2][a]);
+        this.boxes[i * 6 + 3 + a] = Math.max(t[0][a], t[1][a], t[2][a]);
+      }
+      const lo = [0, 1, 2].map((a) => Math.floor(this.boxes[i * 6 + a] / 20)),
+        hi = [0, 1, 2].map((a) => Math.floor(this.boxes[i * 6 + 3 + a] / 20));
+      for (let x = lo[0]; x <= hi[0]; x++)
+        for (let y = lo[1]; y <= hi[1]; y++)
+          for (let z = lo[2]; z <= hi[2]; z++) {
+            const k = x + "," + y + "," + z;
+            const list = this.map.get(k);
+            if (list) list.push(i);
+            else this.map.set(k, [i]);
+          }
+    });
+  }
+  /** Triangles whose box meets the cube of half-size `r` around `p`, in
+   * their original order. */
+  near(p: Vec3, r: number): Tri[] {
+    const found = new Set<number>();
+    const lo = p.map((v) => Math.floor((v - r) / this.cell)),
+      hi = p.map((v) => Math.floor((v + r) / this.cell));
+    for (let x = lo[0]; x <= hi[0]; x++)
+      for (let y = lo[1]; y <= hi[1]; y++)
+        for (let z = lo[2]; z <= hi[2]; z++)
+          for (const i of this.map.get(x + "," + y + "," + z) ?? []) {
+            if (found.has(i)) continue;
+            let inside = true;
+            for (let a = 0; a < 3 && inside; a++)
+              inside =
+                this.boxes[i * 6 + a] <= p[a] + r &&
+                this.boxes[i * 6 + 3 + a] >= p[a] - r;
+            if (inside) found.add(i);
+          }
+    return [...found].sort((a, b) => a - b).map((i) => this.tris[i]);
+  }
+}
 /** Two unit vectors completing `axis` to an orthonormal frame. */
 function perpendiculars(axis: Vec3): [Vec3, Vec3] {
   const ref: Vec3 = Math.abs(axis[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
@@ -498,7 +581,14 @@ function perpendiculars(axis: Vec3): [Vec3, Vec3] {
  * plate (8 LDU) high above the base, contains none of the body — room for the
  * part that will sit on it.
  */
-export function studChecks(body: Tri[], stud: { p: Vec3; axis: Vec3 }) {
+export function studChecks(
+  all: Tri[],
+  stud: { p: Vec3; axis: Vec3 },
+  /** Optional spatial index of `all` (large parts): only triangles within
+   * reach of the stud's rays and room are tested, which gives the same result. */
+  index?: BoxIndex,
+) {
+  const body = index ? index.near(stud.p, STUD_REACH) : all;
   const [e1, e2] = perpendiculars(stud.axis);
   const { half, height, lift } = STUD_ROOM;
   let hits = 0;
@@ -590,8 +680,8 @@ export function hingePins(body: Tri[]): HingePins | null {
   const pts = body.flat();
   if (!pts.length) return null;
   const ys = pts.map((p) => p[1]);
-  const ymin = Math.min(...ys),
-    ymax = Math.max(...ys);
+  const ymin = minOf(ys),
+    ymax = maxOf(ys);
   const centre = (list: Vec3[]) =>
     [0, 2].map((i) => list.reduce((s, p) => s + p[i], 0) / list.length);
   const topTips = pts.filter((p) => p[1] <= ymin + 0.5),
@@ -603,9 +693,9 @@ export function hingePins(body: Tri[]): HingePins | null {
   if ([...topTips, ...bottomTips].some((p) => radial(p) > HINGE.tip))
     return null;
   const leaf = pts.filter((p) => radial(p) > HINGE.leaf);
-  if (!leaf.length || Math.max(...leaf.map(radial)) < 20) return null;
-  const leafTop = Math.min(...leaf.map((p) => p[1])),
-    leafBottom = Math.max(...leaf.map((p) => p[1]));
+  if (!leaf.length || maxOf(leaf.map(radial)) < 20) return null;
+  const leafTop = minOf(leaf.map((p) => p[1])),
+    leafBottom = maxOf(leaf.map((p) => p[1]));
   const protrusion = Math.max(leafTop - ymin, ymax - leafBottom);
   if (leafTop - ymin < 0.25 || ymax - leafBottom < 0.25 || protrusion > 6)
     return null;
@@ -617,7 +707,7 @@ export function hingePins(body: Tri[]): HingePins | null {
     bottom: [clean(ax), clean(leafBottom), clean(az)],
     axis: [0, -1, 0],
     protrusion: clean(protrusion),
-    radius: clean(Math.max(...pins.map(radial))),
+    radius: clean(maxOf(pins.map(radial))),
   };
 }
 
@@ -635,7 +725,7 @@ export function hingeSockets(
   if (!body.length) return [];
   const index = new TriIndex(body);
   const ys = body.flat().map((p) => p[1]);
-  const mid = (Math.min(...ys) + Math.max(...ys)) / 2;
+  const mid = (minOf(ys) + maxOf(ys)) / 2;
   const first = (x: number, z: number, dir: 1 | -1) => {
     let best = Infinity;
     for (const t of index.near(x - 0.1, z - 0.1, x + 0.1, z + 0.1)) {
@@ -839,12 +929,15 @@ export function extractConnectors(
 ): Extraction {
   const flat = flatten(sources, ref);
   const bodyTris = flat.tris.filter((_, i) => !flat.inStud[i]);
+  // Parts with many studs (baseplates) test each stud against its
+  // neighbourhood only.
+  const near = flat.studs.length > 16 ? new BoxIndex(bodyTris) : undefined;
   const connectors: RawConnector[] = flat.studs.map((s) => ({
     kind: "stud" as const,
     p: s.base,
     axis: s.axis,
     source: s.name,
-    ...studChecks(bodyTris, { p: s.base, axis: s.axis }),
+    ...studChecks(bodyTris, { p: s.base, axis: s.axis }, near),
   }));
   const warnings = [...flat.warnings];
   // The catalogue box is conservative (it can reach past curved geometry), so
@@ -853,10 +946,10 @@ export function extractConnectors(
   const body: Box = points.length
     ? {
         min: [0, 1, 2].map((i) =>
-          clean(Math.min(...points.map((p) => p[i]))),
+          clean(minOf(points.map((p) => p[i]))),
         ) as Vec3,
         max: [0, 1, 2].map((i) =>
-          clean(Math.max(...points.map((p) => p[i]))),
+          clean(maxOf(points.map((p) => p[i]))),
         ) as Vec3,
       }
     : {

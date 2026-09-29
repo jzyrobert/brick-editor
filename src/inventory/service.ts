@@ -24,6 +24,9 @@ export type InventoryRequest = {
   excludeAuthoredFigures?: boolean;
   errorPolicy?: "block" | "export-resolved";
   acceptUnknownColors?: boolean;
+  /** Accept mappings derived from the LDraw part files' own BrickLink
+   * keywords (not individually reviewed); reported as acknowledged. */
+  acceptDerivedMappings?: boolean;
 };
 export type Lot = {
   itemId: string;
@@ -93,6 +96,15 @@ export function wantedXML(rows: Lot[], r: InventoryRequest) {
     "\n</INVENTORY>\n"
   );
 }
+type DerivedTable = { parts: Record<string, string> };
+let derivedLoad: Promise<DerivedTable> | undefined;
+/** The derived mapping table (src/catalog/mappings-derived.json), pinned by
+ * hash in mappings.json and loaded only when an inventory is built. */
+export const derivedMappings = () =>
+  (derivedLoad ??= import("../catalog/mappings-derived.json").then(
+    (m) => (m.default ?? m) as unknown as DerivedTable,
+  ));
+
 export class InventoryService {
   private previews = new Map<string, Preview>();
   async preview(p: Project, request: InventoryRequest): Promise<Preview> {
@@ -121,6 +133,22 @@ export class InventoryService {
       substitutions: string[] = [];
     let units = 0;
     const multiplier = r.buildMultiplier ?? 1;
+    // The derived table is only needed (and loaded) when an official part in
+    // scope has no reviewed mapping. Loaded lazily, it can be unavailable
+    // offline before first use: those parts then stay unmapped (blocked).
+    const reviewedParts = mappings.parts as Record<string, unknown>;
+    let derivedMissing = false;
+    const derived = scope.some(
+      (o) =>
+        o.namespace === "official" &&
+        !Object.hasOwn(reviewedParts, "official:" + o.node.ref),
+    )
+      ? await derivedMappings().catch(() => {
+          derivedLoad = undefined;
+          derivedMissing = true;
+          return { parts: {} } as DerivedTable;
+        })
+      : ({ parts: {} } as DerivedTable);
     const problem = (
       code: string,
       message: string,
@@ -137,12 +165,25 @@ export class InventoryService {
         continue;
       }
       const override = p.marketplace.overrides[o.id];
-      const rule = (
+      // A reviewed mapping first; else, for official parts only, the item
+      // number the LDraw part file itself names (derived, never verified).
+      const reviewed = (
         mappings.parts as Record<
           string,
           { itemId: string; verifiedColors: string[] }
         >
       )[o.namespace + ":" + o.node.ref];
+      const keyword =
+        !reviewed &&
+        o.namespace === "official" &&
+        Object.hasOwn(derived.parts, o.node.ref)
+          ? derived.parts[o.node.ref]
+          : undefined;
+      const rule = reviewed
+        ? { ...reviewed, derived: false }
+        : keyword
+          ? { itemId: keyword, verifiedColors: [] as string[], derived: true }
+          : undefined;
       let blocked = false;
       const block = (code: string, msg: string) => {
         problem(code, msg, o.id);
@@ -178,8 +219,27 @@ export class InventoryService {
             o.namespace === "project"
               ? "NON_ORDERABLE_GEOMETRY"
               : "UNMAPPED_PART",
-            "No verified purchasing rule for " + o.node.ref,
+            "No verified purchasing rule for " +
+              o.node.ref +
+              (derivedMissing && o.namespace === "official"
+                ? " (the derived mapping table could not be loaded; it loads once online)"
+                : ""),
           );
+        else if (rule.derived) {
+          if (r.acceptDerivedMappings) {
+            verification = "acknowledged";
+            problem(
+              "DERIVED_MAPPING",
+              `BrickLink ${rule.itemId} comes from the LDraw part file's own BrickLink keyword, not a reviewed catalogue page; accepted explicitly.`,
+              o.id,
+              "warning",
+            );
+          } else
+            block(
+              "DERIVED_MAPPING",
+              `BrickLink ${rule.itemId} for ${o.node.ref} comes from the LDraw part file's own BrickLink keyword and has not been reviewed; accept derived mappings or map it yourself.`,
+            );
+        }
         if (!colorId || o.colorCode === "16")
           block(
             "UNMAPPED_COLOR",

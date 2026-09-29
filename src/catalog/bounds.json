@@ -1,16 +1,19 @@
 {
-  "manifestSha256": "d4068ddde012c956562b73214018fa8d668cf3a17630108870d729a641ab663b",
+  "manifestSha256": "ced540b66ad1c897e8d5315fa04ce93bad78bdda87b69781be4ed90972b466c5",
   "dependencies": {
     "direct": {
       "1-16chrd.dat": [
         "empty.dat"
       ],
+      "1-16con16.dat": [],
+      "1-16con3.dat": [],
       "1-16cyli.dat": [],
       "1-16cylo.dat": [
         "1-16cyli.dat",
         "1-16edge.dat"
       ],
       "1-16edge.dat": [],
+      "1-16ring2.dat": [],
       "1-16ring3.dat": [],
       "1-16stud4.dat": [
         "1-16cylo.dat",
@@ -42,21 +45,25 @@
       ],
       "1-4tang.dat": [],
       "1-8chrd.dat": [],
+      "1-8con4.dat": [],
       "1-8cyli.dat": [],
       "1-8cylo.dat": [
         "1-8edge.dat",
         "1-8cyli.dat"
       ],
       "1-8cyls.dat": [],
+      "1-8disc.dat": [],
       "1-8edge.dat": [],
       "1-8ndis.dat": [],
       "1-8ring1.dat": [],
+      "1-8ring17.dat": [],
       "1-8ring18.dat": [],
       "1-8ring19.dat": [],
       "1-8ring3.dat": [],
       "1-8ring4.dat": [],
       "1-8ring6.dat": [],
       "1-8ring8.dat": [],
+      "1-8ring9.dat": [],
       "1-8sphe.dat": [],
       "1-8stud4.dat": [
         "1-8cylo.dat",
@@ -79,6 +86,7 @@
       "2-4disc.dat": [],
       "2-4edge.dat": [],
       "2-4ndis.dat": [],
+      "2-4ring1.dat": [],
       "2-4ring2.dat": [],
       "2-4ring3.dat": [],
       "2-4ring4.dat": [],
@@ -122,6 +130,7 @@
       "3-4ring1.dat": [],
       "3-4ring2.dat": [],
       "3-4ring3.dat": [],
+      "3-8chrd.dat": [],
       "3-8cyli.dat": [],
       "3-8cylo.dat": [
         "3-8edge.dat",
@@ -129,6 +138,7 @@
       ],
       "3-8cyls.dat": [],
       "3-8edge.dat": [],
+      "3-8ndis.dat": [],
       "3-8ring12.dat": [],
       "3-8ring2.dat": [],
       "3-8ring3.dat": [],
@@ -246,6 +256,8 @@
       "48/4-4edge.dat": [
         "48/1-4edge.dat"
       ],
+      "48/4-4ring2.dat": [],
+      "48/4-4ring6.dat": [],
       "48/4-4ring9.dat": [
         "48/1-4ring9.dat"
       ],
@@ -266,6 +278,10 @@
       "7-8cyli.dat": [],
       "7-8edge.dat": [],
       "7-8ring1.dat": [],
+      "8/1-4cyli.dat": [],
+      "8/1-4cyls.dat": [],
+      "8/1-4edge.dat": [],
+      "8/1-4ndis.dat": [],
       "8/3-8chrd.dat": [],
       "8/3-8cyli.dat": [],
       "8/3-8cylo.dat": [
@@ -273,6 +289,7 @@
         "8/3-8cyli.dat"
       ],
       "8/3-8edge.dat": [],
+      "9-16edge.dat": [],
       "axl2ho10.dat": [],
       "axl2hol2.dat": [],
       "axl2hol3.dat": [],
@@ -328,6 +345,12 @@
         "4-4con1.dat",
         "4-4con0.dat",
         "4-4edge.dat"
+      ],
+      "clip1.dat": [
+        "2-4cylo.dat",
+        "2-4ndis.dat",
+        "rect2p.dat",
+        "rect3.dat"
       ],
       "clip2.dat": [
         "box4o8a.dat",
@@ -405,6 +428,9 @@
         "box2-9.dat"
       ],
       "ridges.dat": [],
+      "st4jfil4.dat": [
+        "1-16tndis.dat"
+      ],
       "stud.dat": [
         "4-4edge.dat",
         "4-4cyli.dat",
@@ -474,6 +500,13 @@
         "4-4cyli.dat",
         "4-4ring3.dat"
       ],
+      "stud4f2w.dat": [
+        "st4jfil4.dat",
+        "4-4edge.dat",
+        "4-4cyli.dat",
+        "3-8ring3.dat",
+        "3-8cylo.dat"
+      ],
       "stud4o.dat": [
         "4-4ring3.dat",
         "4-4cylc.dat"
@@ -492,6 +525,20 @@
         "2-4cyli.dat",
         "1-4cyls.dat",
         "2-4edge.dat"
+      ],
+      "stud9.dat": [
+        "2-4cylo.dat",
+        "4-4cylo.dat",
+        "2-4ring1.dat",
+        "2-4ring2.dat",
+        "2-4ndis.dat",
+        "1-8cylo.dat",
+        "1-8chrd.dat",
+        "3-8edge.dat",
+        "3-8cyli.dat",
+        "3-8ndis.dat",
+        "rect3.dat",
+        "rect1.dat"
       ],
       "stug-16x16.dat": [
         "stug-8x8.dat"
@@ -616,6 +663,30 @@
       "tri3a4.dat": [],
       "tri3u1.dat": [],
       "triangle.dat": [],
+      "wpin.dat": [
+        "3-8chrd.dat",
+        "3-8cyli.dat",
+        "3-8cylo.dat",
+        "3-8edge.dat",
+        "1-16cyli.dat",
+        "1-16edge.dat",
+        "3-8ring12.dat",
+        "8/1-4edge.dat",
+        "8/1-4ndis.dat",
+        "8/1-4cyli.dat",
+        "8/1-4cyls.dat"
+      ],
+      "wpin2.dat": [
+        "1-4edge.dat",
+        "1-4cyli.dat",
+        "1-4chrd.dat",
+        "wpin2a.dat"
+      ],
+      "wpin2a.dat": [
+        "wpin.dat",
+        "1-4cylo.dat",
+        "1-4chrd.dat"
+      ],
       "11211.dat": [
         "stud3.dat",
         "box4t.dat",
@@ -684,6 +755,9 @@
         "rect2p.dat",
         "box5.dat",
         "stug-1x2.dat"
+      ],
+      "2335.dat": [
+        "s/2335s01.dat"
       ],
       "2339.dat": [
         "box5.dat",
@@ -958,6 +1032,23 @@
       "30176.dat": [
         "3062b.dat",
         "s/30176s01.dat"
+      ],
+      "30179.dat": [
+        "stug3-1x3.dat",
+        "box0.dat",
+        "box3u2p.dat",
+        "rect.dat",
+        "box4-2p.dat",
+        "4-4cyli.dat",
+        "4-4edge.dat",
+        "4-4ndis.dat",
+        "2-4cyli.dat",
+        "2-4edge.dat",
+        "2-4ndis.dat",
+        "9-16edge.dat",
+        "1-8ndis.dat",
+        "stud2.dat",
+        "stud9.dat"
       ],
       "3020.dat": [
         "stud4.dat",
@@ -1276,6 +1367,11 @@
         "rect1.dat",
         "tri3.dat"
       ],
+      "3641.dat": [
+        "s/3641s01.dat",
+        "4-4cylo.dat",
+        "4-4con4.dat"
+      ],
       "3659.dat": [
         "box5.dat",
         "box3u2p.dat",
@@ -1404,6 +1500,17 @@
       "3754.dat": [
         "s/3754s01.dat"
       ],
+      "3788.dat": [
+        "stug-1x2.dat",
+        "stug-2x2.dat",
+        "box5.dat",
+        "rect1.dat",
+        "rect3.dat",
+        "rect.dat",
+        "box4-4a.dat",
+        "rect2p.dat",
+        "stud4.dat"
+      ],
       "3794b.dat": [
         "stud3.dat",
         "box5.dat",
@@ -1419,6 +1526,42 @@
         "s/3811s01.dat",
         "1-4disc.dat",
         "stug8.dat"
+      ],
+      "3823.dat": [
+        "stud3.dat",
+        "1-4edge.dat",
+        "1-4cyli.dat",
+        "1-4ndis.dat",
+        "1-4disc.dat",
+        "stud2.dat"
+      ],
+      "3828.dat": [
+        "48/4-4edge.dat",
+        "48/4-4cyli.dat",
+        "48/4-4ring6.dat",
+        "48/4-4ring2.dat",
+        "48/1-4edge.dat",
+        "48/1-4cyli.dat"
+      ],
+      "3829a.dat": [
+        "stud3.dat",
+        "box3u2p.dat",
+        "box5.dat",
+        "rect1.dat",
+        "box2-5.dat",
+        "3-16edge.dat",
+        "5-8edge.dat",
+        "4-4edge.dat",
+        "4-4disc.dat",
+        "4-4cyli.dat",
+        "2-4cyli.dat",
+        "2-4edge.dat",
+        "2-4disc.dat",
+        "1-4cyls.dat"
+      ],
+      "3829c01.dat": [
+        "3829a.dat",
+        "3828.dat"
       ],
       "3832.dat": [
         "stud4.dat",
@@ -1539,6 +1682,17 @@
         "4-4cyli.dat",
         "stud.dat",
         "stud2a.dat"
+      ],
+      "4079.dat": [
+        "stud4.dat",
+        "box5.dat",
+        "1-4disc.dat",
+        "1-4edge.dat",
+        "1-8edge.dat",
+        "1-4cyli.dat",
+        "1-8cyli.dat",
+        "1-4ndis.dat",
+        "stud.dat"
       ],
       "4081b.dat": [
         "box4-2p.dat",
@@ -1692,6 +1846,19 @@
         "4-4con3.dat",
         "4-4ring3.dat",
         "4-4cylc.dat"
+      ],
+      "4600.dat": [
+        "stud4f2w.dat",
+        "4-4edge.dat",
+        "box3u8p.dat",
+        "box3u2p.dat",
+        "rect2a.dat",
+        "box5-4a.dat",
+        "wpin2.dat",
+        "stug-2x2.dat"
+      ],
+      "4624.dat": [
+        "s/4624s01.dat"
       ],
       "4727.dat": [
         "1-4cylc.dat",
@@ -1955,6 +2122,14 @@
         "box3u4a.dat",
         "box2-7.dat",
         "box5-4a.dat",
+        "recte3.dat",
+        "stud2.dat"
+      ],
+      "60616b.dat": [
+        "s/60616s01.dat",
+        "box3u4a.dat",
+        "box2-7.dat",
+        "box3u4p.dat",
         "recte3.dat",
         "stud2.dat"
       ],
@@ -2222,6 +2397,11 @@
         "rect2p.dat",
         "1-8cylo.dat",
         "1-16cylo.dat"
+      ],
+      "s/2335s01.dat": [
+        "rect.dat",
+        "box3u4a.dat",
+        "clip1.dat"
       ],
       "s/24309s01.dat": [
         "rect3.dat",
@@ -2511,6 +2691,12 @@
         "box4t.dat",
         "stug-1x3.dat"
       ],
+      "s/3641s01.dat": [
+        "rect2p.dat",
+        "rect.dat",
+        "rect3.dat",
+        "1-8tndis.dat"
+      ],
       "s/3660bs01.dat": [
         "box4-1.dat",
         "recte3.dat",
@@ -2782,6 +2968,24 @@
         "box5-4a.dat",
         "recte3.dat",
         "stug-1x3.dat"
+      ],
+      "s/4624s01.dat": [
+        "1-8ring17.dat",
+        "1-8ring9.dat",
+        "1-16chrd.dat",
+        "1-8disc.dat",
+        "1-8ring4.dat",
+        "1-8ring3.dat",
+        "1-16ring2.dat",
+        "1-16con3.dat",
+        "1-16con16.dat",
+        "1-16edge.dat",
+        "1-16cylo.dat",
+        "rect.dat",
+        "1-16cyli.dat",
+        "rect2p.dat",
+        "1-8cylo.dat",
+        "1-8con4.dat"
       ],
       "s/4728s01.dat": [],
       "s/4728s02.dat": [
@@ -3115,12 +3319,15 @@
       "1-16chrd.dat": [
         "empty.dat"
       ],
+      "1-16con16.dat": [],
+      "1-16con3.dat": [],
       "1-16cyli.dat": [],
       "1-16edge.dat": [],
       "1-16cylo.dat": [
         "1-16cyli.dat",
         "1-16edge.dat"
       ],
+      "1-16ring2.dat": [],
       "1-16ring3.dat": [],
       "1-16stud4.dat": [
         "1-16cylo.dat",
@@ -3156,6 +3363,7 @@
       ],
       "1-4tang.dat": [],
       "1-8chrd.dat": [],
+      "1-8con4.dat": [],
       "1-8cyli.dat": [],
       "1-8edge.dat": [],
       "1-8cylo.dat": [
@@ -3163,14 +3371,17 @@
         "1-8cyli.dat"
       ],
       "1-8cyls.dat": [],
+      "1-8disc.dat": [],
       "1-8ndis.dat": [],
       "1-8ring1.dat": [],
+      "1-8ring17.dat": [],
       "1-8ring18.dat": [],
       "1-8ring19.dat": [],
       "1-8ring3.dat": [],
       "1-8ring4.dat": [],
       "1-8ring6.dat": [],
       "1-8ring8.dat": [],
+      "1-8ring9.dat": [],
       "1-8sphe.dat": [],
       "1-8stud4.dat": [
         "1-8cylo.dat",
@@ -3195,6 +3406,7 @@
       ],
       "2-4cyls.dat": [],
       "2-4ndis.dat": [],
+      "2-4ring1.dat": [],
       "2-4ring2.dat": [],
       "2-4ring3.dat": [],
       "2-4ring4.dat": [],
@@ -3242,6 +3454,7 @@
       "3-4ring1.dat": [],
       "3-4ring2.dat": [],
       "3-4ring3.dat": [],
+      "3-8chrd.dat": [],
       "3-8cyli.dat": [],
       "3-8edge.dat": [],
       "3-8cylo.dat": [
@@ -3249,6 +3462,7 @@
         "3-8cyli.dat"
       ],
       "3-8cyls.dat": [],
+      "3-8ndis.dat": [],
       "3-8ring12.dat": [],
       "3-8ring2.dat": [],
       "3-8ring3.dat": [],
@@ -3370,6 +3584,8 @@
         "48/1-4cyli.dat"
       ],
       "48/4-4disc.dat": [],
+      "48/4-4ring2.dat": [],
+      "48/4-4ring6.dat": [],
       "48/4-4ring9.dat": [
         "48/1-4ring9.dat"
       ],
@@ -3390,6 +3606,10 @@
       "7-8cyli.dat": [],
       "7-8edge.dat": [],
       "7-8ring1.dat": [],
+      "8/1-4cyli.dat": [],
+      "8/1-4cyls.dat": [],
+      "8/1-4edge.dat": [],
+      "8/1-4ndis.dat": [],
       "8/3-8chrd.dat": [],
       "8/3-8cyli.dat": [],
       "8/3-8edge.dat": [],
@@ -3397,6 +3617,7 @@
         "8/3-8edge.dat",
         "8/3-8cyli.dat"
       ],
+      "9-16edge.dat": [],
       "axl2ho10.dat": [],
       "axl2hol2.dat": [],
       "axl2hol3.dat": [],
@@ -3457,6 +3678,14 @@
         "4-4edge.dat"
       ],
       "rect2p.dat": [],
+      "clip1.dat": [
+        "2-4cylo.dat",
+        "2-4edge.dat",
+        "2-4cyli.dat",
+        "2-4ndis.dat",
+        "rect2p.dat",
+        "rect3.dat"
+      ],
       "clip2.dat": [
         "box4o8a.dat",
         "rect2p.dat",
@@ -3545,6 +3774,9 @@
         "box2-9.dat"
       ],
       "ridges.dat": [],
+      "st4jfil4.dat": [
+        "1-16tndis.dat"
+      ],
       "stud.dat": [
         "4-4edge.dat",
         "4-4cyli.dat",
@@ -3616,6 +3848,16 @@
         "4-4cyli.dat",
         "4-4ring3.dat"
       ],
+      "stud4f2w.dat": [
+        "st4jfil4.dat",
+        "1-16tndis.dat",
+        "4-4edge.dat",
+        "4-4cyli.dat",
+        "3-8ring3.dat",
+        "3-8cylo.dat",
+        "3-8edge.dat",
+        "3-8cyli.dat"
+      ],
       "stud4o.dat": [
         "4-4ring3.dat",
         "4-4cylc.dat",
@@ -3639,6 +3881,26 @@
         "2-4cyli.dat",
         "1-4cyls.dat",
         "2-4edge.dat"
+      ],
+      "stud9.dat": [
+        "2-4cylo.dat",
+        "2-4edge.dat",
+        "2-4cyli.dat",
+        "4-4cylo.dat",
+        "4-4edge.dat",
+        "4-4cyli.dat",
+        "2-4ring1.dat",
+        "2-4ring2.dat",
+        "2-4ndis.dat",
+        "1-8cylo.dat",
+        "1-8edge.dat",
+        "1-8cyli.dat",
+        "1-8chrd.dat",
+        "3-8edge.dat",
+        "3-8cyli.dat",
+        "3-8ndis.dat",
+        "rect3.dat",
+        "rect1.dat"
       ],
       "stug-2x2.dat": [
         "stud.dat",
@@ -3891,6 +4153,56 @@
       "tri3a4.dat": [],
       "tri3u1.dat": [],
       "triangle.dat": [],
+      "wpin.dat": [
+        "3-8chrd.dat",
+        "3-8cyli.dat",
+        "3-8cylo.dat",
+        "3-8edge.dat",
+        "1-16cyli.dat",
+        "1-16edge.dat",
+        "3-8ring12.dat",
+        "8/1-4edge.dat",
+        "8/1-4ndis.dat",
+        "8/1-4cyli.dat",
+        "8/1-4cyls.dat"
+      ],
+      "wpin2a.dat": [
+        "wpin.dat",
+        "3-8chrd.dat",
+        "3-8cyli.dat",
+        "3-8cylo.dat",
+        "3-8edge.dat",
+        "1-16cyli.dat",
+        "1-16edge.dat",
+        "3-8ring12.dat",
+        "8/1-4edge.dat",
+        "8/1-4ndis.dat",
+        "8/1-4cyli.dat",
+        "8/1-4cyls.dat",
+        "1-4cylo.dat",
+        "1-4edge.dat",
+        "1-4cyli.dat",
+        "1-4chrd.dat"
+      ],
+      "wpin2.dat": [
+        "1-4edge.dat",
+        "1-4cyli.dat",
+        "1-4chrd.dat",
+        "wpin2a.dat",
+        "wpin.dat",
+        "3-8chrd.dat",
+        "3-8cyli.dat",
+        "3-8cylo.dat",
+        "3-8edge.dat",
+        "1-16cyli.dat",
+        "1-16edge.dat",
+        "3-8ring12.dat",
+        "8/1-4edge.dat",
+        "8/1-4ndis.dat",
+        "8/1-4cyli.dat",
+        "8/1-4cyls.dat",
+        "1-4cylo.dat"
+      ],
       "11211.dat": [
         "stud3.dat",
         "4-4edge.dat",
@@ -4099,6 +4411,29 @@
         "4-4edge.dat",
         "4-4cyli.dat",
         "4-4disc.dat"
+      ],
+      "s/2335s01.dat": [
+        "rect.dat",
+        "box3u4a.dat",
+        "clip1.dat",
+        "2-4cylo.dat",
+        "2-4edge.dat",
+        "2-4cyli.dat",
+        "2-4ndis.dat",
+        "rect2p.dat",
+        "rect3.dat"
+      ],
+      "2335.dat": [
+        "s/2335s01.dat",
+        "rect.dat",
+        "box3u4a.dat",
+        "clip1.dat",
+        "2-4cylo.dat",
+        "2-4edge.dat",
+        "2-4cyli.dat",
+        "2-4ndis.dat",
+        "rect2p.dat",
+        "rect3.dat"
       ],
       "2339.dat": [
         "box5.dat",
@@ -4850,6 +5185,39 @@
         "2-4cyli.dat",
         "2-8sphe.dat",
         "1-8sphe.dat"
+      ],
+      "30179.dat": [
+        "stug3-1x3.dat",
+        "stud3.dat",
+        "4-4edge.dat",
+        "4-4disc.dat",
+        "4-4cyli.dat",
+        "box0.dat",
+        "box3u2p.dat",
+        "rect.dat",
+        "box4-2p.dat",
+        "4-4ndis.dat",
+        "2-4cyli.dat",
+        "2-4edge.dat",
+        "2-4ndis.dat",
+        "9-16edge.dat",
+        "1-8ndis.dat",
+        "stud2.dat",
+        "4-4ring2.dat",
+        "stud9.dat",
+        "2-4cylo.dat",
+        "4-4cylo.dat",
+        "2-4ring1.dat",
+        "2-4ring2.dat",
+        "1-8cylo.dat",
+        "1-8edge.dat",
+        "1-8cyli.dat",
+        "1-8chrd.dat",
+        "3-8edge.dat",
+        "3-8cyli.dat",
+        "3-8ndis.dat",
+        "rect3.dat",
+        "rect1.dat"
       ],
       "3020.dat": [
         "stud4.dat",
@@ -5814,6 +6182,23 @@
         "rect1.dat",
         "tri3.dat"
       ],
+      "s/3641s01.dat": [
+        "rect2p.dat",
+        "rect.dat",
+        "rect3.dat",
+        "1-8tndis.dat"
+      ],
+      "3641.dat": [
+        "s/3641s01.dat",
+        "rect2p.dat",
+        "rect.dat",
+        "rect3.dat",
+        "1-8tndis.dat",
+        "4-4cylo.dat",
+        "4-4edge.dat",
+        "4-4cyli.dat",
+        "4-4con4.dat"
+      ],
       "3659.dat": [
         "box5.dat",
         "box3u2p.dat",
@@ -6153,6 +6538,22 @@
         "4-4ring2.dat",
         "stud2.dat"
       ],
+      "3788.dat": [
+        "stug-1x2.dat",
+        "stud.dat",
+        "4-4edge.dat",
+        "4-4cyli.dat",
+        "4-4disc.dat",
+        "stug-2x2.dat",
+        "box5.dat",
+        "rect1.dat",
+        "rect3.dat",
+        "rect.dat",
+        "box4-4a.dat",
+        "rect2p.dat",
+        "stud4.dat",
+        "4-4ring3.dat"
+      ],
       "3794b.dat": [
         "stud3.dat",
         "4-4edge.dat",
@@ -6192,6 +6593,66 @@
         "4-4edge.dat",
         "4-4cyli.dat",
         "4-4disc.dat"
+      ],
+      "3823.dat": [
+        "stud3.dat",
+        "4-4edge.dat",
+        "4-4disc.dat",
+        "4-4cyli.dat",
+        "1-4edge.dat",
+        "1-4cyli.dat",
+        "1-4ndis.dat",
+        "1-4disc.dat",
+        "stud2.dat",
+        "4-4ring2.dat"
+      ],
+      "3828.dat": [
+        "48/4-4edge.dat",
+        "48/1-4edge.dat",
+        "48/4-4cyli.dat",
+        "48/1-4cyli.dat",
+        "48/4-4ring6.dat",
+        "48/4-4ring2.dat"
+      ],
+      "3829a.dat": [
+        "stud3.dat",
+        "4-4edge.dat",
+        "4-4disc.dat",
+        "4-4cyli.dat",
+        "box3u2p.dat",
+        "box5.dat",
+        "rect1.dat",
+        "box2-5.dat",
+        "3-16edge.dat",
+        "5-8edge.dat",
+        "2-4cyli.dat",
+        "2-4edge.dat",
+        "2-4disc.dat",
+        "1-4cyls.dat"
+      ],
+      "3829c01.dat": [
+        "3829a.dat",
+        "stud3.dat",
+        "4-4edge.dat",
+        "4-4disc.dat",
+        "4-4cyli.dat",
+        "box3u2p.dat",
+        "box5.dat",
+        "rect1.dat",
+        "box2-5.dat",
+        "3-16edge.dat",
+        "5-8edge.dat",
+        "2-4cyli.dat",
+        "2-4edge.dat",
+        "2-4disc.dat",
+        "1-4cyls.dat",
+        "3828.dat",
+        "48/4-4edge.dat",
+        "48/1-4edge.dat",
+        "48/4-4cyli.dat",
+        "48/1-4cyli.dat",
+        "48/4-4ring6.dat",
+        "48/4-4ring2.dat"
       ],
       "3832.dat": [
         "stud4.dat",
@@ -6621,6 +7082,21 @@
         "4-4disc.dat",
         "stud2a.dat",
         "4-4ring2.dat"
+      ],
+      "4079.dat": [
+        "stud4.dat",
+        "4-4edge.dat",
+        "4-4cyli.dat",
+        "4-4ring3.dat",
+        "box5.dat",
+        "1-4disc.dat",
+        "1-4edge.dat",
+        "1-8edge.dat",
+        "1-4cyli.dat",
+        "1-8cyli.dat",
+        "1-4ndis.dat",
+        "stud.dat",
+        "4-4disc.dat"
       ],
       "4081b.dat": [
         "box4-2p.dat",
@@ -7254,6 +7730,82 @@
         "1-4cyls.dat",
         "2-4edge.dat",
         "4-4con3.dat"
+      ],
+      "4600.dat": [
+        "stud4f2w.dat",
+        "st4jfil4.dat",
+        "1-16tndis.dat",
+        "4-4edge.dat",
+        "4-4cyli.dat",
+        "3-8ring3.dat",
+        "3-8cylo.dat",
+        "3-8edge.dat",
+        "3-8cyli.dat",
+        "box3u8p.dat",
+        "box3u2p.dat",
+        "rect2a.dat",
+        "box5-4a.dat",
+        "wpin2.dat",
+        "1-4edge.dat",
+        "1-4cyli.dat",
+        "1-4chrd.dat",
+        "wpin2a.dat",
+        "wpin.dat",
+        "3-8chrd.dat",
+        "1-16cyli.dat",
+        "1-16edge.dat",
+        "3-8ring12.dat",
+        "8/1-4edge.dat",
+        "8/1-4ndis.dat",
+        "8/1-4cyli.dat",
+        "8/1-4cyls.dat",
+        "1-4cylo.dat",
+        "stug-2x2.dat",
+        "stud.dat",
+        "4-4disc.dat"
+      ],
+      "s/4624s01.dat": [
+        "1-8ring17.dat",
+        "1-8ring9.dat",
+        "1-16chrd.dat",
+        "empty.dat",
+        "1-8disc.dat",
+        "1-8ring4.dat",
+        "1-8ring3.dat",
+        "1-16ring2.dat",
+        "1-16con3.dat",
+        "1-16con16.dat",
+        "1-16edge.dat",
+        "1-16cylo.dat",
+        "1-16cyli.dat",
+        "rect.dat",
+        "rect2p.dat",
+        "1-8cylo.dat",
+        "1-8edge.dat",
+        "1-8cyli.dat",
+        "1-8con4.dat"
+      ],
+      "4624.dat": [
+        "s/4624s01.dat",
+        "1-8ring17.dat",
+        "1-8ring9.dat",
+        "1-16chrd.dat",
+        "empty.dat",
+        "1-8disc.dat",
+        "1-8ring4.dat",
+        "1-8ring3.dat",
+        "1-16ring2.dat",
+        "1-16con3.dat",
+        "1-16con16.dat",
+        "1-16edge.dat",
+        "1-16cylo.dat",
+        "1-16cyli.dat",
+        "rect.dat",
+        "rect2p.dat",
+        "1-8cylo.dat",
+        "1-8edge.dat",
+        "1-8cyli.dat",
+        "1-8con4.dat"
       ],
       "4727.dat": [
         "1-4cylc.dat",
@@ -8008,6 +8560,34 @@
         "4-4cyli.dat",
         "4-4ring2.dat"
       ],
+      "60616b.dat": [
+        "s/60616s01.dat",
+        "2-4cylo.dat",
+        "2-4edge.dat",
+        "2-4cyli.dat",
+        "box2-7.dat",
+        "2-4ring2.dat",
+        "2-4ring4.dat",
+        "2-4ndis.dat",
+        "rect3.dat",
+        "1-8cylo.dat",
+        "1-8edge.dat",
+        "1-8cyli.dat",
+        "1-8ndis.dat",
+        "bump5000.dat",
+        "4-4con3.dat",
+        "4-4con1.dat",
+        "4-4con0.dat",
+        "4-4edge.dat",
+        "1-4chrd.dat",
+        "1-8chrd.dat",
+        "box3u4a.dat",
+        "box3u4p.dat",
+        "recte3.dat",
+        "stud2.dat",
+        "4-4cyli.dat",
+        "4-4ring2.dat"
+      ],
       "60623.dat": [
         "rect.dat",
         "box4.dat",
@@ -8651,6 +9231,30 @@
   },
   "bounds": {
     "1-16chrd.dat": null,
+    "1-16con16.dat": {
+      "min": [
+        14.7824,
+        0,
+        0
+      ],
+      "max": [
+        17,
+        1,
+        6.5059
+      ]
+    },
+    "1-16con3.dat": {
+      "min": [
+        2.7717,
+        0,
+        0
+      ],
+      "max": [
+        4,
+        1,
+        1.5308
+      ]
+    },
     "1-16cyli.dat": {
       "min": [
         0.9239,
@@ -8685,6 +9289,18 @@
         1,
         0,
         0.3827
+      ]
+    },
+    "1-16ring2.dat": {
+      "min": [
+        1.8478,
+        0,
+        0
+      ],
+      "max": [
+        3,
+        0,
+        1.1481
       ]
     },
     "1-16ring3.dat": {
@@ -8903,6 +9519,18 @@
         0.7071
       ]
     },
+    "1-8con4.dat": {
+      "min": [
+        2.8284,
+        0,
+        0
+      ],
+      "max": [
+        5,
+        1,
+        3.5355
+      ]
+    },
     "1-8cyli.dat": {
       "min": [
         0.7071,
@@ -8936,6 +9564,18 @@
       "max": [
         1,
         0.2929,
+        0.7071
+      ]
+    },
+    "1-8disc.dat": {
+      "min": [
+        0,
+        0,
+        0
+      ],
+      "max": [
+        1,
+        0,
         0.7071
       ]
     },
@@ -8973,6 +9613,18 @@
         2,
         0,
         1.4142
+      ]
+    },
+    "1-8ring17.dat": {
+      "min": [
+        12.0207,
+        0,
+        0
+      ],
+      "max": [
+        18,
+        0,
+        12.7278
       ]
     },
     "1-8ring18.dat": {
@@ -9045,6 +9697,18 @@
         9,
         0,
         6.3639
+      ]
+    },
+    "1-8ring9.dat": {
+      "min": [
+        6.3639,
+        0,
+        0
+      ],
+      "max": [
+        10,
+        0,
+        7.071
       ]
     },
     "1-8sphe.dat": {
@@ -9189,6 +9853,18 @@
         1,
         0,
         1
+      ]
+    },
+    "2-4ring1.dat": {
+      "min": [
+        -2,
+        0,
+        0
+      ],
+      "max": [
+        2,
+        0,
+        2
       ]
     },
     "2-4ring2.dat": {
@@ -9491,6 +10167,18 @@
         4
       ]
     },
+    "3-8chrd.dat": {
+      "min": [
+        -0.7071,
+        0,
+        0
+      ],
+      "max": [
+        1,
+        0,
+        1
+      ]
+    },
     "3-8cyli.dat": {
       "min": [
         -0.7071,
@@ -9530,6 +10218,18 @@
     "3-8edge.dat": {
       "min": [
         -0.7071,
+        0,
+        0
+      ],
+      "max": [
+        1,
+        0,
+        1
+      ]
+    },
+    "3-8ndis.dat": {
+      "min": [
+        -1,
         0,
         0
       ],
@@ -10369,6 +11069,30 @@
         1
       ]
     },
+    "48/4-4ring2.dat": {
+      "min": [
+        -3,
+        0,
+        -3
+      ],
+      "max": [
+        3,
+        0,
+        3
+      ]
+    },
+    "48/4-4ring6.dat": {
+      "min": [
+        -7,
+        0,
+        -7
+      ],
+      "max": [
+        7,
+        0,
+        7
+      ]
+    },
     "48/4-4ring9.dat": {
       "min": [
         -10,
@@ -10549,6 +11273,54 @@
         2
       ]
     },
+    "8/1-4cyli.dat": {
+      "min": [
+        0,
+        0,
+        0
+      ],
+      "max": [
+        1,
+        1,
+        1
+      ]
+    },
+    "8/1-4cyls.dat": {
+      "min": [
+        0,
+        0,
+        0
+      ],
+      "max": [
+        1,
+        1,
+        1
+      ]
+    },
+    "8/1-4edge.dat": {
+      "min": [
+        0,
+        0,
+        0
+      ],
+      "max": [
+        1,
+        0,
+        1
+      ]
+    },
+    "8/1-4ndis.dat": {
+      "min": [
+        0,
+        0,
+        0
+      ],
+      "max": [
+        1,
+        0,
+        1
+      ]
+    },
     "8/3-8chrd.dat": {
       "min": [
         -0.7071,
@@ -10590,6 +11362,18 @@
         -0.7071,
         0,
         0
+      ],
+      "max": [
+        1,
+        0,
+        1
+      ]
+    },
+    "9-16edge.dat": {
+      "min": [
+        -1,
+        0,
+        -0.3827
       ],
       "max": [
         1,
@@ -11065,6 +11849,18 @@
         1
       ]
     },
+    "clip1.dat": {
+      "min": [
+        -6.561,
+        -4,
+        -4.05
+      ],
+      "max": [
+        6.561,
+        4,
+        10
+      ]
+    },
     "clip2.dat": {
       "min": [
         -7.5840000000000005,
@@ -11282,6 +12078,18 @@
         2.5
       ]
     },
+    "st4jfil4.dat": {
+      "min": [
+        5.5433,
+        -4,
+        -3.0616
+      ],
+      "max": [
+        8,
+        0,
+        3.0616
+      ]
+    },
     "stud.dat": {
       "min": [
         -6,
@@ -11426,6 +12234,18 @@
         8
       ]
     },
+    "stud4f2w.dat": {
+      "min": [
+        -8.28791752,
+        -4,
+        -10.4528
+      ],
+      "max": [
+        8.28791752,
+        0,
+        10.4528
+      ]
+    },
     "stud4o.dat": {
       "min": [
         -8,
@@ -11472,6 +12292,18 @@
         8,
         0,
         8
+      ]
+    },
+    "stud9.dat": {
+      "min": [
+        -6,
+        -4,
+        -6
+      ],
+      "max": [
+        6,
+        0,
+        6
       ]
     },
     "stug-16x16.dat": {
@@ -12014,6 +12846,42 @@
         1
       ]
     },
+    "wpin.dat": {
+      "min": [
+        -4.489153708,
+        -12,
+        -5.661773
+      ],
+      "max": [
+        4.489153708,
+        0,
+        5.661773
+      ]
+    },
+    "wpin2.dat": {
+      "min": [
+        -7.06,
+        -12,
+        -10
+      ],
+      "max": [
+        7.06,
+        2,
+        10
+      ]
+    },
+    "wpin2a.dat": {
+      "min": [
+        -7.06,
+        -12,
+        -10
+      ],
+      "max": [
+        4.489153708,
+        2,
+        10
+      ]
+    },
     "11211.dat": {
       "min": [
         -20,
@@ -12108,6 +12976,18 @@
         20,
         72,
         10
+      ]
+    },
+    "2335.dat": {
+      "min": [
+        -6.561,
+        0,
+        -4.05
+      ],
+      "max": [
+        6.561,
+        40,
+        50
       ]
     },
     "2339.dat": {
@@ -12588,6 +13468,18 @@
         48.88,
         24,
         41.044809
+      ]
+    },
+    "30179.dat": {
+      "min": [
+        -40,
+        -4,
+        -10
+      ],
+      "max": [
+        40,
+        144,
+        10
       ]
     },
     "3020.dat": {
@@ -13250,6 +14142,18 @@
         10
       ]
     },
+    "3641.dat": {
+      "min": [
+        -18,
+        -18,
+        -8
+      ],
+      "max": [
+        18,
+        18,
+        8
+      ]
+    },
     "3659.dat": {
       "min": [
         -40,
@@ -13430,6 +14334,18 @@
         10
       ]
     },
+    "3788.dat": {
+      "min": [
+        -40,
+        -4,
+        -20
+      ],
+      "max": [
+        40,
+        16,
+        20
+      ]
+    },
     "3794b.dat": {
       "min": [
         -20,
@@ -13464,6 +14380,54 @@
         320,
         4,
         320
+      ]
+    },
+    "3823.dat": {
+      "min": [
+        -40,
+        -4,
+        -30
+      ],
+      "max": [
+        40,
+        48,
+        10
+      ]
+    },
+    "3828.dat": {
+      "min": [
+        -14,
+        -2,
+        -14
+      ],
+      "max": [
+        14,
+        6,
+        14
+      ]
+    },
+    "3829a.dat": {
+      "min": [
+        -20,
+        -29.52,
+        -10
+      ],
+      "max": [
+        20,
+        8,
+        10
+      ]
+    },
+    "3829c01.dat": {
+      "min": [
+        -20,
+        -38.72,
+        -13.440000000000001
+      ],
+      "max": [
+        20,
+        8,
+        10
       ]
     },
     "3832.dat": {
@@ -13632,6 +14596,18 @@
         10,
         24,
         10
+      ]
+    },
+    "4079.dat": {
+      "min": [
+        -20,
+        -40,
+        -20
+      ],
+      "max": [
+        20,
+        8,
+        25
       ]
     },
     "4081b.dat": {
@@ -13920,6 +14896,30 @@
         8,
         24,
         20
+      ]
+    },
+    "4600.dat": {
+      "min": [
+        -34,
+        -4,
+        -20
+      ],
+      "max": [
+        34,
+        12.059999999999999,
+        20
+      ]
+    },
+    "4624.dat": {
+      "min": [
+        -10,
+        -10,
+        -8
+      ],
+      "max": [
+        10,
+        10,
+        8
       ]
     },
     "4727.dat": {
@@ -14271,6 +15271,18 @@
       ]
     },
     "60616a.dat": {
+      "min": [
+        -4.47925921,
+        3.25,
+        -7.75
+      ],
+      "max": [
+        67,
+        136.75,
+        7.75
+      ]
+    },
+    "60616b.dat": {
       "min": [
         -4.47925921,
         3.25,
@@ -14688,6 +15700,18 @@
         80,
         8,
         40
+      ]
+    },
+    "s/2335s01.dat": {
+      "min": [
+        -6.561,
+        0,
+        -4.05
+      ],
+      "max": [
+        6.561,
+        40,
+        50
       ]
     },
     "s/24309s01.dat": {
@@ -15182,6 +16206,18 @@
         10
       ]
     },
+    "s/3641s01.dat": {
+      "min": [
+        0,
+        -18,
+        -8
+      ],
+      "max": [
+        17.6544,
+        0,
+        0
+      ]
+    },
     "s/3660bs01.dat": {
       "min": [
         -20,
@@ -15528,6 +16564,18 @@
         30,
         24,
         10
+      ]
+    },
+    "s/4624s01.dat": {
+      "min": [
+        0,
+        0,
+        -8
+      ],
+      "max": [
+        10,
+        7.071,
+        8
       ]
     },
     "s/4728s01.dat": {

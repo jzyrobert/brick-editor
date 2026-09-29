@@ -24,8 +24,10 @@ import { type CameraSpec, type Command, ensure } from "../core/types";
 import { importLDraw, exportLDraw, scopedLDraw } from "../ldraw/io";
 import {
   loadFullLibraryIndex,
+  loadFullSources,
   unresolvedCuratedRefs,
 } from "../catalog/full-library-loader";
+import { curatedHas } from "../catalog/full-library";
 import { encodeNative, decodeNative } from "../persistence/native";
 import {
   InventoryService,
@@ -330,10 +332,14 @@ export function createAPI(
       },
     },
     /** Verified stud/anti-stud connectors (docs/CONNECTORS.md). */
-    connectors: connectorService(() => {
-      editor.requireMaterialization();
-      return editor.project;
-    }),
+    connectors: connectorService(
+      () => {
+        editor.requireMaterialization();
+        return editor.project;
+      },
+      // Complete-library parts: their definition and derived connector shard.
+      (refs) => loadFullSources(refs.filter((r) => !curatedHas(r))),
+    ),
     checkpoints: {
       list: async () => listCheckpoints(editor.projectId),
       create: async (input: { name: string }) =>

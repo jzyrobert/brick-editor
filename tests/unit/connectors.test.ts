@@ -330,15 +330,18 @@ describe("connector pack", () => {
       if (v.verified) verified++;
     }
     expect(verified).toBe(connectorCoverage.verified);
-    expect(verified).toBe(164);
+    // 164 of the first 214; the catalogue release adding the roadster's,
+    // flag's and door/frame parts verifies 60616b (hinge leaf), 30179 and
+    // the seat 4079 (full underside).
+    expect(verified).toBe(167);
     expect(connectorCoverage.byRule).toEqual({
-      "full-underside": 118,
+      "full-underside": 120,
       "matched-outline": 9,
       "solid-base": 4,
       "partial-underside": 21,
       "side-studs": 6,
       jumper: 2,
-      "hinge-leaf": 4,
+      "hinge-leaf": 5,
     });
   }, 120000);
   it("round-trips the compact encoding, including sideways connectors", () => {

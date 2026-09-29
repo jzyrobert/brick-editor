@@ -50,7 +50,7 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      "brick-cli validate|health|connectors|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --allow-partial\nQuery: --request query.json [--output query-result.json]\nConnectors: connectors --input file [--connected JSON-array-of-occurrence-IDs] [--output connectors.json] (verified stud connection groups, uncovered parts, connected assembly)\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --look standard|realistic|photo --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
+      "brick-cli validate|health|connectors|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --accept-derived-mappings --allow-partial\nQuery: --request query.json [--output query-result.json]\nConnectors: connectors --input file [--connected JSON-array-of-occurrence-IDs] [--output connectors.json] (verified stud connection groups, uncovered parts, connected assembly)\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --look standard|realistic|photo --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
     );
     return;
   }
@@ -82,6 +82,7 @@ export async function main(argv: string[]) {
       "condition",
       "multiplier",
       "accept-unknown-colors",
+      "accept-derived-mappings",
       "allow-partial",
     ],
     instructions: [
@@ -128,6 +129,7 @@ export async function main(argv: string[]) {
   const switches = new Set([
       "per-layer",
       "accept-unknown-colors",
+      "accept-derived-mappings",
       "allow-partial",
       "run",
       "jump",
@@ -359,6 +361,7 @@ export async function main(argv: string[]) {
       condition: (flag("condition") || "any") as InventoryRequest["condition"],
       buildMultiplier: Number(flag("multiplier") || 1),
       acceptUnknownColors: args.includes("--accept-unknown-colors"),
+      acceptDerivedMappings: args.includes("--accept-derived-mappings"),
     };
     const partial = args.includes("--allow-partial");
     try {

@@ -116,8 +116,10 @@ test("a tampered complete-pack chunk is rejected and the part stays unresolved",
         (await caches.keys())
           .filter((k) => k.startsWith("brick-editor-ldraw-full:"))
           .map(async (k) =>
+            // Geometry chunks only (the part's derived connector shard is
+            // intact and legitimately cached).
             (await (await caches.open(k)).keys()).filter((r) =>
-              r.url.endsWith(".bin"),
+              r.url.includes("/chunks/"),
             ),
           ),
       ).then((lists) => lists.flat().length),

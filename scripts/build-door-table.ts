@@ -12,7 +12,7 @@ import {
   type DoorHinge,
 } from "../src/play/door-derive";
 
-const root = process.argv[2] ?? "public/libraries/catalogue-2026-09-28";
+const root = process.argv[2] ?? "public/libraries/catalogue-2026-09-29";
 const archive = process.argv[3];
 const read = (name: string) => {
   const n = name.toLowerCase().replaceAll("\\", "/");

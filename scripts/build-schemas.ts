@@ -107,7 +107,15 @@ const project = obj({
       connectorPackId: id,
       connectorPackSha256: id,
       // Complete official library pack used for parts outside the curated pack.
-      full: obj({ releaseId: id, manifestSha256: id }),
+      full: obj(
+        {
+          releaseId: id,
+          manifestSha256: id,
+          connectorPackId: id,
+          connectorPackSha256: id,
+        },
+        ["releaseId", "manifestSha256"],
+      ),
     },
     ["releaseId", "manifestSha256", "colorConfigSha256"],
   ),
@@ -726,6 +734,7 @@ const inventory = obj(
     excludeAuthoredFigures: { type: "boolean" },
     errorPolicy: { enum: ["block", "export-resolved"] },
     acceptUnknownColors: { type: "boolean" },
+    acceptDerivedMappings: { type: "boolean" },
   },
   ["expectedRevision", "format", "scope"],
 );

@@ -164,12 +164,13 @@ describe("template builds", () => {
     },
   );
 
-  it("castle: grid-placed parts, no overlaps, one connected build, flags from the full library", () => {
+  it("castle: grid-placed parts, no overlaps, one connected build, catalogue flags", () => {
     const project = template("castle");
     expect(project.title).toBe("Small castle");
     const r = report(project);
     expect(r.parts).toBe(235);
-    expect(outside(project)).toEqual(["2335.dat"]);
+    // The flag 2335 joined the catalogue (release catalogue-2026-09-29).
+    expect(outside(project)).toEqual([]);
     expect(r.overlaps).toEqual([]);
     expect(r.offGrid).toEqual([]);
     expect(r.groups).toBe(1);
@@ -236,15 +237,8 @@ describe("template builds", () => {
     const project = template("car");
     const r = report(project);
     expect(r.parts).toBe(52);
-    expect(outside(project)).toEqual([
-      "3641.dat",
-      "3788.dat",
-      "3823.dat",
-      "3829c01.dat",
-      "4079.dat",
-      "4600.dat",
-      "4624.dat",
-    ]);
+    // Every roadster part is in the catalogue (release catalogue-2026-09-29).
+    expect(outside(project)).toEqual([]);
     expect(r.overlaps).toEqual([]);
     expect(r.offGrid).toEqual([]);
     expect(r.groups).toBe(1);

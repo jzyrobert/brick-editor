@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { shardOf } from "../src/catalog/full-connector-pack";
 import { join } from "node:path";
 import type { Plugin } from "vite";
 function publicFiles(path = "public", prefix = ""): string[] {
@@ -30,10 +31,11 @@ export function templateLibraryFiles(root = "public") {
     ),
   );
   const libraries = join(root, "libraries");
-  const release = readdirSync(libraries).find((d) =>
-    d.startsWith("ldraw-full-"),
-  );
-  if (!release) return [];
+  // The release this build ships (a retired release may still be on disk).
+  const release = JSON.parse(
+    readFileSync("src/catalog/full-library-lock.json", "utf8"),
+  ).releaseId as string;
+  if (!existsSync(join(libraries, release, "manifest.json"))) return [];
   const manifest = JSON.parse(
     readFileSync(join(libraries, release, "manifest.json"), "utf8"),
   );
@@ -49,11 +51,31 @@ export function templateLibraryFiles(root = "public") {
       for (const c of index.parts[ref]?.[0] ?? []) chunks.add(c);
   if (!chunks.size) return [];
   const base = `libraries/${release}/`;
+  // The derived connector shards of those parts (health and snapping offline).
+  const connectorLock = JSON.parse(
+    readFileSync("src/catalog/full-connectors-lock.json", "utf8"),
+  ) as { connectorPackId: string };
+  const connectorDir = join(libraries, connectorLock.connectorPackId);
+  const shards: string[] = [];
+  if (existsSync(join(connectorDir, "manifest.json"))) {
+    const m = JSON.parse(
+      readFileSync(join(connectorDir, "manifest.json"), "utf8"),
+    ) as { shards: [string, number, number][] };
+    const wanted = new Set<number>();
+    for (const ref of refs)
+      if (!curated.has(ref) && index.parts[ref])
+        wanted.add(shardOf(ref, m.shards.length));
+    for (const s of [...wanted].sort((a, b) => a - b))
+      shards.push(
+        `libraries/${connectorLock.connectorPackId}/shards/${m.shards[s][0]}.bin`,
+      );
+  }
   return [
     base + manifest.index.path,
     ...[...chunks]
       .sort((a, b) => a - b)
       .map((c) => `${base}chunks/${index.chunks[c][0]}.bin`),
+    ...shards,
   ];
 }
 
@@ -66,11 +88,11 @@ export function offlinePlugin(): Plugin {
     apply: "build",
     enforce: "post",
     generateBundle(_options, bundle) {
-      // The complete LDraw pack (~90 MB) is never precached: the app loads and
+      // The complete LDraw pack (~90 MB) and its derived connector pack are never precached: the app loads and
       // caches the parts a model uses on demand (src/catalog/full-library-loader.ts).
       // Its content-addressed files are all pinned by its manifest, so hashing
       // the manifest alone versions it.
-      const full = /^libraries\/ldraw-full-[^/]+\//;
+      const full = /^libraries\/(connectors-)?ldraw-full-[^/]+\//;
       const files = publicFiles().filter(
         (f) => !full.test(f) || f.endsWith("/manifest.json"),
       );

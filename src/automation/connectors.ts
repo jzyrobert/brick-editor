@@ -7,6 +7,10 @@ import {
 } from "../catalog/connectors";
 import { catalog } from "../catalog/catalog";
 import {
+  fullConnectorLock,
+  fullConnectorManifest,
+} from "../catalog/full-connectors";
+import {
   connectedAssembly,
   connectedGroups,
   connectionGraph,
@@ -50,13 +54,25 @@ function checkProposal(input: Proposal) {
   );
 }
 
-export function connectorService(project: () => Project) {
+/**
+ * `prepare` makes a part's complete-library data available (the browser
+ * loads its definition and derived connector shard; the CLI reads them from
+ * disk synchronously and passes none).
+ */
+export function connectorService(
+  project: () => Project,
+  prepare?: (refs: string[]) => Promise<unknown>,
+) {
+  const ready = async (ref: string) => {
+    if (prepare) await prepare([ref]).catch(() => {});
+  };
   const visibleScene = () => {
     const p = project();
     return sceneConnectors(p, occurrences(p), (o) => o.visible);
   };
-  const fitsFor = (input: Proposal) => {
+  const fitsFor = async (input: Proposal) => {
     checkProposal(input);
+    await ready(input.part);
     const basis = input.basis ?? rotationY(input.angle ?? 0);
     return snapCandidates(
       input.part,
@@ -68,19 +84,28 @@ export function connectorService(project: () => Project) {
   };
   return {
     /** Pack identity, families and how many catalogue parts are verified. */
-    coverage: async () => ({
-      ...connectorCoverage,
-      verifiedParts: Object.keys(catalog).filter((id) =>
-        verifiedConnectors(id),
-      ),
-    }),
+    coverage: async () => {
+      const full = fullConnectorManifest();
+      return {
+        ...connectorCoverage,
+        verifiedParts: Object.keys(catalog).filter((id) =>
+          verifiedConnectors(id),
+        ),
+        // The pack derived from the complete official library (loaded per
+        // part on demand); null until its manifest is registered.
+        completeLibrary: full
+          ? { packId: full.id, ...full.coverage }
+          : { packId: fullConnectorLock.connectorPackId, loaded: false },
+      };
+    },
     /** One catalogue part's verification status, connectors and hinge data (LDraw space). */
     part: async (input: { ref: string }) => {
       ensure(
         typeof input?.ref === "string",
         "INVALID_INPUT",
-        "ref must be a catalogue part file name",
+        "ref must be an official part file name",
       );
+      await ready(input.ref);
       const hinge = hingeData(input.ref);
       return {
         ref: input.ref,
@@ -97,7 +122,7 @@ export function connectorService(project: () => Project) {
     snap: async (
       input: Proposal & { previous?: { position: Vec3; basis?: Basis } },
     ) => {
-      const fits = fitsFor(input);
+      const fits = await fitsFor(input);
       const i = chooseFit(fits, input.previous);
       if (i < 0) return null;
       const { distance: _distance, ...fit } = fits[i];
@@ -105,7 +130,7 @@ export function connectorService(project: () => Project) {
     },
     /** Every fit near a proposal, nearest first (what Next fit cycles through). */
     fits: async (input: Proposal) =>
-      fitsFor(input).map(({ distance: _d, ...fit }) => fit),
+      (await fitsFor(input)).map(({ distance: _d, ...fit }) => fit),
     /**
      * Fits for a tap on a part's face: a hinged leaf seated in the hinge
      * sockets of a frame near `point`, else the part turned onto sideways
@@ -125,6 +150,7 @@ export function connectorService(project: () => Project) {
         "INVALID_INPUT",
         "orient needs a part, a finite point and a finite normal",
       );
+      await ready(input.part);
       const scene = visibleScene();
       const hinge = hingeCandidates(input.part, input, scene);
       const fits = hinge.length

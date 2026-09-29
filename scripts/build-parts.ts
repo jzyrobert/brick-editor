@@ -7,6 +7,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { sourceBounds, sourceDependencies } from "../src/core/spatial";
+import { deriveKeywordMappings } from "./marketplace-mappings";
 
 type Options = {
   tags?: string[];
@@ -187,18 +188,66 @@ const catalog = Object.fromEntries(
     ];
   }),
 );
+// Derived mappings for every other official part, from the LDraw part files'
+// own BrickLink keywords (scripts/marketplace-mappings.ts). Written as a
+// separate file pinned here by hash, so the pack stays one locked identity
+// while the app loads the large table only when an inventory is built.
+const fullLock = JSON.parse(
+  readFileSync("src/catalog/full-library-lock.json", "utf8"),
+);
+const fullRoot = `public/libraries/${fullLock.releaseId}/`;
+const fullManifest = JSON.parse(
+  readFileSync(fullRoot + "manifest.json", "utf8"),
+);
+const fullCatalogBytes = readFileSync(fullRoot + fullManifest.catalog.path);
+if (digest(fullCatalogBytes) !== fullManifest.catalog.sha256)
+  throw new Error("Complete library catalogue does not match its manifest");
+const derived = deriveKeywordMappings({
+  catalog: JSON.parse(fullCatalogBytes.toString()),
+  library: {
+    releaseId: fullLock.releaseId,
+    manifestSha256: fullLock.manifestSha256,
+  },
+  curated: new Set(Object.keys(catalog)),
+  derivedDate: "2026-09-29",
+});
+writeFileSync(
+  "src/catalog/mappings-derived.json",
+  JSON.stringify(derived) + "\n",
+);
+// A new complete-library release changes the derived table, and with it the
+// pack's identity; the previous pack is then retired (kept in scripts/retired/).
 const mapping = {
-  id: "curated-catalogue-2",
-  version: 2,
-  license: "CC0-1.0 (original curated factual correspondences)",
-  verifiedDate: "2026-09-28",
+  id: "curated-catalogue-3+" + derived.id,
+  version: 3,
+  license:
+    "CC0-1.0 (original curated factual correspondences); derived table CC BY 4.0 (LDraw part metadata, see derived.license)",
+  verifiedDate: "2026-09-29",
   source:
     "Individually reviewed public BrickLink catalogue pages (title and known colours per item, scripts/bricklink-review.json); no bulk catalogue copied",
   colorSource: "https://v2.bricklink.com/catalog/color-guide",
   parts: mappedParts,
   unmapped,
   colors: paletteToBrickLink,
+  derived: {
+    id: derived.id,
+    path: "src/catalog/mappings-derived.json",
+    sha256: digest(readFileSync("src/catalog/mappings-derived.json")),
+    confidence: derived.confidence,
+    license: derived.license,
+    source: derived.source,
+    mapped: derived.coverage.mapped,
+    ambiguous: derived.coverage.ambiguous,
+  },
 };
+if (
+  previous?.mappingLock &&
+  previous.mappingLock.mappingPackId !== mapping.id
+) {
+  const retiredFile = `scripts/retired/mappings-${previous.mappingLock.mappingPackId}.json`;
+  if (!existsSync(retiredFile))
+    writeFileSync(retiredFile, readFileSync("src/catalog/mappings.json"));
+}
 writeFileSync(
   "src/catalog/mappings.json",
   JSON.stringify(mapping, null, 2) + "\n",
@@ -259,7 +308,7 @@ writeFileSync(
 // 5. Notices: every distributed file with its authors and licence.
 writeFileSync(
   "public/notices/LDRAW.txt",
-  `LDraw official library subset (${release}); originals retain author and licence headers.\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\nLDraw.org Parts Library agreement: see LDRAW-CAreadme.txt\nSource: https://library.ldraw.org/\nNo geometry modifications. See library manifest for individual authors and hashes.\nCatalogue thumbnails are renderings of these unmodified files.\nConnectors (studs, side studs, jumper studs, anti-studs, hinge pins and sockets) and body occupancy boxes in connector pack ldraw-derived-connectors-2 (src/catalog/connectors.json) are derived from these files by scripts/build-connectors.ts and carry this attribution.\nThe complete official library (public/libraries/ldraw-full-*/, loaded on demand for parts outside this subset) is the unmodified official complete.zip content; see its NOTICE.txt, CAreadme.txt and CAlicense4.txt. Every file keeps its own author and licence header.\n` +
+  `LDraw official library subset (${release}); originals retain author and licence headers.\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\nLDraw.org Parts Library agreement: see LDRAW-CAreadme.txt\nSource: https://library.ldraw.org/\nNo geometry modifications. See library manifest for individual authors and hashes.\nCatalogue thumbnails are renderings of these unmodified files.\nConnectors (studs, side studs, jumper studs, anti-studs, hinge pins and sockets) and body occupancy boxes in connector pack ldraw-derived-connectors-2 (src/catalog/connectors.json) are derived from these files by scripts/build-connectors.ts and carry this attribution.\nConnectors and occupancy boxes for the complete official library (public/libraries/connectors-ldraw-full-*/, scripts/build-full-connectors.ts) are derived from the complete library's files in the same way and carry the same attribution.\nDerived marketplace mappings (src/catalog/mappings-derived.json) are the BrickLink numbers the official part files state in their own !KEYWORDS lines (LDraw.org Parts Library metadata, CC BY 4.0), taken unmodified.\nThe complete official library (public/libraries/ldraw-full-*/, loaded on demand for parts outside this subset) is the unmodified official complete.zip content; see its NOTICE.txt, CAreadme.txt and CAlicense4.txt. Every file keeps its own author and licence header.\n` +
     manifest.files
       .map(
         (f: { path: string; authors: string[]; license: string[] }) =>
@@ -276,5 +325,7 @@ console.log(
     bundleBytes: bundle.length,
     mapped: Object.keys(mappedParts).length,
     unmapped: Object.keys(unmapped).length,
+    derivedMapped: derived.coverage.mapped,
+    derivedAmbiguous: derived.coverage.ambiguous,
   }),
 );

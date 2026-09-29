@@ -63,6 +63,9 @@ const changed = () => {
   generation++;
   for (const l of [...listeners]) l();
 };
+/** Signals derived data for complete-library parts (connectors, occupancy)
+ * arriving, so views and health re-derive. */
+export const notifyFullLibraryChange = () => changed();
 
 /** Parts whose definitions failed to load or verify (retried on next load). */
 const unavailable = new Set<string>();

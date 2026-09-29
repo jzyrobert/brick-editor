@@ -1,6 +1,6 @@
 {
   "$comment": "Curated placeable catalogue: official LDraw file id, display name, palette category and optional extra filter tags, search keywords and glass flag. The library pack release is fetched by fetch-library.py; BrickLink identities are reviewed separately in bricklink-review.json; build-parts.ts derives dimensions, the catalogue and the mapping pack.",
-  "libraryRelease": "catalogue-2026-09-28",
+  "libraryRelease": "catalogue-2026-09-29",
   "categories": [
     "Bricks",
     "Plates",
@@ -13,7 +13,8 @@
     "Modified",
     "Brackets & hinges",
     "Baseplates",
-    "Plants & decor"
+    "Plants & decor",
+    "Vehicles"
   ],
   "parts": [
     ["3005", "Brick 1 × 1", "Bricks", {}],
@@ -173,6 +174,8 @@
     ["60616a", "Door 1 × 4 × 6 Smooth", "Windows & doors", { "keywords": "entrance" }],
     ["60623", "Door 1 × 4 × 6 with 4 Panes", "Windows & doors", { "keywords": "entrance glass" }],
     ["60599", "Door Frame 2 × 4 × 6", "Windows & doors", { "keywords": "doorway" }],
+    ["60616b", "Door 1 × 4 × 6 Smooth, Chamfered Handle", "Windows & doors", { "keywords": "entrance" }],
+    ["30179", "Door Frame 1 × 4 × 6 Type 1", "Windows & doors", { "keywords": "doorway" }],
 
     ["4865b", "Panel 1 × 2 × 1", "Walls & fences", { "keywords": "wall" }],
     ["87552", "Panel 1 × 2 × 2", "Walls & fences", { "keywords": "wall" }],
@@ -240,6 +243,14 @@
     ["3957a", "Antenna 1 × 4", "Plants & decor", { "keywords": "aerial pole" }],
     ["4599b", "Tap 1 × 1", "Plants & decor", {"keywords": "faucet kitchen", "footprint": [1, 1], "align": [10, 10]}],
     ["4345b", "Container Box 2 × 2 × 2", "Plants & decor", { "keywords": "cupboard storage" }],
-    ["4346", "Container Box Door 2 × 2 × 2", "Plants & decor", { "keywords": "cupboard storage" }]
+    ["4346", "Container Box Door 2 × 2 × 2", "Plants & decor", { "keywords": "cupboard storage" }],
+    ["2335", "Flag 2 × 2", "Plants & decor", { "keywords": "banner castle pole clip" }],
+    ["4600", "Plate 2 × 2 with Wheel Holders", "Vehicles", { "tags": ["Plates"], "keywords": "axle car wheel pins" }],
+    ["4624", "Wheel Rim 6.4 × 8", "Vehicles", { "keywords": "car wheel hub" }],
+    ["3641", "Tyre 6/50 × 8 Offset Tread", "Vehicles", { "keywords": "tire car wheel rubber" }],
+    ["3788", "Car Mudguard 2 × 4", "Vehicles", { "keywords": "fender wheel arch" }],
+    ["3823", "Windscreen 2 × 4 × 2", "Vehicles", { "tags": ["Windows & doors"], "keywords": "windshield car glass", "glass": true }],
+    ["4079", "Seat 2 × 2", "Vehicles", { "keywords": "chair car minifig" }],
+    ["3829c01", "Car Steering Stand and Wheel", "Vehicles", { "keywords": "steering wheel car dashboard" }]
   ]
 }

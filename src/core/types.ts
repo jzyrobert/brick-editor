@@ -77,7 +77,13 @@ export type Project = {
     connectorPackId?: string;
     connectorPackSha256?: string;
     /** Complete official library pack resolving parts outside the curated pack. */
-    full?: { releaseId: string; manifestSha256: string };
+    full?: {
+      releaseId: string;
+      manifestSha256: string;
+      /** Connector pack derived from this complete pack (full-connectors.ts). */
+      connectorPackId?: string;
+      connectorPackSha256?: string;
+    };
   };
   marketplace: {
     mappingPackId: string;

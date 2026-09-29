@@ -11,7 +11,7 @@ import type { DynamicRigSource } from "../../src/play/dynamics";
 import type { Bounds } from "../../src/core/spatial";
 import { fullLibrarySources } from "../../scripts/full-library-node";
 
-export const PACK = "public/libraries/catalogue-2026-09-28";
+export const PACK = "public/libraries/catalogue-2026-09-29";
 /** Read one pinned pack file by LDraw reference (parts/, parts/s, p/, p/48). */
 export function readPack(name: string) {
   const n = name.toLowerCase().replaceAll("\\", "/");

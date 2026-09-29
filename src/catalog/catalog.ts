@@ -2,6 +2,8 @@ import sources from "./bounds.json";
 import data from "./data.json";
 import type { Project } from "../core/types";
 import { curatedHas, fullLibraryHas, fullLibraryLock } from "./full-library";
+import { fullConnectorLock } from "./full-connectors";
+import retiredFull from "./full-library-retired.json";
 export const libraryLock = data.libraryLock;
 export const mappingLock = data.mappingLock;
 /** Derived connector pack bound to the current library (see docs/CONNECTORS.md). */
@@ -12,8 +14,24 @@ export const connectorLock = data.connectorLock;
 export const projectLibraryLock: Project["library"] = {
   ...libraryLock,
   ...connectorLock,
-  full: { ...fullLibraryLock },
+  full: {
+    ...fullLibraryLock,
+    connectorPackId: fullConnectorLock.connectorPackId,
+    connectorPackSha256: fullConnectorLock.manifestSha256,
+  },
 };
+/**
+ * Superseded complete-library releases (written by `npm run library:update`).
+ * `affected` names every file whose bytes or dependency closure differ between
+ * that release and the current one (null: too many to list, never re-pinned
+ * automatically). A project pinned to a retired release is re-pinned only when
+ * none of its official references outside the curated pack is affected.
+ */
+export const retiredFullLibraryLocks: {
+  releaseId: string;
+  manifestSha256: string;
+  affected: string[] | null;
+}[] = retiredFull;
 /** Locks of superseded library releases whose every file is byte-identical in
  * the current pack (checked by `npm run library:validate`). */
 export const retiredLibraryLocks: Project["library"][] =
@@ -82,6 +100,24 @@ export function installedSource(ref: string) {
   );
 }
 
+/** Official references of a project outside the curated pack. */
+export function fullLibraryRefs(p: Project) {
+  const refs = new Set<string>();
+  for (const m of Object.values(p.models))
+    for (const n of m.nodes)
+      if (n.kind !== "geometry" && !Object.hasOwn(p.models, n.ref))
+        if (!curatedHas(n.ref)) refs.add(n.ref);
+  return refs;
+}
+/** Whether none of the project's complete-library references is affected by
+ * a release change (`affected` null: unknown, so never). */
+export function fullLockUnaffected(p: Project, affected: string[] | null) {
+  if (!affected) return false;
+  const changed = new Set(affected);
+  for (const ref of fullLibraryRefs(p)) if (changed.has(ref)) return false;
+  return true;
+}
+
 /**
  * Re-pins a loaded project from a retired library or mapping lock to the current
  * one. Only locks listed as retired qualify: every file of a retired library is
@@ -130,7 +166,37 @@ export function adoptCurrentLocks(p: Project): boolean {
     !p.library.full
   ) {
     previous.full = null;
-    p.library = { ...p.library, full: { ...fullLibraryLock } };
+    p.library = { ...p.library, full: { ...projectLibraryLock.full! } };
+  }
+  // A retired complete release: re-pinned when no official part the project
+  // uses outside the curated pack changed (bytes or closure) since then.
+  const full = p.library.full;
+  if (full && full.manifestSha256 !== fullLibraryLock.manifestSha256) {
+    const retired = retiredFullLibraryLocks.find(
+      (l) =>
+        l.releaseId === full.releaseId &&
+        l.manifestSha256 === full.manifestSha256,
+    );
+    if (retired && fullLockUnaffected(p, retired.affected)) {
+      previous.full = { ...full };
+      p.library = { ...p.library, full: { ...projectLibraryLock.full! } };
+    }
+  }
+  // The derived connector pack of the complete library (snapping, clash and
+  // health data only; never geometry) follows the complete pack's lock.
+  const pinned = p.library.full;
+  if (
+    pinned &&
+    pinned.manifestSha256 === fullLibraryLock.manifestSha256 &&
+    pinned.connectorPackSha256 !== fullConnectorLock.manifestSha256
+  ) {
+    previous.fullConnector = pinned.connectorPackSha256
+      ? {
+          connectorPackId: pinned.connectorPackId,
+          connectorPackSha256: pinned.connectorPackSha256,
+        }
+      : null;
+    p.library = { ...p.library, full: { ...projectLibraryLock.full! } };
   }
   const market = p.marketplace;
   if (

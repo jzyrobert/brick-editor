@@ -16,6 +16,8 @@ import {
   registeredFullLibrary,
 } from "../../src/catalog/full-library";
 import { directReferences } from "../../src/catalog/full-pack";
+import { fullConnectorLock } from "../../src/catalog/full-connectors";
+import { shardOf } from "../../src/catalog/full-connector-pack";
 import { partSpec } from "../../src/catalog/extended";
 import { deriveDoorRigs, doorHinge } from "../../src/play/auto-doors";
 import {
@@ -26,7 +28,6 @@ import {
 const fixture = readFileSync("fixtures/ldraw/full-library.ldr", "utf8");
 const outside = [
   "3861.dat",
-  "60616b.dat",
   "86500.dat",
   "30367c.dat",
   "6079.dat",
@@ -87,8 +88,8 @@ describe("complete official library pack", () => {
     // A placement spec is derived with the curated catalogue's rules.
     const spec = partSpec("86500.dat")!;
     expect(spec).toMatchObject({ width: 80, depth: 80, extended: true });
-    // Play's automatic doors see the complete-pack door leaves (3861 via its
-    // moved-to alias 3861c, and 60616b) as official hinged doors.
+    // Play's automatic doors see the complete-pack door leaf 3861 (via its
+    // moved-to alias 3861c) and the catalogue's 60616b as official hinged doors.
     const doors = deriveDoorRigs(p, {
       all,
       reserved: new Set(),
@@ -105,7 +106,11 @@ describe("complete official library pack", () => {
 
   it("records the complete pack in new and re-pinned project locks", () => {
     const p = importLDraw(fixture, "x.ldr");
-    expect(p.library.full).toEqual(fullLibraryLock);
+    expect(p.library.full).toEqual({
+      ...fullLibraryLock,
+      connectorPackId: fullConnectorLock.connectorPackId,
+      connectorPackSha256: fullConnectorLock.manifestSha256,
+    });
     const old = structuredClone(p);
     delete old.library.full;
     expect(adoptCurrentLocks(old)).toBe(true);
@@ -121,12 +126,20 @@ describe("complete official library pack", () => {
 
 describe("browser loader", () => {
   const dir = fullLibraryDir();
+  const connectorDir = dir.replace(
+    /[^/]+\/$/,
+    fullConnectorLock.connectorPackId + "/",
+  );
   const served = (url: string) => {
-    const path = new URL(url).pathname.replace(
-      `/libraries/${fullLibraryLock.releaseId}/`,
-      "",
+    const path = new URL(url).pathname;
+    const connectors = `/libraries/${fullConnectorLock.connectorPackId}/`;
+    return new Uint8Array(
+      readFileSync(
+        path.startsWith(connectors)
+          ? connectorDir + path.slice(connectors.length)
+          : dir + path.replace(`/libraries/${fullLibraryLock.releaseId}/`, ""),
+      ),
     );
-    return new Uint8Array(readFileSync(dir + path));
   };
   /** Minimal Cache Storage: one map shared by every open(). */
   const store = new Map<string, Uint8Array>();
@@ -170,8 +183,16 @@ describe("browser loader", () => {
     await loader.loadFullSources(outside);
     const index = registry.registeredFullLibrary()!.index;
     const planned = new Set(outside.flatMap((p) => index.parts[p][0]));
-    // manifest + index + exactly the planned chunks.
-    expect(requests.length).toBe(2 + planned.size);
+    // manifest + index + exactly the planned chunks, and the derived
+    // connector pack's manifest + the shards of the requested top-level parts.
+    const shardCount = JSON.parse(
+      readFileSync(connectorDir + "manifest.json", "utf8"),
+    ).shards.length;
+    const shards = new Set(outside.map((p) => shardOf(p, shardCount)));
+    expect(requests.length).toBe(2 + planned.size + 1 + shards.size);
+    expect(
+      requests.filter((r) => r.includes("/libraries/connectors-")).length,
+    ).toBe(1 + shards.size);
     // The whole closure of every requested part is loaded or curated.
     const seen = new Set<string>();
     const visit = (name: string) => {

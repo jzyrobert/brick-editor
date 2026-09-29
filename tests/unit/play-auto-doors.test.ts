@@ -128,7 +128,7 @@ describe("official LDraw door table", () => {
     const inPack = Object.keys(table.hinges).filter((part) =>
       readPack(part + ".dat"),
     );
-    expect(inPack.sort()).toEqual(["4346", "60616a", "60623"]);
+    expect(inPack.sort()).toEqual(["4346", "60616a", "60616b", "60623"]);
     for (const part of inPack) {
       const title = readPack(part + ".dat")!
         .split(/\r?\n/, 1)[0]

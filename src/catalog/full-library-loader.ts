@@ -11,6 +11,7 @@
 import { gunzipSync } from "fflate";
 import { sha256 } from "../core/hash";
 import { AppError, ensure, type Project } from "../core/types";
+import { retiredFullLibraryLocks } from "./catalog";
 import {
   FULL_PACK_FORMAT,
   chunkPath,
@@ -32,6 +33,20 @@ import {
   registerFullLibrary,
   registeredFullLibrary,
 } from "./full-library";
+import {
+  addFullConnectorShard,
+  fullConnectorLock,
+  fullConnectorManifest,
+  fullConnectorShardLoaded,
+  registerFullConnectorManifest,
+} from "./full-connectors";
+import {
+  FULL_CONNECTOR_FORMAT,
+  shardOf,
+  shardPath,
+  type FullConnectorManifest,
+  type FullConnectorShardData,
+} from "./full-connector-pack";
 
 export const fullLibraryCacheName =
   "brick-editor-ldraw-full:" + fullLibraryLock.releaseId;
@@ -57,8 +72,13 @@ async function openCache() {
 
 /** Verified bytes of one pack file: cache first (re-verified; a corrupt entry
  * is dropped), then network. A network response that fails its pin is rejected. */
-async function verified(path: string, expected: string, bytes?: number) {
-  const url = base() + path;
+async function verified(
+  path: string,
+  expected: string,
+  bytes?: number,
+  root = base(),
+) {
+  const url = root + path;
   const cache = await openCache();
   const hit = await cache?.match(url).catch(() => undefined);
   if (hit) {
@@ -214,7 +234,14 @@ async function pooled<T>(
 export async function loadFullSources(names: Iterable<string>) {
   await loadFullLibraryIndex();
   const { index, where } = registeredFullLibrary()!;
-  const roots = pendingFullSources(names);
+  const requested = [...names];
+  // Derived connector and occupancy data travels with each top-level part. It
+  // is optional: a part without it still renders and places by its bounds, so
+  // its failure never fails the geometry load.
+  const connectors = loadFullConnectors(
+    requested.filter((n) => Object.hasOwn(index.parts, n)),
+  ).catch(() => {});
+  const roots = pendingFullSources(requested);
   markFullUnavailable(roots, false);
   let wanted = roots;
   for (let round = 0; wanted.length; round++) {
@@ -262,6 +289,73 @@ export async function loadFullSources(names: Iterable<string>) {
     for (const n of wanted) visit(n);
     wanted = pendingFullSources(missing);
   }
+  await connectors;
+}
+
+const connectorBase = () =>
+  new URL(
+    import.meta.env.BASE_URL +
+      "libraries/" +
+      fullConnectorLock.connectorPackId +
+      "/",
+    location.href,
+  ).href;
+let connectorManifestLoad: Promise<FullConnectorManifest> | undefined;
+const loadConnectorManifest = () =>
+  (connectorManifestLoad ??= (async () => {
+    const m = JSON.parse(
+      decoder.decode(
+        await verified(
+          "manifest.json",
+          fullConnectorLock.manifestSha256,
+          undefined,
+          connectorBase(),
+        ),
+      ),
+    ) as FullConnectorManifest;
+    registerFullConnectorManifest(m);
+    return fullConnectorManifest()!;
+  })().catch((e) => {
+    connectorManifestLoad = undefined;
+    throw e;
+  }));
+const shardLoads = new Map<number, Promise<void>>();
+/**
+ * Loads the derived connector and occupancy data (full-connectors.ts) of
+ * these complete-library parts: one verified shard per part group, cached
+ * offline like the geometry. Snapping, clash tests and health use it once
+ * registered.
+ */
+export async function loadFullConnectors(names: Iterable<string>) {
+  const wanted = [...names].filter((n) => !curatedHas(n));
+  if (!wanted.length) return;
+  const m = await loadConnectorManifest();
+  const shards = new Set(wanted.map((n) => shardOf(n, m.shards.length)));
+  await pooled([...shards], 6, async (shard) => {
+    if (fullConnectorShardLoaded(shard)) return;
+    let load = shardLoads.get(shard);
+    if (!load) {
+      load = (async () => {
+        const [sha, bytes] = m.shards[shard];
+        const data = JSON.parse(
+          decoder.decode(
+            gunzipSync(
+              await verified(shardPath(sha), sha, bytes, connectorBase()),
+            ),
+          ),
+        ) as FullConnectorShardData;
+        ensure(
+          data.format === FULL_CONNECTOR_FORMAT,
+          "INVALID_INPUT",
+          "Unsupported connector shard format",
+        );
+        addFullConnectorShard(shard, data.parts);
+      })();
+      load.catch(() => shardLoads.delete(shard));
+      shardLoads.set(shard, load);
+    }
+    await load;
+  });
 }
 
 /** Library references of a project that name files outside the curated pack. */
@@ -298,8 +392,17 @@ export async function prepareFullLibrary(p: Project): Promise<string | null> {
   if (
     p.library.full &&
     p.library.full.manifestSha256 !== fullLibraryLock.manifestSha256
-  )
+  ) {
+    const retired = retiredFullLibraryLocks.find(
+      (l) => l.manifestSha256 === p.library.full!.manifestSha256,
+    );
+    if (retired) {
+      const changed = new Set(retired.affected ?? []);
+      const hit = [...refs].filter((r) => !retired.affected || changed.has(r));
+      return `This project pins the retired complete LDraw library ${retired.releaseId}. ${hit.length ? hit.slice(0, 5).join(", ") + (hit.length > 5 ? "…" : "") : "Its parts"} changed in ${fullLibraryLock.releaseId}, so parts outside the curated pack stay unresolved rather than silently changing.`;
+    }
     return "This project pins a different complete LDraw library; parts outside the curated pack stay unresolved.";
+  }
   try {
     await loadFullSources(refs);
     return null;

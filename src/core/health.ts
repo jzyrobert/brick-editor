@@ -3,7 +3,11 @@ import { connectedGroups, connectionGraph } from "./connectivity";
 import { occurrences } from "./document";
 import { transformBounds, type Bounds } from "./spatial";
 import { compose, inverse } from "./math";
-import { partOccupancy } from "../catalog/connectors";
+import {
+  hingeData,
+  partOccupancy,
+  verifiedConnectors,
+} from "../catalog/connectors";
 import type { Occurrence, Project } from "./types";
 
 /** Model-health report (spec §20.3). Each check says how certain it is. */
@@ -41,13 +45,16 @@ const GLAZING: Record<string, string> = {
   "60602.dat": "60593.dat",
   "60603.dat": "60594.dat",
 };
-/** Door frames' hinge collars stand a stud high above the top face and sit
- * in the underside of the part above, as studs do. */
-const COLLARS = new Set(["60596.dat", "60599.dat"]);
-/** Derived occupancy boxes of a catalogue part, when the pack has them. */
+/** Derived occupancy boxes of a part, when a connector pack has them (the
+ * catalogue's, or the complete library's once the part's shard is loaded).
+ * Door frames' hinge collars (parts with derived hinge sockets) stand a stud
+ * high above the top face and sit in the underside of the part above, as
+ * studs do, so what lies wholly above the top face is left out. */
 function occupancy(ref: string) {
   const boxes = partOccupancy(ref);
-  return boxes && COLLARS.has(ref) ? boxes.filter((b) => b.max[1] > 0) : boxes;
+  return boxes && hingeData(ref)?.sockets
+    ? boxes.filter((b) => b.max[1] > 0)
+    : boxes;
 }
 const glazed = (a: Occurrence, b: Occurrence) => {
   const pair = (x: Occurrence, y: Occurrence) =>
@@ -229,11 +236,14 @@ export function modelHealth(project: Project): HealthReport {
   const find = (i: number): number =>
     parent[i] === i ? i : (parent[i] = find(parent[i]));
   let collisionPairs = 0,
-    boxedPairs = 0;
+    boxedPairs = 0,
+    unmodelledPairs = 0;
+  const unverified = (o: Occurrence) => !verifiedConnectors(o.node.ref);
   for (const [i, j] of candidatePairs(full)) {
     if (clash(i, j)) {
       collisionPairs++;
       if (!shapes[i] || !shapes[j]) boxedPairs++;
+      else if (unverified(boxed[i]) || unverified(boxed[j])) unmodelledPairs++;
       colliding.add(i).add(j);
     }
     // Touching (including a stud row resting in the part above) joins a group.
@@ -252,6 +262,9 @@ export function modelHealth(project: Project): HealthReport {
         ? `${colliding.size} parts overlap in ${collisionPairs} place${collisionPairs === 1 ? "" : "s"} (part bodies intersect; studs sitting in the part above are allowed).` +
           (boxedPairs
             ? ` ${boxedPairs === collisionPairs ? "All" : boxedPairs} of these involve parts without derived shape data, compared by their outer boxes; parts that nest by design, such as wheels under a mudguard or a flag on its pole, show up this way.`
+            : "") +
+          (unmodelledPairs
+            ? ` ${unmodelledPairs === collisionPairs ? "All" : unmodelledPairs} of these involve parts without verified connectors, whose connection (a clip on a bar, a wheel on its pin, a tyre on its rim) is not modelled; derived shapes are one stud cell coarse, so parts that nest by design show up this way.`
             : "")
         : noneChecked
           ? "Not checked."

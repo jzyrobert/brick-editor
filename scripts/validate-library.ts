@@ -9,7 +9,11 @@ import {
   mappingLock,
   retiredLibraryLocks,
   retiredMappingLocks,
+  retiredFullLibraryLocks,
 } from "../src/catalog/catalog";
+import { fullLibraryLock } from "../src/catalog/full-library";
+import { fullConnectorLock } from "../src/catalog/full-connectors";
+import { validateFullConnectors } from "./validate-full-connectors";
 import mappings from "../src/catalog/mappings.json";
 import { validateFullLibrary } from "./validate-full-library";
 import {
@@ -72,6 +76,9 @@ if (
   mappingLock.mappingPackSha256
 )
   throw new Error("Mapping lock mismatch");
+// The derived mapping table is pinned inside the locked mapping pack.
+if (hash(readFileSync(mappings.derived.path)) !== mappings.derived.sha256)
+  throw new Error("Derived mapping table does not match the mapping pack");
 // The derived connector pack is locked and bound to this library release.
 if (
   hash(readFileSync("src/catalog/connectors.json")) !==
@@ -142,6 +149,18 @@ const full = validateFullLibrary({
   files: manifest.files,
   colorConfigSha256: libraryLock.colorConfigSha256,
 });
+// Its derived connector pack (on-demand snapping, clash and health data).
+const fullConnectors = validateFullConnectors({
+  librariesDir: "public/libraries/",
+  lock: fullConnectorLock,
+  full: fullLibraryLock,
+});
+// Retired complete-library locks record what changed since them.
+for (const l of retiredFullLibraryLocks)
+  if (l.releaseId === fullLibraryLock.releaseId)
+    throw new Error(
+      "A retired complete-library lock names the current release",
+    );
 console.log(
   JSON.stringify(
     {
@@ -155,6 +174,8 @@ console.log(
       retiredLibraryLocks: retiredLibraryLocks.map((l) => l.releaseId),
       retiredMappingLocks: retiredMappingLocks.map((l) => l.mappingPackId),
       full,
+      fullConnectors,
+      retiredFullLibraryLocks: retiredFullLibraryLocks.map((l) => l.releaseId),
     },
     null,
     2,

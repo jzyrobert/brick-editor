@@ -3,6 +3,7 @@
 import pack from "./connectors.json";
 import type { Vec3 } from "../core/types";
 import data from "./data.json";
+import { fullConnectorEntry } from "./full-connectors";
 import {
   decodeConnectors,
   decodeOccupancy,
@@ -23,6 +24,18 @@ export const connectorLock = data.connectorLock;
 /** The pack applies only to the library release it was derived from. */
 export const connectorPackMatchesLibrary =
   pack.library.manifestSha256 === data.libraryLock.manifestSha256;
+/**
+ * A part's entry: the curated pack for catalogue parts, else the pack derived
+ * from the complete official library once the part's shard is registered
+ * (full-connectors.ts; loaded with the part's geometry). `full` marks the
+ * latter.
+ */
+function entryOf(ref: string): (PackPart & { full?: true }) | undefined {
+  if (Object.hasOwn(parts, ref))
+    return connectorPackMatchesLibrary ? parts[ref] : undefined;
+  const full = fullConnectorEntry(ref);
+  return full && { ...full, full: true };
+}
 export const connectorCoverage = {
   packId: pack.id,
   ...pack.coverage,
@@ -36,8 +49,7 @@ const cache = new Map<string, Connector[]>();
  * no verified connector data.
  */
 export function verifiedConnectors(ref: string): Connector[] | null {
-  if (!connectorPackMatchesLibrary) return null;
-  const entry = Object.hasOwn(parts, ref) ? parts[ref] : undefined;
+  const entry = entryOf(ref);
   if (!entry?.verified) return null;
   let list = cache.get(ref);
   if (!list) {
@@ -53,8 +65,7 @@ const occupancyCache = new Map<string, OccupancyBox[]>();
  * null for parts outside the pack.
  */
 export function partOccupancy(ref: string): OccupancyBox[] | null {
-  if (!connectorPackMatchesLibrary) return null;
-  const entry = Object.hasOwn(parts, ref) ? parts[ref] : undefined;
+  const entry = entryOf(ref);
   if (!entry?.occupancy?.length) return null;
   let boxes = occupancyCache.get(ref);
   if (!boxes) {
@@ -84,8 +95,7 @@ export type HingeSocketPair = { top: Vec3; bottom: Vec3; depth: number };
 export function hingeData(
   ref: string,
 ): { hinge?: HingeLeaf; sockets?: HingeSocketPair[] } | null {
-  if (!connectorPackMatchesLibrary) return null;
-  const entry = (Object.hasOwn(parts, ref) ? parts[ref] : undefined) as
+  const entry = entryOf(ref) as
     | (PackPart & { hinge?: HingeLeaf; sockets?: HingeSocketPair[] })
     | undefined;
   if (!entry) return null;
@@ -98,18 +108,27 @@ export function hingeData(
 }
 /** Why a catalogue part has no verified connectors (for reports). */
 export function connectorStatus(ref: string): {
+  /** Set for parts outside the catalogue, derived from the complete library. */
+  source?: "complete-library";
   verified: boolean;
   rule?: string;
   reasons: string[];
 } {
-  const entry = Object.hasOwn(parts, ref) ? parts[ref] : undefined;
-  if (!entry) return { verified: false, reasons: ["Not a catalogue part"] };
-  if (!connectorPackMatchesLibrary)
+  if (Object.hasOwn(parts, ref) && !connectorPackMatchesLibrary)
     return {
       verified: false,
       reasons: ["Connector pack was derived from another library release"],
     };
+  const entry = entryOf(ref);
+  if (!entry)
+    return {
+      verified: false,
+      reasons: [
+        "No derived connector data loaded for this part (not an official part, or its complete-library data is not loaded)",
+      ],
+    };
   return {
+    ...(entry.full ? { source: "complete-library" as const } : {}),
     verified: entry.verified,
     ...(entry.rule ? { rule: entry.rule } : {}),
     reasons: entry.reasons ?? [],

@@ -124,7 +124,7 @@ import {
   type TemplateName,
 } from "../catalog/template-names";
 import { ReplaceProjectDialog } from "./ReplaceProjectDialog";
-import { connectorCoverage } from "../catalog/connectors";
+import { connectorCoverage, verifiedConnectors } from "../catalog/connectors";
 import { SceneAdapter, type SectionSpec } from "../render/adapter";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
 import { BrowserProjects } from "../persistence/browser-projects";
@@ -1626,6 +1626,7 @@ function Workspace() {
         scope,
         condition: condition as any,
         acceptUnknownColors: acceptUnknown,
+        acceptDerivedMappings: acceptUnknown,
       });
       setPreview(result);
     });
@@ -1661,6 +1662,7 @@ function Workspace() {
           scope: { kind: "layers", layerIds: [layer.id] },
           condition: condition as any,
           acceptUnknownColors: acceptUnknown,
+          acceptDerivedMappings: acceptUnknown,
         });
         if (p.sourceOccurrenceCount === 0) continue;
         const a = await api.current!.inventory.export({
@@ -2163,7 +2165,11 @@ function Workspace() {
       choosePart(id);
       setStatus(
         spec!.name +
-          " is ready to place. It is outside the curated catalogue: no marketplace mapping or verified connectors.",
+          " is ready to place. It is outside the curated catalogue: " +
+          (verifiedConnectors(id)
+            ? "it snaps by connectors derived from its geometry"
+            : "no verified connectors, so it places by its bounds") +
+          "; no reviewed marketplace mapping.",
       );
     });
   const fullCard = (entry: readonly [string, string, string, string?]) => {
@@ -4395,7 +4401,7 @@ function Workspace() {
                     setPreview(null);
                   }}
                 />
-                Allow part and colour pairs that are not audited yet
+                Allow parts and colours that are not audited yet
               </label>
               <button className="wide" onClick={() => void perLayer()}>
                 One list per layer (ZIP)

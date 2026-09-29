@@ -18,6 +18,19 @@ import {
 } from "../src/catalog/full-pack";
 import { ensure, type Vec3 } from "../src/core/types";
 import { extractConnectors } from "../src/catalog/connector-extract";
+import { decodeOccupancy } from "../src/catalog/connector-pack";
+import {
+  fullConnectorEntry,
+  fullConnectorLock,
+  fullConnectorManifest,
+  registerFullConnectorManifest,
+  setFullConnectorProvider,
+} from "../src/catalog/full-connectors";
+import {
+  shardPath,
+  type FullConnectorManifest,
+  type FullConnectorShardData,
+} from "../src/catalog/full-connector-pack";
 
 const hash = (b: Buffer) => createHash("sha256").update(b).digest("hex");
 export const fullLibraryDir = (
@@ -43,6 +56,36 @@ export function registerFullLibraryFromDisk(dir = fullLibraryDir()) {
     "Full LDraw library index hash mismatch",
   );
   registerFullLibrary(manifest, JSON.parse(index.toString()) as FullPackIndex);
+  registerFullConnectorsFromDisk(
+    dir.replace(/[^/]+\/$/, fullConnectorLock.connectorPackId + "/"),
+  );
+  return true;
+}
+
+/**
+ * Registers the derived connector pack of the complete library (built by
+ * scripts/build-full-connectors.ts) with a synchronous reader: each shard is
+ * read from disk, verified against the manifest, on first use. Returns false
+ * when the pack has not been built.
+ */
+export function registerFullConnectorsFromDisk(dir: string) {
+  if (fullConnectorManifest()) return true;
+  if (!existsSync(dir + "manifest.json")) return false;
+  const raw = readFileSync(dir + "manifest.json");
+  ensure(
+    hash(raw) === fullConnectorLock.manifestSha256,
+    "INVALID_INPUT",
+    "Full-library connector manifest hash mismatch",
+  );
+  const manifest = JSON.parse(raw.toString()) as FullConnectorManifest;
+  registerFullConnectorManifest(manifest);
+  setFullConnectorProvider((shard) => {
+    const [sha] = manifest.shards[shard];
+    const stored = readFileSync(dir + shardPath(sha));
+    ensure(hash(stored) === sha, "INVALID_INPUT", "Shard hash mismatch");
+    return (JSON.parse(gunzipSync(stored).toString()) as FullConnectorShardData)
+      .parts;
+  });
   return true;
 }
 
@@ -53,6 +96,15 @@ export function registerFullLibraryFromDisk(dir = fullLibraryDir()) {
  */
 export function fullLibraryOccupancy(refs: Iterable<string>) {
   const names = [...new Set(refs)];
+  // The derived pack, when built, already holds them.
+  if (fullConnectorManifest()) {
+    const out: Record<string, { min: Vec3; max: Vec3 }[]> = {};
+    for (const ref of names) {
+      const flat = fullConnectorEntry(ref)?.occupancy;
+      if (flat?.length) out[ref] = decodeOccupancy(flat);
+    }
+    return out;
+  }
   const sources = fullLibrarySources(names);
   const { index } = registeredFullLibrary()!;
   const out: Record<string, { min: Vec3; max: Vec3 }[]> = {};

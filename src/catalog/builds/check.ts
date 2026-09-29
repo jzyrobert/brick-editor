@@ -17,6 +17,7 @@ import { modelHealth } from "../../core/health";
 import { transformBounds, type Bounds } from "../../core/spatial";
 import { compose, inverse } from "../../core/math";
 import { localOccupancy } from "../../edit/snap";
+import { hingeData } from "../connectors";
 import { FULL_LIBRARY_BOUNDS } from "./kit";
 import type { Occurrence, Project } from "../../core/types";
 
@@ -28,8 +29,9 @@ const GLASS: Record<string, string> = {
   "60603.dat": "60594.dat",
 };
 const DOORS: Record<string, string[]> = {
-  "60616a.dat": ["60596.dat", "60599.dat"],
-  "60623.dat": ["60596.dat", "60599.dat"],
+  "60616a.dat": ["60596.dat", "60599.dat", "30179.dat"],
+  "60616b.dat": ["60596.dat", "60599.dat", "30179.dat"],
+  "60623.dat": ["60596.dat", "60599.dat", "30179.dat"],
 };
 /** Wheels and tyres turn on wheel pins, off the stud grid. */
 const AXLED = new Set(["4624.dat", "3641.dat"]);
@@ -52,13 +54,14 @@ const bounds = installedBounds.bounds as unknown as Record<
   string,
   Bounds | null
 >;
-/** Door frames' hinge collars stand a stud high above the top face and sit in
- * the underside cavity of the part above, like studs. */
-const COLLARS = new Set(["60596.dat", "60599.dat"]);
+/** Door frames' hinge collars (parts with derived hinge sockets) stand a stud
+ * high above the top face and sit in the underside cavity of the part above,
+ * like studs. */
 function body(ref: string, extra: Record<string, Bounds[]>): Bounds[] | null {
   if (Object.hasOwn(extra, ref)) return extra[ref];
   const own = localOccupancy(ref);
-  if (own) return COLLARS.has(ref) ? own.filter((b) => b.max[1] > 0) : own;
+  if (own)
+    return hingeData(ref)?.sockets ? own.filter((b) => b.max[1] > 0) : own;
   const b = FULL_LIBRARY_BOUNDS[ref];
   return b ? [{ min: [b.min[0], b.min[1] + 4, b.min[2]], max: b.max }] : null;
 }
