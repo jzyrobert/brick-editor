@@ -7,9 +7,10 @@ import {
   SEATED_VISUAL_POSE as pose,
   seatedPlacement,
 } from "../../src/play/seated-profile";
+import { avatarGeometryFromDisk } from "../helpers/avatar-pack";
 
-it("independent fixed body envelopes contain the actual original rigid seated hierarchy across supported head yaw", () => {
-  const avatar = new BrickAvatar(),
+it("independent fixed body envelopes contain the actual minifig seated hierarchy across supported head yaw", async () => {
+  const avatar = new BrickAvatar(await avatarGeometryFromDisk()),
     originalHipLimits = [...JOINTS.leftHip.limits];
   try {
     const vertices = new Map<Mesh, number[]>();
@@ -25,11 +26,12 @@ it("independent fixed body envelopes contain the actual original rigid seated hi
         const entry = Object.entries(JOINTS).find(([, joint]) =>
           object.position.equals(new Vector3(...joint.pivot)),
         )!;
-        if (entry[0] !== "head")
-          object.rotation.x = pose[entry[0] as "leftHip"];
+        if (entry[0] === "head") object.rotation.x = pose.headPitch;
+        else object.rotation.x = pose[entry[0] as "leftHip"];
       }
-    // The geometry's own local forward is-Z. Compare it to pelvis-localLDU
-    // without renderer scene conversion; only Y changes sign about pelvisY26.
+    // The geometry's own local forward is -Z. Compare it to pelvis-local LDU
+    // without renderer scene conversion; only Y changes sign about the hip
+    // axle (pelvis) at y 28.
     for (const yaw of [-0.7, -0.35, 0, 0.35, 0.7]) {
       const head = avatar.joint("head");
       head.rotation.y = yaw;
@@ -45,7 +47,7 @@ it("independent fixed body envelopes contain the actual original rigid seated hi
           const v = new Vector3()
             .fromBufferAttribute(positions, index)
             .applyMatrix4(object.matrixWorld);
-          const local = [v.x, 26 - v.y, v.z];
+          const local = [v.x, 28 - v.y, v.z];
           expect(
             body.envelopes.some((box) =>
               local.every(
@@ -60,14 +62,15 @@ it("independent fixed body envelopes contain the actual original rigid seated hi
     expect(JOINTS.leftHip.limits).toEqual(originalHipLimits);
     expect(JOINTS.leftHip.limits[1]).toBe(1.4);
     expect(pose.leftHip).toBe(Math.PI / 2);
-    // Exactly five original hinge groups: no invented elbow/knee hierarchy.
+    // Exactly five hinge groups on the root (the wrists hang from the
+    // shoulders): no invented elbow/knee hierarchy.
     expect(
       avatar.group.children.filter((child) => child instanceof Group),
     ).toHaveLength(5);
-    // The seated leg turns about the hip pivot at the pelvis (26 LDU) and
-    // reaches forward (-Z) by its 26 LDU length.
+    // The seated leg turns about the hip axle at the pelvis (28 LDU) and
+    // reaches forward (-Z) by its 28 LDU length.
     const leftHip = avatar.joint("leftHip");
-    expect(leftHip.getWorldPosition(new Vector3()).y).toBeCloseTo(26, 10);
+    expect(leftHip.getWorldPosition(new Vector3()).y).toBeCloseTo(28, 10);
     let reach = 0;
     leftHip.traverse((object) => {
       if (!(object instanceof Mesh)) return;
@@ -80,7 +83,7 @@ it("independent fixed body envelopes contain the actual original rigid seated hi
             .applyMatrix4(object.matrixWorld).z,
         );
     });
-    expect(reach).toBeCloseTo(-26, 6);
+    expect(reach).toBeCloseTo(-28, 6);
   } finally {
     avatar.dispose();
   }
@@ -98,14 +101,14 @@ it("transforms authored pelvis, virtual root, eye and body frames through the cu
   expect(placed.pelvisFrame.position).toEqual(
     add(chassis.position, mv(chassis.basis, anchor.position)),
   );
-  expect(placed.avatarRoot[1] - placed.pelvisFrame.position[1]).toBe(26);
-  expect(placed.eye[1] - placed.pelvisFrame.position[1]).toBe(-38);
-  expect(placed.eye[1] - placed.avatarRoot[1]).toBe(-64);
+  expect(placed.avatarRoot[1] - placed.pelvisFrame.position[1]).toBe(28);
+  expect(placed.eye[1] - placed.pelvisFrame.position[1]).toBe(-58);
+  expect(placed.eye[1] - placed.avatarRoot[1]).toBe(-86);
   const forward = mv(placed.pelvisFrame.basis, [0, 0, -1]);
   expect(forward[2]).toBeCloseTo(1, 10);
-  expect(placed.envelopes[0].halfExtents).toEqual([20, 26, 20]);
+  expect(placed.envelopes[0].halfExtents).toEqual([29, 31.75, 26.25]);
   placed.envelopes[0].halfExtents[0] = 999;
-  expect(body.envelopes[0].halfExtents[0]).toBe(20);
+  expect(body.envelopes[0].halfExtents[0]).toBe(29);
   expect(chassis.position).toEqual([100, -20, 200]);
   expect(anchor.position).toEqual([10, -30, 5]);
 });

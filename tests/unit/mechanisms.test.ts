@@ -22,7 +22,7 @@ describe("authored kinematic rigs", () => {
       door = p.motionRigs.door.groups[1].occurrenceIds[0];
     const report = s.setJointPosition("hinge", 90);
     expect(report.transforms[door].position[0]).toBeCloseTo(0);
-    expect(report.transforms[door].position[1]).toBeCloseTo(-48);
+    expect(report.transforms[door].position[1]).toBeCloseTo(-60);
     expect(report.transforms[door].position[2]).toBeCloseTo(-20);
     expect(exportLDraw(p)).toBe(rest);
     expect(() => s.setJointPosition("hinge", 120)).toThrow(/limits/);
@@ -93,7 +93,7 @@ describe("authored kinematic rigs", () => {
       bodyA: "door",
       bodyB: "frame",
       anchorA: [-20, 0, 0],
-      anchorB: [0, -48, 0],
+      anchorB: [0, -60, 0],
     });
     expect(() => validateRig(p, rig)).toThrow(/cycle/);
     const e = new Editor(p);
@@ -120,7 +120,7 @@ describe("authored kinematic rigs", () => {
       id = rig.groups[1].occurrenceIds[0];
     expect(
       session.setJointPosition("hinge", 24).transforms[id].position[1],
-    ).toBeCloseTo(-24);
+    ).toBeCloseTo(-36);
     const e = new Editor(p);
     command(e, "parts.transform", { occurrenceIds: [id], delta: [20, 0, 0] });
     expect(() => new KinematicSession(e.project, "door")).toThrow(/rest pose/);

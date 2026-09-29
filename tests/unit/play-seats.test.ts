@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { openBenchFixture } from "../../src/mechanisms/fixtures";
 import { movingSource } from "../helpers/play-moving-source";
 import { PlaySession } from "../../src/play/session";
+import { PLAY_CAMERA_DEFAULTS } from "../../src/play/types";
 const position: [number, number, number] = [80, -0.3, -188];
 async function create() {
   const source = await movingSource("vehicle", openBenchFixture());
@@ -32,8 +33,10 @@ it("enters a true rigid seated profile, drives with attached eye/root, and safel
     expect(entry.avatar.state).toBe("seated");
     expect(entry.avatar.leftHip).toBe(Math.PI / 2);
     expect(entry.positionAnchor).toBe("seated-avatar-root");
-    expect(entry.position[1]).toBeCloseTo(-15, 5);
-    expect(entry.occupancy!.pelvisWorldLdu[1]).toBe(-41);
+    // Pelvis 22.5 LDU above the chassis origin (y −24); the root is the
+    // minifig's feet level, 28 LDU below its hip axle.
+    expect(entry.position[1]).toBeCloseTo(-18.5, 5);
+    expect(entry.occupancy!.pelvisWorldLdu[1]).toBe(-46.5);
     const beforeCamera = play.camera();
     expect(beforeCamera.position).toEqual(
       entry.occupancy!.effectiveEyeWorldLdu,
@@ -191,16 +194,18 @@ it("foreign moving door stops against the actual seated body while own vehicle m
   frame.nodes = frame.nodes.slice(0, 6);
   const kept = new Set(frame.nodes.map((n) => n.id));
   frame.records = frame.records.filter((r) => !r.nodeId || kept.has(r.nodeId));
+  // The opened leaf stands just clear of the seated minifig's hands (29 LDU
+  // out from its pelvis).
   for (const group of rig.groups) {
-    group.frame.position[0] -= 30;
+    group.frame.position[0] -= 34;
     group.frame.position[2] -= 200;
     for (const [id, rest] of Object.entries(group.restTransforms)) {
-      rest.position[0] -= 30;
+      rest.position[0] -= 34;
       rest.position[2] -= 200;
       const node = project.models[project.rootModelId].nodes.find(
         (n) => n.id === JSON.parse(id)[0],
       )!;
-      node.transform.position[0] -= 30;
+      node.transform.position[0] -= 34;
       node.transform.position[2] -= 200;
     }
   }
@@ -357,7 +362,8 @@ it("seated chase frames torso from above a shoulder, preserves first-person eye 
       play.setCameraMode("third-person");
       const chase = play.camera(),
         arm = Math.hypot(...chase.position.map((n, i) => n - chase.target[i]));
-      expect(chase.target[1]).toBeCloseTo(-61, 5);
+      // 30 LDU over the pelvis: the minifig's chest.
+      expect(chase.target[1]).toBeCloseTo(-76.5, 5);
       expect(chase.target[2]).toBeCloseTo(-198, 5);
       expect(chase.position[0]).toBeLessThan(-5);
       expect(chase.position[1]).toBeLessThan(chase.target[1] - 15);
@@ -365,7 +371,7 @@ it("seated chase frames torso from above a shoulder, preserves first-person eye 
         expect(arm).toBeLessThan(65);
         expect(chase.position[2]).toBeLessThan(-168);
       } else {
-        expect(arm).toBeCloseTo(120, 4);
+        expect(arm).toBeCloseTo(PLAY_CAMERA_DEFAULTS.followDistance, 4);
         expect(play.snapshot().avatarVisible).toBe(true);
       }
       const restore = play.beginCameraCapture(10);

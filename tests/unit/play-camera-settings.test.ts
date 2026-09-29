@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { BoxGeometry, Matrix4, PerspectiveCamera, Vector3 } from "three";
 import { PlaySession } from "../../src/play/session";
 import {
+  CHARACTER_PROFILE,
   PLAY_CAMERA_DEFAULTS,
   type CollisionSnapshot,
 } from "../../src/play/types";
@@ -50,7 +51,7 @@ it("validates camera settings atomically and preserves actor dimensions and posi
   for (const settings of [
     { near: 0 },
     { near: Infinity },
-    { eyeHeight: 80 },
+    { eyeHeight: 120 },
     { followDistance: -1 },
     { minPitch: 0, maxPitch: 0 },
     { fovDeg: 110 },
@@ -61,7 +62,7 @@ it("validates camera settings atomically and preserves actor dimensions and posi
   s.configureCamera({ eyeHeight: 64, maxPitch: 0.3 });
   expect(s.snapshot().pitch).toBe(0.3);
   expect(s.snapshot().position).toEqual(actor);
-  expect(s.snapshot().profile.height).toBe(72);
+  expect(s.snapshot().profile.height).toBe(CHARACTER_PROFILE.height);
   s.setInput({ pitch: 0 });
   s.setCameraMode("third-person");
   expect(
@@ -75,11 +76,13 @@ it("validates camera settings atomically and preserves actor dimensions and posi
 });
 it("sweeps the full configured near-plane footprint near a ceiling and restores capture aspect without camera drift", async () => {
   const s = await PlaySession.create(
+    // A corridor the minifig (104 × 24 LDU) just fits: ceiling at 110 LDU,
+    // walls 28 LDU apart.
     mesh([
-      [0, -76, 0, 200, 2, 200],
-      [11, -40, 0, 2, 80, 200],
-      [-11, -40, 0, 2, 80, 200],
-      [0, -40, 40, 200, 80, 2],
+      [0, -110, 0, 200, 2, 200],
+      [15, -55, 0, 2, 110, 200],
+      [-15, -55, 0, 2, 110, 200],
+      [0, -55, 40, 200, 110, 2],
     ]),
     {
       position: [0, -0.3, 0],
@@ -104,8 +107,8 @@ it("sweeps the full configured near-plane footprint near a ceiling and restores 
   for (const x of [-1, 1])
     for (const y of [-1, 1]) {
       const corner = new Vector3(x, y, -1).unproject(c);
-      expect(corner.y).toBeGreaterThan(-75);
-      expect(Math.abs(corner.x)).toBeLessThan(10);
+      expect(corner.y).toBeGreaterThan(-109);
+      expect(Math.abs(corner.x)).toBeLessThan(14);
       expect(corner.z).toBeLessThan(39);
     }
   const before = s.camera(),

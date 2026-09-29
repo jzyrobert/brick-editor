@@ -97,13 +97,19 @@ test("third-person figure walks, swings its limbs and flies, moving with the cam
   // Diagonal: steady relative to the chase camera, smooth heading.
   await page.evaluate(async () => {
     const play = window.brickEditor!.play;
-    await play.teleport({ position: [260, -10, 260] });
+    // From the corner, across the plate towards the opposite one.
+    await play.teleport({ position: [300, -10, 300] });
     await play.setInput({ moveZ: 1, moveX: 1, pitch: -0.35 });
   });
-  await frames(page, 30);
+  await frames(page, 15);
   await trace(page, true);
   await frames(page, 45);
-  const diagonal = await trace(page);
+  // Slow software frames can carry the minifig (145 LDU/s) off the far edge
+  // of the plate; only frames over the plate are judged.
+  const diagonal = (await trace(page)).filter(
+    (f) => Math.abs(f.figure[0]) < 300 && Math.abs(f.figure[2]) < 300,
+  );
+  expect(diagonal.length).toBeGreaterThan(10);
   const offsets = diagonal.map((f) => f.figure.map((v, k) => v - f.camera[k]));
   // Before render interpolation the figure snapped a whole tick (1.7 LDU)
   // relative to the smoothly interpolated camera.
@@ -119,7 +125,7 @@ test("third-person figure walks, swings its limbs and flies, moving with the cam
     .map((f, i) => Math.abs(wrap(f.heading - diagonal[i].heading)));
   expect(Math.max(...turn)).toBeLessThan(0.02);
   // Constant speed across the studs: horizontal speed per frame stays near
-  // the walking speed (100 LDU/s) instead of stalling on edges. Measured in
+  // the walking speed (145 LDU/s) instead of stalling on edges. Measured in
   // simulated time: slow software rendering may drop catch-up ticks.
   const speeds = diagonal.slice(1).flatMap((f, i) => {
     const dt = f.time - diagonal[i].time;
@@ -130,8 +136,8 @@ test("third-person figure walks, swings its limbs and flies, moving with the cam
     return dt > 0.005 ? [d / dt] : [];
   });
   speeds.sort((a, b) => a - b);
-  expect(speeds[Math.floor(speeds.length / 2)]).toBeGreaterThan(80);
-  expect(speeds[Math.floor(speeds.length / 2)]).toBeLessThan(120);
+  expect(speeds[Math.floor(speeds.length / 2)]).toBeGreaterThan(120);
+  expect(speeds[Math.floor(speeds.length / 2)]).toBeLessThan(170);
   await page.screenshot({ path: shots + "third-person-diagonal.png" });
 
   // Fly: legs trail, no running stride in the air.
@@ -263,4 +269,93 @@ test("mouse look falls back to dragging when pointer lock is refused", async ({
   await page.mouse.move(900, 500, { steps: 3 });
   expect(await yaw()).toBe(still);
   await exitPlay(page);
+});
+
+type Figure = {
+  pack: string;
+  parts: string[];
+  ready: boolean;
+  visible: boolean;
+  meshes: number;
+  triangles: number;
+  height: number;
+  joints: Record<string, number[]>;
+};
+const figure = (page: Page) =>
+  page.evaluate(() =>
+    (
+      window.brickEditor!.play as unknown as {
+        figure: () => Promise<Figure | undefined>;
+      }
+    ).figure(),
+  );
+
+test("the third-person figure is built from official LDraw minifig parts, moves its limbs and works offline-cached", async ({
+  page,
+}) => {
+  const packRequests: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().includes("/libraries/avatar-minifig-"))
+      packRequests.push(new URL(r.url()).pathname);
+  });
+  await open(page);
+  await page.evaluate(() =>
+    window.brickEditor!.play.enter({
+      cameraMode: "third-person",
+      position: [0, -10, 200],
+      pitch: -0.3,
+    }),
+  );
+  const rest = (await figure(page))!;
+  expect(rest.ready).toBe(true);
+  expect(rest.visible).toBe(true);
+  expect(rest.parts).toEqual([
+    "973.dat",
+    "3815b.dat",
+    "3626cp01.dat",
+    "3901.dat",
+    "3818.dat",
+    "3819.dat",
+    "3820.dat",
+    "3816c.dat",
+    "3817c.dat",
+  ]);
+  // One mesh per rig node, a few thousand triangles, true minifig height.
+  expect(rest.meshes).toBe(8);
+  expect(rest.triangles).toBeLessThan(6000);
+  expect(rest.height).toBeGreaterThan(100);
+  expect(rest.height).toBeLessThanOrEqual(104);
+  // One manifest and one bundle, served from the precached snapshot paths.
+  expect(packRequests.sort()).toEqual([
+    `/libraries/${rest.pack}/bundle.txt`,
+    `/libraries/${rest.pack}/manifest.json`,
+  ]);
+  const offline = await page.evaluate(() =>
+    fetch("offline-manifest.json").then((r) => r.json()),
+  );
+  for (const file of ["manifest.json", "bundle.txt"])
+    expect(offline.files).toContain(`libraries/${rest.pack}/${file}`);
+  // Walking swings the legs about the hip axle and the arms about the
+  // shoulders; the hands turn a little with their arms.
+  await page.evaluate(async () => {
+    const play = window.brickEditor!.play;
+    await play.setInput({ moveZ: 1 });
+    await play.stepTicks(20);
+  });
+  await frames(page, 4);
+  const walking = (await figure(page))!;
+  expect(Math.abs(walking.joints.leftHip[0])).toBeGreaterThan(0.1);
+  expect(walking.joints.leftHip[0]).toBeCloseTo(-walking.joints.rightHip[0], 6);
+  expect(walking.joints.leftShoulder[0]).not.toBeCloseTo(
+    rest.joints.leftShoulder[0],
+    3,
+  );
+  expect(walking.joints.leftWrist[2]).not.toBe(0);
+  // First person hides the whole figure.
+  await page.evaluate(() =>
+    window.brickEditor!.play.setCameraMode("first-person"),
+  );
+  await frames(page, 2);
+  expect((await figure(page))!.visible).toBe(false);
+  await page.evaluate(() => window.brickEditor!.play.exit());
 });

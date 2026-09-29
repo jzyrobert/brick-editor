@@ -301,3 +301,154 @@ for (const viewport of [
     expect(errors).toEqual([]);
     await context.close();
   });
+
+// Notched phones: the page runs edge to edge (viewport-fit=cover). Playwright
+// cannot emulate safe-area insets, so the test sets the --safe-* tokens that
+// default to env(safe-area-inset-*) (src/ui/tokens.css).
+type Insets = { top: number; right: number; bottom: number; left: number };
+/** Sheets and menus whose background runs under the insets by design; only
+ * their content (the box inside their padding) must clear them. */
+const EDGE_SHEETS = [".mobile-panel.mobile-open", ".mode-card", ".play-menu"];
+const insetViolations = (page: Page, insets: Insets, list: string[]) =>
+  page.evaluate(
+    ({ insets, selectors, sheets }) => {
+      const shown = (el: Element | null): boolean => {
+        for (; el; el = el.parentElement) {
+          const s = getComputedStyle(el);
+          if (s.display === "none" || s.visibility === "hidden") return false;
+          if (Number(s.opacity) < 0.05) return false;
+        }
+        return true;
+      };
+      const found: string[] = [];
+      for (const selector of selectors)
+        for (const el of document.querySelectorAll(selector)) {
+          if (!shown(el)) continue;
+          const r = el.getBoundingClientRect();
+          if (r.width <= 1 || r.height <= 1) continue;
+          const s = getComputedStyle(el);
+          const pad = sheets.some((sheet) => el.matches(sheet))
+            ? {
+                top: parseFloat(s.paddingTop),
+                right: parseFloat(s.paddingRight),
+                bottom: parseFloat(s.paddingBottom),
+                left: parseFloat(s.paddingLeft),
+              }
+            : { top: 0, right: 0, bottom: 0, left: 0 };
+          const box = {
+            top: r.top + pad.top,
+            right: r.right - pad.right,
+            bottom: r.bottom - pad.bottom,
+            left: r.left + pad.left,
+          };
+          if (box.top < insets.top - 1)
+            found.push(`${selector} under the top inset`);
+          if (box.left < insets.left - 1)
+            found.push(`${selector} under the left inset`);
+          if (box.right > innerWidth - insets.right + 1)
+            found.push(`${selector} under the right inset`);
+          if (box.bottom > innerHeight - insets.bottom + 1)
+            found.push(`${selector} under the bottom inset`);
+        }
+      // The canvas alone fills the whole screen, insets included.
+      const canvas = document
+        .querySelector(".viewport canvas")!
+        .getBoundingClientRect();
+      if (
+        Math.abs(canvas.left) > 1 ||
+        Math.abs(canvas.top) > 1 ||
+        Math.abs(canvas.right - innerWidth) > 1 ||
+        Math.abs(canvas.bottom - innerHeight) > 1
+      )
+        found.push("the canvas does not fill the screen");
+      return found;
+    },
+    { insets, selectors: list, sheets: EDGE_SHEETS },
+  );
+
+for (const { name, viewport, insets } of [
+  {
+    name: "portrait",
+    viewport: { width: 411, height: 686 },
+    insets: { top: 44, right: 0, bottom: 34, left: 0 },
+  },
+  {
+    name: "landscape",
+    viewport: { width: 686, height: 411 },
+    insets: { top: 0, right: 44, bottom: 21, left: 44 },
+  },
+])
+  test(`notched phone (${name}): editor and Play HUD clear the safe areas`, async ({
+    browser,
+  }) => {
+    test.setTimeout(150000);
+    const context = await browser.newContext({
+      viewport,
+      hasTouch: true,
+      isMobile: true,
+    });
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto("./?automation=1");
+    await page.waitForFunction(() => !!window.brickEditor);
+    expect(
+      await page.locator('meta[name="viewport"]').getAttribute("content"),
+    ).toContain("viewport-fit=cover");
+    await page.addStyleTag({
+      content: `:root { --safe-top: ${insets.top}px; --safe-right: ${insets.right}px; --safe-bottom: ${insets.bottom}px; --safe-left: ${insets.left}px; }`,
+    });
+    await page.evaluate(
+      (text) =>
+        window
+          .brickEditor!.project.import({ format: "ldraw", text })
+          .then(() => window.brickEditor!.ready()),
+      house,
+    );
+    const sheetClose = page
+      .locator(".mobile-panel.mobile-open .mobile-sheet-head")
+      .getByRole("button", { name: "Close" });
+    if (await sheetClose.isVisible()) await sheetClose.click();
+    const button = (name: string) =>
+      page.getByRole("button", { name, exact: true });
+    const hotbar = page.getByRole("navigation", { name: "Mobile panels" });
+    const shot = (state: string) =>
+      page.screenshot({
+        path: test.info().outputPath(`notched-${name}-${state}.png`),
+      });
+    const check = async (state: string, list = SLOTS) => {
+      await page.waitForTimeout(300);
+      expect(await insetViolations(page, insets, list), state).toEqual([]);
+      expect(await collisions(page, list), state).toEqual([]);
+    };
+    await check("idle");
+    await shot("editor");
+    await button("Place").click();
+    await check("placing");
+    await button("Cancel").click();
+    await button("Camera views").click();
+    await check("camera views");
+    await button("Camera views").click();
+    await hotbar.getByRole("button", { name: "Parts", exact: true }).click();
+    await check("parts sheet");
+    await shot("parts");
+    await hotbar.getByRole("button", { name: "Parts", exact: true }).click();
+    await openMode(page, "Project");
+    await check("project card");
+    await openMode(page, "Play");
+    await check("play card");
+    await button("Enter Play").click();
+    await expect(button("Pause")).toBeVisible({ timeout: 30000 });
+    await dismissRotatePrompt(page);
+    await check("walking", PLAY_SLOTS);
+    await page.evaluate(() =>
+      window.brickEditor!.play.setCameraMode("third-person"),
+    );
+    await page.waitForTimeout(500);
+    await shot("play");
+    await button("Pause").click();
+    await check("pause menu", PLAY_SLOTS);
+    await page.evaluate(() => window.brickEditor!.play.exit());
+    expect(errors).toEqual([]);
+    await context.close();
+  });

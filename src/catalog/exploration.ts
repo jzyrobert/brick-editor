@@ -40,9 +40,9 @@ export function explorationSource() {
   box("Door left jamb", [-180, -120, 160], [-24, 0, 168], 101);
   box("Door right jamb", [24, -120, 160], [180, 0, 168], 101);
   box(
-    "Door lintel, 48 wide by 96 high clear opening",
+    "Door lintel, 48 wide by 112 high clear opening",
     [-24, -120, 160],
-    [24, -96, 168],
+    [24, -112, 168],
     101,
   );
   box("Step 1, 8 LDU rise", [-40, -8, 50], [40, 0, 80], 102);
@@ -50,7 +50,7 @@ export function explorationSource() {
   box("Step 3, 8 LDU rise", [-40, -24, -10], [40, 0, 20], 102);
   box("Step 4 and landing", [-40, -32, -100], [40, 0, -10], 102);
   box(
-    "Low ceiling alcove, cannot fit 72 LDU capsule",
+    "Low ceiling alcove, cannot fit the 104 LDU capsule",
     [80, -64, -120],
     [160, -56, 30],
     103,

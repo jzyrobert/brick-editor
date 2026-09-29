@@ -7,7 +7,9 @@
  * and a staircase of plate-high steps up to the wall walk. The gate faces −Z,
  * towards the editor's default camera.
  *
- * Play fit: the gate opening is 80 LDU wide and 96 LDU high; each stair step
+ * Play fit: the gate opening is 80 LDU wide and 120 LDU high under the arch's
+ * springing (112 LDU over the gateway floor), room for the minifig explorer
+ * (104 LDU with its hair); each stair step
  * rises one plate (8 LDU, the figure's step height) over a one-stud tread.
  * The drawbridge is an authored hinge (rig "drawbridge"): Play can raise it.
  * All parts are in the curated catalogue except the flags (Flag 2 × 2, 2335),
@@ -59,24 +61,21 @@ function walls() {
     thickness: 2 as const,
     color: stone,
   };
-  // Front wall (z −9..−8) with the gate opening x −2..1, four courses high.
+  // Front wall (z −9..−8) with the gate opening x −2..1, the full five
+  // courses high: the arch stands on the wall top.
   straightWall(m, {
     ...common,
     alongX: true,
     at: -9,
     from: -8,
     to: 8,
-    openings: [
-      { from: -2, to: 2, c0: 0, c1: 4 },
-      { from: -3, to: 3, c0: 4, c1: 5 },
-    ],
+    openings: [{ from: -2, to: 2, c0: 0, c1: 5 }],
   });
   straightWall(m, { ...common, alongX: true, at: 11, from: -8, to: 8 });
   straightWall(m, { ...common, alongX: false, at: -11, from: -6, to: 10 });
   straightWall(m, { ...common, alongX: false, at: 9, from: -6, to: 10 });
-  // Gate: the course over the opening is an arch (outer row, rising above
-  // the wall) and a 1 × 6 brick (inner row); the opening itself is removed
-  // from course 4 below by re-laying that course.
+  // Gate: an arch (outer row) and a 1 × 6 brick (inner row) span the
+  // opening on the wall top; the gatehouse crest rises around them.
   return m;
 }
 
@@ -157,18 +156,21 @@ function battlements() {
 function gate() {
   const m = new Model("castle-gate.ldr", "Gatehouse arch and drawbridge");
   const top = COURSES * 3;
-  // Arch 1 × 6 × 2 over the opening on the outer row (it rises a brick above
-  // the wall), a 1 × 6 brick on the inner row.
-  m.put("3307.dat", GREY, -3, -9, 12);
-  m.put("3009.dat", GREY, -3, -8, 12);
+  // Arch 1 × 6 × 2 over the opening on the outer row, standing on the wall
+  // top (it rises two bricks above it), a 1 × 6 brick on the inner row.
+  m.put("3307.dat", GREY, -3, -9, top);
+  m.put("3009.dat", GREY, -3, -8, top);
   // Gate crest: raised to the arch's top, tied by a 2 × 8 plate, with merlons.
-  m.put("3005.dat", GREY, -4, -9, top);
-  m.put("3005.dat", GREY, 3, -9, top);
-  m.put("3008.dat", GREY, -4, -8, top);
-  m.put("3034.dat", DARK, -4, -9, top + 3);
-  for (const x of [-4, -1, 2]) m.put("3004.dat", GREY, x, -9, top + 4);
-  for (const x of [-2, 1]) m.put("3070b.dat", DARK, x, -9, top + 4);
-  m.put("4162.dat", DARK, -4, -8, top + 4);
+  for (const x of [-4, 3]) {
+    m.put("3005.dat", GREY, x, -9, top);
+    m.put("3005.dat", GREY, x, -8, top);
+    m.put("3005.dat", GREY, x, -9, top + 3);
+  }
+  m.put("3008.dat", GREY, -4, -8, top + 3);
+  m.put("3034.dat", DARK, -4, -9, top + 6);
+  for (const x of [-4, -1, 2]) m.put("3004.dat", GREY, x, -9, top + 7);
+  for (const x of [-2, 1]) m.put("3070b.dat", DARK, x, -9, top + 7);
+  m.put("4162.dat", DARK, -4, -8, top + 7);
   // Floor of the gateway.
   m.put("3020.dat", PATH_DARK, -2, -9, 0);
   return m;

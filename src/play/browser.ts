@@ -28,7 +28,7 @@ import { nearbyInteraction, type PlayInteraction } from "./interaction";
 import { occurrences } from "../core/document";
 import { deriveDoorRigs, type DerivedDoors } from "./auto-doors";
 import type { DynamicRigSource } from "./dynamics";
-import { BrickAvatar } from "./avatar";
+import { BrickAvatar, loadAvatarGeometry } from "./avatar";
 import {
   prepareFullLibrary,
   unresolvedCuratedRefs,
@@ -125,6 +125,11 @@ export class BrowserPlay {
     this.exit();
     const epoch = ++this.epoch;
     this.emit({ loading: true, error: undefined });
+    // The figure's parts (a small precached pack) compile while the world's
+    // collision is collected; a failure only leaves third person without it.
+    const figure = loadAvatarGeometry().catch((e: unknown) =>
+      e instanceof Error ? e : new Error(String(e)),
+    );
     try {
       const r = this.renderer();
       const project = this.project?.();
@@ -283,6 +288,8 @@ export class BrowserPlay {
         ...geometry,
         ...(worldProfile ? { worldProfile } : {}),
       };
+      const figureGeometry = await figure;
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
       const sessionRequest: PlayRequest = { ...request };
       if (derived && Object.keys(derived.rigs).length) {
         delete sessionRequest.rigId;
@@ -326,6 +333,9 @@ export class BrowserPlay {
       if (rigs.length) this.restorePose = r.beginTransientPose();
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
+      if (figureGeometry instanceof Error)
+        console.warn("Play figure unavailable: " + figureGeometry.message);
+      else this.avatar.attach(figureGeometry);
       this.lastVisual = "";
       this.lastScene = "";
       r.scene.add(this.avatar.group);
@@ -591,6 +601,10 @@ export class BrowserPlay {
    * Diagnostics: the camera position and interpolated figure root/pose drawn
    * in recent realtime frames (for smoothness tests; not a stable API).
    */
+  /** The drawn Play figure (diagnostics for tests; not a stable contract). */
+  figure() {
+    return this.avatar?.describe();
+  }
   frameTrace(clear = false) {
     const frames = this.frames.map((f) => structuredClone(f));
     if (clear) this.frames = [];

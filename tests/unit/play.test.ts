@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { PlaySession } from "../../src/play/session";
-import type { CollisionSnapshot } from "../../src/play/types";
+import {
+  CHARACTER_PROFILE,
+  type CollisionSnapshot,
+} from "../../src/play/types";
 const empty: CollisionSnapshot = {
   revision: 12,
   vertices: new Float32Array(),
@@ -25,10 +28,12 @@ describe("isolated fixed-tick play", () => {
     c.stepTicks(60);
     expect(a.snapshot()).toEqual(b.snapshot());
     expect(a.snapshot().grounded).toBe(true);
-    expect(Math.abs(a.snapshot().position[2])).toBeCloseTo(100, 0);
+    // One second at walking speed, straight or diagonal.
+    const walked = CHARACTER_PROFILE.walkSpeed;
+    expect(Math.abs(a.snapshot().position[2])).toBeCloseTo(walked, 0);
     expect(
       Math.hypot(c.snapshot().position[0], c.snapshot().position[2]),
-    ).toBeCloseTo(100, 0);
+    ).toBeCloseTo(walked, 0);
     expect(a.snapshot().sourceRevision).toBe(12);
     a.dispose();
     b.dispose();
@@ -122,8 +127,8 @@ describe("static triangle world collisions", () => {
     const s = await PlaySession.create(
       boxes([
         [
-          [-100, -120, -42],
-          [100, 0, -40],
+          [-200, -120, -42],
+          [200, 0, -40],
         ],
       ]),
       { position: [0, -0.3, 0] },
@@ -140,15 +145,15 @@ describe("static triangle world collisions", () => {
     const s = await PlaySession.create(
       boxes([
         [
-          [-100, -92, -100],
-          [100, -90, 100],
+          [-100, -122, -100],
+          [100, -120, 100],
         ],
         [
-          [-100, -90, -42],
-          [-15, 0, -40],
+          [-100, -120, -42],
+          [-20, 0, -40],
         ],
         [
-          [15, -90, -42],
+          [20, -120, -42],
           [100, 0, -40],
         ],
       ]),

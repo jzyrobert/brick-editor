@@ -57,7 +57,7 @@ test("the three new templates load strictly with every part resolved", async ({
   await expect(page.getByLabel("Project title")).toHaveValue("Small castle");
   expect(castle).toMatchObject({
     unresolved: 0,
-    parts: 235,
+    parts: 237,
     namespaces: ["official"],
   });
   expect(castle.checks["missing-definitions"]).toBe("ok");
@@ -159,7 +159,7 @@ test("the roadster drives in Play and the house door opens", async ({
   const entered = await page.evaluate(() =>
     window.brickEditor!.play.enter({
       // Within reach of the hinge (96 LDU) but outside the leaf's sweep.
-      position: [-40, -0.3, -110],
+      position: [-40, -0.3, -118],
       yaw: Math.PI,
       realtime: false,
       cameraMode: "third-person",

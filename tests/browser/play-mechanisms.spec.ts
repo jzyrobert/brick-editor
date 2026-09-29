@@ -37,7 +37,8 @@ test("Play uses posed door colliders, refuses actor-crossing motion and restores
     const opened = await a.play.setMechanismJoint("hinge", 90);
     const open = await capture();
     await a.play.setInput({ moveZ: 1 });
-    await a.play.stepTicks(27);
+    // 45 LDU at the walking speed (145 LDU/s): into the doorway.
+    await a.play.stepTicks(19);
     await a.play.setInput({});
     const inside = await a.play.snapshot();
     const blocked = await a.play.setMechanismJoint("hinge", 0);

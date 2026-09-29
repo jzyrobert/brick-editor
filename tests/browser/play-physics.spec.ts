@@ -67,7 +67,7 @@ for (const viewport of [desktop, phone])
       });
       // The door swings towards this side; step back out of its sweep first.
       await page.evaluate(() =>
-        window.brickEditor!.play.teleport({ position: [-32, -0.3, 85] }),
+        window.brickEditor!.play.teleport({ position: [-32, -0.3, 92] }),
       );
       await expect(open).toBeEnabled();
       if (touch) await open.tap();
@@ -148,7 +148,9 @@ for (const viewport of [desktop, phone])
         expect(entered.mechanisms![id].mode).toBe("dynamic");
       await page.evaluate(async () => {
         const play = window.brickEditor!.play;
-        await play.teleport({ position: [-120, -0.3, 140] });
+        // Facing −Z, towards the crate (Play now starts in front of a build,
+        // facing +Z).
+        await play.teleport({ position: [-120, -0.3, 140], yaw: 0 });
         await play.setInput({ moveZ: 1 });
         await play.stepTicks(90);
         await play.setInput({});

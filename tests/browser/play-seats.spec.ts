@@ -71,8 +71,9 @@ for (const width of [360, 1080, 1440])
       expect(seated.occupancy).toMatchObject({
         rigId: "vehicle",
         seatId: "driver",
-        pelvisWorldLdu: [0, -41, -188],
-        effectiveEyeWorldLdu: [0, -79, -188],
+        // The minifig sits with its hips on the cushion; the eye is at its print.
+        pelvisWorldLdu: [0, -46.5, -188],
+        effectiveEyeWorldLdu: [0, -104.5, -188],
       });
       expect(seated.positionAnchor).toBe("seated-avatar-root");
       expect(seated.avatarVisible).toBe(false);

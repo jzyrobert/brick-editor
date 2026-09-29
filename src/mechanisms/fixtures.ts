@@ -9,7 +9,7 @@ export function mechanismFixtureSource(openBench = false) {
     "0 Original CC0-1.0 hinged door and planar vehicle test",
     "0 !LICENSE CC0-1.0",
     "1 15 0 0 0 1 0 0 0 1 0 0 0 1 frame.dat",
-    "1 4 20 -48 0 1 0 0 0 1 0 0 0 1 door.dat",
+    "1 4 20 -60 0 1 0 0 0 1 0 0 0 1 door.dat",
     "1 1 0 -24 -200 1 0 0 0 1 0 0 0 1 chassis.dat",
   ];
   for (const x of [-40, 40])
@@ -43,12 +43,14 @@ export function mechanismFixtureSource(openBench = false) {
     ])
       out.push(`4 16 ${f.flatMap((i) => p[i]).join(" ")}`);
   };
+  // A two-stud doorway five bricks high: the Play minifig (104 LDU with its
+  // hair) walks through it.
   begin("frame.dat");
-  box([-8, -104, -4], [0, 0, 4]);
-  box([40, -104, -4], [48, 0, 4]);
-  box([0, -104, -4], [40, -96, 4]);
+  box([-8, -128, -4], [0, 0, 4]);
+  box([40, -128, -4], [48, 0, 4]);
+  box([0, -128, -4], [40, -120, 4]);
   begin("door.dat");
-  box([-20, -48, -2], [20, 48, 2]);
+  box([-20, -60, -2], [20, 60, 2]);
   begin("chassis.dat");
   box([-36, -8, -32], [36, 8, 32]);
   if (openBench) {
@@ -97,7 +99,7 @@ export function mechanismFixture(openBench = false): Project {
         kind: "revolute",
         bodyA: "frame",
         bodyB: "door",
-        anchorA: [0, -48, 0],
+        anchorA: [0, -60, 0],
         anchorB: [-20, 0, 0],
         axisA: [0, 1, 0],
         axisB: [0, 1, 0],
@@ -145,7 +147,8 @@ export function openBenchFixture(): Project {
   rig.vehicle!.driverSeat = {
     id: "driver",
     profile: "brick-figure-open-seat-v1",
-    pelvisPosition: [0, -17, 12],
+    // The minifig's hips (9.3 LDU under its pelvis) rest on the cushion.
+    pelvisPosition: [0, -22.5, 12],
     yawDegrees: 0,
     accessPoint: [45, -6, 12],
     approachPosition: [80, 23.7, 12],

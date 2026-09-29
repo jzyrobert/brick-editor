@@ -16,7 +16,10 @@ import {
   type AvatarMotionState,
 } from "../../src/play/avatar-motion";
 import { PlaySession } from "../../src/play/session";
-import type { CollisionSnapshot } from "../../src/play/types";
+import {
+  CHARACTER_PROFILE,
+  type CollisionSnapshot,
+} from "../../src/play/types";
 
 const DT = 1 / 60;
 const evidence = (
@@ -69,7 +72,9 @@ describe("Minecraft-style limb swing", () => {
     expect(first.amount).toBeGreaterThan(0);
     expect(first.amount).toBeLessThan(0.1);
     // Phase advances by distance travelled (one stride = 2π).
-    expect(run(39, { dz: -65 / 39 }).phase).toBeCloseTo(0, 6);
+    expect(
+      run(39, { dz: -CHARACTER_PROFILE.strideLength / 39 }).phase,
+    ).toBeCloseTo(0, 6);
     // Stopping decays to neutral.
     const stopped = run(60, {}, sprint);
     expect(stopped.amount).toBeLessThan(0.001);
@@ -93,6 +98,19 @@ describe("Minecraft-style limb swing", () => {
       true,
     );
   });
+  it("turns the minifig hands about their wrists: a fifth of the arm swing on the ground, mirrored outward in the air", () => {
+    const walking = limbAngles(run(90, { dz: -145 * DT }));
+    expect(walking.leftWrist).toBeCloseTo(0.2 * walking.leftShoulder, 12);
+    expect(walking.rightWrist).toBeCloseTo(0.2 * walking.rightShoulder, 12);
+    const air = limbAngles(run(30, { grounded: false, vy: 100 }));
+    expect(air.leftWrist).toBeGreaterThan(0.4);
+    expect(air.rightWrist).toBeCloseTo(-air.leftWrist, 2);
+    const flying = limbAngles(run(120, { flying: true }));
+    expect(flying.leftWrist).toBeCloseTo(0.3, 2);
+    expect(flying.rightWrist).toBeCloseTo(-0.3, 2);
+    const idle = limbAngles(initialMotion());
+    expect(Math.abs(idle.leftWrist)).toBeLessThan(0.02);
+  });
   it("raises the arms when airborne (more when falling) and splits the legs", () => {
     const rising = run(20, { grounded: false, vy: -150 });
     const falling = run(40, { grounded: false, vy: 250 }, rising);
@@ -112,7 +130,11 @@ describe("Minecraft-style limb swing", () => {
     expect(hover.fly).toBeGreaterThan(0.99);
     expect(pose.leftHip).toBeLessThan(-0.2);
     expect(pose.rightHip).toBeLessThan(-0.2);
-    const skim = run(120, { flying: true, nearGround: true, dz: -160 * DT });
+    const skim = run(120, {
+      flying: true,
+      nearGround: true,
+      dz: -CHARACTER_PROFILE.flySpeed * DT,
+    });
     expect(skim.amount).toBeGreaterThan(0.8);
     expect(skim.fly).toBeLessThan(0.01);
   });
@@ -309,26 +331,30 @@ describe("diagonal walking jitter", () => {
   };
   it("moves at a steady speed across triangle edges with a smooth camera and heading", async () => {
     for (const running of [false, true]) {
+      // 120 ticks at the minifig run speed (245 LDU/s) stop short of the wall.
       const { feet, camera, heading, speed } = await walk(
-        [300, -8.2, 300],
-        150,
+        [340, -8.2, 340],
+        120,
         running,
       );
       const steady = (a: number[][]) => a.slice(30);
       // Before the fix a one-tick stall on an internal edge scored ~1.6 LDU.
       expect(jitter(ground(steady(feet)))).toBeLessThan(0.02);
       expect(jitter(ground(steady(camera)))).toBeLessThan(0.02);
-      // Snap-to-ground may correct height by a tenth of an LDU at an edge.
-      expect(jitter(steady(feet))).toBeLessThan(0.25);
+      // Snap-to-ground may correct height by a few tenths of an LDU at an edge
+      // (the minifig runs 1.45x faster over the same 20 LDU triangles).
+      expect(jitter(steady(feet))).toBeLessThan(0.35);
       expect(jitter(steady(camera))).toBeLessThan(0.25);
-      const expected = ((running ? 170 : 100) * DT) / 1;
+      const expected =
+        (running ? CHARACTER_PROFILE.runSpeed : CHARACTER_PROFILE.walkSpeed) *
+        DT;
       expect(Math.min(...speed.slice(30))).toBeGreaterThan(expected * 0.97);
       expect(angularJitter(heading)).toBeLessThan(0.03);
       expect(angularJitter(heading.slice(40))).toBeLessThan(1e-3);
     }
   });
   it("slides along a wall without stalls or a flickering heading", async () => {
-    const { feet, heading, speed } = await walk([300, -8.2, -40], 200);
+    const { feet, heading, speed } = await walk([300, -8.2, 0], 200);
     // Skip the approach and the single contact (a real change of direction).
     const sliding = speed.findIndex((v, i) => i > 0 && v < speed[0] * 0.8);
     expect(sliding).toBeGreaterThan(0);
@@ -337,7 +363,9 @@ describe("diagonal walking jitter", () => {
     // (jitter ~1.1 LDU, 10 stalls). A panel seam may still catch one tick
     // partially.
     const slide = speed.slice(after);
-    expect(slide.filter((v) => v < 1.18 * 0.9).length).toBeLessThanOrEqual(2);
+    // Sliding keeps the along-wall share of the diagonal speed (1/√2).
+    const along = (CHARACTER_PROFILE.walkSpeed * DT) / Math.SQRT2;
+    expect(slide.filter((v) => v < along * 0.9).length).toBeLessThanOrEqual(2);
     expect(Math.min(...slide)).toBeGreaterThan(0.6);
     expect(jitter(ground(feet.slice(after)))).toBeLessThan(0.5);
     expect(jitter(feet.slice(after))).toBeLessThan(0.5);

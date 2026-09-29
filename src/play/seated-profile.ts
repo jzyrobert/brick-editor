@@ -9,18 +9,24 @@ export const SEATED_BODY_PROFILE = Object.freeze({
   units: "LDU" as const,
   up: "-Y" as const,
   forward: "-Z" as const,
-  avatarRootFromPelvis: Object.freeze([0, 26, 0] as const),
-  eyeFromPelvis: Object.freeze([0, -38, 0] as const),
+  // The pelvis is the minifig hip axle, 28 LDU above the feet; the eyes
+  // are the head print's, 86 LDU above the feet (avatar-assembly.ts).
+  avatarRootFromPelvis: Object.freeze([0, 28, 0] as const),
+  eyeFromPelvis: Object.freeze([0, -58, 0] as const),
+  // Measured from the seated figure (legs forward, arms at 0.7 rad, head
+  // level over its whole yaw range) with about 0.5 LDU to spare: torso, arms,
+  // hands and head above the hips; hips and legs below. The hips' underside
+  // (and the legs' rounded backs) sit 9.3 LDU under the pelvis.
   envelopes: Object.freeze([
     Object.freeze({
       id: "torso-head" as const,
-      center: Object.freeze([0, -22, -4] as const),
-      halfExtents: Object.freeze([20, 26, 20] as const),
+      center: Object.freeze([0, -43.75, -9.75] as const),
+      halfExtents: Object.freeze([29, 31.75, 26.25] as const),
     }),
     Object.freeze({
       id: "straight-legs" as const,
-      center: Object.freeze([0, -4, -13.5] as const),
-      halfExtents: Object.freeze([14, 10, 14] as const),
+      center: Object.freeze([0, -1.35, -8.5] as const),
+      halfExtents: Object.freeze([20, 10.65, 20] as const),
     }),
   ]),
 });
@@ -31,6 +37,11 @@ export const SEATED_VISUAL_POSE = Object.freeze({
   rightHip: Math.PI / 2,
   leftShoulder: 0.7,
   rightShoulder: 0.7,
+  leftWrist: 0,
+  rightWrist: 0,
+  /** The seated head stays level (the view still pitches), so the hair
+   * keeps clear of a backrest right behind the torso. */
+  headPitch: 0,
   headYawLimits: Object.freeze([-0.7, 0.7] as const),
 });
 export type SeatedPelvisAnchor = { position: Vec3; yawDegrees: number };

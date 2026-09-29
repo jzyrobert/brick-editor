@@ -53,7 +53,8 @@ test("actual app preserves local colours and traverses the exploration doorway a
     });
     await a.play.stepTicks(3);
     await a.play.setInput({ moveZ: 1 });
-    const stairs = await a.play.stepTicks(144);
+    // About 280 LDU at the walking speed (145 LDU/s): onto the landing.
+    const stairs = await a.play.stepTicks(115);
     await a.play.exit();
     await a.play.enter({
       position: [0, -0.3, 220],

@@ -1,11 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { BoxGeometry, Group, Mesh, Vector3 } from "three";
 import { BrickAvatar, JOINTS } from "../../src/play/avatar";
+import {
+  AVATAR_PARTS,
+  FEET_T,
+  JOINT_ORDER,
+} from "../../src/play/avatar-assembly";
 import { PlaySession } from "../../src/play/session";
-import type {
-  CollisionSnapshot,
-  PlaySnapshotReport,
+import {
+  CHARACTER_PROFILE,
+  type CollisionSnapshot,
+  type PlaySnapshotReport,
 } from "../../src/play/types";
+import { avatarGeometryFromDisk } from "../helpers/avatar-pack";
 const empty: CollisionSnapshot = {
   revision: 1,
   vertices: new Float32Array(),
@@ -29,10 +36,93 @@ function wall() {
   geometry.dispose();
   return { ...empty, vertices, indices };
 }
-describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
+const worldVertices = (mesh: Mesh) => {
+  const p = mesh.geometry.getAttribute("position");
+  return Array.from({ length: p.count }, (_, i) =>
+    new Vector3().fromBufferAttribute(p, i).applyMatrix4(mesh.matrixWorld),
+  );
+};
+describe("LDraw minifig figure assembly", () => {
+  it("is made of the official minifig parts with the standard assembly offsets", () => {
+    expect(AVATAR_PARTS.map((p) => p.part)).toEqual([
+      "973.dat",
+      "3815b.dat",
+      "3626cp01.dat",
+      "3901.dat",
+      "3818.dat",
+      "3819.dat",
+      "3820.dat",
+      "3820.dat",
+      "3816c.dat",
+      "3817c.dat",
+    ]);
+    // Torso origin (the neck) at 72 LDU: hips 32 and legs 12 + 28 below it.
+    expect(FEET_T).toBe(72);
+    expect(JOINTS.head.pivot).toEqual([0, 72, 0]);
+    expect(JOINTS.rightHip.pivot).toEqual([0, 28, 0]);
+    expect(JOINTS.leftHip.pivot).toEqual([0, 28, 0]);
+    // 973c01: arms at (∓15.552, 9, 0) below the neck, rolled about 9.8°.
+    expect(JOINTS.rightShoulder.pivot).toEqual([15.552, 63, 0]);
+    expect(JOINTS.leftShoulder.pivot).toEqual([-15.552, 63, 0]);
+    expect(JOINTS.rightShoulder.restEuler[2]).toBeCloseTo(0.1709, 3);
+    expect(JOINTS.leftShoulder.restEuler[2]).toBeCloseTo(-0.1709, 3);
+    // 973c01's hands, relative to their arm: 5 out, 18.9 down, 9.9 forward,
+    // tilted 45°.
+    for (const [side, sign] of [
+      ["rightWrist", 1],
+      ["leftWrist", -1],
+    ] as const) {
+      const w = JOINTS[side];
+      expect(w.pivot[0]).toBeCloseTo(4.995 * sign, 1);
+      expect(w.pivot[1]).toBeCloseTo(-18.891, 1);
+      expect(w.pivot[2]).toBeCloseTo(-9.898, 1);
+      expect(w.restEuler[0]).toBeCloseTo(-Math.PI / 4, 3);
+    }
+    // Every joint has a unit axis and ordered limits.
+    for (const name of JOINT_ORDER) {
+      const j = JOINTS[name];
+      expect(Math.hypot(...j.axis)).toBeCloseTo(1, 12);
+      expect(j.limits[0]).toBeLessThan(j.limits[1]);
+    }
+  });
+  it("compiles one outward-facing, vertex-coloured mesh per node, face print in front", async () => {
+    const geometry = await avatarGeometryFromDisk();
+    expect([...geometry.keys()].sort()).toEqual(
+      ["body", ...JOINT_ORDER].sort(),
+    );
+    for (const [node, g] of geometry) {
+      const p = g.getAttribute("position");
+      expect(g.getAttribute("color").count, node).toBe(p.count);
+      // Closed parts wind outward (mirrored 3819 and 3816c included): the
+      // area-weighted flux of the face normals away from the centre is positive.
+      const centre = g.boundingBox!.getCenter(new Vector3());
+      let flux = 0;
+      const a = new Vector3(),
+        b = new Vector3(),
+        c = new Vector3();
+      for (let i = 0; i < p.count; i += 3) {
+        a.fromBufferAttribute(p, i);
+        b.fromBufferAttribute(p, i + 1);
+        c.fromBufferAttribute(p, i + 2);
+        const n = b.clone().sub(a).cross(c.clone().sub(a));
+        flux += a.add(b).add(c).divideScalar(3).sub(centre).dot(n);
+      }
+      expect(flux, node).toBeGreaterThan(0);
+    }
+    // The printed grin (black) is on the front of the head (−Z).
+    const head = geometry.get("head")!;
+    const colour = head.getAttribute("color"),
+      position = head.getAttribute("position");
+    const black: number[] = [];
+    for (let i = 0; i < colour.count; i++)
+      if (colour.getX(i) + colour.getY(i) + colour.getZ(i) < 0.1)
+        black.push(position.getZ(i));
+    expect(black.length).toBeGreaterThan(20);
+    expect(Math.max(...black)).toBeLessThan(-8);
+  });
   it("rotates rigid limbs about declared pivots, preserves the fixed torso and vertices, and hides every figure mesh in first person", async () => {
     const play = await session(),
-      avatar = new BrickAvatar();
+      avatar = new BrickAvatar(await avatarGeometryFromDisk());
     try {
       play.stepTicks(3);
       const rest = play.snapshot();
@@ -41,21 +131,30 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
       const joints = avatar.group.children.filter(
         (o): o is Group => o instanceof Group,
       );
-      expect(joints).toHaveLength(5); // neck, two shoulders and two hips; no elbow/knee groups.
-      expect(
-        joints.every((g) => g.children.every((child) => child instanceof Mesh)),
-      ).toBe(true);
+      // Neck, two shoulders and two hips on the root; the wrists hang from
+      // the shoulders. No elbow or knee groups.
+      expect(joints.map((g) => g.name).sort()).toEqual(
+        ["head", "leftHip", "leftShoulder", "rightHip", "rightShoulder"].sort(),
+      );
+      expect(avatar.joint("leftWrist").parent).toBe(
+        avatar.joint("leftShoulder"),
+      );
+      expect(avatar.joint("rightWrist").parent).toBe(
+        avatar.joint("rightShoulder"),
+      );
       const fixed = avatar.group.children.filter(
         (o): o is Mesh => o instanceof Mesh,
       );
-      expect(fixed).toHaveLength(2); // rigid torso and hip block (one mesh per colour).
+      expect(fixed).toHaveLength(1); // rigid torso and hips, one mesh.
       const matrices = fixed.map((mesh) => mesh.matrix.clone());
       const meshes: Mesh[] = [];
       avatar.group.traverse((o) => {
         if (o instanceof Mesh) meshes.push(o);
       });
-      // Small enough for phones: a dozen draw calls, a few thousand triangles.
-      expect(meshes.length).toBeLessThanOrEqual(12);
+      // Cheap on phones: eight draw calls sharing one material, a few
+      // thousand triangles.
+      expect(meshes).toHaveLength(8);
+      expect(new Set(meshes.map((m) => m.material)).size).toBe(1);
       expect(
         meshes.reduce(
           (sum, m) => sum + m.geometry.getAttribute("position").count / 3,
@@ -65,19 +164,14 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
       const vertices = meshes.map((mesh) =>
         Array.from(mesh.geometry.getAttribute("position").array),
       );
-      // A hand vertex, before and after the shoulder turns.
+      // An arm vertex, before and after the shoulder turns.
       const shoulder = avatar.joint("leftShoulder");
       expect(shoulder.position.toArray()).toEqual([
         ...JOINTS.leftShoulder.pivot,
       ]);
-      const tip = (g: Group) => {
-        const mesh = g.children[g.children.length - 1] as Mesh;
-        const p = mesh.geometry.getAttribute("position");
-        return new Vector3()
-          .fromBufferAttribute(p, 0)
-          .applyMatrix4(mesh.matrixWorld);
-      };
-      const tipBefore = tip(shoulder);
+      const arm = shoulder.children.find((o) => o instanceof Mesh) as Mesh;
+      const tip = () => worldVertices(arm)[0];
+      const tipBefore = tip();
       const pose: PlaySnapshotReport = {
         ...rest,
         pitch: 1.2,
@@ -89,6 +183,8 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
           rightShoulder: -0.7,
           leftHip: -0.5,
           rightHip: 0.5,
+          leftWrist: 0.4,
+          rightWrist: -0.4,
         },
       };
       avatar.update(pose);
@@ -101,42 +197,47 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
           Array.from(mesh.geometry.getAttribute("position").array),
         ),
       ).toEqual(vertices);
-      for (const [name, definition] of Object.entries(JOINTS)) {
-        const joint = avatar.joint(name as keyof typeof JOINTS);
+      for (const name of JOINT_ORDER) {
+        const definition = JOINTS[name],
+          joint = avatar.joint(name);
         expect(joint.position.toArray()).toEqual([...definition.pivot]);
-        expect(joint.rotation.z).toBe(0);
         if (name === "head") {
           expect(joint.rotation.y).toBe(0.3);
           expect(joint.rotation.x).toBe(0.2);
+        } else if (name.endsWith("Wrist")) {
+          // Rest tilt about X, the pose turns the hand about its grip axis.
+          expect(joint.rotation.x).toBe(definition.restEuler[0]);
+          expect(joint.rotation.z).toBe(pose.avatar[name]);
         } else {
+          // Rest roll about Z (shoulders), the pose swings about X.
+          expect(joint.rotation.z).toBe(definition.restEuler[2]);
           expect(joint.rotation.y).toBe(0);
-          expect(joint.rotation.x).toBe(pose.avatar[name as "leftHip"]);
+          expect(joint.rotation.x).toBe(pose.avatar[name]);
         }
       }
-      // Rigid rotation about the declared pivot: the hand moves but keeps its
+      // Rigid rotation about the declared pivot: the arm moves but keeps its
       // distance from the shoulder pivot.
-      const tipAfter = tip(shoulder),
+      const tipAfter = tip(),
         pivot = shoulder.getWorldPosition(new Vector3());
       expect(tipAfter.distanceTo(tipBefore)).toBeGreaterThan(1);
       expect(tipAfter.distanceTo(pivot)).toBeCloseTo(
         tipBefore.distanceTo(pivot),
         8,
       );
-      // Feet anchor: the soles sit at the collider's feet position.
-      let lowest = Infinity;
+      // Feet anchor: the soles sit at the collider's feet position, and the
+      // hair top is just under the collider's height.
+      let lowest = Infinity,
+        highest = -Infinity;
       avatar.update(rest);
       avatar.group.updateMatrixWorld(true);
-      for (const mesh of meshes) {
-        const p = mesh.geometry.getAttribute("position");
-        for (let i = 0; i < p.count; i++)
-          lowest = Math.min(
-            lowest,
-            new Vector3()
-              .fromBufferAttribute(p, i)
-              .applyMatrix4(mesh.matrixWorld).y,
-          );
-      }
+      for (const mesh of meshes)
+        for (const v of worldVertices(mesh)) {
+          lowest = Math.min(lowest, v.y);
+          highest = Math.max(highest, v.y);
+        }
       expect(lowest).toBeCloseTo(-rest.position[1], 6);
+      expect(highest - lowest).toBeLessThanOrEqual(CHARACTER_PROFILE.height);
+      expect(highest - lowest).toBeGreaterThan(CHARACTER_PROFILE.height - 2);
       avatar.update(pose);
       expect(avatar.group.position.toArray()).toEqual([
         pose.position[0],
@@ -190,8 +291,10 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
       play.stepTicks(60);
       const still = play.snapshot();
       expect(still.position[2]).toBeGreaterThan(-33);
+      // Pressing into the wall at the minifig run speed creeps by contact
+      // corrections of a few thousandths of an LDU, no more.
       expect(Math.abs(still.position[2] - blocked.position[2])).toBeLessThan(
-        0.001,
+        0.005,
       );
       // Contact corrections can advance the distance-based phase slightly.
       // The visible gait must still settle to neutral while movement stays blocked.

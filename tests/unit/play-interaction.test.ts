@@ -12,7 +12,8 @@ it("toggles asymmetric negative joint limits and measures reach in world coordin
   const session = new KinematicSession(project, rig.id);
   const report = {
     mechanism: { ...session.snapshot(), blocked: false },
-    position: [0, -12, 96],
+    // Mid-body (feet − height/2) level with the hinge anchor, 96 LDU away.
+    position: [0, -60 + CHARACTER_PROFILE.height / 2, 96],
     profile: CHARACTER_PROFILE,
   } as unknown as PlaySnapshotReport;
   expect(nearbyInteraction(rig, report)).toMatchObject({

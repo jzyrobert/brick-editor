@@ -17,10 +17,11 @@ export type CollisionSnapshot = {
   unsupported?: boolean;
 };
 export const PLAY_CAMERA_DEFAULTS = Object.freeze({
-  eyeHeight: 64,
+  /** The figure's printed eyes (CHARACTER_PROFILE.eyeHeight). */
+  eyeHeight: 86,
   fovDeg: 65,
   near: 0.5,
-  followDistance: 120,
+  followDistance: 160,
   minPitch: -1.48,
   maxPitch: 1.48,
 });
@@ -28,7 +29,7 @@ export type PlayCameraSettings = {
   [K in keyof typeof PLAY_CAMERA_DEFAULTS]: number;
 };
 export const PLAY_CAMERA_LIMITS = Object.freeze({
-  eyeHeight: { min: 16, max: 64 },
+  eyeHeight: { min: 16, max: 100 },
   fovDeg: { min: 30, max: 100 },
   near: { min: 0.05, max: 2 },
   followDistance: { min: 24, max: 400 },
@@ -74,19 +75,33 @@ export type PlayTeleportRequest = {
   yaw?: number;
   pitch?: number;
 };
+/**
+ * The explicit Play character profile (LDU, LDU/s) at the true scale of the
+ * Play figure, an assembly of official LDraw minifig parts (avatar-assembly.ts):
+ * the collider is as tall as the figure with its hair (103 LDU), its radius is
+ * the torso's half-width at the shoulders and the figure's half-depth (973 is
+ * 24 LDU across at the top, torso and legs 20–22.5 deep), and the eye is at the
+ * printed eyes. LDraw doors and buildings are designed for this figure, so
+ * nothing is rescaled to fit an opening. The hips and hanging arms (38–64 LDU
+ * across) are wider than the capsule and may brush a wall the figure slides
+ * along, as a real minifig's would; two-stud gaps (40 LDU) stay passable.
+ * Speeds are the former 72 LDU profile's scaled by the height ratio (×1.45);
+ * gravity stays physical at the declared LDU scale; stairs of one brick still
+ * step up.
+ */
 export const CHARACTER_PROFILE = Object.freeze({
-  id: "original-brick-figure-v1",
-  radius: 8,
-  height: 72,
-  eyeHeight: 64,
+  id: "ldraw-minifig-v1",
+  radius: 12,
+  height: 104,
+  eyeHeight: 86,
   stepHeight: 24,
   maxSlopeDegrees: 45,
-  walkSpeed: 100,
-  runSpeed: 170,
-  flySpeed: 160,
-  jumpSpeed: 190,
+  walkSpeed: 145,
+  runSpeed: 245,
+  flySpeed: 230,
+  jumpSpeed: 230,
   gravity: 490,
-  strideLength: 65,
+  strideLength: 85,
   scaleMetresPerLdu: 0.02,
 });
 /** Presentation pose of the figure (radians; positive limb angles swing
@@ -107,6 +122,9 @@ export type AvatarPose = {
   rightHip: number;
   leftShoulder: number;
   rightShoulder: number;
+  /** Hand turn about each wrist (the hand's grip axis). */
+  leftWrist: number;
+  rightWrist: number;
 };
 export const JOINT_TARGET_SPEED_LIMITS = Object.freeze({
   revolute: { min: 0.001, max: 3600 },

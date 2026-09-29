@@ -37,6 +37,7 @@ import {
 } from "./dynamics";
 import RAPIER from "@dimforge/rapier3d-compat";
 import {
+  AVATAR_MOTION,
   advanceMotion,
   flyBob,
   RIDE_SMOOTH_TIME,
@@ -163,12 +164,13 @@ export class PlaySession {
    * through a critically damped spring while walking on the ground, so the
    * view and the figure glide over studs and up steps instead of bobbing
    * with every contact correction (a capsule's round base dips into the gaps
-   * between studs). The camera may lag a whole step (a smoothed rise); the
-   * figure at most a stud's height, so it never sinks into a step. Snapshots,
-   * collision and the API report the exact feet.
+   * between studs). The camera may lag one and a half steps (a smoothed rise,
+   * even climbing brick-high stairs briskly); the figure at most a stud's
+   * height, so it never sinks into a step. Snapshots, collision and the API
+   * report the exact feet.
    */
   private ride = {
-    camera: { y: 0, previous: 0, velocity: 0, lag: P.stepHeight },
+    camera: { y: 0, previous: 0, velocity: 0, lag: P.stepHeight * 1.5 },
     figure: { y: 0, previous: 0, velocity: 0, lag: 4 },
   };
   /** Why walking collision is unavailable, when it is. */
@@ -392,13 +394,17 @@ export class PlaySession {
     this.controller.setMaxSlopeClimbAngle((P.maxSlopeDegrees * Math.PI) / 180);
     this.controller.setMinSlopeSlideAngle((P.maxSlopeDegrees * Math.PI) / 180);
     this.world.step();
-    this.yaw = request.yaw ?? 0;
+    // Without a requested position the explorer starts in front of the
+    // build: LDraw models face −Z, so the spawn is beyond the world's −Z
+    // bounds, facing +Z (yaw π) towards it, with the third-person camera
+    // behind the explorer. A requested position keeps yaw 0 by default.
+    this.yaw = request.yaw ?? (request.position ? 0 : Math.PI);
     this.pitch = this.clampPitch(request.pitch ?? 0);
     this.cameraMode = request.cameraMode ?? "first-person";
     const candidate = request.position ?? [
       (snapshot.bounds.min[0] + snapshot.bounds.max[0]) / 2,
       Math.min(0, snapshot.bounds.min[1]) - 2,
-      snapshot.bounds.max[2] + P.radius * 3,
+      snapshot.bounds.min[2] - P.radius * 3,
     ];
     const found = this.ready ? this.findSafe(candidate) : undefined;
     this.feet = found ?? candidate;
@@ -1289,7 +1295,12 @@ export class PlaySession {
       const desired = delta,
         wasGrounded = this.grounded;
       delta = this.moveCharacter(desired);
-      this.grounded = this.controller.computedGrounded();
+      // Rising under a jump is never grounded. Rapier reports ground for a
+      // capsule jumping up along a riser taller than its autostep (seen with
+      // the minifig's 12 LDU radius), which zeroed the jump mid-air.
+      this.grounded =
+        this.controller.computedGrounded() &&
+        !(this.velocity[1] < 0 && delta[1] < -1e-3);
       const want = Math.hypot(desired[0], desired[2]),
         got = Math.hypot(delta[0], delta[2]);
       if (
@@ -1420,12 +1431,19 @@ export class PlaySession {
     }
   }
   private updateRide() {
+    // A capsule wider than a plate-high riser rides over its edge and leaves
+    // the ground for a tick or two; that still counts as walking, as it does
+    // for the figure's pose (AVATAR_MOTION.airDelayTicks).
     const walking =
-      this.locomotion === "walk" && this.grounded && !this.occupied;
+      this.locomotion === "walk" &&
+      !this.occupied &&
+      (this.grounded || this.motion.airTicks <= AVATAR_MOTION.airDelayTicks);
     for (const track of Object.values(this.ride)) {
       track.previous = track.y;
       const before = Math.abs(track.y - this.feet[1]);
-      if (before > P.stepHeight + 4) {
+      // Snap only on a discontinuity: more than a step beyond the lag a track
+      // may keep (climbing brick-high stairs briskly reaches the camera's).
+      if (before > track.lag + P.stepHeight + 4) {
         track.y = this.feet[1];
         track.velocity = 0;
         continue;
@@ -1502,12 +1520,14 @@ export class PlaySession {
         phase: motion.phase,
         swing: 0,
         headYaw: Math.max(-0.7, Math.min(0.7, this.occupied.localLookYaw)),
-        headPitch: head.headPitch,
+        headPitch: SEATED_VISUAL_POSE.headPitch,
         bob: 0,
         leftHip: SEATED_VISUAL_POSE.leftHip,
         rightHip: SEATED_VISUAL_POSE.rightHip,
         leftShoulder: SEATED_VISUAL_POSE.leftShoulder,
         rightShoulder: SEATED_VISUAL_POSE.rightShoulder,
+        leftWrist: SEATED_VISUAL_POSE.leftWrist,
+        rightWrist: SEATED_VISUAL_POSE.rightWrist,
       };
     const airborne = !this.grounded && this.locomotion === "walk";
     return {
@@ -1685,7 +1705,7 @@ export class PlaySession {
     // above the bench and looks down past a shoulder; own-rig camera collision
     // remains active. The first-person eye and stored look intent are unchanged.
     const target: Vec3 = this.occupied
-      ? seatPoint(this.occupied.placement.pelvisFrame, [0, -20, -10])
+      ? seatPoint(this.occupied.placement.pelvisFrame, [0, -30, -10])
       : [feet[0], feet[1] - P.height * 0.7, feet[2]];
     const yaw = this.yaw + (this.occupied ? 0.35 : 0);
     const pitch = this.occupied

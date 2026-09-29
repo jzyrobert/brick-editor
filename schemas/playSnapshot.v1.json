@@ -40,7 +40,7 @@
         "eyeHeight": {
           "type": "number",
           "minimum": 16,
-          "maximum": 64
+          "maximum": 100
         },
         "fovDeg": {
           "type": "number",
@@ -279,6 +279,12 @@
         },
         "rightShoulder": {
           "type": "number"
+        },
+        "leftWrist": {
+          "type": "number"
+        },
+        "rightWrist": {
+          "type": "number"
         }
       },
       "required": [
@@ -292,7 +298,9 @@
         "leftHip",
         "rightHip",
         "leftShoulder",
-        "rightShoulder"
+        "rightShoulder",
+        "leftWrist",
+        "rightWrist"
       ],
       "additionalProperties": false
     },

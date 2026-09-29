@@ -551,7 +551,7 @@ small {
 /* Placement, face picking and mode cards over the canvas. */
 .placement-card {
   position: absolute;
-  bottom: 78px;
+  bottom: calc(max(14px, var(--safe-bottom)) + 64px);
   left: 50%;
   transform: translateX(-50%);
   background: var(--card);
@@ -562,7 +562,7 @@ small {
   align-items: center;
   gap: 9px;
   padding: 14px;
-  width: calc(100% - 40px);
+  width: calc(100% - 40px - 2 * max(var(--safe-left), var(--safe-right)));
   max-width: 640px;
   flex-wrap: wrap;
 }
@@ -594,11 +594,14 @@ small {
 }
 .face-pick-card {
   position: absolute;
-  top: 70px;
+  top: calc(var(--edge-top) + 58px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 6;
-  width: min(420px, calc(100% - 24px));
+  width: min(
+    420px,
+    calc(100% - 24px - 2 * max(var(--safe-left), var(--safe-right)))
+  );
   padding: 12px;
   border-radius: var(--r-card);
   background: var(--card);
@@ -760,14 +763,15 @@ small {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: max(20px, var(--safe-top)) max(20px, var(--safe-right))
+    max(20px, var(--safe-bottom)) max(20px, var(--safe-left));
 }
 .dialog {
   background: var(--paper);
   border-radius: var(--r-sheet);
   max-width: 100%;
   width: 480px;
-  max-height: calc(100dvh - 40px);
+  max-height: calc(100dvh - 2 * max(20px, var(--safe-top), var(--safe-bottom)));
   overflow: auto;
   padding: 27px;
   box-shadow: var(--shadow-sheet);
@@ -1400,8 +1404,8 @@ th {
     margin-top: 16px;
   }
   .placement-card {
-    left: 10px;
-    right: 10px;
+    left: max(10px, var(--safe-left));
+    right: max(10px, var(--safe-right));
     transform: none;
     width: auto;
     padding: 10px;
@@ -1428,12 +1432,15 @@ th {
     min-height: 44px;
   }
   .modal-backdrop {
-    padding: 10px;
+    padding: max(10px, var(--safe-top)) max(10px, var(--safe-right))
+      max(10px, var(--safe-bottom)) max(10px, var(--safe-left));
   }
   .dialog {
     padding: 20px 15px;
     border-radius: var(--r-dock);
-    max-height: calc(100dvh - 20px);
+    max-height: calc(
+      100dvh - 2 * max(10px, var(--safe-top), var(--safe-bottom))
+    );
   }
   .dialog-heading {
     top: -20px;

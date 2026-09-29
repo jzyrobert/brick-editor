@@ -5,6 +5,7 @@ import { PlaySession } from "../../src/play/session";
 import { openBenchFixture } from "../../src/mechanisms/fixtures";
 import { movingSource } from "../helpers/play-moving-source";
 import { conversion, inverse, mv } from "../../src/core/math";
+import { avatarGeometryFromDisk } from "../helpers/avatar-pack";
 import { seatPlacement } from "../../src/play/vehicle-seat";
 import type { Vec3 } from "../../src/core/types";
 
@@ -25,7 +26,7 @@ it("rendered seated avatar stays inside declared body boxes at rotated seat head
       },
       source.mechanism,
     );
-    const avatar = new BrickAvatar();
+    const avatar = new BrickAvatar(await avatarGeometryFromDisk());
     try {
       play.enterVehicle({ rigId: "vehicle", seatId: seat.id });
       for (const offset of [-0.7, 0, 0.7]) {

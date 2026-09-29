@@ -122,9 +122,10 @@ describe("Play collision compaction", () => {
     expect(twinned.trace).toEqual(single.trace);
     // The wall stopped the walker before z = -40 + radius.
     expect((twinned.trace[11] as number[])[2]).toBeGreaterThan(-40 + 7);
-    // The 8 LDU step was climbed (after 50 ticks the walker is on the tread).
-    expect((twinned.trace[16] as number[])[0]).toBeGreaterThan(70);
-    expect((twinned.trace[16] as number[])[1]).toBeCloseTo(-8, 0);
+    // The 8 LDU step was climbed (after 30 ticks at 145 LDU/s the walker is
+    // on the tread).
+    expect((twinned.trace[14] as number[])[0]).toBeGreaterThan(70);
+    expect((twinned.trace[14] as number[])[1]).toBeCloseTo(-8, 0);
     expect(twinned.stats.static).toMatchObject({
       inputTriangles: 12,
       triangles: 6,

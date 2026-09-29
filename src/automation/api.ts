@@ -311,6 +311,7 @@ export function createAPI(
       collisionStats: async () => player().collisionStats(),
       /** Diagnostics: recent realtime frames (camera, interpolated figure). */
       frameTrace: async (clear = false) => player().frameTrace(clear),
+      figure: async () => player().figure(),
       pause: async (paused = true) => player().pause(paused),
     },
     apiVersion: "1.0" as const,

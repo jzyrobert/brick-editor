@@ -64,7 +64,7 @@ for (const viewport of [
       expect(snapshot.cameraSettings.followDistance).toBe(180);
       expect(snapshot.cameraSettings.minPitch).toBeCloseTo(-Math.PI / 4);
       expect(snapshot.position).toEqual(initial.position);
-      expect(snapshot.profile.height).toBe(72);
+      expect(snapshot.profile.height).toBe(104);
       await settings
         .getByLabel("Minimum pitch (degrees)", { exact: true })
         .fill("5");

@@ -24,7 +24,7 @@ export const AVATAR_MOTION = Object.freeze({
   /** Arm amplitude per unit swing amount (Minecraft: 2 × 0.5). */
   armSwing: 1,
   /** Horizontal speed (LDU/s) at which the swing amount reaches 1. */
-  fullSwingSpeed: 190,
+  fullSwingSpeed: 250,
   /** Per-60 Hz-tick blend of the swing amount (Minecraft 0.4 per 20 Hz tick). */
   swingBlend: 1 - Math.pow(0.6, 1 / 3),
   /** Critically damped body-turn smoothing time, seconds. */
@@ -239,9 +239,13 @@ export type LimbAngles = {
   rightHip: number;
   leftShoulder: number;
   rightShoulder: number;
+  /** Hand turns about the wrists (the minifig hand's grip axis). */
+  leftWrist: number;
+  rightWrist: number;
 };
+type SwingAngles = Omit<LimbAngles, "leftWrist" | "rightWrist">;
 /** Minecraft swing: legs opposite each other, arms opposite their legs. */
-export function swingAngles(phase: number, amount: number): LimbAngles {
+export function swingAngles(phase: number, amount: number): SwingAngles {
   const M = AVATAR_MOTION,
     c = Math.cos(phase);
   return {
@@ -256,7 +260,7 @@ export function limbAngles(s: AvatarMotionState): LimbAngles {
   const M = AVATAR_MOTION;
   const swing = swingAngles(s.phase, s.amount);
   // Airborne: arms up and forward (more when falling), legs split slightly.
-  const air: LimbAngles = {
+  const air: SwingAngles = {
     leftShoulder: 0.5 + 0.4 * s.fall,
     rightShoulder: 0.5 + 0.4 * s.fall,
     leftHip: 0.3 - 0.2 * s.fall,
@@ -264,14 +268,14 @@ export function limbAngles(s: AvatarMotionState): LimbAngles {
   };
   // Flying: legs trail behind with a slow flutter, arms relaxed.
   const flutter = Math.sin(s.time * 2.4) * 0.06;
-  const fly: LimbAngles = {
+  const fly: SwingAngles = {
     leftHip: -0.3 + flutter,
     rightHip: -0.3 - flutter,
     leftShoulder: 0.15,
     rightShoulder: 0.15,
   };
   const sway = Math.sin(s.time * 1.34) * M.idleSway;
-  const out = {} as LimbAngles;
+  const out = {} as SwingAngles;
   for (const k of [
     "leftHip",
     "rightHip",
@@ -283,7 +287,15 @@ export function limbAngles(s: AvatarMotionState): LimbAngles {
   }
   out.rightShoulder += sway;
   out.leftShoulder -= sway;
-  return out;
+  // Hands follow a fifth of their arm's swing on the ground and turn outward
+  // (mirrored) as the figure leaves it: open in a jump, relaxed in flight.
+  const outward = 0.5 * s.air * (1 - s.fly) + 0.3 * s.fly;
+  const follow = 0.2 * (1 - s.air) * (1 - s.fly);
+  return {
+    ...out,
+    leftWrist: follow * out.leftShoulder + outward,
+    rightWrist: follow * out.rightShoulder - outward,
+  };
 }
 export function flyBob(s: AvatarMotionState) {
   return Math.sin(s.time * 2.1) * AVATAR_MOTION.flyBob * s.fly;

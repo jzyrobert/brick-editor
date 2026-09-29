@@ -16,6 +16,7 @@ import { fullConnectorLock } from "../src/catalog/full-connectors";
 import { validateFullConnectors } from "./validate-full-connectors";
 import mappings from "../src/catalog/mappings.json";
 import { validateFullLibrary } from "./validate-full-library";
+import { validateAvatarPack } from "./validate-avatar-pack";
 import { validatePartThumbnails } from "./validate-part-thumbnails";
 import {
   connectorLock,
@@ -164,6 +165,8 @@ for (const l of retiredFullLibraryLocks)
     );
 // Sprite-sheet thumbnails of the complete library (hash-locked like the packs).
 const partThumbnails = validatePartThumbnails();
+// The Play figure's own pack of official minifig parts (not placeable).
+const avatarPack = validateAvatarPack();
 console.log(
   JSON.stringify(
     {
@@ -180,6 +183,7 @@ console.log(
       fullConnectors,
       retiredFullLibraryLocks: retiredFullLibraryLocks.map((l) => l.releaseId),
       partThumbnails,
+      avatarPack,
     },
     null,
     2,

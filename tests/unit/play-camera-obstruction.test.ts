@@ -2,7 +2,11 @@ import { expect, it } from "vitest";
 import { BoxGeometry, Matrix4, Mesh, PerspectiveCamera, Vector3 } from "three";
 import { PlaySession } from "../../src/play/session";
 import { BrickAvatar } from "../../src/play/avatar";
-import type { CollisionSnapshot } from "../../src/play/types";
+import {
+  PLAY_CAMERA_DEFAULTS,
+  type CollisionSnapshot,
+} from "../../src/play/types";
+import { avatarGeometryFromDisk } from "../helpers/avatar-pack";
 
 type Bounds = [number, number, number, number, number, number];
 function fixture(boxes: Bounds[]): CollisionSnapshot {
@@ -84,7 +88,7 @@ it("hides every avatar mesh when the follow arm is squeezed, then restores smoot
     position: [0, -0.3, 0],
     cameraMode: "third-person",
   });
-  const avatar = new BrickAvatar();
+  const avatar = new BrickAvatar(await avatarGeometryFromDisk());
   try {
     s.stepTicks(3);
     const before = s.snapshot(),
@@ -108,7 +112,9 @@ it("hides every avatar mesh when the follow arm is squeezed, then restores smoot
     expect(lengths[0]).toBeLessThan(40);
     for (let i = 1; i < lengths.length; i++)
       expect(lengths[i]).toBeGreaterThanOrEqual(lengths[i - 1] - 1e-8);
-    expect(lengths.at(-1)).toBeGreaterThan(119);
+    expect(lengths.at(-1)).toBeGreaterThan(
+      PLAY_CAMERA_DEFAULTS.followDistance - 1,
+    );
     const after = s.snapshot();
     expect(after.avatarVisible).toBe(true);
     avatar.update(after);

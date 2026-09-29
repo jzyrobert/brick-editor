@@ -120,6 +120,35 @@ describe("template builds", () => {
   });
 
   it(
+    "house: Play starts in front of the build (−Z), facing it, with the chase camera behind",
+    { timeout: 120000 },
+    async () => {
+      const project = template("house");
+      const { geometry } = await officialSources(
+        project,
+        {},
+        { min: [-330, -460, -330], max: [330, 0, 330] },
+      );
+      const play = await PlaySession.create(geometry, {
+        cameraMode: "third-person",
+      });
+      const start = play.snapshot();
+      // LDraw models face −Z (the house's door is on its −Z wall).
+      expect(start.locomotion).toBe("walk");
+      expect(start.position[2]).toBeLessThan(-330);
+      expect(start.yaw).toBeCloseTo(Math.PI, 12);
+      const camera = play.camera();
+      expect(camera.position[2]).toBeLessThan(start.position[2]);
+      expect(camera.target[2]).toBeGreaterThan(camera.position[2]);
+      // Walking forward heads towards the house.
+      play.setInput({ moveZ: 1 });
+      play.stepTicks(30);
+      expect(play.snapshot().position[2]).toBeGreaterThan(start.position[2]);
+      play.dispose();
+    },
+  );
+
+  it(
     "house: the explorer walks up the path, opens the door and goes inside",
     { timeout: 120000 },
     async () => {
@@ -168,7 +197,7 @@ describe("template builds", () => {
     const project = template("castle");
     expect(project.title).toBe("Small castle");
     const r = report(project);
-    expect(r.parts).toBe(235);
+    expect(r.parts).toBe(237);
     // The flag 2335 joined the catalogue (release catalogue-2026-09-29).
     expect(outside(project)).toEqual([]);
     expect(r.overlaps).toEqual([]);
@@ -215,13 +244,13 @@ describe("template builds", () => {
       });
       // Up the stairs along +Z to the top step (level 16 = y −128)…
       play.setInput({ moveZ: 1, yaw: Math.PI });
-      play.stepTicks(190);
+      play.stepTicks(120);
       const top = play.snapshot().position;
       expect(top[1]).toBeLessThan(-124);
       expect(top[2]).toBeGreaterThan(170);
       // …across onto the tiled wall walk (x −200..−180)…
       play.setInput({ moveZ: 1, yaw: -Math.PI / 2 });
-      play.stepTicks(20);
+      play.stepTicks(12);
       // …and along it towards the gate side.
       play.setInput({ moveZ: 1, yaw: 0 });
       play.stepTicks(120);
@@ -229,6 +258,32 @@ describe("template builds", () => {
       expect(walk[0]).toBeLessThan(-180);
       expect(walk[1]).toBeLessThan(-124);
       expect(walk[2]).toBeLessThan(0);
+      play.dispose();
+    },
+  );
+
+  it(
+    "castle: the explorer crosses the drawbridge and walks under the gate arch",
+    { timeout: 120000 },
+    async () => {
+      const project = template("castle");
+      const { geometry } = await officialSources(
+        project,
+        {},
+        { min: [-330, -340, -330], max: [330, 0, 330] },
+      );
+      // The arch's springing is 120 LDU over the baseplate: the minifig
+      // (104 LDU) on the gateway plate passes under it.
+      expect(CHARACTER_PROFILE.height + 8).toBeLessThan(120);
+      const play = await PlaySession.create(geometry, {
+        position: [0, -30, -310],
+        yaw: Math.PI,
+      });
+      play.stepTicks(30);
+      play.setInput({ moveZ: 1, yaw: Math.PI });
+      play.stepTicks(110);
+      // Past the front wall (z −180..−160) into the courtyard.
+      expect(play.snapshot().position[2]).toBeGreaterThan(-100);
       play.dispose();
     },
   );

@@ -19,7 +19,8 @@ it("opens a real door collider, traverses the opening and refuses a swept closin
   const opened = play.setMechanismJoint("hinge", 90);
   expect(opened.mechanism!.blocked).toBe(false);
   play.setInput({ moveZ: 1 });
-  play.stepTicks(27);
+  // 45 LDU at the walking speed (145 LDU/s): into the doorway.
+  play.stepTicks(19);
   play.clearInput();
   expect(Math.abs(play.snapshot().position[2])).toBeLessThan(3);
   const before = play.snapshot().mechanism!.pose;
@@ -147,7 +148,8 @@ it("runs door and vehicle rigs together with explicit targeting, shared collisio
     play.teleport({ position: [20, -0.3, 45] });
     play.setMechanismJoint("hinge", 90, "door");
     play.setInput({ moveZ: 1 });
-    play.stepTicks(27);
+    // 45 LDU at the walking speed (145 LDU/s): into the doorway.
+    play.stepTicks(19);
     play.clearInput();
     expect(Math.abs(play.snapshot().position[2])).toBeLessThan(3);
     const blocked = play.setMechanismJoint("hinge", 0, "door");

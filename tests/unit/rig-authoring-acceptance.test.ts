@@ -73,9 +73,9 @@ it("converts a world hinge pivot through independently rotated group frames with
   const draft = buildHingeRig(p, request),
     preview = previewRigDraft(p, draft, { jointPositions: { hinge: 90 } });
   const id = originalRig.groups[1].occurrenceIds[0];
-  // The authored member starts at (20,-48,0): relative (17,-44,-5)
-  // about world pivot (3,-4,5), +90deg aboutY yields (-2,-48,-12).
-  for (const [i, value] of [-2, -48, -12].entries())
+  // The authored member starts at (20,-60,0): relative (17,-56,-5)
+  // about world pivot (3,-4,5), +90deg aboutY yields (-2,-60,-12).
+  for (const [i, value] of [-2, -60, -12].entries())
     expect(preview.transforms[id].position[i]).toBeCloseTo(value, 8);
   expect(preview.transforms[originalRig.groups[0].occurrenceIds[0]]).toEqual(
     originalRig.groups[0].restTransforms[
@@ -150,7 +150,7 @@ it("applies prismatic LDU travel and rebases its limits as one undoable rest edi
     before = structuredClone(e.project),
     s = new KinematicSession(e.project, "door");
   const preview = s.setJointPosition("hinge", 25);
-  expect(preview.transforms[id].position[1]).toBeCloseTo(-23);
+  expect(preview.transforms[id].position[1]).toBeCloseTo(-35);
   expect(preview.transforms[id].basis).toEqual(
     rig.groups[1].restTransforms[id].basis,
   );

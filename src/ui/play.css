@@ -22,10 +22,10 @@
 
 .play-overlay {
   /* Edge insets clear notches and home indicators when the page runs edge to edge. */
-  --play-top: max(12px, env(safe-area-inset-top));
-  --play-right: max(16px, env(safe-area-inset-right));
-  --play-bottom: max(16px, env(safe-area-inset-bottom));
-  --play-left: max(16px, env(safe-area-inset-left));
+  --play-top: max(12px, var(--safe-top));
+  --play-right: max(16px, var(--safe-right));
+  --play-bottom: max(16px, var(--safe-bottom));
+  --play-left: max(16px, var(--safe-left));
   --play-glass: rgba(29, 34, 48, 0.62);
   --play-glass-line: rgba(244, 241, 234, 0.34);
   --stick: 120px;
@@ -794,7 +794,8 @@
     bottom: 0;
     width: auto;
     max-height: calc(100% - var(--play-top) - 60px);
-    padding: 10px 16px calc(16px + env(safe-area-inset-bottom));
+    padding: 10px calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom))
+      calc(16px + var(--safe-left));
     border-radius: var(--r-sheet) var(--r-sheet) 0 0;
     box-shadow: var(--shadow-rise);
     animation-name: play-sheet-rise;
@@ -822,8 +823,8 @@
 /* ---- Short screens (phones in landscape) ---- */
 @media (max-height: 500px) {
   .play-overlay {
-    --play-top: max(10px, env(safe-area-inset-top));
-    --play-bottom: max(14px, env(safe-area-inset-bottom));
+    --play-top: max(10px, var(--safe-top));
+    --play-bottom: max(14px, var(--safe-bottom));
     --stick: 112px;
   }
   .play-stick-zone {

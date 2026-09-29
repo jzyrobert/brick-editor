@@ -824,7 +824,7 @@ const inventoryPreview = obj({
   request: { $ref: "inventory" },
 });
 const playCameraSettings = obj({
-  eyeHeight: { type: "number", minimum: 16, maximum: 64 },
+  eyeHeight: { type: "number", minimum: 16, maximum: 100 },
   fovDeg: { type: "number", minimum: 30, maximum: 100 },
   near: { type: "number", minimum: 0.05, maximum: 2 },
   followDistance: { type: "number", minimum: 24, maximum: 400 },
@@ -998,6 +998,8 @@ const playSnapshot = obj({
     rightHip: num,
     leftShoulder: num,
     rightShoulder: num,
+    leftWrist: num,
+    rightWrist: num,
   }),
 });
 playSnapshot.properties.occupancy = obj({

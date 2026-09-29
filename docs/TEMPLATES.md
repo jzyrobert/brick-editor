@@ -2,11 +2,11 @@
 
 Project → **Start from a template** shows picture cards. Three are detailed original builds made from official LDraw parts; the rest are the older technical starts (studio, exploration room, door room, mechanisms, physics, wall, 200 parts, blank).
 
-| Template          | Parts | Designs | Outside the curated catalogue                                    | Play                                                                           |
-| ----------------- | ----: | ------: | ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| House with garden |   281 |      43 | none                                                             | walk up the path, open the real door (E or tap) and go in                      |
-| Small castle      |   235 |      39 | Flag 2 × 2 (2335)                                                | climb the stairs to the wall walk; raise the drawbridge (rig `drawbridge`)     |
-| Roadster car      |    52 |      21 | 4600, 4624, 3641, 3788, 3823, 4079, 3829c01 (chassis and wheels) | drive it: vehicle rig `car`, four wheel groups, front-wheel steering, faces −Z |
+| Template          | Parts | Designs | Outside the curated catalogue                                    | Play                                                                                                          |
+| ----------------- | ----: | ------: | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| House with garden |   281 |      43 | none                                                             | walk up the path, open the real door (E or tap) and go in                                                     |
+| Small castle      |   237 |      39 | Flag 2 × 2 (2335)                                                | cross the drawbridge and walk under the gate; climb to the wall walk; raise the drawbridge (rig `drawbridge`) |
+| Roadster car      |    52 |      21 | 4600, 4624, 3641, 3788, 3823, 4079, 3829c01 (chassis and wheels) | drive it: vehicle rig `car`, four wheel groups, front-wheel steering, faces −Z                                |
 
 ## How they are made
 
@@ -34,4 +34,4 @@ The house needs only the curated pack. The castle's flags and the roadster's cha
 
 ## Play fit
 
-The Play figure is 16 LDU across and 72 LDU tall. The house door opening is 68 LDU wide and 128 LDU high; the gate is 80 LDU wide and 96 LDU high. The house floor and path are one plate high and the castle stairs rise one plate per one-stud tread, within the figure's step height. Unit tests walk the figure into the house through the opened door and up the stairs onto the castle wall walk; a browser test drives the roadster and opens the house door with E.
+The Play figure is an LDraw minifig: 104 LDU tall with its hair, a 24 LDU wide collider (hips and hanging arms are wider). The house door opening is 68 LDU wide and 128 LDU high; the gate is 80 LDU wide and 120 LDU high under the arch's springing (the arch now stands on the wall top, raising the gatehouse crest; 237 parts). Unit tests also walk the figure across the drawbridge and under the arch. The house floor and path are one plate high and the castle stairs rise one plate per one-stud tread, within the figure's step height. Unit tests walk the figure into the house through the opened door and up the stairs onto the castle wall walk; a browser test drives the roadster and opens the house door with E.

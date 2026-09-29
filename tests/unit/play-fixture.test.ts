@@ -59,8 +59,9 @@ it("walks the original LDraw room through its doorway and four stairs using the 
   s.stepTicks(3);
   s.setInput({ moveZ: 1 });
   // Stairs are climbed without the old autostep "hop" (which also bounced
-  // the walker over studs), so four 8-LDU steps take a few extra ticks.
-  s.stepTicks(165);
+  // the walker over studs), so four 8-LDU steps take a few extra ticks: about
+  // 280 LDU at the walking speed (145 LDU/s) onto the landing.
+  s.stepTicks(120);
   expect(s.snapshot().position[2]).toBeLessThan(-10);
   expect(s.snapshot().position[1]).toBeLessThan(-31);
   expect(s.snapshot().grounded).toBe(true);
