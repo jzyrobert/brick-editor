@@ -187,7 +187,10 @@
    show under the sticky search and filters. */
 @media (max-width: 650px) and (max-height: 760px) {
   .app:not(.sheet-full) .left-sidebar.mobile-panel {
-    height: min(68dvh, calc(100dvh - 180px));
+    height: min(
+      68dvh,
+      calc(100dvh - 180px - var(--safe-top) - var(--safe-bottom))
+    );
   }
 }
 @media (pointer: coarse) {
