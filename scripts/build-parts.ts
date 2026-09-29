@@ -99,27 +99,40 @@ const phase = (min: number, max: number) => {
 };
 const categories = new Set(spec.categories);
 
-// 3. Marketplace mapping: only individually reviewed BrickLink identities; each
-// palette colour is verified only if BrickLink lists it for that item.
-const paletteToBrickLink: Record<string, string> = {
-  "0": "11",
-  "1": "7",
-  "4": "5",
-  "14": "3",
-  "15": "1",
-  "2": "6",
-  "19": "2",
-  "71": "86",
-  "72": "85",
-  "40": "13",
-  "47": "12",
-};
+// 3. Marketplace mapping: only individually reviewed BrickLink identities; a
+// colour is verified for an item only if BrickLink lists it among the item's
+// known colours. LDraw → BrickLink colour identities come from the checked
+// join table (scripts/color-joins.ts: LEGO colour numbers recorded by LDConfig
+// and BrickLink's colour guide), written by `npm run library:colors`.
+const colorJoins = JSON.parse(
+  readFileSync("scripts/color-joins.json", "utf8"),
+) as { colors: { code: string; bricklink?: { bricklink: number } }[] };
+const paletteToBrickLink: Record<string, string> = Object.fromEntries(
+  colorJoins.colors
+    .filter((c) => c.bricklink)
+    .map((c) => [c.code, String(c.bricklink!.bricklink)]),
+);
 const mappedParts: Record<
   string,
   { itemId: string; verifiedColors: string[]; source: string }
 > = {};
 const unmapped: Record<string, string> = {};
 
+const dependencyHash = (id: string) =>
+  digest(
+    [...closure[id]]
+      .sort()
+      .map((ref) => ref + ":" + fileHash[ref])
+      .join("\n"),
+  );
+const unchangedSnap = (id: string) => {
+  const before = previous?.catalog?.[id];
+  return (
+    !!before?.snapVerified &&
+    before.geometryHash === fileHash[id] &&
+    before.dependencyHash === dependencyHash(id)
+  );
+};
 const catalog = Object.fromEntries(
   spec.parts.map(([number, name, category, options]) => {
     const id = number + ".dat";
@@ -173,16 +186,12 @@ const catalog = Object.fromEntries(
           max: box.max.map(round),
         },
         source: "official",
-        // Set by build-connectors.ts (npm run library:connectors).
-        snapVerified: false,
+        // Set by build-connectors.ts (npm run library:connectors); kept
+        // while the part's geometry and dependency closure are unchanged.
+        snapVerified: unchangedSnap(id),
         inventoryBoundary: true,
         geometryHash: fileHash[id],
-        dependencyHash: digest(
-          [...closure[id]]
-            .sort()
-            .map((ref) => ref + ":" + fileHash[ref])
-            .join("\n"),
-        ),
+        dependencyHash: dependencyHash(id),
         thumbnail: `thumbnails/${release}/${number}.webp`,
       },
     ];
@@ -218,13 +227,13 @@ writeFileSync(
 // A new complete-library release changes the derived table, and with it the
 // pack's identity; the previous pack is then retired (kept in scripts/retired/).
 const mapping = {
-  id: "curated-catalogue-3+" + derived.id,
-  version: 3,
+  id: "curated-catalogue-4+" + derived.id,
+  version: 4,
   license:
     "CC0-1.0 (original curated factual correspondences); derived table CC BY 4.0 (LDraw part metadata, see derived.license)",
   verifiedDate: "2026-09-29",
   source:
-    "Individually reviewed public BrickLink catalogue pages (title and known colours per item, scripts/bricklink-review.json); no bulk catalogue copied",
+    "Individually reviewed public BrickLink catalogue pages (title and known colours per item, scripts/bricklink-review.json); no bulk catalogue copied. Colour identities: scripts/color-joins.json (LEGO colour numbers in LDConfig and BrickLink's colour guide)",
   colorSource: "https://v2.bricklink.com/catalog/color-guide",
   parts: mappedParts,
   unmapped,

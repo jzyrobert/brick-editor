@@ -94,6 +94,15 @@
               "verified",
               "acknowledged"
             ]
+          },
+          "colorExistence": {
+            "enum": [
+              "verified",
+              "derived",
+              "not-produced",
+              "not-recorded",
+              "unknown"
+            ]
           }
         },
         "required": [
@@ -102,7 +111,8 @@
           "quantity",
           "occurrenceIds",
           "layers",
-          "verification"
+          "verification",
+          "colorExistence"
         ],
         "additionalProperties": false
       },

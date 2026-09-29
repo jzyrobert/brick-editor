@@ -323,8 +323,9 @@ describe("offline Wanted List", () => {
   it("marks nonphysical transforms and unknown colours as blockers unless acknowledged", async () => {
     const p = template("wall");
     p.models.root.nodes[0].transform.basis[0] = -1;
-    // BrickLink lists no Trans-Brown (LDraw 40) Brick 1 × 2, so that
-    // combination stays unverified.
+    // BrickLink lists no Trans-Brown (LDraw 40) Brick 1 × 2 among its known
+    // colours, so that combination is known not produced (a blocker that
+    // accepting unknown colours does not lift).
     const node = p.models.root.nodes[1];
     if (node.kind !== "geometry") node.ref = "3004.dat";
     node.colorCode = "40";
@@ -334,7 +335,7 @@ describe("offline Wanted List", () => {
       scope: { kind: "all" },
     });
     expect(v.diagnostics.map((d) => d.code)).toContain("NONPHYSICAL_TRANSFORM");
-    expect(v.diagnostics.map((d) => d.code)).toContain("UNVERIFIED_PART_COLOR");
+    expect(v.diagnostics.map((d) => d.code)).toContain("INVALID_PART_COLOR");
   });
 });
 class MemoryStorage {

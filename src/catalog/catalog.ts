@@ -4,6 +4,7 @@ import type { Project } from "../core/types";
 import { curatedHas, fullLibraryHas, fullLibraryLock } from "./full-library";
 import { fullConnectorLock } from "./full-connectors";
 import retiredFull from "./full-library-retired.json";
+import { paletteColors, type PaletteColor } from "./color-availability";
 export const libraryLock = data.libraryLock;
 export const mappingLock = data.mappingLock;
 /** Derived connector pack bound to the current library (see docs/CONNECTORS.md). */
@@ -77,23 +78,10 @@ export type CatalogPart = {
 export const catalog: Record<string, CatalogPart> = data.catalog;
 /** Palette order of categories for filter chips and grouped browsing. */
 export const catalogCategoryOrder: readonly string[] = data.categories;
-export const colors: {
-  code: string;
-  name: string;
-  hex: string;
-  /** Drawn see-through (LDConfig ALPHA). */
-  transparent?: boolean;
-}[] = [
-  { code: "4", name: "Red", hex: "#c91a09" },
-  { code: "1", name: "Blue", hex: "#0055bf" },
-  { code: "14", name: "Yellow", hex: "#f2cd37" },
-  { code: "15", name: "White", hex: "#ffffff" },
-  { code: "0", name: "Black", hex: "#1b2a34" },
-  { code: "71", name: "Light grey", hex: "#a0a5a9" },
-  { code: "2", name: "Green", hex: "#237841" },
-  { code: "19", name: "Tan", hex: "#e4cd9e" },
-  { code: "47", name: "Clear", hex: "#eef3f5", transparent: true },
-];
+/** Picker palette (src/catalog/colors.json, built with the colour
+ * availability pack): favourites first, then basic, earth, pastel,
+ * transparent and metallic/pearl colours that real parts are made in. */
+export const colors: PaletteColor[] = paletteColors;
 
 /** Installed source definitions include primitives; purchasing identities
  * remain in catalog. Beyond the curated pack, any file of the complete official

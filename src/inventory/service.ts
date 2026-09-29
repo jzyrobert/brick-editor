@@ -13,6 +13,12 @@ import { sha256, stable } from "../core/hash";
 import { mappingLock, libraryLock } from "../catalog/catalog";
 import mappings from "../catalog/mappings.json";
 import { validate } from "../core/validate";
+import {
+  colorExistence,
+  loadColorAvailability,
+  type ColorExistence,
+} from "../catalog/color-availability";
+import { colors as palette } from "../catalog/catalog";
 export type InventoryRequest = {
   expectedRevision: number;
   format: "bricklink-wanted-xml";
@@ -35,7 +41,18 @@ export type Lot = {
   occurrenceIds: string[];
   layers: Record<string, number>;
   verification: "verified" | "acknowledged";
+  /** Whether the part is known to exist in this colour (colour availability
+   * pack; the weakest of the lot's occurrences). */
+  colorExistence: ColorExistence;
 };
+/** Weakest first: a lot is only as certain as its least certain occurrence. */
+const existenceOrder: ColorExistence[] = [
+  "not-produced",
+  "not-recorded",
+  "unknown",
+  "derived",
+  "verified",
+];
 export type Preview = {
   previewId: string;
   documentRevision: number;
@@ -149,6 +166,11 @@ export class InventoryService {
           return { parts: {} } as DerivedTable;
         })
       : ({ parts: {} } as DerivedTable);
+    // Colour availability (verified/derived part colours) is its own field of
+    // each lot; unavailable offline before first use, it counts as unknown.
+    await loadColorAvailability().catch(() => undefined);
+    const colourName = (code: string) =>
+      palette.find((c) => c.code === code)?.name ?? "colour " + code;
     const problem = (
       code: string,
       message: string,
@@ -199,6 +221,10 @@ export class InventoryService {
           override?.colorId ||
           (mappings.colors as Record<string, string>)[o.colorCode];
       let verification: Lot["verification"] = "verified";
+      const existence: ColorExistence =
+        o.namespace === "official" && !override
+          ? colorExistence(o.node.ref, o.colorCode)
+          : "unknown";
       if (override) {
         ensure(
           override.acknowledged,
@@ -257,20 +283,38 @@ export class InventoryService {
             "UNMAPPED_COLOR",
             "Project colour definition needs an explicit mapping",
           );
-        if (rule && colorId && !rule.verifiedColors.includes(o.colorCode)) {
-          if (r.acceptUnknownColors) {
-            verification = "acknowledged";
-            problem(
-              "UNVERIFIED_PART_COLOR",
-              "Colour combination uncertainty explicitly accepted.",
-              o.id,
-              "warning",
-            );
-          } else
+        if (
+          rule &&
+          colorId &&
+          (rule.derived || !rule.verifiedColors.includes(o.colorCode))
+        ) {
+          if (existence === "not-produced")
             block(
-              "UNVERIFIED_PART_COLOR",
-              "Part/colour combination has not been audited; acknowledge uncertainty or choose a verified colour.",
+              "INVALID_PART_COLOR",
+              `BrickLink's catalogue lists no ${rule.itemId} in ${colourName(o.colorCode)}: it is not known to have been made. Choose another colour or map it yourself.`,
             );
+          else {
+            const why =
+              existence === "derived"
+                ? "Rebrickable records this part in this colour (derived, not catalogue verified)"
+                : existence === "not-recorded"
+                  ? "No source records this part in this colour; it may never have been made"
+                  : "Whether this part was made in this colour is unknown";
+            if (r.acceptUnknownColors) {
+              verification = "acknowledged";
+              problem(
+                "UNVERIFIED_PART_COLOR",
+                why + "; uncertainty explicitly accepted.",
+                o.id,
+                "warning",
+              );
+            } else
+              block(
+                "UNVERIFIED_PART_COLOR",
+                why +
+                  ". Acknowledge the uncertainty or choose a verified colour.",
+              );
+          }
         }
       }
       if (blocked || !itemId || !colorId) {
@@ -290,6 +334,7 @@ export class InventoryService {
         occurrenceIds: [],
         layers: {},
         verification,
+        colorExistence: existence,
       };
       if (
         !Number.isSafeInteger(lot.quantity + multiplier) ||
@@ -304,6 +349,11 @@ export class InventoryService {
       lot.occurrenceIds.push(o.id);
       lot.layers[o.layerId] = (lot.layers[o.layerId] || 0) + multiplier;
       if (verification === "acknowledged") lot.verification = verification;
+      if (
+        existenceOrder.indexOf(existence) <
+        existenceOrder.indexOf(lot.colorExistence)
+      )
+        lot.colorExistence = existence;
       lots.set(key, lot);
     }
     const rows = [...lots.values()].sort(

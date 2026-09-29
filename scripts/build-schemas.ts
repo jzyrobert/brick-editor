@@ -823,6 +823,15 @@ const inventoryPreview = obj({
       occurrenceIds: arr(occurrenceId),
       layers: dictionary(integer),
       verification: { enum: ["verified", "acknowledged"] },
+      colorExistence: {
+        enum: [
+          "verified",
+          "derived",
+          "not-produced",
+          "not-recorded",
+          "unknown",
+        ],
+      },
     }),
   ),
   diagnostics: arr(diagnostic),

@@ -112,6 +112,7 @@ import {
 } from "../core/types";
 import { identity, rotationY, compose } from "../core/math";
 import { catalog, catalogCategoryOrder, colors } from "../catalog/catalog";
+import { ColorPicker, colourAvailabilityHint } from "./ColorPicker";
 import { loadTemplate } from "../catalog/template-loader";
 import {
   SHOWCASE_TEMPLATE,
@@ -614,6 +615,14 @@ function Workspace() {
     ...(!crossLayer ? { activeLayerId: activeLayer } : {}),
   });
   const colorHex = (code: string) => colors.find((c) => c.code === code)?.hex;
+  /** Inventory rows: whether the part is known in the colour (spec §6.6). */
+  const colourExistenceLabel: Record<string, string> = {
+    verified: "Yes (BrickLink)",
+    derived: "Yes (Rebrickable)",
+    "not-recorded": "Not recorded",
+    "not-produced": "Not made",
+    unknown: "Unknown",
+  };
   const inspection = useMemo(
     () => inspectSelection(project, selected),
     // `selected` derives from these two (and resolved library names).
@@ -1323,13 +1332,21 @@ function Workspace() {
         return;
       }
       if (s.tool === "Paint")
-        void run(() =>
-          command("parts.recolor", {
+        void run(async () => {
+          await command("parts.recolor", {
             occurrenceIds: [id],
             colorCode: s.color,
             activeLayerId: s.crossLayer ? undefined : s.activeLayer,
-          }),
-        );
+          });
+          const hint =
+            o.namespace === "official" &&
+            colourAvailabilityHint(
+              o.node.ref,
+              partSpec(o.node.ref)?.name ?? o.node.ref.replace(/\.dat$/i, ""),
+              s.color,
+            );
+          if (hint) setStatus("Painted. " + hint);
+        });
       else {
         receiveSelection([id], e.shiftKey ? "toggle" : s.selectionOperation);
         setPanel("Inspector");
@@ -2126,6 +2143,8 @@ function Workspace() {
         ];
   const choosePart = (id: string) => {
     const p = partSpec(id)!;
+    const hint = colourAvailabilityHint(id, p.name, color);
+    if (hint) setStatus(hint);
     setPart(id);
     setPosition(
       (v) => placementOnPlane(v, workplane, p.height, angle, p.align).position,
@@ -2175,13 +2194,15 @@ function Workspace() {
       const spec = partSpec(id);
       ensure(spec, "REFERENCE_MISSING", "This part has no geometry to place.");
       choosePart(id);
+      const hint = colourAvailabilityHint(id, spec!.name, color);
       setStatus(
         spec!.name +
           " is ready to place. It is outside the curated catalogue: " +
           (verifiedConnectors(id)
             ? "it snaps by connectors derived from its geometry"
             : "no verified connectors, so it places by its bounds") +
-          "; no reviewed marketplace mapping.",
+          "; no reviewed marketplace mapping." +
+          (hint ? " " + hint : ""),
       );
     });
   const toggleFavourite = (id: string) =>
@@ -2333,21 +2354,12 @@ function Workspace() {
         <h2>Colour</h2>
         <span>{colors.find((c) => c.code === color)?.name}</span>
       </div>
-      <div className="swatches" id="colour-swatches">
-        {colors.map((c) => (
-          <button
-            key={c.code}
-            aria-label={c.name}
-            title={c.name}
-            style={{ background: c.hex }}
-            className={color === c.code ? "chosen" : ""}
-            aria-pressed={color === c.code}
-            onClick={() => setColor(c.code)}
-          >
-            {color === c.code && <Icon name="check" size={18} />}
-          </button>
-        ))}
-      </div>
+      <ColorPicker
+        color={color}
+        onChoose={setColor}
+        partId={currentPart.id}
+        partName={currentPart.name}
+      />
       {!browseAll &&
         !search &&
         !favouritesOnly &&
@@ -4482,6 +4494,7 @@ function Workspace() {
                         <th>Colour ID</th>
                         <th>Quantity</th>
                         <th>Mapping</th>
+                        <th>Colour made</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -4491,6 +4504,7 @@ function Workspace() {
                           <td>{row.colorId}</td>
                           <td>{row.quantity}</td>
                           <td>{row.verification}</td>
+                          <td>{colourExistenceLabel[row.colorExistence]}</td>
                         </tr>
                       ))}
                     </tbody>

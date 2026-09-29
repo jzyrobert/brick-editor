@@ -18,6 +18,7 @@ import mappings from "../src/catalog/mappings.json";
 import { validateFullLibrary } from "./validate-full-library";
 import { validateAvatarPack } from "./validate-avatar-pack";
 import { validatePartThumbnails } from "./validate-part-thumbnails";
+import { validateColorAvailability } from "./validate-color-availability";
 import {
   connectorLock,
   connectorPackMatchesLibrary,
@@ -165,6 +166,8 @@ for (const l of retiredFullLibraryLocks)
     );
 // Sprite-sheet thumbnails of the complete library (hash-locked like the packs).
 const partThumbnails = validatePartThumbnails();
+// Colour availability (verified/derived part colours) and the palette.
+const colorAvailability = validateColorAvailability();
 // The Play figure's own pack of official minifig parts (not placeable).
 const avatarPack = validateAvatarPack();
 console.log(
@@ -183,6 +186,7 @@ console.log(
       fullConnectors,
       retiredFullLibraryLocks: retiredFullLibraryLocks.map((l) => l.releaseId),
       partThumbnails,
+      colorAvailability,
       avatarPack,
     },
     null,
