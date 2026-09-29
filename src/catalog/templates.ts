@@ -7,6 +7,10 @@ import { doorRoomSource } from "./door-room";
 import { houseSource } from "./builds/house";
 import { castleProject } from "./builds/castle";
 import { carProject } from "./builds/car";
+import { jeepProject } from "./builds/jeep";
+import { windmillProject } from "./builds/windmill";
+import { cafeProject } from "./builds/cafe";
+import { lighthouseProject } from "./builds/lighthouse";
 import type { TemplateName } from "./template-names";
 import { explorationSource } from "./exploration";
 import { importLDraw } from "../ldraw/io";
@@ -21,6 +25,10 @@ export function template(name: TemplateName) {
   }
   if (name === "castle") return castleProject();
   if (name === "car") return carProject();
+  if (name === "jeep") return jeepProject();
+  if (name === "windmill") return windmillProject();
+  if (name === "cafe") return cafeProject();
+  if (name === "lighthouse") return lighthouseProject();
   if (name === "seated-vehicle") return openBenchFixture();
   if (name === "physics") return physicsFixture();
   if (name === "door-room") {

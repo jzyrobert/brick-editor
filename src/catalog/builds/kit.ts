@@ -14,8 +14,8 @@
 import installedBounds from "../bounds.json";
 import pack from "../connectors.json";
 import { catalog } from "../catalog";
-import { rotationY } from "../../core/math";
-import type { Basis, Vec3 } from "../../core/types";
+import { compose, rotationY } from "../../core/math";
+import type { Basis, Transform, Vec3 } from "../../core/types";
 
 export type Turn = 0 | 90 | 180 | 270;
 type Box = { min: Vec3; max: Vec3 };
@@ -33,6 +33,15 @@ export const FULL_LIBRARY_BOUNDS: Record<string, Box> = {
   "3823.dat": { min: [-40, -4, -30], max: [40, 48, 10] },
   "4079.dat": { min: [-20, -40, -20], max: [20, 8, 25] },
   "3829c01.dat": { min: [-20, -38.72, -13.44], max: [20, 8, 10] },
+  // Off-road jeep.
+  "4176.dat": { min: [-60, -4, -30], max: [60, 48, 10] },
+  "50745.dat": { min: [-40, -8, -28], max: [40, 40, 20] },
+  "6014b.dat": { min: [-16.986, -16.986, -20], max: [16.986, 16.986, 8] },
+  "56890.dat": { min: [-32.11, -32.11, -14], max: [32.11, 32.11, 14] },
+  // Corner café.
+  "3010p20.dat": { min: [-40, -4, -10], max: [40, 24, 10] },
+  "3068bp25.dat": { min: [-20, 0, -20], max: [20, 8, 20] },
+  "2454adfa.dat": { min: [-20, -4, -10.25], max: [20, 120, 10] },
 };
 
 const bounds = installedBounds.bounds as unknown as Record<string, Box | null>;
@@ -100,6 +109,15 @@ const fmt = (n: number) => {
 
 export class Model {
   lines: string[] = [];
+  /**
+   * Where the root places this section (default: the identity, so section
+   * coordinates are world coordinates). A section built flat and stood up
+   * (a windmill's sails) uses its own frame.
+   */
+  placement: { position: Vec3; basis: Basis } = {
+    position: [0, 0, 0],
+    basis: basis(0),
+  };
   constructor(
     public name: string,
     public title: string,
@@ -135,6 +153,22 @@ export class Model {
     this.lines.push("0 // " + text);
     return this;
   }
+}
+
+const Rx90: Basis = [1, 0, 0, 0, 0, -1, 0, 1, 0];
+/**
+ * A 1 × 1 round tile on the recessed side stud of the headlight brick (4070)
+ * placed last in `m`.
+ */
+export function lens(m: Model, color: number) {
+  const brick = m.lines[m.lines.length - 1].split(" ").map(Number);
+  const t: Transform = {
+    position: [brick[2], brick[3], brick[4]],
+    basis: brick.slice(5, 14) as Basis,
+  };
+  const local: Transform = { position: [0, 10, -14], basis: Rx90 };
+  const w = compose(t, local);
+  m.raw("98138.dat", color, w.position, w.basis);
 }
 
 /** Straight 1-wide and 2-wide bricks, plates and tiles by length in studs. */
@@ -380,6 +414,145 @@ export function straightWall(
   }
 }
 
+const SLOPE: Record<number, string> = {
+  1: "3040b.dat",
+  2: "3039.dat",
+  3: "3038.dat",
+  4: "3037.dat",
+};
+
+/**
+ * A 45° gable roof over cells x0..x1 × z0..z1 (inclusive; an even number of
+ * rows deep), with a stud of overhang all round, from plate level `level`.
+ * The ridge runs along X: stepped slope courses face −Z (front) and +Z
+ * (back), each clutching the row below in running bond; gable walls fill the
+ * ends at x0 and x1 and 2 × 2 double slopes cap the ridge. Returns the plate
+ * level of the ridge's underside.
+ */
+export function gableRoof(
+  m: Model,
+  o: {
+    x0: number;
+    x1: number;
+    z0: number;
+    z1: number;
+    level: number;
+    roof: number;
+    gable: number;
+    /** Cells to leave out of the slopes (a chimney), as [x, z]. */
+    skip?: (x: number, z: number) => boolean;
+  },
+) {
+  const n = (o.z1 - o.z0 + 1) / 2;
+  if (!Number.isInteger(n)) throw new Error("Gable roof needs an even depth");
+  const RX0 = o.x0 - 1,
+    RX1 = o.x1 + 1;
+  const lengths = Object.keys(SLOPE).map(Number);
+  for (const side of ["front", "back"] as const) {
+    let below = new Set<number>();
+    for (let k = 0; k < n; k++) {
+      const level = o.level + 3 * k;
+      const zMin = side === "front" ? o.z0 - 1 + k : o.z1 - k;
+      const runs: [number, number][] = [];
+      for (let x = RX0; x <= RX1; x++) {
+        if (o.skip?.(x, zMin) || o.skip?.(x, zMin + 1)) continue;
+        const last = runs[runs.length - 1];
+        if (last && last[1] === x) last[1] = x + 1;
+        else runs.push([x, x + 1]);
+      }
+      const next = new Set<number>();
+      for (const [s, e] of runs) {
+        const local = new Set(
+          [...below].filter((p) => p > s && p < e).map((p) => p - s),
+        );
+        if (k % 2) local.add(4);
+        const pieces = bond(e - s, lengths, local);
+        let at = s;
+        for (const len of pieces) {
+          m.put(
+            SLOPE[len],
+            o.roof,
+            at,
+            zMin,
+            level,
+            side === "front" ? 0 : 180,
+          );
+          at += len;
+        }
+        for (const j of joints(pieces, s)) next.add(j);
+        next.add(s).add(e);
+      }
+      below = next;
+    }
+  }
+  for (let k = 0; k < n - 1; k++) {
+    const z0 = o.z0 + 1 + k,
+      z1 = o.z1 - 1 - k;
+    for (const x of [o.x0, o.x1]) {
+      let at = z0;
+      for (const len of bond(z1 - z0 + 1, [1, 2, 3, 4, 6, 8], new Set())) {
+        m.put(BRICK_1[len], o.gable, x, at, o.level + 3 * k, 90);
+        at += len;
+      }
+    }
+  }
+  const ridge = o.level + 3 * n;
+  for (let x = RX0; x <= RX1; x += 2)
+    m.put("3043.dat", o.roof, x, o.z0 + n - 1, ridge);
+  return ridge;
+}
+
+/** A framed window with its glass (the glass shares the frame's origin). */
+export function glazed(
+  m: Model,
+  frame: string,
+  color: number,
+  x: number,
+  z: number,
+  level: number,
+  turn: Turn,
+  glassColor = 47,
+) {
+  const glass: Record<string, string> = {
+    "60592.dat": "60601.dat",
+    "60593.dat": "60602.dat",
+    "60594.dat": "60603.dat",
+  };
+  m.put(frame, color, x, z, level, turn);
+  const line = m.lines[m.lines.length - 1].split(" ");
+  m.lines.push(
+    ["1", String(glassColor), ...line.slice(2, 14), glass[frame]].join(" "),
+  );
+}
+
+/**
+ * A Door Frame 1 × 4 × 6 (60596) in a wall along X at cells x..x+3, row z,
+ * with a Door 1 × 4 × 6 hung on its pins. `inside` hangs the door on the +Z
+ * face with its hinge on the −X post (it opens inwards when the wall's
+ * outside faces −Z); otherwise on the −Z face, hinge on the +X post.
+ */
+export function door(
+  m: Model,
+  o: {
+    x: number;
+    z: number;
+    level: number;
+    frame: number;
+    door: number;
+    inside: boolean;
+    leaf?: string;
+  },
+) {
+  m.put("60596.dat", o.frame, o.x, o.z, o.level, o.inside ? 0 : 180);
+  const f = m.lines[m.lines.length - 1].split(" ").map(Number);
+  m.raw(
+    o.leaf ?? "60616a.dat",
+    o.door,
+    o.inside ? [f[2] - 32, f[3], f[4] + 5] : [f[2] + 32, f[3], f[4] - 5],
+    basis(o.inside ? 0 : 180),
+  );
+}
+
 /** Deterministic multi-part document: root lists the submodels. */
 export function mpd(
   file: string,
@@ -394,7 +567,11 @@ export function mpd(
     "0 Author: Brick Editor contributors",
     "0 !LICENSE Licensed under CC0 1.0 : see fixtures/PROVENANCE.md",
     ...header.map((h) => "0 // " + h),
-    ...sections.map((s) => `1 16 0 0 0 1 0 0 0 1 0 0 0 1 ${s.name}`),
+    ...sections.map(
+      (s) =>
+        `1 16 ${s.placement.position.map(fmt).join(" ")} ` +
+        `${s.placement.basis.map(fmt).join(" ")} ${s.name}`,
+    ),
   ];
   for (const s of sections)
     out.push(

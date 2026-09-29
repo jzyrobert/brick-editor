@@ -4,7 +4,7 @@ The actual contract is the exported TypeScript API in `src/automation/api.ts` pl
 
 - `capabilities()` returns the machine-readable support report.
 - `ready({minRevision?, strict?})` awaits staged renderer updates and refuses missing/unsupported resources in strict mode.
-- `project.import({format:'ldraw', text, name?, strict?})`, `{format:'native', bytes:number[]}` or `{format:'template', template:'blank'|'house'|'castle'|'car'|'room'|'wall'|'200'|'explore'|'mechanisms'|'seated-vehicle'|'door-room'|'physics'}` stages a new project and returns its revision (templates that use parts outside the curated catalogue, such as the castle and the car, load the complete library's index first). No user file is uploaded. A concurrent edit rejects the import.
+- `project.import({format:'ldraw', text, name?, strict?})`, `{format:'native', bytes:number[]}` or `{format:'template', template}` stages a new project and returns its revision. Sample builds (the chooser's cards): `'blank'|'cafe'|'windmill'|'lighthouse'|'jeep'|'house'|'castle'|'car'`; test fixtures, kept for automation and the test suites but not offered in the chooser: `'room'|'wall'|'200'|'explore'|'mechanisms'|'seated-vehicle'|'door-room'|'physics'` (the schema's description lists both). Samples that use parts outside the curated catalogue (café, windmill, lighthouse, jeep) load the complete library's index first. No user file is uploaded. A concurrent edit rejects the import.
 - `project.export({format:'native'|'ldraw', scope?})` returns `{name,mimeType,bytes:Uint8Array}`. Native exports preserve the whole project. LDraw scope uses the inventory scope shape.
 - `query({ref?,colorCode?,layerId?,occurrenceIds?})` returns revision, semantic occurrences and diagnostics. Unimplemented spatial/connectivity queries are not advertised.
 - `dispatch({schemaVersion:1,commandId,expectedRevision,type,payload,dryRun?})` atomically changes the document. `dryRun` validates and returns counts without mutation/history/ledger entry.
@@ -80,7 +80,7 @@ The session-only ground is an infinite plane at Y=0 and can be disabled with `gr
 
 `parts.array` accepts `kind:"linear"`, `delta`, `count` (new copies), or `kind:"circular"`, `center`, unit `axis`, `angleDegrees` per copy and `count`. It supports command dry runs and the same scope/lock/budget checks. Results include `addedIds`, `removedIds` and `copyMappings`.
 
-The `mechanisms` API is separate from the walking actor. Create a rig through `rigs.upsert`, or import the `mechanisms` template. Rigid group frames, occurrence memberships, rest transforms, joint anchors/axes, limits and vehicle wheel radii are explicit data. Public hinge angles are degrees, prismatic offsets are LDU, and the simulation scale is 0.02 metres/LDU.
+The `mechanisms` API is separate from the walking actor. Create a rig through `rigs.upsert`, or import the `mechanisms` test fixture (the `windmill`, `lighthouse`, `castle`, `jeep` and `car` samples carry authored rigs too). Rigid group frames, occurrence memberships, rest transforms, joint anchors/axes, limits and vehicle wheel radii are explicit data. Public hinge angles are degrees, prismatic offsets are LDU, and the simulation scale is 0.02 metres/LDU.
 
 ```js
 await api.project.import({ format: "template", template: "mechanisms" });
@@ -156,7 +156,7 @@ Pausing stops realtime advancement and retains targets for resume. Explicit `ste
 
 ## Authored driver seats
 
-The `seated-vehicle` template provides an original open-bench example. A vehicle's optional `driverSeat` metadata specifies a pelvis anchor, access point, standing approach and 1–4 ordered standing exits in chassis-local LDU; its facing and exit yaw values use degrees. Native backups and vehicle edits preserve this data. Runtime occupancy is separate and is never stored as a source part or inventory item.
+The `seated-vehicle` test fixture provides an original open-bench example, and the `jeep` sample a driver seat in a real-parts vehicle. A vehicle's optional `driverSeat` metadata specifies a pelvis anchor, access point, standing approach and 1–4 ordered standing exits in chassis-local LDU; its facing and exit yaw values use degrees. Native backups and vehicle edits preserve this data. Runtime occupancy is separate and is never stored as a source part or inventory item.
 
 ```js
 await api.project.import({ format: "template", template: "seated-vehicle" });

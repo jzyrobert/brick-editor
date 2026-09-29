@@ -114,6 +114,7 @@ import { identity, rotationY, compose } from "../core/math";
 import { catalog, catalogCategoryOrder, colors } from "../catalog/catalog";
 import { loadTemplate } from "../catalog/template-loader";
 import {
+  SHOWCASE_TEMPLATE,
   TEMPLATE_CARDS,
   templatePreview,
   type TemplateName,
@@ -3481,9 +3482,9 @@ function Workspace() {
               </p>
               <button
                 className="primary"
-                onClick={() => chooseTemplate("room")}
+                onClick={() => chooseTemplate(SHOWCASE_TEMPLATE)}
               >
-                Explore the studio template <Icon name="arrowRight" size={16} />
+                Explore the corner café <Icon name="arrowRight" size={16} />
               </button>
               <button
                 className="text-button"

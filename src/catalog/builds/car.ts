@@ -12,12 +12,11 @@
  * from the complete official library (they are not in the curated catalogue);
  * the body uses curated parts. Ground is y = 0, just under the tyres.
  */
-import type { Basis, Project, Transform, Vec3 } from "../../core/types";
+import type { Project, Vec3 } from "../../core/types";
 import { importLDraw } from "../../ldraw/io";
 import { occurrences } from "../../core/document";
 import type { MotionRig } from "../../mechanisms/types";
-import { Model, basis, mpd } from "./kit";
-import { compose } from "../../core/math";
+import { Model, basis, lens, mpd } from "./kit";
 
 const BODY = 4, // red
   CHASSIS = 0, // black
@@ -36,19 +35,6 @@ const AXLE_Y = -19;
 const WHEEL_X = 30;
 /** Plate level of the mudguards' underside (the wheel holders' top). */
 const BASE = 3;
-
-const Rx90: Basis = [1, 0, 0, 0, 0, -1, 0, 1, 0];
-/** A 1 × 1 round tile on a headlight brick's recessed side stud. */
-function lens(m: Model, color: number) {
-  const brick = m.lines[m.lines.length - 1].split(" ").map(Number);
-  const t: Transform = {
-    position: [brick[2], brick[3], brick[4]],
-    basis: brick.slice(5, 14) as Basis,
-  };
-  const local: Transform = { position: [0, 10, -14], basis: Rx90 };
-  const w = compose(t, local);
-  m.raw("98138.dat", color, w.position, w.basis);
-}
 
 function chassis() {
   const m = new Model("car-chassis.ldr", "Chassis");

@@ -1,4 +1,4 @@
-// Generates the original template builds and their chooser previews:
+// Generates the sample builds and their chooser previews:
 //
 //   npm run templates            sources, checks and previews
 //   npm run templates -- --check sources and checks only (no browser)
@@ -13,6 +13,10 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { houseSource } from "../src/catalog/builds/house";
 import { castleSource } from "../src/catalog/builds/castle";
 import { carSource } from "../src/catalog/builds/car";
+import { jeepSource } from "../src/catalog/builds/jeep";
+import { windmillSource } from "../src/catalog/builds/windmill";
+import { lighthouseSource } from "../src/catalog/builds/lighthouse";
+import { cafeSource } from "../src/catalog/builds/cafe";
 import { checkBuild } from "../src/catalog/builds/check";
 import { template } from "../src/catalog/templates";
 import {
@@ -33,6 +37,10 @@ export const TEMPLATE_BUILDS = [
   { name: "house", file: "house-with-garden.mpd", source: houseSource },
   { name: "castle", file: "small-castle.mpd", source: castleSource },
   { name: "car", file: "roadster.mpd", source: carSource },
+  { name: "jeep", file: "off-road-jeep.mpd", source: jeepSource },
+  { name: "windmill", file: "windmill-farm.mpd", source: windmillSource },
+  { name: "lighthouse", file: "lighthouse.mpd", source: lighthouseSource },
+  { name: "cafe", file: "corner-cafe.mpd", source: cafeSource },
 ] as const;
 
 const cam = (position: number[], target: number[], fovDeg = 40) =>
@@ -51,6 +59,10 @@ const CAMERAS: Partial<Record<TemplateName, CameraSpec>> = {
   house: cam([520, -560, -880], [-10, -120, -40]),
   castle: cam([520, -620, -900], [0, -80, 0]),
   car: cam([210, -170, -300], [0, -40, 0], 38),
+  jeep: cam([300, -230, -430], [0, -60, -10], 38),
+  windmill: cam([600, -660, -960], [-30, -160, -20]),
+  lighthouse: cam([600, -620, -980], [-10, -230, -20]),
+  cafe: cam([600, -560, -940], [-40, -140, -30]),
 };
 
 registerFullLibraryFromDisk();

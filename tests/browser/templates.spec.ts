@@ -2,14 +2,44 @@ import { test, expect, type Page } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
 
-/** A few-hundred-part build compiles on the main thread; software WebGL on
- * the test VM takes several seconds per template. */
+/** A few-hundred-part build takes several seconds to compile and draw with
+ * software WebGL on the test VM. */
 const LOAD = 60000;
-test.describe.configure({ timeout: 240000 });
+test.describe.configure({ timeout: 300000 });
 
 const shots = "test-results/templates/";
 
-async function openTemplate(page: Page, template: "house" | "castle" | "car") {
+type Sample =
+  | "cafe"
+  | "windmill"
+  | "lighthouse"
+  | "jeep"
+  | "house"
+  | "castle"
+  | "car";
+/** Every sample: its title and part count. */
+const SAMPLES: [Sample, string, number][] = [
+  ["cafe", "Corner café", 358],
+  ["windmill", "Windmill farm", 338],
+  ["lighthouse", "Lighthouse", 269],
+  ["jeep", "Off-road jeep", 80],
+  ["house", "House with garden", 281],
+  ["castle", "Small castle", 237],
+  ["car", "Roadster", 52],
+];
+/** Chooser cards in display order (the blank canvas last). */
+const CARDS = [
+  "Corner café",
+  "Windmill farm",
+  "Lighthouse",
+  "Off-road jeep",
+  "House with garden",
+  "Small castle",
+  "Roadster car",
+  "Blank canvas",
+];
+
+async function openTemplate(page: Page, template: Sample) {
   return page.evaluate(async (template) => {
     const a = window.brickEditor!;
     const imported = await a.project.import({ format: "template", template });
@@ -32,43 +62,26 @@ async function openTemplate(page: Page, template: "house" | "castle" | "car") {
   }, template);
 }
 
-test("the three new templates load strictly with every part resolved", async ({
+test("every sample loads strictly with every part resolved", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
-  const house = await openTemplate(page, "house");
-  await expect(page.getByLabel("Project title")).toHaveValue(
-    "House with garden",
-  );
-  expect(house).toMatchObject({
-    unresolved: 0,
-    parts: 281,
-    namespaces: ["official"],
-  });
-  expect(house.checks).toMatchObject({
-    "missing-definitions": "ok",
-    collisions: "ok",
-    connectivity: "ok",
-  });
-  const castle = await openTemplate(page, "castle");
-  await expect(page.getByLabel("Project title")).toHaveValue("Small castle");
-  expect(castle).toMatchObject({
-    unresolved: 0,
-    parts: 237,
-    namespaces: ["official"],
-  });
-  expect(castle.checks["missing-definitions"]).toBe("ok");
-  const car = await openTemplate(page, "car");
-  await expect(page.getByLabel("Project title")).toHaveValue("Roadster");
-  expect(car).toMatchObject({
-    unresolved: 0,
-    parts: 52,
-    namespaces: ["official"],
-  });
-  expect(car.checks["missing-definitions"]).toBe("ok");
+  for (const [name, title, parts] of SAMPLES) {
+    const r = await openTemplate(page, name);
+    await expect(page.getByLabel("Project title")).toHaveValue(title);
+    expect(r, name).toMatchObject({
+      unresolved: 0,
+      parts,
+      namespaces: ["official"],
+    });
+    expect(r.checks["missing-definitions"], name).toBe("ok");
+    expect(r.checks.connectivity, name).toBe("ok");
+    if (name !== "jeep" && name !== "car" && name !== "castle")
+      expect(r.checks.collisions, name).toBe("ok");
+  }
   expect(errors).toEqual([]);
 });
 
@@ -76,14 +89,27 @@ for (const viewport of [
   { width: 1440, height: 900 },
   { width: 390, height: 844 },
 ])
-  test(`template chooser cards open the builds (${viewport.width}×${viewport.height})`, async ({
+  test(`the chooser offers only the samples and opens them (${viewport.width}×${viewport.height})`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
     await page.goto("./?automation=1");
     await page.waitForFunction(() => !!window.brickEditor);
     await openMode(page, "Project");
-    const card = page.getByRole("button", { name: "Small castle" });
+    const grid = page.locator(".template-grid");
+    await expect(grid.locator(".template-card")).toHaveText(CARDS);
+    for (const old of [
+      "Courtyard studio",
+      "Exploration room",
+      "Door room",
+      "Door & vehicle",
+      "Open-bench vehicle",
+      "Physics playground",
+      "Simple wall",
+      "200-part build",
+    ])
+      await expect(page.getByRole("button", { name: old })).toHaveCount(0);
+    const card = page.getByRole("button", { name: "Corner café" });
     await card.scrollIntoViewIfNeeded();
     await expect(card.locator("img")).toBeVisible();
     // The preview image loaded (not a broken image).
@@ -100,22 +126,33 @@ for (const viewport of [
     // An empty project has nothing to lose: no prompt.
     await card.click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
-    await expect(page.getByLabel("Project title")).toHaveValue("Small castle", {
+    await expect(page.getByLabel("Project title")).toHaveValue("Corner café", {
       timeout: LOAD,
     });
-    await page.evaluate(async () => {
-      const a = window.brickEditor!;
-      await a.ready({ strict: true });
-    });
-    await page.screenshot({ path: `${shots}castle-${viewport.width}.png` });
-    for (const [name, file] of [
-      ["House with garden", "house"],
-      ["Roadster car", "car"],
-    ] as const) {
+    await page.evaluate(() => window.brickEditor!.ready({ strict: true }));
+    await page.screenshot({ path: `${shots}cafe-${viewport.width}.png` });
+    const next: [string, string, string][] =
+      viewport.width > 800
+        ? [
+            ["Windmill farm", "Windmill farm", "windmill"],
+            ["Lighthouse", "Lighthouse", "lighthouse"],
+            ["Off-road jeep", "Off-road jeep", "jeep"],
+            ["House with garden", "House with garden", "house"],
+            ["Small castle", "Small castle", "castle"],
+            ["Roadster car", "Roadster", "car"],
+          ]
+        : [
+            ["Lighthouse", "Lighthouse", "lighthouse"],
+            ["Off-road jeep", "Off-road jeep", "jeep"],
+          ];
+    for (const [name, title, file] of next) {
       await openMode(page, "Project");
-      // The previous template is untouched, so it is replaced without asking.
+      // The previous sample is untouched, so it is replaced without asking.
       await page.getByRole("button", { name }).click();
       await expect(page.getByRole("dialog")).toHaveCount(0);
+      await expect(page.getByLabel("Project title")).toHaveValue(title, {
+        timeout: LOAD,
+      });
       await page.evaluate(() => window.brickEditor!.ready({ strict: true }));
       // A template just opened has nothing unsaved (it is autosaved for
       // recovery, so the state may already read "Saved").
@@ -125,6 +162,73 @@ for (const viewport of [
       await page.screenshot({ path: `${shots}${file}-${viewport.width}.png` });
     }
   });
+
+test("the jeep drives from its driver seat and the windmill's sails turn", async ({
+  page,
+}) => {
+  await refusePointerLock(page);
+  await page.goto("./?automation=1");
+  await page.waitForFunction(() => !!window.brickEditor);
+  await openTemplate(page, "jeep");
+  await openMode(page, "Play");
+  await page.evaluate(() =>
+    window.brickEditor!.play.enter({
+      rigIds: ["jeep"],
+      position: [-110, -0.3, -20],
+      yaw: Math.PI / 2,
+      realtime: false,
+      cameraMode: "third-person",
+    }),
+  );
+  const enter = page.getByRole("button", {
+    name: "Enter driver seat",
+    exact: true,
+  });
+  await expect(enter).toBeEnabled();
+  await page.keyboard.press("e");
+  await expect(
+    page.getByRole("button", { name: "Exit vehicle", exact: true }),
+  ).toBeVisible();
+  const drive = await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    const seated = await a.play.snapshot();
+    await a.play.setInput({ moveZ: 1 });
+    const moved = await a.play.stepTicks(60);
+    await a.play.setInput({});
+    return { seated, moved };
+  });
+  expect(drive.seated.occupancy).toMatchObject({
+    rigId: "jeep",
+    seatId: "driver",
+  });
+  expect(drive.moved.mechanisms!.jeep.pose.vehicle!.position[2]).toBeLessThan(
+    -100,
+  );
+  await page.screenshot({ path: `${shots}jeep-driving.png` });
+  await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    await a.play.exitVehicle();
+    await a.play.exit();
+  });
+
+  await openTemplate(page, "windmill");
+  await openMode(page, "Play");
+  const sails = await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    await a.play.enter({
+      rigIds: ["windmill"],
+      position: [0, -8.3, -200],
+      realtime: false,
+      cameraMode: "third-person",
+    });
+    const s = await a.play.stepTicks(60);
+    return s.mechanisms!.windmill;
+  });
+  expect(sails.pose.jointPositions.axle).toBeGreaterThan(25);
+  expect(sails.motors!.axle.status).toBe("running");
+  await page.screenshot({ path: `${shots}windmill-play.png` });
+  await page.evaluate(() => window.brickEditor!.play.exit());
+});
 
 test("the roadster drives in Play and the house door opens", async ({
   page,

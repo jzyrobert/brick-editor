@@ -118,24 +118,26 @@ test("desktop template renders real geometry and exports inventory in the UI", a
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/?automation=1");
-  await page
-    .getByRole("button", { name: "Explore the studio template" })
-    .click();
+  await page.getByRole("button", { name: "Explore the corner café" }).click();
   await page.evaluate(async () => {
     const a = window.brickEditor!;
     const q = await a.query();
     await a.ready({ minRevision: q.revision, strict: true });
   });
-  await expect(page.locator(".canvas-bottom")).toContainText("74 parts");
+  await expect(page.locator(".canvas-bottom")).toContainText("358 parts");
   await page.screenshot({ path: info.outputPath("desktop.png") });
   await page.getByRole("button", { name: "Export", exact: true }).click();
   await page.getByRole("button", { name: "Preview parts list" }).click();
+  // The lampposts, bicycle and menu board have no marketplace number, so
+  // the complete list is blocked and the resolved items export on their own.
   await expect(
     page.getByRole("button", { name: "Download XML" }),
-  ).toBeEnabled();
+  ).toBeDisabled();
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Download XML" }).click();
-  expect((await download).suggestedFilename()).toBe("wanted-list.xml");
+  await page
+    .getByRole("button", { name: /Export resolved items only/ })
+    .click();
+  expect((await download).suggestedFilename()).toMatch(/\.zip$/);
   expect(errors).toEqual([]);
 });
 for (const viewport of [

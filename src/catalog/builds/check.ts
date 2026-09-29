@@ -34,7 +34,7 @@ const DOORS: Record<string, string[]> = {
   "60623.dat": ["60596.dat", "60599.dat", "30179.dat"],
 };
 /** Wheels and tyres turn on wheel pins, off the stud grid. */
-const AXLED = new Set(["4624.dat", "3641.dat"]);
+const AXLED = new Set(["4624.dat", "3641.dat", "6014b.dat", "56890.dat"]);
 /**
  * Parts that nest by design: a flag's clips close round its bar; a wheel rim
  * sits on its holder's pin, a tyre on its rim, and both turn under the car
@@ -45,6 +45,10 @@ const CLIPPED: Record<string, string[]> = {
   "2335.dat": ["3957a.dat"],
   "4624.dat": ["4600.dat", "3641.dat", "3788.dat"],
   "3641.dat": ["4600.dat", "3788.dat"],
+  // The jeep: Wheel Rim 12 × 11 (6014b) on the same wheel holder, its
+  // balloon tyre (56890) on the rim, both under Car Mudguard 50745's arch.
+  "6014b.dat": ["4600.dat", "56890.dat", "50745.dat"],
+  "56890.dat": ["4600.dat", "50745.dat"],
 };
 const overlaps = (a: Bounds, b: Bounds) =>
   [0, 1, 2].every(

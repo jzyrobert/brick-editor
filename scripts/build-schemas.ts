@@ -1,7 +1,11 @@
 import Ajv from "ajv";
 import standaloneCode from "ajv/dist/standalone/index.js";
 import { writeFileSync } from "node:fs";
-import { TEMPLATE_NAMES } from "../src/catalog/template-names";
+import {
+  FIXTURE_TEMPLATES,
+  SAMPLE_TEMPLATES,
+  TEMPLATE_NAMES,
+} from "../src/catalog/template-names";
 import { _Code } from "ajv/dist/compile/codegen/code.js";
 import {
   isOccurrenceId,
@@ -767,6 +771,9 @@ const importRequest = {
       {
         format: { const: "template" },
         template: {
+          description:
+            `Sample builds (offered in the chooser): ${SAMPLE_TEMPLATES.join(", ")}. ` +
+            `Test fixtures (not in the chooser; kept for automation and tests): ${FIXTURE_TEMPLATES.join(", ")}.`,
           enum: [...TEMPLATE_NAMES],
         },
       },
