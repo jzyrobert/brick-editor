@@ -824,10 +824,18 @@ export class Editor {
       }
     }
   }
-  replace(p: Project) {
-    validate("project", p);
-    validateSourceDocument(p);
-    const replacement = structuredClone(p);
+  /**
+   * Replace the document. `trusted` is for a project the caller has just
+   * validated (schema and source) and will not mutate afterwards: it skips
+   * validating and deep-copying it again (large recovered projects). Only a
+   * shallow copy is made, so the caller's object keeps its own revision.
+   */
+  replace(p: Project, options: { trusted?: boolean } = {}) {
+    if (!options.trusted) {
+      validate("project", p);
+      validateSourceDocument(p);
+    }
+    const replacement = options.trusted ? { ...p } : structuredClone(p);
     const availability = assessMaterialization(
       replacement,
       this.expansionOptions,

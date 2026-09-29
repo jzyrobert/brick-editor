@@ -1,7 +1,7 @@
 import { LayerFolders } from "./LayerFolders";
 import { useEffect, useId, useMemo, useState } from "react";
 import { occurrences } from "../core/document";
-import type { Project } from "../core/types";
+import type { Occurrence, Project } from "../core/types";
 
 export function LayerActions({
   project,
@@ -11,6 +11,7 @@ export function LayerActions({
   onCreated,
   ghostOtherLayers = false,
   onGhostChange,
+  occurrences: derived,
 }: {
   project: Project;
   layerId: string;
@@ -22,6 +23,8 @@ export function LayerActions({
   onCreated?: (layerId: string) => void;
   ghostOtherLayers?: boolean;
   onGhostChange?: (enabled: boolean) => void;
+  /** The workspace's occurrences of `project`, when already derived. */
+  occurrences?: Occurrence[];
 }) {
   const [confirm, setConfirm] = useState(false),
     [mode, setMode] = useState("reassign"),
@@ -41,8 +44,10 @@ export function LayerActions({
         destinations[0]?.id ??
         "");
   const count = useMemo(
-    () => occurrences(project).filter((o) => o.layerId === layerId).length,
-    [project, layerId],
+    () =>
+      (derived ?? occurrences(project)).filter((o) => o.layerId === layerId)
+        .length,
+    [project, layerId, derived],
   );
   useEffect(() => {
     setConfirm(false);

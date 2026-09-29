@@ -117,6 +117,11 @@ for (const viewport of [
       await page.getByRole("button", { name }).click();
       await expect(page.getByRole("dialog")).toHaveCount(0);
       await page.evaluate(() => window.brickEditor!.ready({ strict: true }));
+      // A template just opened has nothing unsaved (it is autosaved for
+      // recovery, so the state may already read "Saved").
+      await expect(page.locator(".save-state")).toHaveText(
+        /^(No changes|Saving…|Saved revision \d+)$/,
+      );
       await page.screenshot({ path: `${shots}${file}-${viewport.width}.png` });
     }
   });

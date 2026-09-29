@@ -2,7 +2,13 @@ import { useMemo, useState } from "react";
 import { colors } from "../catalog/catalog";
 import type { Editor } from "../core/commands";
 import { occurrences } from "../core/document";
-import { uid, type Project, type Vec3, type Transform } from "../core/types";
+import {
+  uid,
+  type Occurrence,
+  type Project,
+  type Vec3,
+  type Transform,
+} from "../core/types";
 import {
   buildJointRig,
   rigAuthoringRequest,
@@ -45,6 +51,7 @@ export function RigAuthoring({
   selection,
   activeLayerId,
   onSelect,
+  occurrences: derived,
 }: {
   editor: Editor;
   /** The workspace's current snapshot; reading `editor.project` here deep-copied
@@ -53,6 +60,8 @@ export function RigAuthoring({
   selection: string[];
   activeLayerId?: string;
   onSelect: (ids: string[]) => void;
+  /** The workspace's occurrences of `project`, when already derived. */
+  occurrences?: Occurrence[];
 }) {
   const [kind, setKind] = useState<RigKind>("hinge"),
     [name, setName] = useState("My mechanism"),
@@ -97,7 +106,10 @@ export function RigAuthoring({
       key: string;
       result: ReturnType<typeof buildJointRig>;
     }>();
-  const all = useMemo(() => occurrences(project), [project]);
+  const all = useMemo(
+    () => derived ?? occurrences(project),
+    [project, derived],
+  );
   const available = all
     .filter(
       (o) =>

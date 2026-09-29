@@ -121,8 +121,10 @@ import {
 import { ReplaceProjectDialog } from "./ReplaceProjectDialog";
 import { connectorCoverage, verifiedConnectors } from "../catalog/connectors";
 import { SceneAdapter, type SectionSpec } from "../render/adapter";
+import { LoadProgressIndicator, setLoadProgress } from "./LoadProgress";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
 import { BrowserProjects } from "../persistence/browser-projects";
+import { recoverProject } from "../persistence/restore";
 import {
   applyResourcePreference,
   loadResourcePreference,
@@ -208,6 +210,8 @@ let releaseStartupRecovery = () => {};
 const startupRecovered = new Promise<void>((resolve) => {
   releaseStartupRecovery = resolve;
 });
+/** An API or file import started before recovery finished takes precedence. */
+let importStarted = false;
 const applicationAPI = createAPI(
   editor,
   () => runtime.renderer,
@@ -215,6 +219,9 @@ const applicationAPI = createAPI(
   () => runtime.mechanisms,
   () => runtime.selection(),
   () => Promise.all([rendererMounted, startupRecovered]).then(() => {}),
+  () => {
+    importStarted = true;
+  },
 );
 function download(
   name: string,
@@ -534,8 +541,13 @@ function Workspace() {
     onFullLibraryChange,
     fullLibraryGeneration,
   );
-  const all =
-      editor.materialization.status === "available" ? occurrences(project) : [],
+  const available = editor.materialization.status === "available";
+  // Walking every occurrence of a 20,000-part model takes a few hundred ms:
+  // derive it once per project (and library change), not on every render.
+  const all = useMemo(
+      () => (available ? occurrences(project) : []),
+      [project, available, fullLibraryVersion],
+    ),
     // The parent unmounts this entire derived workspace on limited replacement.
 
     selected = all.filter((o) => selection.includes(o.id)),
@@ -737,19 +749,29 @@ function Workspace() {
         return;
       }
       setProject(p);
-      setSelection((ids) =>
-        ids.filter((id) => occurrences(p).some((o) => o.id === id)),
-      );
+      setSelection((ids) => {
+        if (!ids.length) return ids;
+        const live = new Set(occurrences(p).map((o) => o.id));
+        return ids.filter((id) => live.has(id));
+      });
       if (!p.layers[interact.current.activeLayer])
         setActiveLayer(p.defaultLayerId);
       setPreview(null);
+      // `p` is this callback's own copy of the project (editor.project
+      // returns a fresh one); nothing mutates it after this point.
       renderer.current
-        ?.update(p)
+        ?.update(p, { owned: true })
         .then(() => renderer.current?.select(selectionRef.current))
         .catch(() => {});
       if (!loaded.current) return;
-      setSaveStatus("Unsaved changes");
-      autosave.current?.schedule(p);
+      // A project just opened (a template, a file, a saved project) has no
+      // changes yet; autosave still writes it for recovery.
+      setSaveStatus(
+        opened.current.id === p.id && opened.current.revision === p.revision
+          ? "No changes"
+          : "Unsaved changes",
+      );
+      autosave.current?.schedule(p, { owned: true });
     });
     const save = (p: typeof project) =>
       enqueueSourceSave(async () => {
@@ -818,6 +840,7 @@ function Workspace() {
     window.addEventListener("storage", notifySavedChange);
     try {
       renderer.current = new SceneAdapter(viewport.current!, setStatus);
+      renderer.current.onProgress = setLoadProgress;
       // Phones degrade the realistic looks; apply the viewer's saved look.
       renderer.current.setLookResourceProfile(editor.resourceProfile);
       renderer.current.setLook(loadLookPreference());
@@ -873,17 +896,21 @@ function Workspace() {
       let recovered = false;
       try {
         const id = localStorage.getItem("brick-editor-current");
-        const saved = id
-          ? await new BrowserProjects(localStorage).load(id)
+        // Verified off the main thread, so a large saved project does not
+        // freeze the page while it is read back.
+        const recoveredProject = id
+          ? await recoverProject(id, localStorage)
           : null;
+        const saved = recoveredProject?.project;
         if (
           saved &&
           editor.revision === initialRevision &&
-          editor.projectId === initialId
+          editor.projectId === initialId &&
+          !importStarted
         ) {
           saveRevisions.current.set(saved.id, saved.revision);
           observedProjectId.current = saved.id;
-          editor.replace(saved);
+          editor.replace(saved, { trusted: recoveredProject.verified });
           opened.current = {
             id: saved.id,
             revision: editor.revision,
@@ -1459,6 +1486,7 @@ function Workspace() {
           "CANCELLED",
           "Import cancelled",
         );
+        renderer.current?.requestFitOnFirstParts();
         const result = await api.current!.project.import(input);
         if (result.materialization.status === "limited") return;
         setStatus("Imported revision " + result.revision);
@@ -1466,6 +1494,7 @@ function Workspace() {
         renderer.current?.fit();
         setSelectionSafe([]);
       } finally {
+        renderer.current?.requestFitOnFirstParts(false);
         setBusy(false);
       }
     });
@@ -1480,13 +1509,19 @@ function Workspace() {
   async function useTemplate(name: TemplateName) {
     await run(async () => {
       const next = await loadTemplate(name);
-      editor.replace(next);
-      setActiveLayer("base");
-      setSelectionSafe([]);
-      // Show the new build (on phones the Project sheet would cover it).
-      setMode("Build");
-      setPanel("Canvas");
-      await renderer.current?.ready();
+      // Frame the build as soon as its first parts appear.
+      renderer.current?.requestFitOnFirstParts();
+      try {
+        editor.replace(next);
+        setActiveLayer("base");
+        setSelectionSafe([]);
+        // Show the new build (on phones the Project sheet would cover it).
+        setMode("Build");
+        setPanel("Canvas");
+        await renderer.current?.ready();
+      } finally {
+        renderer.current?.requestFitOnFirstParts(false);
+      }
       renderer.current?.fit();
       setStatus(
         name === "blank" ? "New blank project" : `Opened “${next.title}”`,
@@ -4095,6 +4130,7 @@ function Workspace() {
               {layersPanel}
               <LayerActions
                 project={project}
+                occurrences={available ? all : undefined}
                 layerId={activeLayer}
                 dispatch={(type, payload) => command(type, payload)}
                 onRemoved={setActiveLayer}
@@ -4147,6 +4183,7 @@ function Workspace() {
             <RigAuthoring
               editor={editor}
               project={project}
+              occurrences={available ? all : undefined}
               selection={selection}
               activeLayerId={crossLayer ? undefined : activeLayer}
               onSelect={setSelectionSafe}
@@ -4193,6 +4230,7 @@ function Workspace() {
           {busy ? "Working… " : ""}
           {status}
         </span>
+        <LoadProgressIndicator />
         {busy && (
           <button
             onClick={() => {

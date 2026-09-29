@@ -77,6 +77,8 @@ export function assertExpansionResource(
   limits: ExpansionMetrics,
   phase: "preflight" | "traversal",
 ) {
+  // Hot path (several calls per occurrence): build the error only on failure.
+  if (required <= limits[resource]) return;
   ensure(
     required <= limits[resource],
     "LIMIT_EXCEEDED",

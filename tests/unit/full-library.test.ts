@@ -210,6 +210,43 @@ describe("browser loader", () => {
     expect(store.size).toBe(requests.length);
   });
 
+  it("loads the dependencies of a part first loaded only as a chunk neighbour", async () => {
+    // Regression: after a large import, importing 10715.dat reported its
+    // dependency 2313b.dat unresolved (a fresh page rendered it). 10715.dat
+    // had arrived in a chunk loaded for another part, so it counted as
+    // loaded although none of its own dependencies were.
+    online();
+    const { loader, registry } = await fresh();
+    await loader.loadFullLibraryIndex();
+    const { index, where } = registry.registeredFullLibrary()!;
+    const target = "10715.dat";
+    const dependencyChunk = where.get("2313b.dat")!.chunk;
+    // Another part in 10715.dat's chunk whose own closure never touches the
+    // chunk holding 10715.dat's dependency 2313b.dat.
+    const neighbour = Object.keys(index.parts).find(
+      (n) =>
+        n !== target &&
+        !registry.curatedHas(n) &&
+        where.get(n)?.chunk === where.get(target)!.chunk &&
+        !index.parts[n][0].includes(dependencyChunk),
+    )!;
+    expect(neighbour).toBeTruthy();
+    await loader.loadFullSources([neighbour]);
+    expect(registry.fullSource(target)).toBeTruthy();
+    expect(registry.fullSource("2313b.dat")).toBeUndefined();
+    await loader.loadFullSources([target]);
+    expect(registry.fullSource("2313b.dat")).toBeTruthy();
+    const seen = new Set<string>();
+    const visit = (name: string) => {
+      if (seen.has(name) || registry.curatedHas(name)) return;
+      seen.add(name);
+      const text = registry.fullSource(name);
+      expect(text, name).toBeTruthy();
+      for (const ref of directReferences(text!)) visit(ref);
+    };
+    visit(target);
+  });
+
   it("reloads offline from the cache and re-verifies cached bytes", async () => {
     vi.stubGlobal("location", { href: "http://pack.test/" });
     vi.stubGlobal("caches", cacheStorage);

@@ -69,7 +69,7 @@ import {
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { LDrawLoader } from "three/addons/loaders/LDrawLoader.js";
+import { LDrawLoader } from "./vendor/LDrawLoader.js";
 import { LDrawConditionalLineMaterial } from "three/addons/materials/LDrawConditionalLineMaterial.js";
 import {
   type Project,
@@ -83,7 +83,16 @@ import {
 import { occurrences } from "../core/document";
 import { conversion } from "../core/math";
 import { libraryLock } from "../catalog/catalog";
-import { fullSource } from "../catalog/full-library";
+import { fullLibraryLock, fullSource } from "../catalog/full-library";
+import { PartCompiler, type PartCompileStats } from "./part-compiler";
+import { parseLDraw, PART_COMPILER_VERSION } from "./part-compile-core";
+import { rebuildPart, unpackPart } from "./part-record";
+import {
+  GeometryCache,
+  geometryCacheKey,
+  openIndexedDbStore,
+} from "./geometry-cache";
+import { TimeSlicer } from "./scheduling";
 import { prepareFullLibrary } from "../catalog/full-library-loader";
 import { directReferences } from "../catalog/full-pack";
 import installedBounds from "../catalog/bounds.json";
@@ -257,6 +266,79 @@ function mainMaterials(group: THREE.Object3D, code?: string): MainMaterials {
   });
   return found;
 }
+/** Longest stretch of model loading work in one main-thread task. */
+const LOAD_SLICE_MS = 12;
+/** Persistent compiled-geometry budget per resource profile. */
+const GEOMETRY_CACHE_BYTES: Record<ResourceProfileName, number> = {
+  desktop: 128 * 1024 * 1024,
+  mobile: 48 * 1024 * 1024,
+};
+/** Diagnostic URL switches: `geometryCache=0`, `compileWorkers=0|N`,
+ * `progressive=0`. */
+const loadOption = (name: string) =>
+  typeof location === "undefined"
+    ? null
+    : new URLSearchParams(location.search).get(name);
+let geometryCache: GeometryCache | undefined;
+/** One persistent geometry cache per page (`?geometryCache=0` disables it). */
+function sharedGeometryCache() {
+  if (loadOption("geometryCache") === "0") return undefined;
+  return (geometryCache ??= new GeometryCache(
+    openIndexedDbStore(),
+    GEOMETRY_CACHE_BYTES.desktop,
+  ));
+}
+/** SHA-256 of compile inputs, shared across updates (bounded, oldest out). */
+const compilationKeys = new Map<string, Promise<string>>();
+function compilationKey(source: string) {
+  let value = compilationKeys.get(source);
+  if (value) {
+    // Refresh recency.
+    compilationKeys.delete(source);
+  } else {
+    value = sha256(source);
+    value.catch(() => compilationKeys.delete(source));
+  }
+  compilationKeys.set(source, value);
+  if (compilationKeys.size > 512)
+    compilationKeys.delete(compilationKeys.keys().next().value!);
+  return value;
+}
+export type LoadProgress = {
+  /** Distinct part/colour variants compiled so far, and in all. */
+  done: number;
+  total: number;
+};
+/**
+ * `object.clone(true)` for compiled part trees, without the throwaway default
+ * geometry and material every Mesh/Line constructor allocates when cloning
+ * (about a third of the time to create 20,000 occurrence handles).
+ */
+function cloneTree<T extends THREE.Object3D>(source: T): T {
+  let copy: THREE.Object3D;
+  const mesh = source as unknown as THREE.Mesh;
+  const lines = source as unknown as THREE.LineSegments & {
+    isConditionalLine?: boolean;
+  };
+  if (
+    mesh.isMesh &&
+    !(source as unknown as THREE.InstancedMesh).isInstancedMesh &&
+    !(source as unknown as THREE.SkinnedMesh).isSkinnedMesh
+  )
+    copy = new THREE.Mesh(mesh.geometry, mesh.material).copy(mesh, false);
+  else if (lines.isLineSegments) {
+    copy = new THREE.LineSegments(lines.geometry, lines.material).copy(
+      lines,
+      false,
+    );
+    if (lines.isConditionalLine)
+      (copy as typeof lines).isConditionalLine = true;
+  } else if ((source as unknown as THREE.Group).isGroup)
+    copy = new THREE.Group().copy(source, false);
+  else copy = source.clone(false);
+  for (const child of source.children) copy.add(cloneTree(child));
+  return copy as T;
+}
 const triangleCounts = new WeakMap<THREE.Object3D, number>();
 /** Surface triangles one occurrence of this prototype draws (memoized). */
 function prototypeTriangleCount(prototype: THREE.Object3D) {
@@ -297,10 +379,13 @@ export class SceneAdapter {
   private colorText = "";
   private rawCompiler?: RawPrimitiveCompiler;
   private updateEpoch = 0;
-  private compilationKeys = new WeakMap<
-    Project,
-    Map<string, Promise<string>>
-  >();
+  /** Off-main-thread part compiler (workers + persistent cache), on demand. */
+  private compiler?: PartCompiler;
+  /** Paces main-thread compile work: see onMain(). */
+  private mainSlicer = new TimeSlicer(LOAD_SLICE_MS);
+  private mainQueue: Promise<unknown> = Promise.resolve();
+  /** Model loading progress for the HUD; null when no load is in progress. */
+  onProgress?: (progress: LoadProgress | null) => void;
   private knownColors = new Set<string>();
   private resolvedCache = new Map<string, THREE.Group>();
   /** The last project passed to update(), rendered or refused. */
@@ -676,29 +761,87 @@ export class SceneAdapter {
     }
     return [...keep.values()].join("\n");
   }
-  private compilationKey(project: Project, source: string) {
-    let keys = this.compilationKeys.get(project);
-    if (!keys) {
-      keys = new Map();
-      this.compilationKeys.set(project, keys);
-    }
-    let value = keys.get(source);
-    if (!value) {
-      value = sha256(source);
-      keys.set(source, value);
-    }
-    return value;
+  /**
+   * Runs one unit of main-thread compile work (a loader parse, a rebuild from
+   * a compiled record) after the previous one, ending the task first once the
+   * slice budget is spent. Loader parses are chains of microtasks that never
+   * yield on their own; without this, compiling many parts was one long task.
+   */
+  private onMain<T>(work: () => Promise<T> | T): Promise<T> {
+    const run = this.mainQueue.then(async () => {
+      if (this.mainSlicer.due) await this.mainSlicer.yield();
+      return work();
+    });
+    this.mainQueue = run.catch(() => {});
+    return run;
   }
-  private async prototype(o: Occurrence, p: Project): Promise<THREE.Group> {
+  private partCompiler() {
+    if (!this.compiler) {
+      const cores =
+        typeof navigator === "undefined"
+          ? 2
+          : navigator.hardwareConcurrency || 2;
+      const workers =
+        loadOption("compileWorkers") === "0"
+          ? undefined
+          : () =>
+              new Worker(
+                new URL("../workers/part-compile.worker.ts", import.meta.url),
+                { type: "module" },
+              );
+      this.compiler = new PartCompiler({
+        size: this.compileWorkerCount(cores),
+        createWorker: workers,
+        cache: sharedGeometryCache(),
+      });
+    }
+    return this.compiler;
+  }
+  /** Leave a core for the page; phones get at most two workers. */
+  private compileWorkerCount(cores = navigator.hardwareConcurrency || 2) {
+    const requested = Number(loadOption("compileWorkers"));
+    if (requested > 0) return Math.min(8, requested);
+    return Math.max(
+      1,
+      Math.min(this.lookResourceProfile === "mobile" ? 2 : 4, cores - 2),
+    );
+  }
+  /** Where compiled geometry came from (workers, persistent cache, main thread). */
+  compileStats(): PartCompileStats & {
+    cache?: GeometryCache["stats"] & { bytes: number; maxBytes: number };
+  } {
+    const cache = sharedGeometryCache();
+    return {
+      ...(this.compiler?.stats ?? {
+        diskHits: 0,
+        workerCompiles: 0,
+        mainThread: 0,
+        workerMs: 0,
+        workers: 0,
+      }),
+      ...(cache
+        ? {
+            cache: {
+              ...cache.stats,
+              bytes: cache.bytes,
+              maxBytes: cache.maxBytes,
+            },
+          }
+        : {}),
+    };
+  }
+  private async prototype(
+    o: Occurrence,
+    p: Project,
+    renderContext = occurrenceRenderContext(p, o),
+  ): Promise<THREE.Group> {
     const source =
       o.namespace === "project" && o.node.kind !== "geometry"
         ? dependencySource(p, o.node.ref)
         : "";
-    const renderContext = occurrenceRenderContext(p, o);
     const context = renderContext.source;
     const raw = o.node.kind === "geometry" ? occurrenceRawRecord(p, o) : "";
-    const fingerprint = await this.compilationKey(
-      p,
+    const fingerprint = await compilationKey(
       context + "\n" + renderContext.forceDoubleSided + "\n" + source,
     );
     const key = JSON.stringify([
@@ -716,7 +859,9 @@ export class SceneAdapter {
         const compiler = (this.rawCompiler ??= new RawPrimitiveCompiler(
           this.colorText,
         ));
-        const group = await compiler.compile(raw, o.colorCode, renderContext);
+        const group = await this.onMain(() =>
+          compiler.compile(raw, o.colorCode, renderContext),
+        );
         this.allPrototypes.add(group);
         this.resolvedCache.set(key, group);
         return group;
@@ -739,13 +884,15 @@ export class SceneAdapter {
       const group =
         o.namespace === "official" && !renderContext.forceDoubleSided
           ? await this.colourVariant(o, context, fingerprint)
-          : await this.compilePart(
-              o,
-              p,
-              source,
-              context,
-              o.colorCode,
-              renderContext.forceDoubleSided,
+          : await this.onMain(() =>
+              this.compilePart(
+                o,
+                p,
+                source,
+                context,
+                o.colorCode,
+                renderContext.forceDoubleSided,
+              ),
             );
       this.allPrototypes.add(group);
       this.resolvedCache.set(key, group);
@@ -754,27 +901,16 @@ export class SceneAdapter {
     this.cache.set(key, promise);
     return promise;
   }
-  /** Compile one part (or project submodel) reference in `colorCode`. */
-  private async compilePart(
+  /** The self-contained loader source that compiles one part (or project
+   * submodel) reference in `colorCode`: colour definitions, render context,
+   * the reference, project definitions and the official closure. */
+  private partSource(
     o: Occurrence,
     p: Project | undefined,
     source: string,
     context: string,
     colorCode: string,
-    forceDoubleSided: boolean,
   ) {
-    let dependencyFailure: string | undefined;
-    const manager = new THREE.LoadingManager();
-    const loader = new LDrawLoader(manager);
-    loader.setConditionalLineMaterial(LDrawConditionalLineMaterial);
-    loader.setMaterials([]);
-    manager.setURLModifier((url) => {
-      dependencyFailure = url;
-      throw new AppError(
-        "REFERENCE_MISSING",
-        "Unresolved dependency (network resolution disabled): " + url,
-      );
-    });
     const ref =
       o.namespace === "project"
         ? p?.models[o.node.ref]?.name || o.node.ref
@@ -788,7 +924,7 @@ export class SceneAdapter {
       context + "\n" + line + "\n" + projectSource,
       o.namespace === "project" ? localNames : new Set<string>(),
     );
-    const text = normalizeBfcSource(
+    return normalizeBfcSource(
       "0 FILE __render__.ldr\n" +
         (colorCode === SHARED_MAIN_CODE ? SHARED_MAIN_COLOUR + "\n" : "") +
         this.colourDefinitions(
@@ -803,19 +939,19 @@ export class SceneAdapter {
         "\n" +
         library,
     );
-    loader.setFileMap(
-      Object.fromEntries(
-        [...text.matchAll(/^0 FILE (.+)$/gm)].map((m) => [m[1], m[1]]),
-      ),
-    );
-    const group = await new Promise<THREE.Group>((resolve, reject) =>
-      (
-        loader.parse as unknown as (
-          text: string,
-          resolve: (g: THREE.Group) => void,
-          reject: (e: unknown) => void,
-        ) => void
-      )(text, resolve, reject),
+  }
+  /** Compile one part (or project submodel) reference in `colorCode` on the
+   * main thread. Callers run it through onMain(). */
+  private async compilePart(
+    o: Occurrence,
+    p: Project | undefined,
+    source: string,
+    context: string,
+    colorCode: string,
+    forceDoubleSided: boolean,
+  ) {
+    const { group, dependencyFailure } = await parseLDraw(
+      this.partSource(o, p, source, context, colorCode),
     );
     ensure(
       !dependencyFailure,
@@ -828,7 +964,14 @@ export class SceneAdapter {
       "Part compilation produced no geometry: " + o.node.ref,
     );
     repairFaceNormals(group);
+    return this.finishPrototype(group, forceDoubleSided);
+  }
+  private finishPrototype(group: THREE.Group, forceDoubleSided: boolean) {
     group.traverse((object) => {
+      // Loader metadata (file names, categories, building steps) is unused,
+      // and Object3D.clone() JSON-copies user data for every object of every
+      // occurrence handle.
+      object.userData = {};
       if ((object as THREE.Mesh).isMesh) {
         if (forceDoubleSided) {
           const mesh = object as THREE.Mesh;
@@ -860,58 +1003,135 @@ export class SceneAdapter {
     const baseKey = JSON.stringify([o.node.ref, fingerprint]);
     let base = this.sharedBases.get(baseKey);
     if (!base) {
-      base = this.compilePart(
-        o,
-        undefined,
-        "",
-        context,
-        SHARED_MAIN_CODE,
-        false,
-      ).then((group) => {
+      base = this.compileBase(o, context, fingerprint).then((group) => {
         this.resolvedBases.set(baseKey, group);
         return { group, main: mainMaterials(group, SHARED_MAIN_CODE) };
       });
       this.sharedBases.set(baseKey, base);
       base.catch(() => this.sharedBases.delete(baseKey));
     }
-    const paletteKey = JSON.stringify([o.colorCode, fingerprint]);
-    let palette = this.palettes.get(paletteKey);
-    if (!palette) {
-      palette = this.compilePalette(o.colorCode, context).then((m) => {
-        this.resolvedPalettes.add(m);
-        return m;
-      });
-      this.palettes.set(paletteKey, palette);
-      palette.catch(() => this.palettes.delete(paletteKey));
-    }
     const [{ group: compiled, main }, colour] = await Promise.all([
       base,
-      palette,
+      this.palette(o.colorCode, context, fingerprint),
     ]);
     const swap = new Map<THREE.Material, THREE.Material>();
     if (main.face && colour.face) swap.set(main.face, colour.face);
     if (main.edge && colour.edge) swap.set(main.edge, colour.edge);
     if (main.conditional && colour.conditional)
       swap.set(main.conditional, colour.conditional);
-    const group = compiled.clone(true);
-    group.traverse((object) => {
-      const drawable = object as THREE.Mesh;
-      if (!drawable.material) return;
-      drawable.material = Array.isArray(drawable.material)
-        ? drawable.material.map((m) => swap.get(m) ?? m)
-        : (swap.get(drawable.material) ?? drawable.material);
+    return this.onMain(() => {
+      const group = cloneTree(compiled);
+      group.traverse((object) => {
+        const drawable = object as THREE.Mesh;
+        if (!drawable.material) return;
+        drawable.material = Array.isArray(drawable.material)
+          ? drawable.material.map((m) => swap.get(m) ?? m)
+          : (swap.get(drawable.material) ?? drawable.material);
+      });
+      return group;
     });
-    return group;
+  }
+  /** Face, edge and conditional-line materials of `colorCode` in one render
+   * context, shared by every prototype that draws that colour there. The
+   * sentinel palette carries the shared-geometry main colour. */
+  private palette(
+    colorCode: string,
+    context: string,
+    fingerprint: string,
+    sentinel = false,
+  ) {
+    const paletteKey = sentinel
+      ? JSON.stringify(["sentinel", fingerprint])
+      : JSON.stringify([colorCode, fingerprint]);
+    let palette = this.palettes.get(paletteKey);
+    if (!palette) {
+      palette = this.onMain(() =>
+        this.compilePalette(
+          colorCode,
+          context,
+          sentinel ? SHARED_MAIN_COLOUR : "",
+        ),
+      ).then((m) => {
+        this.resolvedPalettes.add(m);
+        return m;
+      });
+      this.palettes.set(paletteKey, palette);
+      palette.catch(() => this.palettes.delete(paletteKey));
+    }
+    return palette;
+  }
+  /**
+   * The shared (sentinel-colour) geometry of an official part. Compile
+   * workers build it off the main thread, or the persistent cache supplies
+   * it; the main thread only wraps the record's buffers in Three objects with
+   * the render context's shared palette materials. Falls back to a main-thread
+   * compile when workers are unavailable or the part needs file-local colours.
+   */
+  private async compileBase(
+    o: Occurrence,
+    context: string,
+    fingerprint: string,
+  ): Promise<THREE.Group> {
+    const key = geometryCacheKey({
+      compiler: PART_COMPILER_VERSION,
+      library: libraryLock.manifestSha256,
+      fullLibrary: fullLibraryLock.manifestSha256,
+      ref: o.node.ref,
+      context: fingerprint + ":" + SHARED_MAIN_CODE,
+    });
+    const buffer = await this.partCompiler().compile(key, () =>
+      this.partSource(o, undefined, "", context, SHARED_MAIN_CODE),
+    );
+    ensure(!this.disposed, "WEBGL_UNAVAILABLE", "The renderer was closed");
+    if (!buffer)
+      return this.onMain(() =>
+        this.compilePart(o, undefined, "", context, SHARED_MAIN_CODE, false),
+      );
+    const { header } = unpackPart(buffer);
+    const palettes = new Map<string, MainMaterials>();
+    await Promise.all(
+      header.codes.map(async (code) =>
+        palettes.set(
+          code,
+          await (code === SHARED_MAIN_CODE
+            ? this.palette(code, context, fingerprint, true)
+            : this.palette(code, context, fingerprint)),
+        ),
+      ),
+    );
+    return this.onMain(() => {
+      const group = rebuildPart(buffer, (slot) => {
+        const material = palettes.get(slot.code)?.[slot.kind];
+        ensure(
+          material,
+          "REFERENCE_MISSING",
+          "Colour materials could not be built for colour " + slot.code,
+        );
+        return material;
+      });
+      ensure(
+        group.children.length > 0,
+        "REFERENCE_MISSING",
+        "Part compilation produced no geometry: " + o.node.ref,
+      );
+      return this.finishPrototype(group, false);
+    });
   }
   /** The face, edge and conditional-line materials the loader builds for
-   * `colorCode` (a one-triangle swatch referenced in that colour). */
-  private async compilePalette(colorCode: string, context: string) {
+   * `colorCode` (a one-triangle swatch referenced in that colour), after any
+   * extra colour `definitions`. */
+  private async compilePalette(
+    colorCode: string,
+    context: string,
+    definitions = "",
+  ) {
     const loader = new LDrawLoader(new THREE.LoadingManager());
     loader.setConditionalLineMaterial(LDrawConditionalLineMaterial);
     loader.setMaterials([]);
     const line = `1 ${colorCode} 0 0 0 1 0 0 0 1 0 0 0 1 __swatch__.dat`;
     const text = [
       "0 FILE __palette__.ldr",
+      ...(definitions ? [definitions] : []),
       this.colourDefinitions(context + "\n" + line),
       context,
       line,
@@ -1090,137 +1310,275 @@ export class SceneAdapter {
       batches: this.batches.stats(),
     };
   }
-  update(p: Project) {
-    const snapshot = structuredClone(p);
+  /**
+   * Render `p`. The renderer keeps its own snapshot; a caller that hands over
+   * a project it will never mutate (a fresh copy from the editor) passes
+   * `owned` to skip that deep copy — a few hundred ms for 20,000 parts.
+   */
+  update(p: Project, options: { owned?: boolean } = {}) {
+    const snapshot = options.owned ? p : structuredClone(p);
     this.requested = snapshot;
     const epoch = ++this.updateEpoch;
     this.pending = this.pending
       .catch(() => {})
-      .then(async () => {
-        await this.load;
-        ensure(
-          snapshot.library.manifestSha256 === libraryLock.manifestSha256,
-          "REFERENCE_MISSING",
-          "Pinned library is unavailable",
-        );
-        // Official parts outside the curated pack: fetch (or read from the
-        // offline cache) and verify their definitions before compiling.
-        const fullLibraryProblem = await prepareFullLibrary(snapshot);
-        if (fullLibraryProblem) this.report(fullLibraryProblem);
+      .then(() => this.applyUpdate(snapshot, epoch))
+      .catch((e) => {
         if (this.disposed || epoch !== this.updateEpoch) return;
-        const all = occurrences(snapshot),
-          keep = new Set(all.map((o) => o.id));
-        const physical = all.filter((o) => o.node.kind !== "geometry");
-        const profile = this.lookResourceProfile;
-        checkRenderBudget(profile, {
-          partOccurrences: physical.length,
-          rawOccurrences: all.length - physical.length,
-        });
-        const variants = new Map<string, Occurrence>();
-        for (const o of physical) {
-          const context = occurrenceRenderContext(snapshot, o);
-          variants.set(
-            JSON.stringify([o.namespace, o.node.ref, o.colorCode, context]),
-            o,
-          );
-        }
-        checkRenderBudget(profile, { variants: variants.size });
-        let sourceBytes = 0;
-        const encoder = new TextEncoder();
-        const contexts = new Set<string>();
-        for (const o of all) {
-          const context = occurrenceRenderContext(snapshot, o).source;
-          if (!contexts.has(context)) {
-            contexts.add(context);
-            sourceBytes += encoder.encode(context).length;
-          }
-          if (o.node.kind === "geometry")
-            sourceBytes += encoder.encode(
-              occurrenceRawRecord(snapshot, o),
-            ).length;
-          ensure(
-            sourceBytes <= 50 * 1024 * 1024,
-            "LIMIT_EXCEEDED",
-            "Geometry compilation exceeds its bounded source/context budget.",
-          );
-        }
-        for (const o of variants.values()) {
-          if (o.namespace !== "project") continue;
-          sourceBytes += encoder.encode(
-            dependencySource(snapshot, o.node.ref),
-          ).length;
-          ensure(
-            sourceBytes <= 50 * 1024 * 1024,
-            "LIMIT_EXCEEDED",
-            "Custom geometry compilation exceeds its bounded dependency source budget.",
-          );
-        }
-        const loaded: Array<{ o: Occurrence; prototype: THREE.Group }> = [];
-        // Bound concurrent loader work and let input/source replacement interrupt
-        // large raw-geometry imports without discarding any source occurrences.
-        let slice = performance.now();
-        for (let offset = 0; offset < all.length; offset += 128) {
-          if (this.disposed || epoch !== this.updateEpoch) return;
-          loaded.push(
-            ...(await Promise.all(
-              all.slice(offset, offset + 128).map(async (o) => ({
-                o,
-                prototype: await this.prototype(o, snapshot),
-              })),
-            )),
-          );
-          // Yield by elapsed time, not per chunk: at 20,000 parts a yield per
-          // 128 cached lookups cost ~160 clamped timer waits.
-          if (offset + 128 < all.length && performance.now() - slice > 12) {
-            await new Promise((resolve) => setTimeout(resolve, 0));
-            slice = performance.now();
-          }
-        }
-        if (this.disposed || epoch !== this.updateEpoch) return;
-        // Geometry budgets need compiled prototypes; refuse before touching the
-        // scene so an over-budget model is never drawn partially.
-        let sceneTriangles = 0,
-          prototypeTriangles = 0;
-        const counted = new Set<THREE.Group>();
-        const geometries = new Set<THREE.BufferGeometry>();
-        for (const { prototype } of loaded) {
-          sceneTriangles += prototypeTriangleCount(prototype);
-          if (counted.has(prototype)) continue;
-          counted.add(prototype);
-          // Colour variants share geometry: count each geometry once.
-          prototype.traverse((object) => {
-            const mesh = object as THREE.Mesh;
-            if (!mesh.isMesh || geometries.has(mesh.geometry)) return;
-            geometries.add(mesh.geometry);
-            prototypeTriangles += Math.floor(
-              (mesh.geometry.index?.count ??
-                mesh.geometry.getAttribute("position")?.count ??
-                0) / 3,
-            );
-          });
-        }
-        const usage = {
-          partOccurrences: physical.length,
-          rawOccurrences: all.length - physical.length,
-          variants: variants.size,
-          prototypeTriangles,
-          sceneTriangles,
-        };
-        try {
-          checkRenderBudget(profile, usage);
-        } catch (e) {
-          this.evictPrototypes(counted);
-          throw e;
-        }
-        this.renderUsage = { profile, ...usage };
-        // Render-side post-process (frame cost, not compilation): index each
-        // new prototype's triangles once, before any handle clones it.
-        this.indexPrototypes(loaded.map(({ prototype }) => prototype));
-        if (this.reducedQuality && !this.reducedNotice)
-          this.report(
-            "Large model on a phone: conditional edge lines are hidden and pixel density is reduced while viewing. Every part is drawn; captures keep full quality.",
-          );
-        this.reducedNotice = this.reducedQuality;
+        this.error = e;
+        this.root.visible = false;
+        this.invalidate();
+        this.report(e instanceof Error ? e.message : String(e));
+        throw e;
+      })
+      .finally(() => {
+        if (epoch === this.updateEpoch) this.onProgress?.(null);
+      });
+    this.pending.catch(() => {});
+    return this.pending;
+  }
+  /** Fit the camera to the next newly opened model as soon as its first
+   * parts are drawn (the UI still fits the complete model once it is ready,
+   * and withdraws the request with `false` when the open ends). */
+  requestFitOnFirstParts(on = true) {
+    this.fitOnFirstParts = on;
+  }
+  private fitOnFirstParts = false;
+  private cloneHandle(o: Occurrence, prototype: THREE.Group) {
+    const group = cloneTree(prototype);
+    group.userData = { occurrenceId: o.id, prototype };
+    group.matrixAutoUpdate = false;
+    return group;
+  }
+  /** Create (or reuse) the handle of one occurrence and place it. */
+  private placeHandle(
+    o: Occurrence,
+    prototype: THREE.Group,
+    prepared?: THREE.Group,
+  ) {
+    let group = this.handles.get(o.id);
+    if (!group || group.userData.prototype !== prototype) {
+      if (group) this.root.remove(group);
+      group = prepared ?? this.cloneHandle(o, prototype);
+      this.handles.set(o.id, group);
+      this.root.add(group);
+    }
+    const b = o.transform.basis,
+      v = o.transform.position;
+    group.matrixAutoUpdate = false;
+    group.matrix.set(
+      b[0],
+      b[1],
+      b[2],
+      v[0],
+      b[3],
+      b[4],
+      b[5],
+      v[1],
+      b[6],
+      b[7],
+      b[8],
+      v[2],
+      0,
+      0,
+      0,
+      1,
+    );
+    const lift = this.explodeLift.get(o.id);
+    if (lift) group.matrix.elements[13] -= lift;
+    group.visible =
+      (this.instructionVisibility
+        ? this.instructionVisibility.has(o.id)
+        : o.visible) && !this.floorHidden.has(o.id);
+    group.updateMatrixWorld(true);
+  }
+  /**
+   * Compile and draw one project snapshot. Work is split into tasks of about
+   * LOAD_SLICE_MS (see onMain) and official part geometry compiles in workers,
+   * so input and frames keep flowing while a large model loads. A newly
+   * opened model is drawn progressively as its parts compile (most used part
+   * variants first); edits of the open model swap in all at once.
+   */
+  private async applyUpdate(snapshot: Project, epoch: number) {
+    await this.load;
+    ensure(
+      snapshot.library.manifestSha256 === libraryLock.manifestSha256,
+      "REFERENCE_MISSING",
+      "Pinned library is unavailable",
+    );
+    // Official parts outside the curated pack: fetch (or read from the
+    // offline cache) and verify their definitions before compiling.
+    const fullLibraryProblem = await prepareFullLibrary(snapshot);
+    if (fullLibraryProblem) this.report(fullLibraryProblem);
+    const current = () => !this.disposed && epoch === this.updateEpoch;
+    if (!current()) return;
+    const started = performance.now();
+    const slicer = this.mainSlicer;
+    slicer.reset();
+    const yieldsBefore = slicer.yields;
+    /** Ends the task when its budget is spent; false once superseded. */
+    const pace = async () => {
+      if (slicer.due) await slicer.yield();
+      return current();
+    };
+    const all = occurrences(snapshot),
+      keep = new Set(all.map((o) => o.id));
+    const physical = all.filter((o) => o.node.kind !== "geometry");
+    const profile = this.lookResourceProfile;
+    checkRenderBudget(profile, {
+      partOccurrences: physical.length,
+      rawOccurrences: all.length - physical.length,
+    });
+    // Each occurrence's render context, once (it also keys its prototype).
+    const contexts = new Array<ReturnType<typeof occurrenceRenderContext>>(
+      all.length,
+    );
+    /** Occurrence indices of each distinct part/colour variant. */
+    const variants = new Map<string, number[]>();
+    const rawIndices: number[] = [];
+    for (let i = 0; i < all.length; i++) {
+      const o = all[i];
+      const context = (contexts[i] = occurrenceRenderContext(snapshot, o));
+      if (o.node.kind === "geometry") rawIndices.push(i);
+      else {
+        const key = JSON.stringify([
+          o.namespace,
+          o.node.ref,
+          o.colorCode,
+          context,
+        ]);
+        const list = variants.get(key);
+        if (list) list.push(i);
+        else variants.set(key, [i]);
+      }
+      if ((i & 255) === 255 && !(await pace())) return;
+    }
+    checkRenderBudget(profile, { variants: variants.size });
+    let sourceBytes = 0;
+    const encoder = new TextEncoder();
+    const seenContexts = new Set<string>();
+    for (let i = 0; i < all.length; i++) {
+      const context = contexts[i].source;
+      if (!seenContexts.has(context)) {
+        seenContexts.add(context);
+        sourceBytes += encoder.encode(context).length;
+      }
+      if (all[i].node.kind === "geometry")
+        sourceBytes += encoder.encode(
+          occurrenceRawRecord(snapshot, all[i]),
+        ).length;
+      ensure(
+        sourceBytes <= 50 * 1024 * 1024,
+        "LIMIT_EXCEEDED",
+        "Geometry compilation exceeds its bounded source/context budget.",
+      );
+      if ((i & 255) === 255 && !(await pace())) return;
+    }
+    for (const [first] of variants.values()) {
+      const o = all[first];
+      if (o.namespace !== "project") continue;
+      sourceBytes += encoder.encode(
+        dependencySource(snapshot, o.node.ref),
+      ).length;
+      ensure(
+        sourceBytes <= 50 * 1024 * 1024,
+        "LIMIT_EXCEEDED",
+        "Custom geometry compilation exceeds its bounded dependency source budget.",
+      );
+    }
+    // Request every distinct prototype once, most used variants first, so the
+    // compile workers finish what shows the most parts soonest.
+    const loaded = new Array<
+      { o: Occurrence; prototype: THREE.Group } | undefined
+    >(all.length);
+    const progress: LoadProgress = {
+      done: 0,
+      total: variants.size + rawIndices.length,
+    };
+    /** Loaded occurrences not yet drawn progressively. */
+    const arrived: number[] = [];
+    const waits: Promise<void>[] = [];
+    const request = (indices: number[]) => {
+      const first = indices[0];
+      waits.push(
+        this.prototype(all[first], snapshot, contexts[first]).then(
+          (prototype) => {
+            for (const i of indices) loaded[i] = { o: all[i], prototype };
+            arrived.push(...indices);
+            progress.done++;
+          },
+        ),
+      );
+    };
+    const order = [...variants.values()].sort((a, b) => b.length - a.length);
+    for (let v = 0; v < order.length; v++) {
+      request(order[v]);
+      if ((v & 31) === 31 && !(await pace())) return;
+    }
+    for (let r = 0; r < rawIndices.length; r++) {
+      request([rawIndices[r]]);
+      if ((r & 31) === 31 && !(await pace())) return;
+    }
+    const everything = Promise.all(waits);
+    let finished = false;
+    everything.then(
+      () => (finished = true),
+      () => (finished = true),
+    );
+    // A newly opened model is drawn as its parts arrive; the open model's
+    // edits keep showing the previous state until everything is ready.
+    const fresh =
+      !this.handles.size || !this.project || this.project.id !== snapshot.id;
+    const budget = renderBudget(profile);
+    const shown: number[] = [];
+    let progressive = fresh && loadOption("progressive") !== "0",
+      shownTriangles = 0,
+      shownPrototypeTriangles = 0,
+      lastFlush = 0,
+      flushCost = 0,
+      flushFrame = 0,
+      lastReport = 0;
+    const shownPrototypes = new Set<THREE.Group>();
+    // A fence left by an earlier load (or a lost context) says nothing now.
+    if (this.gpuFence && !this.lost)
+      (this.renderer.getContext() as WebGL2RenderingContext).deleteSync(
+        this.gpuFence,
+      );
+    this.gpuFence = undefined;
+    while (!finished) {
+      await Promise.race([
+        everything.catch(() => {}),
+        new Promise((resolve) => setTimeout(resolve, 100)),
+      ]);
+      if (!current()) return;
+      if (finished) break;
+      const now = performance.now();
+      if (now - started > 250 && now - lastReport > 200) {
+        lastReport = now;
+        this.onProgress?.({ ...progress });
+      }
+      // Draw what has compiled: first after a short delay (a fast load swaps
+      // in at once), then when the drawn set would at least double (else
+      // after a second), never so often that redrawing partial scenes
+      // (placement, batching, the frame) costs more than a fifth of the load,
+      // and only once the GPU has finished the previous partial frame.
+      if (shown.length && !this.gpuFence && this.frameStats.frames > flushFrame)
+        this.gpuFence = this.markGpu();
+      if (
+        !progressive ||
+        !arrived.length ||
+        now - started < 150 ||
+        !this.gpuCaughtUp() ||
+        (shown.length &&
+          now - lastFlush <
+            Math.max(
+              4 * (flushCost + this.frameStats.cpuMs),
+              arrived.length >= shown.length ? 250 : 1000,
+            ))
+      )
+        continue;
+      const flushStart = performance.now();
+      if (!shown.length) {
+        // First parts of a newly opened model: take the previous one down.
         this.instructionDimming.restore();
         this.layerGhost.restore();
         for (const [id, g] of this.handles)
@@ -1234,71 +1592,191 @@ export class SceneAdapter {
         this.explodeLift = exploded.lifts;
         this.explodeLevels = exploded.levels;
         this.computeFloorFocus(snapshot);
-        for (const { o, prototype } of loaded) {
-          let group = this.handles.get(o.id);
-          if (!group || group.userData.prototype !== prototype) {
-            if (group) this.root.remove(group);
-            group = prototype.clone(true);
-            group.userData = { occurrenceId: o.id, prototype };
-            this.handles.set(o.id, group);
-            this.root.add(group);
-          }
-          const b = o.transform.basis,
-            v = o.transform.position;
-          group.matrixAutoUpdate = false;
-          group.matrix.set(
-            b[0],
-            b[1],
-            b[2],
-            v[0],
-            b[3],
-            b[4],
-            b[5],
-            v[1],
-            b[6],
-            b[7],
-            b[8],
-            v[2],
-            0,
-            0,
-            0,
-            1,
-          );
-          const lift = this.explodeLift.get(o.id);
-          if (lift) group.matrix.elements[13] -= lift;
-          group.visible =
-            (this.instructionVisibility
-              ? this.instructionVisibility.has(o.id)
-              : o.visible) && !this.floorHidden.has(o.id);
-          group.updateMatrixWorld(true);
-        }
-        this.evictPrototypes();
-        // The handle set and prototypes changed: reclassify the batches once.
-        // Later view changes (quality, look, treatments, steps) only refill them.
-        this.batches.rebuild(this.handles);
-        this.project = snapshot;
-        this.tuneMaterials();
-        this.applyLayerGhost();
-        this.rebuildAnnotations();
-        this.applyQuality(this.qualityProfile, true);
-        this.fitLookToModel();
-        this.root.visible = true;
-        this.revision = snapshot.revision;
-        this.error = undefined;
         this.select([]);
-        this.invalidate();
-      })
-      .catch((e) => {
-        if (this.disposed || epoch !== this.updateEpoch) return;
-        this.error = e;
-        this.root.visible = false;
-        this.invalidate();
-        this.report(e instanceof Error ? e.message : String(e));
-        throw e;
+        this.root.visible = true;
+      }
+      const batch = arrived.splice(0);
+      // Index new prototypes' triangles before any handle clones or draws
+      // them (records from the compile workers arrive indexed already).
+      this.indexPrototypes(batch.map((i) => loaded[i]!.prototype));
+      for (let n = 0; n < batch.length; n++) {
+        const { o, prototype } = loaded[batch[n]]!;
+        // Never draw more than the profile's budgets allow while loading: a
+        // model that turns out over budget is refused (and hidden) at the end.
+        const triangles = prototypeTriangleCount(prototype);
+        const unique = shownPrototypes.has(prototype) ? 0 : triangles;
+        if (
+          shownTriangles + triangles > budget.sceneTriangles ||
+          shownPrototypeTriangles + unique > budget.prototypeTriangles
+        ) {
+          progressive = false;
+          break;
+        }
+        shownTriangles += triangles;
+        shownPrototypeTriangles += unique;
+        shownPrototypes.add(prototype);
+        this.placeHandle(o, prototype);
+        shown.push(batch[n]);
+        if ((n & 63) === 63 && !(await pace())) return;
+      }
+      this.batches.rebuild(this.handles);
+      this.tuneMaterials();
+      this.applyQuality(this.qualityProfile, true);
+      if (this.fitOnFirstParts) {
+        this.fitOnFirstParts = false;
+        this.fit();
+      }
+      this.invalidate();
+      lastFlush = performance.now();
+      flushCost = lastFlush - flushStart;
+      flushFrame = this.frameStats.frames;
+    }
+    await everything;
+    if (!current()) return;
+    // Geometry budgets need compiled prototypes; refuse before touching the
+    // scene so an over-budget model is never drawn (beyond budget-checked
+    // parts shown while loading, which a refusal takes down again).
+    let sceneTriangles = 0,
+      prototypeTriangles = 0;
+    const counted = new Set<THREE.Group>();
+    const geometries = new Set<THREE.BufferGeometry>();
+    for (let i = 0; i < loaded.length; i++) {
+      const { prototype } = loaded[i]!;
+      sceneTriangles += prototypeTriangleCount(prototype);
+      if (counted.has(prototype)) continue;
+      counted.add(prototype);
+      // Colour variants share geometry: count each geometry once.
+      prototype.traverse((object) => {
+        const mesh = object as THREE.Mesh;
+        if (!mesh.isMesh || geometries.has(mesh.geometry)) return;
+        geometries.add(mesh.geometry);
+        prototypeTriangles += Math.floor(
+          (mesh.geometry.index?.count ??
+            mesh.geometry.getAttribute("position")?.count ??
+            0) / 3,
+        );
       });
-    this.pending.catch(() => {});
-    return this.pending;
+    }
+    const usage = {
+      partOccurrences: physical.length,
+      rawOccurrences: all.length - physical.length,
+      variants: variants.size,
+      prototypeTriangles,
+      sceneTriangles,
+    };
+    try {
+      checkRenderBudget(profile, usage);
+    } catch (e) {
+      for (const i of shown) {
+        const id = all[i].id;
+        const g = this.handles.get(id);
+        if (g) this.root.remove(g);
+        this.handles.delete(id);
+      }
+      if (shown.length) this.batches.rebuild(this.handles);
+      this.evictPrototypes(counted);
+      throw e;
+    }
+    // Render-side post-process (frame cost, not compilation): index each
+    // new prototype's triangles once, before any handle clones it.
+    this.indexPrototypes(loaded.map((entry) => entry!.prototype));
+    // Clone new handles ahead of the swap (the costly part, paced); the swap
+    // below then only places them.
+    const prepared = new Map<string, THREE.Group>();
+    if (!fresh)
+      for (let i = 0; i < loaded.length; i++) {
+        const { o, prototype } = loaded[i]!;
+        const g = this.handles.get(o.id);
+        if (!g || g.userData.prototype !== prototype)
+          prepared.set(o.id, this.cloneHandle(o, prototype));
+        if ((i & 63) === 63 && !(await pace())) return;
+      }
+    this.renderUsage = { profile, ...usage };
+    if (this.reducedQuality && !this.reducedNotice)
+      this.report(
+        "Large model on a phone: conditional edge lines are hidden and pixel density is reduced while viewing. Every part is drawn; captures keep full quality.",
+      );
+    this.reducedNotice = this.reducedQuality;
+    this.instructionDimming.restore();
+    this.layerGhost.restore();
+    for (const [id, g] of this.handles)
+      if (!keep.has(id)) {
+        this.root.remove(g);
+        this.handles.delete(id);
+      }
+    const exploded = this.explodeGap
+      ? explodeLifts(snapshot, this.explodeGap)
+      : { lifts: new Map<string, number>(), levels: [] };
+    this.explodeLift = exploded.lifts;
+    this.explodeLevels = exploded.levels;
+    this.computeFloorFocus(snapshot);
+    for (let i = 0; i < loaded.length; i++) {
+      const { o, prototype } = loaded[i]!;
+      this.placeHandle(o, prototype, prepared.get(o.id));
+      // A newly opened model is already on screen part by part; an edit
+      // swaps in within one task.
+      if (fresh && (i & 63) === 63 && !(await pace())) return;
+    }
+    this.evictPrototypes();
+    // The handle set and prototypes changed: reclassify the batches once.
+    // Later view changes (quality, look, treatments, steps) only refill them.
+    this.batches.rebuild(this.handles);
+    this.project = snapshot;
+    this.tuneMaterials();
+    this.applyLayerGhost();
+    this.rebuildAnnotations();
+    this.applyQuality(this.qualityProfile, true);
+    this.fitLookToModel();
+    if (this.fitOnFirstParts) {
+      this.fitOnFirstParts = false;
+      this.fit();
+    }
+    this.root.visible = true;
+    this.revision = snapshot.revision;
+    this.error = undefined;
+    this.select([]);
+    this.invalidate();
+    this.lastLoad = {
+      ms: Math.round(performance.now() - started),
+      variants: variants.size,
+      progressive: shown.length > 0,
+      tasks: slicer.yields - yieldsBefore,
+    };
   }
+  /** A fence behind the last progressive frame's GPU commands. */
+  private gpuFence?: WebGLSync | null;
+  private markGpu() {
+    const gl = this.renderer.getContext() as WebGL2RenderingContext;
+    const fence = gl.fenceSync?.(gl.SYNC_GPU_COMMANDS_COMPLETE, 0) ?? null;
+    gl.flush();
+    return fence;
+  }
+  /**
+   * Whether the GPU has finished the last progressive frame, without waiting
+   * for it. Software rasterizers can fall seconds behind; the next partial
+   * frame's first synchronous call (a shader link) would then block the
+   * page until they caught up.
+   */
+  private gpuCaughtUp() {
+    const fence = this.gpuFence;
+    if (!fence) return true;
+    const gl = this.renderer.getContext() as WebGL2RenderingContext;
+    if (
+      !this.lost &&
+      gl.getSyncParameter(fence, gl.SYNC_STATUS) !== gl.SIGNALED
+    )
+      return false;
+    gl.deleteSync(fence);
+    this.gpuFence = undefined;
+    return true;
+  }
+  /** Timing of the last completed update (diagnostics). */
+  lastLoad?: {
+    ms: number;
+    variants: number;
+    progressive: boolean;
+    tasks: number;
+  };
   async ready(minRevision?: number, strict = false) {
     // A newer update supersedes queued work, which then settles without rendering;
     // wait until no newer update was queued while this one was pending.
@@ -1385,6 +1863,8 @@ export class SceneAdapter {
   setLookResourceProfile(profile: ResourceProfileName) {
     if (profile === this.lookResourceProfile) return;
     this.lookResourceProfile = profile;
+    this.compiler?.setSize(this.compileWorkerCount());
+    void sharedGeometryCache()?.setMaxBytes(GEOMETRY_CACHE_BYTES[profile]);
     // Renderer budgets follow the profile: re-assess the current model, so a
     // stricter profile refuses it (nothing drawn) and a looser one draws it.
     if (this.requested) this.update(this.requested).catch(() => {});
@@ -3404,6 +3884,7 @@ export class SceneAdapter {
     this.disposed = true;
     clearTimeout(this.motionTimer);
     this.contextWork.abort();
+    this.compiler?.dispose();
     this.transformHandles?.dispose();
     this.transformHandles = undefined;
     this.instructionDimming.restore();

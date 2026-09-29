@@ -11,16 +11,52 @@ export const add = (a: Vec3, b: Vec3): Vec3 =>
   a.map((x, i) => x + b[i]) as Vec3;
 export function compose(a: Transform, b: Transform): Transform {
   return {
-    position: add(a.position, mv(a.basis, b.position)),
-    basis: Array.from({ length: 9 }, (_, i) => {
-      const r = Math.floor(i / 3),
-        c = i % 3;
-      return (
-        a.basis[r * 3] * b.basis[c] +
-        a.basis[r * 3 + 1] * b.basis[3 + c] +
-        a.basis[r * 3 + 2] * b.basis[6 + c]
-      );
-    }) as Basis,
+    // add(a.position, mv(a.basis, b.position)), unrolled.
+    position: [
+      a.position[0] +
+        (a.basis[0] * b.position[0] +
+          a.basis[1] * b.position[1] +
+          a.basis[2] * b.position[2]),
+      a.position[1] +
+        (a.basis[3] * b.position[0] +
+          a.basis[4] * b.position[1] +
+          a.basis[5] * b.position[2]),
+      a.position[2] +
+        (a.basis[6] * b.position[0] +
+          a.basis[7] * b.position[1] +
+          a.basis[8] * b.position[2]),
+    ],
+    // Row r, column c: a[r][0]·b[0][c] + a[r][1]·b[1][c] + a[r][2]·b[2][c]
+    // (unrolled: this runs once per occurrence of every expansion).
+    basis: [
+      a.basis[0] * b.basis[0] +
+        a.basis[1] * b.basis[3] +
+        a.basis[2] * b.basis[6],
+      a.basis[0] * b.basis[1] +
+        a.basis[1] * b.basis[4] +
+        a.basis[2] * b.basis[7],
+      a.basis[0] * b.basis[2] +
+        a.basis[1] * b.basis[5] +
+        a.basis[2] * b.basis[8],
+      a.basis[3] * b.basis[0] +
+        a.basis[4] * b.basis[3] +
+        a.basis[5] * b.basis[6],
+      a.basis[3] * b.basis[1] +
+        a.basis[4] * b.basis[4] +
+        a.basis[5] * b.basis[7],
+      a.basis[3] * b.basis[2] +
+        a.basis[4] * b.basis[5] +
+        a.basis[5] * b.basis[8],
+      a.basis[6] * b.basis[0] +
+        a.basis[7] * b.basis[3] +
+        a.basis[8] * b.basis[6],
+      a.basis[6] * b.basis[1] +
+        a.basis[7] * b.basis[4] +
+        a.basis[8] * b.basis[7],
+      a.basis[6] * b.basis[2] +
+        a.basis[7] * b.basis[5] +
+        a.basis[8] * b.basis[8],
+    ] as Basis,
   };
 }
 export const determinant = (m: Basis) =>

@@ -69,7 +69,7 @@ async function readRecord(id: string): Promise<RecordValue | undefined> {
 async function validSnapshot(
   id: string,
   record?: RecordValue,
-): Promise<{ project: Project; snapshot: Snapshot } | null> {
+): Promise<{ project: Project; snapshot: Snapshot; adopted: boolean } | null> {
   if (record?.deleted) return null;
   for (const snapshot of record?.snapshots ?? []) {
     try {
@@ -77,14 +77,32 @@ async function validSnapshot(
       const project = JSON.parse(snapshot.json);
       validate("project", project);
       validateSourceDocument(project);
-      adoptCurrentLocks(project);
+      const adopted = adoptCurrentLocks(project);
       if (project.id !== id || project.revision !== snapshot.revision) continue;
-      return { project, snapshot };
+      return { project, snapshot, adopted };
     } catch {
       /* A failed newest snapshot must not hide the previous valid revision. */
     }
   }
   return null;
+}
+/**
+ * The newest verified snapshot in IndexedDB: hash-checked, parsed, validated
+ * and re-pinned to current locks. `null` when the project was deleted,
+ * `undefined` when IndexedDB holds no valid copy (the legacy store may).
+ * Needs no DOM or localStorage, so it also runs in a worker.
+ */
+export async function loadStoredProject(
+  id: string,
+): Promise<{ project: Project; json: string } | null | undefined> {
+  const record = await readRecord(id);
+  if (record?.deleted) return null;
+  const valid = await validSnapshot(id, record);
+  if (!valid) return undefined;
+  return {
+    project: valid.project,
+    json: valid.adopted ? JSON.stringify(valid.project) : valid.snapshot.json,
+  };
 }
 /** Publish a checksum already computed outside the transaction. The token CAS
  * and snapshot replacement occur in one exclusive readwrite transaction. */
@@ -143,10 +161,9 @@ export class BrowserProjects {
     }
   }
   async load(id: string): Promise<Project | null> {
-    const record = await readRecord(id);
-    if (record?.deleted) return null;
-    const valid = await validSnapshot(id, record);
-    return valid?.project ?? new LocalProjects(this.legacyStorage).load(id);
+    const stored = await loadStoredProject(id);
+    if (stored === null) return null;
+    return stored?.project ?? new LocalProjects(this.legacyStorage).load(id);
   }
   async save(input: Project, expectedStoredRevision: number | null) {
     const project = structuredClone(input);

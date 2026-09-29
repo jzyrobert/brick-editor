@@ -67,6 +67,8 @@ export function createAPI(
   mechanisms?: () => MechanismBrowser | undefined,
   selection?: () => string[],
   renderMounted?: () => Promise<void>,
+  /** Called when an import starts (startup recovery then stands down). */
+  onImportStart?: () => void,
 ) {
   const inventory = new InventoryService(),
     jobs = new JobRegistry();
@@ -495,6 +497,9 @@ export function createAPI(
           "INVALID_INPUT",
           "Unknown import format",
         );
+        // An import started while the stored project is still being
+        // recovered wins: recovery must not replace the document under it.
+        onImportStart?.();
         const baseRevision = editor.revision;
         const profile = editor.resourceProfile,
           limits = resourceLimits(profile);
@@ -612,6 +617,12 @@ export function createAPI(
       /** Renderer budget of the active resource profile and the last rendered
        * model's measured use (part occurrences, variants, triangles). */
       budget: async () => renderer().renderBudgetStatus(),
+      /** Where compiled part geometry came from: compile workers, the
+       * persistent geometry cache, or the main thread; and the last load. */
+      compileStats: async () => ({
+        ...renderer().compileStats(),
+        lastLoad: renderer().lastLoad,
+      }),
       /** Exploded view: lift floors (top-level submodels, else layers) apart. Render-only. */
       explode: {
         set: async (input: { gap: number }) => ({

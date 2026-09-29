@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { LDrawLoader } from "three/addons/loaders/LDrawLoader.js";
+import { LDrawLoader } from "./vendor/LDrawLoader.js";
 import { LDrawConditionalLineMaterial } from "three/addons/materials/LDrawConditionalLineMaterial.js";
 import { ensure } from "../core/types";
 

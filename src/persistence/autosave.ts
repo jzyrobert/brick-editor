@@ -13,11 +13,13 @@ export class AutosaveQueue {
     private delay = 750,
     private maxDelay = 3000,
   ) {}
-  schedule(project: Project) {
+  /** Queue `project` for writing. A caller handing over a copy it will never
+   * mutate passes `owned` to skip the defensive deep copy (large models). */
+  schedule(project: Project, options: { owned?: boolean } = {}) {
     if (this.disposed) return;
     // A project switch must not discard the prior project's pending snapshot.
     if (this.pending && this.pending.id !== project.id) this.flush();
-    this.pending = structuredClone(project);
+    this.pending = options.owned ? project : structuredClone(project);
     clearTimeout(this.debounce);
     this.debounce = setTimeout(() => this.flush(), this.delay);
     this.deadline ??= setTimeout(() => this.flush(), this.maxDelay);

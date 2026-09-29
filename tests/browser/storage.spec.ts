@@ -161,36 +161,42 @@ test("an early import during delayed startup recovery wins and is autosaved", as
   const original = await stored(page);
   await page.addInitScript(() => {
     const controls = window as typeof window & {
-      recoveryDigestBlocked?: boolean;
-      releaseRecoveryDigest?: () => void;
+      recoveryBlocked?: boolean;
+      releaseRecovery?: () => void;
     };
-    const digest = crypto.subtle.digest.bind(crypto.subtle);
-    let held = false;
-    crypto.subtle.digest = (algorithm, data) => {
-      if (
-        !held &&
-        new TextDecoder()
-          .decode(data)
-          .includes('"title":"Previously saved wall"')
-      ) {
-        held = true;
-        controls.recoveryDigestBlocked = true;
-        return new Promise<void>((resolve) => {
-          controls.releaseRecoveryDigest = () => {
-            crypto.subtle.digest = digest;
-            resolve();
-          };
-        }).then(() => digest(algorithm, data));
+    // Recovery verifies the stored project in a worker: hold its reply.
+    const NativeWorker = window.Worker;
+    class HeldWorker extends NativeWorker {
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        if (!String(url).includes("project-restore")) return;
+        let handler: ((e: MessageEvent) => void) | null = null;
+        Object.defineProperty(this, "onmessage", {
+          configurable: true,
+          get: () => handler,
+          set: (h: ((e: MessageEvent) => void) | null) => {
+            handler = h;
+          },
+        });
+        NativeWorker.prototype.addEventListener.call(
+          this,
+          "message",
+          (e: Event) => {
+            controls.recoveryBlocked = true;
+            void new Promise<void>((resolve) => {
+              controls.releaseRecovery = resolve;
+            }).then(() => handler?.call(this, e as MessageEvent));
+          },
+        );
       }
-      return digest(algorithm, data);
-    };
+    }
+    window.Worker = HeldWorker;
   });
   await page.reload();
   await page.waitForFunction(
     () =>
       !!window.brickEditor &&
-      (window as typeof window & { recoveryDigestBlocked?: boolean })
-        .recoveryDigestBlocked,
+      (window as typeof window & { recoveryBlocked?: boolean }).recoveryBlocked,
   );
   await page.evaluate(async () => {
     await window.brickEditor!.project.import({
@@ -206,8 +212,8 @@ test("an early import during delayed startup recovery wins and is autosaved", as
   );
   await page.evaluate(() =>
     (
-      window as typeof window & { releaseRecoveryDigest: () => void }
-    ).releaseRecoveryDigest(),
+      window as typeof window & { releaseRecovery: () => void }
+    ).releaseRecovery(),
   );
   await expect
     .poll(async () => (await stored(page)).title)

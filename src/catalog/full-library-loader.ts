@@ -241,7 +241,28 @@ export async function loadFullSources(names: Iterable<string>) {
   const connectors = loadFullConnectors(
     requested.filter((n) => Object.hasOwn(index.parts, n)),
   ).catch(() => {});
-  const roots = pendingFullSources(requested);
+  /** Names reachable from `starts` through loaded texts whose definitions
+   * are not loaded (and that the complete pack defines). */
+  const unloadedClosure = (starts: Iterable<string>) => {
+    const missing = new Set<string>();
+    const seen = new Set<string>();
+    const visit = (name: string) => {
+      if (seen.has(name)) return;
+      seen.add(name);
+      const text = fullSource(name);
+      if (text === undefined) {
+        missing.add(name);
+        return;
+      }
+      for (const d of directReferences(text)) visit(d);
+    };
+    for (const n of starts) visit(n);
+    return pendingFullSources(missing);
+  };
+  // A chunk holds many files, so a part can be loaded as a neighbour of
+  // another part without its own dependencies: it is a root too until its
+  // whole closure is loaded (a later import of it used to miss them).
+  const roots = requested.filter((n) => unloadedClosure([n]).length);
   markFullUnavailable(roots, false);
   let wanted = roots;
   for (let round = 0; wanted.length; round++) {
@@ -274,20 +295,7 @@ export async function loadFullSources(names: Iterable<string>) {
       throw error;
     }
     // Anything the loaded closure still lacks (reached via a subpart root).
-    const missing = new Set<string>();
-    const seen = new Set<string>();
-    const visit = (name: string) => {
-      if (seen.has(name)) return;
-      seen.add(name);
-      const text = fullSource(name);
-      if (text === undefined) {
-        missing.add(name);
-        return;
-      }
-      for (const d of directReferences(text)) visit(d);
-    };
-    for (const n of wanted) visit(n);
-    wanted = pendingFullSources(missing);
+    wanted = unloadedClosure(wanted);
   }
   await connectors;
 }
