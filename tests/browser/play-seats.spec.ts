@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { unzipSync, strFromU8 } from "fflate";
 import { openMode } from "./helpers/mode";
+import { refusePointerLock } from "./helpers/pointer";
 
 for (const width of [360, 1080, 1440])
   test(`open-bench entry driving and exit at ${width}px`, async ({
@@ -16,6 +17,7 @@ for (const width of [360, 1080, 1440])
       hasTouch: width !== 1440,
     });
     const page = await context.newPage();
+    await refusePointerLock(page);
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     try {

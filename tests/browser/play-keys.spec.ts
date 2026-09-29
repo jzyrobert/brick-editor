@@ -13,7 +13,9 @@ test("Play keys validate, persist, drive movement and preserve Escape on focused
     await window.brickEditor!.ready();
   });
   await openMode(page, "Play");
-  await page.getByText("Play keyboard controls", { exact: true }).click();
+  await page
+    .getByText("Play keyboard and mouse controls", { exact: true })
+    .click();
   const forward = page.getByLabel("Move forward Play key", { exact: true });
   await forward.fill("S");
   await page
@@ -52,7 +54,9 @@ test("Play keys validate, persist, drive movement and preserve Escape on focused
   await expect(
     page.getByRole("button", { name: "Resume", exact: true }),
   ).toBeVisible();
-  await page.getByText("Play keyboard controls", { exact: true }).click();
+  await page
+    .getByText("Play keyboard and mouse controls", { exact: true })
+    .click();
   await page.evaluate(async () => {
     await window.brickEditor!.play.pause(false);
     const input = document.createElement("input");
@@ -67,7 +71,9 @@ test("Play keys validate, persist, drive movement and preserve Escape on focused
   await page.reload();
   await page.waitForFunction(() => !!window.brickEditor);
   await openMode(page, "Play");
-  await page.getByText("Play keyboard controls", { exact: true }).click();
+  await page
+    .getByText("Play keyboard and mouse controls", { exact: true })
+    .click();
   await expect(
     page.getByLabel("Move forward Play key", { exact: true }),
   ).toHaveValue("ArrowUp");

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { BrowserPlay } from "../play/browser";
 import "./play.css";
 import type { MotionRig } from "../mechanisms/types";
+import type { PlaySnapshotReport } from "../play/types";
 import {
   loadPlayKeys,
   savePlayKeys,
@@ -14,6 +15,17 @@ import {
   type PlayKeys,
 } from "../play/keys";
 import { PlayKeySettings } from "./PlayKeySettings";
+import {
+  loadPlayLook,
+  mouseLookRate,
+  savePlayLook,
+  type PlayLookSettings,
+} from "../play/look-settings";
+
+/** Desktop pointer (mouse or trackpad): mouse look uses pointer lock. */
+const finePointerQuery = "(hover: hover) and (pointer: fine)";
+const hasFinePointer = () =>
+  typeof matchMedia === "function" && matchMedia(finePointerQuery).matches;
 import { PlayMechanismControls } from "./PlayMechanismControls";
 
 export function PlayPanel({
@@ -47,6 +59,42 @@ export function PlayPanel({
   const [bindings, setBindings] = useState(loadPlayKeys);
   const bindingRef = useRef(bindings);
   bindingRef.current = bindings;
+  const [look, setLook] = useState<PlayLookSettings>(loadPlayLook);
+  const lookRef = useRef(look);
+  lookRef.current = look;
+  const changeLook = (next: PlayLookSettings) => {
+    setLook(next);
+    lookRef.current = next;
+    return savePlayLook(next);
+  };
+  const [finePointer, setFinePointer] = useState(hasFinePointer);
+  const [locked, setLocked] = useState(false);
+  // Set when the browser refuses pointer lock (e.g. an iframe without
+  // permission, or automation): the hint then offers drag-to-look instead.
+  const [lockRefused, setLockRefused] = useState(false);
+  const lookLayer = useRef<HTMLDivElement>(null);
+  const wantLock = useRef(false);
+  const mouseLook = () => ({
+    radiansPerPixel: mouseLookRate(lookRef.current),
+    invertY: lookRef.current.invertY,
+  });
+  /** Capture the mouse for look (desktop only). Must run in a user gesture;
+   * failure leaves drag-to-look working. */
+  const requestLock = () => {
+    const target = lookLayer.current;
+    if (!hasFinePointer() || !target || document.pointerLockElement === target)
+      return;
+    try {
+      const result = target.requestPointerLock?.() as unknown;
+      if (result instanceof Promise)
+        result.then(
+          () => setLockRefused(false),
+          () => setLockRefused(true),
+        );
+    } catch {
+      setLockRefused(true);
+    }
+  };
   const [run, setRun] = useState(false);
   const runRef = useRef(run);
   runRef.current = run;
@@ -94,6 +142,14 @@ export function PlayPanel({
       jump: jump.current || keys.current.has("jump"),
       run: runRef.current || keys.current.has("run"),
     });
+  };
+  /** Say why a world opened in Fly (e.g. missing parts), not just that it did. */
+  const explainFly = (report: PlaySnapshotReport) => {
+    if (report.collisionReady) return;
+    const reason = report.warnings
+      .filter((w) => !w.startsWith("Session-only ground"))
+      .join(" ");
+    setMessage(reason || "Walking is off for this world. Fly still works.");
   };
   const clear = () => {
     keys.current.clear();
@@ -186,12 +242,23 @@ export function PlayPanel({
     const visibility = () => {
       if (document.hidden) pause();
     };
+    // Esc releases pointer lock (the browser handles that key itself), which
+    // pauses Play so every button is reachable again.
     const lock = () => {
+      setLocked(!!document.pointerLockElement);
       if (!document.pointerLockElement) pause();
+      else setLockRefused(false);
     };
+    const lockError = () => setLockRefused(true);
     const mouse = (e: MouseEvent) => {
-      if (document.pointerLockElement) play.look(e.movementX, e.movementY);
+      if (document.pointerLockElement)
+        play.look(e.movementX, e.movementY, mouseLook());
     };
+    const media =
+      typeof matchMedia === "function"
+        ? matchMedia(finePointerQuery)
+        : undefined;
+    const pointerKind = () => setFinePointer(!!media?.matches);
     const focus = (e: FocusEvent) => {
       if (
         (e.target as HTMLElement).closest(
@@ -205,6 +272,8 @@ export function PlayPanel({
     window.addEventListener("blur", pause);
     document.addEventListener("visibilitychange", visibility);
     document.addEventListener("pointerlockchange", lock);
+    document.addEventListener("pointerlockerror", lockError);
+    media?.addEventListener?.("change", pointerKind);
     document.addEventListener("mousemove", mouse);
     document.addEventListener("focusin", focus);
     return () => {
@@ -214,6 +283,8 @@ export function PlayPanel({
       window.removeEventListener("blur", pause);
       document.removeEventListener("visibilitychange", visibility);
       document.removeEventListener("pointerlockchange", lock);
+      document.removeEventListener("pointerlockerror", lockError);
+      media?.removeEventListener?.("change", pointerKind);
       document.removeEventListener("mousemove", mouse);
       document.removeEventListener("focusin", focus);
     };
@@ -221,6 +292,14 @@ export function PlayPanel({
   useEffect(() => {
     if (state.paused) clear();
   }, [state.paused]);
+  // Entering Play from a click captures the mouse straight away on desktop
+  // (the layer only exists once the session is active).
+  useEffect(() => {
+    if (state.active && wantLock.current) {
+      wantLock.current = false;
+      requestLock();
+    }
+  }, [state.active]);
   const releaseStick = (e: React.PointerEvent) => {
     if (stickPointer.current !== e.pointerId) return;
     stickPointer.current = null;
@@ -334,44 +413,52 @@ export function PlayPanel({
         <button
           className="primary wide"
           disabled={state.loading}
-          onClick={() =>
+          onClick={() => {
+            wantLock.current = true;
             attempt(() =>
-              play.enter({
-                realtime: true,
-                ground,
-                worldProfile: {
-                  excludedLayerIds: excludedLayerIds.filter(
-                    (id) => !!layers[id],
-                  ),
-                },
-                ...(mechanismMode === "all" && Object.keys(rigs).length
-                  ? {
-                      rigIds: Object.keys(rigs),
-                      ...(physics === "dynamic"
-                        ? { dynamicRigIds: Object.keys(rigs).slice(0, 14) }
-                        : {}),
-                    }
-                  : mechanismMode === "single" && rigs[rigId]
+              play
+                .enter({
+                  realtime: true,
+                  ground,
+                  worldProfile: {
+                    excludedLayerIds: excludedLayerIds.filter(
+                      (id) => !!layers[id],
+                    ),
+                  },
+                  ...(mechanismMode === "all" && Object.keys(rigs).length
                     ? {
-                        rigId,
+                        rigIds: Object.keys(rigs),
                         ...(physics === "dynamic"
-                          ? { dynamicRigIds: [rigId] }
+                          ? { dynamicRigIds: Object.keys(rigs).slice(0, 14) }
                           : {}),
                       }
+                    : mechanismMode === "single" && rigs[rigId]
+                      ? {
+                          rigId,
+                          ...(physics === "dynamic"
+                            ? { dynamicRigIds: [rigId] }
+                            : {}),
+                        }
+                      : {}),
+                  // Static build keeps every part still, doors included.
+                  ...(mechanismMode === "static" && Object.keys(rigs).length
+                    ? { autoDoors: false }
                     : {}),
-                // Static build keeps every part still, doors included.
-                ...(mechanismMode === "static" && Object.keys(rigs).length
-                  ? { autoDoors: false }
-                  : {}),
-              }),
-            )
-          }
+                })
+                .then(explainFly),
+            );
+          }}
         >
           {state.loading ? "Preparing your world…" : "Enter Play"}
         </button>
         {state.loading && <button onClick={() => play.exit()}>Cancel</button>}
         <p role="status">{message || state.error}</p>
-        <PlayKeySettings value={bindings} onChange={changeBindings} />
+        <PlayKeySettings
+          value={bindings}
+          onChange={changeBindings}
+          look={look}
+          onLookChange={changeLook}
+        />
         {children}
       </div>
     );
@@ -405,7 +492,9 @@ export function PlayPanel({
       className={
         "play-overlay" +
         (state.paused ? " is-paused" : "") +
-        (occupied ? " is-seated" : "")
+        (occupied ? " is-seated" : "") +
+        (finePointer ? " has-mouse" : "") +
+        (locked ? " is-locked" : "")
       }
     >
       <div className="play-top">
@@ -444,17 +533,30 @@ export function PlayPanel({
         </button>
       </div>
       <div
+        ref={lookLayer}
         className="play-look"
-        aria-label="Drag to look around"
+        aria-label={
+          finePointer
+            ? "Click to look around with the mouse"
+            : "Drag to look around"
+        }
         onPointerDown={(e) => {
           if (state.paused || lookPointer.current) return;
+          // Desktop: a click captures the mouse; dragging still works if the
+          // browser refuses pointer lock.
+          if (e.pointerType === "mouse") requestLock();
           e.currentTarget.setPointerCapture(e.pointerId);
           lookPointer.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
         }}
         onPointerMove={(e) => {
           const p = lookPointer.current;
           if (!p || p.id !== e.pointerId) return;
-          play.look(e.clientX - p.x, e.clientY - p.y);
+          if (document.pointerLockElement) return; // Raw mouse deltas drive look.
+          play.look(
+            e.clientX - p.x,
+            e.clientY - p.y,
+            e.pointerType === "mouse" ? mouseLook() : undefined,
+          );
           p.x = e.clientX;
           p.y = e.clientY;
         }}
@@ -478,7 +580,13 @@ export function PlayPanel({
         <div className="play-menu">
           <h2>Take a breather.</h2>
           <p>Movement is paused.</p>
-          <button className="primary" onClick={() => play.pause(false)}>
+          <button
+            className="primary"
+            onClick={() => {
+              play.pause(false);
+              requestLock();
+            }}
+          >
             {occupied ? "Resume driving" : "Resume exploring"}
           </button>
           <button
@@ -496,7 +604,12 @@ export function PlayPanel({
             Save this view to Photo
           </button>
           <PlaySettings play={play} report={report} />
-          <PlayKeySettings value={bindings} onChange={changeBindings} />
+          <PlayKeySettings
+            value={bindings}
+            onChange={changeBindings}
+            look={look}
+            onLookChange={changeLook}
+          />
           <p role="status">
             {message ||
               report.warnings
@@ -510,10 +623,21 @@ export function PlayPanel({
         </div>
       ) : (
         <>
-          <div className="play-hint">
+          {finePointer && !locked && (
+            <div className="play-hint play-lock-hint">
+              {lockRefused
+                ? "Drag to look around · Esc to pause"
+                : "Click to look around · Esc to release"}
+            </div>
+          )}
+          <div
+            className="play-hint play-keys-hint"
+            hidden={finePointer && !locked}
+          >
             {bindings.forward || "—"}/{bindings.left || "—"}/
             {bindings.backward || "—"}/{bindings.right || "—"}{" "}
-            {occupied ? "drive" : "move"} · drag to look ·{" "}
+            {occupied ? "drive" : "move"} ·{" "}
+            {locked ? "mouse to look · Esc to release" : "drag to look"} ·{" "}
             {!occupied && (
               <>
                 {bindings.jump || "—"} jump · {bindings.fly || "—"} fly ·{" "}
@@ -637,18 +761,6 @@ export function PlayPanel({
           {report.cameraMode === "first-person"
             ? "Third person"
             : "First person"}
-        </button>
-        <button
-          className="play-mouse-lock"
-          onClick={() =>
-            attempt(() =>
-              document
-                .querySelector<HTMLElement>(".play-look")!
-                .requestPointerLock(),
-            )
-          }
-        >
-          Lock mouse
         </button>
       </div>
       {!state.paused &&

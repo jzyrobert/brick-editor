@@ -1989,17 +1989,27 @@ export class SceneAdapter {
       );
       vertexFloats = indexCount = 0;
     }
-    if (
-      this.project &&
-      this.projectOccurrences().some(
-        (o) =>
-          (!include || include.has(o.id)) &&
-          !exclude.has(o.id) &&
-          o.namespace === "missing",
-      )
-    ) {
+    const missing = this.project
+      ? [
+          ...new Set(
+            this.projectOccurrences()
+              .filter(
+                (o) =>
+                  (!include || include.has(o.id)) &&
+                  !exclude.has(o.id) &&
+                  o.namespace === "missing",
+              )
+              .map((o) => o.node.ref),
+          ),
+        ]
+      : [];
+    if (missing.length) {
+      // Name the parts: a generic "collision unavailable" gave no way forward.
+      const names =
+        missing.slice(0, 3).join(", ") + (missing.length > 3 ? ", …" : "");
       warnings.push(
-        "Missing parts have no collision geometry. Use Fly to inspect this incomplete world.",
+        `${missing.length} part type${missing.length === 1 ? " is" : "s are"} missing (${names}), so the world may have gaps and walking is off. ` +
+          "Reconnect and enter Play again if they are official parts, or replace them in Build. Fly still works.",
       );
       vertexFloats = indexCount = 0;
     }

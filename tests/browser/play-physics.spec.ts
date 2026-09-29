@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { openMode } from "./helpers/mode";
+import { refusePointerLock } from "./helpers/pointer";
 
 const shots = fileURLToPath(
   new URL("../../.local/screenshots/", import.meta.url),
@@ -34,6 +35,7 @@ for (const viewport of [desktop, phone])
       baseURL,
     });
     const page = await context.newPage();
+    await refusePointerLock(page);
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     try {
@@ -123,6 +125,7 @@ for (const viewport of [desktop, phone])
       baseURL,
     });
     const page = await context.newPage();
+    await refusePointerLock(page);
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     try {

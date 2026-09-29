@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { openMode } from "./helpers/mode";
+import { refusePointerLock } from "./helpers/pointer";
 for (const width of [360, 1080, 1440]) {
   test(`all mechanisms default and separated remote controls at ${width}px`, async ({
     browser,
@@ -15,6 +16,7 @@ for (const width of [360, 1080, 1440]) {
       page = await context.newPage(),
       errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
+    await refusePointerLock(page);
     try {
       await page.goto(`${baseURL}/?automation=1`);
       await page.waitForFunction(() => !!window.brickEditor);

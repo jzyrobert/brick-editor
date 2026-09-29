@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { openMode } from "./helpers/mode";
+import { refusePointerLock } from "./helpers/pointer";
 for (const viewport of [
   { width: 1440, height: 1000 },
   { width: 360, height: 800 },
@@ -15,6 +16,7 @@ for (const viewport of [
       baseURL,
     });
     const page = await context.newPage();
+    await refusePointerLock(page);
     try {
       await page.goto("/?automation=1");
       await page.waitForFunction(() => !!window.brickEditor);

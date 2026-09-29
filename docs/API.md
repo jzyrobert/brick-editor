@@ -54,7 +54,9 @@ Snapshots and result objects are copies. Never infer persistent IDs from rendere
 
 ## Play exploration
 
-`play.enter({realtime:false})` freezes the current rendered revision; manual fixed ticks are the API default. The UI uses realtime mode with bounded catch-up. Public positions are in LDraw LDU (negative Y up); `positionAnchor` distinguishes standing feet from the virtual avatar root while seated. Angles are radians. The declared 72 LDU capsule is never rescaled to a doorway. The Rapier engine is pinned and lazy-loaded.
+`play.enter({realtime:false})` freezes the current rendered revision; manual fixed ticks are the API default. The UI uses realtime mode with bounded catch-up. Public positions are in LDraw LDU (negative Y up); `positionAnchor` distinguishes standing feet from the virtual avatar root while seated. Angles are radians. The declared 72 LDU capsule is never rescaled to a doorway; it steps up risers of up to 24 LDU (`profile.stepHeight`). The Rapier engine is pinned and lazy-loaded.
+
+`snapshot().avatar` is presentation state computed on fixed ticks: `state` (`idle`, `walk`, `run`, `jump`, `fall`, `fly`, `seated`), `heading` (body yaw), `phase` (advances 2π per 65 LDU travelled), `swing` (0–1), `headYaw` (±50°), `headPitch`, `bob` (LDU, flight only) and the four limb angles (radians, positive swings forward). `play.frameTrace(clear?)` returns the camera and the interpolated figure root and pose drawn in recent realtime frames, with wall and simulated times (diagnostics for smoothness tests, not a stable contract).
 
 ```js
 await api.play.enter({ position: [0, 0, 150], locomotion: "walk" });

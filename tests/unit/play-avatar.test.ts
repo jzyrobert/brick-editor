@@ -48,25 +48,43 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
       const fixed = avatar.group.children.filter(
         (o): o is Mesh => o instanceof Mesh,
       );
-      expect(fixed).toHaveLength(2); // rigid torso and pelvis.
+      expect(fixed).toHaveLength(2); // rigid torso and hip block (one mesh per colour).
       const matrices = fixed.map((mesh) => mesh.matrix.clone());
       const meshes: Mesh[] = [];
       avatar.group.traverse((o) => {
         if (o instanceof Mesh) meshes.push(o);
       });
+      // Small enough for phones: a dozen draw calls, a few thousand triangles.
+      expect(meshes.length).toBeLessThanOrEqual(12);
+      expect(
+        meshes.reduce(
+          (sum, m) => sum + m.geometry.getAttribute("position").count / 3,
+          0,
+        ),
+      ).toBeLessThan(6000);
       const vertices = meshes.map((mesh) =>
         Array.from(mesh.geometry.getAttribute("position").array),
       );
-      const shoulder = joints.find((g) =>
-        g.position.equals(new Vector3(-15, 51, 0)),
-      )!;
-      const centreBefore = shoulder.children[0].getWorldPosition(new Vector3());
+      // A hand vertex, before and after the shoulder turns.
+      const shoulder = avatar.joint("leftShoulder");
+      expect(shoulder.position.toArray()).toEqual([
+        ...JOINTS.leftShoulder.pivot,
+      ]);
+      const tip = (g: Group) => {
+        const mesh = g.children[g.children.length - 1] as Mesh;
+        const p = mesh.geometry.getAttribute("position");
+        return new Vector3()
+          .fromBufferAttribute(p, 0)
+          .applyMatrix4(mesh.matrixWorld);
+      };
+      const tipBefore = tip(shoulder);
       const pose: PlaySnapshotReport = {
         ...rest,
         pitch: 1.2,
         avatar: {
           ...rest.avatar,
           headYaw: 0.3,
+          headPitch: 0.2,
           leftShoulder: 0.7,
           rightShoulder: -0.7,
           leftHip: -0.5,
@@ -84,26 +102,45 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
         ),
       ).toEqual(vertices);
       for (const [name, definition] of Object.entries(JOINTS)) {
-        const joint = joints.find((g) =>
-          g.position.equals(new Vector3(...definition.pivot)),
-        )!;
-        expect(joint).toBeDefined();
+        const joint = avatar.joint(name as keyof typeof JOINTS);
+        expect(joint.position.toArray()).toEqual([...definition.pivot]);
         expect(joint.rotation.z).toBe(0);
         if (name === "head") {
-          expect(joint.rotation.x).toBe(0);
           expect(joint.rotation.y).toBe(0.3);
+          expect(joint.rotation.x).toBe(0.2);
         } else {
           expect(joint.rotation.y).toBe(0);
           expect(joint.rotation.x).toBe(pose.avatar[name as "leftHip"]);
         }
       }
-      const centreAfter = shoulder.children[0].getWorldPosition(new Vector3()),
+      // Rigid rotation about the declared pivot: the hand moves but keeps its
+      // distance from the shoulder pivot.
+      const tipAfter = tip(shoulder),
         pivot = shoulder.getWorldPosition(new Vector3());
-      expect(centreAfter.distanceTo(centreBefore)).toBeGreaterThan(1);
-      expect(centreAfter.distanceTo(pivot)).toBeCloseTo(11, 10);
+      expect(tipAfter.distanceTo(tipBefore)).toBeGreaterThan(1);
+      expect(tipAfter.distanceTo(pivot)).toBeCloseTo(
+        tipBefore.distanceTo(pivot),
+        8,
+      );
+      // Feet anchor: the soles sit at the collider's feet position.
+      let lowest = Infinity;
+      avatar.update(rest);
+      avatar.group.updateMatrixWorld(true);
+      for (const mesh of meshes) {
+        const p = mesh.geometry.getAttribute("position");
+        for (let i = 0; i < p.count; i++)
+          lowest = Math.min(
+            lowest,
+            new Vector3()
+              .fromBufferAttribute(p, i)
+              .applyMatrix4(mesh.matrixWorld).y,
+          );
+      }
+      expect(lowest).toBeCloseTo(-rest.position[1], 6);
+      avatar.update(pose);
       expect(avatar.group.position.toArray()).toEqual([
         pose.position[0],
-        -pose.position[1],
+        -pose.position[1] + pose.avatar.bob,
         -pose.position[2],
       ]);
       avatar.update({
@@ -140,14 +177,14 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
         8,
       );
       expect(moving.avatar.leftHip).toBeCloseTo(-moving.avatar.rightHip, 10);
-      expect(moving.avatar.leftShoulder).toBeCloseTo(
-        -moving.avatar.leftHip,
-        10,
-      );
-      expect(moving.avatar.rightShoulder).toBeCloseTo(
-        -moving.avatar.rightHip,
-        10,
-      );
+      // Arms swing opposite their legs at 1/1.4 of the leg amplitude (plus a
+      // small idle sway that moves the arms in opposite directions).
+      expect(
+        moving.avatar.leftShoulder + moving.avatar.rightShoulder,
+      ).toBeCloseTo(0, 10);
+      expect(
+        Math.abs(moving.avatar.leftShoulder + moving.avatar.leftHip / 1.4),
+      ).toBeLessThanOrEqual(0.05 + 1e-9);
       play.stepTicks(120);
       const blocked = play.snapshot();
       play.stepTicks(60);
@@ -162,18 +199,19 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
         0.02,
       );
       expect(still.avatar.state).toBe("idle");
+      for (const value of [still.avatar.leftHip, still.avatar.rightHip])
+        expect(Math.abs(value)).toBeLessThan(0.01); // <0.25 LDU at a 26-LDU leg tip.
+      // Only the subtle idle sway remains on the arms.
       for (const value of [
-        still.avatar.leftHip,
-        still.avatar.rightHip,
         still.avatar.leftShoulder,
         still.avatar.rightShoulder,
       ])
-        expect(Math.abs(value)).toBeLessThan(0.01); // <0.25 LDU at a 25-LDU limb tip.
+        expect(Math.abs(value)).toBeLessThan(0.06);
     } finally {
       play.dispose();
     }
   });
-  it("backward travel turns the rigid root toward actual movement and camera switching preserves the player pose", async () => {
+  it("backward travel keeps facing the look direction (Minecraft policy) and camera switching preserves the player pose", async () => {
     const play = await session();
     try {
       play.stepTicks(3);
@@ -181,9 +219,12 @@ describe("PL04/05 actual rigid avatar and corrected-travel animation", () => {
       play.stepTicks(12);
       const moved = play.snapshot();
       expect(moved.position[2]).toBeGreaterThan(15);
-      expect(Math.abs(moved.avatar.heading)).toBeCloseTo(Math.PI, 8);
+      expect(Math.abs(moved.avatar.heading)).toBeLessThan(1e-6);
       expect(moved.avatar.phase).toBeGreaterThan(0);
-      expect(Math.abs(moved.avatar.headYaw)).toBeLessThanOrEqual(0.7);
+      expect(moved.avatar.swing).toBeGreaterThan(0.2);
+      expect(Math.abs(moved.avatar.headYaw)).toBeLessThanOrEqual(0.873);
+      // The head pitches with the view, within its declared neck limit.
+      expect(moved.avatar.headPitch).toBeCloseTo(0.45, 10);
       play.setCameraMode("first-person");
       const first = play.snapshot();
       play.setCameraMode("third-person");

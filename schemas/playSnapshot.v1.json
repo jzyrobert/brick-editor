@@ -246,6 +246,7 @@
             "run",
             "jump",
             "fall",
+            "fly",
             "seated"
           ]
         },
@@ -255,7 +256,16 @@
         "phase": {
           "type": "number"
         },
+        "swing": {
+          "type": "number"
+        },
         "headYaw": {
+          "type": "number"
+        },
+        "headPitch": {
+          "type": "number"
+        },
+        "bob": {
           "type": "number"
         },
         "leftHip": {
@@ -275,7 +285,10 @@
         "state",
         "heading",
         "phase",
+        "swing",
         "headYaw",
+        "headPitch",
+        "bob",
         "leftHip",
         "rightHip",
         "leftShoulder",

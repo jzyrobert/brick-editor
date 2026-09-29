@@ -163,8 +163,7 @@
   .mode-play .workspace {
     padding-bottom: 0;
   }
-  .play-hint,
-  .play-mouse-lock {
+  .play-keys-hint {
     display: none;
   }
   .play-look::after {
@@ -232,8 +231,17 @@
   }
 }
 
-.play-overlay.is-paused .play-look::after {
+.play-overlay.is-paused .play-look::after,
+.play-overlay.has-mouse .play-look::after {
   display: none;
+}
+/* Desktop: sits just under the crosshair until the mouse is captured. */
+.play-hint.play-lock-hint {
+  top: calc(50% + 26px);
+  font-size: 12px;
+  padding: 6px 12px;
+  color: #334852;
+  pointer-events: none;
 }
 
 .mode-play .mobile-panel {
@@ -321,6 +329,27 @@
   font-size: 12px;
   line-height: 1.5;
   margin: 8px 0;
+}
+.play-look-settings {
+  border: 0;
+  border-top: 1px solid #d9e1e5;
+  margin: 12px 0 0;
+  padding: 8px 0 0;
+  min-width: 0;
+}
+.play-look-settings legend {
+  font-weight: 600;
+  padding: 0;
+}
+.play-look-settings input[type="range"] {
+  width: 140px;
+}
+.play-key-settings .play-look-invert {
+  justify-content: flex-start;
+}
+.play-key-settings .play-look-invert input {
+  width: 22px;
+  min-height: 22px;
 }
 .play-key-buttons {
   display: flex;

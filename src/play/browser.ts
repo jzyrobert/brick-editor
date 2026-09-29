@@ -19,7 +19,9 @@ import type {
   PlaySeatRequest,
   PlayMotorRequest,
   PlayPosedModel,
+  AvatarPose,
 } from "./types";
+import type { Vec3 } from "../core/types";
 import { posedLDraw } from "../mechanisms/posed-export";
 import type { PlaySession } from "./session";
 import { nearbyInteraction, type PlayInteraction } from "./interaction";
@@ -27,6 +29,11 @@ import { occurrences } from "../core/document";
 import { deriveDoorRigs, type DerivedDoors } from "./auto-doors";
 import type { DynamicRigSource } from "./dynamics";
 import { BrickAvatar } from "./avatar";
+import {
+  prepareFullLibrary,
+  unresolvedCuratedRefs,
+} from "../catalog/full-library-loader";
+import { fullLibraryGeneration } from "../catalog/full-library";
 
 /** Wall time a realtime frame may spend on catch-up physics ticks. */
 export const PLAY_FRAME_TICK_BUDGET_MS = 10;
@@ -203,6 +210,12 @@ export class BrowserPlay {
         "LIMIT_EXCEEDED",
         "Play supports at most 128 moving groups across all rigs",
       );
+      // Official parts outside the curated pack load on demand. A failed or
+      // interrupted download leaves them missing, which turns collision off
+      // for the whole world; retry now and re-render before collecting the
+      // collision snapshot, so walking is not refused for a transient fault.
+      if (project) await this.loadOnDemandParts(project, r);
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
       const [{ PlaySession }, geometry] = await Promise.all([
         import("./session"),
         r.playGeometry({
@@ -329,6 +342,14 @@ export class BrowserPlay {
       throw e;
     }
   }
+  private async loadOnDemandParts(project: Project, r: SceneAdapter) {
+    if (!unresolvedCuratedRefs(project).size) return;
+    const before = fullLibraryGeneration();
+    // Resolves to a message instead of throwing; still-missing parts are then
+    // named by the collision snapshot's warning.
+    await prepareFullLibrary(project);
+    if (fullLibraryGeneration() !== before) await r.update(project);
+  }
   private draw() {
     if (!this.session) return;
     const r = this.renderer();
@@ -346,32 +367,47 @@ export class BrowserPlay {
     const transforms = mechanisms.length
       ? Object.assign({}, ...mechanisms.map((m) => m.transforms))
       : undefined;
-    const camera = this.session.camera(this.realtime && !this.state.paused);
+    const interpolate = this.realtime && !this.state.paused;
+    const camera = this.session.camera(interpolate);
+    // The figure uses the same interpolation factor as the camera, so both
+    // move together between fixed ticks instead of the figure juddering.
+    const view = this.session.presentation(interpolate);
+    const figureShown =
+      report.avatarVisible && report.cameraMode === "third-person";
     // Only redraw when something Play controls on screen changed; standing still
     // (or paused) no longer re-renders the whole world every animation frame.
     // Values are compared at 1/1000 precision: ground snapping jitters a resting
     // character by ~1e-6 LDU per tick, which is invisible but would defeat this.
-    const visual = JSON.stringify(
-      [
-        r.cameraChanges,
-        camera,
-        transforms,
-        report.position,
-        report.avatar,
-        report.avatarVisible,
-        report.cameraMode,
-      ],
-      (_, value) =>
-        typeof value === "number" ? Math.round(value * 1000) / 1000 : value,
-    );
+    // The hidden figure is left out, and its idle sway is compared coarsely
+    // (1/100 radian), so an idle third-person view redraws only a few times a
+    // second rather than every frame.
+    const visual =
+      JSON.stringify(
+        [
+          r.cameraChanges,
+          camera,
+          transforms,
+          figureShown,
+          report.cameraMode,
+          figureShown ? view.position : undefined,
+        ],
+        (_, value) =>
+          typeof value === "number" ? Math.round(value * 1000) / 1000 : value,
+      ) +
+      (figureShown
+        ? JSON.stringify(view.avatar, (_, value) =>
+            typeof value === "number" ? Math.round(value * 100) / 100 : value,
+          )
+        : "");
     if (visual !== this.lastVisual) {
       this.lastVisual = visual;
       if (transforms) r.applyTransientPose(transforms);
       r.playCamera(camera);
       // camera() is read-only, so one snapshot serves the avatar, pose and UI.
-      this.avatar?.update(report);
+      this.avatar?.update(report, view);
       r.invalidate();
     }
+    this.trace(camera.position, view);
     this.state = {
       ...this.state,
       report,
@@ -495,15 +531,59 @@ export class BrowserPlay {
     if (paused && document.pointerLockElement) void document.exitPointerLock();
     this.schedule();
   }
-  look(dx: number, dy: number) {
+  /**
+   * Turns the view by a pointer movement in CSS pixels. Touch drag uses the
+   * default 0.004 rad/px; desktop mouse look passes its own sensitivity and
+   * optional inverted Y (see look-settings.ts).
+   */
+  look(
+    dx: number,
+    dy: number,
+    options: { radiansPerPixel?: number; invertY?: boolean } = {},
+  ) {
     if (!this.session || this.state.paused || this.captureSession) return;
     const s = this.session.snapshot();
+    const k = options.radiansPerPixel ?? 0.004;
     this.setInput({
       ...this.held,
-      yaw: s.yaw - dx * 0.004,
-      pitch: s.pitch - dy * 0.004,
+      yaw: s.yaw - dx * k,
+      pitch: s.pitch - dy * k * (options.invertY ? -1 : 1),
     });
     this.draw();
+  }
+  private frames: Array<{
+    t: number;
+    /** Simulated seconds shown by this frame. */
+    time: number;
+    camera: Vec3;
+    figure: Vec3;
+    heading: number;
+    pose: AvatarPose;
+  }> = [];
+  private trace(
+    camera: Vec3,
+    view: { position: Vec3; avatar: AvatarPose; time: number },
+  ) {
+    if (!this.realtime || this.state.paused) return;
+    this.frames.push({
+      t: performance.now(),
+      time: view.time,
+      camera: [...camera],
+      figure: [...view.position],
+      heading: view.avatar.heading,
+      pose: { ...view.avatar },
+    });
+    if (this.frames.length > 600)
+      this.frames.splice(0, this.frames.length - 600);
+  }
+  /**
+   * Diagnostics: the camera position and interpolated figure root/pose drawn
+   * in recent realtime frames (for smoothness tests; not a stable API).
+   */
+  frameTrace(clear = false) {
+    const frames = this.frames.map((f) => structuredClone(f));
+    if (clear) this.frames = [];
+    return frames;
   }
   setCameraMode(mode: PlayCameraMode) {
     this.assertMutable();
@@ -779,6 +859,7 @@ export class BrowserPlay {
     this.captureSession = undefined;
     this.captureInputClear = false;
     this.lastVisual = "";
+    this.frames = [];
     ++this.epoch;
     cancelAnimationFrame(this.raf);
     this.clearInput();

@@ -31,9 +31,7 @@ it("independent fixed body envelopes contain the actual original rigid seated hi
     // The geometry's own local forward is-Z. Compare it to pelvis-localLDU
     // without renderer scene conversion; only Y changes sign about pelvisY26.
     for (const yaw of [-0.7, -0.35, 0, 0.35, 0.7]) {
-      const head = avatar.group.children.find(
-        (object) => object instanceof Group && object.position.y === 54,
-      )!;
+      const head = avatar.joint("head");
       head.rotation.y = yaw;
       avatar.group.updateMatrixWorld(true);
       avatar.group.traverse((object) => {
@@ -60,18 +58,29 @@ it("independent fixed body envelopes contain the actual original rigid seated hi
       });
     }
     expect(JOINTS.leftHip.limits).toEqual(originalHipLimits);
-    expect(JOINTS.leftHip.limits[1]).toBe(0.9);
+    expect(JOINTS.leftHip.limits[1]).toBe(1.4);
     expect(pose.leftHip).toBe(Math.PI / 2);
     // Exactly five original hinge groups: no invented elbow/knee hierarchy.
     expect(
       avatar.group.children.filter((child) => child instanceof Group),
     ).toHaveLength(5);
-    const leftHip = avatar.group.children.find(
-      (object) => object instanceof Group && object.position.x === -7,
-    )!;
-    const leg = leftHip.children[0].getWorldPosition(new Vector3());
-    expect(leg.y).toBeCloseTo(27, 10);
-    expect(leg.z).toBeCloseTo(-12.5, 10);
+    // The seated leg turns about the hip pivot at the pelvis (26 LDU) and
+    // reaches forward (-Z) by its 26 LDU length.
+    const leftHip = avatar.joint("leftHip");
+    expect(leftHip.getWorldPosition(new Vector3()).y).toBeCloseTo(26, 10);
+    let reach = 0;
+    leftHip.traverse((object) => {
+      if (!(object instanceof Mesh)) return;
+      const p = object.geometry.getAttribute("position");
+      for (let i = 0; i < p.count; i++)
+        reach = Math.min(
+          reach,
+          new Vector3()
+            .fromBufferAttribute(p, i)
+            .applyMatrix4(object.matrixWorld).z,
+        );
+    });
+    expect(reach).toBeCloseTo(-26, 6);
   } finally {
     avatar.dispose();
   }

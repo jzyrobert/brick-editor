@@ -36,6 +36,18 @@ import {
   type DynamicRigSource,
 } from "./dynamics";
 import RAPIER from "@dimforge/rapier3d-compat";
+import {
+  advanceMotion,
+  flyBob,
+  RIDE_SMOOTH_TIME,
+  smoothDamp,
+  headAngles,
+  initialMotion,
+  lerpMotion,
+  limbAngles,
+  wrapAngle,
+  type AvatarMotionState,
+} from "./avatar-motion";
 import { ensure, type CameraSpec, type Vec3 } from "../core/types";
 import {
   CHARACTER_PROFILE as P,
@@ -140,9 +152,27 @@ export class PlaySession {
   private worldProfile: ResolvedPlayWorldProfile;
   private aspectRatio = 1;
   private arm = 120;
-  private phase = 0;
-  private heading = 0;
-  private amplitude = 0;
+  /** Figure motion after the latest tick and before it (render interpolation). */
+  private motion: AvatarMotionState = initialMotion();
+  private previousMotion: AvatarMotionState = initialMotion();
+  private get heading() {
+    return this.motion.body;
+  }
+  /**
+   * Presentation heights of the feet: each follows the collider's feet
+   * through a critically damped spring while walking on the ground, so the
+   * view and the figure glide over studs and up steps instead of bobbing
+   * with every contact correction (a capsule's round base dips into the gaps
+   * between studs). The camera may lag a whole step (a smoothed rise); the
+   * figure at most a stud's height, so it never sinks into a step. Snapshots,
+   * collision and the API report the exact feet.
+   */
+  private ride = {
+    camera: { y: 0, previous: 0, velocity: 0, lag: P.stepHeight },
+    figure: { y: 0, previous: 0, velocity: 0, lag: 4 },
+  };
+  /** Why walking collision is unavailable, when it is. */
+  private collisionIssue?: string;
   private ready: boolean;
   private warnings: string[];
   private bounds: CollisionSnapshot["bounds"];
@@ -176,8 +206,15 @@ export class PlaySession {
     this.bounds = structuredClone(snapshot.bounds);
     this.warnings = [...(snapshot.warnings ?? [])];
     this.ready = !snapshot.unsupported;
+    if (snapshot.unsupported)
+      this.collisionIssue =
+        (snapshot.warnings ?? [])
+          .filter((w) => !w.startsWith("Session-only ground"))
+          .join(" ") || "The build's collision geometry could not be prepared.";
     if (snapshot.indices.length > 3_000_000) {
       this.ready = false;
+      this.collisionIssue =
+        "This world has more than 1,000,000 collision triangles, which is too many to walk on.";
       this.warnings.push(
         "Collision exceeds the 1,000,000 triangle budget. Fly remains available.",
       );
@@ -347,7 +384,10 @@ export class PlaySession {
       throw error;
     }
     this.controller = this.world.createCharacterController(0.15 * S);
-    this.controller.enableAutostep(P.stepHeight * S, 4 * S, false);
+    // Rapier's own autostep handles plate-height ledges; taller risers up
+    // to the profile's step height use stepUp() (large autostep heights
+    // overshoot and launch the character).
+    this.controller.enableAutostep(8.5 * S, 4 * S, false);
     this.controller.enableSnapToGround(3 * S);
     this.controller.setMaxSlopeClimbAngle((P.maxSlopeDegrees * Math.PI) / 180);
     this.controller.setMinSlopeSlideAngle((P.maxSlopeDegrees * Math.PI) / 180);
@@ -363,6 +403,8 @@ export class PlaySession {
     const found = this.ready ? this.findSafe(candidate) : undefined;
     this.feet = found ?? candidate;
     this.previous = [...this.feet];
+    this.motion = this.previousMotion = initialMotion(this.yaw);
+    this.settle();
     this.spawn = [...this.feet];
     this.locomotion =
       request.locomotion === "fly-noclip" || !found ? "fly-noclip" : "walk";
@@ -702,6 +744,13 @@ export class PlaySession {
     }
     return undefined;
   }
+  /** Actionable reason walking is refused because collision is unavailable. */
+  private walkUnavailableMessage() {
+    return (
+      "Walking is off for this world, so you stay in Fly. " +
+      (this.collisionIssue ?? "Collision geometry is unavailable.")
+    );
+  }
   private requireOnFoot() {
     ensure(!this.occupied, "INVALID_INPUT", "Exit vehicle first");
   }
@@ -876,6 +925,7 @@ export class PlaySession {
       );
     this.updateOccupant();
     this.previous = [...this.feet];
+    this.settle();
     this.world.step();
     this.updateArm(true);
     return this.snapshot();
@@ -935,7 +985,14 @@ export class PlaySession {
     this.collider.setEnabled(true);
     this.feet = [...chosen.position];
     this.previous = [...this.feet];
+    this.settle();
     this.yaw = chosen.yaw;
+    this.motion = {
+      ...this.motion,
+      body: wrapAngle(chosen.yaw),
+      bodyVelocity: 0,
+    };
+    this.settle();
     this.velocity = [0, 0, 0];
     this.grounded = false;
     this.syncCollider();
@@ -952,7 +1009,11 @@ export class PlaySession {
     this.feet = [...this.occupied.placement.avatarRoot];
     this.velocity = [0, 0, 0];
     this.grounded = true;
-    this.heading = seatYaw(this.occupied.placement.pelvisFrame);
+    this.motion = {
+      ...this.motion,
+      body: wrapAngle(seatYaw(this.occupied.placement.pelvisFrame)),
+      bodyVelocity: 0,
+    };
     this.yaw = this.heading + this.occupied.localLookYaw;
     this.pitch = this.occupied.localLookPitch;
     this.occupied.placement.envelopes.forEach((box, i) => {
@@ -1048,7 +1109,7 @@ export class PlaySession {
       ensure(
         this.ready,
         "UNSUPPORTED_RENDER_FEATURE",
-        "Collision is unavailable; remain in Fly.",
+        this.walkUnavailableMessage(),
       );
       const safe =
         this.findSafe(this.feet) ??
@@ -1060,6 +1121,7 @@ export class PlaySession {
       );
       this.feet = [...safe];
       this.previous = [...safe];
+      this.settle();
     }
     this.locomotion = mode;
     this.velocity = [0, 0, 0];
@@ -1089,14 +1151,16 @@ export class PlaySession {
         );
     if (input.policy === "free-flight") this.locomotion = "fly-noclip";
     else {
+      ensure(this.ready, "INVALID_INPUT", this.walkUnavailableMessage());
       ensure(
-        this.ready && this.clear(input.position),
+        this.clear(input.position),
         "INVALID_INPUT",
-        "Teleport target intersects geometry or collision is unavailable.",
+        "Teleport target intersects geometry.",
       );
     }
     this.feet = [...input.position];
     this.previous = [...this.feet];
+    this.settle();
     this.velocity = [0, 0, 0];
     this.grounded = false;
     this.setInput({ yaw: input.yaw, pitch: input.pitch });
@@ -1154,6 +1218,7 @@ export class PlaySession {
     return count;
   }
   private step() {
+    this.previousMotion = this.motion;
     for (const id of [...this.mechanisms.keys()].sort()) {
       this.mechanisms.get(id)!.step();
       if (this.occupied?.request.rigId === id) this.updateOccupant();
@@ -1169,6 +1234,7 @@ export class PlaySession {
     if (this.occupied) {
       this.world.step();
       this.previous = [...this.feet];
+      this.settle();
       this.updateArm();
       this.tick++;
       return;
@@ -1203,46 +1269,67 @@ export class PlaySession {
       if (length > limit)
         delta = delta.map((v) => (v * limit) / length) as Vec3;
     }
+    let stopped = false;
     if (this.locomotion === "walk") {
       if (i.jump && !this.jumpHeld && this.grounded)
         this.velocity[1] = -P.jumpSpeed;
       this.velocity[1] = Math.min(500, this.velocity[1] + P.gravity * DT);
-      delta[1] = this.velocity[1] * DT;
-      this.controller.computeColliderMovement(this.collider, physics(delta));
-      delta = ldraw(this.controller.computedMovement());
+      // While standing, the controller is asked only for horizontal travel;
+      // snap-to-ground keeps the feet on the floor. Adding gravity's small
+      // downward step to every grounded sweep aimed it into the floor, where
+      // it caught the internal edges between coplanar triangles and stalled
+      // for a tick every few steps: the stop-start judder seen walking
+      // diagonally across plates or sliding along a wall. Standing still (and
+      // airborne) still sweeps with gravity, so a floor that moves away is felt.
+      const gravitySweep =
+        !this.grounded ||
+        this.velocity[1] < 0 ||
+        Math.hypot(delta[0], delta[2]) < 1e-6;
+      delta[1] = gravitySweep ? this.velocity[1] * DT : 0;
+      const desired = delta,
+        wasGrounded = this.grounded;
+      delta = this.moveCharacter(desired);
       this.grounded = this.controller.computedGrounded();
-      if (this.dynamics) {
-        const hits = [];
-        for (let n = 0; n < this.controller.numComputedCollisions(); n++) {
-          const hit = this.controller.computedCollision(n);
-          if (hit?.collider && this.dynamics.isMirror(hit.collider.handle))
-            hits.push({
-              handle: hit.collider.handle,
-              point: hit.witness1,
-              remaining: hit.translationDeltaRemaining,
-            });
-        }
-        this.dynamics.push(hits);
-      }
+      const want = Math.hypot(desired[0], desired[2]),
+        got = Math.hypot(delta[0], delta[2]);
       if (
+        wasGrounded &&
+        this.velocity[1] >= 0 &&
+        want > 1e-6 &&
+        got < want * 0.9
+      ) {
+        const stepped = this.stepUp([desired[0], 0, desired[2]], got);
+        if (stepped) {
+          delta = stepped;
+          this.grounded = true;
+        }
+      }
+      stopped =
         this.grounded ||
-        Math.abs(delta[1]) < Math.abs(this.velocity[1] * DT) * 0.5
-      )
-        this.velocity[1] = 0;
+        (gravitySweep && Math.abs(delta[1]) < Math.abs(desired[1]) * 0.5);
     } else this.grounded = false;
     this.jumpHeld = i.jump;
     this.feet = this.feet.map((v, k) => v + delta[k]) as Vec3;
-    this.velocity = [delta[0] / DT, delta[1] / DT, delta[2] / DT];
+    // A step-up or ground snap lifts the feet without being a launch: on
+    // ground (or under a ceiling) the vertical speed restarts from zero.
+    // Deriving it from the corrected displacement turned every autostep onto
+    // a stud into a small hop, bouncing the character up to 16 LDU.
+    this.velocity = [delta[0] / DT, stopped ? 0 : delta[1] / DT, delta[2] / DT];
     this.syncCollider();
     this.world.step();
-    const distance = Math.hypot(delta[0], delta[2]);
-    this.phase =
-      (this.phase + (2 * Math.PI * distance) / P.strideLength) % (Math.PI * 2);
-    if (distance > 0.01) this.heading = Math.atan2(delta[0], -delta[2]);
-    this.amplitude +=
-      ((distance > 0.01 && this.grounded ? (i.run ? 0.65 : 0.45) : 0) -
-        this.amplitude) *
-      0.2;
+    this.motion = advanceMotion(this.motion, {
+      dx: delta[0],
+      dz: delta[2],
+      vy: this.velocity[1],
+      grounded: this.grounded,
+      flying: this.locomotion === "fly-noclip",
+      nearGround:
+        this.locomotion === "fly-noclip" &&
+        Math.hypot(delta[0], delta[2]) > 0.01 &&
+        this.surfaceBelow(6),
+      lookYaw: this.yaw,
+      dt: DT,
+    });
     if (this.grounded && this.clear(this.feet)) this.safe = [...this.feet];
     if (
       this.feet[1] > Math.max(this.bounds.max[1], 0) + 3000 &&
@@ -1250,53 +1337,220 @@ export class PlaySession {
     ) {
       this.feet = [...(this.safe ?? this.spawn)];
       this.previous = [...this.feet];
+      this.settle();
       this.velocity = [0, 0, 0];
       this.syncCollider();
     }
+    this.updateRide();
     this.updateArm();
     this.tick++;
   }
-  private avatar(): AvatarPose {
+  private cast(from: Vec3, direction: Vec3, maxToi: number) {
+    return this.world.castShape(
+      this.center(from),
+      rot,
+      physics(direction),
+      this.capsule,
+      0,
+      maxToi,
+      true,
+      undefined,
+      undefined,
+      this.collider,
+      undefined,
+      (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
+    );
+  }
+  /**
+   * Step up a riser of up to the profile's step height (one brick) when
+   * walking is blocked. Probes one body radius ahead above the riser for a
+   * walkable top with headroom (swept casts), then lifts the feet onto that
+   * level and moves on as far as is clear. The camera and figure rise
+   * smoothly through the ride tracks. Returns the displacement, or nothing
+   * when there is no step to take.
+   */
+  private stepUp(horizontal: Vec3, progress: number): Vec3 | undefined {
+    const start = this.feet,
+      length = Math.hypot(horizontal[0], horizontal[2]);
+    const up = this.cast(start, [0, -1, 0], P.stepHeight + 0.5);
+    const headroom = up ? up.time_of_impact - 0.2 : P.stepHeight + 0.5;
+    if (headroom < 1) return;
+    const raised: Vec3 = [start[0], start[1] - headroom, start[2]];
+    // Look one radius (plus this tick's travel) ahead for the step's top.
+    const reach = (P.radius + length) / length;
+    const ahead = this.cast(raised, horizontal, reach);
+    const fraction = ahead
+      ? Math.max(0, ahead.time_of_impact - 0.1 / length)
+      : reach;
+    if (length * fraction < P.radius * 0.75) return;
+    const probe: Vec3 = [
+      raised[0] + horizontal[0] * fraction,
+      raised[1],
+      raised[2] + horizontal[2] * fraction,
+    ];
+    const down = this.cast(probe, [0, 1, 0], headroom + 1);
+    if (!down || down.normal1.y < Math.cos((P.maxSlopeDegrees * Math.PI) / 180))
+      return;
+    const top = probe[1] + down.time_of_impact - 0.2;
+    // Only a real riser: the top must be above the feet and within reach.
+    if (start[1] - top < 1 || start[1] - top > P.stepHeight + 0.5) return;
+    const lifted: Vec3 = [start[0], top, start[2]];
+    if (!this.clear(lifted)) return;
+    // Continue this tick's travel from the lifted height where it is clear.
+    const onward = this.cast(lifted, horizontal, 1);
+    const travel = onward
+      ? Math.max(0, onward.time_of_impact - 0.1 / length)
+      : 1;
+    const landed: Vec3 = [
+      lifted[0] + horizontal[0] * travel,
+      top,
+      lifted[2] + horizontal[2] * travel,
+    ];
+    const end = this.clear(landed) ? landed : lifted;
+    if (Math.hypot(end[0] - start[0], end[2] - start[2]) + 0.05 < progress)
+      return;
+    return end.map((v, k) => v - start[k]) as Vec3;
+  }
+  /** Ends render interpolation and ride smoothing after a discontinuity. */
+  private settle() {
+    this.previousMotion = this.motion;
+    for (const track of Object.values(this.ride)) {
+      track.y = track.previous = this.feet[1];
+      track.velocity = 0;
+    }
+  }
+  private updateRide() {
+    const walking =
+      this.locomotion === "walk" && this.grounded && !this.occupied;
+    for (const track of Object.values(this.ride)) {
+      track.previous = track.y;
+      const before = Math.abs(track.y - this.feet[1]);
+      if (before > P.stepHeight + 4) {
+        track.y = this.feet[1];
+        track.velocity = 0;
+        continue;
+      }
+      // Walking on the ground glides; in the air or flying any remaining lag
+      // closes quickly and never grows (physics motion there is smooth).
+      [track.y, track.velocity] = smoothDamp(
+        track.y,
+        this.feet[1],
+        track.velocity,
+        walking ? RIDE_SMOOTH_TIME : RIDE_SMOOTH_TIME / 4,
+        DT,
+      );
+      const lag = track.y - this.feet[1],
+        limit = walking ? track.lag : Math.min(track.lag, before);
+      if (Math.abs(lag) > limit) {
+        track.y = this.feet[1] + Math.sign(lag) * limit;
+        if (!walking) track.velocity = 0;
+      }
+    }
+  }
+  /** Interpolated presentation feet (render frames between fixed ticks). */
+  private presentedFeet(alpha: number, track: "camera" | "figure"): Vec3 {
+    const { y, previous } = this.ride[track];
+    return [
+      this.previous[0] + (this.feet[0] - this.previous[0]) * alpha,
+      previous + (y - previous) * alpha,
+      this.previous[2] + (this.feet[2] - this.previous[2]) * alpha,
+    ];
+  }
+  /** One character-controller pass from the collider's current position;
+   * returns the corrected LDraw displacement and reports dynamic pushes. */
+  private moveCharacter(desired: Vec3): Vec3 {
+    // A zero request is skipped: Rapier's controller answers it against a
+    // half-space with a spurious lift instead of no motion.
+    if (Math.hypot(...desired) < 1e-9) return [0, 0, 0];
+    this.controller.computeColliderMovement(this.collider, physics(desired));
+    const moved = ldraw(this.controller.computedMovement());
+    if (this.dynamics) {
+      const hits = [];
+      for (let n = 0; n < this.controller.numComputedCollisions(); n++) {
+        const hit = this.controller.computedCollision(n);
+        if (hit?.collider && this.dynamics.isMirror(hit.collider.handle))
+          hits.push({
+            handle: hit.collider.handle,
+            point: hit.witness1,
+            remaining: hit.translationDeltaRemaining,
+          });
+      }
+      this.dynamics.push(hits);
+    }
+    return moved;
+  }
+  /** Whether solid collision lies within `distance` LDU below the feet. */
+  private surfaceBelow(distance: number) {
+    const hit = this.world.castRay(
+      new RAPIER.Ray(physics([this.feet[0], this.feet[1] - 1, this.feet[2]]), {
+        x: 0,
+        y: -1,
+        z: 0,
+      }),
+      (distance + 1) * S,
+      true,
+      RAPIER.QueryFilterFlags.EXCLUDE_SENSORS,
+    );
+    return !!hit;
+  }
+  private avatar(motion: AvatarMotionState = this.motion): AvatarPose {
+    const head = headAngles(motion, this.yaw, this.pitch);
     if (this.occupied)
       return {
         state: "seated",
-        heading: this.heading,
-        phase: this.phase,
+        heading: motion.body,
+        phase: motion.phase,
+        swing: 0,
         headYaw: Math.max(-0.7, Math.min(0.7, this.occupied.localLookYaw)),
+        headPitch: head.headPitch,
+        bob: 0,
         leftHip: SEATED_VISUAL_POSE.leftHip,
         rightHip: SEATED_VISUAL_POSE.rightHip,
         leftShoulder: SEATED_VISUAL_POSE.leftShoulder,
         rightShoulder: SEATED_VISUAL_POSE.rightShoulder,
       };
-    let swing = Math.sin(this.phase) * this.amplitude;
     const airborne = !this.grounded && this.locomotion === "walk";
-    if (airborne) swing = this.velocity[1] < 0 ? 0.2 : -0.15;
     return {
       state: airborne
         ? this.velocity[1] < 0
           ? "jump"
           : "fall"
-        : this.amplitude < 0.03
-          ? "idle"
-          : this.input.run
-            ? "run"
-            : "walk",
-      heading: this.heading,
-      phase: this.phase,
-      headYaw: Math.max(
-        -0.7,
-        Math.min(
-          0.7,
-          Math.atan2(
-            Math.sin(this.yaw - this.heading),
-            Math.cos(this.yaw - this.heading),
-          ),
-        ),
+        : this.locomotion === "fly-noclip" && motion.amount < 0.03
+          ? "fly"
+          : motion.amount < 0.03
+            ? "idle"
+            : this.input.run
+              ? "run"
+              : "walk",
+      heading: motion.body,
+      phase: motion.phase,
+      swing: motion.amount,
+      ...head,
+      bob: flyBob(motion),
+      ...limbAngles(motion),
+    };
+  }
+  /**
+   * Render-frame view of the figure: the root and pose interpolated between
+   * the last two fixed ticks with the same factor camera(true) uses, so the
+   * figure and camera move together instead of juddering at the tick rate.
+   */
+  presentation(interpolate = false): {
+    position: Vec3;
+    avatar: AvatarPose;
+    /** Simulated seconds at the presented instant. */
+    time: number;
+  } {
+    this.alive();
+    const alpha = interpolate ? this.accumulator / DT : 1;
+    return {
+      time: (this.tick - 1 + alpha) * DT,
+      position: this.presentedFeet(alpha, "figure"),
+      avatar: this.avatar(
+        alpha === 1
+          ? this.motion
+          : lerpMotion(this.previousMotion, this.motion, alpha),
       ),
-      leftHip: swing,
-      rightHip: -swing,
-      leftShoulder: -swing,
-      rightShoulder: swing,
     };
   }
   private clampPitch(pitch: number) {
@@ -1360,10 +1614,11 @@ export class PlaySession {
       "INVALID_INPUT",
       "Spawn look must be finite and within the configured pitch limits",
     );
+    ensure(this.ready, "INVALID_INPUT", this.walkUnavailableMessage());
     ensure(
-      this.ready && this.clear(input.position),
+      this.clear(input.position),
       "INVALID_INPUT",
-      "Spawn intersects geometry or collision is unavailable",
+      "Spawn intersects geometry. Move to a clear spot first.",
     );
     const hit = this.world.castShape(
       this.center(input.position),
@@ -1458,9 +1713,7 @@ export class PlaySession {
   camera(interpolate = false): CameraSpec {
     this.alive();
     const alpha = interpolate ? this.accumulator / DT : 1;
-    const feet = this.feet.map(
-      (v, k) => this.previous[k] + (v - this.previous[k]) * alpha,
-    ) as Vec3;
+    const feet = this.presentedFeet(alpha, "camera");
     const follow = this.followRig(feet);
     const look: Vec3 =
       this.cameraMode === "third-person"

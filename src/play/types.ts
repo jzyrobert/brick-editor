@@ -79,7 +79,7 @@ export const CHARACTER_PROFILE = Object.freeze({
   radius: 8,
   height: 72,
   eyeHeight: 64,
-  stepHeight: 8,
+  stepHeight: 24,
   maxSlopeDegrees: 45,
   walkSpeed: 100,
   runSpeed: 170,
@@ -89,11 +89,20 @@ export const CHARACTER_PROFILE = Object.freeze({
   strideLength: 65,
   scaleMetresPerLdu: 0.02,
 });
+/** Presentation pose of the figure (radians; positive limb angles swing
+ * forward). Computed from fixed-tick motion state; see avatar-motion.ts. */
 export type AvatarPose = {
-  state: "idle" | "walk" | "run" | "jump" | "fall" | "seated";
+  state: "idle" | "walk" | "run" | "jump" | "fall" | "fly" | "seated";
+  /** Body (root) yaw. */
   heading: number;
+  /** Gait phase: advances 2π per stride of travelled distance. */
   phase: number;
+  /** Swing amount in [0, 1], blended toward horizontal speed each tick. */
+  swing: number;
   headYaw: number;
+  headPitch: number;
+  /** Visual-only vertical offset of the figure while hovering (LDU, +up). */
+  bob: number;
   leftHip: number;
   rightHip: number;
   leftShoulder: number;
