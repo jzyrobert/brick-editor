@@ -50,8 +50,9 @@ async function load(page: Page) {
 test("render looks switch from the views popover, persist, and captures request them explicitly", async ({
   page,
 }) => {
-  // Realistic frames cost about a second each on software WebGL.
-  test.setTimeout(180000);
+  // Realistic frames cost about a second each on software WebGL, and the photo
+  // capture compiles the path-tracing shader.
+  test.setTimeout(300000);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   const revision = await load(page);
@@ -107,7 +108,7 @@ test("render looks switch from the views popover, persist, and captures request 
         background: { type: "solid", color: "#e9edef" },
         quality: "balanced",
         ...(look ? { look } : {}),
-        ...(look === "photo" ? { lookControls: { samples: 4 } } : {}),
+        ...(look === "photo" ? { lookControls: { pathSamples: 4 } } : {}),
         strict: true,
       });
       const hash = Array.from(
@@ -139,7 +140,11 @@ test("render looks switch from the views popover, persist, and captures request 
   expect(implicit.hash).toBe(standard.hash);
   expect(implicit.look.name).toBe("standard");
   expect(real.look.name).toBe("realistic");
-  expect(photo.look).toMatchObject({ name: "photo", samples: 4 });
+  expect(photo.look).toMatchObject({
+    name: "photo",
+    renderer: "path",
+    pathSamples: 4,
+  });
   expect(standard.stats.lines).toBeGreaterThan(0);
   expect(real.stats.lines).toBe(0);
   expect(standard.output.toneMapped).toBe(false);
@@ -167,19 +172,58 @@ test("render looks switch from the views popover, persist, and captures request 
   expect(errors).toEqual([]);
 });
 
-test("the photo look refines a still view, then stops drawing; Play never accumulates", async ({
+test("the photo look path-traces a still view with progress, then stops drawing; Play never accumulates", async ({
   page,
 }) => {
+  // The first photo still compiles the path-tracing shader, and every traced
+  // sample costs seconds on software WebGL: keep the viewport small.
+  test.setTimeout(480000);
+  await page.setViewportSize({ width: 720, height: 520 });
   await countDraws(page);
   await load(page);
   await page.evaluate(() =>
-    window.brickEditor!.render.look.set("photo", { samples: 6 }),
+    window.brickEditor!.render.look.set("photo", { pathSamples: 4 }),
   );
-  // The still view keeps drawing while it accumulates…
   await page.evaluate(() => window.brickEditor!.camera.fit());
-  expect(await drawsOver(page, 3)).toBeGreaterThan(0);
-  // …and goes idle once every sample is in.
-  await expect.poll(() => drawsOver(page, 8), { timeout: 30000 }).toBe(0);
+  // A realistic raster frame is drawn at once; the still then prepares its
+  // BVH and shader and refines, with progress in the status toast.
+  const status = page.locator(".status-bar");
+  await expect(status).toContainText(/(Preparing|Refining) photo…/, {
+    timeout: 240000,
+  });
+  await expect(status).toHaveAttribute("data-refining", "");
+  await expect
+    .poll(() => page.evaluate(() => window.brickEditor!.render.look.photo()), {
+      timeout: 240000,
+    })
+    .toMatchObject({ renderer: "path", reason: null, samples: 4 });
+  await expect(status).toContainText("Photo refined: 4 path-traced samples.");
+  await expect(status).not.toHaveAttribute("data-refining", "");
+  const stats = await page.evaluate(() =>
+    window.brickEditor!.render.look.photo(),
+  );
+  expect(stats.triangles).toBeGreaterThan(60000);
+  // Converged: nothing more is drawn.
+  await expect.poll(() => drawsOver(page, 8), { timeout: 60000 }).toBe(0);
+  // Moving the view restarts it: raster frames first, then tracing again.
+  await page.evaluate(() =>
+    window.brickEditor!.camera.set({
+      space: "ldraw",
+      projection: "perspective",
+      position: [300, -260, 420],
+      target: [-30, -40, 0],
+      up: [0, -1, 0],
+      fovDeg: 45,
+      near: 0.5,
+      far: 50000,
+    }),
+  );
+  // (The raster frame lands at once; tracing resumes after PHOTO_IDLE_MS.)
+  await expect
+    .poll(() => drawsOver(page, 4), { timeout: 60000 })
+    .toBeGreaterThan(0);
+  await expect.poll(() => drawsOver(page, 8), { timeout: 120000 }).toBe(0);
+  // Play draws live raster frames: no tracing, no accumulation.
   await page.evaluate(() =>
     window.brickEditor!.play.enter({
       realtime: true,
@@ -190,6 +234,117 @@ test("the photo look refines a still view, then stops drawing; Play never accumu
   await drawsOver(page, 5);
   expect(await drawsOver(page, 10)).toBe(0);
   await page.evaluate(() => window.brickEditor!.play.exit());
+});
+
+test("photo captures are path traced, repeatable, and clearly unlike realistic; section cuts fall back to the raster photo", async ({
+  page,
+}) => {
+  test.setTimeout(300000);
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  const revision = await load(page);
+  const result = await page.evaluate(async (revision) => {
+    const a = window.brickEditor!;
+    await a.camera.set({
+      space: "ldraw",
+      projection: "perspective",
+      position: [330, -230, 400],
+      target: [-30, -40, 0],
+      up: [0, -1, 0],
+      fovDeg: 45,
+      near: 0.5,
+      far: 50000,
+    });
+    const capture = async (
+      look: "realistic" | "photo",
+      lookControls: Record<string, unknown> = {},
+    ) => {
+      const r = await a.render.image({
+        revision,
+        width: 200,
+        height: 150,
+        format: "png",
+        visibility: { mode: "all" },
+        background: { type: "solid", color: "#e9edef" },
+        quality: "balanced",
+        look,
+        lookControls,
+        strict: true,
+      });
+      const bitmap = await createImageBitmap(r.blob);
+      const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+      const context = canvas.getContext("2d")!;
+      context.drawImage(bitmap, 0, 0);
+      return {
+        pixels: Array.from(
+          context.getImageData(0, 0, bitmap.width, bitmap.height).data,
+        ),
+        manifest: { look: r.manifest.look, photo: r.manifest.photo },
+      };
+    };
+    const realistic = await capture("realistic");
+    const photo = await capture("photo", { pathSamples: 8 });
+    const again = await capture("photo", { pathSamples: 8 });
+    await a.render.section.set({ height: -40 });
+    const sectioned = await capture("photo", { samples: 2 });
+    await a.render.section.set(null);
+    // Mean absolute difference per channel (0–255).
+    const difference = (x: number[], y: number[]) => {
+      let sum = 0;
+      for (let i = 0; i < x.length; i++)
+        if (i % 4 !== 3) sum += Math.abs(x[i] - y[i]);
+      return sum / ((x.length / 4) * 3);
+    };
+    return {
+      realisticVsPhoto: difference(realistic.pixels, photo.pixels),
+      photoRepeat: difference(photo.pixels, again.pixels),
+      photo: photo.manifest,
+      sectioned: sectioned.manifest,
+    };
+  }, revision);
+  expect(result.photo.photo).toMatchObject({
+    renderer: "path",
+    reason: null,
+    samples: 8,
+  });
+  // A clear image difference, not a subtle one.
+  expect(result.realisticVsPhoto).toBeGreaterThan(12);
+  // Seeded (stable) noise: the same view traces the same image.
+  expect(result.photoRepeat).toBeLessThan(1);
+  expect(result.sectioned.photo).toMatchObject({
+    renderer: "raster",
+    samples: 2,
+  });
+  expect(result.sectioned.photo?.reason).toMatch(/Section cuts/);
+  expect(errors).toEqual([]);
+});
+
+test("phones trace fewer samples within the phone budget", async ({ page }) => {
+  test.setTimeout(300000);
+  await page.setViewportSize({ width: 720, height: 520 });
+  await load(page);
+  const look = await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    await a.resources.setProfile({ profile: "mobile" });
+    return a.render.look.set("photo");
+  });
+  expect(look).toMatchObject({
+    resourceProfile: "mobile",
+    renderer: "path",
+    pathSamples: 64,
+  });
+  const budget = await page.evaluate(
+    async () => (await window.brickEditor!.render.budget()).budget,
+  );
+  expect(budget.photoTriangles).toBe(600000);
+  await page.evaluate(() =>
+    window.brickEditor!.render.look.set("photo", { pathSamples: 2 }),
+  );
+  await expect
+    .poll(() => page.evaluate(() => window.brickEditor!.render.look.photo()), {
+      timeout: 240000,
+    })
+    .toMatchObject({ renderer: "path", samples: 2 });
 });
 
 test("Play re-renders the cached shadow map only when the scene changes, not when the camera moves", async ({

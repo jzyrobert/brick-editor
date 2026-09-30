@@ -24,6 +24,8 @@ export type PipelineFrame = {
   accumulate: boolean;
   /** Multisampled HDR target; accumulation already anti-aliases through jitter. */
   msaa: number;
+  /** Photographic colour grade after tone mapping (the photo look). */
+  grade?: { contrast: number; saturation: number } | null;
 };
 
 const vertexShader = /* glsl */ `
@@ -51,17 +53,57 @@ const compositeShader = /* glsl */ `
   uniform float backgroundAlpha;
   uniform float vignette;
   uniform float weight;
+  uniform float gradeContrast;
+  uniform float gradeSaturation;
+  uniform float denoise;
+  uniform vec2 texel;
   varying vec2 vUv;
   #include <tonemapping_pars_fragment>
   #include <colorspace_pars_fragment>
-  void main() {
-    vec4 hdr = texture2D(tColor, vUv);
+  vec3 toneMap(vec4 hdr) {
     float a = clamp(hdr.a, 0.0, 1.0);
     vec3 rgb = a > 0.0 ? hdr.rgb / a : vec3(0.0);
     #if defined(ACES_FILMIC_TONE_MAPPING)
       rgb = ACESFilmicToneMapping(rgb);
     #elif defined(NEUTRAL_TONE_MAPPING)
       rgb = NeutralToneMapping(rgb);
+    #elif defined(AGX_TONE_MAPPING)
+      rgb = AgXToneMapping(rgb);
+    #endif
+    return rgb;
+  }
+  void main() {
+    vec4 hdr = texture2D(tColor, vUv);
+    float a = clamp(hdr.a, 0.0, 1.0);
+    vec3 rgb = toneMap(hdr);
+    #ifdef DENOISE
+      // Edge-preserving (bilateral) smoothing of path-tracing noise on the
+      // tone-mapped image: neighbours of similar colour are averaged, edges and
+      // texture that differ by more than the noise level are kept.
+      vec3 centre = sqrt(max(rgb, 0.0));
+      vec3 sum = rgb;
+      float total = 1.0;
+      float range = 0.5 / max(denoise * denoise, 1e-6);
+      for (int y = -2; y <= 2; y++) {
+        for (int x = -2; x <= 2; x++) {
+          if (x == 0 && y == 0) continue;
+          vec3 neighbour = toneMap(texture2D(tColor, vUv + vec2(x, y) * texel));
+          vec3 d = sqrt(max(neighbour, 0.0)) - centre;
+          float w = exp(-float(x * x + y * y) / 4.5 - dot(d, d) * range);
+          sum += neighbour * w;
+          total += w;
+        }
+      }
+      rgb = sum / total;
+    #endif
+    #ifdef PHOTO_GRADE
+      // Photographic grade: a touch more saturation and a gentle S-curve in
+      // perceptual space (display-linear in, display-linear out).
+      float luma = dot(rgb, vec3(0.2126, 0.7152, 0.0722));
+      rgb = max(mix(vec3(luma), rgb, gradeSaturation), 0.0);
+      vec3 p = pow(clamp(rgb, 0.0, 1.0), vec3(1.0 / 2.2));
+      p = mix(p, p * p * (3.0 - 2.0 * p), gradeContrast);
+      rgb = pow(p, vec3(2.2));
     #endif
     vec3 color = rgb * a + background * backgroundAlpha * (1.0 - a);
     float alpha = a + backgroundAlpha * (1.0 - a);
@@ -141,6 +183,10 @@ export class LookPipeline {
       backgroundAlpha: { value: 1 },
       vignette: { value: 0 },
       weight: { value: 1 },
+      gradeContrast: { value: 0 },
+      gradeSaturation: { value: 1 },
+      denoise: { value: 0 },
+      texel: { value: new THREE.Vector2() },
       toneMappingExposure: { value: 1 },
     },
     vertexShader,
@@ -293,7 +339,12 @@ export class LookPipeline {
     const toneDefines = {
       ACES_FILMIC_TONE_MAPPING: tone === THREE.ACESFilmicToneMapping,
       NEUTRAL_TONE_MAPPING: tone === THREE.NeutralToneMapping,
+      AGX_TONE_MAPPING: tone === THREE.AgXToneMapping,
+      PHOTO_GRADE: !!frame.grade,
+      DENOISE: false,
     };
+    uniforms.gradeContrast.value = frame.grade?.contrast ?? 0;
+    uniforms.gradeSaturation.value = frame.grade?.saturation ?? 1;
     if (frame.accumulate) {
       const [a, b] = this.ensureAccumulation(frame.width, frame.height);
       if (frame.sample === 0) this.current = 0;
@@ -332,6 +383,51 @@ export class LookPipeline {
       passes += 1;
     }
     this.lastPasses = passes;
+  }
+  /**
+   * Tone-map, grade and present an already rendered linear HDR image (a path-traced
+   * still, premultiplied alpha) to the canvas or a capture target.
+   */
+  presentImage(frame: {
+    renderer: THREE.WebGLRenderer;
+    texture: THREE.Texture;
+    target: THREE.WebGLRenderTarget | null;
+    background: THREE.Color | null;
+    vignette: number;
+    grade: { contrast: number; saturation: number } | null;
+    /** Noise level of the image in perceptual units (0 = no smoothing). */
+    denoise?: number;
+  }) {
+    const { renderer } = frame;
+    const uniforms = this.composite.uniforms;
+    uniforms.tColor.value = frame.texture;
+    uniforms.background.value.copy(
+      frame.background ?? new THREE.Color(0, 0, 0),
+    );
+    uniforms.backgroundAlpha.value = frame.background ? 1 : 0;
+    uniforms.vignette.value = frame.vignette;
+    uniforms.toneMappingExposure.value = renderer.toneMappingExposure;
+    uniforms.gradeContrast.value = frame.grade?.contrast ?? 0;
+    uniforms.gradeSaturation.value = frame.grade?.saturation ?? 1;
+    uniforms.denoise.value = frame.denoise ?? 0;
+    const image = frame.texture.image as { width: number; height: number };
+    uniforms.texel.value.set(1 / image.width, 1 / image.height);
+    const tone = renderer.toneMapping;
+    this.setDefines(this.composite, {
+      DENOISE: (frame.denoise ?? 0) > 0,
+      ACES_FILMIC_TONE_MAPPING: tone === THREE.ACESFilmicToneMapping,
+      NEUTRAL_TONE_MAPPING: tone === THREE.NeutralToneMapping,
+      AGX_TONE_MAPPING: tone === THREE.AgXToneMapping,
+      PHOTO_GRADE: !!frame.grade,
+      STRAIGHT_ALPHA: frame.target !== null,
+      SRGB_TRANSFER:
+        frame.target === null ||
+        frame.target.texture.colorSpace !== THREE.SRGBColorSpace,
+    });
+    renderer.setRenderTarget(frame.target);
+    this.quad.material = this.composite;
+    this.quad.render(renderer);
+    this.lastPasses = 1;
   }
   /** Release every GPU resource; the pipeline can be used again afterwards. */
   releaseTargets() {

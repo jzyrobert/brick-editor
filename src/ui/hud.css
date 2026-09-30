@@ -744,7 +744,7 @@ summary:focus-visible {
 }
 @media (max-width: 1100px) {
   /* Status is announced always, but shown only briefly after it changes. */
-  .status-bar:not(.fresh):not([data-loading]) {
+  .status-bar:not(.fresh):not([data-loading]):not([data-refining]) {
     opacity: 0;
     pointer-events: none;
   }
@@ -821,7 +821,7 @@ a .icon {
 }
 
 /* Status is a transient toast at every size; revision lives in the project slab. */
-.status-bar:not(.fresh):not([data-loading]) {
+.status-bar:not(.fresh):not([data-loading]):not([data-refining]) {
   opacity: 0;
   pointer-events: none;
 }

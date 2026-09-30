@@ -608,11 +608,16 @@ export function createAPI(
         ) => renderer().setQuality(name, controls),
       },
       /** Shading look: standard (default), realistic (IBL, finishes, AO, soft shadows,
-       * no outlines) or photo (realistic plus progressive still refinement). */
+       * no outlines) or photo (path-traced stills in a studio; realistic frames while
+       * the view moves). */
       look: {
         get: async () => renderer().currentLook(),
         set: async (name: LookName, controls: Partial<LookControls> = {}) =>
           renderer().setLook(name, controls),
+        /** How the photo look's last still was rendered: "path" (path traced) or
+         * "raster" (accumulated realistic frames, with the reason), its traced
+         * triangles, samples so far and BVH build time. */
+        photo: async () => renderer().photoStats,
       },
       image: captureImage,
       /** Renderer budget of the active resource profile and the last rendered
@@ -696,6 +701,7 @@ export function createAPI(
         height: number;
         quality?: RenderRequest["quality"];
         look?: RenderRequest["look"];
+        lookControls?: RenderRequest["lookControls"];
         background?: RenderRequest["background"];
         visibility?: RenderRequest["visibility"];
       }) => {
@@ -751,6 +757,9 @@ export function createAPI(
               },
               quality: input.quality ?? "balanced",
               ...(input.look ? { look: input.look } : {}),
+              ...(input.lookControls
+                ? { lookControls: input.lookControls }
+                : {}),
             });
             first ??= shot.manifest;
             shots.push({

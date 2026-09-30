@@ -10,10 +10,10 @@ Every official LDraw part resolves offline: the CLI registers the committed comp
 
 ```sh
 npm run cli -- render --input fixtures/ldraw/finishes.mpd --camera fixtures/renders/interior.camera.json --look realistic --output realistic.png
-npm run cli -- render-collection --input build.brickproj --collection exterior/ --look photo --output exterior.zip
+npm run cli -- render-collection --input build.brickproj --collection exterior/ --look photo --samples 32 --output exterior.zip
 ```
 
-`render`, `render-collection` and `play` accept `--look standard|realistic|photo` (default `standard`, the original look). `realistic` adds image-based lighting, tuned plastic/finish materials, ambient occlusion and soft shadows and hides outlines; `photo` also accumulates 32 jittered samples per image. See [rendering looks](RENDERING.md). Software WebGL makes `photo` captures slow (tens of seconds per megapixel).
+`render`, `render-collection` and `play` accept `--look standard|realistic|photo` (default `standard`, the original look). `realistic` adds image-based lighting, tuned plastic/finish materials, ambient occlusion and soft shadows and hides outlines; `photo` path-traces each image in a studio (256 samples by default; `--samples N` sets 1–4096). See [rendering looks](RENDERING.md#photo-path-traced-stills). Software WebGL makes `photo` captures slow: the first compiles the tracing shader (up to a minute), then each sample costs seconds per megapixel, so pass a small `--samples` (16–64) for headless runs.
 
 ## Instruction publication
 

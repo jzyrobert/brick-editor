@@ -124,6 +124,7 @@ import { ReplaceProjectDialog } from "./ReplaceProjectDialog";
 import { connectorCoverage, verifiedConnectors } from "../catalog/connectors";
 import { SceneAdapter, type SectionSpec } from "../render/adapter";
 import { LoadProgressIndicator, setLoadProgress } from "./LoadProgress";
+import { PhotoProgressIndicator, setPhotoProgress } from "./PhotoProgress";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
 import { BrowserProjects } from "../persistence/browser-projects";
 import { recoverProject } from "../persistence/restore";
@@ -851,6 +852,16 @@ function Workspace() {
     try {
       renderer.current = new SceneAdapter(viewport.current!, setStatus);
       renderer.current.onProgress = setLoadProgress;
+      renderer.current.onPhotoProgress = (progress) => {
+        setPhotoProgress(progress);
+        if (progress?.phase === "done")
+          setStatus(
+            progress.renderer === "path"
+              ? `Photo refined: ${progress.samples} path-traced samples.`
+              : `Photo refined: ${progress.samples} samples.` +
+                  (progress.note ? " " + progress.note : ""),
+          );
+      };
       // Phones degrade the realistic looks; apply the viewer's saved look.
       renderer.current.setLookResourceProfile(editor.resourceProfile);
       renderer.current.setLook(loadLookPreference());
@@ -1938,7 +1949,7 @@ function Workspace() {
           ? "Standard look: flat lighting with part outlines."
           : name === "realistic"
             ? "Realistic look: plastic materials, soft shadows and ambient occlusion."
-            : "Photo look: realistic, and the view refines itself while it is still.",
+            : "Photo look: a path-traced studio shot that refines while the view is still.",
       );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : String(e));
@@ -4244,6 +4255,7 @@ function Workspace() {
           {status}
         </span>
         <LoadProgressIndicator />
+        <PhotoProgressIndicator />
         {busy && (
           <button
             onClick={() => {

@@ -61,6 +61,17 @@ import {
 import type { ResourceProfileName } from "../core/resource-profile";
 import { checkRenderBudget, renderBudget } from "./render-budget";
 import {
+  PHOTO_SCHEDULE,
+  choosePhotoRenderer,
+  nextTilesPerFrame,
+  photoDenoise,
+  photoProgress,
+  traceMeshes,
+  traceSignature,
+  type PhotoRendererChoice,
+} from "./photo-policy";
+import type { PhotoTracer, TraceSource } from "./photo-tracer";
+import {
   boxProxy,
   collisionProxy,
   keepsOpenings,
@@ -104,6 +115,18 @@ export const PLAY_PIXEL_RATIO_CAP = 1.5;
 export const MOTION_PIXEL_RATIO_CAP = 1.25;
 /** A view counts as at rest this long after its last motion event. */
 export const MOTION_IDLE_MS = 180;
+/** A photo still starts path tracing once the view has been still this long. */
+export const PHOTO_IDLE_MS = 220;
+/** Refinement of a photo still, for the "Refining photo… n%" toast. */
+export type PhotoProgressReport = {
+  phase: "preparing" | "refining" | "done";
+  percent: number;
+  samples: number;
+  target: number;
+  renderer: "path" | "raster";
+  /** Why the path tracer is not used, when it is not. */
+  note: string | null;
+};
 const defaultCamera: CameraSpec = {
   space: "ldraw",
   projection: "perspective",
@@ -446,6 +469,35 @@ export class SceneAdapter {
   private lookStats = { passes: 1, samples: 0 };
   /** World-space model bounds (grown) that limit ambient occlusion. */
   private aoBox = new THREE.Box3();
+  /** Path tracer for photo stills: loaded and created on first use, freed with
+   * the look (see photo-tracer.ts). */
+  private photo?: PhotoTracer;
+  private photoModule?: Promise<typeof import("./photo-tracer")>;
+  /** Restarted by every invalidate(); a pending refinement checks it. */
+  private photoToken = 0;
+  private photoTimer?: ReturnType<typeof setTimeout>;
+  private photoRaf = 0;
+  private photoLastFrame = 0;
+  /** The view the tracer's accumulated samples belong to. */
+  private photoViewKey = "";
+  /** The last tapped model point: the photo look focuses there. */
+  private photoFocusPoint: THREE.Vector3 | null = null;
+  private photoReportKey = "";
+  /** How the last photo still was (or is being) rendered. */
+  private photoInfo: {
+    renderer: "path" | "raster";
+    reason: string | null;
+    triangles: number;
+    samples: number;
+    buildMs: number;
+  } = {
+    renderer: "raster",
+    reason: null,
+    triangles: 0,
+    samples: 0,
+    buildMs: 0,
+  };
+  onPhotoProgress?: (progress: PhotoProgressReport | null) => void;
   /** Whether the next draw must re-render a cached shadow map. */
   private shadowDirty = true;
   constructor(
@@ -543,6 +595,11 @@ export class SceneAdapter {
     this.raf = 0;
     cancelAnimationFrame(this.refineRaf);
     this.refineRaf = 0;
+    this.stopPhoto();
+    // The tracer's textures and targets do not survive a loss.
+    this.photo?.dispose();
+    this.photo = undefined;
+    this.photoViewKey = "";
     this.report(
       "Graphics context lost. Your document remains available for native export.",
     );
@@ -1863,6 +1920,8 @@ export class SceneAdapter {
   setLookResourceProfile(profile: ResourceProfileName) {
     if (profile === this.lookResourceProfile) return;
     this.lookResourceProfile = profile;
+    // The photo tracer's schedule (tiles, bounces) follows the profile.
+    if (!this.captureActive) this.releasePhoto(true);
     this.compiler?.setSize(this.compileWorkerCount());
     void sharedGeometryCache()?.setMaxBytes(GEOMETRY_CACHE_BYTES[profile]);
     // Renderer budgets follow the profile: re-assess the current model, so a
@@ -1896,6 +1955,8 @@ export class SceneAdapter {
       this.pipeline?.dispose();
       this.pipeline = undefined;
     }
+    // A capture switches looks temporarily; keep the tracer until it ends.
+    if (look.renderer !== "path" && !this.captureActive) this.releasePhoto();
     this.invalidate();
   }
   private ensureEnvironment() {
@@ -2009,11 +2070,15 @@ export class SceneAdapter {
     this.qualityProfile = structuredClone(profile);
     this.applyPixelRatio();
     const toneMapping =
-      this.look.toneMapping === "neutral" ? "neutral" : profile.toneMapping;
+      this.look.toneMapping === "quality"
+        ? profile.toneMapping
+        : this.look.toneMapping;
     this.renderer.toneMapping =
       toneMapping === "aces"
         ? THREE.ACESFilmicToneMapping
-        : THREE.NeutralToneMapping;
+        : toneMapping === "agx"
+          ? THREE.AgXToneMapping
+          : THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure =
       profile.exposure * this.look.exposureScale;
     // A look may raise shadows and hide edges; it never changes the stored profile.
@@ -2144,6 +2209,7 @@ export class SceneAdapter {
     return {
       ...this.look,
       samples: 1,
+      renderer: "raster",
       ambientOcclusion:
         this.look.resourceProfile === "mobile"
           ? "off"
@@ -2199,6 +2265,22 @@ export class SceneAdapter {
       this.drawDirect();
       return;
     }
+    let note: string | null = null;
+    if (look.renderer === "path") {
+      const trace = this.photoTrace(look);
+      if (trace.choice.renderer === "path") {
+        this.drawPhotoFrame(look, trace);
+        return;
+      }
+      note = trace.choice.reason;
+      this.photoInfo = {
+        renderer: "raster",
+        reason: note,
+        triangles: trace.triangles,
+        samples: 0,
+        buildMs: 0,
+      };
+    }
     const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
     const accumulate = look.samples > 1;
     const sample = accumulate ? this.stillSample : 0;
@@ -2210,6 +2292,17 @@ export class SceneAdapter {
       passes: this.pipeline!.lastPasses,
       samples: accumulate ? sample + 1 : 0,
     };
+    if (accumulate) {
+      this.photoInfo.samples = sample + 1;
+      this.reportPhoto({
+        phase: sample + 1 < look.samples ? "refining" : "done",
+        percent: photoProgress(sample + 1, look.samples),
+        samples: sample + 1,
+        target: look.samples,
+        renderer: "raster",
+        note,
+      });
+    } else if (look.renderer !== "path") this.reportPhoto(null);
     if (accumulate && sample + 1 < look.samples) {
       // Refine a still view one jittered sample per frame; any change restarts.
       this.refineRaf = requestAnimationFrame(() => {
@@ -2220,6 +2313,430 @@ export class SceneAdapter {
         this.drawScene();
       });
     }
+  }
+  private reportPhoto(progress: PhotoProgressReport | null) {
+    const key = progress
+      ? `${progress.phase}:${progress.percent}:${progress.renderer}`
+      : "";
+    if (key === this.photoReportKey) return;
+    this.photoReportKey = key;
+    this.onPhotoProgress?.(progress && { ...progress });
+  }
+  /** Colour grade of the look (photo), for the pipeline's composite. */
+  private lookGrade(look: LookControls) {
+    return look.grade === "film" ? { contrast: 0.25, saturation: 1.15 } : null;
+  }
+  /** What a path-traced still of the current view would contain, and whether the
+   * tracer takes it (see choosePhotoRenderer). */
+  private photoTrace(look: LookControls) {
+    this.root.updateMatrixWorld(true);
+    const visible = [...this.handles.values()].filter((group) => group.visible);
+    const { meshes, triangles } = traceMeshes(visible);
+    const gl = this.renderer;
+    const choice: PhotoRendererChoice = choosePhotoRenderer({
+      look,
+      support: {
+        floatRenderTargets: gl.extensions.has("EXT_color_buffer_float"),
+        maxTextureSize: gl.capabilities.maxTextureSize,
+      },
+      triangles,
+      triangleBudget: renderBudget(this.lookResourceProfile).photoTriangles,
+      profile: this.lookResourceProfile,
+      sectionCut: this.renderer.clippingPlanes.length > 0,
+      play: this.playViewActive,
+    });
+    const bounds = new THREE.Box3();
+    for (const mesh of meshes) bounds.expandByObject(mesh, false);
+    // A scene environment (ground, props) composes with Photo by flagging its
+    // objects `userData.photoStage`: they are traced instead of the studio sweep.
+    const staged = traceMeshes(
+      this.scene.children.filter((child) => child.userData.photoStage),
+    ).meshes;
+    for (const mesh of staged)
+      for (const material of Array.isArray(mesh.material)
+        ? mesh.material
+        : [mesh.material])
+        material.userData.photoStage = true;
+    const backdrop: "studio" | "floor" | "scene" = staged.length
+      ? "scene"
+      : look.backdrop === "floor"
+        ? "floor"
+        : "studio";
+    const key =
+      traceSignature([...meshes, ...staged]) +
+      "|" +
+      backdrop +
+      "|" +
+      bounds.min
+        .toArray()
+        .concat(bounds.max.toArray())
+        .map((v) => Math.round(v * 16))
+        .join(",");
+    return {
+      meshes: [...meshes, ...staged],
+      triangles,
+      choice,
+      key,
+      bounds,
+      backdrop,
+    };
+  }
+  private traceSources(meshes: readonly THREE.Mesh[]): TraceSource[] {
+    return meshes.map((mesh) => ({
+      mesh,
+      geometry: mesh.geometry,
+      matrix: mesh.matrixWorld.clone(),
+      materials: Array.isArray(mesh.material) ? mesh.material : [mesh.material],
+    }));
+  }
+  /** Focus distance for depth of field: the last tapped point, else the centre
+   * of the visible model (its bounds), else the orbit target. */
+  private photoFocusDistance(bounds: THREE.Box3) {
+    const camera = this.camera;
+    camera.updateMatrixWorld();
+    const origin = camera.getWorldPosition(new THREE.Vector3());
+    const forward = camera.getWorldDirection(new THREE.Vector3());
+    if (this.photoFocusPoint) {
+      const distance = this.photoFocusPoint.clone().sub(origin).dot(forward);
+      if (distance > camera.near) return distance;
+    }
+    if (!bounds.isEmpty()) {
+      const distance = bounds
+        .getCenter(new THREE.Vector3())
+        .sub(origin)
+        .dot(forward);
+      if (distance > camera.near) return distance;
+    }
+    return Math.max(
+      camera.near,
+      this.controls.target.clone().sub(origin).dot(forward),
+    );
+  }
+  private photoBackground(): THREE.Color | null {
+    return this.scene.background instanceof THREE.Color
+      ? this.scene.background
+      : null;
+  }
+  private photoView(
+    look: LookControls,
+    width: number,
+    height: number,
+    bounds: THREE.Box3,
+  ) {
+    const camera = this.camera;
+    const target = this.controls.target;
+    const position = camera.getWorldPosition(new THREE.Vector3());
+    return {
+      camera,
+      width,
+      height,
+      focusDistance: this.photoFocusDistance(bounds),
+      depthOfField: look.depthOfField,
+      azimuth: Math.atan2(position.x - target.x, position.z - target.z),
+    };
+  }
+  private photoViewSignature(
+    view: ReturnType<SceneAdapter["photoView"]>,
+    key: string,
+  ) {
+    const round = (v: number) => Math.round(v * 1000) / 1000;
+    return JSON.stringify([
+      key,
+      view.width,
+      view.height,
+      round(view.focusDistance),
+      view.depthOfField,
+      round(view.azimuth),
+      view.camera.matrixWorld.elements.map(round),
+      view.camera.projectionMatrix.elements.map(round),
+      this.photoBackground()?.getHexString() ?? null,
+    ]);
+  }
+  private loadPhotoTracer() {
+    this.photoModule ??= import("./photo-tracer");
+    return this.photoModule;
+  }
+  private async ensurePhoto() {
+    const module = await this.loadPhotoTracer();
+    this.photo ??= new module.PhotoTracer(
+      this.renderer,
+      PHOTO_SCHEDULE[this.lookResourceProfile],
+    );
+    return this.photo;
+  }
+  /** Stop refining a photo still (it resumes on the next still frame). */
+  private stopPhoto() {
+    this.photoToken++;
+    clearTimeout(this.photoTimer);
+    this.photoTimer = undefined;
+    cancelAnimationFrame(this.photoRaf);
+    this.photoRaf = 0;
+    this.photoLastFrame = 0;
+  }
+  /** Free the tracer's BVH, textures and targets (look changed away from photo). */
+  private releasePhoto(dispose = false) {
+    this.stopPhoto();
+    if (dispose) {
+      this.photo?.dispose();
+      this.photo = undefined;
+    } else this.photo?.trim();
+    this.photoViewKey = "";
+    this.reportPhoto(null);
+  }
+  /**
+   * An interactive photo frame. A still view that the tracer has already refined
+   * is presented from its samples; otherwise a realistic raster frame is drawn
+   * now and path tracing starts once the view has been still for PHOTO_IDLE_MS.
+   */
+  private drawPhotoFrame(
+    look: LookControls,
+    trace: ReturnType<SceneAdapter["photoTrace"]>,
+  ) {
+    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
+    const photo = this.photo;
+    const view = this.photoView(look, size.x, size.y, trace.bounds);
+    const viewKey = this.photoViewSignature(view, trace.key);
+    const schedule = PHOTO_SCHEDULE[this.lookResourceProfile];
+    const current =
+      !!photo &&
+      photo.hasScene(trace.key) &&
+      viewKey === this.photoViewKey &&
+      !photo.compiling;
+    if (current && photo.samples >= schedule.displaySamples) {
+      this.presentPhoto(look);
+      if (photo.samples < look.pathSamples) this.schedulePhoto(look, trace, 0);
+      return;
+    }
+    this.drawLookFrame({ ...look, samples: 1 }, null, size.x, size.y, 0, {
+      aoScale: 0.5,
+      msaa: this.look.resourceProfile === "mobile" ? 2 : 4,
+    });
+    this.lookStats = { passes: this.pipeline!.lastPasses, samples: 0 };
+    this.schedulePhoto(look, trace, current ? 0 : PHOTO_IDLE_MS);
+  }
+  private schedulePhoto(
+    look: LookControls,
+    trace: ReturnType<SceneAdapter["photoTrace"]>,
+    delay: number,
+  ) {
+    const token = this.photoToken;
+    clearTimeout(this.photoTimer);
+    this.photoTimer = setTimeout(() => {
+      this.photoTimer = undefined;
+      void this.startPhoto(token, look, trace).catch((error) => {
+        if (token !== this.photoToken) return;
+        this.photoInfo.reason =
+          "Path tracing failed (" +
+          (error instanceof Error ? error.message : String(error)) +
+          "); showing the realistic frame.";
+        this.reportPhoto(null);
+      });
+    }, delay);
+  }
+  private photoCurrent(token: number) {
+    return (
+      token === this.photoToken &&
+      !this.lost &&
+      !this.disposed &&
+      !this.captureActive &&
+      !this.raf
+    );
+  }
+  private async startPhoto(
+    token: number,
+    look: LookControls,
+    trace: ReturnType<SceneAdapter["photoTrace"]>,
+  ) {
+    if (!this.photoCurrent(token)) return;
+    // A drag in progress (finger or button held) is not a still view yet.
+    if (this.motionHeld) {
+      this.schedulePhoto(look, trace, PHOTO_IDLE_MS);
+      return;
+    }
+    const target = look.pathSamples;
+    const report = (phase: PhotoProgressReport["phase"], samples: number) =>
+      this.reportPhoto({
+        phase,
+        percent: phase === "preparing" ? 0 : photoProgress(samples, target),
+        samples,
+        target,
+        renderer: "path",
+        note: null,
+      });
+    if (!this.photo?.hasScene(trace.key)) report("preparing", 0);
+    const photo = await this.ensurePhoto();
+    if (!this.photoCurrent(token)) return;
+    if (!photo.hasScene(trace.key)) {
+      const built = await photo.prepare(
+        trace.key,
+        () => this.traceSources(trace.meshes),
+        { backdrop: trace.backdrop, bounds: trace.bounds },
+      );
+      if (!built || !this.photoCurrent(token)) return;
+    }
+    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
+    const view = this.photoView(look, size.x, size.y, trace.bounds);
+    const viewKey = this.photoViewSignature(view, trace.key);
+    const background = photo.setBackground(this.photoBackground());
+    if (viewKey !== this.photoViewKey || background) {
+      photo.setView(view);
+      photo.reset();
+      this.photoViewKey = viewKey;
+    }
+    this.photoInfo = {
+      renderer: "path",
+      reason: null,
+      triangles: photo.triangles,
+      samples: photo.samples,
+      buildMs: photo.buildMs,
+    };
+    photo.compile();
+    const frame = () => {
+      this.photoRaf = 0;
+      if (!this.photoCurrent(token)) return;
+      if (photo.compiling) {
+        report("preparing", 0);
+        this.photoRaf = requestAnimationFrame(frame);
+        return;
+      }
+      const now = performance.now();
+      if (this.photoLastFrame)
+        photo.tilesPerFrame = nextTilesPerFrame(
+          photo.tilesPerFrame,
+          now - this.photoLastFrame,
+          photo.totalTiles,
+        );
+      this.photoLastFrame = now;
+      photo.step(
+        Math.min(
+          photo.tilesPerFrame,
+          Math.ceil((target - photo.samples) * photo.totalTiles),
+        ),
+      );
+      photo.sync();
+      const samples = Math.floor(photo.samples);
+      this.photoInfo.samples = samples;
+      if (photo.samples >= photo.schedule.displaySamples)
+        this.presentPhoto(look);
+      if (photo.samples >= target) {
+        this.photoLastFrame = 0;
+        report("done", samples);
+        return;
+      }
+      report("refining", samples);
+      this.photoRaf = requestAnimationFrame(frame);
+    };
+    this.photoRaf = requestAnimationFrame(frame);
+  }
+  /** Tone-map the traced still to the canvas, then draw the editing overlays
+   * (selection, gizmos, measurements) over it. */
+  private presentPhoto(look: LookControls) {
+    const photo = this.photo!;
+    const pipeline = (this.pipeline ??= new LookPipeline());
+    const info = this.renderer.info;
+    info.autoReset = false;
+    pipeline.presentImage({
+      renderer: this.renderer,
+      texture: photo.texture,
+      target: null,
+      background: this.photoBackground(),
+      vignette: look.vignette,
+      grade: this.lookGrade(look),
+      denoise: photoDenoise(photo.samples),
+    });
+    this.lookStats = { passes: 1, samples: Math.floor(photo.samples) };
+    const scene = this.scene;
+    const children = scene.children;
+    const overlays = children.filter(
+      (child) =>
+        child !== this.root &&
+        child !== this.grid &&
+        child !== this.shadowGround &&
+        child !== this.keyLight.target &&
+        !(child as THREE.Light).isLight,
+    );
+    const background = scene.background;
+    const autoClear = this.renderer.autoClear;
+    try {
+      scene.children = overlays;
+      scene.background = null;
+      this.renderer.autoClear = false;
+      this.renderer.clearDepth();
+      this.renderer.render(scene, this.camera);
+    } finally {
+      scene.children = children;
+      scene.background = background;
+      this.renderer.autoClear = autoClear;
+    }
+  }
+  /** Photo-look diagnostics: how the last still was rendered. */
+  get photoStats() {
+    return { ...this.photoInfo };
+  }
+  /** Path-trace a capture: the same tracer, stage and lens as the interactive
+   * still, at the capture size, for exactly `pathSamples` samples (stable noise,
+   * so a capture of the same view repeats). Yields between tiles. */
+  private async capturePathTraced(
+    look: LookControls,
+    trace: ReturnType<SceneAdapter["photoTrace"]>,
+    target: THREE.WebGLRenderTarget,
+    width: number,
+    height: number,
+    background: THREE.Color | null,
+    context: number,
+  ) {
+    const alive = () =>
+      ensure(
+        !this.lost && context === this.contextEpoch,
+        "WEBGL_UNAVAILABLE",
+        "Graphics context changed during capture",
+      );
+    const photo = await this.withContext(this.ensurePhoto());
+    // The interactive still restarts after the capture.
+    this.photoViewKey = "";
+    await this.withContext(
+      photo.prepare(trace.key, () => this.traceSources(trace.meshes), {
+        backdrop: trace.backdrop,
+        bounds: trace.bounds,
+      }),
+    );
+    alive();
+    photo.setBackground(background);
+    photo.setView(this.photoView(look, width, height, trace.bounds));
+    photo.compile();
+    while (photo.compiling) {
+      await new Promise((resolve) => setTimeout(resolve, 16));
+      alive();
+    }
+    photo.reset();
+    let last = performance.now();
+    while (photo.samples < look.pathSamples) {
+      photo.step(1);
+      photo.sync();
+      if (performance.now() - last > 40) {
+        // Keep the page responsive during a long trace.
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        alive();
+        last = performance.now();
+      }
+    }
+    const pipeline = (this.pipeline ??= new LookPipeline());
+    pipeline.presentImage({
+      renderer: this.renderer,
+      texture: photo.texture,
+      target,
+      background,
+      vignette: look.vignette,
+      grade: this.lookGrade(look),
+      denoise: photoDenoise(photo.samples),
+    });
+    return {
+      calls: 0,
+      triangles: photo.triangles,
+      points: 0,
+      lines: 0,
+      frame: 0,
+    };
   }
   /** One frame of the HDR look pipeline, jittered (camera sub-pixel offset and key
    * light position) when it is a later sample of an accumulated still. */
@@ -2267,6 +2784,7 @@ export class SceneAdapter {
         sample,
         accumulate,
         msaa: options.msaa,
+        grade: this.lookGrade(look),
       });
     } finally {
       if (accumulate && sample > 0) {
@@ -2282,6 +2800,9 @@ export class SceneAdapter {
     if (!options.cameraOnly) this.shadowDirty = true;
     // Any change restarts the still accumulation.
     this.stillSample = 0;
+    // A path-traced still pauses; the next frame resumes it if nothing it
+    // depends on changed (a selection change keeps its samples).
+    this.stopPhoto();
     if (this.refineRaf) {
       cancelAnimationFrame(this.refineRaf);
       this.refineRaf = 0;
@@ -3342,13 +3863,14 @@ export class SceneAdapter {
     this.invalidate();
   }
   pick(x: number, y: number) {
-    return (
-      this.raycastHandles(
-        this.ray(x, y),
-        (_, group) => group.visible,
-        (hit) => !this.aboveSection(hit.point),
-      )?.id ?? null
+    const found = this.raycastHandles(
+      this.ray(x, y),
+      (_, group) => group.visible,
+      (hit) => !this.aboveSection(hit.point),
     );
+    // The photo look focuses on the last tapped part.
+    if (found) this.photoFocusPoint = found.hit.point.clone();
+    return found?.id ?? null;
   }
   /** Intersects only authored triangle meshes, preserving their complete world affine transform. */
   pickFace(
@@ -3639,6 +4161,13 @@ export class SceneAdapter {
     let captureStats: typeof this.renderer.info.render;
     let capturedFloorFocus: FloorFocus | null = null,
       capturedAnnotations = { guides: 0, labels: 0 };
+    let capturePhoto: {
+      renderer: "path" | "raster";
+      reason: string | null;
+      samples: number;
+      triangles: number;
+      buildMs?: number;
+    } | null = null;
     const rt = new THREE.WebGLRenderTarget(request.width, request.height, {
       format: THREE.RGBAFormat,
       type: THREE.UnsignedByteType,
@@ -3723,7 +4252,30 @@ export class SceneAdapter {
         "REVISION_CONFLICT",
         "Document changed during capture",
       );
-      if (lookUsesPipeline(captureLook)) {
+      const photoTrace =
+        captureLook.renderer === "path" ? this.photoTrace(captureLook) : null;
+      capturePhoto = {
+        renderer: photoTrace?.choice.renderer ?? "raster",
+        reason: photoTrace?.choice.reason ?? null,
+        samples: 0,
+        triangles: photoTrace?.triangles ?? 0,
+      };
+      if (photoTrace?.choice.renderer === "path") {
+        captureStats = await this.capturePathTraced(
+          captureLook,
+          photoTrace,
+          rt,
+          request.width,
+          request.height,
+          request.background.type === "transparent"
+            ? null
+            : new THREE.Color(request.background.color || "#ffffff"),
+          capturedContext,
+        );
+        capturePhoto.samples = captureLook.pathSamples;
+        capturePhoto.buildMs = Math.round(this.photo?.buildMs ?? 0);
+      } else if (lookUsesPipeline(captureLook)) {
+        if (captureLook.samples > 1) capturePhoto.samples = captureLook.samples;
         // Accumulated captures anti-alias through jitter; single frames use MSAA.
         const samples = captureLook.samples;
         for (let sample = 0; sample < samples; sample++) {
@@ -3846,6 +4398,9 @@ export class SceneAdapter {
         stats: captureStats!,
         profile: captureProfile,
         look: captureLook,
+        ...(captureLook.name === "photo" && capturePhoto
+          ? { photo: capturePhoto }
+          : {}),
         lighting: captureLighting!,
         clipping: {
           space: "renderer-world",
@@ -3865,9 +4420,9 @@ export class SceneAdapter {
           height: request.height,
           colorSpace: this.renderer.outputColorSpace,
           toneMapping:
-            captureLook.toneMapping === "neutral"
-              ? "neutral"
-              : captureProfile.toneMapping,
+            captureLook.toneMapping === "quality"
+              ? captureProfile.toneMapping
+              : captureLook.toneMapping,
           exposure: captureProfile.exposure * captureLook.exposureScale,
           // Only the look pipeline tone-maps captures; direct captures are linear sRGB.
           toneMapped: lookUsesPipeline(captureLook),
@@ -3893,6 +4448,7 @@ export class SceneAdapter {
     this.clearAnnotations();
     cancelAnimationFrame(this.raf);
     cancelAnimationFrame(this.refineRaf);
+    this.releasePhoto(true);
     this.pipeline?.dispose();
     this.pipeline = undefined;
     this.environmentMap = disposeTexture(this.environmentMap);

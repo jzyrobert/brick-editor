@@ -50,7 +50,7 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      "brick-cli validate|health|connectors|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --accept-derived-mappings --allow-partial\nQuery: --request query.json [--output query-result.json]\nConnectors: connectors --input file [--connected JSON-array-of-occurrence-IDs] [--output connectors.json] (verified stud connection groups, uncovered parts, connected assembly)\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --look standard|realistic|photo --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
+      "brick-cli validate|health|connectors|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --accept-derived-mappings --allow-partial\nQuery: --request query.json [--output query-result.json]\nConnectors: connectors --input file [--connected JSON-array-of-occurrence-IDs] [--output connectors.json] (verified stud connection groups, uncovered parts, connected assembly)\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --look standard|realistic|photo [--samples N] --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
     );
     return;
   }
@@ -93,8 +93,8 @@ export async function main(argv: string[]) {
       "width",
       "height",
     ],
-    render: ["camera", "width", "height", "look"],
-    "render-collection": ["collection", "width", "height", "look"],
+    render: ["camera", "width", "height", "look", "samples"],
+    "render-collection": ["collection", "width", "height", "look", "samples"],
     play: [
       "ticks",
       "move-forward",
@@ -111,6 +111,7 @@ export async function main(argv: string[]) {
       "width",
       "height",
       "look",
+      "samples",
       "rigs",
       "dynamic-rigs",
       "no-auto-doors",
@@ -578,6 +579,11 @@ export async function main(argv: string[]) {
     "INVALID_INPUT",
     "--look must be standard, realistic or photo",
   );
+  // Path-traced samples for --look photo (software WebGL costs seconds each).
+  const lookControls =
+    look === "photo" && flag("samples") !== undefined
+      ? { pathSamples: numberFlag("samples", 256, 1, 4096, true) }
+      : undefined;
   if (operation === "render-collection") {
     ensure(output, "INVALID_INPUT", "--output collection.zip is required");
     const width = numberFlag("width", 1280, 1, 4096, true),
@@ -590,13 +596,14 @@ export async function main(argv: string[]) {
     const prefix = flag("collection");
     const result = await withHeadlessPage(p, (page) =>
       page.evaluate(
-        async ({ prefix, width, height, look }) => {
+        async ({ prefix, width, height, look, lookControls }) => {
           const r = await window.brickEditor!.render.collection({
             prefix,
             width,
             height,
             quality: "photo",
             look,
+            ...(lookControls ? { lookControls } : {}),
           });
           return {
             manifest: r.manifest,
@@ -610,7 +617,7 @@ export async function main(argv: string[]) {
             ),
           };
         },
-        { prefix, width, height, look },
+        { prefix, width, height, look, lookControls },
       ),
     );
     const files: Record<string, Uint8Array> = {
@@ -751,6 +758,7 @@ export async function main(argv: string[]) {
           input,
           ticks,
           look,
+          lookControls,
           rigs,
           dynamicRigs,
           jointTargets,
@@ -806,6 +814,7 @@ export async function main(argv: string[]) {
               background: { type: "solid", color: "#ffffff" },
               quality: "photo",
               look,
+              ...(lookControls ? { lookControls } : {}),
               strict: true,
             });
             return {
@@ -839,6 +848,7 @@ export async function main(argv: string[]) {
           width,
           height,
           look,
+          lookControls,
           request: {
             position,
             locomotion: locomotion as PlayLocomotion,

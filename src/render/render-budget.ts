@@ -35,6 +35,10 @@ export type RenderBudget = {
    * phones, draw at ≤ 1.25× pixel density; the view redraws in full as soon
    * as it comes to rest. Captures are unaffected. */
   motionReductionTriangles: number;
+  /** Triangles the photo look's path tracer accepts for a still (BVH and vertex
+   * textures cost about 200 bytes per triangle); larger views fall back to the
+   * accumulated raster photo. */
+  photoTriangles: number;
 };
 
 export const RENDER_BUDGETS: Readonly<
@@ -49,6 +53,7 @@ export const RENDER_BUDGETS: Readonly<
     retainedUnusedPrototypes: 256,
     reducedQualityTriangles: 60_000_000,
     motionReductionTriangles: 4_000_000,
+    photoTriangles: 2_000_000,
   }),
   mobile: Object.freeze({
     partOccurrences: RESOURCE_PROFILES.mobile.occurrences,
@@ -59,6 +64,7 @@ export const RENDER_BUDGETS: Readonly<
     retainedUnusedPrototypes: 64,
     reducedQualityTriangles: 4_000_000,
     motionReductionTriangles: 500_000,
+    photoTriangles: 600_000,
   }),
 });
 

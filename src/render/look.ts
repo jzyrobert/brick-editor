@@ -5,9 +5,10 @@ import type { ResourceProfileName } from "../core/resource-profile";
  * Shading style, independent of the resource-oriented quality profile. "standard" is the
  * original editor look (flat hemisphere/sun lighting with LDraw edge lines). "realistic"
  * adds image-based lighting, tuned ABS/finish materials, fitted soft shadows on a
- * shadow-catcher ground and screen-space ambient occlusion. "photo" is realistic plus
- * progressive refinement: a still view accumulates jittered frames (anti-aliasing and
- * area-light soft shadows), and captures accumulate the same samples.
+ * shadow-catcher ground and screen-space ambient occlusion. "photo" path-traces still
+ * views progressively (global illumination, refraction, area-light shadows, depth of
+ * field) in a studio, and draws realistic frames while the view moves; where path
+ * tracing is unavailable it accumulates jittered realistic frames instead.
  */
 export type LookName = "standard" | "realistic" | "photo";
 export const LOOK_NAMES: readonly LookName[] = [
@@ -33,10 +34,23 @@ export type LookControls = {
   /** Darkening at the frame corners, 0..0.5. */
   vignette: number;
   /** "neutral" (Khronos PBR Neutral) keeps LEGO colours saturated in bright light,
-   * where ACES bleaches sunlit tops; "quality" follows the quality profile. */
-  toneMapping: "quality" | "neutral";
+   * where ACES bleaches sunlit tops; "agx" is a filmic curve with a softer highlight
+   * roll-off; "quality" follows the quality profile. */
+  toneMapping: "quality" | "neutral" | "agx";
   /** Multiplies the quality profile's exposure. */
   exposureScale: number;
+  /** Still renderer: "raster" accumulates jittered frames; "path" path-traces the
+   * still (falls back to raster where unsupported, see photo-tracer.ts). */
+  renderer: "raster" | "path";
+  /** Path-traced samples per pixel for a still and for captures. */
+  pathSamples: number;
+  /** Thin-lens depth of field for path-traced stills, 0 (pinhole) to 1. */
+  depthOfField: number;
+  /** Path-traced staging: "studio" a seamless cove, "floor" a floor under the
+   * background colour, "none" the realistic shadow ground (raster only). */
+  backdrop: "none" | "studio" | "floor";
+  /** Colour grade after tone mapping: "film" adds contrast and saturation. */
+  grade: "none" | "film";
 };
 export type RenderLook = LookControls & {
   schemaVersion: 1;
@@ -56,6 +70,11 @@ const defaults: Record<LookName, LookControls> = {
     vignette: 0,
     toneMapping: "quality",
     exposureScale: 1,
+    renderer: "raster",
+    pathSamples: 256,
+    depthOfField: 0,
+    backdrop: "none",
+    grade: "none",
   },
   realistic: {
     environment: "room",
@@ -68,6 +87,11 @@ const defaults: Record<LookName, LookControls> = {
     vignette: 0.12,
     toneMapping: "neutral",
     exposureScale: 0.85,
+    renderer: "raster",
+    pathSamples: 256,
+    depthOfField: 0,
+    backdrop: "none",
+    grade: "none",
   },
   photo: {
     environment: "room",
@@ -77,18 +101,24 @@ const defaults: Record<LookName, LookControls> = {
     shadows: "soft",
     ground: "shadow",
     samples: 32,
-    vignette: 0.12,
+    vignette: 0.2,
     toneMapping: "neutral",
-    exposureScale: 0.85,
+    exposureScale: 0.8,
+    renderer: "path",
+    pathSamples: 256,
+    depthOfField: 0.25,
+    backdrop: "studio",
+    grade: "film",
   },
 };
 /** Phones keep the cheap parts of the look (IBL, materials, shadows) and drop the
  * full-screen passes that cost fill rate on every interactive frame. */
 const mobile: Partial<Record<LookName, Partial<LookControls>>> = {
   realistic: { ambientOcclusion: "off", vignette: 0 },
-  photo: { samples: 12 },
+  photo: { samples: 12, pathSamples: 64 },
 };
 export const MAX_LOOK_SAMPLES = 64;
+export const MAX_PATH_SAMPLES = 4096;
 
 export function isLookName(value: unknown): value is LookName {
   return typeof value === "string" && LOOK_NAMES.includes(value as LookName);
@@ -122,10 +152,19 @@ export function resolveLook(
     !Number.isFinite(result.vignette) ||
     result.vignette < 0 ||
     result.vignette > 0.5 ||
-    !["quality", "neutral"].includes(result.toneMapping) ||
+    !["quality", "neutral", "agx"].includes(result.toneMapping) ||
     !Number.isFinite(result.exposureScale) ||
     result.exposureScale < 0.25 ||
-    result.exposureScale > 4
+    result.exposureScale > 4 ||
+    !["raster", "path"].includes(result.renderer) ||
+    !Number.isInteger(result.pathSamples) ||
+    result.pathSamples < 1 ||
+    result.pathSamples > MAX_PATH_SAMPLES ||
+    !Number.isFinite(result.depthOfField) ||
+    result.depthOfField < 0 ||
+    result.depthOfField > 1 ||
+    !["none", "studio", "floor"].includes(result.backdrop) ||
+    !["none", "film"].includes(result.grade)
   )
     throw new AppError(
       "INVALID_INPUT",
@@ -146,7 +185,9 @@ export function lookUsesPipeline(look: LookControls, accumulate = true) {
   return (
     look.ambientOcclusion !== "off" ||
     look.vignette > 0 ||
-    (accumulate && look.samples > 1)
+    look.toneMapping === "agx" ||
+    look.grade !== "none" ||
+    (accumulate && (look.samples > 1 || look.renderer === "path"))
   );
 }
 
