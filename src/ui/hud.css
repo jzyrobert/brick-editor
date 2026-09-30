@@ -1600,6 +1600,52 @@ a .icon {
   min-height: 36px;
   accent-color: var(--grass);
 }
+/* Exploded views: floors or anatomy, one at a time. */
+.explode-switches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+.explode-switches button {
+  padding: 0 6px;
+}
+.anatomy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  min-width: 0;
+}
+.section-control .anatomy-row .floor-check {
+  display: flex;
+  flex: none;
+}
+.anatomy-row .view-hint {
+  min-width: 0;
+}
+.view-controls .anatomy-focus {
+  /* Beside Guides when there is room, else on a row of its own. */
+  flex: 1 1 190px;
+  min-width: 0;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 0 8px;
+}
+.anatomy-focus span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.anatomy-focus small {
+  flex: none;
+  color: inherit;
+  opacity: 0.75;
+  font-weight: 500;
+}
+.anatomy-focus span:last-child {
+  margin-left: auto;
+}
 @media (pointer: coarse) {
   .view-controls button {
     min-height: 44px;

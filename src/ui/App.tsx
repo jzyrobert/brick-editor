@@ -145,6 +145,7 @@ import {
 import { ReplaceProjectDialog } from "./ReplaceProjectDialog";
 import { connectorCoverage, verifiedConnectors } from "../catalog/connectors";
 import { SceneAdapter, type SectionSpec } from "../render/adapter";
+import type { AnatomyStatus } from "../render/anatomy-view";
 import { LoadProgressIndicator, setLoadProgress } from "./LoadProgress";
 import { PhotoProgressIndicator, setPhotoProgress } from "./PhotoProgress";
 import { createAPI, type BrickEditorAPI } from "../automation/api";
@@ -505,6 +506,7 @@ function Workspace() {
     [section, setSection] = useState<SectionSpec | null>(null),
     [measurePoints, setMeasurePoints] = useState<Vec3[]>([]),
     [explodeBricks, setExplodeBricks] = useState(0),
+    [anatomy, setAnatomy] = useState<AnatomyStatus | null>(null),
     [renderLook, setRenderLook] = useState<LookName>(loadLookPreference),
     [gridOn, setGridOn] = useState(loadGridPreference),
     [sectionRange, setSectionRange] = useState<{
@@ -687,6 +689,9 @@ function Workspace() {
       ]),
     );
   modeRef.current = mode;
+  const anatomyOn = !!anatomy?.on;
+  const anatomyOnRef = useRef(false);
+  anatomyOnRef.current = anatomyOn && mode !== "Play";
   projectRef.current = project;
   selectionRef.current = selection;
   allRef.current = all;
@@ -1034,6 +1039,7 @@ function Workspace() {
     try {
       renderer.current = new SceneAdapter(viewport.current!, setStatus);
       renderer.current.onProgress = setLoadProgress;
+      renderer.current.onAnatomyChange = setAnatomy;
       renderer.current.onPhotoProgress = (progress) => {
         setPhotoProgress(progress);
         if (progress?.phase === "done")
@@ -1289,7 +1295,10 @@ function Workspace() {
       if (pointers.size > 1) navigated = true;
     };
     const up = (e: PointerEvent) => {
-      if (modeRef.current !== "Build" || play.current?.getState().active)
+      if (
+        (modeRef.current !== "Build" && !anatomyOnRef.current) ||
+        play.current?.getState().active
+      )
         return;
       const start = pointers.get(e.pointerId);
       pointers.delete(e.pointerId);
@@ -1379,6 +1388,20 @@ function Workspace() {
         });
         return;
       }
+      // Anatomy: a tap isolates the group under it; a tap on nothing (or on
+      // the isolated group again) shows every group.
+      if (anatomyOnRef.current) {
+        const group = r.anatomyGroupAt(e.clientX, e.clientY);
+        const focus = group && group.key !== r.anatomy.focus ? group.key : null;
+        r.setAnatomy({ focus });
+        setStatus(
+          group && focus
+            ? `${group.name}: ${group.parts} part${group.parts === 1 ? "" : "s"}.`
+            : "Showing every group.",
+        );
+        return;
+      }
+      if (modeRef.current !== "Build") return;
       if (s.tool === "Navigate") return;
       if (s.tool === "Measure") {
         const point =
@@ -2218,6 +2241,10 @@ function Workspace() {
       );
     }
   }, [explodeBricks, mode]);
+  // Anatomy is a viewing aid too: Play puts the model back together meanwhile.
+  useEffect(() => {
+    renderer.current?.suspendAnatomy(mode === "Play");
+  }, [mode]);
   // Measurements exist only while the Measure tool is in hand.
   useEffect(() => {
     if (tool !== "Measure" && measurePoints.length) setMeasurePoints([]);
@@ -2374,7 +2401,8 @@ function Workspace() {
       );
   };
   // Exploded positions are visual only: editing and measuring wait until assembled.
-  const toolLocked = (t: string) => explodeBricks > 0 && t !== "Navigate";
+  const toolLocked = (t: string) =>
+    (explodeBricks > 0 || anatomyOn) && t !== "Navigate";
   const toolbar = (
     <>
       <div className="tool-segment">
@@ -3620,7 +3648,7 @@ function Workspace() {
                   >
                     {t}
                     {((t === "Cut" &&
-                      (section !== null || explodeBricks > 0)) ||
+                      (section !== null || explodeBricks > 0 || anatomyOn)) ||
                       (t === "Floors" && focusFloorId !== null)) && (
                       <i className="view-tab-on" aria-hidden="true" />
                     )}
@@ -3748,24 +3776,64 @@ function Workspace() {
                   )}
                 </div>
                 <div className="section-control explode-control">
-                  <button
-                    className="view-switch"
-                    aria-pressed={explodeBricks > 0}
-                    onClick={() => {
-                      if (explodeBricks) {
-                        setExplodeBricks(0);
-                        setStatus("Floors assembled. Editing tools are back.");
-                        return;
-                      }
-                      setTool("Navigate");
-                      setExplodeBricks(4);
-                      setStatus(
-                        "Exploded view: floors are lifted apart for viewing; editing is paused until you assemble.",
-                      );
-                    }}
+                  <div
+                    className="explode-switches"
+                    role="group"
+                    aria-label="Exploded views"
                   >
-                    {explodeBricks ? "Assemble floors" : "Explode floors"}
-                  </button>
+                    <button
+                      className="view-switch"
+                      aria-pressed={explodeBricks > 0}
+                      onClick={() => {
+                        if (explodeBricks) {
+                          setExplodeBricks(0);
+                          setStatus(
+                            "Floors assembled. Editing tools are back.",
+                          );
+                          return;
+                        }
+                        setTool("Navigate");
+                        setExplodeBricks(4);
+                        setStatus(
+                          "Exploded view: floors are lifted apart for viewing; editing is paused until you assemble.",
+                        );
+                      }}
+                    >
+                      {explodeBricks ? "Assemble floors" : "Explode floors"}
+                    </button>
+                    <button
+                      className="view-switch"
+                      aria-pressed={anatomyOn}
+                      title="Take the model apart by its submodels"
+                      onClick={() => {
+                        const r = renderer.current;
+                        if (!r) return;
+                        if (anatomyOn) {
+                          r.setAnatomy({ on: false });
+                          setStatus(
+                            "Put back together. Editing tools are back.",
+                          );
+                          return;
+                        }
+                        setExplodeBricks(0);
+                        setTool("Navigate");
+                        const next = r.setAnatomy({ on: true });
+                        if (next.on) {
+                          r.fitAnatomy();
+                          // Phones: the pane would hide the model coming apart.
+                          if (window.matchMedia("(max-width: 1100px)").matches)
+                            setViewsOpen(false);
+                        }
+                        setStatus(
+                          next.on
+                            ? `Anatomy: ${next.movers + 1} groups by ${next.basis === "submodels" ? "submodel" : next.basis === "layers" ? "layer" : "section"}. Tap one to isolate it; editing is paused.`
+                            : "Nothing to take apart: the model needs submodels, layers or separate sections.",
+                        );
+                      }}
+                    >
+                      {anatomyOn ? "Put together" : "Anatomy"}
+                    </button>
+                  </div>
                   {explodeBricks > 0 ? (
                     <label>
                       <span className="section-label">
@@ -3784,9 +3852,72 @@ function Workspace() {
                         }
                       />
                     </label>
+                  ) : anatomy?.on ? (
+                    <>
+                      <label>
+                        <span className="section-label">
+                          Spread {Math.round(anatomy.spread * 100)}%
+                        </span>
+                        <input
+                          type="range"
+                          aria-label="Anatomy spread"
+                          min={50}
+                          max={300}
+                          step={25}
+                          value={Math.round(anatomy.spread * 100)}
+                          onChange={(e) =>
+                            renderer.current?.setAnatomy({
+                              spread: Number(e.target.value) / 100,
+                            })
+                          }
+                        />
+                      </label>
+                      {(() => {
+                        const focused = anatomy.groups.find(
+                          (g) => g.key === anatomy.focus,
+                        );
+                        return (
+                          <div className="anatomy-row">
+                            <label className="floor-check">
+                              <input
+                                type="checkbox"
+                                checked={anatomy.guides}
+                                onChange={(e) =>
+                                  renderer.current?.setAnatomy({
+                                    guides: e.target.checked,
+                                  })
+                                }
+                              />
+                              Guides
+                            </label>
+                            {focused ? (
+                              <button
+                                className="anatomy-focus"
+                                title="Show every group"
+                                onClick={() =>
+                                  renderer.current?.setAnatomy({ focus: null })
+                                }
+                              >
+                                <span>{focused.name}</span>
+                                <small>
+                                  {focused.parts} part
+                                  {focused.parts === 1 ? "" : "s"}
+                                </small>
+                                <span aria-hidden="true">×</span>
+                              </button>
+                            ) : (
+                              <p className="view-hint">
+                                Tap a group to isolate it.
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </>
                   ) : (
                     <p className="view-hint">
-                      Lift the floors apart to look in.
+                      Lift the floors apart, or take the model apart by its
+                      submodels.
                     </p>
                   )}
                 </div>
@@ -3809,7 +3940,7 @@ function Workspace() {
                   sectionHeight={
                     section?.axis === "y" && !section.flip ? section.at : null
                   }
-                  exploded={explodeBricks > 0}
+                  exploded={explodeBricks > 0 || anatomyOn}
                   modelBottom={() =>
                     renderer.current?.modelHeightRange()?.bottom ?? null
                   }

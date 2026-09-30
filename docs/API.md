@@ -257,6 +257,11 @@ Play runs trains standing on official LDraw track (see [running trains](PLAY-TRA
 - `render.compileStats()` reports where compiled part geometry came from in this page: `workerCompiles` (compile workers), `diskHits` (the persistent geometry cache), `mainThread` (parts compiled on the main thread: no workers, or file-local colours), the worker pool size, the cache's hit/miss/write/eviction/corruption/error counts with its size and bound, and `lastLoad` (duration, variants, whether it was drawn progressively, and how many tasks it was split into). Diagnostics only; it never changes what is drawn.
 - `play.collisionStats()` returns the static collider's triangle and vertex counts after compaction (diagnostics). Worlds whose rendered surface exceeds one million triangles collide with simplified official parts (studs and underside tubes omitted), reported in the Play warnings.
 
+## Exploded views
+
+- `render.explode.set({gap})` lifts floors (top-level submodels, else layers) apart by `gap` LDU each and returns `{groups, gap}`; `render.explode.get()` returns `{gap}`.
+- `render.anatomy.set({on?, spread?, guides?, focus?, animate?})` takes the model apart by submodel (else layer, else touching cluster), each group sliding out along its clearest direction; it resolves once the animation has finished and returns `{on, progress, spread, guides, focus, basis, movers, planMs, groups[]}`. `spread` is 0.25–3 (1 just clears), `focus` a group `key` to isolate (others see-through) or `null`, `animate:false` jumps to the end. `render.anatomy.get()` returns the same status. Both are render-only: no command, revision or undo entry. See [Anatomy](ANATOMY.md).
+
 ## Build scripts and part search
 
 Agents describe builds as **build scripts** (declarative JSON: walls, rooms, boxes, roofs, windows, doors, stairs, repeats, components) that compile deterministically to ordinary parts. Guide, op reference and system prompt: [AGENT-BUILDING.md](AGENT-BUILDING.md); schema: `schemas/buildScript.v1.json`.

@@ -835,6 +835,24 @@ export function createAPI(
         }),
         get: async () => ({ gap: renderer().exploded }),
       },
+      /** Anatomy exploded view: submodels (else layers, else touching
+       * clusters) slide apart along their clearest direction. Render-only;
+       * set() resolves once the animation has finished. See docs/ANATOMY.md. */
+      anatomy: {
+        set: async (input: {
+          on?: boolean;
+          spread?: number;
+          guides?: boolean;
+          focus?: string | null;
+          animate?: boolean;
+        }) => {
+          const r = renderer();
+          r.setAnatomy(input);
+          await r.anatomySettled();
+          return r.anatomy;
+        },
+        get: async () => renderer().anatomy,
+      },
       /** Floor focus and architectural overlays: show one floor with the floors above
        * hidden and those below ghosted; draw floor guides and room labels. View only. */
       floors: {

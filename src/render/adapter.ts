@@ -24,6 +24,11 @@ import {
   type TransformHandleOptions,
 } from "../edit/transform-handles";
 import { LayerGhost } from "./layerGhost";
+import {
+  AnatomyView,
+  type AnatomyInputOptions,
+  type AnatomyStatus,
+} from "./anatomy-view";
 import { indexPrototypeGeometry } from "./geometry-index";
 import {
   explodeLifts,
@@ -469,6 +474,27 @@ export class SceneAdapter {
   private hiddenCull = loadOption("hiddenCull") !== "0";
   private layerGhost = new LayerGhost();
   private instructionDimming = new LayerGhost(0.3);
+  /** Anatomy exploded view (anatomy-view.ts): moves handle translations only. */
+  private anatomyView = new AnatomyView({
+    handles: this.handles,
+    parent: this.root,
+    project: () => this.project,
+    occurrences: () => this.projectOccurrences(),
+    moved: (motion) => {
+      this.batches.refresh();
+      if (motion) this.noteMotion();
+      this.invalidate();
+    },
+    restyle: () => {
+      if (this.captureActive) return;
+      this.applyLayerGhost();
+      this.batches.refresh();
+      this.invalidate();
+    },
+    notify: () => this.onAnatomyChange?.(this.anatomyView.status()),
+  });
+  /** Called when the anatomy view's state changes (on, groups, focus). */
+  onAnatomyChange?: (status: AnatomyStatus) => void;
   private instructionNewIds: Set<string> | null = null;
   private playViewActive = false;
   private cameraChangeCount = 0;
@@ -1689,6 +1715,8 @@ export class SceneAdapter {
     // edits keep showing the previous state until everything is ready.
     const fresh =
       !this.handles.size || !this.project || this.project.id !== snapshot.id;
+    // A newly opened model starts assembled.
+    if (fresh) this.anatomyView.reset();
     const budget = renderBudget(profile);
     const shown: number[] = [];
     let progressive = fresh && loadOption("progressive") !== "0",
@@ -1875,6 +1903,8 @@ export class SceneAdapter {
     // Later view changes (quality, look, treatments, steps) only refill them.
     this.batches.rebuild(this.handles, { defer: true });
     this.project = snapshot;
+    // Handles are back at home: re-plan and put the groups back out.
+    this.anatomyView.replaced(fresh);
     this.tuneMaterials();
     this.applyLayerGhost();
     this.rebuildAnnotations();
@@ -4111,6 +4141,8 @@ export class SceneAdapter {
       "INVALID_INPUT",
       "Explode gap must be 0–4000 LDU.",
     );
+    // The two exploded views do not combine.
+    if (gap) this.anatomyView.reset();
     this.explodeGap = gap;
     const next =
       gap && this.project
@@ -4132,6 +4164,85 @@ export class SceneAdapter {
   }
   get exploded() {
     return this.explodeGap;
+  }
+  /**
+   * Anatomy exploded view (docs/ANATOMY.md): groups (submodels, else layers,
+   * else touching clusters) slide apart along their clearest direction, then
+   * back. Render-only: handle translations move; nothing is rebuilt and the
+   * document is unchanged. Turns the floor explode off.
+   */
+  setAnatomy(input: AnatomyInputOptions) {
+    ensure(
+      input &&
+        typeof input === "object" &&
+        Object.keys(input).every((k) =>
+          ["on", "spread", "guides", "focus", "animate"].includes(k),
+        ) &&
+        (input.on === undefined || typeof input.on === "boolean") &&
+        (input.guides === undefined || typeof input.guides === "boolean") &&
+        (input.animate === undefined || typeof input.animate === "boolean") &&
+        (input.focus === undefined ||
+          input.focus === null ||
+          typeof input.focus === "string") &&
+        (input.spread === undefined ||
+          (Number.isFinite(input.spread) &&
+            input.spread >= 0.25 &&
+            input.spread <= 3)),
+      "INVALID_INPUT",
+      "Anatomy takes on, spread (0.25–3), guides, focus and animate.",
+    );
+    if (input.on && this.explodeGap) this.setExplode(0);
+    return this.anatomyView.set(input);
+  }
+  get anatomy(): AnatomyStatus {
+    return this.anatomyView.status();
+  }
+  /** Resolves when the anatomy animation has finished. */
+  anatomySettled() {
+    return this.anatomyView.settled();
+  }
+  /** Play suspends the anatomy view (it animates back, and out again after). */
+  suspendAnatomy(suspended: boolean) {
+    this.anatomyView.suspend(suspended);
+  }
+  /** Frame the model fully apart (Anatomy), keeping the viewing direction,
+   * so the groups stay in view as they come out. */
+  fitAnatomy() {
+    const exploded = this.anatomyView.explodedBox();
+    if (!exploded) return;
+    const box = new THREE.Box3(
+      new THREE.Vector3(...exploded.min),
+      new THREE.Vector3(...exploded.max),
+    ).applyMatrix4(this.rootWorld());
+    const radius = box.getSize(new THREE.Vector3()).length() / 2;
+    const center = box.getCenter(new THREE.Vector3());
+    const spec = this.currentCamera();
+    const eye = this.camera.position.clone().sub(this.controls.target);
+    if (eye.lengthSq() === 0) eye.set(0.8, 0.65, 0.9);
+    eye.normalize();
+    const aspect = Math.max(
+      0.1,
+      this.element.clientWidth / this.element.clientHeight,
+    );
+    const vertical = THREE.MathUtils.degToRad(spec.fovDeg || 45) / 2;
+    const limitingAngle = Math.min(
+      vertical,
+      Math.atan(Math.tan(vertical) * aspect),
+    );
+    const distance = (radius / Math.sin(limitingAngle)) * 1.05;
+    this.setCamera({
+      ...spec,
+      position: conversion(
+        center.clone().addScaledVector(eye, distance).toArray() as Vec3,
+      ),
+      target: conversion(center.toArray() as Vec3),
+      span: radius * 2.2,
+    });
+  }
+  /** The anatomy group under a screen point (for taps while exploded). */
+  anatomyGroupAt(x: number, y: number) {
+    const id = this.pick(x, y);
+    return id ? this.anatomyView.groupOfOccurrence(id) : null;
   }
   private sectionSpec: SectionSpec | null = null;
   /** Section cut (spec §20.2) along one LDraw axis. The kept side is below a height
@@ -4692,6 +4803,8 @@ export class SceneAdapter {
         : [],
     );
     if (!this.playViewActive) for (const id of this.floorGhosted) ids.add(id);
+    const isolated = this.playViewActive ? null : this.anatomyView?.ghosted();
+    if (isolated) for (const id of isolated) ids.add(id);
     this.layerGhost.apply(this.handles, ids);
     if (!this.playViewActive && this.instructionNewIds)
       this.instructionDimming.apply(
@@ -5184,6 +5297,7 @@ export class SceneAdapter {
     this.layerGhost.restore();
     this.clearGhost();
     this.clearAnnotations();
+    this.anatomyView.dispose();
     cancelAnimationFrame(this.raf);
     cancelAnimationFrame(this.refineRaf);
     this.releasePhoto(true);
