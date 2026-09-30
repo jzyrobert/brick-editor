@@ -1,6 +1,7 @@
 import RAPIER from "@dimforge/rapier3d-compat";
 import { beforeAll, expect, it } from "vitest";
 import {
+  DRIVING_CANDIDATE_LIMIT,
   DrivingObstacleSnapshot,
   type DrivingTriangleSource,
 } from "../../src/play/vehicle-obstacles";
@@ -72,22 +73,57 @@ it("sloped triangle support is conservatively blocked rather than granting a flo
   });
 });
 it("dense overlapping triangles refuse atomically without a truncated successful collision set", () => {
-  const dense = source(
-    [-1, 0, -1, 1, 0, -1, 0, 0, 1],
-    Array.from({ length: 600 }, () => [0, 1, 2]).flat(),
-  );
+  // A sliver beside the box, inside its swept bounds but never touched.
+  const sliver = (count: number) =>
+    source(
+      [0.125, 0.05, 0.125, 0.135, 0.05, 0.125, 0.13, 0.15, 0.13],
+      Array.from({ length: count }, () => [0, 1, 2]).flat(),
+    );
+  const dense = sliver(DRIVING_CANDIDATE_LIMIT + 1);
   const snapshot = new DrivingObstacleSnapshot([dense]);
-  expect(snapshot.totalTriangles).toBe(600);
-  expect(snapshot.sweep("car", box, pose, { ...pose, z: 0.1 })).toMatchObject({
+  expect(snapshot.totalTriangles).toBe(DRIVING_CANDIDATE_LIMIT + 1);
+  expect(snapshot.sweep("car", box, pose, { ...pose, z: 0.01 })).toMatchObject({
     accepted: false,
     reason: "work-budget",
     queries: 0,
-    totalTriangles: 600,
-    candidateTriangles: 512,
+    candidateTriangles: DRIVING_CANDIDATE_LIMIT,
   });
+  // Below the limit every candidate is checked in one merged narrowphase, so
+  // the query count does not grow with the triangle count.
+  const many = new DrivingObstacleSnapshot([sliver(600)]).sweep(
+    "car",
+    box,
+    pose,
+    { ...pose, z: 0.01 },
+  );
+  expect(many).toMatchObject({ accepted: true, candidateTriangles: 600 });
+  expect(many.queries).toBeLessThanOrEqual(2);
   expect(() => new DrivingObstacleSnapshot([dense], 599)).toThrow(
     /complete geometry budget/,
   );
+});
+it("floor triangles under the proxies are support, not candidates", () => {
+  const vertices: number[] = [],
+    indices: number[] = [];
+  // A studded floor: 20,000 triangles level with the wheels' bottom.
+  for (let i = 0; i < 20000; i++) {
+    const x = (i % 200) * 0.01 - 1,
+      z = Math.floor(i / 200) * 0.02 - 1,
+      base = vertices.length / 3;
+    vertices.push(x, 0, z, x + 0.01, 0, z, x, 0, z + 0.01);
+    indices.push(base, base + 1, base + 2);
+  }
+  const snapshot = new DrivingObstacleSnapshot([
+    source(vertices, indices, "floor"),
+  ]);
+  const result = snapshot.sweep(
+    "car",
+    box,
+    { ...pose, yaw: 3 },
+    { ...pose, z: 0.3, yaw: 3.2 },
+  );
+  expect(result).toMatchObject({ accepted: true, candidateTriangles: 0 });
+  expect(result.visitedBvhNodes).toBeLessThan(10);
 });
 it("BVH skips remote dense geometry without dropping it, and preserves foreign-rig collisions", () => {
   const vertices: number[] = [],

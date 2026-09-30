@@ -1,5 +1,6 @@
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import type { PlayVehicleCollisionReport } from "./types";
+import type { VehicleCheck } from "./vehicle-world";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { Matrix4, Quaternion, Vector3 } from "three";
 import {
@@ -169,10 +170,12 @@ export class PlayMechanism {
   }> = [];
   private vehicleChassis?: string;
   private riderBlockedReason?: string;
+  /** A stop reason, `{hold:true}` to refuse only this tick's motion (a work
+   * budget, not a contact), or undefined when the rider is clear. */
   private riderGuard?: (
     before: MechanismSnapshot,
     after: MechanismSnapshot,
-  ) => string | undefined;
+  ) => string | { hold: true } | undefined;
   setRiderGuard(guard: NonNullable<PlayMechanism["riderGuard"]>) {
     this.riderGuard = guard;
   }
@@ -183,7 +186,7 @@ export class PlayMechanism {
   private vehicleCheck?: (
     before: MechanismSnapshot,
     after: MechanismSnapshot,
-  ) => PlayVehicleCollisionReport | undefined;
+  ) => VehicleCheck;
   setVehicleWorld(
     check: NonNullable<PlayMechanism["vehicleCheck"]>,
     report?: PlayVehicleCollisionReport,
@@ -473,7 +476,14 @@ export class PlayMechanism {
         JSON.stringify(before.pose.vehicle) !==
         JSON.stringify(target.pose.vehicle);
       if (changed || forceVehicle) {
-        this.vehicleReport = this.vehicleCheck(before, target);
+        const checked = this.vehicleCheck(before, target);
+        if (checked.hold) {
+          // Only this tick is refused: keep the pose and the driver's input.
+          this.session.setPose(before.pose);
+          this.apply(before);
+          return false;
+        }
+        this.vehicleReport = checked.report;
         if (this.vehicleReport && this.vehicleReport.status !== "ready") {
           this.session.setPose(before.pose);
           this.apply(before);
@@ -504,6 +514,11 @@ export class PlayMechanism {
       return false;
     }
     const riderFailure = this.riderGuard?.(before, target);
+    if (typeof riderFailure === "object") {
+      this.session.setPose(before.pose);
+      this.apply(before);
+      return false;
+    }
     if (riderFailure) {
       this.session.setPose(before.pose);
       this.apply(before);

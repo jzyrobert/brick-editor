@@ -291,7 +291,7 @@ describe("template builds", () => {
   it("car: grid-placed parts, no overlaps, a valid four-wheel drivable rig", () => {
     const project = template("car");
     const r = report(project);
-    expect(r.parts).toBe(52);
+    expect(r.parts).toBe(58);
     // Every roadster part is in the catalogue (release catalogue-2026-09-29).
     expect(outside(project)).toEqual([]);
     expect(r.overlaps).toEqual([]);

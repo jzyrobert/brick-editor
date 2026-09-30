@@ -43,6 +43,7 @@ import {
   RIDE_SMOOTH_TIME,
   smoothDamp,
   headAngles,
+  orbitHead,
   initialMotion,
   lerpMotion,
   limbAngles,
@@ -375,7 +376,9 @@ export class PlaySession {
             );
             return result.accepted
               ? undefined
-              : (result.reason ?? "Seated body motion is blocked");
+              : result.hold
+                ? { hold: true as const }
+                : (result.reason ?? "Seated body motion is blocked");
           });
         }
       }
@@ -1269,6 +1272,10 @@ export class PlaySession {
       -(y + z * sp) * speed * DT,
       (-x * Math.sin(this.yaw) - z * Math.cos(this.yaw) * cp) * speed * DT,
     ];
+    // The intended (camera-relative) travel, before any collision: an orbit
+    // camera turns the figure to face it.
+    const wishX = delta[0],
+      wishZ = delta[2];
     if (this.locomotion === "fly-noclip") {
       const length = Math.hypot(...delta),
         limit = speed * DT;
@@ -1340,6 +1347,9 @@ export class PlaySession {
         this.surfaceBelow(6),
       lookYaw: this.yaw,
       dt: DT,
+      orbit: this.cameraMode === "third-person",
+      wishX,
+      wishZ,
     });
     if (this.grounded && this.clear(this.feet)) this.safe = [...this.feet];
     if (
@@ -1512,15 +1522,22 @@ export class PlaySession {
     return !!hit;
   }
   private avatar(motion: AvatarMotionState = this.motion): AvatarPose {
-    const head = headAngles(motion, this.yaw, this.pitch);
+    const orbit = this.cameraMode === "third-person";
+    const head = headAngles(motion, this.yaw, this.pitch, orbit);
     if (this.occupied)
       return {
         state: "seated",
         heading: motion.body,
         phase: motion.phase,
         swing: 0,
-        headYaw: Math.max(-0.7, Math.min(0.7, this.occupied.localLookYaw)),
-        headPitch: SEATED_VISUAL_POSE.headPitch,
+        // The seated head follows the look like the standing one, within
+        // the seated limits (it may nod forward, never back into a backrest).
+        ...orbitHead(
+          this.occupied.localLookYaw,
+          this.occupied.localLookPitch,
+          SEATED_VISUAL_POSE.headYawLimits[1],
+          SEATED_VISUAL_POSE.headPitchLimits,
+        ),
         bob: 0,
         leftHip: SEATED_VISUAL_POSE.leftHip,
         rightHip: SEATED_VISUAL_POSE.rightHip,

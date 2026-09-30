@@ -8,11 +8,16 @@
  * travelled after collision correction (spec 19.1.5), so feet never skate and
  * a character pushing into a wall settles to neutral.
  *
- * Heading policy (documented per spec): the body turns toward travel with a
- * critically damped spring; travel more than 100 degrees away from the look
- * direction walks backward facing forward (as in Minecraft); and the head may
- * look at most 50 degrees either side of the body — beyond that the body turns
- * with the head.
+ * Heading policy (documented per spec). First person: the body turns toward
+ * travel with a critically damped spring; travel more than 100 degrees away
+ * from the look direction walks backward facing forward (as in Minecraft);
+ * and the head may look at most 50 degrees either side of the body — beyond
+ * that the body turns with the head. Third person is an orbit camera: the
+ * camera yaw is independent of the figure, the body turns (same spring) to
+ * face the intended travel — so walking towards the camera turns the figure
+ * round — and holds its heading when standing still, so orbiting shows the
+ * face. The head follows the look within 50 degrees and eases back to
+ * straight ahead as the camera swings round towards the front (orbitHead).
  *
  * Every function is pure and deterministic, so fixed-tick replays repeat
  * exactly and the renderer can interpolate two tick states.
@@ -72,6 +77,11 @@ export type AvatarMotionEvidence = {
   nearGround: boolean;
   lookYaw: number;
   dt: number;
+  /** Third-person orbit camera: face the intended travel, never the look. */
+  orbit?: boolean;
+  /** Intended horizontal LDraw travel this tick (X, Z), before collision. */
+  wishX?: number;
+  wishZ?: number;
 };
 export const TAU = Math.PI * 2;
 export function wrapAngle(angle: number) {
@@ -162,6 +172,14 @@ export function bodyTarget(
     ? wrapAngle(travel + Math.PI)
     : travel;
 }
+/**
+ * Orbit-camera heading: face the direction the player asks to move (camera
+ * relative), whatever the look; hold the heading with no movement input.
+ */
+export function orbitBodyTarget(body: number, wishX: number, wishZ: number) {
+  if (Math.hypot(wishX, wishZ) < 1e-9) return body;
+  return Math.atan2(wishX, -wishZ);
+}
 /** Keep the head within its yaw limit by turning the body with it. */
 export function followHead(body: number, lookYaw: number) {
   const limit = AVATAR_MOTION.headYawLimit,
@@ -189,14 +207,18 @@ export function advanceMotion(
     : 0;
   let [body, bodyVelocity] = smoothDampAngle(
     state.body,
-    bodyTarget(state.body, e.lookYaw, e.dx, e.dz, speed),
+    e.orbit
+      ? orbitBodyTarget(state.body, e.wishX ?? 0, e.wishZ ?? 0)
+      : bodyTarget(state.body, e.lookYaw, e.dx, e.dz, speed),
     state.bodyVelocity,
     M.bodyTurnTime,
     e.dt,
   );
-  const head = followHead(body, e.lookYaw);
-  body = head.body;
-  if (head.clamped) bodyVelocity = 0;
+  if (!e.orbit) {
+    const head = followHead(body, e.lookYaw);
+    body = head.body;
+    if (head.clamped) bodyVelocity = 0;
+  }
   return {
     phase:
       (state.phase + (TAU * distance) / CHARACTER_PROFILE.strideLength) % TAU,
@@ -300,8 +322,38 @@ export function limbAngles(s: AvatarMotionState): LimbAngles {
 export function flyBob(s: AvatarMotionState) {
   return Math.sin(s.time * 2.1) * AVATAR_MOTION.flyBob * s.fly;
 }
-export function headAngles(s: AvatarMotionState, yaw: number, pitch: number) {
+/** Beyond the head's yaw limit the orbit head eases back to straight ahead
+ * over this much further camera swing (60 degrees). */
+export const ORBIT_HEAD_FADE = Math.PI / 3;
+/**
+ * Head angles for a look `offset` from the body (yaw, radians) and look
+ * pitch under an orbit camera: the head follows the look within its yaw
+ * limit, then eases back to straight ahead (continuously) as the camera
+ * swings on towards the front, so the face is seen square-on.
+ */
+export function orbitHead(
+  offset: number,
+  pitch: number,
+  yawLimit: number,
+  pitchLimits: readonly [number, number],
+) {
+  const a = Math.abs(wrapAngle(offset)),
+    weight =
+      a <= yawLimit ? 1 : Math.max(0, 1 - (a - yawLimit) / ORBIT_HEAD_FADE);
+  return {
+    headYaw: clamp(wrapAngle(offset), -yawLimit, yawLimit) * weight,
+    headPitch: clamp(pitch, pitchLimits[0], pitchLimits[1]) * weight,
+  };
+}
+export function headAngles(
+  s: AvatarMotionState,
+  yaw: number,
+  pitch: number,
+  orbit = false,
+) {
   const M = AVATAR_MOTION;
+  if (orbit)
+    return orbitHead(yaw - s.body, pitch, M.headYawLimit, M.headPitchLimits);
   return {
     headYaw: clamp(wrapAngle(yaw - s.body), -M.headYawLimit, M.headYawLimit),
     headPitch: clamp(pitch, M.headPitchLimits[0], M.headPitchLimits[1]),

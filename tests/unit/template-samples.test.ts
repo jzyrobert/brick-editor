@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { template } from "../../src/catalog/templates";
 import { jeepSource, JEEP_AXLES } from "../../src/catalog/builds/jeep";
+import { CAR_PELVIS } from "../../src/catalog/builds/car";
 import { windmillSource } from "../../src/catalog/builds/windmill";
 import { lighthouseSource } from "../../src/catalog/builds/lighthouse";
 import { cafeSource } from "../../src/catalog/builds/cafe";
@@ -206,6 +207,107 @@ describe("sample builds", () => {
         session.setInput({});
         const out = session.exitVehicle();
         expect(out.occupancy).toBeUndefined();
+      } finally {
+        session.dispose();
+      }
+    },
+  );
+
+  it(
+    "jeep: turning while driving round full circles never stops on a collision work budget",
+    { timeout: 180000 },
+    async () => {
+      // Regression: the seated rider's yaw is read back from its frame and
+      // wraps at ±180°, which asked for a 358° sweep in one tick and stopped
+      // the jeep with "Body transfer exceeds collision work budget".
+      const project = template("jeep");
+      const { geometry, sources } = await officialSources(
+        project,
+        project.motionRigs,
+        { min: [-400, -300, -400], max: [400, 0, 400] },
+      );
+      for (const [seated, moveX, moveZ] of [
+        [true, 1, 1],
+        [true, -1, 1],
+        [true, 1, -1],
+        [false, -1, -1],
+      ] as const) {
+        const session = await PlaySession.create(
+          geometry,
+          { rigIds: ["jeep"], position: [-110, -0.3, -20], yaw: Math.PI / 2 },
+          sources,
+        );
+        try {
+          if (seated) {
+            session.enterVehicle({ rigId: "jeep", seatId: "driver" });
+            session.setInput({ moveX, moveZ });
+          } else
+            session.setMechanismVehicleInput({
+              throttle: moveZ,
+              steering: -moveX,
+            });
+          const stops: string[] = [];
+          for (let t = 0; t < 900; t++) {
+            const jeep = session.stepTicks(1).mechanisms!.jeep;
+            if (jeep.blockedReason) stops.push(jeep.blockedReason);
+            expect(jeep.vehicleCollision!.status).toBe("ready");
+          }
+          expect(stops).toEqual([]);
+          // Well past ±180°: through the wrap at least once.
+          expect(
+            Math.abs(
+              session.snapshot().mechanisms!.jeep.pose.vehicle!.headingDegrees,
+            ),
+          ).toBeGreaterThan(360);
+        } finally {
+          session.dispose();
+        }
+      }
+    },
+  );
+
+  it(
+    "roadster: a figure climbs into the driver seat, drives and turns, and gets out",
+    { timeout: 120000 },
+    async () => {
+      const project = template("car");
+      expect(project.motionRigs.car.vehicle!.driverSeat!.id).toBe("driver");
+      const { geometry, sources } = await officialSources(
+        project,
+        project.motionRigs,
+        { min: [-400, -300, -400], max: [400, 0, 400] },
+      );
+      const session = await PlaySession.create(
+        geometry,
+        { rigIds: ["car"], position: [-90, -0.3, 40], yaw: Math.PI / 2 },
+        sources,
+      );
+      try {
+        const request = { rigId: "car", seatId: "driver" };
+        expect(session.vehicleSeatEligibility(request)).toEqual({
+          ...request,
+          eligible: true,
+        });
+        const seated = session.enterVehicle(request);
+        expect(seated.occupancy).toMatchObject({
+          rigId: "car",
+          pelvisWorldLdu: CAR_PELVIS,
+        });
+        session.setInput({ moveZ: 1 });
+        const moved = session.stepTicks(60);
+        expect(moved.mechanisms!.car.pose.vehicle!.position[2]).toBeLessThan(
+          -100,
+        );
+        session.setInput({ moveZ: 1, moveX: 1 });
+        const turned = session.stepTicks(240);
+        expect(turned.mechanisms!.car.blockedReason).toBeUndefined();
+        expect(
+          Math.abs(turned.mechanisms!.car.pose.vehicle!.headingDegrees),
+        ).toBeGreaterThan(90);
+        session.setInput({});
+        const out = session.exitVehicle();
+        expect(out.occupancy).toBeUndefined();
+        expect(out.positionAnchor).toBe("standing-feet");
       } finally {
         session.dispose();
       }

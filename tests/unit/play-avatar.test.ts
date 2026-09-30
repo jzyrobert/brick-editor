@@ -13,6 +13,7 @@ import {
   type PlaySnapshotReport,
 } from "../../src/play/types";
 import { avatarGeometryFromDisk } from "../helpers/avatar-pack";
+import { wrapAngle } from "../../src/play/avatar-motion";
 const empty: CollisionSnapshot = {
   revision: 1,
   vertices: new Float32Array(),
@@ -314,9 +315,10 @@ describe("LDraw minifig figure assembly", () => {
       play.dispose();
     }
   });
-  it("backward travel keeps facing the look direction (Minecraft policy) and camera switching preserves the player pose", async () => {
+  it("first person: backward travel keeps facing the look direction (Minecraft policy)", async () => {
     const play = await session();
     try {
+      play.setCameraMode("first-person");
       play.stepTicks(3);
       play.setInput({ moveZ: -1, pitch: 1.2 });
       play.stepTicks(12);
@@ -328,6 +330,26 @@ describe("LDraw minifig figure assembly", () => {
       expect(Math.abs(moved.avatar.headYaw)).toBeLessThanOrEqual(0.873);
       // The head pitches with the view, within its declared neck limit.
       expect(moved.avatar.headPitch).toBeCloseTo(0.45, 10);
+    } finally {
+      play.dispose();
+    }
+  });
+  it("third person: walking towards the camera turns the figure round to face it; camera switching preserves the player pose", async () => {
+    const play = await session();
+    try {
+      play.stepTicks(3);
+      play.setInput({ moveZ: -1, pitch: 0.3 });
+      play.stepTicks(40);
+      const moved = play.snapshot();
+      expect(moved.position[2]).toBeGreaterThan(50);
+      // Look yaw 0 (camera behind, looking along −Z); travel is +Z.
+      expect(moved.yaw).toBe(0);
+      expect(Math.abs(wrapAngle(moved.avatar.heading - Math.PI))).toBeLessThan(
+        1e-3,
+      );
+      // The camera sees the face: the head is straight, not twisted round.
+      expect(moved.avatar.headYaw).toBeCloseTo(0, 6);
+      expect(moved.avatar.headPitch).toBeCloseTo(0, 6);
       play.setCameraMode("first-person");
       const first = play.snapshot();
       play.setCameraMode("third-person");
@@ -335,8 +357,10 @@ describe("LDraw minifig figure assembly", () => {
       for (const report of [first, third]) {
         expect(report.position).toEqual(moved.position);
         expect(report.velocity).toEqual(moved.velocity);
-        expect(report.avatar).toEqual(moved.avatar);
+        expect(report.avatar.heading).toBe(moved.avatar.heading);
+        expect(report.avatar.leftHip).toBe(moved.avatar.leftHip);
       }
+      expect(third.avatar).toEqual(moved.avatar);
     } finally {
       play.dispose();
     }

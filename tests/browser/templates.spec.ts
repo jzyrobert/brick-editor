@@ -25,7 +25,7 @@ const SAMPLES: [Sample, string, number][] = [
   ["jeep", "Off-road jeep", 80],
   ["house", "House with garden", 281],
   ["castle", "Small castle", 237],
-  ["car", "Roadster", 52],
+  ["car", "Roadster", 58],
 ];
 /** Chooser cards in display order (the blank canvas last). */
 const CARDS = [

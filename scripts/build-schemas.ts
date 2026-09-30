@@ -976,7 +976,11 @@ const playSnapshot = obj({
   position: vec,
   positionAnchor: { enum: ["standing-feet", "seated-avatar-root"] },
   velocity: vec,
-  yaw: num,
+  yaw: {
+    ...num,
+    description:
+      "Look yaw (radians): the first-person view, or the third-person orbit camera's bearing. Independent of the figure's body yaw (avatar.heading).",
+  },
   pitch: num,
   grounded: { type: "boolean" },
   locomotion: { enum: ["walk", "fly-noclip"] },
@@ -1004,7 +1008,11 @@ const playSnapshot = obj({
   warnings: arr(str),
   avatar: obj({
     state: { enum: ["idle", "walk", "run", "jump", "fall", "fly", "seated"] },
-    heading: num,
+    heading: {
+      ...num,
+      description:
+        "Body yaw (radians). Third person: faces the movement and holds still while the camera orbits.",
+    },
     phase: num,
     swing: num,
     headYaw: num,

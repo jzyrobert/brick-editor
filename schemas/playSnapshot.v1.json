@@ -131,7 +131,8 @@
       "minItems": 3
     },
     "yaw": {
-      "type": "number"
+      "type": "number",
+      "description": "Look yaw (radians): the first-person view, or the third-person orbit camera's bearing. Independent of the figure's body yaw (avatar.heading)."
     },
     "pitch": {
       "type": "number"
@@ -251,7 +252,8 @@
           ]
         },
         "heading": {
-          "type": "number"
+          "type": "number",
+          "description": "Body yaw (radians). Third person: faces the movement and holds still while the camera orbits."
         },
         "phase": {
           "type": "number"

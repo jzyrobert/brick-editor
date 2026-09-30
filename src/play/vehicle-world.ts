@@ -16,6 +16,59 @@ const reason = (error: unknown) =>
   error instanceof Error
     ? error.message
     : "Driving collision preparation failed";
+const TAU = Math.PI * 2;
+const wrap = (angle: number) =>
+  angle - TAU * Math.floor((angle + Math.PI) / TAU);
+/** Angular segments one query may take (vehicle-collision's bound) and the
+ * 5 mm envelope each segment covers. */
+const SEGMENTS_PER_QUERY = 128,
+  ANGULAR_ENVELOPE = 0.005,
+  /** A single tick's move may split into at most this many sub-sweeps. */
+  MAX_SUBSTEPS = 16;
+/**
+ * The same rotation expressed continuously: yaw read back from a frame wraps
+ * at ±π, so a vehicle or seated rider turning through due south (+179° to
+ * −179°) would otherwise ask for a 358° sweep in one tick. `from` is reduced
+ * to [−π, π) and `to` is the shortest turn from it (a single tick never turns
+ * half a revolution).
+ */
+export function continuousPoses(
+  from: DrivingPose,
+  to: DrivingPose,
+): [DrivingPose, DrivingPose] {
+  const start = wrap(from.yaw);
+  return [
+    { ...from, yaw: start },
+    { ...to, yaw: start + wrap(to.yaw - from.yaw) },
+  ];
+}
+/** Sub-sweeps needed so every piece stays within one query's angular
+ * segments (adaptive substeps for fast turns). */
+export function drivingSubsteps(boxes: readonly DrivingBox[], angle: number) {
+  let radius = 0;
+  for (const box of boxes)
+    radius = Math.max(
+      radius,
+      Math.hypot(
+        Math.abs(box.center[0]) + box.halfExtents[0],
+        Math.abs(box.center[2]) + box.halfExtents[2],
+      ),
+    );
+  const segments = Math.ceil((Math.abs(angle) * radius) / ANGULAR_ENVELOPE);
+  return Math.max(1, Math.ceil(segments / SEGMENTS_PER_QUERY));
+}
+type SweepOutcome = {
+  accepted: boolean;
+  reason?: "contact" | "work-budget";
+  obstacle?: { sourceId: string; triangleIndex: number };
+};
+/** What a vehicle check means for this tick. `hold` refuses only this tick's
+ * motion (a work budget was reached): the pose stays, input is kept and no
+ * stop is reported, so the next tick simply tries again. */
+export type VehicleCheck = {
+  report?: PlayVehicleCollisionReport;
+  hold?: boolean;
+};
 /** Session-owned static BVH plus foreign-rig BVHs cached by accepted geometry
  * identity. No authored mutation and no retained Rapier query worlds. */
 export class PlayVehicleWorld {
@@ -71,10 +124,66 @@ export class PlayVehicleWorld {
     const report = this.reports.get(rigId);
     return report ? structuredClone(report) : undefined;
   }
-  check(rigId: string, before: MechanismSnapshot, after: MechanismSnapshot) {
+  private snapshots(excludeRigId: string) {
+    const snapshots = [this.staticWorld!];
+    for (const foreign of this.acceptedGeometry(excludeRigId)) {
+      if (foreign.rigId === excludeRigId) continue;
+      let cache = this.foreign.get(foreign.rigId);
+      if (!cache || cache.sources !== foreign.sources) {
+        cache = {
+          sources: foreign.sources,
+          snapshot: new DrivingObstacleSnapshot(foreign.sources, 200000),
+        };
+        this.foreign.set(foreign.rigId, cache);
+      }
+      snapshots.push(cache.snapshot);
+    }
+    return snapshots;
+  }
+  /** Sweeps the whole move against every snapshot, split into adaptive
+   * substeps when a fast turn needs more angular segments than one query. */
+  private sweepAll(
+    rigId: string,
+    boxes: DrivingBox[],
+    start: DrivingPose,
+    end: DrivingPose,
+    allowVertical: boolean,
+  ): SweepOutcome {
+    const [from, to] = continuousPoses(start, end);
+    const pieces = drivingSubsteps(boxes, to.yaw - from.yaw);
+    if (pieces > MAX_SUBSTEPS)
+      return { accepted: false, reason: "work-budget" };
+    const snapshots = this.snapshots(rigId);
+    const at = (t: number): DrivingPose => ({
+      x: from.x + (to.x - from.x) * t,
+      y: from.y + (to.y - from.y) * t,
+      z: from.z + (to.z - from.z) * t,
+      yaw: from.yaw + (to.yaw - from.yaw) * t,
+    });
+    for (let piece = 0; piece < pieces; piece++) {
+      const a = piece ? at(piece / pieces) : from,
+        b = piece === pieces - 1 ? to : at((piece + 1) / pieces);
+      if (!allowVertical) b.y = a.y;
+      for (const snapshot of snapshots) {
+        const result = snapshot.sweep(rigId, boxes, a, b, { allowVertical });
+        if (!result.accepted)
+          return {
+            accepted: false,
+            reason: result.reason,
+            obstacle: result.obstacle,
+          };
+      }
+    }
+    return { accepted: true };
+  }
+  check(
+    rigId: string,
+    before: MechanismSnapshot,
+    after: MechanismSnapshot,
+  ): VehicleCheck {
     const report = this.reports.get(rigId);
-    if (!report) return undefined;
-    if (!report.supported) return this.report(rigId);
+    if (!report) return {};
+    if (!report.supported) return { report: this.report(rigId) };
     const profile = this.profiles.get(rigId)!;
     const from = drivingPose(profile, before),
       to = drivingPose(profile, after);
@@ -89,37 +198,15 @@ export class PlayVehicleWorld {
           "INVALID_INPUT",
           "Vehicle proxy penetrates the session-only ground plane",
         );
-      const snapshots = [this.staticWorld!];
-      for (const foreign of this.acceptedGeometry(rigId)) {
-        if (foreign.rigId === rigId) continue;
-        let cache = this.foreign.get(foreign.rigId);
-        if (!cache || cache.sources !== foreign.sources) {
-          cache = {
-            sources: foreign.sources,
-            snapshot: new DrivingObstacleSnapshot(foreign.sources, 200000),
-          };
-          this.foreign.set(foreign.rigId, cache);
-        }
-        snapshots.push(cache.snapshot);
-      }
-      let queries = 0,
-        candidates = 0;
-      for (const snapshot of snapshots) {
-        const result = snapshot.sweep(rigId, profile.boxes, from, to, {
-          queries: 16384 - queries,
-          candidates: 512 - candidates,
-        });
-        queries += result.queries;
-        candidates += result.candidateTriangles;
-        if (!result.accepted || queries > 16384 || candidates > 512) {
-          report.status = "blocked";
-          report.reason =
-            result.reason === "contact"
-              ? "Vehicle stopped before intersecting included world or another rig"
-              : "Vehicle sweep exceeds the complete collision work budget";
-          report.obstacle = result.obstacle;
-          return this.report(rigId);
-        }
+      const result = this.sweepAll(rigId, profile.boxes, from, to, false);
+      if (result.reason === "work-budget")
+        return { report: this.report(rigId), hold: true };
+      if (!result.accepted) {
+        report.status = "blocked";
+        report.reason =
+          "Vehicle stopped before intersecting included world or another rig";
+        report.obstacle = result.obstacle;
+        return { report: this.report(rigId) };
       }
       report.status = "ready";
       delete report.reason;
@@ -129,16 +216,17 @@ export class PlayVehicleWorld {
       report.reason = reason(error);
       delete report.obstacle;
     }
-    return this.report(rigId);
+    return { report: this.report(rigId) };
   }
   /** Body queries include own-vehicle geometry unless the attachment invariant
-   * has already been certified. Caller supplies no opaque visibility filters. */
+   * has already been certified. Caller supplies no opaque visibility filters.
+   * `hold` marks a refusal that is only a work budget, not a contact. */
   sweepBody(
     boxes: DrivingBox[],
     from: DrivingPose,
     to: DrivingPose,
     excludeRigId?: string,
-  ) {
+  ): { accepted: boolean; reason?: string; hold?: boolean } {
     if (!this.staticWorld)
       return {
         accepted: false,
@@ -156,39 +244,19 @@ export class PlayVehicleWorld {
         accepted: false,
         reason: "Body transfer intersects session ground",
       };
-    const snapshots = [this.staticWorld];
     try {
-      for (const foreign of this.acceptedGeometry(excludeRigId ?? "")) {
-        let cache = this.foreign.get(foreign.rigId);
-        if (!cache || cache.sources !== foreign.sources) {
-          cache = {
-            sources: foreign.sources,
-            snapshot: new DrivingObstacleSnapshot(foreign.sources, 200000),
-          };
-          this.foreign.set(foreign.rigId, cache);
-        }
-        snapshots.push(cache.snapshot);
-      }
-      let queries = 0,
-        candidates = 0;
-      for (const snapshot of snapshots) {
-        const result = snapshot.sweep(excludeRigId ?? "", boxes, from, to, {
-          queries: 16384 - queries,
-          candidates: 512 - candidates,
-          allowVertical: true,
-        });
-        queries += result.queries;
-        candidates += result.candidateTriangles;
-        if (!result.accepted)
-          return {
+      const result = this.sweepAll(excludeRigId ?? "", boxes, from, to, true);
+      if (result.accepted) return { accepted: true };
+      return result.reason === "work-budget"
+        ? {
             accepted: false,
-            reason:
-              result.reason === "contact"
-                ? "Body transfer intersects included geometry"
-                : "Body transfer exceeds collision work budget",
+            hold: true,
+            reason: "Too much nearby geometry to check this move",
+          }
+        : {
+            accepted: false,
+            reason: "Body transfer intersects included geometry",
           };
-      }
-      return { accepted: true };
     } catch (error) {
       return { accepted: false, reason: reason(error) };
     }

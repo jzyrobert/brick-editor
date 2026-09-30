@@ -39,10 +39,14 @@ export const SEATED_VISUAL_POSE = Object.freeze({
   rightShoulder: 0.7,
   leftWrist: 0,
   rightWrist: 0,
-  /** The seated head stays level (the view still pitches), so the hair
-   * keeps clear of a backrest right behind the torso. */
+  /** Resting head pitch (level). */
   headPitch: 0,
+  /** The seated head turns with the look within these limits. */
   headYawLimits: Object.freeze([-0.7, 0.7] as const),
+  /** It may nod forward (negative) with the look but never tips back: tipping
+   * back swings the hair towards a backrest right behind the torso. Every
+   * pitch in this range stays inside the declared torso-head envelope. */
+  headPitchLimits: Object.freeze([-0.35, 0] as const),
 });
 export type SeatedPelvisAnchor = { position: Vec3; yawDegrees: number };
 export type SeatedPlacement = {

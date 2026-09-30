@@ -21,6 +21,8 @@ export type DrivingSweep = {
   segments: number;
   reason?: "contact" | "work-budget";
   colliderHandle?: number;
+  /** World-space point of the first contact (obstacle provenance lookup). */
+  point?: { x: number; y: number; z: number };
 };
 /** Deliberately bounded f32 query domain; values outside it are unsupported,
  * never clamped or written back to authored data. */
@@ -260,6 +262,7 @@ export function sweepDrivingBoxes(
             segments,
             reason: "contact",
             colliderHandle: collider.handle,
+            point: { ...contact.point1 },
           };
         queries++;
         const hit = collider.castShape(
@@ -272,14 +275,21 @@ export function sweepDrivingBoxes(
           1,
           true,
         );
-        if (hit)
+        if (hit) {
+          // The witness is in the obstacle collider's local space.
+          const t = collider.translation(),
+            w = new Vector3(hit.witness1.x, hit.witness1.y, hit.witness1.z)
+              .applyQuaternion(new Quaternion().copy(collider.rotation()))
+              .add(new Vector3(t.x, t.y, t.z));
           return {
             accepted: false,
             queries,
             segments,
             reason: "contact",
             colliderHandle: collider.handle,
+            point: { x: w.x, y: w.y, z: w.z },
           };
+        }
       }
     }
   }

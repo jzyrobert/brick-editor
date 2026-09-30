@@ -1,4 +1,5 @@
 import RAPIER from "@dimforge/rapier3d-compat";
+import { Triangle, Vector3 } from "three";
 import { ensure } from "../core/types";
 import {
   drivingCoordinate,
@@ -19,6 +20,9 @@ export type DrivingTriangleSource = {
   vertices: Float32Array;
   indices: Uint32Array;
 };
+/** Most non-support triangles one sweep may gather (its merged narrowphase
+ * mesh stays within the obstacle vertex bound). */
+export const DRIVING_CANDIDATE_LIMIT = 4096;
 type Bound = [number, number, number, number, number, number];
 type Branch = {
   bounds: Bound;
@@ -192,6 +196,16 @@ export class DrivingObstacleSnapshot {
     };
     if (total) this.root = build(0, total);
   }
+  /**
+   * Broadphase + one merged narrowphase. The BVH gathers every triangle the
+   * swept proxies could reach, skipping pure support: a triangle whose top is
+   * no higher than every box's bottom throughout the (planar or vertical)
+   * travel can never be touched, so floors under a vehicle cost nothing. The
+   * remaining candidates become ONE transient trimesh, so contact/cast work
+   * is `segments × boxes × 2` queries however many triangles lie nearby
+   * (Rapier's own BVH handles the rest). Budget failures still refuse the
+   * whole operation; there is no truncated candidate set.
+   */
   sweep(
     rigId: string,
     boxes: readonly DrivingBox[],
@@ -213,20 +227,16 @@ export class DrivingObstacleSnapshot {
       budget.allowVertical,
     );
     const queryBudget = budget.queries ?? 16384,
-      candidateBudget = budget.candidates ?? 512;
+      candidateBudget = budget.candidates ?? DRIVING_CANDIDATE_LIMIT;
     ensure(
       Number.isInteger(queryBudget) &&
         queryBudget >= 0 &&
         queryBudget <= 16384 &&
         Number.isInteger(candidateBudget) &&
         candidateBudget >= 0 &&
-        candidateBudget <= 512,
+        candidateBudget <= DRIVING_CANDIDATE_LIMIT,
       "INVALID_INPUT",
       "Invalid remaining driving query budget",
-    );
-    const candidateLimit = Math.min(
-      candidateBudget,
-      Math.floor(queryBudget / (empty.segments * boxes.length * 2)),
     );
     let radius = 0,
       low = Infinity,
@@ -258,16 +268,20 @@ export class DrivingObstacleSnapshot {
       high + padding,
       Math.max(from.z, to.z) + radius + padding,
     ];
+    // Same numerical support tolerance as the narrowphase (0.0005 LDU).
+    const support = low + 0.00001;
     const candidates: number[] = [];
     let visited = 0,
-      exceeded = !empty.accepted;
+      exceeded =
+        !empty.accepted || empty.segments * boxes.length * 2 > queryBudget;
     const visit = (branch: Branch) => {
       if (exceeded) return;
       if (++visited > 65536) {
         exceeded = true;
         return;
       }
-      if (!overlaps(query, branch.bounds)) return;
+      if (!overlaps(query, branch.bounds) || branch.bounds[4] <= support)
+        return;
       if (branch.left && branch.right) {
         visit(branch.left);
         visit(branch.right);
@@ -278,11 +292,12 @@ export class DrivingObstacleSnapshot {
         const source = this.sources[this.sourceIndex[id]];
         if (source.owner.kind === "rig" && source.owner.rigId === rigId)
           continue;
+        if (this.bounds[id * 6 + 4] <= support) continue;
         const bounds = Array.from(
           this.bounds.subarray(id * 6, id * 6 + 6),
         ) as Bound;
         if (overlaps(query, bounds)) {
-          if (candidates.length === candidateLimit) {
+          if (candidates.length === candidateBudget) {
             exceeded = true;
             return;
           }
@@ -290,7 +305,7 @@ export class DrivingObstacleSnapshot {
         }
       }
     };
-    if (this.root) visit(this.root);
+    if (this.root && !exceeded) visit(this.root);
     const report = {
       units: "metres" as const,
       totalTriangles: this.totalTriangles,
@@ -305,48 +320,63 @@ export class DrivingObstacleSnapshot {
         queries: 0,
         reason: "work-budget",
       };
+    if (!candidates.length) return { ...empty, ...report };
     // Transient narrowphase query world, no authored/session world mutation.
     const world = new RAPIER.World({ x: 0, y: 0, z: 0 });
     try {
-      const provenance = new Map<
-        number,
-        { sourceId: string; triangleIndex: number }
-      >();
-      const obstacles = candidates.map((id) => {
+      const vertices = new Float32Array(candidates.length * 9);
+      candidates.forEach((id, n) => {
         const source = this.sources[this.sourceIndex[id]],
           triangle = this.triangleIndex[id];
-        const vertices = new Float32Array(9);
         for (let corner = 0; corner < 3; corner++) {
           const index = source.indices[triangle * 3 + corner] * 3;
-          vertices.set(source.vertices.subarray(index, index + 3), corner * 3);
+          vertices.set(
+            source.vertices.subarray(index, index + 3),
+            n * 9 + corner * 3,
+          );
         }
-        const collider = world.createCollider(
-          RAPIER.ColliderDesc.trimesh(vertices, new Uint32Array([0, 1, 2])),
-        );
-        provenance.set(collider.handle, {
-          sourceId: source.sourceId,
-          triangleIndex: triangle,
-        });
-        return { collider, owner: source.owner };
       });
+      const collider = world.createCollider(
+        RAPIER.ColliderDesc.trimesh(
+          vertices,
+          Uint32Array.from({ length: candidates.length * 3 }, (_, i) => i),
+        ),
+      );
       const result = sweepDrivingBoxes(
         rigId,
         boxes,
         from,
         to,
-        obstacles,
+        [{ collider, owner: { kind: "static" } }],
         budget.allowVertical,
       );
-      // Handles belong to the temporary world; expose stable source provenance.
-      const { colliderHandle, ...sweep } = result;
-      return {
-        ...sweep,
-        ...report,
-        obstacle:
-          colliderHandle === undefined
-            ? undefined
-            : provenance.get(colliderHandle),
-      };
+      // Handles belong to the temporary world; expose stable source
+      // provenance: the candidate triangle nearest the first contact.
+      const { colliderHandle, point, ...sweep } = result;
+      let obstacle: ObstacleSweep["obstacle"];
+      if (colliderHandle !== undefined) {
+        const p = point ? new Vector3(point.x, point.y, point.z) : undefined,
+          triangle = new Triangle(),
+          closest = new Vector3();
+        let best = Infinity,
+          nearest = candidates[0];
+        if (p)
+          candidates.forEach((id, n) => {
+            triangle.a.fromArray(vertices, n * 9);
+            triangle.b.fromArray(vertices, n * 9 + 3);
+            triangle.c.fromArray(vertices, n * 9 + 6);
+            const d = triangle.closestPointToPoint(p, closest).distanceTo(p);
+            if (d < best) {
+              best = d;
+              nearest = id;
+            }
+          });
+        obstacle = {
+          sourceId: this.sources[this.sourceIndex[nearest]].sourceId,
+          triangleIndex: this.triangleIndex[nearest],
+        };
+      }
+      return { ...sweep, ...report, obstacle };
     } finally {
       world.free();
     }
