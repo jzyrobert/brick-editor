@@ -1687,6 +1687,36 @@ function Workspace() {
       const epoch = ++operationEpoch.current;
       setBusy(true);
       try {
+        if (/\.json$/i.test(file.name)) {
+          // A build script (docs/AGENT-BUILDING.md), compiled to parts.
+          let script: unknown;
+          try {
+            script = JSON.parse(await file.text());
+          } catch {
+            throw new AppError(
+              "INVALID_INPUT",
+              `${file.name} is not a build script (invalid JSON)`,
+            );
+          }
+          ensure(
+            epoch === operationEpoch.current,
+            "CANCELLED",
+            "Import cancelled",
+          );
+          renderer.current?.requestFitOnFirstParts();
+          const result = await api.current!.buildScript.apply({ script });
+          const errors = result.report.problems.filter(
+            (p) => p.severity !== "info",
+          ).length;
+          setStatus(
+            `Built “${result.report.title}”: ${result.report.stats.parts} parts` +
+              (errors ? `, ${errors} problem(s) — see Health` : ""),
+          );
+          await renderer.current?.ready();
+          renderer.current?.fit();
+          setSelectionSafe([]);
+          return;
+        }
         const input = file.name.endsWith(".brickproj")
           ? {
               format: "native" as const,
@@ -4307,6 +4337,10 @@ function Workspace() {
               <button className="wide" onClick={() => void exportFile("ldraw")}>
                 Export LDraw MPD <Icon name="arrowDown" size={16} />
               </button>
+              <p className="muted">
+                Open file reads LDraw (.ldr, .mpd), native backups and build
+                scripts (.json).
+              </p>
               <h3>Start from a template</h3>
               <p className="muted">
                 If your current build has changes, you can save or discard it
@@ -4731,7 +4765,7 @@ function Workspace() {
         hidden
         ref={fileInput}
         type="file"
-        accept=".ldr,.mpd,.dat,.brickproj"
+        accept=".ldr,.mpd,.dat,.brickproj,.json"
         onChange={(e) => {
           const f = e.target.files?.[0];
           if (f) void replaceProject(`“${f.name}”`, () => openFile(f));

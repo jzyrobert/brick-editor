@@ -1,0 +1,95 @@
+{
+  "buildScript": 1,
+  "title": "Santorini terrace village",
+  "description": "Brief: a Santorini cliffside village. White cube houses with blue doors and shutters step down four terraces to a harbour quay; a blue-domed chapel with a bell tower; stairs winding up the middle; boats in the water; bougainvillea.",
+  "palette": {
+    "cliff": {"mix": ["dark tan", "dark tan", "reddish brown", "tan"]},
+    "white": "white",
+    "blue": "blue",
+    "paving": "white",
+    "sea": "trans light blue",
+    "quay": {"mix": ["tan", "tan", "dark tan"]}
+  },
+  "defaults": {"interior": "empty"},
+  "components": {
+    "house-a": {"title": "Cube house 8 x 8", "ops": [
+      {"op": "room", "at": [0, 0, 0], "size": [8, 18, 8], "colour": "white", "openings": [{"side": "front", "at": 1, "width": 4, "height": 18, "fill": "door", "frame": "white", "door": "blue"}, {"side": "front", "at": 6, "width": 2, "y": 9, "height": 6, "frame": "blue"}, {"side": "left", "at": 3, "width": 2, "y": 9, "height": 6, "frame": "blue"}]},
+      {"op": "roof", "style": "flat", "at": [0, 18, 0], "size": [8, 8], "colour": "white", "overhang": 0, "parapet": 2}
+    ]},
+    "house-b": {"title": "Domed house 6 x 8", "ops": [
+      {"op": "room", "at": [0, 0, 0], "size": [6, 21, 8], "colour": "white", "openings": [{"side": "front", "at": 1, "width": 4, "height": 18, "fill": "door", "frame": "white", "door": "blue"}]},
+      {"op": "floor", "at": [0, 21, 0], "size": [6, 8], "colour": "white"},
+      {"op": "dome", "at": [0, 22, 1], "diameter": 6, "colour": "blue"}
+    ]},
+    "house-c": {"title": "Two-storey house 10 x 8", "ops": [
+      {"op": "room", "at": [0, 0, 0], "size": [10, 30, 8], "colour": "white", "openings": [{"side": "front", "at": 1, "width": 4, "height": 18, "fill": "door", "frame": "white", "door": "blue"}, {"side": "front", "at": 6, "width": 2, "y": 9, "height": 6, "frame": "blue"}, {"side": "front", "at": 1, "width": 2, "y": 21, "height": 6, "frame": "blue"}, {"side": "front", "at": 6, "width": 2, "y": 21, "height": 6, "frame": "blue"}]},
+      {"op": "roof", "style": "flat", "at": [0, 30, 0], "size": [10, 8], "colour": "white", "overhang": 0, "parapet": 2},
+      {"op": "place", "part": {"find": "chimney"}, "at": [7, 31, 5], "colour": "white"}
+    ]},
+    "boat": {"title": "Fishing boat", "ops": [
+      {"op": "box", "at": [0, 0, 1], "size": [4, 3, 8], "colour": "blue", "interior": "solid"},
+      {"op": "box", "at": [0, 3, 0], "size": [4, 2, 10], "colour": "white", "interior": "solid", "top": "tile"},
+      {"op": "box", "at": [1, 5, 5], "size": [2, 6, 3], "colour": "red", "interior": "solid"}
+    ]}
+  },
+  "sections": [
+    {"name": "Ground and sea", "layer": "Landscape", "ops": [
+      {"op": "baseplate", "at": [-48, -32], "size": [96, 64], "colour": "tan"},
+      {"op": "floor", "at": [-48, 0, -32], "size": [96, 12], "colour": "sea", "top": "tile"},
+      {"op": "box", "at": [-48, 0, -20], "size": [96, 3, 6], "colour": "quay", "top": "tile"}
+    ]},
+    {"name": "Terraces", "layer": "Landscape", "ops": [
+      {"op": "box", "at": [-48, 0, -14], "size": [96, 12, 46], "colour": "cliff"},
+      {"op": "floor", "at": [-48, 11, -14], "size": [96, 12], "colour": "paving", "top": "tile"},
+      {"op": "box", "at": [-48, 12, -2], "size": [96, 12, 34], "colour": "cliff"},
+      {"op": "floor", "at": [-48, 23, -2], "size": [96, 12], "colour": "paving", "top": "tile"},
+      {"op": "box", "at": [-48, 24, 10], "size": [96, 12, 22], "colour": "cliff"},
+      {"op": "floor", "at": [-48, 35, 10], "size": [96, 12], "colour": "paving", "top": "tile"},
+      {"op": "box", "at": [-48, 36, 22], "size": [96, 12, 10], "colour": "cliff"},
+      {"op": "floor", "at": [-48, 47, 22], "size": [96, 10], "colour": "paving", "top": "tile"},
+      {"op": "repeat", "count": 4, "step": [0, 12, 12], "ops": [
+        {"op": "carve", "at": [-2, 0, -14], "size": [3, 12, 12]},
+        {"op": "stairs", "at": [-2, 0, -14], "width": 3, "steps": 12, "dir": "+z", "colour": "paving", "top": "tile"},
+        {"op": "mirror", "axis": "x", "about": -0.5, "ops": [
+          {"op": "wall", "from": [-3, -14], "to": [-3, -3], "height": 11, "colour": "cliff"}
+        ]}
+      ]}
+    ]},
+    {"name": "Houses", "layer": "Village", "ops": [
+      {"op": "repeat", "count": 3, "step": [0, 12, 12], "ops": [
+        {"op": "instance", "component": "house-a", "at": [-46, 12, -10]},
+        {"op": "instance", "component": "house-b", "at": [-36, 12, -10]},
+        {"op": "instance", "component": "house-c", "at": [-28, 12, -10]},
+        {"op": "instance", "component": "house-a", "at": [-16, 12, -10]},
+        {"op": "instance", "component": "house-b", "at": [-7, 12, -10]},
+        {"op": "instance", "component": "house-b", "at": [2, 12, -10]},
+        {"op": "instance", "component": "house-c", "at": [10, 12, -10]},
+        {"op": "instance", "component": "house-a", "at": [22, 12, -10]},
+        {"op": "instance", "component": "house-b", "at": [32, 12, -10]},
+        {"op": "instance", "component": "house-a", "at": [40, 12, -10]}
+      ]}
+    ]},
+    {"name": "Chapel", "layer": "Village", "ops": [
+      {"op": "room", "at": [-20, 48, 23], "size": [14, 24, 8], "colour": "white", "openings": [{"side": "front", "at": 5, "width": 4, "height": 18, "fill": "door", "frame": "white", "door": "blue"}, {"side": "front", "at": 1, "width": 2, "y": 9, "height": 9, "frame": "white"}, {"side": "front", "at": 11, "width": 2, "y": 9, "height": 9, "frame": "white"}]},
+      {"op": "floor", "at": [-20, 72, 23], "size": [14, 8], "colour": "white"},
+      {"op": "dome", "at": [-17, 73, 23], "diameter": 8, "colour": "blue"},
+      {"op": "box", "at": [-4, 48, 24], "size": [4, 42, 4], "colour": "white", "interior": "empty"},
+      {"op": "carve", "at": [-4, 78, 24], "size": [4, 6, 1]},
+      {"op": "dome", "at": [-4, 90, 24], "diameter": 4, "colour": "blue"}
+    ]},
+    {"name": "Harbour", "layer": "Harbour", "ops": [
+      {"op": "instance", "component": "boat", "at": [-30, 1, -30]},
+      {"op": "instance", "component": "boat", "at": [-12, 1, -31], "turn": 90},
+      {"op": "instance", "component": "boat", "at": [18, 1, -30]},
+      {"op": "repeat", "count": 6, "step": [16, 0, 0], "ops": [
+        {"op": "column", "at": [-40, 3, -20], "height": 3, "colour": "dark bluish grey", "cap": "tile"},
+        {"op": "place", "part": {"find": "lamp post"}, "at": [-44, 3, -16], "colour": "black"}
+      ]},
+      {"op": "repeat", "count": 4, "step": [0, 12, 12], "ops": [
+        {"op": "fence", "path": [[-48, -14], [-4, -14]], "y": 12, "colour": "white", "style": "lattice-low"},
+        {"op": "fence", "path": [[2, -14], [47, -14]], "y": 12, "colour": "white", "style": "lattice-low"}
+      ]},
+      {"op": "scatter", "region": {"at": [-48, -14], "size": [96, 46]}, "parts": ["24866"], "colours": ["magenta", "dark pink", "bright green"], "density": 0.06, "seed": 7}
+    ]}
+  ]
+}

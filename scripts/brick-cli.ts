@@ -27,6 +27,7 @@ import { Editor } from "../src/core/commands";
 import { occurrences } from "../src/core/document";
 import { AppError, ensure, uid, type Scope } from "../src/core/types";
 import { withHeadlessPage } from "./headless";
+import { buildCommand, partsCommand } from "./build-script-cli";
 import { registerFullLibraryFromDisk } from "./full-library-node";
 import type { CameraSpec } from "../src/core/types";
 import type { PlayCameraMode, PlayLocomotion } from "../src/play/types";
@@ -38,6 +39,8 @@ export async function main(argv: string[]) {
   // Official parts outside the curated pack resolve from the built complete
   // pack on disk (verified against its lock); no network is used.
   registerFullLibraryFromDisk();
+  if (operation === "build") return buildCommand(args);
+  if (operation === "parts") return partsCommand(args);
   const flag = (key: string) => {
     const i = args.indexOf("--" + key);
     return i < 0 ? undefined : args[i + 1];
@@ -51,7 +54,7 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      "brick-cli validate|health|connectors|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --accept-derived-mappings --allow-partial\nQuery: --request query.json [--output query-result.json]\nConnectors: connectors --input file [--connected JSON-array-of-occurrence-IDs] [--output connectors.json] (verified stud connection groups, uncovered parts, connected assembly)\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --look standard|realistic|photo [--samples N] --backdrop blank|grass|street|beach|night|studio --output image.png\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json",
+      'brick-cli build|parts|validate|health|connectors|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --accept-derived-mappings --allow-partial\nQuery: --request query.json [--output query-result.json]\nConnectors: connectors --input file [--connected JSON-array-of-occurrence-IDs] [--output connectors.json] (verified stud connection groups, uncovered parts, connected assembly)\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --look standard|realistic|photo [--samples N] --backdrop blank|grass|street|beach|night|studio --output image.png\nBuild: build --script build.json --output build.mpd [--render view.png --views iso,front] (brick-cli build --help)\nParts: parts search "cheese slope" [--size 1x2] [--colour red --available] [--json]\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json',
     );
     return;
   }

@@ -1653,6 +1653,181 @@
         "input"
       ],
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "buildScript.validate"
+        },
+        "input": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "buildScript.compile"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "script": {
+              "type": "object"
+            },
+            "check": {
+              "type": "boolean"
+            },
+            "includeLDraw": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "script"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "buildScript.apply"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "script": {
+              "type": "object"
+            },
+            "dryRun": {
+              "type": "boolean"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "check": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "script"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "parts.search"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "category": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "size": {
+              "type": "object",
+              "properties": {
+                "w": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "d": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "h": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            },
+            "colour": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              ]
+            },
+            "availableInColour": {
+              "type": "boolean"
+            },
+            "connectable": {
+              "type": "boolean"
+            },
+            "scope": {
+              "enum": [
+                "all",
+                "curated"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
     }
   ]
 }

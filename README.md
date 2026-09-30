@@ -77,6 +77,10 @@ await api.dispatch({
 
 Core commands, inventory and file conversion also run in Node without DOM or GPU. Camera and selection are transient; bookmarks are authoring commands. Long import jobs expose status/cancellation; failed or cancelled imports leave the previous document intact.
 
+## Building with agents
+
+LLM agents can design large builds as compact [build scripts](docs/AGENT-BUILDING.md) (walls, rooms, roofs, windows, repeats, components) that compile to real parts with overlap and connectivity checks: `npm run cli -- build --script fixtures/build-scripts/santorini.json --output santorini.mpd --render views/santorini.png`. A ready-to-paste system prompt is in [prompts/build-agent.md](prompts/build-agent.md); `npm run cli -- parts search "cheese slope"` finds parts by description.
+
 ## CLI
 
 ```sh

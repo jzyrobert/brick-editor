@@ -1,0 +1,2261 @@
+{
+  "$id": "buildScript",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Brick Editor Build Script v1",
+  "description": "Declarative build language compiled to LDraw parts (docs/AGENT-BUILDING.md). x/z in studs, y in plates (\"4b\" = 4 bricks); y = 0 is the ground; the front faces -Z.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "buildScript": {
+      "enum": [
+        1
+      ],
+      "description": "Language version (1)"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Build title"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What is being built"
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Author"
+    },
+    "palette": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/colour"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "mix": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/colour"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "mix"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "Named colours: {\"wall\": \"white\", \"stone\": {\"mix\": [\"light bluish grey\", \"dark bluish grey\"]}}"
+    },
+    "parts": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/part"
+      },
+      "description": "Named parts: {\"lamp\": {\"find\": \"lamp post\"}}"
+    },
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "interior": {
+          "enum": [
+            "empty",
+            "fill",
+            "solid"
+          ],
+          "description": "Default interior of box/cylinder (empty)"
+        },
+        "interiorColour": {
+          "$ref": "#/definitions/colour",
+          "description": "Colour of filled interiors"
+        },
+        "overhang": {
+          "enum": [
+            0,
+            1
+          ],
+          "description": "Default roof overhang"
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Seed for colour mixes and scatter"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "description": "Defaults"
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Title"
+          },
+          "ops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/op"
+            },
+            "description": "Ops in the component's own frame"
+          }
+        },
+        "required": [
+          "ops"
+        ],
+        "additionalProperties": false
+      },
+      "description": "Reusable submodels (placed with instance)"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Section (submodel) name"
+          },
+          "layer": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Layer name (default: the section name)"
+          },
+          "ops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/op"
+            },
+            "description": "Ops"
+          }
+        },
+        "required": [
+          "name",
+          "ops"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "description": "Sections, compiled in order"
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "maxParts": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Refuse builds larger than this"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "description": "Limits"
+    }
+  },
+  "required": [
+    "buildScript",
+    "title",
+    "sections"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "colour": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ],
+      "description": "Palette key, colour name (e.g. 'light bluish grey') or LDraw code"
+    },
+    "part": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "find": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Search text, e.g. '1x2 tile'"
+            },
+            "category": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Category filter"
+            },
+            "colour": {
+              "$ref": "#/definitions/colour",
+              "description": "Prefer parts made in this colour"
+            }
+          },
+          "required": [
+            "find"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "description": "Part number ('3001'), @alias, or {find: 'text'}"
+    },
+    "op": {
+      "type": "object",
+      "required": [
+        "op"
+      ],
+      "properties": {
+        "op": {
+          "enum": [
+            "box",
+            "wall",
+            "room",
+            "floor",
+            "carve",
+            "line",
+            "cylinder",
+            "dome",
+            "stairs",
+            "roof",
+            "window",
+            "door",
+            "place",
+            "column",
+            "fence",
+            "baseplate",
+            "repeat",
+            "mirror",
+            "group",
+            "instance",
+            "scatter",
+            "smooth"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "box"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "box"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] minimum corner"
+              },
+              "size": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[w, h, d]: studs, plates, studs"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "interior": {
+                "enum": [
+                  "empty",
+                  "fill",
+                  "solid"
+                ],
+                "description": "Unseen inside: empty (hollow shell), fill (cheap large bricks in the interior colour) or solid"
+              },
+              "thickness": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Shell wall thickness in studs when hollow"
+              },
+              "open": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "top",
+                    "front",
+                    "back",
+                    "left",
+                    "right"
+                  ]
+                },
+                "description": "Faces of a hollow shell to leave out"
+              },
+              "top": {
+                "enum": [
+                  "studs",
+                  "tile"
+                ],
+                "description": "Top surface: studs (default) or smooth tiles"
+              },
+              "pieces": {
+                "enum": [
+                  "auto",
+                  "plates"
+                ],
+                "description": "auto: bricks where 3 plates fit, else plates"
+              }
+            },
+            "required": [
+              "at",
+              "size",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Rectangular volume packed into bricks/plates (greedy, staggered joints)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "wall"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "wall"
+              },
+              "note": {
+                "type": "string"
+              },
+              "from": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "[x, z] first cell"
+              },
+              "to": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "[x, z] last cell (same x or same z as from)"
+              },
+              "y": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]+b$"
+                  }
+                ],
+                "description": "Base level (plates, default 0)"
+              },
+              "height": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]+b$"
+                  }
+                ],
+                "description": "Height (plates or 'nb')"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "thickness": {
+                "enum": [
+                  1,
+                  2
+                ],
+                "description": "Studs, grows towards +z (X walls) or +x (Z walls)"
+              },
+              "facing": {
+                "enum": [
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ],
+                "description": "Outside of the wall, for windows and doors"
+              },
+              "openings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "side": {
+                      "enum": [
+                        "front",
+                        "back",
+                        "left",
+                        "right"
+                      ],
+                      "description": "Wall side (room only): front|back|left|right"
+                    },
+                    "at": {
+                      "type": "integer",
+                      "description": "Offset along the wall from its start (studs)"
+                    },
+                    "width": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "description": "Width in studs"
+                    },
+                    "y": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string",
+                          "pattern": "^[0-9]+b$"
+                        }
+                      ],
+                      "description": "Bottom above the wall base (plates, default 0)"
+                    },
+                    "height": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string",
+                          "pattern": "^[0-9]+b$"
+                        }
+                      ],
+                      "description": "Height (plates; default: to the wall top)"
+                    },
+                    "fill": {
+                      "enum": [
+                        "auto",
+                        "none",
+                        "window",
+                        "door"
+                      ],
+                      "description": "What goes in: auto picks a window or door that fits exactly (default)"
+                    },
+                    "frame": {
+                      "$ref": "#/definitions/colour",
+                      "description": "Window/door frame colour"
+                    },
+                    "glass": {
+                      "$ref": "#/definitions/colour",
+                      "description": "Window glass colour (default trans-clear)"
+                    },
+                    "door": {
+                      "$ref": "#/definitions/colour",
+                      "description": "Door leaf colour"
+                    },
+                    "opens": {
+                      "enum": [
+                        "in",
+                        "out"
+                      ],
+                      "description": "Door swing (default in)"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "width"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Door/window/plain openings"
+              },
+              "top": {
+                "enum": [
+                  "studs",
+                  "tile"
+                ],
+                "description": "Top surface: studs (default) or smooth tiles"
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "height",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Straight wall along X or Z in running bond, with openings"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "room"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "room"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] outer minimum corner"
+              },
+              "size": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[w, h, d] outer size"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "openings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "side": {
+                      "enum": [
+                        "front",
+                        "back",
+                        "left",
+                        "right"
+                      ],
+                      "description": "Wall side (room only): front|back|left|right"
+                    },
+                    "at": {
+                      "type": "integer",
+                      "description": "Offset along the wall from its start (studs)"
+                    },
+                    "width": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "description": "Width in studs"
+                    },
+                    "y": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string",
+                          "pattern": "^[0-9]+b$"
+                        }
+                      ],
+                      "description": "Bottom above the wall base (plates, default 0)"
+                    },
+                    "height": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string",
+                          "pattern": "^[0-9]+b$"
+                        }
+                      ],
+                      "description": "Height (plates; default: to the wall top)"
+                    },
+                    "fill": {
+                      "enum": [
+                        "auto",
+                        "none",
+                        "window",
+                        "door"
+                      ],
+                      "description": "What goes in: auto picks a window or door that fits exactly (default)"
+                    },
+                    "frame": {
+                      "$ref": "#/definitions/colour",
+                      "description": "Window/door frame colour"
+                    },
+                    "glass": {
+                      "$ref": "#/definitions/colour",
+                      "description": "Window glass colour (default trans-clear)"
+                    },
+                    "door": {
+                      "$ref": "#/definitions/colour",
+                      "description": "Door leaf colour"
+                    },
+                    "opens": {
+                      "enum": [
+                        "in",
+                        "out"
+                      ],
+                      "description": "Door swing (default in)"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "width"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Openings; each names its side"
+              },
+              "floor": {
+                "$ref": "#/definitions/colour",
+                "description": "Floor plate colour inside the walls"
+              },
+              "top": {
+                "enum": [
+                  "studs",
+                  "tile"
+                ],
+                "description": "Top surface: studs (default) or smooth tiles"
+              }
+            },
+            "required": [
+              "at",
+              "size",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Four 1-stud walls around a footprint with interlocking corners"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "floor"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "floor"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] minimum corner"
+              },
+              "size": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "[w, d] studs"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "layers": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Plates thick (default 1)"
+              },
+              "top": {
+                "enum": [
+                  "studs",
+                  "tile"
+                ],
+                "description": "Top surface: studs (default) or smooth tiles"
+              },
+              "holes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "description": "[x, z] minimum corner"
+                    },
+                    "size": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "description": "[w, d] studs"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "size"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Rectangles to leave open"
+              }
+            },
+            "required": [
+              "at",
+              "size",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Plate or tile area (floors, slabs, paving, water)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "carve"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "carve"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] minimum corner"
+              },
+              "size": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[w, h, d]"
+              }
+            },
+            "required": [
+              "at",
+              "size"
+            ],
+            "additionalProperties": false,
+            "description": "Remove massing in a volume (later ops can fill it again)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "line"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "line"
+              },
+              "note": {
+                "type": "string"
+              },
+              "from": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z]"
+              },
+              "to": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z]"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "One-stud line of massing between two cells (beams, posts)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "cylinder"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "cylinder"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] minimum corner of the bounding square"
+              },
+              "diameter": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Studs"
+              },
+              "height": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]+b$"
+                  }
+                ],
+                "description": "Plates or 'nb'"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "interior": {
+                "enum": [
+                  "empty",
+                  "fill",
+                  "solid"
+                ],
+                "description": "Unseen inside: empty (hollow shell), fill (cheap large bricks in the interior colour) or solid"
+              },
+              "thickness": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Shell wall thickness in studs when hollow"
+              },
+              "open": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "top",
+                    "front",
+                    "back",
+                    "left",
+                    "right"
+                  ]
+                },
+                "description": "Faces of a hollow shell to leave out"
+              },
+              "top": {
+                "enum": [
+                  "studs",
+                  "tile"
+                ],
+                "description": "Top surface: studs (default) or smooth tiles"
+              },
+              "pieces": {
+                "enum": [
+                  "auto",
+                  "plates"
+                ],
+                "description": "auto: bricks where 3 plates fit, else plates"
+              }
+            },
+            "required": [
+              "at",
+              "diameter",
+              "height",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Round massing (towers, tanks): a stud disc per level"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "dome"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "dome"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] minimum corner of the base square"
+              },
+              "diameter": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Studs"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "interior": {
+                "enum": [
+                  "empty",
+                  "fill",
+                  "solid"
+                ],
+                "description": "Unseen inside: empty (hollow shell), fill (cheap large bricks in the interior colour) or solid"
+              }
+            },
+            "required": [
+              "at",
+              "diameter",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Hemispherical massing (Santorini domes, cupolas), 1-stud shell"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "stairs"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "stairs"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] minimum corner of the first step"
+              },
+              "width": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Studs across"
+              },
+              "steps": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Number of steps"
+              },
+              "dir": {
+                "enum": [
+                  "+x",
+                  "-x",
+                  "+z",
+                  "-z"
+                ],
+                "description": "Climbing direction"
+              },
+              "rise": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]+b$"
+                  }
+                ],
+                "description": "Plates per step (default 1)"
+              },
+              "run": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Studs per step (default 1)"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "top": {
+                "enum": [
+                  "studs",
+                  "tile"
+                ],
+                "description": "Top surface: studs (default) or smooth tiles"
+              }
+            },
+            "required": [
+              "at",
+              "width",
+              "steps",
+              "dir",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "A flight of steps (massing); rise 1 plate is Play-walkable"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "roof"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "roof"
+              },
+              "note": {
+                "type": "string"
+              },
+              "style": {
+                "enum": [
+                  "gable",
+                  "hip",
+                  "flat"
+                ],
+                "description": "Roof shape"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z]: footprint corner; y = wall top"
+              },
+              "size": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "[w, d] footprint (walls' outer size)"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "ridge": {
+                "enum": [
+                  "x",
+                  "z"
+                ],
+                "description": "Ridge direction (default: along the longer side)"
+              },
+              "overhang": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "description": "Eave overhang in studs (default 1)"
+              },
+              "gable": {
+                "$ref": "#/definitions/colour",
+                "description": "Gable-end wall colour (default roof colour)"
+              },
+              "parapet": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]+b$"
+                  }
+                ],
+                "description": "Flat roofs: parapet height (plates)"
+              },
+              "holes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "description": "[x, z] minimum corner"
+                    },
+                    "size": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "description": "[w, d] studs"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "size"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Cells left out of the slopes (chimneys): [{at: [x, z], size: [w, d]}]"
+              }
+            },
+            "required": [
+              "style",
+              "at",
+              "size",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Roof over a footprint: 45° gable or hip slopes, or flat"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "window"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "window"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] footprint corner"
+              },
+              "facing": {
+                "enum": [
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ],
+                "description": "Outside direction"
+              },
+              "size": {
+                "enum": [
+                  "1x2x2",
+                  "1x2x3",
+                  "1x4x3"
+                ],
+                "description": "Frame size (default 1x2x3)"
+              },
+              "frame": {
+                "$ref": "#/definitions/colour",
+                "description": "Frame colour"
+              },
+              "glass": {
+                "$ref": "#/definitions/colour",
+                "description": "Glass colour (default trans-clear)"
+              }
+            },
+            "required": [
+              "at",
+              "facing",
+              "frame"
+            ],
+            "additionalProperties": false,
+            "description": "Framed, glazed window; carves its opening"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "door"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "door"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] footprint corner"
+              },
+              "facing": {
+                "enum": [
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ],
+                "description": "Outside direction"
+              },
+              "frame": {
+                "$ref": "#/definitions/colour",
+                "description": "Frame colour"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Door colour (default frame colour)"
+              },
+              "opens": {
+                "enum": [
+                  "in",
+                  "out"
+                ],
+                "description": "Swing (default in)"
+              },
+              "style": {
+                "enum": [
+                  "smooth",
+                  "panes"
+                ],
+                "description": "Door leaf"
+              }
+            },
+            "required": [
+              "at",
+              "facing",
+              "frame"
+            ],
+            "additionalProperties": false,
+            "description": "Door frame 1x4x6 with a hinged door (Play opens it)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "place"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "place"
+              },
+              "note": {
+                "type": "string"
+              },
+              "part": {
+                "$ref": "#/definitions/part",
+                "description": "Part number, @alias or {find: 'text'}"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] footprint corner; y = underside level"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "turn": {
+                "enum": [
+                  0,
+                  90,
+                  180,
+                  270
+                ],
+                "description": "Degrees about Y: 0 90 180 270"
+              }
+            },
+            "required": [
+              "part",
+              "at",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "One part at a stud cell (window frames get their glass)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "column"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "column"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] footprint corner"
+              },
+              "height": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]+b$"
+                  }
+                ],
+                "description": "Plates or 'nb'"
+              },
+              "diameter": {
+                "enum": [
+                  1,
+                  2,
+                  4
+                ],
+                "description": "Studs (default 1)"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "cap": {
+                "enum": [
+                  "none",
+                  "cone",
+                  "plate",
+                  "tile"
+                ],
+                "description": "Top (default none)"
+              },
+              "capColour": {
+                "$ref": "#/definitions/colour",
+                "description": "Cap colour (default column colour)"
+              }
+            },
+            "required": [
+              "at",
+              "height",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Round column of round bricks (1, 2 or 4 studs) with a cap"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "fence"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "fence"
+              },
+              "note": {
+                "type": "string"
+              },
+              "path": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "minItems": 2,
+                "description": "[[x, z], ...] cells, corners"
+              },
+              "y": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]+b$"
+                  }
+                ],
+                "description": "Base level (default 0)"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "style": {
+                "enum": [
+                  "picket",
+                  "lattice",
+                  "lattice-low",
+                  "spindle",
+                  "panel"
+                ],
+                "description": "Fence style (default lattice-low: 1 brick high)"
+              }
+            },
+            "required": [
+              "path",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Fence or railing along an axis-aligned path"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "baseplate"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "baseplate"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "[x, z] minimum corner"
+              },
+              "size": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "[w, d]: multiples of 16 studs"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Colour: palette key, colour name or LDraw code"
+              }
+            },
+            "required": [
+              "at",
+              "size",
+              "colour"
+            ],
+            "additionalProperties": false,
+            "description": "Ground baseplates tiled over an area (top at y = 0)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "repeat"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "repeat"
+              },
+              "note": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Copies (including the first)"
+              },
+              "step": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[dx, dy, dz] per copy"
+              },
+              "ops": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/op"
+                },
+                "description": "Ops to repeat"
+              }
+            },
+            "required": [
+              "count",
+              "step",
+              "ops"
+            ],
+            "additionalProperties": false,
+            "description": "Repeat ops count times, offset by step each time"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "mirror"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "mirror"
+              },
+              "note": {
+                "type": "string"
+              },
+              "axis": {
+                "enum": [
+                  "x",
+                  "z"
+                ],
+                "description": "Coordinate that is mirrored"
+              },
+              "about": {
+                "type": "number",
+                "description": "Mirror plane (studs; 10 maps cell 9 to 10)"
+              },
+              "ops": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/op"
+                },
+                "description": "Ops"
+              },
+              "keep": {
+                "type": "boolean",
+                "description": "Keep the original too (default true)"
+              }
+            },
+            "required": [
+              "axis",
+              "about",
+              "ops"
+            ],
+            "additionalProperties": false,
+            "description": "Ops and their mirror image across x = about or z = about"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "group"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "group"
+              },
+              "note": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] offset of the local origin"
+              },
+              "turn": {
+                "enum": [
+                  0,
+                  90,
+                  180,
+                  270
+                ],
+                "description": "Degrees about Y"
+              },
+              "ops": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/op"
+                },
+                "description": "Ops in local coordinates"
+              }
+            },
+            "required": [
+              "ops"
+            ],
+            "additionalProperties": false,
+            "description": "Ops in a local frame: offset, then turned about the frame origin"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "instance"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "instance"
+              },
+              "note": {
+                "type": "string"
+              },
+              "component": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name in components"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z] where its footprint corner goes"
+              },
+              "turn": {
+                "enum": [
+                  0,
+                  90,
+                  180,
+                  270
+                ],
+                "description": "Degrees about Y"
+              }
+            },
+            "required": [
+              "component",
+              "at"
+            ],
+            "additionalProperties": false,
+            "description": "A component (a real LDraw submodel) placed at a stud cell"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "scatter"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "scatter"
+              },
+              "note": {
+                "type": "string"
+              },
+              "region": {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "[x, z] minimum corner"
+                  },
+                  "size": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "[w, d] studs"
+                  }
+                },
+                "required": [
+                  "at",
+                  "size"
+                ],
+                "additionalProperties": false,
+                "description": "{at: [x, z], size: [w, d]}"
+              },
+              "parts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/part"
+                },
+                "minItems": 1,
+                "description": "Parts to choose from"
+              },
+              "colours": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/colour"
+                },
+                "minItems": 1,
+                "description": "Colours to choose from"
+              },
+              "density": {
+                "type": "number",
+                "description": "0..1 share of free cells (default 0.2)"
+              },
+              "spacing": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Minimum distance between parts in studs, |dx|+|dz| (default 1)"
+              },
+              "seed": {
+                "type": "integer",
+                "description": "Random seed (default 1)"
+              }
+            },
+            "required": [
+              "region",
+              "parts",
+              "colours"
+            ],
+            "additionalProperties": false,
+            "description": "Detail pass: parts dropped on exposed tops in a region (seeded)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "smooth"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "smooth"
+              },
+              "note": {
+                "type": "string"
+              },
+              "region": {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "[x, z] minimum corner"
+                  },
+                  "size": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "[w, d] studs"
+                  }
+                },
+                "required": [
+                  "at",
+                  "size"
+                ],
+                "additionalProperties": false,
+                "description": "Region (default: everywhere)"
+              }
+            },
+            "required": [],
+            "additionalProperties": false,
+            "description": "Detail pass: exposed tops in a region become tiles"
+          }
+        }
+      ]
+    }
+  }
+}

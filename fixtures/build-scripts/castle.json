@@ -1,0 +1,101 @@
+{
+  "buildScript": 1,
+  "title": "Small castle (build script)",
+  "description": "The Small castle sample (src/catalog/builds/castle.ts) as a build script: 2-stud curtain walls in running bond, four round towers with cones and flags, battlements, a gate with an arch, a moat, a courtyard with a well, a hall and stairs to the wall walk.",
+  "palette": {
+    "stone": {"mix": ["light bluish grey", "light bluish grey", "light bluish grey", "dark bluish grey"]},
+    "grey": "light bluish grey",
+    "dark": "dark bluish grey",
+    "cone": "dark blue",
+    "wood": "reddish brown",
+    "water": "trans dark blue",
+    "path": "tan",
+    "path2": "dark tan"
+  },
+  "components": {
+    "tower": {"title": "Round tower", "ops": [
+      {"op": "column", "at": [0, 0, 0], "diameter": 4, "height": 22, "colour": "dark", "cap": "cone", "capColour": "cone"},
+      {"op": "place", "part": "87580", "at": [1, 28, 1], "colour": "cone"},
+      {"op": "place", "part": {"find": "antenna"}, "at": [2, 29, 2], "colour": "black"}
+    ]}
+  },
+  "sections": [
+    {"name": "Grounds", "ops": [
+      {"op": "baseplate", "at": [-16, -16], "size": [32, 32], "colour": "green"},
+      {"op": "floor", "at": [-16, 0, -14], "size": [32, 4], "colour": "water", "top": "tile", "holes": [{"at": [-2, -14], "size": [4, 4]}]},
+      {"op": "place", "part": "3032", "at": [-2, 0, -15], "turn": 90, "colour": "wood"},
+      {"op": "repeat", "count": 2, "step": [0, 0, 4], "ops": [
+        {"op": "place", "part": "87079", "at": [-2, 0, -7], "colour": "path"},
+        {"op": "place", "part": "87079", "at": [-2, 0, -5], "colour": "path2"}
+      ]},
+      {"op": "column", "at": [-2, 0, 1], "diameter": 4, "height": 4, "colour": "dark"},
+      {"op": "mirror", "axis": "x", "about": 0, "ops": [
+        {"op": "column", "at": [-2, 4, 2], "height": 6, "colour": "wood"}
+      ]},
+      {"op": "place", "part": "3710", "at": [-2, 10, 2], "colour": "wood"},
+      {"op": "repeat", "count": 2, "step": [2, 0, 0], "ops": [
+        {"op": "place", "part": "3039", "at": [-2, 11, 1], "colour": "dark red"}
+      ]},
+      {"op": "repeat", "count": 2, "step": [1, 0, 0], "ops": [
+        {"op": "repeat", "count": 2, "step": [0, 0, 1], "ops": [
+          {"op": "column", "at": [7, 0, 4], "height": 3, "colour": "wood"}
+        ]}
+      ]},
+      {"op": "column", "at": [8, 3, 5], "height": 3, "colour": "wood"},
+      {"op": "mirror", "axis": "x", "about": 0, "ops": [
+        {"op": "place", "part": "3471", "at": [12, 0, -6], "colour": "green"},
+        {"op": "place", "part": "2435", "at": [13, 0, 1], "colour": "green"},
+        {"op": "place", "part": "6255", "at": [14, 0, 5], "colour": "bright green"}
+      ]}
+    ]},
+    {"name": "Curtain walls", "ops": [
+      {"op": "wall", "from": [-8, -9], "to": [7, -9], "height": 15, "thickness": 2, "colour": "stone", "openings": [{"at": 6, "width": 4, "fill": "none"}]},
+      {"op": "wall", "from": [-8, 11], "to": [7, 11], "height": 15, "thickness": 2, "colour": "stone"},
+      {"op": "wall", "from": [-11, -6], "to": [-11, 9], "height": 15, "thickness": 2, "colour": "stone"},
+      {"op": "wall", "from": [9, -6], "to": [9, 9], "height": 15, "thickness": 2, "colour": "stone"},
+      {"op": "place", "part": "3020", "at": [-2, 0, -9], "colour": "path2"}
+    ]},
+    {"name": "Gate", "ops": [
+      {"op": "place", "part": {"find": "arch 1x6x2"}, "at": [-3, 15, -9], "colour": "grey"},
+      {"op": "place", "part": "3009", "at": [-3, 15, -8], "colour": "grey"},
+      {"op": "place", "part": "3009", "at": [-3, 18, -8], "colour": "grey"},
+      {"op": "mirror", "axis": "x", "about": 0, "ops": [
+        {"op": "box", "at": [-4, 15, -9], "size": [1, 6, 2], "colour": "grey", "interior": "solid"}
+      ]},
+      {"op": "floor", "at": [-4, 21, -9], "size": [8, 2], "colour": "dark"},
+      {"op": "repeat", "count": 3, "step": [3, 0, 0], "ops": [
+        {"op": "place", "part": "3004", "at": [-4, 22, -9], "colour": "grey"}
+      ]},
+      {"op": "floor", "at": [-4, 22, -9], "size": [8, 2], "colour": "dark", "top": "tile"}
+    ]},
+    {"name": "Battlements", "ops": [
+      {"op": "repeat", "count": 4, "step": [4, 0, 0], "ops": [
+        {"op": "place", "part": "3004", "at": [-8, 15, 12], "colour": "grey"}
+      ]},
+      {"op": "floor", "at": [-8, 15, 11], "size": [16, 2], "colour": "dark", "top": "tile"},
+      {"op": "mirror", "axis": "x", "about": 0, "keep": true, "ops": [
+        {"op": "repeat", "count": 4, "step": [0, 0, 4], "ops": [
+          {"op": "place", "part": "3004", "at": [-11, 15, -6], "turn": 90, "colour": "grey"}
+        ]},
+        {"op": "floor", "at": [-11, 15, -6], "size": [2, 16], "colour": "dark", "top": "tile"}
+      ]},
+      {"op": "mirror", "axis": "x", "about": 0, "ops": [
+        {"op": "place", "part": "3004", "at": [-8, 15, -9], "colour": "grey"},
+        {"op": "floor", "at": [-8, 15, -9], "size": [4, 2], "colour": "dark", "top": "tile"}
+      ]}
+    ]},
+    {"name": "Towers", "ops": [
+      {"op": "instance", "component": "tower", "at": [-12, 0, -10]},
+      {"op": "instance", "component": "tower", "at": [8, 0, -10]},
+      {"op": "instance", "component": "tower", "at": [-12, 0, 10]},
+      {"op": "instance", "component": "tower", "at": [8, 0, 10]}
+    ]},
+    {"name": "Great hall", "ops": [
+      {"op": "room", "at": [-6, 0, 7], "size": [8, "3b", 4], "colour": "tan", "openings": [{"side": "front", "at": 3, "width": 2, "height": 6, "fill": "none"}, {"side": "front", "at": 1, "width": 2, "y": 3, "height": 6, "frame": "wood"}, {"side": "front", "at": 5, "width": 2, "y": 3, "height": 6, "frame": "wood"}]},
+      {"op": "roof", "style": "flat", "at": [-6, 9, 7], "size": [8, 4], "colour": "dark red", "overhang": 0}
+    ]},
+    {"name": "Stairs", "ops": [
+      {"op": "stairs", "at": [-9, 0, -6], "width": 2, "steps": 15, "dir": "+z", "colour": "grey", "top": "tile"}
+    ]}
+  ]
+}

@@ -88,6 +88,8 @@ export type BuildReport = {
   offGrid: string[];
   unmeasured: string[];
   groups: number;
+  /** Occurrence IDs of each verified connection group. */
+  groupMembers: string[][];
   covered: number;
   uncovered: number;
   studContacts: number;
@@ -102,11 +104,16 @@ export type BuildReport = {
  */
 export function checkBuild(
   project: Project,
-  options: { baseY?: number; occupancy?: Record<string, Bounds[]> } = {},
+  options: {
+    baseY?: number;
+    occupancy?: Record<string, Bounds[]>;
+    /** The project's occurrences, when the caller already has them. */
+    occurrences?: Occurrence[];
+  } = {},
 ): BuildReport {
   const baseY = options.baseY ?? 0,
     extra = options.occupancy ?? {};
-  const all = occurrences(project);
+  const all = options.occurrences ?? occurrences(project);
   const refs: Record<string, number> = {};
   for (const o of all) refs[o.node.ref] = (refs[o.node.ref] ?? 0) + 1;
   const measured: { o: Occurrence; boxes: Bounds[]; world: Bounds }[] = [];
@@ -126,18 +133,31 @@ export function checkBuild(
     measured.push({ o, boxes, world });
   }
   const found: [string, string][] = [];
-  for (let i = 0; i < measured.length; i++)
-    for (let j = i + 1; j < measured.length; j++) {
-      const a = measured[i],
-        b = measured[j];
-      if (!overlaps(a.world, b.world) || exempt(a.o, b.o)) continue;
-      const rel = compose(inverse(b.o.transform), a.o.transform);
-      const clash = a.boxes.some((box) => {
-        const t = transformBounds(box, rel);
-        return b.boxes.some((other) => overlaps(t, other));
-      });
-      if (clash) found.push([a.o.id, b.o.id]);
+  // Sweep along x: only parts whose x ranges meet are compared (pairs in
+  // the same order as a full pairwise scan, so reports are unchanged).
+  const order = measured
+    .map((m, i) => ({ m, i }))
+    .sort((a, b) => a.m.world.min[0] - b.m.world.min[0] || a.i - b.i);
+  const pairs: [number, number][] = [];
+  for (let s = 0; s < order.length; s++)
+    for (let t = s + 1; t < order.length; t++) {
+      if (order[t].m.world.min[0] >= order[s].m.world.max[0] - MARGIN) break;
+      const i = Math.min(order[s].i, order[t].i),
+        j = Math.max(order[s].i, order[t].i);
+      pairs.push([i, j]);
     }
+  pairs.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+  for (const [i, j] of pairs) {
+    const a = measured[i],
+      b = measured[j];
+    if (!overlaps(a.world, b.world) || exempt(a.o, b.o)) continue;
+    const rel = compose(inverse(b.o.transform), a.o.transform);
+    const clash = a.boxes.some((box) => {
+      const t = transformBounds(box, rel);
+      return b.boxes.some((other) => overlaps(t, other));
+    });
+    if (clash) found.push([a.o.id, b.o.id]);
+  }
   const offGrid = all
     .filter((o) => {
       const [x, y, z] = o.transform.position;
@@ -154,13 +174,18 @@ export function checkBuild(
     .map((o) => o.id);
   const graph = connectionGraph(project, all);
   const health = modelHealth(project);
+  const groupMembers = withoutLooseObjects(
+    project,
+    connectedGroups(graph),
+  ).groups;
   return {
     parts: all.length,
     refs,
     overlaps: found,
     offGrid,
     unmeasured: [...new Set(unmeasured)],
-    groups: withoutLooseObjects(project, connectedGroups(graph)).groups.length,
+    groups: groupMembers.length,
+    groupMembers,
     covered: graph.covered.length,
     uncovered: graph.uncovered.length,
     studContacts: graph.contacts - graph.hingeContacts,

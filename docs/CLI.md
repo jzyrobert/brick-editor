@@ -71,3 +71,19 @@ npm run cli -- connectors --input build.ldr --connected '["[\"n1\"]"]'
 ```
 
 Reports the connector pack coverage, the verified stud-connected groups (largest first), parts without verified connector data and the number of stud contacts. `--connected` takes a JSON array of occurrence IDs and adds the connected assembly of those parts. See [connectors](CONNECTORS.md).
+
+## Build scripts and part search
+
+```sh
+npm run cli -- build --script fixtures/build-scripts/santorini.json --output santorini.mpd
+npm run cli -- build --script build.json --output build.brickproj --report build.report.json \
+  --render views/build.png --views iso,front,iso-back,top --width 1280 --height 960
+npm run cli -- build --reference     # op reference with one example per op
+npm run cli -- build --schema        # JSON Schema of build scripts
+npm run cli -- parts search "cheese slope"
+npm run cli -- parts search --size 1x2x1 --category Tiles --colour white --available --json
+```
+
+`build` compiles a [build script](AGENT-BUILDING.md), runs the build checks (overlaps, stud grid, verified connectivity; `--no-check` skips them) and prints a summary with every problem and the op that caused it; the full report (JSON) goes to `--report` or next to `--output` (`.mpd`/`.ldr` for LDraw, `.brickproj` for a native project). The exit code is 2 when the report has errors. `--render` writes one PNG per view from `--views` (`iso`, `front`, `back`, `left`, `right`, `top`, `iso-back`; cameras frame the build's bounds) with the usual `--look` and `--backdrop`; like `render`, it launches a private Vite server and headless Chromium (software WebGL: a 4,000-part build takes about a minute per view). The output is ordinary LDraw, so `health`, `connectors`, `inventory`, `render` and `play` take it as `--input`.
+
+`parts search` ranks the curated catalogue and the complete library (see [API](API.md#build-scripts-and-part-search)); `--size` is `WxD`, `WxDxH` in plates or `WxDxHb` in bricks, `--available` keeps parts known in `--colour`, `--connectable` keeps parts with verified connectors, `--curated` searches only the catalogue. Columns: part, size (studs × studs × plates), curated or library, `snaps` when connectors are verified, colours known, existence in the colour, name.

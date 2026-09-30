@@ -1,7 +1,7 @@
 import type { CatalogPart } from "./catalog";
 
 /** Normalise "2x4", "2 × 4" and "2*4" to the same "2×4" token. */
-function tokens(text: string) {
+export function tokens(text: string) {
   return (
     text
       .toLowerCase()

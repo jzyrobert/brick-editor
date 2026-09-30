@@ -454,5 +454,59 @@
     "riding dynamic bodies and seated driving of dynamic vehicles",
     "compound-rig and arbitrary-frame authoring UI",
     "auto-rig proposals beyond official door leaves"
-  ]
+  ],
+  "buildScripts": {
+    "version": 1,
+    "schema": "schemas/buildScript.v1.json",
+    "guide": "docs/AGENT-BUILDING.md",
+    "api": ["buildScript.validate", "buildScript.compile", "buildScript.apply"],
+    "cli": "brick-cli build --script build.json --output build.mpd [--render view.png --views iso,front]",
+    "ops": [
+      "box",
+      "wall",
+      "room",
+      "floor",
+      "carve",
+      "line",
+      "cylinder",
+      "dome",
+      "stairs",
+      "roof",
+      "window",
+      "door",
+      "place",
+      "column",
+      "fence",
+      "baseplate",
+      "repeat",
+      "mirror",
+      "group",
+      "instance",
+      "scatter",
+      "smooth"
+    ],
+    "interior": ["empty", "fill", "solid"],
+    "checks": [
+      "overlaps",
+      "stud grid",
+      "verified connectivity",
+      "colour availability",
+      "opening sizes"
+    ],
+    "deterministic": true
+  },
+  "partSearch": {
+    "api": "parts.search",
+    "cli": "brick-cli parts search",
+    "scope": ["curated catalogue", "complete official library"],
+    "filters": [
+      "category",
+      "size",
+      "colour",
+      "availableInColour",
+      "connectable",
+      "scope"
+    ],
+    "ranking": "roles and builder slang, then curated, commonly produced and connector-verified parts; printed, sticker, Duplo and obsolete variants last"
+  }
 }

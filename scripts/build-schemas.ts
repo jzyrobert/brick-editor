@@ -2,6 +2,7 @@ import Ajv from "ajv";
 import { BACKDROP_NAMES, PLAY_HINT_MAX_LENGTH } from "../src/core/scene";
 import standaloneCode from "ajv/dist/standalone/index.js";
 import { writeFileSync } from "node:fs";
+import { buildScriptJsonSchema } from "../src/build-script/spec";
 import {
   FIXTURE_TEMPLATES,
   SAMPLE_TEMPLATES,
@@ -1356,6 +1357,45 @@ const api = {
     "jobs.cancel": obj({ id }),
     "jobs.wait": obj({ id }),
     "jobs.list": obj({}),
+    // Build scripts: schemas/buildScript.v1.json describes `script`.
+    "buildScript.validate": { type: "object" },
+    "buildScript.compile": obj(
+      {
+        script: { type: "object" },
+        check: { type: "boolean" },
+        includeLDraw: { type: "boolean" },
+      },
+      ["script"],
+    ),
+    "buildScript.apply": obj(
+      {
+        script: { type: "object" },
+        dryRun: { type: "boolean" },
+        expectedRevision: integer,
+        check: { type: "boolean" },
+      },
+      ["script"],
+    ),
+    "parts.search": obj(
+      {
+        query: str,
+        category: str,
+        size: obj(
+          {
+            w: { type: "integer", minimum: 1 },
+            d: { type: "integer", minimum: 1 },
+            h: { type: "integer", minimum: 0 },
+          },
+          [],
+        ),
+        colour: { anyOf: [str, { type: "integer", minimum: 0 }] },
+        availableInColour: { type: "boolean" },
+        connectable: { type: "boolean" },
+        scope: { enum: ["all", "curated"] },
+        limit: { type: "integer", minimum: 1, maximum: 200 },
+      },
+      [],
+    ),
   }).map(([method, input]) =>
     obj({ apiVersion: { const: "1.0" }, method: { const: method }, input }),
   ),
@@ -1449,6 +1489,20 @@ for (const [name, s] of Object.entries(schemas)) {
   );
   ajv.addSchema(schema, name);
 }
+// The build script language's schema is generated from its own tables
+// (src/build-script/spec.ts, which also validates at run time).
+writeFileSync(
+  "schemas/buildScript.v1.json",
+  JSON.stringify(
+    {
+      $id: "buildScript",
+      $schema: "http://json-schema.org/draft-07/schema#",
+      ...buildScriptJsonSchema(),
+    },
+    null,
+    2,
+  ) + "\n",
+);
 writeFileSync(
   "src/core/validators.js",
   standaloneCode(

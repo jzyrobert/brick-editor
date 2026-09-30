@@ -123,7 +123,12 @@ export class Model {
     public title: string,
   ) {}
   /** A part at an explicit LDraw origin and basis. */
-  raw(ref: string, color: number, position: Vec3, b: Basis = basis(0)) {
+  raw(
+    ref: string,
+    color: number | string,
+    position: Vec3,
+    b: Basis = basis(0),
+  ) {
     this.lines.push(
       `1 ${color} ${position.map(fmt).join(" ")} ${b.map(fmt).join(" ")} ${ref}`,
     );
@@ -135,7 +140,7 @@ export class Model {
    */
   put(
     ref: string,
-    color: number,
+    color: number | string,
     x: number,
     z: number,
     level: number,

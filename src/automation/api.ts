@@ -62,6 +62,10 @@ import type { Project } from "../core/types";
 import { validate } from "../core/validate";
 import { detectFloors, floorReport } from "../edit/floors";
 import { architectureOf, type FloorFocus } from "../core/architecture";
+// Build scripts load on first use (their compiler is not needed to edit).
+const buildScripts = () => import("../build-script/service");
+import type { PartSearchRequest } from "../build-script/part-search";
+import { assertRequestBudget } from "../core/request-budget";
 export function createAPI(
   editor: Editor,
   render: () => SceneAdapter | undefined,
@@ -318,6 +322,81 @@ export function createAPI(
     },
     apiVersion: "1.0" as const,
     capabilities: async () => capabilities,
+    /**
+     * Build scripts (docs/AGENT-BUILDING.md): a declarative JSON build
+     * language compiled deterministically to ordinary parts, with a report
+     * of counts, bounds, part list and problems naming their source ops.
+     */
+    buildScript: {
+      validate: async (script: unknown) => {
+        assertRequestBudget(script);
+        const issues = (await buildScripts()).validateBuildScript(script);
+        return { valid: !issues.length, issues };
+      },
+      compile: async (input: {
+        script: unknown;
+        check?: boolean;
+        includeLDraw?: boolean;
+      }) => {
+        assertRequestBudget(input);
+        const r = await (
+          await buildScripts()
+        ).compileInBrowser(input.script, {
+          profile: editor.resourceProfile,
+          check: input.check,
+        });
+        return {
+          report: r.report,
+          ...(input.includeLDraw ? { ldraw: r.ldraw } : {}),
+        };
+      },
+      /** Replaces the open project with the compiled build (undo cannot
+       * bring the previous project back; save it first). */
+      apply: async (input: {
+        script: unknown;
+        dryRun?: boolean;
+        expectedRevision?: number;
+        check?: boolean;
+      }) => {
+        assertRequestBudget(input);
+        const baseRevision = editor.revision;
+        ensure(
+          input.expectedRevision === undefined ||
+            input.expectedRevision === baseRevision,
+          "REVISION_CONFLICT",
+          "Document revision changed",
+        );
+        const r = await (
+          await buildScripts()
+        ).compileInBrowser(input.script, {
+          profile: editor.resourceProfile,
+          check: input.check,
+        });
+        if (input.dryRun || !r.project)
+          return {
+            applied: false,
+            revision: editor.revision,
+            report: r.report,
+          };
+        onImportStart?.();
+        ensure(
+          editor.revision === baseRevision,
+          "REVISION_CONFLICT",
+          "Document changed during compilation",
+        );
+        const result = editor.replace(r.project);
+        return { applied: true, revision: result.revision, report: r.report };
+      },
+    },
+    parts: {
+      /** Ranked part search over the catalogue and the complete library. */
+      search: async (request: PartSearchRequest = {}) => {
+        assertRequestBudget(request);
+        return {
+          results: await (await buildScripts()).searchPartsInBrowser(request),
+        };
+      },
+    },
     /** Floor guides, room labels and camera floor views (spec §20.2). Edit them with the
      * floors.set, labels.add/update/remove and camera.bookmark.focus commands. */
     architecture: {
