@@ -35,6 +35,12 @@ import {
   registerFullLibraryFromDisk,
 } from "./full-library-node";
 import { withHeadlessPage } from "./headless";
+import {
+  SCRIPT_TEMPLATES,
+  registerScriptTemplateSource,
+  type ScriptTemplateName,
+} from "../src/catalog/script-templates";
+import { compileScriptTemplate } from "./script-templates-node";
 
 export const TEMPLATE_BUILDS = [
   { name: "house", file: "house-with-garden.mpd", source: houseSource },
@@ -78,6 +84,9 @@ const CAMERAS: Partial<Record<TemplateName, CameraSpec>> = {
   cafe: cam([600, -560, -940], [-40, -140, -30]),
   playground: cam([560, -520, -900], [-10, -60, -20]),
   train: cam([1500, -1500, -2300], [200, -40, 500], 40),
+  town: cam([1800, -1650, -2600], [60, -300, 0], 40),
+  cathedral: cam([2600, -2300, -3900], [120, -700, -150], 40),
+  harbour: cam([1900, -1700, -2700], [60, -280, -80], 40),
 };
 
 registerFullLibraryFromDisk();
@@ -93,6 +102,28 @@ for (const build of TEMPLATE_BUILDS) {
   const connectivity = r.health.checks.find((c) => c.id === "connectivity")!;
   console.log(
     `${build.name}: ${r.parts} parts, ${Object.keys(r.refs).length} designs; ` +
+      `${r.overlaps.length} overlaps, ${r.offGrid.length} off grid, ` +
+      `${r.groups} verified group(s) (${r.covered} covered, ${r.uncovered} without data). ` +
+      connectivity.detail,
+  );
+  if (r.overlaps.length || r.offGrid.length || r.groups > 1) failed = true;
+}
+// The build-script samples: compiled from fixtures/build-scripts/.
+for (const name of Object.keys(SCRIPT_TEMPLATES) as ScriptTemplateName[]) {
+  const text = compileScriptTemplate(name);
+  writeFileSync(
+    "fixtures/ldraw/templates/" + SCRIPT_TEMPLATES[name].file,
+    text,
+  );
+  registerScriptTemplateSource(name, text);
+  const project = template(name);
+  const extra = occurrences(project)
+    .map((o) => o.node.ref)
+    .filter((ref) => !curatedHas(ref));
+  const r = checkBuild(project, { occupancy: fullLibraryOccupancy(extra) });
+  const connectivity = r.health.checks.find((c) => c.id === "connectivity")!;
+  console.log(
+    `${name}: ${r.parts} parts, ${Object.keys(r.refs).length} designs; ` +
       `${r.overlaps.length} overlaps, ${r.offGrid.length} off grid, ` +
       `${r.groups} verified group(s) (${r.covered} covered, ${r.uncovered} without data). ` +
       connectivity.detail,

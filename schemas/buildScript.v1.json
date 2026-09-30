@@ -104,6 +104,16 @@
             "minLength": 1,
             "description": "Title"
           },
+          "size": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[w, d]: its plot, from [0, 0] in its own frame; instance places this rectangle, so awnings, bays and ledges sticking out do not shift it (default: everything it holds)"
+          },
           "ops": {
             "type": "array",
             "items": {
@@ -241,6 +251,8 @@
             "column",
             "fence",
             "baseplate",
+            "track",
+            "railcar",
             "repeat",
             "mirror",
             "group",
@@ -267,6 +279,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "at": {
                 "type": "array",
@@ -390,6 +407,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "from": {
                 "type": "array",
@@ -572,6 +594,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "at": {
                 "type": "array",
                 "items": [
@@ -750,6 +777,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "at": {
                 "type": "array",
                 "items": [
@@ -862,6 +894,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "at": {
                 "type": "array",
                 "items": [
@@ -939,6 +976,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "from": {
                 "type": "array",
@@ -1022,6 +1064,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "at": {
                 "type": "array",
@@ -1138,6 +1185,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "at": {
                 "type": "array",
                 "items": [
@@ -1207,6 +1259,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "at": {
                 "type": "array",
@@ -1310,13 +1367,28 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "style": {
                 "enum": [
                   "gable",
                   "hip",
-                  "flat"
+                  "flat",
+                  "shed"
                 ],
-                "description": "Roof shape"
+                "description": "Roof shape (shed: one slope, a lean-to against a higher wall)"
+              },
+              "facing": {
+                "enum": [
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ],
+                "description": "Shed roofs: the side the slope faces (its low edge; default front)"
               },
               "at": {
                 "type": "array",
@@ -1371,6 +1443,20 @@
                   1
                 ],
                 "description": "Eave overhang in studs (default 1)"
+              },
+              "pitch": {
+                "enum": [
+                  45,
+                  75
+                ],
+                "description": "Hip roofs: 75 makes a steep spire of 75° slopes (a stud in per three bricks, a cone on top); default 45"
+              },
+              "ends": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "description": "Overhang past the ends of the ridge (default: overhang); 0 for houses in a terrace"
               },
               "gable": {
                 "$ref": "#/definitions/colour",
@@ -1429,7 +1515,7 @@
               "colour"
             ],
             "additionalProperties": false,
-            "description": "Roof over a footprint: 45° gable or hip slopes, or flat"
+            "description": "Roof over a footprint: 45° gable, hip or shed (lean-to) slopes, or flat"
           }
         },
         {
@@ -1448,6 +1534,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "at": {
                 "type": "array",
@@ -1526,6 +1617,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "at": {
                 "type": "array",
@@ -1611,6 +1707,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "part": {
                 "$ref": "#/definitions/part",
                 "description": "Part number, @alias or {find: 'text'}"
@@ -1653,6 +1754,17 @@
                   270
                 ],
                 "description": "Degrees about Y: 0 90 180 270"
+              },
+              "anchor": {
+                "enum": [
+                  "footprint",
+                  "origin"
+                ],
+                "description": "footprint (default): at is the footprint's corner cell and y its underside; origin: at is the grid point (x, z) and plate level (y) of the part's own origin, for parts made to fit together (a boat hull and its deck share one)"
+              },
+              "wheels": {
+                "$ref": "#/definitions/colour",
+                "description": "Plate 2 × 2 with Wheel Holders (4600) only: rim colour; adds two wheels with black tyres (place the plate's underside 2 plates up so they reach the ground)"
               }
             },
             "required": [
@@ -1680,6 +1792,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "at": {
                 "type": "array",
@@ -1771,6 +1888,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "path": {
                 "type": "array",
                 "items": {
@@ -1836,6 +1958,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "at": {
                 "type": "array",
                 "items": {
@@ -1873,6 +2000,197 @@
           "if": {
             "properties": {
               "op": {
+                "const": "track"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "track"
+              },
+              "note": {
+                "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z]: the grid point where the track starts (between studs); y = level the sleepers stand on"
+              },
+              "dir": {
+                "enum": [
+                  "+x",
+                  "-x",
+                  "+z",
+                  "-z"
+                ],
+                "description": "Direction it leaves in"
+              },
+              "pieces": {
+                "type": "string",
+                "minLength": 1,
+                "description": "S straight (16 studs), L/R curve 22.5° (R40: 16 make a circle), W/V 9V points left/right; e.g. 'SSSS LLLLLLLL SSSS LLLLLLLL' is an oval 64 + 80 studs long, 80 across"
+              },
+              "branch": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Pieces laid from the last points' diverging end (a siding)"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Track colour (default dark bluish grey)"
+              }
+            },
+            "required": [
+              "at",
+              "dir",
+              "pieces"
+            ],
+            "additionalProperties": false,
+            "description": "Official train track laid piece by piece (Play runs trains on it)"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "railcar"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "const": "railcar"
+              },
+              "note": {
+                "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
+              "at": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]+b$"
+                      }
+                    ],
+                    "description": "Plates, or \"<n>b\" for n bricks"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "[x, y, z]: the car's centre, a grid point on the track's centreline; y = the track's level"
+              },
+              "dir": {
+                "enum": [
+                  "+x",
+                  "-x",
+                  "+z",
+                  "-z"
+                ],
+                "description": "Direction the car's front faces"
+              },
+              "component": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Body built on the deck: its frame is 24 long along +x (front at x = 23), 6 wide along z, y = 0 the deck top"
+              },
+              "colour": {
+                "$ref": "#/definitions/colour",
+                "description": "Base and bogie colour (default black)"
+              },
+              "palette": {
+                "type": "object",
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/colour"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "mix": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/definitions/colour"
+                          },
+                          "minItems": 1
+                        }
+                      },
+                      "required": [
+                        "mix"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "description": "Palette overrides for the body component"
+              },
+              "with": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": "Flags for the body component"
+              }
+            },
+            "required": [
+              "at",
+              "dir"
+            ],
+            "additionalProperties": false,
+            "description": "A rail vehicle on the track: train base 6 x 24 on two bogies with a component as its body"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
                 "const": "repeat"
               }
             }
@@ -1885,6 +2203,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "count": {
                 "type": "integer",
@@ -1951,6 +2274,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "axis": {
                 "enum": [
                   "x",
@@ -1999,6 +2327,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "at": {
                 "type": "array",
@@ -2067,6 +2400,11 @@
               "note": {
                 "type": "string"
               },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
+              },
               "component": {
                 "type": "string",
                 "minLength": 1,
@@ -2106,6 +2444,41 @@
                   270
                 ],
                 "description": "Degrees about Y"
+              },
+              "palette": {
+                "type": "object",
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/colour"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "mix": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/definitions/colour"
+                          },
+                          "minItems": 1
+                        }
+                      },
+                      "required": [
+                        "mix"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "description": "Palette keys recoloured for this copy: {\"wall\": \"sand green\"} (each variant is its own submodel)"
+              },
+              "with": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": "Flags for this copy: the component ops with \"when\": \"flag\" run, those with \"when\": \"!flag\" do not"
               }
             },
             "required": [
@@ -2132,6 +2505,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "region": {
                 "type": "object",
@@ -2218,6 +2596,11 @@
               },
               "note": {
                 "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "pattern": "^!?[\\w-]+$",
+                "description": "Run only in component copies placed with this flag in `with` ('!flag': only without it)"
               },
               "region": {
                 "type": "object",

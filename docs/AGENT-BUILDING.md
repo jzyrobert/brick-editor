@@ -87,22 +87,36 @@ Each **section** becomes an LDraw submodel and a layer (`layer` groups several s
 | ----------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
 | `window`    | frame + glass (1x2x2, 1x2x3, 1x4x3)                    | `at`, `facing`, `size`, `frame`, `glass`                                            |
 | `door`      | 1x4x6 frame + hinged door (Play opens it)              | `at`, `facing`, `frame`, `colour`, `opens` in\|out                                  |
-| `roof`      | 45° `gable` or `hip` slopes with ridge, or `flat`      | `at` (y = wall top), `size [w,d]`, `ridge`, `overhang`, `gable`, `holes`, `parapet` |
-| `place`     | any part                                               | `part`, `at`, `colour`, `turn`                                                      |
+| `roof`      | 45° `gable`, `hip` or `shed` (lean-to) slopes, `flat`  | `at` (y = wall top), `size [w,d]`, `ridge`, `overhang`, `ends`, `pitch`, `facing`, `gable`, `holes`, `parapet` |
+| `place`     | any part                                               | `part`, `at`, `colour`, `turn`, `anchor`, `wheels`                                  |
 | `column`    | round bricks 1/2/4 studs across, cap cone/plate/tile   | `at`, `height`, `diameter`, `cap`                                                   |
 | `fence`     | fence/railing along a path, corners allowed            | `path [[x,z]...]`, `y`, `style` picket\|lattice\|lattice-low\|spindle\|panel        |
 | `baseplate` | 16/32/48-stud baseplates tiled over an area, top y = 0 | `at [x,z]`, `size` (multiples of 16)                                                |
-| `instance`  | a component (real submodel)                            | `component`, `at` (footprint corner), `turn`                                        |
+| `instance`  | a component (real submodel)                            | `component`, `at` (plot corner), `turn`, `palette`, `with`                          |
+| `track`     | official train track, piece by piece (Play runs it)    | `at [x,y,z]` (grid point), `dir` ±x\|±z, `pieces` "SSLL…", `branch`, `colour`       |
+| `railcar`   | a train car on the track: base, bogies, a body         | `at [x,y,z]` (car centre on the track), `dir`, `component`, `palette`, `with`       |
 
-**Structure** — `repeat {count, step [dx,dy,dz], ops}`, `mirror {axis x|z, about, ops, keep}` (cell `x` maps to `2·about − 1 − x`; windows, slopes and left/right parts mirror correctly), `group {at, turn, ops}` (a local frame; `turn: 90` turns local front to face left).
+**Structure** — `repeat {count, step [dx,dy,dz], ops}`, `mirror {axis x|z, about, ops, keep}` (cell `x` maps to `2·about − 1 − x`; windows, slopes, shed roofs and left/right parts mirror correctly), `group {at, turn, ops}` (a local frame; `turn: 90` turns local front to face left).
+
+**Components** (`components.name = {title, size, ops}`) compile once per variant into a real submodel:
+
+- `size: [w, d]` is the component's plot, from `[0, 0]` in its own frame. `instance.at` places that rectangle, so an awning, bay window or ledge sticking out in front does not shift the building (without `size` the corner of everything it holds is placed — a 2-stud awning then moves the whole house back 2 studs).
+- `instance.palette: {"wall": "sand blue", "roof": "dark red"}` recolours palette keys for one copy: one "house" component makes a street of houses in different colours (each colour set is its own submodel).
+- `instance.with: ["left"]` sets flags: any op in the component with `"when": "left"` runs only in copies placed with that flag, `"when": "!left"` only without it. A corner house then has windows on whichever side is open, a tall variant an extra storey.
+
+**Roof options** — `ends: 0` keeps the ridge ends flush (houses in a terrace, where an overhang would run into the neighbour; `overhang` stays on the eaves). `style: "shed"` is one slope, low along `facing`, high against a taller wall (aisles, lean-tos, porches); `mirror` flips it. `style: "hip", pitch: 75` makes a steep spire of 75° slopes (`4460b`, `3684a`, corners `3685`), a stud in per three bricks with a cone on top. Slope lengths that are not made in the roof's colour are left out (a sand green roof uses 2 × 4 and 2 × 2 slopes, not the 2 × 3).
+
+**Parts options** — `place {..., anchor: "origin"}` puts the part's own origin on a grid point `[x, z]` at plate level `y`, for parts made to fit together round a shared origin (sails on a mast, a hull and its deck); it is not snapped to the stud grid. `place {part: "4600", wheels: "light bluish grey"}` adds two wheels (rims in that colour, black tyres) to a Plate 2 × 2 with Wheel Holders; with its underside 2 plates up they clear the ground by 1 LDU. A group of parts on such plates is a parked car: the checks set it aside like a train on its wheels.
+
+**Trains** — `track {at, dir, pieces}` lays official plastic track (Straight 53401, Curve 53400; 9V points 75542/75541 with `W`/`V`) from a grid point, sleepers on level `y`: `"SSSS LLLLLLLL SSSS LLLLLLLL"` is an oval 64 + 80 studs long and 80 across, `branch` continues from the last points. The track holds the cells under its sleepers (massing is carved, parts on it are reported). `railcar {at, dir, component}` stands a Train Base 6 × 24 on two bogies with its centre on the track's centreline and the component on its deck (the component's frame: 24 long along +x with the front at x = 23, 6 wide, y = 0 the deck). Cars 26 studs apart are coupled; a car with a train front (2924bc01) leads. Play derives the train and runs it ([trains](PLAY-TRAINS.md)).
 
 **Detail pass** — after everything else: `scatter {region, parts, colours, density, spacing, seed}` drops flowers/plants/props on exposed studded tops; `smooth {region}` turns exposed tops into tiles.
 
-**Openings** in `wall`/`room`: `{side, at, width, y, height, fill}` — `at` counts studs from the wall's start (min x for front/back, min z for left/right), `y`/`height` in plates from the wall base. `fill: "auto"` (default) puts in a window when the opening is exactly 2×6, 2×9 or 4×9 (width × plates), a door when it is 4×18, and leaves anything else open.
+**Openings** in `wall`/`room`: `{side, at, width, y, height, fill}` — `at` counts studs from the wall's start (min x for front/back, min z for left/right), `y`/`height` in plates from the wall base. `fill: "auto"` (default) puts in a window when the opening is exactly 2×6, 2×9 or 4×9 (width × plates), a door when it is 4×18, and leaves anything else open. In a `room` with a `floor`, a door that opens inwards stands on the floor (`y` 1) so its leaf swings over the floor plate: leave the wall 19 plates or taller above it. The door leaf is the smooth door (60616a) unless that is not made in the colour (red, dark blue, dark green, …): then it is the door with panes (60623).
 
 **Colours**: a palette key, a colour name (`"light bluish grey"`, `"dark tan"`, `"trans-clear"`, `"medium azure"` — BrickLink/LDraw names work) or an LDraw code. `{"mix": [...]}` picks per piece, deterministically — good for stone and rock. The compiler only uses brick/plate sizes that exist in the colour and warns (`colour-unavailable`) when a placed part is not known in it.
 
-**Parts**: `"3001"`, `"3001.dat"`, `"@alias"` (from `parts`), `{"find": "1x2 tile"}` or just a phrase (`"window 1x2x3 with glass"`). Searches resolve deterministically at compile time and are listed in the report under `resolved`.
+**Parts**: `"3001"`, `"3001.dat"`, `"@alias"` (from `parts`), `{"find": "1x2 tile"}` or just a phrase (`"window 1x2x3 with glass"`). Searches resolve deterministically at compile time and are listed in the report under `resolved`. Check which way a library part faces before relying on `turn`: the Arch 1 × 3 × 3 Pointed (13965) runs along Z at `turn: 0`, the arches 1 × 4/1 × 6 (6182, 3307, 6183) along X.
 
 ## Unseen sections: interior fill
 
@@ -127,8 +141,10 @@ Curated parts (snap and count for connectivity). `npm run cli -- parts search "<
 | windows & doors  | `window` (1x2x2 `60592`, 1x2x3 `60593`, 1x4x3 `60594` + glass), `door` (`60596` + `60616a`), shutters `60608`, arches `3659` `6182` `3307` `2339`                     |
 | columns & towers | `column` (round bricks `3062b` `3941` `87081`, cones `4589` `3942c` `3943b`), `cylinder` for big towers, pillar `2453b`                                               |
 | detailing        | cheese slope `54200`, tiles `3070b` `3069b`, grille tile `2412b`, jumper `3794b`, SNOT `87087` `4070` `11211`, brackets `99781` `44728`, fences `33303` `3185` `3633` |
-| landscape        | trees `3470` `3471` `2435`, bush `6255`, leaves `2423`, flowers `24866` `33291`, water: `floor` in trans light blue/trans dark blue with `top: "tile"`                |
-| vehicles         | wheel holder plate `4600`, rim `4624`, tyre `3641`, mudguard `3788`, windscreen `3823`, seat `4079`, steering `3829c01`                                               |
+| landscape        | trees `3470` `3471` `2435`, bush `6255`, leaves `2423`, flowers `24866` `33291`, water: `floor` in trans light blue/trans dark blue with `top: "tile"`, or a blue baseplate (`4186` and `3811` are made in blue) |
+| vehicles         | wheel holder plate `4600` (`wheels`), mudguard `3788`, windscreen `3823`, seat `4079`, steering `3829c01`; train front `2924bc01`, windows `4033c01` `4035c01`         |
+| gothic           | pointed arch `13965` over a 1-wide slot of stained glass (a `box` of trans 1 × 1 bricks: `{"mix": ["trans red", "trans dark blue", "trans yellow"]}`), spires `pitch: 75` |
+| ships            | sails `u9494c01` `85651c01` (`anchor: "origin"`), masts from `column`, clock brick `3003p0b` (tan)                                                                     |
 
 ## Workflow
 
@@ -146,9 +162,20 @@ Report (`--report file.json`, `buildScript.compile()`):
 - `bounds.studs`: `[x, y, z]` min/max (y in plates) — check that things landed where planned.
 - `parts`: the parts list (ref, name, colour, count). `heaviestOps`: the ops that produced most parts.
 - `resolved`: what each `find` became. `check`: overlaps, off-grid, connected groups, health.
-- `problems`: `{severity, code, message, ops}`; `ops` are paths such as `sections[2].ops[0].ops[3]` or `components.house.ops[1]`.
+- `problems`: `{severity, code, message, ops}`; `ops` are paths such as `sections[2].ops[0].ops[3]` or `components.house.ops[1]`; a part inside a component names both, `sections[3].ops[1] > components.house.ops[4]`. `floating` also says where the first loose groups are: `e.g. 3710 at [48, 21, -1]` (studs, plate level).
 
 Common fixes: `overlap` — two ops fill the same space (parts overlapping parts; massing never overlaps). `floating` — nothing under a part: check its `y` against the top of what should hold it (a flat roof at `y` is 1 plate; its parapet adds more). `opening-height` — the opening is taller than its wall. `opening-size` — no window fits; use 2×6, 2×9, 4×9 or 4×18. Gable/hip roofs need an even depth across the ridge (including overhang).
+
+What the checks count as connected: baseplates laid side by side are one ground (the groups standing on them count as one); a train on its wheels and a parked car on its wheel holders stand apart by design. Stud-high bumps sitting in the part above (a window frame's end studs, its glass's pivots) are not overlaps.
+
+Lessons from building the Market town, Cathedral and Harbour samples:
+
+- Give every component a `size`, and compile a component alone before instancing it a dozen times.
+- Houses back to back: leave 2 studs between the rows for the eaves (`overhang: 1` on both), or use `ends: 0`/`overhang: 0` where a roof meets a neighbour.
+- Ledges and bands: a plate ring round a wall (`floor` with a hole the size of the room) holds when it is at most 3 studs wide on each side; the packer reaches back over the wall, but a ring on both sides of a thin wall (inside and out) needs 3-deep pieces. Hollow upper floors (`holes`) save parts and hold better than plates spanning a hollow room.
+- Anything that sits on a part rather than on massing (a chimney on a roof, a tower top on a ring) needs massing under it: extend the massing, do not rely on slopes.
+- Put Play doors on the floor they open over, and keep other parts out of the door's swing.
+- Keep parts two studs clear of track curves: a curve's sleepers reach about 4 studs either side of the centreline (radius 36–44 studs from a curve's centre).
 
 ## Limits
 
@@ -163,6 +190,9 @@ Script sizes are minified JSON (what an agent emits); the files are laid out one
 | [house.json](../fixtures/build-scripts/house.json)         | 275   | 5.0 KB | 13 KB  | the House sample (its TypeScript generator is 11 KB for 285 parts)                                        |
 | [castle.json](../fixtures/build-scripts/castle.json)       | 255   | 4.5 KB | 12 KB  | the Small castle sample (generator 11.8 KB, 245 parts); the towers are one component                      |
 | [santorini.json](../fixtures/build-scripts/santorini.json) | 4,089 | 5.4 KB | 110 KB | from a one-paragraph brief: four hollow terraces, 30 houses from three components, chapel, harbour, boats |
+| [market-town.json](../fixtures/build-scripts/market-town.json) | 5,940 | 24 KB | 270 KB | the Market town sample: 11 houses from 4 components in 11 palettes, town hall, oval of track, a train, cars |
+| [cathedral.json](../fixtures/build-scripts/cathedral.json)     | 11,817 | 22 KB | 520 KB | the Cathedral sample: mirrored towers and aisles, 75° spires, stained-glass lancets, interior with stairs |
+| [harbour.json](../fixtures/build-scripts/harbour.json)         | 6,963 | 17 KB | 320 KB | the Harbour sample: 19 houses from one component with flags, warehouses, ships with sails, lighthouse   |
 
 The Santorini script's first draft compiled to 6,213 parts with 5 overlaps, 3,745 floating parts and 2 colour warnings; the report named the ops (terraces a plate above the terrace below, a chimney above its roof, flowers with tabs against the chapel), one revision fixed them all, and hollow terraces saved about 2,100 parts with no visible change.
 

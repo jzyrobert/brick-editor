@@ -106,6 +106,9 @@ describe("sample builds", () => {
         "playground",
         "train",
         "windmill",
+        "town",
+        "cathedral",
+        "harbour",
       ].sort(),
     );
     expect(SHOWCASE_TEMPLATE).toBe("cafe");

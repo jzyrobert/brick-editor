@@ -200,8 +200,10 @@ function pack2d(
             const id = under(x + i, z + j);
             if (id !== undefined) ids.add(id);
           }
-        // Bridging pieces below ties the structure together.
+        // Bridging pieces below ties the structure together; a piece over
+        // nothing (a ledge's outer row) should reach back over a support.
         score += Math.min(ids.size - 1, 4) * 2;
+        if (!ids.size) score -= 30;
         if (ids.size === 1) {
           const r = belowRects.get([...ids][0]);
           if (r && r.x === x && r.z === z && r.w === s.w && r.d === s.d)
@@ -234,6 +236,187 @@ function pack2d(
   return out;
 }
 
+/**
+ * pack2d, and when that leaves pieces with nothing under them (a ledge on
+ * the far side of its support: the scan anchors pieces at their minimum
+ * corner, so the last row or column gets pieces of its own), pack2d again
+ * scanning from the other corner; the result with fewer unsupported pieces
+ * wins (then fewer pieces, then the first).
+ */
+function packSupported(
+  free: Set<number>,
+  pieces: Size[],
+  below: Map<number, number> | undefined,
+  belowRects: Map<number, Rect>,
+  parity: number,
+  held: (k: number) => boolean,
+): Rect[] {
+  const first = pack2d(free, pieces, below, belowRects, parity);
+  if (!below?.size) return first;
+  // Support: a piece packed below, or a part (a window or door frame's
+  // studded top).
+  const supported = (k: number) => below.has(k) || held(k);
+  const unsupported = (rects: Rect[]) =>
+    rects.filter((r) => {
+      for (let i = 0; i < r.w; i++)
+        for (let j = 0; j < r.d; j++)
+          if (supported(colKey(r.x + i, r.z + j))) return false;
+      return true;
+    }).length;
+  let best = first,
+    fewest = unsupported(first);
+  // Mirror x, z or both, pack, mirror back.
+  for (const [fx, fz] of [
+    [-1, 1],
+    [1, -1],
+    [-1, -1],
+  ]) {
+    if (!fewest) break;
+    const cx = (x: number, w = 1) => (fx < 0 ? -(x + w) : x),
+      cz = (z: number, d = 1) => (fz < 0 ? -(z + d) : z);
+    const flip = (k: number) =>
+      colKey(cx(Math.floor(k / SPAN) - OFF), cz((k % SPAN) - OFF));
+    const mFree = new Set([...free].map(flip));
+    const mBelow = new Map([...below].map(([k, id]) => [flip(k), id]));
+    const mRects = new Map(
+      [...belowRects].map(([id, r]) => [
+        id,
+        { ...r, x: cx(r.x, r.w), z: cz(r.z, r.d) },
+      ]),
+    );
+    const rects = pack2d(mFree, pieces, mBelow, mRects, parity).map((r) => ({
+      ...r,
+      x: cx(r.x, r.w),
+      z: cz(r.z, r.d),
+    }));
+    const n = unsupported(rects);
+    if (n < fewest || (n === fewest && rects.length < best.length))
+      (best = rects), (fewest = n);
+  }
+  if (fewest) {
+    // A ledge round all four sides (a tower's cornice): every scan leaves a
+    // far side. Cover the rim first (unsupported cells next to supported
+    // ones) with pieces placed any way round that reach back over support,
+    // then pack the rest.
+    // Unsupported cells up to three studs from support, farthest first, so
+    // a two-stud ledge's outer row takes a piece that spans the inner row.
+    const distance = new Map<number, number>();
+    let frontier = [...free].filter(supported);
+    for (const k of frontier) distance.set(k, 0);
+    for (let step = 1; step <= 3 && frontier.length; step++) {
+      const next: number[] = [];
+      for (const k of frontier) {
+        const x = Math.floor(k / SPAN) - OFF,
+          z = (k % SPAN) - OFF;
+        for (const [dx, dz] of [
+          [1, 0],
+          [-1, 0],
+          [0, 1],
+          [0, -1],
+        ]) {
+          const n = colKey(x + dx, z + dz);
+          if (free.has(n) && !distance.has(n)) {
+            distance.set(n, step);
+            next.push(n);
+          }
+        }
+      }
+      frontier = next;
+    }
+    // Farthest first suits a two-stud ledge (its outer row needs a piece
+    // spanning the inner one); nearest first suits a ledge round a hollow
+    // (the ring's pieces must reach the wall before the middle takes it).
+    for (const far of [true, false]) {
+      if (!fewest) break;
+      const rim = [...distance]
+        .filter(([, d]) => d > 0)
+        .sort((a, b) => (far ? b[1] - a[1] : a[1] - b[1]) || a[0] - b[0])
+        .map(([k]) => k);
+      const covered = new Set<number>();
+      const rects: Rect[] = [];
+      for (const k of rim) {
+        if (covered.has(k)) continue;
+        const x = Math.floor(k / SPAN) - OFF,
+          z = (k % SPAN) - OFF;
+        let pick: { r: Rect; score: number } | undefined;
+        for (const s of pieces)
+          for (let i = 0; i < s.w; i++)
+            for (let j = 0; j < s.d; j++) {
+              const ax = x - i,
+                az = z - j;
+              let fits = true,
+                reaches = false;
+              for (let a = 0; a < s.w && fits; a++)
+                for (let b = 0; b < s.d && fits; b++) {
+                  const c = colKey(ax + a, az + b);
+                  fits = free.has(c) && !covered.has(c);
+                  reaches ||= supported(c);
+                }
+              if (!fits || !reaches) continue;
+              // Taking the last support next to another loose cell (the
+              // inner row of a ledge on both sides of a wall) orphans it.
+              const inside = (cx: number, cz: number) =>
+                cx >= ax && cx < ax + s.w && cz >= az && cz < az + s.d;
+              let orphans = 0;
+              for (let a = 0; a < s.w; a++)
+                for (let b = 0; b < s.d; b++) {
+                  const c = colKey(ax + a, az + b);
+                  if (!supported(c)) continue;
+                  for (const [dx, dz] of STEPS) {
+                    const nx = ax + a + dx,
+                      nz = az + b + dz,
+                      n = colKey(nx, nz);
+                    if (
+                      inside(nx, nz) ||
+                      !free.has(n) ||
+                      covered.has(n) ||
+                      supported(n)
+                    )
+                      continue;
+                    const other = STEPS.some(([ex, ez]) => {
+                      const m = colKey(nx + ex, nz + ez);
+                      return (
+                        !inside(nx + ex, nz + ez) &&
+                        free.has(m) &&
+                        !covered.has(m) &&
+                        supported(m)
+                      );
+                    });
+                    if (!other) orphans++;
+                  }
+                }
+              const score = s.w * s.d - 40 * orphans;
+              if (!pick || score > pick.score)
+                pick = {
+                  r: { x: ax, z: az, w: s.w, d: s.d, ref: s.ref, turn: s.turn },
+                  score,
+                };
+            }
+        if (!pick) continue;
+        const r = pick.r;
+        for (let a = 0; a < r.w; a++)
+          for (let b = 0; b < r.d; b++) covered.add(colKey(r.x + a, r.z + b));
+        rects.push(r);
+      }
+      const rest = new Set([...free].filter((k) => !covered.has(k)));
+      const all = [
+        ...rects,
+        ...(rest.size ? pack2d(rest, pieces, below, belowRects, parity) : []),
+      ];
+      const n = unsupported(all);
+      if (n < fewest || (n === fewest && all.length < best.length))
+        (best = all), (fewest = n);
+    }
+  }
+  return best;
+}
+
+const STEPS = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+];
 export type PackResult = { pieces: Piece[]; unavailable: Map<string, number> };
 /**
  * Packs every cell of the grid. `blocked(x, y, z)` reports cells above that
@@ -244,6 +427,8 @@ export function packGrid(
   materials: Material[],
   seed: number,
   blocked: (x: number, y: number, z: number) => boolean,
+  /** A part in this cell holds a piece on top (a frame's studded top). */
+  holds: (x: number, y: number, z: number) => boolean = blocked,
 ): PackResult {
   const levels = new Map<number, number[]>();
   for (const key of grid.cells.keys()) {
@@ -350,24 +535,28 @@ export function packGrid(
         void kind;
       };
       const parity = Math.floor(y / (g.kind === "brick" ? 3 : 1)) % 2;
+      const partBelow = (k: number) =>
+        holds(Math.floor(k / SPAN) - OFF, y - 1, (k % SPAN) - OFF);
       if (g.kind === "brick" && g.eligible.size) {
-        for (const r of pack2d(
+        for (const r of packSupported(
           g.eligible,
           piecesFor("brick", mat.colours),
           below,
           rects,
           parity,
+          partBelow,
         ))
           emit(r, 3, "brick");
       }
       const rest = new Set([...g.cells].filter((k) => !g.eligible.has(k)));
       if (rest.size)
-        for (const r of pack2d(
+        for (const r of packSupported(
           rest,
           piecesFor(g.kind === "tile" ? "tile" : "plate", mat.colours),
           below,
           rects,
           y % 2,
+          partBelow,
         ))
           emit(r, 1, g.kind);
     }

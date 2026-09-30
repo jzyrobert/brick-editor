@@ -4,6 +4,11 @@ import {
   loadFullLibraryIndex,
   unresolvedCuratedRefs,
 } from "./full-library-loader";
+import {
+  isScriptTemplate,
+  registerScriptTemplateSource,
+  scriptTemplateSourceLoaded,
+} from "./script-templates";
 
 /**
  * A template with every official part resolvable: templates that use parts
@@ -12,6 +17,13 @@ import {
  * diagnostics and part namespaces are exact rather than "missing".
  */
 export async function loadTemplate(name: TemplateName) {
+  // The build-script samples' LDraw text loads on demand.
+  if (isScriptTemplate(name) && !scriptTemplateSourceLoaded(name)) {
+    const { fetchScriptTemplateSource } = await import(
+      "./script-template-urls"
+    );
+    registerScriptTemplateSource(name, await fetchScriptTemplateSource(name));
+  }
   const first = template(name);
   if (!unresolvedCuratedRefs(first).size) return first;
   try {

@@ -14,6 +14,9 @@ export const SAMPLE_TEMPLATES = [
   "cafe",
   "playground",
   "train",
+  "town",
+  "cathedral",
+  "harbour",
 ] as const;
 /**
  * Older technical starts kept only as test fixtures for the automation API
@@ -42,6 +45,9 @@ export type SampleTemplateName = (typeof SAMPLE_TEMPLATES)[number];
  * `npm run templates` (scripts/build-templates.ts) into public/templates/.
  */
 export const TEMPLATE_CARDS: { name: SampleTemplateName; title: string }[] = [
+  { name: "town", title: "Market town" },
+  { name: "cathedral", title: "Cathedral" },
+  { name: "harbour", title: "Harbour" },
   { name: "cafe", title: "Corner café" },
   { name: "windmill", title: "Windmill farm" },
   { name: "lighthouse", title: "Lighthouse" },

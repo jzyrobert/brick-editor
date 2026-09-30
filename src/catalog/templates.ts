@@ -13,6 +13,11 @@ import { cafeProject } from "./builds/cafe";
 import { lighthouseProject } from "./builds/lighthouse";
 import { playgroundProject } from "./builds/playground";
 import { trainProject } from "./builds/train";
+import {
+  SCRIPT_TEMPLATES,
+  isScriptTemplate,
+  scriptTemplateProject,
+} from "./script-templates";
 import type { TemplateName } from "./template-names";
 import type { BackdropName } from "../core/scene";
 import { explorationSource } from "./exploration";
@@ -31,6 +36,9 @@ export const TEMPLATE_BACKDROPS: Partial<Record<TemplateName, BackdropName>> = {
   lighthouse: "beach",
   playground: "grass",
   train: "grass",
+  town: SCRIPT_TEMPLATES.town.backdrop,
+  cathedral: SCRIPT_TEMPLATES.cathedral.backdrop,
+  harbour: SCRIPT_TEMPLATES.harbour.backdrop,
 };
 export function template(name: TemplateName) {
   const project = templateProject(name);
@@ -39,6 +47,7 @@ export function template(name: TemplateName) {
   return project;
 }
 function templateProject(name: TemplateName) {
+  if (isScriptTemplate(name)) return scriptTemplateProject(name);
   if (name === "house") {
     const project = importLDraw(houseSource(), "house-with-garden.mpd");
     project.title = "House with garden";

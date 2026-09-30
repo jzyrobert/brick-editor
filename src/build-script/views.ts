@@ -42,11 +42,43 @@ export function viewCamera(
       bounds.max[2] - bounds.min[2],
     ) / 2 || 100;
   const half = ((fovDeg / 2) * Math.PI) / 180;
-  const fit = Math.min(Math.tan(half), Math.tan(half) * aspect);
-  const distance = (radius / fit) * 0.8;
   const d = DIRECTIONS[view];
   const len = Math.hypot(...d);
-  const position = center.map((c, i) => c + (d[i] / len) * distance) as Vec3;
+  const back = d.map((v) => v / len) as Vec3; // centre → camera
+  // Camera axes (world up is −Y): right = up × back, up' = back × right.
+  const cross = (a: number[], b: number[]) => [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0],
+  ];
+  const norm = (v: number[]) => {
+    const l = Math.hypot(...v) || 1;
+    return v.map((x) => x / l);
+  };
+  const right = norm(
+    Math.abs(back[1]) > 0.999 ? [1, 0, 0] : cross([0, -1, 0], back),
+  );
+  const up = cross(back, right);
+  // The distance at which every corner of the box is in the frustum (a
+  // sphere round the box wastes most of the frame on flat, wide builds).
+  const tanV = Math.tan(half),
+    tanH = tanV * aspect;
+  let distance = 0;
+  for (let c = 0; c < 8; c++) {
+    const p = [0, 1, 2].map((i) =>
+      (c >> i) & 1 ? bounds.max[i] : bounds.min[i],
+    );
+    const rel = p.map((v, i) => v - center[i]);
+    const dot = (a: number[]) => a[0] * rel[0] + a[1] * rel[1] + a[2] * rel[2];
+    const along = dot(back);
+    distance = Math.max(
+      distance,
+      along + Math.abs(dot(right)) / tanH,
+      along + Math.abs(dot(up)) / tanV,
+    );
+  }
+  distance = Math.max(distance * 1.04, radius * 0.5, 100);
+  const position = center.map((c, i) => c + back[i] * distance) as Vec3;
   return {
     space: "ldraw",
     projection: "perspective",

@@ -51,7 +51,7 @@ export type BuildScript = {
     overhang?: number;
     seed?: number;
   };
-  components?: Record<string, { title?: string; ops: Op[] }>;
+  components?: Record<string, { title?: string; size?: Vec2; ops: Op[] }>;
   sections: Section[];
   limits?: { maxParts?: number };
 };
@@ -64,6 +64,7 @@ type T =
   | "bool"
   | "height"
   | "colour"
+  | "swatch"
   | "part"
   | "turn"
   | "facing"
@@ -292,9 +293,16 @@ export const OPS: Record<string, OpSpec> = {
     },
   },
   roof: {
-    doc: "Roof over a footprint: 45° gable or hip slopes, or flat",
+    doc: "Roof over a footprint: 45° gable, hip or shed (lean-to) slopes, or flat",
     fields: {
-      style: req({ enum: ["gable", "hip", "flat"] }, "Roof shape"),
+      style: req(
+        { enum: ["gable", "hip", "flat", "shed"] },
+        "Roof shape (shed: one slope, a lean-to against a higher wall)",
+      ),
+      facing: opt(
+        "facing",
+        "Shed roofs: the side the slope faces (its low edge; default front)",
+      ),
       at: req("vec3", "[x, y, z]: footprint corner; y = wall top"),
       size: req("size2", "[w, d] footprint (walls' outer size)"),
       colour: colour(),
@@ -303,6 +311,14 @@ export const OPS: Record<string, OpSpec> = {
         "Ridge direction (default: along the longer side)",
       ),
       overhang: opt({ enum: [0, 1] }, "Eave overhang in studs (default 1)"),
+      pitch: opt(
+        { enum: [45, 75] },
+        "Hip roofs: 75 makes a steep spire of 75° slopes (a stud in per three bricks, a cone on top); default 45",
+      ),
+      ends: opt(
+        { enum: [0, 1] },
+        "Overhang past the ends of the ridge (default: overhang); 0 for houses in a terrace",
+      ),
       gable: opt("colour", "Gable-end wall colour (default roof colour)"),
       parapet: opt("height", "Flat roofs: parapet height (plates)"),
       holes: opt(
@@ -364,6 +380,14 @@ export const OPS: Record<string, OpSpec> = {
       at: req("vec3", "[x, y, z] footprint corner; y = underside level"),
       colour: colour(),
       turn: opt("turn", "Degrees about Y: 0 90 180 270"),
+      anchor: opt(
+        { enum: ["footprint", "origin"] },
+        "footprint (default): at is the footprint's corner cell and y its underside; origin: at is the grid point (x, z) and plate level (y) of the part's own origin, for parts made to fit together (a boat hull and its deck share one)",
+      ),
+      wheels: opt(
+        "colour",
+        "Plate 2 × 2 with Wheel Holders (4600) only: rim colour; adds two wheels with black tyres (place the plate's underside 2 plates up so they reach the ground)",
+      ),
     },
     example: {
       op: "place",
@@ -429,6 +453,60 @@ export const OPS: Record<string, OpSpec> = {
       colour: "green",
     },
   },
+  track: {
+    doc: "Official train track laid piece by piece (Play runs trains on it)",
+    fields: {
+      at: req(
+        "vec3",
+        "[x, y, z]: the grid point where the track starts (between studs); y = level the sleepers stand on",
+      ),
+      dir: req({ enum: ["+x", "-x", "+z", "-z"] }, "Direction it leaves in"),
+      pieces: req(
+        "str",
+        "S straight (16 studs), L/R curve 22.5° (R40: 16 make a circle), W/V 9V points left/right; e.g. 'SSSS LLLLLLLL SSSS LLLLLLLL' is an oval 64 + 80 studs long, 80 across",
+      ),
+      branch: opt(
+        "str",
+        "Pieces laid from the last points' diverging end (a siding)",
+      ),
+      colour: opt("colour", "Track colour (default dark bluish grey)"),
+    },
+    example: {
+      op: "track",
+      at: [-32, 0, -40],
+      dir: "+x",
+      pieces: "SSSS LLLLLLLL SSSS LLLLLLLL",
+    },
+  },
+  railcar: {
+    doc: "A rail vehicle on the track: train base 6 x 24 on two bogies with a component as its body",
+    fields: {
+      at: req(
+        "vec3",
+        "[x, y, z]: the car's centre, a grid point on the track's centreline; y = the track's level",
+      ),
+      dir: req(
+        { enum: ["+x", "-x", "+z", "-z"] },
+        "Direction the car's front faces",
+      ),
+      component: opt(
+        "str",
+        "Body built on the deck: its frame is 24 long along +x (front at x = 23), 6 wide along z, y = 0 the deck top",
+      ),
+      colour: opt("colour", "Base and bogie colour (default black)"),
+      palette: opt(
+        { record: "swatch" },
+        "Palette overrides for the body component",
+      ),
+      with: opt({ array: "str" }, "Flags for the body component"),
+    },
+    example: {
+      op: "railcar",
+      at: [0, 0, -40],
+      dir: "+x",
+      component: "loco",
+    },
+  },
   repeat: {
     doc: "Repeat ops count times, offset by step each time",
     fields: {
@@ -485,6 +563,14 @@ export const OPS: Record<string, OpSpec> = {
       component: req("str", "Name in components"),
       at: req("vec3", "[x, y, z] where its footprint corner goes"),
       turn: opt("turn", "Degrees about Y"),
+      palette: opt(
+        { record: "swatch" },
+        'Palette keys recoloured for this copy: {"wall": "sand green"} (each variant is its own submodel)',
+      ),
+      with: opt(
+        { array: "str" },
+        'Flags for this copy: the component ops with "when": "flag" run, those with "when": "!flag" do not',
+      ),
     },
     example: {
       op: "instance",
@@ -585,6 +671,21 @@ function check(t: T, v: unknown, path: string, out: ValidationIssue[]) {
       if (typeof v !== "number" && (typeof v !== "string" || !v))
         bad("must be a palette key, colour name or LDraw colour code");
       return;
+    case "swatch": {
+      const mix = (v as { mix?: unknown } | null)?.mix;
+      if (v && typeof v === "object" && !Array.isArray(v)) {
+        if (
+          !Array.isArray(mix) ||
+          !mix.length ||
+          mix.some(
+            (c) => typeof c !== "number" && (typeof c !== "string" || !c),
+          )
+        )
+          bad('must be a colour or {"mix": [colours...]}');
+      } else if (typeof v !== "number" && (typeof v !== "string" || !v))
+        bad('must be a colour or {"mix": [colours...]}');
+      return;
+    }
     case "part":
       if (typeof v === "string") {
         if (!v) bad("must name a part");
@@ -683,7 +784,16 @@ function checkOp(op: unknown, path: string, out: ValidationIssue[]) {
       path: path + ".op",
       message: `unknown op ${JSON.stringify(name)} (ops: ${Object.keys(OPS).join(", ")})`,
     });
-  checkFields(OPS[name].fields, op, path, out, ["op", "note"]);
+  checkFields(OPS[name].fields, op, path, out, ["op", "note", "when"]);
+  const when = (op as { when?: unknown }).when;
+  if (
+    when !== undefined &&
+    (typeof when !== "string" || !/^!?[\w-]+$/.test(when))
+  )
+    out.push({
+      path: path + ".when",
+      message: 'must be a flag name, or "!name" (run when the flag is not set)',
+    });
 }
 
 const TOP: Fields = {
@@ -715,6 +825,10 @@ const TOP: Fields = {
       record: {
         object: {
           title: opt("str", "Title"),
+          size: opt(
+            "size2",
+            "[w, d]: its plot, from [0, 0] in its own frame; instance places this rectangle, so awnings, bays and ledges sticking out do not shift it (default: everything it holds)",
+          ),
           ops: req("ops", "Ops in the component's own frame"),
         },
       },
@@ -799,6 +913,24 @@ function schemaOf(t: T): unknown {
       return HEIGHT_SCHEMA;
     case "colour":
       return { $ref: "#/definitions/colour" };
+    case "swatch":
+      return {
+        anyOf: [
+          { $ref: "#/definitions/colour" },
+          {
+            type: "object",
+            properties: {
+              mix: {
+                type: "array",
+                items: { $ref: "#/definitions/colour" },
+                minItems: 1,
+              },
+            },
+            required: ["mix"],
+            additionalProperties: false,
+          },
+        ],
+      };
     case "part":
       return { $ref: "#/definitions/part" };
     case "turn":
@@ -901,6 +1033,12 @@ export function buildScriptJsonSchema() {
             ...objectSchema(spec.fields, {
               op: { const: name },
               note: { type: "string" },
+              when: {
+                type: "string",
+                pattern: "^!?[\\w-]+$",
+                description:
+                  "Run only in component copies placed with this flag in `with` ('!flag': only without it)",
+              },
             }),
             description: spec.doc,
           },

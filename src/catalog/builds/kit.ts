@@ -60,6 +60,8 @@ export function localBounds(ref: string): Box {
 }
 /** The plane a part rests on: its lowest anti-stud row, else its bounds. */
 export function underside(ref: string) {
+  // The wheel holders' plate: its pin holders hang below the plate.
+  if (ref === "4600.dat") return 8;
   const anti = packParts[ref]?.runs.filter((r) => r[0] === "a") ?? [];
   return anti.length
     ? Math.max(...anti.map((r) => r[1]))
@@ -72,11 +74,23 @@ const apply = (b: Basis, v: Vec3): Vec3 => [
   b[3] * v[0] + b[4] * v[1] + b[5] * v[2],
   b[6] * v[0] + b[7] * v[1] + b[8] * v[2],
 ];
+/**
+ * Parts whose bounds reach past their stud cells sideways (LDU, centred on
+ * the origin): the wheel holders' pins stick out 14 LDU either side of the
+ * 2 × 2 plate.
+ */
+const STUD_FOOTPRINT: Record<string, [number, number]> = {
+  "4600.dat": [40, 40],
+};
 /** Footprint (min corner and size, LDU) of a part turned about Y. */
 export function footprint(ref: string, turn: Turn) {
   let { min, max } = localBounds(ref);
   const part = Object.hasOwn(catalog, ref) ? catalog[ref] : undefined;
-  if (part) {
+  const studs = STUD_FOOTPRINT[ref];
+  if (studs) {
+    min = [-studs[0] / 2, min[1], -studs[1] / 2];
+    max = [studs[0] / 2, max[1], studs[1] / 2];
+  } else if (part) {
     // The catalogue's stud footprint and origin phase: the footprint's corner
     // lies on a grid line, nearest the centre of the part's bounds.
     const corner = (lo: number, hi: number, size: number, phase: number) => {

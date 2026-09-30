@@ -33,6 +33,7 @@ import { fileURLToPath } from "node:url";
 import { catalog } from "../src/catalog/catalog";
 import { template } from "../src/catalog/templates";
 import { SAMPLE_TEMPLATES } from "../src/catalog/template-names";
+import { registerScriptTemplatesFromDisk } from "./script-templates-node";
 import { occurrences } from "../src/core/document";
 import { fullLibraryLock } from "../src/catalog/full-library";
 import { printVariants } from "../src/catalog/print-variants";
@@ -212,6 +213,7 @@ async function main() {
 
   // Sample builds: occurrences per official part.
   const samples = new Map<string, number>();
+  registerScriptTemplatesFromDisk();
   for (const name of SAMPLE_TEMPLATES)
     for (const o of occurrences(template(name)))
       if (o.namespace === "official")

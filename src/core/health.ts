@@ -144,16 +144,78 @@ export function withoutLooseObjects(
         for (const id of group.occurrenceIds)
           owner.set(id, rig.id + "\u0000" + group.id);
   const rolling = railVehicles(project, all);
+  const wheeled = touching(project, WHEEL_HOLDERS, all);
+  const refOf = new Map(
+    (all ?? occurrences(project)).map((o) => [o.id, o.node.ref]),
+  );
   const kept: string[][] = [];
   let loose = 0,
-    vehicles = 0;
+    vehicles = 0,
+    cars = 0;
+  const carGroups: string[][] = [];
   for (const g of groups) {
     const key = owner.get(g[0]);
     if (key !== undefined && g.every((id) => owner.get(id) === key)) loose++;
     else if (rolling(g)) vehicles++;
+    // A parked car stands on its wheels (wheel holder plates), not on studs;
+    // a group that also holds a baseplate is the scene, not a car.
+    else if (wheeled(g) && !g.some((id) => BASEPLATES.has(refOf.get(id) ?? "")))
+      carGroups.push(g);
     else kept.push(g);
   }
-  return { groups: kept, loose, rolling: vehicles };
+  // A car on its own is the build (the roadster), not a parked car.
+  if (kept.length) cars = carGroups.length;
+  else kept.push(...carGroups);
+  // Baseplates laid side by side are one ground, as on a table: the groups
+  // standing on them count as one.
+  let grounds = 0;
+  if (kept.length > 1) {
+    const onGround = kept.filter((g) =>
+      g.some((id) => BASEPLATES.has(refOf.get(id) ?? "")),
+    );
+    if (onGround.length > 1) {
+      grounds = onGround.length;
+      const merged = onGround.flat();
+      const rest = kept.filter((g) => !onGround.includes(g));
+      kept.length = 0;
+      kept.push(merged, ...rest);
+      kept.sort((a, b) => b.length - a.length);
+    }
+  }
+  return { groups: kept, loose, rolling: vehicles, grounds, cars };
+}
+const BASEPLATES = new Set(["3811.dat", "3857.dat", "3867.dat", "4186.dat"]);
+const WHEEL_HOLDERS = new Set(["4600.dat"]);
+/** A group holding or touching one of `refs` (a car's wheel holders). */
+function touching(project: Project, refs: Set<string>, all?: Occurrence[]) {
+  const list = all ?? occurrences(project);
+  const box = (o: Occurrence) => {
+    const b = (
+      installedBounds.bounds as unknown as Record<string, Bounds | null>
+    )[o.node.ref];
+    return b ? transformBounds(b, o.transform) : null;
+  };
+  const targets = list
+    .filter((o) => refs.has(o.node.ref))
+    .map(box)
+    .filter((b): b is Bounds => !!b);
+  if (!targets.length) return () => false;
+  const byId = new Map(list.map((o) => [o.id, o]));
+  return (group: string[]) =>
+    group.some((id) => {
+      const o = byId.get(id);
+      if (!o) return false;
+      if (refs.has(o.node.ref)) return true;
+      const b = box(o);
+      return (
+        !!b &&
+        targets.some((w) =>
+          [0, 1, 2].every(
+            (k) => b.min[k] <= w.max[k] + 0.5 && w.min[k] <= b.max[k] + 0.5,
+          ),
+        )
+      );
+    });
 }
 /**
  * Rail vehicles stand on their wheels on the track, not on studs: a group
@@ -246,6 +308,8 @@ export function modelHealth(
     groups: connected,
     loose: looseObjects,
     rolling: railVehicleCount,
+    grounds,
+    cars,
   } = withoutLooseObjects(project, connectedGroups(graph), all);
   const inConnected = new Set(connected.flat());
   const floating = graph.covered.filter(
@@ -257,6 +321,12 @@ export function modelHealth(
       : "") +
     (railVehicleCount
       ? ` ${railVehicleCount} rail vehicle${railVehicleCount === 1 ? "" : "s"} stand${railVehicleCount === 1 ? "s" : ""} on ${railVehicleCount === 1 ? "its" : "their"} wheels on the track.`
+      : "") +
+    (cars
+      ? ` ${cars} car${cars === 1 ? "" : "s"} stand${cars === 1 ? "s" : ""} on ${cars === 1 ? "its" : "their"} wheels.`
+      : "") +
+    (grounds
+      ? ` ${grounds} groups stand on baseplates laid side by side, which count as one ground.`
       : "");
   const studs = graph.contacts - graph.hingeContacts;
   const unverifiedNote = uncovered

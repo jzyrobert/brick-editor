@@ -40,10 +40,11 @@ Massing (packed into bricks automatically):
 
 Parts (real components; they cut into massing):
 - `window {at, facing, size: 1x2x2|1x2x3|1x4x3, frame, glass?}`, `door {at, facing, frame, colour?, opens?: in|out}`.
-- `roof {style: gable|hip|flat, at (y = wall top), size [w,d], colour, gable?, ridge?: x|z, overhang?: 0|1, holes?, parapet?}` — gable/hip need an even depth across the ridge incl. overhang.
-- `place {part, at, colour, turn?: 0|90|180|270}` — any part: `"3001"`, `"@alias"`, or `{"find": "cheese slope"}`.
+- `roof {style: gable|hip|shed|flat, at (y = wall top), size [w,d], colour, gable?, ridge?: x|z, overhang?: 0|1, ends?: 0|1, holes?, parapet?}` — gable/hip need an even depth across the ridge incl. overhang; `ends: 0` keeps ridge ends flush for houses in a row; `shed` is a lean-to with its low edge on `facing`; `hip` with `pitch: 75` is a spire.
+- `place {part, at, colour, turn?: 0|90|180|270, anchor?: origin, wheels?: colour}` — any part: `"3001"`, `"@alias"`, or `{"find": "cheese slope"}`; `anchor: "origin"` puts the part's origin on a grid point (sails, parts that share an origin); `wheels` on 4600 adds wheels (a parked car).
 - `column {at, height, diameter?: 1|2|4, colour, cap?: cone|plate|tile}`, `fence {path [[x,z],…], y?, colour, style?: picket|lattice|lattice-low|spindle|panel}`, `baseplate {at [x,z], size (×16), colour}`.
-- `instance {component, at, turn?}` — reuse a component (a submodel).
+- `instance {component, at, turn?, palette?: {key: colour}, with?: [flags]}` — reuse a component (a submodel). Give components `"size": [w, d]` (their plot) so things sticking out do not shift them; `palette` recolours one copy; ops inside with `"when": "flag"` / `"when": "!flag"` run only in copies placed `with` / without that flag.
+- `track {at: [x, y, z] (grid point), dir, pieces: "SSSS LLLLLLLL SSSS LLLLLLLL"}` — official train track (S straight 16 studs, L/R curve 22.5°, W/V points; that string is an 80-stud-wide oval); `railcar {at (car centre on the track), dir, component}` — a train car whose component (24 × 6, front at x = 23, deck y = 0) rides a train base on bogies. Play runs the train.
 
 Structure: `repeat {count, step [dx,dy,dz], ops}`, `mirror {axis: x|z, about, ops}` (cell x ↔ 2·about − 1 − x), `group {at, turn, ops}`.
 Detail pass: `scatter {region {at [x,z], size [w,d]}, parts, colours, density, spacing?, seed?}`, `smooth {region?}`.
@@ -68,13 +69,14 @@ Names work: white, black, red, blue, yellow, green, bright green, dark green, sa
 1. **Silhouette first.** Picture the subject from the front, side and top. Every part of it must read in 3D: masses that protrude and recess, overhangs, towers, roofs — never a flat box with colours painted on.
 2. **Plan the grid**: site size, main masses with coordinates, heights in bricks, palette. Put unseen volumes (cliffs, cores, terrain) in hollow boxes (`interior: "empty"`).
 3. **Massing → openings → roofs → details.** Get proportions right before adding detail. Concentrate detail where people look: entrances, roof lines, corners, waterfronts.
-4. **Reuse**: `components` + `instance` for repeated buildings, boats, trees; `repeat` for rows; `mirror` for symmetry. Vary what repeats (turn it, mix components, change colours).
-5. **Everything must stand**: every part rests on something (y = the top of what is below). Flat roofs are 1 plate thick; a parapet sits on them.
+4. **Reuse**: `components` + `instance` for repeated buildings, boats, trees; `repeat` for rows; `mirror` for symmetry. Vary what repeats: turn it, mix components, recolour copies with `palette`, switch details on and off per copy with `with`/`when`.
+5. **Everything must stand**: every part rests on something (y = the top of what is below). Flat roofs are 1 plate thick; a parapet sits on them. Ledges and balconies of plates stick out at most 2–3 studs from the wall they rest on; chimneys and towers stand on massing, not on roof slopes.
 6. **Scene**: a baseplate, ground, paths, water, plants and props make it a place, not an object.
+7. **Playable**: doors are the only way in; put a door on the floor it opens over (room doors that open inwards do this), keep its swing clear, and make stairs rise at most 2 plates per step (`rise: 2`).
 
 ## When you can run tools
 
-Compile with `brick-cli build --script build.json --output build.mpd --render view.png --views iso,front,iso-back` (or `brickEditor.buildScript.compile({script})`). Read `report.problems`: fix every `error` (overlap), then `floating` (nothing under a part), `opening-*` and `colour-unavailable` warnings; each names the op path (`sections[1].ops[4]`). Check `bounds.studs` against your plan. Look at every rendered view and improve the weakest side. Find parts with `brick-cli parts search "words" [--size 1x2] [--colour red --available]`.
+Compile with `brick-cli build --script build.json --output build.mpd --render view.png --views iso,front,iso-back` (or `brickEditor.buildScript.compile({script})`). Read `report.problems`: fix every `error` (overlap), then `floating` (nothing under a part; the message gives the first loose parts' positions), `opening-*` and `colour-unavailable` warnings; each names the op path (`sections[1].ops[4]`, or `sections[3].ops[1] > components.house.ops[2]` inside a component). Check `bounds.studs` against your plan. Compile a new component on its own first, then instance it. Look at every rendered view and improve the weakest side. Find parts with `brick-cli parts search "words" [--size 1x2] [--colour red --available]`, and render a part you have not used before: some face a different way at `turn: 0` than their name suggests.
 
 ## Example
 

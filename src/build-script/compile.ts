@@ -21,6 +21,7 @@ import { partSpec } from "../catalog/extended";
 import {
   colorAvailabilityLoaded,
   colorExistence,
+  madeIn,
 } from "../catalog/color-availability";
 import { fullConnectorEntry } from "../catalog/full-connectors";
 import { decodeOccupancy } from "../catalog/connector-pack";
@@ -45,7 +46,7 @@ import {
   resourceLimits,
   type ResourceProfileName,
 } from "../core/resource-profile";
-import type { Bounds } from "../core/spatial";
+import { transformBounds, type Bounds } from "../core/spatial";
 import {
   plates,
   validateBuildScript,
@@ -62,6 +63,8 @@ import {
 import { colourName, colourSuggestions, resolveColourName } from "./palette";
 import { Grid, cellKey, cellOf, hash01, packGrid, type Material } from "./pack";
 import { roleParts, searchParts } from "./part-search";
+import { LAYER_COMMENT, assignSectionLayers } from "./layers";
+import { placeTrackPiece, type TrackCursor } from "../play/track";
 
 export type Problem = {
   severity: "error" | "warning" | "info";
@@ -192,7 +195,7 @@ const FACING_TURN: Record<Facing, Turn> = {
 };
 
 // Parts whose mirror image is themselves across a diagonal (corner slopes).
-const DIAGONAL = new Set(["3045.dat", "3046.dat", "3676.dat"]);
+const DIAGONAL = new Set(["3045.dat", "3046.dat", "3676.dat", "3685.dat"]);
 let chiral: Map<string, string> | undefined;
 /** Left ↔ right counterpart of a part, by name. */
 function counterpart(ref: string) {
@@ -254,6 +257,10 @@ const ROUND: Record<
     tile: "60474.dat",
   },
 };
+const SLOPES_75: Record<number, string> = {
+  1: "4460b.dat",
+  2: "3684a.dat",
+};
 const SLOPES: Record<number, string> = {
   1: "3040b.dat",
   2: "3039.dat",
@@ -286,6 +293,7 @@ class Compiler {
   components = new Map<
     string,
     {
+      name: string;
       unit: Unit;
       model: Model;
       box: { x: number; z: number; w: number; d: number };
@@ -341,10 +349,16 @@ class Compiler {
     return code;
   }
   colours(c: Colour, path: string): string[] {
-    if (typeof c === "string" && this.palette.has(c.toLowerCase()))
-      return this.palette.get(c.toLowerCase())!;
+    if (typeof c === "string") {
+      const key = c.toLowerCase();
+      const hit = this.override?.get(key) ?? this.palette.get(key);
+      if (hit) return hit;
+    }
     return [this.colourCode(c, path)];
   }
+  /** Palette entries an `instance` overrides for the component it places
+   * (merged with the overrides of the component being compiled). */
+  override: Map<string, string[]> | undefined;
   /** One colour for a part (a mix picks deterministically per position). */
   colour(c: Colour, path: string, ...at: number[]) {
     const list = this.colours(c, path);
@@ -426,10 +440,7 @@ class Compiler {
     return id;
   }
   isSingle(c: Colour) {
-    return !(
-      typeof c === "string" &&
-      (this.palette.get(c.toLowerCase())?.length ?? 1) > 1
-    );
+    return typeof c !== "string" || this.colours(c, "").length <= 1;
   }
   opIndex(path: string, kind: string) {
     this.opPaths.push(path);
@@ -636,6 +647,10 @@ class Compiler {
   }
   runOp(u: Unit, op: Op, f: Frame, section: number, path: string) {
     const o = op as Record<string, any>;
+    if (typeof o.when === "string") {
+      const negate = o.when.startsWith("!");
+      if (this.flags.has(o.when.slice(negate ? 1 : 0)) === negate) return;
+    }
     const id = this.opIndex(path, op.op);
     if (++this.opsRun > 200_000)
       throw new AppError(
@@ -818,9 +833,24 @@ class Compiler {
             d - 2,
             this.material(o.floor, path + ".floor", "plate"),
           );
-        (o.openings ?? []).forEach((op2: Opening, n: number) => {
-          const side: Facing = op2.side ?? "front";
+        (o.openings ?? []).forEach((op: Opening, n: number) => {
+          const side: Facing = op.side ?? "front";
           const alongX = side === "front" || side === "back";
+          // A door opening inwards stands on the room's floor, so its leaf
+          // swings over the floor plate instead of into it (Play opens it).
+          const door =
+            op.fill === "door" ||
+            ((op.fill ?? "auto") === "auto" &&
+              op.width === 4 &&
+              op.height !== undefined &&
+              plates(op.height) === 18);
+          const op2 =
+            door &&
+            o.floor !== undefined &&
+            op.y === undefined &&
+            (op.opens ?? "in") === "in"
+              ? { ...op, y: 1 }
+              : op;
           this.opening(u, model, f, id, `${path}.openings[${n}]`, op2, {
             alongX,
             x0: side === "right" ? x + w - 1 : x,
@@ -992,7 +1022,46 @@ class Compiler {
         const [x, y, z] = y3(o.at);
         const ref = this.part(o.part, path + ".part", o.colour);
         const colour = this.colour(o.colour, path + ".colour", x, y, z);
-        this.put(
+        if (o.anchor === "origin") {
+          // The part's own origin on a grid point at a plate level: parts
+          // made to fit together share an origin (a boat hull and its deck).
+          const [wx, wz] = point(f, x, z);
+          const wt = turnOf(mul(f.m, turnMat(o.turn ?? 0)));
+          this.countPart(path);
+          model.raw(
+            ref,
+            colour,
+            [wx * 20, -8 * (f.ty + y), wz * 20],
+            basis(wt),
+          );
+          this.origin(u, model, id);
+          this.checkColour(ref, colour, id);
+          // Its cells: the placed bounds, rounded out to whole cells.
+          const b = transformBounds(localBounds(ref) as Bounds, {
+            position: [wx * 20, -8 * (f.ty + y), wz * 20],
+            basis: basis(wt),
+          });
+          const holder = u.holders.length;
+          u.holders.push({ op: id, ref });
+          for (
+            let cx = Math.floor(b.min[0] / 20);
+            cx < Math.ceil(b.max[0] / 20);
+            cx++
+          )
+            for (
+              let cz = Math.floor(b.min[2] / 20);
+              cz < Math.ceil(b.max[2] / 20);
+              cz++
+            )
+              for (
+                let cy = Math.floor(-b.max[1] / 8);
+                cy < Math.ceil(-b.min[1] / 8);
+                cy++
+              )
+                u.reserved.set(cellKey(cx, cy, cz), holder);
+          return;
+        }
+        const line = this.put(
           u,
           model,
           f,
@@ -1005,6 +1074,41 @@ class Compiler {
           o.turn ?? 0,
           GLASS[ref] ? { companion: GLASS[ref] } : {},
         );
+        if (o.wheels !== undefined) {
+          if (ref !== "4600.dat")
+            this.fail(
+              path + ".wheels",
+              "wheels go on Plate 2 × 2 with Wheel Holders (4600)",
+            );
+          // Wheel Rims 6.4 × 8 (4624) with Tyres 6/50 × 8 (3641) on the two
+          // pins, 30 LDU either side and 5 below the plate's origin, as on
+          // the roadster; they clear the ground by 1 LDU when the plate's
+          // underside is 2 plates up.
+          const p = model.lines[line].split(" ");
+          const pos = p.slice(2, 5).map(Number);
+          const B = p.slice(5, 14).map(Number);
+          const rim = this.colour(o.wheels, path + ".wheels");
+          for (const side of [-1, 1]) {
+            const W = basis(side < 0 ? 270 : 90);
+            const m = [0, 1, 2].flatMap((r) =>
+              [0, 1, 2].map((c) =>
+                [0, 1, 2].reduce((s, k) => s + B[r * 3 + k] * W[k * 3 + c], 0),
+              ),
+            ) as unknown as Basis;
+            const at: V3 = [0, 1, 2].map(
+              (r) => pos[r] + B[r * 3] * 30 * side + B[r * 3 + 1] * 5,
+            ) as V3;
+            for (const [part, c] of [
+              ["4624.dat", rim],
+              ["3641.dat", "0"],
+            ]) {
+              this.countPart(path);
+              model.raw(part, c, at, m);
+              this.origin(u, model, id);
+              this.checkColour(part, c, id);
+            }
+          }
+        }
         return;
       }
       case "column": {
@@ -1113,6 +1217,10 @@ class Compiler {
         return;
       case "instance":
         return this.instance(u, model, f, id, path, o);
+      case "track":
+        return this.track(u, model, f, id, path, o);
+      case "railcar":
+        return this.railcar(u, model, f, id, path, o);
       case "scatter":
       case "smooth":
         u.details.push({ op, frame: f, path: id, section });
@@ -1263,12 +1371,21 @@ class Compiler {
       line[4] + b[6] * off[0] + b[7] * off[1] + b[8] * off[2],
     ];
     this.countPart(path);
-    model.raw(
-      style === "panes" ? "60623.dat" : "60616a.dat",
-      this.colour(leaf, path + ".colour"),
-      pos,
-      b,
-    );
+    const leafColour = this.colour(leaf, path + ".colour");
+    // Without a style, the leaf that is made in the colour: the smooth door
+    // (60616a) is not made in red, dark blue or dark green, the door with
+    // panes (60623) is.
+    const leafRef =
+      style === "panes"
+        ? "60623.dat"
+        : style === "smooth" ||
+            !colorAvailabilityLoaded() ||
+            madeIn("60616a.dat", leafColour) ||
+            !madeIn("60623.dat", leafColour)
+          ? "60616a.dat"
+          : "60623.dat";
+    model.raw(leafRef, leafColour, pos, b);
+    this.checkColour(leafRef, leafColour, id);
     this.origin(u, model, id);
   }
 
@@ -1371,20 +1488,29 @@ class Compiler {
     const [x, y, z] = [o.at[0], plates(o.at[1]), o.at[2]] as number[];
     const [w, d] = o.size as number[];
     const oh = o.overhang ?? this.script.defaults?.overhang ?? 1;
+    // Overhang past the ends of the ridge (gable ends, hip ends; for flat
+    // roofs the sides the ridge would run into): 0 keeps a terrace of houses
+    // clear of its neighbours.
+    const ends = o.ends ?? oh;
+    const ridgeX = (o.ridge ?? (w >= d ? "x" : "z")) === "x";
     const colour = this.colour(o.colour, path + ".colour");
     if (o.style === "flat") {
       const mat = this.material(o.colour, path + ".colour", "plate");
+      const ox = ridgeX ? ends : oh,
+        oz = ridgeX ? oh : ends;
+      const W = w + 2 * ox,
+        D = d + 2 * oz;
       this.fill(
         u,
         f,
         section,
         id,
-        x - oh,
+        x - ox,
         y,
-        z - oh,
-        w + 2 * oh,
+        z - oz,
+        W,
         1,
-        d + 2 * oh,
+        D,
         mat,
         undefined,
         !o.parapet,
@@ -1392,16 +1518,14 @@ class Compiler {
       if (o.parapet) {
         const ph = plates(o.parapet);
         const pm = this.material(o.gable ?? o.colour, path + ".gable");
-        const W = w + 2 * oh,
-          D = d + 2 * oh;
         this.fill(
           u,
           f,
           section,
           id,
-          x - oh,
+          x - ox,
           y + 1,
-          z - oh,
+          z - oz,
           W,
           ph,
           D,
@@ -1412,12 +1536,25 @@ class Compiler {
       }
       return;
     }
-    // Work in a frame where the ridge runs along local X.
-    const ridgeX = (o.ridge ?? (w >= d ? "x" : "z")) === "x";
-    const lf = ridgeX ? child(f, [x, y, z]) : child(f, [x, y, z + d], 90);
-    const L = ridgeX ? w : d,
-      D = (ridgeX ? d : w) + 2 * oh;
-    if (D % 2)
+    // Work in a frame where the ridge runs along local X (a shed roof: its
+    // low edge along local X at z = 0, rising towards +z).
+    const shed = o.style === "shed";
+    const facing: Facing = o.facing ?? "front";
+    const lf = shed
+      ? facing === "front"
+        ? child(f, [x, y, z])
+        : facing === "back"
+          ? child(f, [x + w, y, z + d], 180)
+          : facing === "left"
+            ? child(f, [x, y, z + d], 90)
+            : child(f, [x + w, y, z], 270)
+      : ridgeX
+        ? child(f, [x, y, z])
+        : child(f, [x, y, z + d], 90);
+    const across = shed ? facing === "front" || facing === "back" : ridgeX;
+    const L = across ? w : d,
+      D = shed ? (across ? d : w) + oh : (ridgeX ? d : w) + 2 * oh;
+    if (!shed && D % 2)
       this.fail(
         path,
         `the roof's depth across the ridge (${D - 2 * oh} studs + overhang) must be even`,
@@ -1449,7 +1586,15 @@ class Compiler {
       if (!blocked(px, pz, fp.width / 20, fp.depth / 20))
         this.put(u, model, lf, id, ref, colour, px, py, pz, turn);
     };
-    const lengths = [4, 3, 2, 1];
+    // Slope lengths that are made in the roof's colour (1 × 2 always).
+    // Pitch 75: steep spires of 75° slopes, a stud in per three bricks.
+    const steep = o.pitch === 75;
+    if (steep && o.style !== "hip")
+      this.fail(path + ".pitch", "pitch 75 is for hip roofs (spires)");
+    const table = steep ? SLOPES_75 : SLOPES;
+    const lengths = (steep ? [2, 1] : [4, 3, 2, 1]).filter(
+      (l) => l === 1 || !colorAvailabilityLoaded() || madeIn(table[l], colour),
+    );
     const run = (
       from: number,
       to: number,
@@ -1470,22 +1615,48 @@ class Compiler {
         const first = firstSegment && offset && end - x > 4 ? 2 : 0;
         firstSegment = false;
         if (first) {
-          put(SLOPES[first], at, level, lz, turn);
+          put(table[first], at, level, lz, turn);
           at += first;
         }
         while (at < end) {
           const len = lengths.find((l) => l <= end - at)!;
-          put(SLOPES[len], at, level, lz, turn);
+          put(table[len], at, level, lz, turn);
           at += len;
         }
         x = end;
       }
     };
+    if (shed) {
+      // One slope rising a stud per brick from the low edge to the high
+      // side, walls under its two ends.
+      for (let k = 0; k + 2 <= D; k++) {
+        const level = 3 * k;
+        run(-ends, L + ends, -oh + k, level, 0, k % 2 === 1);
+        const g0 = Math.max(0, -oh + k + 2),
+          g1 = D - oh - 1;
+        if (g1 >= g0)
+          for (const gx of [0, L - 1])
+            this.fill(
+              u,
+              lf,
+              section,
+              id,
+              gx,
+              level,
+              g0,
+              1,
+              3,
+              g1 - g0 + 1,
+              gable,
+            );
+      }
+      return;
+    }
     if (o.style === "gable") {
       for (let k = 0; k < n; k++) {
         const level = 3 * k;
-        run(-oh, L + oh, -oh + k, level, 0, k % 2 === 1);
-        run(-oh, L + oh, D - oh - 2 - k, level, 180, k % 2 === 1);
+        run(-ends, L + ends, -oh + k, level, 0, k % 2 === 1);
+        run(-ends, L + ends, D - oh - 2 - k, level, 180, k % 2 === 1);
         // Gable ends inside the slopes.
         const g0 = -oh + k + 2,
           g1 = D - oh - 3 - k;
@@ -1506,9 +1677,9 @@ class Compiler {
             );
       }
       const ridge = 3 * n;
-      let at = -oh;
-      while (at < L + oh) {
-        if (L + oh - at >= 2 && !blocked(at, -oh + n, 2, 2)) {
+      let at = -ends;
+      while (at < L + ends) {
+        if (L + ends - at >= 2 && !blocked(at, -oh + n, 2, 2)) {
           put("3043.dat", at, ridge, -oh + n, 0);
           at += 2;
         } else {
@@ -1519,13 +1690,35 @@ class Compiler {
       return;
     }
     // Hip: rings of slopes stepping in one stud per course, corner pieces.
-    const W = L + 2 * oh;
+    const W = L + 2 * ends;
     for (let k = 0; ; k++) {
-      const x0 = -oh + k,
+      const x0 = -ends + k,
         z0 = -oh + k,
         wk = W - 2 * k,
         dk = D - 2 * k;
-      const level = 3 * k;
+      const level = (steep ? 9 : 3) * k;
+      if (steep && (wk <= 2 || dk <= 2)) {
+        // The spire's tip: 2 × 2 cones along what is left.
+        for (let i = 0; i + 2 <= Math.max(wk, 2); i += 2)
+          for (let j = 0; j + 2 <= Math.max(dk, 2); j += 2)
+            put("3942c.dat", x0 + i, level, z0 + j, 0);
+        return;
+      }
+      if (wk <= 2 && dk > 2) {
+        // Narrower than deep (ends overhang less than the eaves): the ridge
+        // runs across, along local Z.
+        let at = z0;
+        while (at < z0 + dk) {
+          if (z0 + dk - at >= 2) {
+            put("3043.dat", x0, level, at, 90);
+            at += 2;
+          } else {
+            put("3044b.dat", x0, level, at, 90);
+            at += 1;
+          }
+        }
+        return;
+      }
       if (dk <= 2) {
         let at = x0;
         while (at < x0 + wk) {
@@ -1539,10 +1732,11 @@ class Compiler {
         }
         return;
       }
-      put("3045.dat", x0 + wk - 2, level, z0, 0);
-      put("3045.dat", x0, level, z0, 90);
-      put("3045.dat", x0, level, z0 + dk - 2, 180);
-      put("3045.dat", x0 + wk - 2, level, z0 + dk - 2, 270);
+      const corner = steep ? "3685.dat" : "3045.dat";
+      put(corner, x0 + wk - 2, level, z0, 0);
+      put(corner, x0, level, z0, 90);
+      put(corner, x0, level, z0 + dk - 2, 180);
+      put(corner, x0 + wk - 2, level, z0 + dk - 2, 270);
       if (wk > 4) {
         run(x0 + 2, x0 + wk - 2, z0, level, 0, k % 2 === 1);
         run(x0 + 2, x0 + wk - 2, z0 + dk - 2, level, 180, k % 2 === 1);
@@ -1555,7 +1749,7 @@ class Compiler {
           while (at < to) {
             const len = lengths.find((l) => l <= to - at)!;
             // Footprint corner at (lx, at): turned slopes are 2 wide in X.
-            put(SLOPES[len], lx, level, at, turn);
+            put(table[len], lx, level, at, turn);
             at += len;
           }
         };
@@ -1566,6 +1760,170 @@ class Compiler {
     }
   }
 
+  /** World direction of a local "+x"/"-x"/"+z"/"-z" in frame f. */
+  dirOf(f: Frame, dir: string): [number, number] {
+    const v = { "+x": [1, 0], "-x": [-1, 0], "+z": [0, 1], "-z": [0, -1] }[
+      dir
+    ]!;
+    return [f.m[0] * v[0] + f.m[1] * v[1], f.m[2] * v[0] + f.m[3] * v[1]];
+  }
+  track(
+    u: Unit,
+    model: Model,
+    f: Frame,
+    id: number,
+    path: string,
+    o: Record<string, any>,
+  ) {
+    const [x, z] = point(f, o.at[0], o.at[2]);
+    const y = f.ty + plates(o.at[1]);
+    const colour = this.colour(
+      o.colour ?? "dark bluish grey",
+      path + ".colour",
+    );
+    const flip = det(f.m) < 0;
+    const steps = (text: string, field: string) => {
+      const out = text.toUpperCase().replace(/[\s,]/g, "");
+      if (!/^[SLRWV]*$/.test(out))
+        this.fail(
+          path + "." + field,
+          "pieces are S (straight), L/R (curves) and W/V (points left/right)",
+        );
+      // A mirrored frame turns left curves and points into right ones.
+      return flip
+        ? [...out].map(
+            (c) => ({ L: "R", R: "L", W: "V", V: "W" })[c as "L"] ?? c,
+          )
+        : [...out];
+    };
+    // Six decimals: curves and points join within a hundredth of an LDU.
+    const fmt = (n: number) => {
+      const r = Math.round(n * 1e6) / 1e6;
+      return Object.is(r, -0) ? "0" : String(r);
+    };
+    let branch: TrackCursor | undefined;
+    const lay = (step: string, at: TrackCursor) => {
+      const [ref, inEnd, outEnd] =
+        step === "S"
+          ? ["53401.dat", 0, 1]
+          : step === "L"
+            ? ["53400.dat", 1, 0]
+            : step === "R"
+              ? ["53400.dat", 0, 1]
+              : step === "W"
+                ? ["75542-f1.dat", 0, 1]
+                : ["75541-f1.dat", 0, 1];
+      const placed = placeTrackPiece(ref, at, inEnd);
+      this.countPart(path);
+      model.lines.push(
+        `1 ${colour} ${[...placed.transform.position, ...placed.transform.basis].map(fmt).join(" ")} ${ref}`,
+      );
+      this.origin(u, model, id);
+      this.checkColour(ref, colour, id);
+      // The track holds the cells under its sleepers (three plates high),
+      // so massing is carved there and parts placed on it are reported.
+      const holder = u.holders.length;
+      u.holders.push({ op: id, ref });
+      const from = at.position;
+      for (const end of placed.ends) {
+        if (end === placed.ends[inEnd]) continue;
+        const to = end.position;
+        // Band ±95 LDU round the chord (an R40 curve bows 15 LDU from it).
+        const ax = from[0],
+          az = from[2],
+          dx = to[0] - ax,
+          dz = to[2] - az;
+        const len2 = dx * dx + dz * dz || 1;
+        const x0 = Math.floor((Math.min(ax, to[0]) - 95) / 20),
+          x1 = Math.ceil((Math.max(ax, to[0]) + 95) / 20),
+          z0 = Math.floor((Math.min(az, to[2]) - 95) / 20),
+          z1 = Math.ceil((Math.max(az, to[2]) + 95) / 20);
+        for (let cx = x0; cx <= x1; cx++)
+          for (let cz = z0; cz <= z1; cz++) {
+            const px = cx * 20 + 10,
+              pz = cz * 20 + 10;
+            const t = Math.max(
+              0,
+              Math.min(1, ((px - ax) * dx + (pz - az) * dz) / len2),
+            );
+            if (Math.hypot(px - ax - t * dx, pz - az - t * dz) > 95) continue;
+            for (let j = 0; j < 3; j++) {
+              const key = cellKey(cx, y + j, cz);
+              u.reserved.set(key, holder);
+            }
+          }
+      }
+      if (step === "W" || step === "V") branch = placed.ends[2];
+      return placed.ends[outEnd];
+    };
+    let cursor: TrackCursor = {
+      position: [x * 20, -8 * y - 24, z * 20],
+      direction: this.dirOf(f, o.dir),
+    };
+    for (const step of steps(o.pieces, "pieces")) cursor = lay(step, cursor);
+    if (o.branch) {
+      if (!branch)
+        this.fail(path + ".branch", "a branch needs points (W or V) in pieces");
+      let side = branch;
+      for (const step of steps(o.branch, "branch")) side = lay(step, side);
+    }
+  }
+  railcar(
+    u: Unit,
+    model: Model,
+    f: Frame,
+    id: number,
+    path: string,
+    o: Record<string, any>,
+  ) {
+    const [x, z] = point(f, o.at[0], o.at[2]);
+    const y = f.ty + plates(o.at[1]);
+    const [dx, dz] = this.dirOf(f, o.dir);
+    // The car's local +X (its front) turned onto the world direction.
+    const turn = ([0, 90, 180, 270] as Turn[]).find((t) => {
+      const m = turnMat(t);
+      return m[0] === dx && m[2] === dz;
+    })!;
+    const colour = this.colour(o.colour ?? "black", path + ".colour");
+    const n = ++this.railcars;
+    const car = new Model(
+      `${this.slug}-railcar-${n}.ldr`,
+      o.component ? `Rail car: ${o.component}` : "Rail car",
+    );
+    this.countPart(path);
+    car.put("92088.dat", colour, -12, -3, 0);
+    this.checkColour("92088.dat", colour, id);
+    for (const bx of [-160, 160]) {
+      this.countPart(path);
+      car.raw("2878c01.dat", colour, [bx, 0, 0], basis(90));
+    }
+    if (o.component) {
+      let override = this.override;
+      if (o.palette) {
+        override = new Map(this.override);
+        for (const [k, v] of Object.entries(
+          o.palette as Record<string, Colour | { mix: Colour[] }>,
+        ))
+          override.set(
+            k.toLowerCase(),
+            typeof v === "object"
+              ? v.mix.flatMap((c) => this.colours(c, `${path}.palette.${k}`))
+              : this.colours(v, `${path}.palette.${k}`),
+          );
+      }
+      const comp = this.component(o.component, path, override, o.with);
+      this.countPart(path);
+      // Deck top: two plates above the base's underside; footprint corner
+      // at the car's rear left (-12, -3).
+      car.raw(comp.model.name, "16", [-240, -16, -60], basis(0));
+    }
+    this.railcarModels.push(car);
+    model.raw(car.name, "16", [x * 20, -8 * y - 24 - 63, z * 20], basis(turn));
+    this.origin(u, model, id);
+  }
+  railcars = 0;
+  railcarModels: Model[] = [];
+
   instance(
     u: Unit,
     model: Model,
@@ -1575,7 +1933,20 @@ class Compiler {
     o: Record<string, any>,
   ) {
     const name = o.component as string;
-    const comp = this.component(name, path);
+    let override = this.override;
+    if (o.palette) {
+      override = new Map(this.override);
+      for (const [k, v] of Object.entries(
+        o.palette as Record<string, Colour | { mix: Colour[] }>,
+      ))
+        override.set(
+          k.toLowerCase(),
+          typeof v === "object"
+            ? v.mix.flatMap((c) => this.colours(c, `${path}.palette.${k}`))
+            : this.colours(v, `${path}.palette.${k}`),
+        );
+    }
+    const comp = this.component(name, path, override, o.with);
     const turn = (o.turn ?? 0) as number;
     // Where the component's footprint corner lands after the turn.
     const tm = turnMat(turn);
@@ -1622,21 +1993,50 @@ class Compiler {
       reserve(cx, cy, cz);
     }
   }
-  component(name: string, path: string) {
-    const hit = this.components.get(name);
+  /** Flags of the component copy being compiled (`instance.with`). */
+  flags = new Set<string>();
+  component(
+    name: string,
+    path: string,
+    override?: Map<string, string[]>,
+    withFlags: string[] = [],
+  ) {
+    // One submodel per component, palette variant and set of flags.
+    const flags = [...new Set(withFlags)].sort();
+    const variant =
+      (override?.size
+        ? [...override.entries()]
+            .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+            .map(([k, v]) => k + "=" + v.join("+"))
+            .join(";")
+        : "") + (flags.length ? "|" + flags.join(",") : "");
+    const key = name + "\u0000" + variant;
+    const hit = this.components.get(key);
     if (hit) return hit;
     const spec = this.script.components?.[name];
     if (!spec) this.fail(path, `unknown component ${JSON.stringify(name)}`);
     if (this.compiling.has(name))
       this.fail(path, `component ${name} contains itself`);
     this.compiling.add(name);
+    const n = [...this.components.values()].filter(
+      (e) => e.name === name,
+    ).length;
     const model = new Model(
-      `${this.slug}-component-${slugify(name)}.ldr`,
-      spec.title ?? name,
+      `${this.slug}-component-${slugify(name)}${n ? "-" + (n + 1) : ""}.ldr`,
+      (spec.title ?? name) + (n ? ` (${n + 1})` : ""),
     );
     const unit = newUnit(name, [model]);
-    this.run(unit, spec.ops, IDENTITY, 0, `components.${name}.ops`);
-    this.finish(unit, () => model);
+    const outer = this.override,
+      outerFlags = this.flags;
+    this.override = override;
+    this.flags = new Set(flags);
+    try {
+      this.run(unit, spec.ops, IDENTITY, 0, `components.${name}.ops`);
+      this.finish(unit, () => model);
+    } finally {
+      this.override = outer;
+      this.flags = outerFlags;
+    }
     this.compiling.delete(name);
     // Footprint of everything it holds (cells and reserved part cells).
     let x0 = Infinity,
@@ -1652,11 +2052,14 @@ class Compiler {
     }
     if (x0 === Infinity) (x0 = 0), (z0 = 0), (x1 = 0), (z1 = 0);
     const entry = {
+      name,
       unit,
       model,
-      box: { x: x0, z: z0, w: x1 - x0, d: z1 - z0 },
+      box: spec.size
+        ? { x: 0, z: 0, w: spec.size[0], d: spec.size[1] }
+        : { x: x0, z: z0, w: x1 - x0, d: z1 - z0 },
     };
-    this.components.set(name, entry);
+    this.components.set(key, entry);
     return entry;
   }
 
@@ -1685,8 +2088,19 @@ class Compiler {
           u.grid.cells.set(key, { ...cell, tile: true });
       }
     }
-    const packed = packGrid(u.grid, this.materials, this.seed, (x, y, z) =>
-      u.reserved.has(cellKey(x, y, z)),
+    const packed = packGrid(
+      u.grid,
+      this.materials,
+      this.seed,
+      (x, y, z) => u.reserved.has(cellKey(x, y, z)),
+      (x, y, z) => {
+        // Studded parts hold what rests on them; slopes only on their top
+        // row, so they are not counted.
+        const holder = u.reserved.get(cellKey(x, y, z));
+        if (holder === undefined) return false;
+        const spec = partSpec(u.holders[holder].ref);
+        return !!spec?.studded && !/slope|roof|ridge/i.test(spec.name);
+      },
     );
     for (const [k, n] of packed.unavailable) {
       const hit = this.unavailable.get(k) ?? {
@@ -1751,11 +2165,10 @@ class Compiler {
             // Only on studs: not on tiles, trees or other smooth tops.
             const below = cellKey(x + i, level - 1, z + k);
             const holder = u.reserved.get(below);
-            if (
-              holder !== undefined &&
-              !partSpec(u.holders[holder].ref)?.studded
-            )
-              free = false;
+            // Only on massing and the ground, never on parts: a part's cells
+            // cover its whole body but its studs are only on some of them
+            // (a roof's ridge row, one stud of a plant).
+            if (holder !== undefined) free = false;
             if (u.grid.cells.get(below)?.tile) free = false;
           }
         if (!free) continue;
@@ -1841,7 +2254,10 @@ export function compileBuildScript(
   );
   const massingCells = unit.grid.cells.size;
   const massingParts = c.finish(unit, (i) => models[i]);
-  const componentModels = [...c.components.values()].map((e) => e.model);
+  const componentModels = [
+    ...[...c.components.values()].map((e) => e.model),
+    ...c.railcarModels,
+  ];
   const header = [
     "Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).",
     "x/z studs, y plates; front faces -Z; y = 0 is the ground.",
@@ -1853,6 +2269,7 @@ export function compileBuildScript(
     models,
     componentModels,
     script.author,
+    script.sections.map((sec) => sec.layer ?? sec.name),
   );
   const compileMs = now() - started;
 
@@ -1899,7 +2316,14 @@ export function compileBuildScript(
   const opOf = (occurrenceId: string): string | undefined => {
     const o = byId.get(occurrenceId);
     if (!o) return undefined;
-    // Parts inside a component: the instance in its section.
+    const own = () => {
+      const i = nodeIndex.get(o.modelId + "\u0000" + o.node.id);
+      const m = modelByName.get(project!.models[o.modelId].name.toLowerCase());
+      if (i === undefined || !m) return undefined;
+      return c.opPaths[unitOfModel.get(m)?.origins.get(m)?.[i] ?? -1];
+    };
+    // Parts inside a component: the instance in its section, then the
+    // component's own op ("sections[1].ops[3] > components.house.ops[2]").
     const top = project!.models[project!.rootModelId].nodes.find(
       (n) => n.id === o.path[0],
     );
@@ -1909,13 +2333,15 @@ export function compileBuildScript(
       const m = modelByName.get(
         project!.models[sectionModelId].name.toLowerCase(),
       );
-      if (i !== undefined && m)
-        return c.opPaths[unit.origins.get(m)?.[i] ?? -1];
+      if (i !== undefined && m) {
+        const outer = c.opPaths[unit.origins.get(m)?.[i] ?? -1];
+        const inner = own();
+        return outer && inner && inner !== outer
+          ? `${outer} > ${inner}`
+          : outer;
+      }
     }
-    const i = nodeIndex.get(o.modelId + "\u0000" + o.node.id);
-    const m = modelByName.get(project!.models[o.modelId].name.toLowerCase());
-    if (i === undefined || !m) return undefined;
-    return c.opPaths[unitOfModel.get(m)?.origins.get(m)?.[i] ?? -1];
+    return own();
   };
   if (options.check !== false) {
     const extra: Record<string, Bounds[]> = {};
@@ -1970,10 +2396,25 @@ export function compileBuildScript(
           const p = opOf(idd);
           if (p) ops.set(p, (ops.get(p) ?? 0) + 1);
         }
+      // Where the first loose groups are, in script coordinates (studs,
+      // plates): "3004 at [12, 21, -4]".
+      const where = loose
+        .slice(0, 6)
+        .map((g) => {
+          const o = byId.get(g[0]);
+          if (!o) return "";
+          const [px, py, pz] = o.transform.position;
+          const b = partSpec(o.node.ref)?.bounds;
+          const top = b ? -py - b.max[1] : -py;
+          return `${o.node.ref.replace(/\.dat$/, "")} at [${Math.floor(px / 20)}, ${Math.round(top / 8)}, ${Math.floor(pz / 20)}]`;
+        })
+        .filter(Boolean);
       c.problem({
         severity: "warning",
         code: "floating",
-        message: `${count} part(s) in ${loose.length} group(s) are not connected to the main structure (largest group: ${sorted[0].length} parts)`,
+        message:
+          `${count} part(s) in ${loose.length} group(s) are not connected to the main structure (largest group: ${sorted[0].length} parts)` +
+          (where.length ? `; e.g. ${where.join(", ")}` : ""),
         ops: [...ops.entries()]
           .sort((a, b) => b[1] - a[1])
           .slice(0, 12)
@@ -2013,12 +2454,11 @@ export function compileBuildScript(
     lots.set(k, lot);
     const b = partSpec(o.node.ref)?.bounds;
     if (b) {
-      const p = o.transform.position;
-      // Rough bounds: the part's own box around its origin.
+      // The part's box, placed and turned.
+      const w = transformBounds(b as Bounds, o.transform);
       for (let i = 0; i < 3; i++) {
-        const ext = Math.max(Math.abs(b.min[i]), Math.abs(b.max[i]));
-        min[i] = Math.min(min[i], p[i] - ext);
-        max[i] = Math.max(max[i], p[i] + ext);
+        min[i] = Math.min(min[i], w.min[i]);
+        max[i] = Math.max(max[i], w.max[i]);
       }
     }
   }
@@ -2108,36 +2548,11 @@ export function compileBuildScript(
 }
 
 function assignLayers(project: Project, script: BuildScript, models: Model[]) {
-  const root = project.models[project.rootModelId];
-  const layerIds = new Map<string, string>();
-  let order = Object.keys(project.layers).length;
-  // The default layer holds nothing; sections get their own layers.
-  script.sections.forEach((s, i) => {
-    const name = s.layer ?? s.name;
-    let id = layerIds.get(name);
-    if (!id) {
-      id = "layer-" + slugify(name) + "-" + (layerIds.size + 1);
-      layerIds.set(name, id);
-      project.layers[id] = {
-        id,
-        name,
-        visible: true,
-        locked: false,
-        order: order++,
-      };
-    }
-    const node = root.nodes[i];
-    if (!node || !models[i]) return;
-    const walk = (modelId: string, prefix: string[]) => {
-      for (const n of project.models[modelId].nodes) {
-        const path = [...prefix, n.id];
-        if (n.kind === "submodel" || project.models[n.ref]) walk(n.ref, path);
-        else if (n.kind === "part")
-          project.layerAssignments[encode(path)] = id!;
-      }
-    };
-    walk(node.ref, [node.id]);
-  });
+  assignSectionLayers(project, (i) =>
+    models[i]
+      ? (script.sections[i].layer ?? script.sections[i].name)
+      : undefined,
+  );
 }
 
 function mpdText(
@@ -2147,6 +2562,7 @@ function mpdText(
   sections: Model[],
   components: Model[],
   author?: string,
+  layers: string[] = [],
 ) {
   const fmt = (n: number) => {
     const r = Math.round(n * 1000) / 1000;
@@ -2163,13 +2579,16 @@ function mpdText(
         `1 16 ${s.placement.position.map(fmt).join(" ")} ${s.placement.basis.map(fmt).join(" ")} ${s.name}`,
     ),
   ];
-  for (const s of [...sections, ...components])
+  [...sections, ...components].forEach((s, i) =>
     out.push(
       "",
       `0 FILE ${s.name}`,
       `0 ${s.title}`,
       `0 Name: ${s.name}`,
+      // Read back by sectionLayers() when the file is opened again.
+      ...(layers[i] !== undefined ? [LAYER_COMMENT + layers[i]] : []),
       ...s.lines,
-    );
+    ),
+  );
   return out.join("\n") + "\n";
 }

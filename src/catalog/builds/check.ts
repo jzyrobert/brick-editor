@@ -56,6 +56,19 @@ const overlaps = (a: Bounds, b: Bounds) =>
   [0, 1, 2].every(
     (i) => Math.min(a.max[i], b.max[i]) - Math.max(a.min[i], b.min[i]) > MARGIN,
   );
+/**
+ * A stud-high bump on top of one part sitting in the underside of the part
+ * resting on it (a window frame's end studs in the frame above, its glass's
+ * pivots in the plate above): at most a stud (4 LDU) deep, at the interface
+ * where the lower part's top meets the upper part's bottom (LDraw −Y up).
+ */
+const seated = (p: Bounds, q: Bounds) => {
+  const bump = (lower: Bounds, upper: Bounds) =>
+    lower.max[1] >= upper.max[1] - 0.01 &&
+    lower.min[1] < upper.max[1] &&
+    upper.max[1] - lower.min[1] <= 4.01;
+  return bump(p, q) || bump(q, p);
+};
 const bounds = installedBounds.bounds as unknown as Record<
   string,
   Bounds | null
@@ -154,9 +167,12 @@ export function checkBuild(
       b = measured[j];
     if (!overlaps(a.world, b.world) || exempt(a.o, b.o)) continue;
     const rel = compose(inverse(b.o.transform), a.o.transform);
+    const upright = Math.abs(Math.abs(rel.basis[4]) - 1) < 1e-6;
     const clash = a.boxes.some((box) => {
       const t = transformBounds(box, rel);
-      return b.boxes.some((other) => overlaps(t, other));
+      return b.boxes.some(
+        (other) => overlaps(t, other) && !(upright && seated(t, other)),
+      );
     });
     if (clash) found.push([a.o.id, b.o.id]);
   }

@@ -16,6 +16,7 @@ import {
 } from "../../src/core/scene";
 import { TEMPLATE_BACKDROPS, template } from "../../src/catalog/templates";
 import { SAMPLE_TEMPLATES } from "../../src/catalog/template-names";
+import { registerScriptTemplatesFromDisk } from "../../scripts/script-templates-node";
 
 const run = (editor: Editor, type: string, payload: Record<string, unknown>) =>
   editor.dispatch({
@@ -137,7 +138,11 @@ describe("scene backdrops", () => {
       castle: "grass",
       lighthouse: "beach",
       playground: "grass",
+      town: "street",
+      cathedral: "grass",
+      harbour: "beach",
     });
+    registerScriptTemplatesFromDisk();
     for (const name of SAMPLE_TEMPLATES)
       expect(backdropOf(template(name))).toBe(
         TEMPLATE_BACKDROPS[name] ?? "blank",

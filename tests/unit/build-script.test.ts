@@ -201,7 +201,8 @@ describe("build script ops", () => {
     );
     expect(report.problems.filter((p) => p.severity === "error")).toEqual([]);
     expect(refCount(list, "60596.dat")).toBe(1);
-    expect(refCount(list, "60616a.dat")).toBe(1);
+    // The smooth door is not made in red: the door with panes is.
+    expect(refCount(list, "60623.dat")).toBe(1);
     expect(refCount(list, "60593.dat")).toBe(1);
     expect(refCount(list, "60602.dat")).toBe(1);
     // The open hole (x 10..11, levels 6..11) holds nothing.

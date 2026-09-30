@@ -1,0 +1,389 @@
+{
+  "buildScript": 1,
+  "title": "Market town",
+  "description": "Brief: a toy market town with a railway round it. A block of eleven town houses back to back between two streets, each in its own colours: shop houses with arched windows and striped awnings, tall houses with street gables and bay windows, corner houses with roof terraces and water towers, hotels with balconies; a town hall with a portico and a clock tower in the middle of the high street. Roads with dashed centre lines and parked cars, pavements with lamp posts, trees and benches, a park with a pond and a bandstand at one end and a fountain square at the other; a station platform with a shelter on the front straight of an oval of official train track, and a train of a locomotive and a coach.",
+  "palette": {
+    "grass": "green",
+    "road": "dark bluish grey",
+    "pave": "light bluish grey",
+    "line": "white",
+    "hallwall": "tan",
+    "hallbase": "dark tan",
+    "halltrim": "white",
+    "hallroof": "sand green",
+    "wall": "sand green",
+    "trim": "white",
+    "frame": "white",
+    "door": "dark green",
+    "awnA": "red",
+    "awnB": "white",
+    "roof": "dark bluish grey",
+    "floor": "tan",
+    "chimney": "reddish brown",
+    "bay": "white",
+    "body": "red",
+    "loco": "red",
+    "coach": "dark green",
+    "stripe": "yellow",
+    "path": "tan",
+    "water": "trans light blue",
+    "hedge": "dark green"
+  },
+  "parts": {"lamp": "2039", "tree": "3470", "pine": "3471", "smallpine": "2435", "clock": "3003p0b"},
+  "defaults": {"interior": "empty"},
+  "components": {
+    "shop": {"title": "Shop house", "size": [16, 16], "ops": [
+      {"op": "room", "at": [0, 0, 0], "size": [16, 21, 16], "colour": "wall", "floor": "floor", "openings": [{"side": "front", "at": 1, "width": 4, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 6, "width": 4, "height": 18, "fill": "door", "frame": "frame", "door": "door"}, {"side": "front", "at": 11, "width": 4, "y": 3, "height": 9, "frame": "frame"}]},
+      {"op": "place", "part": "3307", "at": [0, 12, 0], "colour": "trim"},
+      {"op": "place", "part": "3307", "at": [10, 12, 0], "colour": "trim"},
+      {"op": "box", "at": [0, 0, -1], "size": [1, 21, 1], "colour": "trim", "interior": "solid"},
+      {"op": "box", "at": [15, 0, -1], "size": [1, 21, 1], "colour": "trim", "interior": "solid"},
+      {"op": "repeat", "count": 3, "step": [4, 0, 0], "ops": [
+        {"op": "place", "part": "3039", "at": [1, 18, -2], "colour": "awnA"},
+        {"op": "place", "part": "3039", "at": [3, 18, -2], "colour": "awnB"}
+      ]},
+      {"op": "place", "part": "3039", "at": [13, 18, -2], "colour": "awnA"},
+      {"op": "box", "at": [2, 1, 11], "size": [12, 3, 2], "colour": "reddish brown", "interior": "solid", "top": "tile"},
+      {"op": "column", "at": [3, 1, 4], "height": 3, "diameter": 2, "colour": "reddish brown", "cap": "tile"},
+      {"op": "column", "at": [11, 1, 4], "height": 3, "diameter": 2, "colour": "reddish brown", "cap": "tile"},
+      {"op": "floor", "at": [0, 21, -1], "size": [16, 17], "colour": "trim"},
+      {"op": "fence", "path": [[1, -1], [14, -1]], "y": 22, "colour": "trim", "style": "lattice-low"},
+      {"op": "repeat", "count": 2, "step": [0, 19, 0], "ops": [
+        {"op": "room", "at": [0, 22, 0], "size": [16, 18, 16], "colour": "wall", "openings": [{"side": "front", "at": 1, "width": 2, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 5, "width": 2, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 9, "width": 2, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 13, "width": 2, "y": 3, "height": 9, "frame": "frame"}]},
+        {"op": "repeat", "count": 4, "step": [4, 0, 0], "ops": [
+          {"op": "place", "part": "6182", "at": [0, 34, 0], "colour": "trim"}
+        ]},
+        {"op": "floor", "at": [0, 40, 0], "size": [16, 16], "colour": "trim", "holes": [{"at": [1, 1], "size": [14, 14]}]}
+      ]},
+      {"op": "roof", "style": "gable", "at": [0, 60, 0], "size": [16, 16], "colour": "roof", "gable": "wall", "ridge": "x", "ends": 0, "holes": [{"at": [11, 14], "size": [2, 2]}]},
+      {"op": "box", "at": [11, 60, 14], "size": [2, 27, 2], "colour": "chimney", "interior": "solid"},
+      {"op": "place", "part": "2877", "at": [11, 87, 14], "colour": "dark bluish grey"}
+    ]},
+    "tall": {"title": "Tall house with a street gable and a bay window", "size": [16, 16], "ops": [
+      {"op": "room", "at": [0, 0, 0], "size": [16, 21, 16], "colour": "wall", "floor": "floor", "openings": [{"side": "front", "at": 1, "width": 4, "height": 18, "fill": "door", "frame": "frame", "door": "door"}, {"side": "front", "at": 7, "width": 4, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 7, "width": 4, "y": 12, "height": 6, "fill": "none"}, {"side": "front", "at": 12, "width": 2, "y": 3, "height": 9, "frame": "frame"}]},
+      {"op": "place", "part": "60592", "at": [7, 12, 0], "colour": "frame"},
+      {"op": "place", "part": "60592", "at": [9, 12, 0], "colour": "frame"},
+      {"op": "box", "at": [2, 1, 12], "size": [3, 6, 3], "colour": "reddish brown", "interior": "solid"},
+      {"op": "box", "at": [10, 1, 13], "size": [5, 3, 2], "colour": "reddish brown", "interior": "solid", "top": "tile"},
+      {"op": "floor", "at": [0, 21, -1], "size": [16, 17], "colour": "trim"},
+      {"op": "floor", "at": [5, 21, -2], "size": [6, 1], "colour": "trim"},
+      {"op": "repeat", "count": 2, "step": [0, 19, 0], "ops": [
+        {"op": "room", "at": [0, 22, 0], "size": [16, 18, 16], "colour": "wall", "openings": [{"side": "front", "at": 1, "width": 2, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 13, "width": 2, "y": 3, "height": 9, "frame": "frame"}]},
+        {"op": "box", "at": [1, 34, 0], "size": [2, 1, 1], "colour": "trim"},
+        {"op": "box", "at": [13, 34, 0], "size": [2, 1, 1], "colour": "trim"},
+        {"op": "box", "at": [5, 22, -2], "size": [6, 18, 2], "colour": "bay", "interior": "solid"},
+        {"op": "window", "at": [6, 25, -2], "facing": "front", "size": "1x2x3", "frame": "frame"},
+        {"op": "window", "at": [8, 25, -2], "facing": "front", "size": "1x2x3", "frame": "frame"},
+        {"op": "window", "at": [5, 25, -2], "facing": "left", "size": "1x2x3", "frame": "frame"},
+        {"op": "window", "at": [10, 25, -2], "facing": "right", "size": "1x2x3", "frame": "frame"},
+        {"op": "floor", "at": [0, 40, 0], "size": [16, 16], "colour": "trim", "holes": [{"at": [1, 1], "size": [14, 14]}]},
+        {"op": "floor", "at": [5, 40, -2], "size": [6, 2], "colour": "trim"}
+      ]},
+      {"op": "repeat", "count": 3, "step": [2, 0, 0], "ops": [
+        {"op": "place", "part": "3039", "at": [5, 60, -2], "colour": "roof"}
+      ]},
+      {"op": "room", "at": [0, 60, 0], "size": [16, 18, 16], "colour": "wall", "openings": [{"side": "front", "at": 2, "width": 2, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 7, "width": 2, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 12, "width": 2, "y": 3, "height": 9, "frame": "frame"}]},
+      {"op": "box", "at": [2, 72, 0], "size": [2, 1, 1], "colour": "trim"},
+      {"op": "box", "at": [7, 72, 0], "size": [2, 1, 1], "colour": "trim"},
+      {"op": "box", "at": [12, 72, 0], "size": [2, 1, 1], "colour": "trim"},
+      {"op": "floor", "at": [0, 78, -1], "size": [16, 17], "colour": "trim"},
+      {"op": "roof", "style": "gable", "at": [0, 79, 0], "size": [16, 16], "colour": "roof", "gable": "wall", "ridge": "z", "overhang": 0, "ends": 1, "holes": [{"at": [2, 11], "size": [2, 2]}]},
+      {"op": "window", "at": [7, 82, 0], "facing": "front", "size": "1x2x3", "frame": "frame"},
+      {"op": "window", "at": [7, 82, 15], "facing": "back", "size": "1x2x3", "frame": "frame"},
+      {"op": "box", "at": [2, 79, 11], "size": [2, 24, 2], "colour": "chimney", "interior": "solid"},
+      {"op": "place", "part": "2877", "at": [2, 103, 11], "colour": "dark bluish grey"}
+    ]},
+    "corner": {"title": "Corner house with a roof terrace", "size": [16, 16], "ops": [
+      {"op": "room", "at": [0, 0, 0], "size": [16, 21, 16], "colour": "wall", "floor": "floor", "openings": [{"side": "front", "at": 1, "width": 4, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 1, "width": 4, "y": 12, "height": 9, "frame": "frame"}, {"side": "front", "at": 6, "width": 4, "height": 18, "fill": "door", "frame": "frame", "door": "door"}, {"side": "front", "at": 11, "width": 4, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 11, "width": 4, "y": 12, "height": 9, "frame": "frame"}]},
+      {"op": "box", "at": [2, 1, 12], "size": [10, 3, 2], "colour": "reddish brown", "interior": "solid", "top": "tile"},
+      {"op": "floor", "at": [0, 21, -1], "size": [16, 17], "colour": "trim"},
+      {"op": "floor", "at": [-1, 21, -1], "size": [1, 17], "colour": "trim", "when": "left"},
+      {"op": "floor", "at": [16, 21, -1], "size": [1, 17], "colour": "trim", "when": "right"},
+      {"op": "repeat", "count": 2, "step": [0, 19, 0], "ops": [
+        {"op": "room", "at": [0, 22, 0], "size": [16, 18, 16], "colour": "wall", "openings": [{"side": "front", "at": 1, "width": 4, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 6, "width": 4, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 11, "width": 4, "y": 3, "height": 9, "frame": "frame"}]},
+        {"op": "floor", "at": [0, 40, 0], "size": [16, 16], "colour": "trim", "holes": [{"at": [1, 1], "size": [14, 14]}]}
+      ]},
+      {"op": "group", "when": "left", "ops": [
+        {"op": "repeat", "count": 2, "step": [0, 0, 7], "ops": [
+          {"op": "window", "at": [0, 3, 2], "facing": "left", "size": "1x4x3", "frame": "frame"},
+          {"op": "window", "at": [0, 12, 2], "facing": "left", "size": "1x4x3", "frame": "frame"},
+          {"op": "window", "at": [0, 25, 2], "facing": "left", "size": "1x4x3", "frame": "frame"},
+          {"op": "window", "at": [0, 44, 2], "facing": "left", "size": "1x4x3", "frame": "frame"}
+        ]}
+      ]},
+      {"op": "group", "when": "right", "ops": [
+        {"op": "repeat", "count": 2, "step": [0, 0, 7], "ops": [
+          {"op": "window", "at": [15, 3, 2], "facing": "right", "size": "1x4x3", "frame": "frame"},
+          {"op": "window", "at": [15, 12, 2], "facing": "right", "size": "1x4x3", "frame": "frame"},
+          {"op": "window", "at": [15, 25, 2], "facing": "right", "size": "1x4x3", "frame": "frame"},
+          {"op": "window", "at": [15, 44, 2], "facing": "right", "size": "1x4x3", "frame": "frame"}
+        ]}
+      ]},
+      {"op": "roof", "style": "flat", "at": [0, 60, 0], "size": [16, 16], "colour": "trim", "overhang": 1, "ends": 0, "parapet": 3},
+      {"op": "cylinder", "at": [9, 61, 8], "diameter": 4, "height": 12, "colour": "reddish brown", "interior": "solid"},
+      {"op": "place", "part": "3943b", "at": [9, 73, 8], "colour": "dark bluish grey"},
+      {"op": "column", "at": [3, 61, 4], "height": 12, "colour": "white"},
+      {"op": "place", "part": "3960", "at": [2, 73, 3], "colour": "awnA"},
+      {"op": "column", "at": [3, 61, 11], "height": 3, "diameter": 2, "colour": "white", "cap": "tile"}
+    ]},
+    "hotel": {"title": "Hotel with balconies", "size": [16, 16], "ops": [
+      {"op": "room", "at": [0, 0, 0], "size": [16, 21, 16], "colour": "wall", "floor": "floor", "openings": [{"side": "front", "at": 1, "width": 4, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 6, "width": 4, "height": 18, "fill": "door", "frame": "frame", "door": "door"}, {"side": "front", "at": 11, "width": 4, "y": 3, "height": 9, "frame": "frame"}]},
+      {"op": "column", "at": [5, 0, -2], "height": 18, "colour": "trim"},
+      {"op": "column", "at": [10, 0, -2], "height": 18, "colour": "trim"},
+      {"op": "floor", "at": [5, 18, -2], "size": [6, 2], "colour": "awnA", "layers": 3},
+      {"op": "box", "at": [2, 1, 12], "size": [12, 3, 2], "colour": "reddish brown", "interior": "solid", "top": "tile"},
+      {"op": "floor", "at": [0, 21, -1], "size": [16, 17], "colour": "trim"},
+      {"op": "repeat", "count": 4, "step": [0, 19, 0], "ops": [
+        {"op": "room", "at": [0, 22, 0], "size": [16, 18, 16], "colour": "wall", "openings": [{"side": "front", "at": 1, "width": 2, "y": 3, "height": 9, "frame": "frame"}, {"side": "front", "at": 6, "width": 4, "height": 18, "fill": "door", "frame": "frame", "door": "frame", "opens": "out"}, {"side": "front", "at": 13, "width": 2, "y": 3, "height": 9, "frame": "frame"}]},
+        {"op": "box", "at": [1, 34, 0], "size": [2, 1, 1], "colour": "trim"},
+        {"op": "box", "at": [13, 34, 0], "size": [2, 1, 1], "colour": "trim"},
+        {"op": "floor", "at": [0, 40, -2], "size": [16, 18], "colour": "trim", "holes": [{"at": [1, 1], "size": [14, 14]}]},
+        {"op": "fence", "path": [[4, -2], [11, -2]], "y": 41, "colour": "trim", "style": "lattice-low"}
+      ]},
+      {"op": "floor", "at": [4, 21, -2], "size": [8, 1], "colour": "trim"},
+      {"op": "fence", "path": [[4, -2], [11, -2]], "y": 22, "colour": "trim", "style": "lattice-low"},
+      {"op": "roof", "style": "hip", "at": [0, 98, 0], "size": [16, 16], "colour": "roof", "overhang": 1, "ends": 0}
+    ]},
+    "lamp": {"title": "Lamp post", "ops": [
+      {"op": "place", "part": "@lamp", "at": [0, 0, 0], "colour": "black"}
+    ]},
+    "bench": {"title": "Bench", "ops": [
+      {"op": "place", "part": "3005", "at": [0, 0, 0], "colour": "black"},
+      {"op": "place", "part": "3005", "at": [3, 0, 0], "colour": "black"},
+      {"op": "place", "part": "3710", "at": [0, 3, 0], "colour": "reddish brown"}
+    ]},
+    "car": {"title": "Car", "size": [4, 10], "ops": [
+      {"op": "place", "part": "4600", "at": [1, 2, 1], "colour": "black", "wheels": "light bluish grey"},
+      {"op": "place", "part": "4600", "at": [1, 2, 7], "colour": "black", "wheels": "light bluish grey"},
+      {"op": "place", "part": "3788", "at": [0, 3, 1], "colour": "body"},
+      {"op": "place", "part": "3788", "at": [0, 3, 7], "colour": "body"},
+      {"op": "floor", "at": [0, 3, 0], "size": [4, 1], "colour": "light bluish grey"},
+      {"op": "floor", "at": [0, 3, 9], "size": [4, 1], "colour": "light bluish grey"},
+      {"op": "floor", "at": [0, 3, 3], "size": [4, 4], "colour": "black", "layers": 2},
+      {"op": "floor", "at": [0, 4, 0], "size": [4, 1], "colour": "black"},
+      {"op": "floor", "at": [0, 4, 9], "size": [4, 1], "colour": "black"},
+      {"op": "floor", "at": [0, 5, 0], "size": [4, 10], "colour": "body"},
+      {"op": "box", "at": [0, 6, 0], "size": [4, 2, 3], "colour": "body", "interior": "solid", "top": "tile"},
+      {"op": "place", "part": "3823", "at": [0, 6, 3], "colour": "trans-clear"},
+      {"op": "box", "at": [0, 6, 5], "size": [4, 6, 3], "colour": "body", "interior": "solid"},
+      {"op": "floor", "at": [0, 12, 3], "size": [4, 5], "colour": "body", "top": "tile"},
+      {"op": "box", "at": [0, 6, 8], "size": [4, 2, 2], "colour": "body", "interior": "solid", "top": "tile"},
+      {"op": "place", "part": "3070b", "at": [0, 7, 0], "colour": "trans-clear"},
+      {"op": "place", "part": "3070b", "at": [3, 7, 0], "colour": "trans-clear"},
+      {"op": "place", "part": "3070b", "at": [0, 7, 9], "colour": "trans red"},
+      {"op": "place", "part": "3070b", "at": [3, 7, 9], "colour": "trans red"}
+    ]},
+    "loco": {"title": "Locomotive", "ops": [
+      {"op": "place", "part": "2924bc01", "at": [21, 0, 0], "colour": "loco", "turn": 90},
+      {"op": "place", "part": "4070", "at": [23, 0, 0], "colour": "white", "turn": 270},
+      {"op": "place", "part": "4070", "at": [23, 0, 5], "colour": "white", "turn": 270},
+      {"op": "place", "part": "3004", "at": [23, 0, 2], "colour": "stripe", "turn": 90},
+      {"op": "place", "part": "2412b", "at": [23, 3, 2], "colour": "dark bluish grey", "turn": 90},
+      {"op": "mirror", "axis": "z", "about": 3, "ops": [
+        {"op": "place", "part": "3009", "at": [15, 0, 0], "colour": "loco"},
+        {"op": "repeat", "count": 3, "step": [0, 3, 0], "ops": [
+          {"op": "place", "part": "3005", "at": [15, 3, 0], "colour": "loco"},
+          {"op": "place", "part": "3005", "at": [20, 3, 0], "colour": "loco"}
+        ]},
+        {"op": "place", "part": "4033c01", "at": [16, 3, 0], "colour": "white"},
+        {"op": "place", "part": "3009", "at": [15, 12, 0], "colour": "stripe"},
+        {"op": "place", "part": "3666", "at": [15, 15, 0], "colour": "loco"},
+        {"op": "place", "part": "3666", "at": [0, 0, 0], "colour": "dark bluish grey"},
+        {"op": "place", "part": "3666", "at": [6, 0, 0], "colour": "dark bluish grey"},
+        {"op": "place", "part": "3623", "at": [12, 0, 0], "colour": "dark bluish grey"}
+      ]},
+      {"op": "place", "part": "3010", "at": [15, 0, 1], "colour": "loco", "turn": 90},
+      {"op": "repeat", "count": 3, "step": [0, 3, 0], "ops": [
+        {"op": "place", "part": "3005", "at": [15, 3, 1], "colour": "loco"},
+        {"op": "place", "part": "3005", "at": [15, 3, 4], "colour": "loco"}
+      ]},
+      {"op": "place", "part": "4035c01", "at": [15, 3, 2], "colour": "white", "turn": 90},
+      {"op": "place", "part": "3010", "at": [15, 12, 1], "colour": "loco", "turn": 90},
+      {"op": "place", "part": "3710", "at": [15, 15, 1], "colour": "loco", "turn": 90},
+      {"op": "place", "part": "3036", "at": [15, 16, 0], "colour": "dark bluish grey"},
+      {"op": "place", "part": "87079", "at": [15, 17, 2], "colour": "dark bluish grey"},
+      {"op": "place", "part": "87079", "at": [19, 17, 2], "colour": "dark bluish grey"},
+      {"op": "box", "at": [1, 0, 1], "size": [14, 6, 4], "colour": "loco", "interior": "solid", "top": "tile"},
+      {"op": "place", "part": "3710", "at": [0, 0, 1], "colour": "dark bluish grey", "turn": 90},
+      {"op": "place", "part": "3070b", "at": [0, 1, 2], "colour": "trans red"},
+      {"op": "place", "part": "3070b", "at": [0, 1, 3], "colour": "trans red"}
+    ]},
+    "coach": {"title": "Passenger coach", "ops": [
+      {"op": "mirror", "axis": "z", "about": 3, "ops": [
+        {"op": "box", "at": [0, 0, 0], "size": [24, 3, 1], "colour": "coach", "interior": "solid"},
+        {"op": "box", "at": [0, 3, 0], "size": [4, 9, 1], "colour": "coach", "interior": "solid"},
+        {"op": "box", "at": [8, 3, 0], "size": [2, 9, 1], "colour": "coach", "interior": "solid"},
+        {"op": "box", "at": [14, 3, 0], "size": [2, 9, 1], "colour": "coach", "interior": "solid"},
+        {"op": "box", "at": [20, 3, 0], "size": [4, 9, 1], "colour": "coach", "interior": "solid"},
+        {"op": "place", "part": "4033c01", "at": [4, 3, 0], "colour": "white"},
+        {"op": "place", "part": "4033c01", "at": [10, 3, 0], "colour": "white"},
+        {"op": "place", "part": "4033c01", "at": [16, 3, 0], "colour": "white"},
+        {"op": "box", "at": [0, 12, 0], "size": [24, 3, 1], "colour": "stripe", "interior": "solid"}
+      ]},
+      {"op": "box", "at": [0, 0, 1], "size": [1, 15, 4], "colour": "coach", "interior": "solid"},
+      {"op": "box", "at": [23, 0, 1], "size": [1, 15, 4], "colour": "coach", "interior": "solid"},
+      {"op": "place", "part": "4035c01", "at": [0, 3, 2], "colour": "white", "turn": 90},
+      {"op": "place", "part": "4035c01", "at": [23, 3, 2], "colour": "white", "turn": 90},
+      {"op": "place", "part": "3010", "at": [5, 0, 1], "colour": "reddish brown", "turn": 90},
+      {"op": "place", "part": "3010", "at": [11, 0, 1], "colour": "reddish brown", "turn": 90},
+      {"op": "place", "part": "3010", "at": [17, 0, 1], "colour": "reddish brown", "turn": 90},
+      {"op": "floor", "at": [0, 15, 0], "size": [24, 6], "colour": "dark bluish grey"},
+      {"op": "floor", "at": [0, 16, 1], "size": [24, 4], "colour": "light bluish grey", "top": "tile"}
+    ]}
+  },
+  "sections": [
+    {"name": "Ground", "layer": "Town", "ops": [
+      {"op": "baseplate", "at": [-80, -48], "size": [160, 96], "colour": "grass"}
+    ]},
+    {"name": "Railway", "layer": "Railway", "ops": [
+      {"op": "track", "at": [-32, 0, -40], "dir": "+x", "pieces": "SSSS LLLLLLLL SSSS LLLLLLLL"},
+      {"op": "railcar", "at": [13, 0, -40], "dir": "+x", "component": "loco"},
+      {"op": "railcar", "at": [-13, 0, -40], "dir": "+x", "component": "coach"},
+      {"op": "box", "at": [-24, 0, -35], "size": [48, 2, 5], "colour": "pave", "interior": "solid"},
+      {"op": "floor", "at": [-24, 2, -35], "size": [48, 5], "colour": "pave", "top": "tile"},
+      {"op": "floor", "at": [-24, 2, -35], "size": [48, 1], "colour": "yellow", "top": "tile"},
+      {"op": "repeat", "count": 4, "step": [8, 0, 0], "ops": [
+        {"op": "column", "at": [-12, 3, -33], "height": 18, "colour": "dark green"}
+      ]},
+      {"op": "floor", "at": [-14, 21, -34], "size": [28, 3], "colour": "dark green"},
+      {"op": "roof", "style": "gable", "at": [-14, 22, -34], "size": [28, 2], "colour": "dark red", "overhang": 1, "ridge": "x"},
+      {"op": "instance", "component": "bench", "at": [-10, 3, -32]},
+      {"op": "instance", "component": "bench", "at": [6, 3, -32]},
+      {"op": "instance", "component": "lamp", "at": [-22, 3, -32]},
+      {"op": "instance", "component": "lamp", "at": [20, 3, -32]}
+    ]},
+    {"name": "Streets", "layer": "Streets", "ops": [
+      {"op": "floor", "at": [-48, 0, -30], "size": [96, 2], "colour": "pave", "top": "tile"},
+      {"op": "floor", "at": [-52, 0, -28], "size": [104, 8], "colour": "road", "top": "tile"},
+      {"op": "repeat", "count": 17, "step": [6, 0, 0], "ops": [
+        {"op": "floor", "at": [-51, 0, -25], "size": [3, 2], "colour": "line", "top": "tile"}
+      ]},
+      {"op": "floor", "at": [-56, 0, -20], "size": [112, 5], "colour": "pave", "top": "tile"},
+      {"op": "floor", "at": [-56, 0, -15], "size": [6, 34], "colour": "pave", "top": "tile"},
+      {"op": "floor", "at": [50, 0, -15], "size": [6, 34], "colour": "pave", "top": "tile"},
+      {"op": "floor", "at": [-56, 0, 19], "size": [112, 5], "colour": "pave", "top": "tile"},
+      {"op": "floor", "at": [-52, 0, 24], "size": [104, 8], "colour": "road", "top": "tile"},
+      {"op": "repeat", "count": 17, "step": [6, 0, 0], "ops": [
+        {"op": "floor", "at": [-51, 0, 27], "size": [3, 2], "colour": "line", "top": "tile"}
+      ]},
+      {"op": "instance", "component": "lamp", "at": [-46, 0, -19]},
+      {"op": "instance", "component": "lamp", "at": [-30, 0, -19]},
+      {"op": "instance", "component": "lamp", "at": [-14, 0, -19]},
+      {"op": "instance", "component": "lamp", "at": [12, 0, -19]},
+      {"op": "instance", "component": "lamp", "at": [28, 0, -19]},
+      {"op": "instance", "component": "lamp", "at": [44, 0, -19]},
+      {"op": "repeat", "count": 6, "step": [16, 0, 0], "ops": [
+        {"op": "instance", "component": "lamp", "at": [-46, 0, 21]}
+      ]},
+      {"op": "place", "part": "@tree", "at": [-39, 0, 20], "colour": "green"},
+      {"op": "place", "part": "@tree", "at": [-3, 0, 20], "colour": "green"},
+      {"op": "place", "part": "@tree", "at": [29, 0, 20], "colour": "green"},
+      {"op": "place", "part": "@tree", "at": [-56, 0, -20], "colour": "green"},
+      {"op": "place", "part": "@tree", "at": [52, 0, -20], "colour": "green"},
+      {"op": "place", "part": "@tree", "at": [-55, 0, -2], "colour": "green"},
+      {"op": "place", "part": "@tree", "at": [51, 0, -2], "colour": "green"},
+      {"op": "instance", "component": "bench", "at": [-38, 0, -18]},
+      {"op": "instance", "component": "bench", "at": [36, 0, -18]},
+      {"op": "instance", "component": "bench", "at": [-24, 0, 21]},
+      {"op": "instance", "component": "bench", "at": [8, 0, 21]},
+      {"op": "instance", "component": "car", "at": [-44, 1, -28], "turn": 90},
+      {"op": "instance", "component": "car", "at": [22, 1, -28], "turn": 90, "palette": {"body": "blue"}},
+      {"op": "instance", "component": "car", "at": [-10, 1, -24], "turn": 270, "palette": {"body": "yellow"}},
+      {"op": "instance", "component": "car", "at": [36, 1, -24], "turn": 270, "palette": {"body": "white"}},
+      {"op": "instance", "component": "car", "at": [-30, 1, 24], "turn": 90, "palette": {"body": "green"}},
+      {"op": "instance", "component": "car", "at": [10, 1, 28], "turn": 270, "palette": {"body": "black"}},
+      {"op": "instance", "component": "car", "at": [30, 1, 24], "turn": 90, "palette": {"body": "orange"}}
+    ]},
+    {"name": "High street houses", "layer": "Houses", "ops": [
+      {"op": "instance", "component": "corner", "at": [-48, 0, -15], "with": ["left"], "palette": {"wall": "bright light yellow", "trim": "white", "frame": "white", "door": "dark blue", "awnA": "red"}},
+      {"op": "instance", "component": "shop", "at": [-32, 0, -15]},
+      {"op": "instance", "component": "tall", "at": [16, 0, -15], "palette": {"wall": "sand blue", "trim": "white", "frame": "white", "door": "red", "roof": "dark red"}},
+      {"op": "instance", "component": "corner", "at": [32, 0, -15], "with": ["right"], "palette": {"wall": "dark orange", "trim": "tan", "frame": "white", "door": "dark green", "awnA": "yellow"}}
+    ]},
+    {"name": "Back street houses", "layer": "Houses", "ops": [
+      {"op": "instance", "component": "corner", "at": [-48, 0, 3], "turn": 180, "with": ["right"], "palette": {"wall": "medium azure", "trim": "white", "frame": "white", "door": "white", "awnA": "yellow"}},
+      {"op": "instance", "component": "tall", "at": [-32, 0, 3], "turn": 180, "palette": {"wall": "dark red", "trim": "tan", "frame": "white", "door": "tan"}},
+      {"op": "instance", "component": "hotel", "at": [-16, 0, 3], "turn": 180, "palette": {"wall": "tan", "trim": "white", "frame": "reddish brown", "door": "reddish brown", "roof": "dark bluish grey", "awnA": "dark red"}},
+      {"op": "instance", "component": "shop", "at": [0, 0, 3], "turn": 180, "palette": {"wall": "dark blue", "trim": "white", "frame": "white", "door": "white", "awnA": "yellow", "awnB": "white", "roof": "dark bluish grey"}},
+      {"op": "instance", "component": "hotel", "at": [16, 0, 3], "turn": 180, "palette": {"wall": "white", "trim": "light bluish grey", "frame": "white", "door": "dark blue", "roof": "dark red", "awnA": "dark blue"}},
+      {"op": "instance", "component": "corner", "at": [32, 0, 3], "turn": 180, "with": ["left"], "palette": {"wall": "reddish brown", "trim": "tan", "frame": "white", "door": "tan", "awnA": "dark green"}}
+    ]},
+    {"name": "Town hall", "layer": "Town hall", "ops": [
+      {"op": "room", "at": [-16, 0, -15], "size": [32, 24, 16], "colour": "hallwall", "floor": "light bluish grey", "openings": [{"side": "front", "at": 14, "width": 4, "height": 18, "fill": "door", "frame": "halltrim", "door": "reddish brown"}, {"side": "front", "at": 2, "width": 2, "y": 6, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 6, "width": 2, "y": 6, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 10, "width": 2, "y": 6, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 20, "width": 2, "y": 6, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 24, "width": 2, "y": 6, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 28, "width": 2, "y": 6, "height": 9, "frame": "halltrim"}]},
+      {"op": "box", "at": [-16, 0, -15], "size": [14, 3, 1], "colour": "hallbase", "interior": "solid"},
+      {"op": "box", "at": [2, 0, -15], "size": [14, 3, 1], "colour": "hallbase", "interior": "solid"},
+      {"op": "repeat", "count": 3, "step": [4, 0, 0], "ops": [
+        {"op": "place", "part": "6182", "at": [-15, 15, -15], "colour": "halltrim"},
+        {"op": "place", "part": "6182", "at": [3, 15, -15], "colour": "halltrim"}
+      ]},
+      {"op": "repeat", "count": 2, "step": [0, 0, 5], "ops": [
+        {"op": "instance", "component": "bench", "at": [-12, 1, -10]},
+        {"op": "instance", "component": "bench", "at": [8, 1, -10]}
+      ]},
+      {"op": "box", "at": [-4, 1, -4], "size": [8, 3, 2], "colour": "reddish brown", "interior": "solid", "top": "tile"},
+      {"op": "column", "at": [-7, 0, -18], "height": 21, "colour": "halltrim", "cap": "plate"},
+      {"op": "column", "at": [-4, 0, -18], "height": 21, "colour": "halltrim", "cap": "plate"},
+      {"op": "column", "at": [3, 0, -18], "height": 21, "colour": "halltrim", "cap": "plate"},
+      {"op": "column", "at": [6, 0, -18], "height": 21, "colour": "halltrim", "cap": "plate"},
+      {"op": "floor", "at": [-8, 22, -19], "size": [16, 4], "colour": "halltrim"},
+      {"op": "floor", "at": [-16, 24, -16], "size": [32, 17], "colour": "halltrim"},
+      {"op": "fence", "path": [[-8, -19], [7, -19]], "y": 23, "colour": "halltrim", "style": "spindle"},
+      {"op": "room", "at": [-16, 25, -15], "size": [32, 24, 16], "colour": "hallwall", "openings": [{"side": "front", "at": 2, "width": 2, "y": 3, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 6, "width": 2, "y": 3, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 10, "width": 2, "y": 3, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 20, "width": 2, "y": 3, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 24, "width": 2, "y": 3, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 28, "width": 2, "y": 3, "height": 9, "frame": "halltrim"}, {"side": "front", "at": 14, "width": 4, "y": 3, "height": 9, "frame": "halltrim"}]},
+      {"op": "repeat", "count": 3, "step": [4, 0, 0], "ops": [
+        {"op": "place", "part": "60592", "at": [-14, 37, -15], "colour": "halltrim"},
+        {"op": "place", "part": "60592", "at": [4, 37, -15], "colour": "halltrim"},
+        {"op": "place", "part": "6182", "at": [-15, 43, -15], "colour": "halltrim"},
+        {"op": "place", "part": "6182", "at": [3, 43, -15], "colour": "halltrim"}
+      ]},
+      {"op": "place", "part": "3307", "at": [-3, 37, -15], "colour": "halltrim"},
+      {"op": "floor", "at": [-16, 49, -16], "size": [32, 18], "colour": "halltrim"},
+      {"op": "roof", "style": "hip", "at": [-16, 50, -15], "size": [32, 16], "colour": "hallroof", "overhang": 1, "ends": 0, "holes": [{"at": [-4, -11], "size": [8, 8]}]},
+      {"op": "room", "at": [-4, 50, -11], "size": [8, 60, 8], "colour": "hallwall", "openings": [{"side": "front", "at": 3, "width": 2, "y": 40, "height": 6, "fill": "none"}, {"side": "back", "at": 3, "width": 2, "y": 40, "height": 6, "fill": "none"}, {"side": "left", "at": 3, "width": 2, "y": 40, "height": 6, "fill": "none"}, {"side": "right", "at": 3, "width": 2, "y": 40, "height": 6, "fill": "none"}]},
+      {"op": "floor", "at": [-5, 77, -12], "size": [10, 10], "colour": "halltrim", "holes": [{"at": [-3, -10], "size": [6, 6]}]},
+      {"op": "place", "part": "@clock", "at": [-1, 81, -11], "colour": "tan"},
+      {"op": "place", "part": "@clock", "at": [-1, 81, -5], "colour": "tan", "turn": 180},
+      {"op": "place", "part": "@clock", "at": [-4, 81, -8], "colour": "tan", "turn": 90},
+      {"op": "place", "part": "@clock", "at": [2, 81, -8], "colour": "tan", "turn": 270},
+      {"op": "floor", "at": [-5, 87, -12], "size": [10, 10], "colour": "halltrim", "holes": [{"at": [-3, -10], "size": [6, 6]}]},
+      {"op": "place", "part": "6182", "at": [-2, 96, -11], "colour": "halltrim"},
+      {"op": "place", "part": "6182", "at": [-2, 96, -4], "colour": "halltrim"},
+      {"op": "place", "part": "6182", "at": [-4, 96, -9], "colour": "halltrim", "turn": 90},
+      {"op": "place", "part": "6182", "at": [3, 96, -9], "colour": "halltrim", "turn": 90},
+      {"op": "floor", "at": [-5, 110, -12], "size": [10, 10], "colour": "halltrim"},
+      {"op": "roof", "style": "hip", "at": [-4, 111, -11], "size": [8, 8], "colour": "hallroof", "overhang": 1}
+    ]},
+    {"name": "Park and square", "layer": "Park", "ops": [
+      {"op": "floor", "at": [-62, 0, -14], "size": [8, 16], "colour": "water", "top": "tile"},
+      {"op": "floor", "at": [-63, 0, -15], "size": [10, 1], "colour": "path", "top": "tile"},
+      {"op": "floor", "at": [-63, 0, 2], "size": [10, 1], "colour": "path", "top": "tile"},
+      {"op": "floor", "at": [-63, 0, -14], "size": [1, 16], "colour": "path", "top": "tile"},
+      {"op": "floor", "at": [-54, 0, -14], "size": [1, 16], "colour": "path", "top": "tile"},
+      {"op": "floor", "at": [-53, 0, -8], "size": [3, 4], "colour": "path", "top": "tile"},
+      {"op": "place", "part": "2423", "at": [-61, 1, -12], "colour": "green"},
+      {"op": "place", "part": "2423", "at": [-58, 1, -4], "colour": "green"},
+      {"op": "cylinder", "at": [-62, 0, 5], "diameter": 8, "height": 2, "colour": "light bluish grey", "interior": "solid", "top": "tile"},
+      {"op": "column", "at": [-61, 2, 8], "height": 15, "colour": "white"},
+      {"op": "column", "at": [-56, 2, 8], "height": 15, "colour": "white"},
+      {"op": "column", "at": [-59, 2, 6], "height": 15, "colour": "white"},
+      {"op": "column", "at": [-59, 2, 10], "height": 15, "colour": "white"},
+      {"op": "floor", "at": [-62, 17, 5], "size": [8, 8], "colour": "white"},
+      {"op": "roof", "style": "hip", "at": [-62, 18, 5], "size": [8, 8], "colour": "dark red", "overhang": 0},
+      {"op": "place", "part": "@pine", "at": [-60, 0, 15], "colour": "green"},
+      {"op": "place", "part": "@smallpine", "at": [-66, 0, -4], "colour": "green"},
+      {"op": "scatter", "region": {"at": [-66, -24], "size": [16, 48]}, "parts": ["24866", "33291", "32607"], "colours": ["yellow", "red", "white", "green"], "density": 0.08, "spacing": 2},
+      {"op": "floor", "at": [53, 0, -12], "size": [11, 24], "colour": "path", "top": "tile"},
+      {"op": "cylinder", "at": [55, 1, -4], "diameter": 8, "height": 3, "colour": "light bluish grey", "interior": "solid"},
+      {"op": "floor", "at": [56, 3, -3], "size": [6, 6], "colour": "water", "top": "tile"},
+      {"op": "column", "at": [58, 3, -1], "height": 9, "diameter": 2, "colour": "light bluish grey", "cap": "cone"},
+      {"op": "instance", "component": "bench", "at": [57, 1, -10]},
+      {"op": "instance", "component": "bench", "at": [57, 1, 9]},
+      {"op": "place", "part": "@pine", "at": [56, 0, -20], "colour": "green"},
+      {"op": "place", "part": "@pine", "at": [56, 0, 16], "colour": "green"},
+      {"op": "place", "part": "@smallpine", "at": [60, 0, -15], "colour": "green"},
+      {"op": "box", "at": [-44, 0, 32], "size": [88, 3, 2], "colour": "hedge", "interior": "solid"},
+      {"op": "box", "at": [-40, 0, -33], "size": [14, 3, 2], "colour": "hedge", "interior": "solid"},
+      {"op": "box", "at": [26, 0, -33], "size": [14, 3, 2], "colour": "hedge", "interior": "solid"},
+      {"op": "scatter", "region": {"at": [-44, 32], "size": [88, 2]}, "parts": ["24866"], "colours": ["red", "yellow", "white"], "density": 0.15}
+    ]}
+  ]
+}
