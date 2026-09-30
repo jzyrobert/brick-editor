@@ -23,7 +23,7 @@ npm run library:validate
 npm audit
 ```
 
-The browser suite uses pinned Playwright Chromium with **SwiftShader software WebGL2**. It covers 1440×1000 desktop, the requested **1080×1800 touch viewport**, and 360×800. These are browser layout tests, not measurements from physical phones. `npm run test:performance` measures the running local app at port 4173; see [docs/reports](docs/reports) for environment-qualified results.
+The browser suite uses pinned Playwright Chromium with **SwiftShader software WebGL2**. It covers 1440×1000 desktop, the requested **1080×1800 touch viewport**, and 360×800. These are browser layout tests, not measurements from physical phones. Tests run in parallel; `npm run test:browser:quick` skips the slow path-traced and timing-budget tests for iteration (see [running the browser suite](docs/VERIFICATION.md#running-the-browser-suite)). `npm run test:performance` measures the running local app at port 4173; see [docs/reports](docs/reports) for environment-qualified results.
 
 ## Build and export
 

@@ -21,6 +21,28 @@ Browser tests exercise a 200-part UI fill, command recolour/undo, native round t
 
 The first conformance run exposed a real loader integration failure: `s/` subparts were being rewritten to unresolved paths, and the loader returned empty groups after swallowing errors. The final adapter supplies an explicit embedded file map, checks for failed dependency attempts and rejects empty official prototypes. A separate material-cache issue was fixed by compiling colour directives in the same loader instance as the geometry. No placeholder cuboids stand in for the audited starter parts.
 
+## Running the browser suite
+
+The browser tests are independent (each gets a fresh browser context) and run in parallel. `playwright.config.ts` splits them into three projects:
+
+| Project | Selects                | What it holds                                                                                                            |
+| ------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `main`  | everything not tagged  | the bulk of the suite, fully parallel                                                                                    |
+| `heavy` | titles ending `@heavy` | path-traced Photo tests; each compiles the path-tracing shader (about a minute on SwiftShader)                           |
+| `perf`  | titles ending `@perf`  | tests asserting wall-clock budgets (longest main-thread task, physics tick, selection latency); one worker, never shared |
+
+| Command                                           | What it does                                                                                                                |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `npm run test:browser`                            | builds, runs `main` + `heavy` in parallel, then `perf` alone (so budgets are never timed under load); fails if either fails |
+| `npm run test:browser:quick`                      | builds, runs only `main` — for iteration                                                                                    |
+| `npm run test:browser -- tests/browser/x.spec.ts` | extra arguments (spec paths, `--grep`) go to both phases                                                                    |
+| `npx playwright test --project=main <spec>`       | against the existing `dist/`, no rebuild                                                                                    |
+| `BROWSER_WORKERS=1 npm run test:browser`          | override the worker count (default: half the cores locally, 2 on CI)                                                        |
+
+Tag a new test by ending its title with ` @perf` if it asserts elapsed time, or ` @heavy` if it path-traces. Local results go to `test-results/browser-results.json` (and `browser-results-perf.json`); perf traces to `test-results/perf/`.
+
+On CI (`.github/workflows/cloudflare.yml`) the bundle is built once and shared as an artifact; the browser tests run as eleven parallel jobs — `main` in eight shards, `heavy` in two, `perf` in one — with a merged HTML/JSON report uploaded as `playwright-report`. SwiftShader is CPU-bound, so a second worker on a 4-vCPU runner roughly doubles each test's duration; the speed-up comes from more jobs, not more workers per job. Shards are contiguous by test count, not balanced by duration, so the slowest shard sets the pace.
+
 ## Expanded feature verification
 
 Production-browser coverage now includes fixed-tick Play and simultaneous touch movement/look, real doorway/stair collision, safe teleport and low-ceiling refusal, kinematic hinge/vehicle previews and undoable pose application, clipboard/arrays, layer disposition, PDF/PNG/HTML instruction publishing, native asset bundles, checksum-checked sharing, offline reload with lazy Play/PDF loading, multi-tab conflict forks and delayed startup recovery. The CLI suite also exports real Play PNGs and instruction PDFs. Recovery guards preserve edits made during delayed startup without re-saving an unchanged recovered project; the two-tab and controlled-delay regressions both pass.
