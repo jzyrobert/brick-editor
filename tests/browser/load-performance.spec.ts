@@ -30,7 +30,11 @@ async function openHouse(page: Page) {
     });
     observer.observe({ type: "longtask" });
     const progress = new MutationObserver(() => {
-      if (document.querySelector(".load-progress:not([hidden])"))
+      if (
+        document.querySelector(
+          ".load-progress:not(.photo-progress):not([hidden])",
+        )
+      )
         w.__progressSeen = true;
     });
     progress.observe(document.body, {
@@ -117,7 +121,9 @@ test("the house template loads in short tasks, progressively, and reopens from t
   expect(cold.stats.lastLoad?.tasks).toBeGreaterThan(10);
   expect(cold.drawnBeforeReady).toBe(true);
   expect(cold.progressSeen).toBe(true);
-  await expect(page.locator(".load-progress")).toBeHidden();
+  await expect(
+    page.locator(".load-progress:not(.photo-progress)"),
+  ).toBeHidden();
 
   // A reload keeps the persistent cache: no part compiles again.
   await reloadBlank(page);
