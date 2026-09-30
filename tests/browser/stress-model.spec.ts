@@ -5,8 +5,8 @@ import { architecturalStressModel } from "../helpers/architectural-stress";
 // (5,000 part occurrences, 128 part/colour variants): every part must be drawn.
 const model = architecturalStressModel({ parts: 6000, variants: 200 });
 
-async function load(page: Page) {
-  await page.goto("/?automation=1");
+async function load(page: Page, query = "") {
+  await page.goto("/?automation=1" + query);
   await page.waitForFunction(() => !!window.brickEditor);
   return page.evaluate(async (text) => {
     const a = window.brickEditor!;
@@ -60,7 +60,11 @@ test("a 6,000-part, 200-variant official-parts model renders completely and is w
   page,
 }) => {
   test.setTimeout(240000);
-  const result = await load(page);
+  // Without hidden-geometry culling: the adaptive-cell checks below compare
+  // a whole-model view (from above, where culling also leaves out every
+  // underside) with an eye-level view (which sees undersides); culling has
+  // its own spec (hidden-geometry.spec.ts).
+  const result = await load(page, "&hiddenCull=0");
   expect(result.profile).toBe("desktop");
   expectComplete(result);
   expect(result.budget.usage!.variants).toBeGreaterThan(128);

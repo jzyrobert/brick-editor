@@ -16,6 +16,7 @@ import { chromium, type BrowserContext } from "@playwright/test";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import { architecturalStressModel } from "../tests/helpers/architectural-stress";
+import { brickCityModel } from "../tests/helpers/brick-city";
 
 const arg = (name: string, fallback: string) => {
   const i = process.argv.indexOf("--" + name);
@@ -30,7 +31,33 @@ const playFrames = Number(arg("play-frames", "10"));
 /** Extra page query, e.g. `batchCells=640`. */
 const query = arg("query", "");
 const url = process.env.BRICK_BENCH_URL || "http://127.0.0.1:4173/";
-const model = architecturalStressModel({ parts, variants });
+/** `--model city`: the plain-brick city (tests/helpers/brick-city.ts), a
+ * Minebench-like build of bricks, plates and tiles. */
+const kind = arg("model", "village");
+const city = kind === "city" ? brickCityModel({ parts }) : undefined;
+const model = city
+  ? {
+      text: city.text,
+      parts: city.parts,
+      variants: 0,
+      floors: 0,
+      name: "brick-city.mpd",
+    }
+  : {
+      ...architecturalStressModel({ parts, variants }),
+      name: "stress-village.mpd",
+    };
+const interact = !city && !process.argv.includes("--no-interaction");
+/** Orbit centre, radius and height (LDraw, −Y up). */
+const orbitView = city
+  ? (() => {
+      const { min, max } = city.bounds;
+      const cx = (min[0] + max[0]) / 2,
+        cz = (min[2] + max[2]) / 2;
+      const r = Math.hypot(max[0] - min[0], max[2] - min[2]) / 2;
+      return { cx, cz, ty: min[1] / 2, radius: r * 1.1, height: -r * 0.8 };
+    })()
+  : { cx: 1000, cz: 1000, ty: -300, radius: 3200, height: -2200 };
 
 const browser = await chromium.launch({
   headless: true,
@@ -108,42 +135,45 @@ async function measure(context: BrowserContext, profile: string) {
   if (active !== profile)
     throw new Error(`Expected the ${profile} profile, got ${active}`);
   const heapBefore = await heapMb();
-  const load = await page.evaluate(async (text) => {
-    const a = window.brickEditor!;
-    const t0 = performance.now();
-    const imported = await a.project.import({
-      format: "ldraw",
-      text,
-      name: "stress-village.mpd",
-    });
-    const importMs = performance.now() - t0;
-    let failure = "";
-    try {
-      await a.ready({ minRevision: imported.revision, strict: true });
-    } catch (e) {
-      failure = (e as Error).message;
-    }
-    const readyMs = performance.now() - t0 - importMs;
-    // First drawn frame after the scene is ready.
-    const before = (await a.render.budget()).lastFrame.frames;
-    const frame = () => new Promise((r) => requestAnimationFrame(r));
-    for (let i = 0; i < 600; i++) {
-      await frame();
-      if ((await a.render.budget()).lastFrame.frames > before) break;
-    }
-    const firstFrameMs = performance.now() - t0;
-    const q = await a.query();
-    return {
-      t0,
-      firstFrameAt: t0 + firstFrameMs,
-      importMs: Math.round(importMs),
-      readyMs: Math.round(readyMs),
-      timeToFirstRenderMs: Math.round(firstFrameMs),
-      occurrences: q.occurrences.length,
-      failure,
-      budget: await a.render.budget(),
-    };
-  }, model.text);
+  const load = await page.evaluate(
+    async ({ text, name }) => {
+      const a = window.brickEditor!;
+      const t0 = performance.now();
+      const imported = await a.project.import({
+        format: "ldraw",
+        text,
+        name,
+      });
+      const importMs = performance.now() - t0;
+      let failure = "";
+      try {
+        await a.ready({ minRevision: imported.revision, strict: true });
+      } catch (e) {
+        failure = (e as Error).message;
+      }
+      const readyMs = performance.now() - t0 - importMs;
+      // First drawn frame after the scene is ready.
+      const before = (await a.render.budget()).lastFrame.frames;
+      const frame = () => new Promise((r) => requestAnimationFrame(r));
+      for (let i = 0; i < 600; i++) {
+        await frame();
+        if ((await a.render.budget()).lastFrame.frames > before) break;
+      }
+      const firstFrameMs = performance.now() - t0;
+      const q = await a.query();
+      return {
+        t0,
+        firstFrameAt: t0 + firstFrameMs,
+        importMs: Math.round(importMs),
+        readyMs: Math.round(readyMs),
+        timeToFirstRenderMs: Math.round(firstFrameMs),
+        occurrences: q.occurrences.length,
+        failure,
+        budget: await a.render.budget(),
+      };
+    },
+    { text: model.text, name: model.name },
+  );
   // Long tasks from the import to the first frame, and until the autosave of
   // the imported project completed.
   const loadLongTasks = await longTasks(load.t0, load.firstFrameAt);
@@ -168,7 +198,7 @@ async function measure(context: BrowserContext, profile: string) {
   const rssAfterLoad = await rssMb();
   const orbit = load.failure
     ? undefined
-    : await page.evaluate(async () => {
+    : await page.evaluate(async (view) => {
         const a = window.brickEditor!;
         const frame = () => new Promise((r) => requestAnimationFrame(r));
         const cpu: number[] = [],
@@ -182,15 +212,15 @@ async function measure(context: BrowserContext, profile: string) {
             space: "ldraw",
             projection: "perspective",
             position: [
-              1000 + Math.cos(angle) * 3200,
-              -2200,
-              1000 + Math.sin(angle) * 3200,
+              view.cx + Math.cos(angle) * view.radius,
+              view.height,
+              view.cz + Math.sin(angle) * view.radius,
             ],
-            target: [1000, -300, 1000],
+            target: [view.cx, view.ty, view.cz],
             up: [0, -1, 0],
             fovDeg: 45,
             near: 1,
-            far: 20000,
+            far: Math.max(20000, view.radius * 4),
           });
           let stats = (await a.render.budget()).lastFrame;
           for (let f = 0; f < 600 && stats.frames <= before; f++) {
@@ -211,8 +241,9 @@ async function measure(context: BrowserContext, profile: string) {
           triangles: last.triangles,
           lines: last.lines,
         };
-      });
-  const interaction = load.failure ? undefined : await measureInteraction();
+      }, orbitView);
+  const interaction =
+    load.failure || !interact ? undefined : await measureInteraction();
   async function measureInteraction() {
     // Scene-adapter operations the editor UI drives directly (instruction steps,
     // floor focus, picking), timed as the call plus its next drawn frame.

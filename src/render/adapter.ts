@@ -48,6 +48,12 @@ import {
 } from "./quality";
 import { isTreated, RenderBatches, type BatchOptions } from "./batching";
 import {
+  HiddenGeometryView,
+  occlusionItem,
+  occlusionOf,
+  registerPartPrototype,
+} from "./hidden-view";
+import {
   cloneTree,
   writeBoxHelper,
   OccurrenceHandles,
@@ -433,6 +439,9 @@ export class SceneAdapter {
     variants: number;
     prototypeTriangles: number;
     sceneTriangles: number;
+    /** Scene triangles before hidden-geometry culling (sceneTriangles is
+     * what the plain view draws). */
+    sceneTrianglesFull?: number;
   };
   private load: Promise<void>;
   private raf = 0;
@@ -452,6 +461,10 @@ export class SceneAdapter {
   /** `?batchCells=<LDU>` splits large buckets into spatial cells (a
    * diagnostic for measuring culling granularity; off by default). */
   private batches = new RenderBatches(batchCellOptions());
+  /** Hidden stud/cavity culling in the plain view (hidden-view.ts);
+   * `?hiddenCull=0` turns it off. */
+  private hiddenView = new HiddenGeometryView();
+  private hiddenCull = loadOption("hiddenCull") !== "0";
   private layerGhost = new LayerGhost();
   private instructionDimming = new LayerGhost(0.3);
   private instructionNewIds: Set<string> | null = null;
@@ -540,6 +553,7 @@ export class SceneAdapter {
     this.root.rotation.x = Math.PI;
     this.scene.add(this.root, this.selection);
     this.root.add(this.batches.root);
+    if (this.hiddenCull) this.batches.setVariantProvider(this.hiddenView);
     this.ghost.rotation.x = Math.PI;
     this.scene.add(this.ghost);
     this.hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xa4adb2, 3);
@@ -978,6 +992,7 @@ export class SceneAdapter {
       // Textured parts: textured form, or fallback geometry when a texture
       // is unavailable (reported by ready()).
       await this.texmaps.resolve(group, o.node.ref);
+      if (o.namespace === "official") registerPartPrototype(group, o.node.ref);
       this.allPrototypes.add(group);
       this.resolvedCache.set(key, group);
       return group;
@@ -1385,6 +1400,39 @@ export class SceneAdapter {
       ? this.texmaps.diagnostics(occurrences(this.project))
       : [];
   }
+  /** Hidden studs and cavities of the placed occurrences (no explode). */
+  private plainViewOcclusion(
+    loaded: ReadonlyArray<{ o: Occurrence; prototype: THREE.Group }>,
+  ) {
+    const items = [];
+    const matrix = new THREE.Matrix4();
+    for (const { o, prototype } of loaded) {
+      if (!o.visible) continue;
+      const b = o.transform.basis,
+        v = o.transform.position;
+      matrix.set(
+        b[0],
+        b[1],
+        b[2],
+        v[0],
+        b[3],
+        b[4],
+        b[5],
+        v[1],
+        b[6],
+        b[7],
+        b[8],
+        v[2],
+        0,
+        0,
+        0,
+        1,
+      );
+      const item = occlusionItem(o.id, matrix, prototype);
+      if (item) items.push(item);
+    }
+    return occlusionOf(items).hidden;
+  }
   /** Measured size of the last rendered model against its profile budget. */
   renderBudgetStatus() {
     return {
@@ -1400,6 +1448,10 @@ export class SceneAdapter {
       lastFrame: this.lastFrameStats,
       geometryIndex: { ...this.geometryIndexStats },
       batches: this.batches.stats(),
+      hiddenGeometry: {
+        enabled: this.hiddenCull,
+        ...this.hiddenView.lastStats,
+      },
       textures: this.texmaps.stats(),
     };
   }
@@ -1730,9 +1782,23 @@ export class SceneAdapter {
       prototypeTriangles = 0;
     const counted = new Set<THREE.Group>();
     const geometries = new Set<THREE.BufferGeometry>();
+    // Plain-view triangles: studs and cavities hidden inside neighbours are
+    // not drawn (hidden-view.ts), so budgets count what is drawn.
+    const hiddenParts = this.hiddenCull
+      ? this.plainViewOcclusion(
+          loaded as Array<{ o: Occurrence; prototype: THREE.Group }>,
+        )
+      : undefined;
+    let sceneTrianglesFull = 0;
     for (let i = 0; i < loaded.length; i++) {
-      const { prototype } = loaded[i]!;
-      sceneTriangles += prototypeTriangleCount(prototype);
+      const { o, prototype } = loaded[i]!;
+      const full = prototypeTriangleCount(prototype);
+      sceneTrianglesFull += full;
+      const hidden = hiddenParts?.get(o.id);
+      sceneTriangles += hidden
+        ? HiddenGeometryView.keptTriangles(prototype, hidden)
+        : full;
+      if ((i & 1023) === 1023 && !(await pace())) return;
       if (counted.has(prototype)) continue;
       counted.add(prototype);
       // Colour variants share geometry: count each geometry once.
@@ -1765,7 +1831,7 @@ export class SceneAdapter {
     // Render-side post-process (frame cost, not compilation): index each
     // new prototype's triangles once, before any handle draws it.
     this.indexPrototypes(loaded.map((entry) => entry!.prototype));
-    this.renderUsage = { profile, ...usage };
+    this.renderUsage = { profile, ...usage, sceneTrianglesFull };
     if (this.reducedQuality && !this.reducedNotice)
       this.report(
         "Large model on a phone: conditional edge lines are hidden and pixel density is reduced while viewing. Every part is drawn; captures keep full quality.",

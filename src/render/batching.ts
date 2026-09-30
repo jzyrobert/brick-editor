@@ -268,7 +268,94 @@ type Slot = {
   occurrenceId: string;
   /** Baked only as a draw-call optimization; may still render unmerged. */
   optional?: boolean;
+  /** Index of the slot's handle in `batched`. */
+  index: number;
+  /** Hidden-geometry substitutes (see DrawVariant). */
+  plain?: THREE.BufferGeometry | null;
+  plainClosed?: THREE.BufferGeometry | null;
+  closed?: THREE.BufferGeometry;
+  /** The part's downward opening as a plane in the batches' space; the eye
+   * sees into it only on the positive side. */
+  opening?: THREE.Plane;
 };
+
+/**
+ * Geometry an occurrence drawable may draw instead of its own
+ * (src/render/hidden-view.ts, docs/PERFORMANCE-MINEBENCH.md). `plain` and
+ * `plainClosed` depend on neighbours, so they apply only in the plain view:
+ * every batched handle shown, untreated and where it was classified, and no
+ * section plane. `closed` depends only on the part itself and applies to any
+ * untreated drawable in place when there is no section plane. `plainClosed`
+ * and `closed` apply while the eye is on the closed side of `opening`.
+ * undefined keeps the drawable's own geometry; null draws nothing.
+ */
+export type DrawVariant = {
+  plain?: THREE.BufferGeometry | null;
+  plainClosed?: THREE.BufferGeometry | null;
+  closed?: THREE.BufferGeometry;
+  /** The part's downward opening, in the drawable's own space. */
+  opening?: { normal: THREE.Vector3; point: THREE.Vector3 };
+};
+export interface VariantProvider {
+  /** Called once per structure build with the handles it classifies (drawn
+   * live dynamic handles are left out and must not hide anything). */
+  begin(batched: ReadonlyArray<readonly [string, OccurrenceHandle]>): void;
+  variant(
+    handle: OccurrenceHandle,
+    template: DrawableTemplate,
+  ): DrawVariant | undefined;
+}
+
+/**
+ * Distinct part-opening planes (hidden-geometry culling). Parts on one course
+ * share a plane, so a model has few; the eye's side of each is tracked and a
+ * change of side refills the instances.
+ */
+class OpeningSides {
+  private planes = new Map<string, { plane: THREE.Plane; sees: boolean }>();
+  private byPlane = new WeakMap<
+    THREE.Plane,
+    { plane: THREE.Plane; sees: boolean }
+  >();
+  clear() {
+    this.planes.clear();
+    this.byPlane = new WeakMap();
+  }
+  add(plane: THREE.Plane) {
+    const n = plane.normal;
+    const key = [n.x, n.y, n.z, plane.constant]
+      .map((v) => Math.round(v * 1e4))
+      .join(",");
+    let entry = this.planes.get(key);
+    if (!entry) this.planes.set(key, (entry = { plane, sees: true }));
+    this.byPlane.set(plane, entry);
+  }
+  private static side(plane: THREE.Plane, eye: THREE.Vector4) {
+    const n = plane.normal;
+    return (
+      n.x * eye.x + n.y * eye.y + n.z * eye.z + plane.constant * eye.w > 1e-6
+    );
+  }
+  /** Re-evaluate every plane; true when any side changed. */
+  update(eye: THREE.Vector4) {
+    let changed = false;
+    for (const entry of this.planes.values()) {
+      const sees = OpeningSides.side(entry.plane, eye);
+      if (sees !== entry.sees) {
+        entry.sees = sees;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+  sees(plane: THREE.Plane, eye: THREE.Vector4) {
+    const entry = this.byPlane.get(plane);
+    return entry ? entry.sees : OpeningSides.side(plane, eye);
+  }
+  get size() {
+    return this.planes.size;
+  }
+}
 /** Same materials (treatments return a fresh array for multi-material drawables). */
 function sameMaterials(a: Materials | undefined, b: Materials) {
   if (a === b) return true;
@@ -294,9 +381,82 @@ type InstancedDraw = (THREE.InstancedMesh | InstancedLineSegments) & {
 type SlotGroup = {
   lines: boolean;
   slots: Slot[];
-  /** One draw per treatment in use (untreated, ghosted, dimmed …). */
+  /** One draw per treatment in use (untreated, ghosted, dimmed …), and per
+   * substitute geometry. */
   draws: InstancedDraw[];
+  /** Slots that may draw each substitute geometry (its draw capacity). */
+  variants?: Map<THREE.BufferGeometry, number>;
+  /** Substitutes this group may draw (all when absent). */
+  allowed?: Set<THREE.BufferGeometry>;
 };
+/** A substitute geometry must leave out at least this many primitives across
+ * its bucket to earn its extra draw (else its slots draw the next option). */
+export const VARIANT_MIN_SAVING = 16384;
+const primitives = (geometry: THREE.BufferGeometry, lines: boolean) =>
+  (geometry.index?.count ?? geometry.getAttribute("position")?.count ?? 0) /
+  (lines ? 2 : 3);
+/**
+ * Drop substitutes that would cost more in draws than they save: a model
+ * with many part types and partly covered parts would otherwise multiply
+ * its draws (each distinct stud mask is a geometry of its own).
+ */
+function pruneVariants(slots: Slot[], lines: boolean, minSaving: number) {
+  if (!slots.some((s) => s.plain || s.plainClosed || s.closed)) return;
+  const own = primitives(slots[0].object.geometry, lines);
+  const profitable = (option: THREE.BufferGeometry, count: number) =>
+    count * (own - primitives(option, lines)) >= minSaving;
+  const tally = (
+    pick: (s: Slot) => THREE.BufferGeometry | null | undefined,
+  ) => {
+    const counts = new Map<THREE.BufferGeometry, number>();
+    for (const s of slots) {
+      const g = pick(s);
+      if (g) counts.set(g, (counts.get(g) ?? 0) + 1);
+    }
+    return counts;
+  };
+  // Neighbour-independent first: plainClosed falls back to it.
+  const closed = tally((s) => s.closed);
+  for (const s of slots)
+    if (s.closed && !profitable(s.closed, closed.get(s.closed)!))
+      s.closed = undefined;
+  const plain = tally((s) => s.plain);
+  for (const s of slots)
+    if (s.plain && !profitable(s.plain, plain.get(s.plain)!))
+      s.plain = undefined;
+  const plainClosed = tally((s) => s.plainClosed);
+  for (const s of slots)
+    if (
+      s.plainClosed &&
+      !profitable(s.plainClosed, plainClosed.get(s.plainClosed)!)
+    )
+      s.plainClosed = s.closed ?? s.plain ?? undefined;
+}
+function countVariants(group: SlotGroup, minSaving = 0) {
+  for (const slot of group.slots) {
+    if (!slot.plain && !slot.plainClosed && !slot.closed) continue;
+    for (const option of new Set([slot.plain, slot.plainClosed, slot.closed]))
+      if (option) {
+        group.variants ??= new Map();
+        group.variants.set(option, (group.variants.get(option) ?? 0) + 1);
+      }
+  }
+  // A spatial cell holds a share of its bucket: substitutes must pay for
+  // their draw in each cell too (a quarter of the bucket threshold: cells are
+  // in use only when much of the model is outside the view), else its slots
+  // draw the next option there.
+  if (minSaving > 0 && group.variants) {
+    const own = primitives(group.slots[0].object.geometry, group.lines);
+    group.allowed = new Set(
+      [...group.variants]
+        .filter(
+          ([g, count]) =>
+            count * (own - primitives(g, group.lines)) >= minSaving,
+        )
+        .map(([g]) => g),
+    );
+  }
+}
 
 /**
  * Repeated geometry + base material(s) + render order. Visibility, treatment,
@@ -324,12 +484,16 @@ export type BatchOptions = {
    * view (Play, a camera inside the model).
    */
   adaptiveCells: boolean;
+  /** Hidden-geometry substitutes must save this many primitives per bucket
+   * (VARIANT_MIN_SAVING). */
+  variantMinSaving: number;
 };
 
 export const DEFAULT_BATCH_OPTIONS: Readonly<BatchOptions> = Object.freeze({
   cellSize: 0,
   cellMinSlots: 64,
   adaptiveCells: false,
+  variantMinSaving: VARIANT_MIN_SAVING,
 });
 
 /** Adaptive cells: the model's largest extent spans about this many cells,
@@ -394,7 +558,24 @@ export class RenderBatches {
   private cellsActive = false;
   /** Cell size of the current structure (0: no cells). */
   private builtCellSize = 0;
-  private counters = { structures: 0, fills: 0, rawMerges: 0, drawables: 0 };
+  private counters = {
+    structures: 0,
+    fills: 0,
+    rawMerges: 0,
+    drawables: 0,
+    /** Drawables drawn with hidden-geometry substitutes in the last fill. */
+    culled: 0,
+    /** Drawables left out entirely (enclosed parts) in the last fill. */
+    omitted: 0,
+  };
+  private variantProvider: VariantProvider | null = null;
+  /** Handle translations when classified: substitutes apply only in place. */
+  private builtPlaces = new Float64Array(0);
+  private openings = new OpeningSides();
+  /** The eye in the batches' space (w = 0: reversed orthographic direction). */
+  private eye = new THREE.Vector4(0, 0, 0, 0);
+  /** Whether the last fill was the plain view. */
+  private plainView = false;
   constructor(options: Partial<BatchOptions> = {}) {
     this.root.name = "render-only occurrence batches";
     this.options = { ...DEFAULT_BATCH_OPTIONS, ...options };
@@ -476,6 +657,12 @@ export class RenderBatches {
   get dynamicIds(): ReadonlySet<string> {
     return this.dynamic;
   }
+  /** Install (or remove) hidden-geometry substitutes; reclassifies once. */
+  setVariantProvider(provider: VariantProvider | null) {
+    if (provider === this.variantProvider) return;
+    this.variantProvider = provider;
+    this.structureStale = true;
+  }
   /** Hide (or restore) instanced lines without refilling anything: the
    * interactive view drops edges while it moves. Captures never set this. */
   setLinesSuppressed(suppressed: boolean) {
@@ -551,8 +738,18 @@ export class RenderBatches {
     /** Parent-space position of each instanceable slot, for cells. */
     const positions = new Map<Slot, [number, number, number]>();
     const extent = new THREE.Box3();
+    const provider = this.variantProvider;
+    provider?.begin(this.batched);
+    this.openings.clear();
+    this.builtPlaces = new Float64Array(this.batched.length * 3);
+    let index = -1;
     for (const [occurrenceId, handle] of this.batched) {
+      index++;
       const raw = handle.rawPrimitive;
+      const e = handle.matrix.elements;
+      this.builtPlaces[index * 3] = e[12];
+      this.builtPlaces[index * 3 + 1] = e[13];
+      this.builtPlaces[index * 3 + 2] = e[14];
       for (const template of handle.drawables) {
         const drawable = template.object;
         const slot: Slot = {
@@ -560,8 +757,24 @@ export class RenderBatches {
           template,
           handle,
           occurrenceId,
+          index,
         };
         const matrix = handle.drawableMatrix(template, null, scratchMatrix);
+        const variant = raw ? undefined : provider?.variant(handle, template);
+        if (variant) {
+          if (variant.plain !== undefined) slot.plain = variant.plain;
+          if (variant.opening && variant.plainClosed !== undefined) {
+            slot.plainClosed = variant.plainClosed;
+            slot.closed = variant.closed;
+            slot.opening = new THREE.Plane()
+              .setFromNormalAndCoplanarPoint(
+                variant.opening.normal,
+                variant.opening.point,
+              )
+              .applyMatrix4(matrix);
+            this.openings.add(slot.opening);
+          }
+        }
         const info = templateInfo(template);
         const mesh = template.mesh;
         const bakeable =
@@ -609,6 +822,8 @@ export class RenderBatches {
     for (const slots of keyed.values()) {
       const lines = !(slots[0].object as THREE.Mesh).isMesh;
       const bucket: Bucket = { lines, slots, draws: [] };
+      pruneVariants(slots, lines, this.options.variantMinSaving);
+      countVariants(bucket);
       // Cells only for large buckets: small ones stay one draw however
       // spread, and adaptive cells only split buckets with enough primitives
       // for culling to outweigh the extra draws.
@@ -675,7 +890,9 @@ export class RenderBatches {
       const radius = geometry.boundingSphere!.radius;
       bucket.cells = [];
       for (const [key, slots] of cells) {
-        bucket.cells.push({ lines: bucket.lines, slots, draws: [] });
+        const cell: SlotGroup = { lines: bucket.lines, slots, draws: [] };
+        countVariants(cell, this.options.variantMinSaving / 4);
+        bucket.cells.push(cell);
         // What each grid cell holds, for culledShare().
         let region = regions.get(key);
         if (!region)
@@ -739,12 +956,17 @@ export class RenderBatches {
       for (const draw of list) RenderBatches.disposeDraw(draw);
     this.pool.clear();
   }
-  private newDraw(bucket: SlotGroup, materials: Materials): InstancedDraw {
+  private newDraw(
+    bucket: SlotGroup,
+    materials: Materials,
+    geometry: THREE.BufferGeometry = bucket.slots[0].object.geometry,
+  ): InstancedDraw {
     const source = bucket.slots[0].object;
-    const capacity = bucket.slots.length;
-    const pooled = this.pool.get(
-      (bucket.lines ? "l:" : "m:") + source.geometry.uuid,
-    );
+    const capacity =
+      geometry === source.geometry
+        ? bucket.slots.length
+        : (bucket.variants?.get(geometry) ?? bucket.slots.length);
+    const pooled = this.pool.get((bucket.lines ? "l:" : "m:") + geometry.uuid);
     const index =
       pooled?.findIndex((d) => d.instanceMatrix.count >= capacity) ?? -1;
     if (index >= 0) {
@@ -761,16 +983,12 @@ export class RenderBatches {
     let draw: InstancedDraw;
     if (!bucket.lines) {
       draw = new THREE.InstancedMesh(
-        source.geometry,
+        geometry,
         materials,
         capacity,
       ) as unknown as InstancedDraw;
     } else {
-      draw = instancedLineSegments(
-        source.geometry,
-        materials,
-        [],
-      ) as InstancedDraw;
+      draw = instancedLineSegments(geometry, materials, []) as InstancedDraw;
       draw.instanceMatrix = new THREE.InstancedBufferAttribute(
         new Float32Array(capacity * 16),
         16,
@@ -802,6 +1020,9 @@ export class RenderBatches {
     const matrix = new THREE.Matrix4();
     const cells = this.cellsInUse;
     let written = 0;
+    this.plainView = this.isPlainView();
+    this.counters.culled = 0;
+    this.counters.omitted = 0;
     for (const bucket of this.buckets) {
       const geometry = bucket.slots[0].object.geometry;
       if (!geometry.boundingSphere) geometry.computeBoundingSphere();
@@ -810,7 +1031,10 @@ export class RenderBatches {
         const slot = bucket.slots[0],
           copy = bucket.single;
         slot.handle.drawableMatrix(slot.template, null, matrix);
+        const drawn = this.drawnGeometry(slot, bucket);
+        copy.geometry = drawn ?? slot.object.geometry;
         const visible =
+          drawn !== null &&
           RenderBatches.shown(slot) &&
           !culled(scratchSphere.copy(local).applyMatrix4(matrix));
         copy.visible = visible;
@@ -862,22 +1086,37 @@ export class RenderBatches {
     const bounds: number[][] = [];
     for (const slot of group.slots) {
       if (!RenderBatches.shown(slot)) continue;
+      const geometry = this.drawnGeometry(slot, group);
+      if (geometry === null) continue;
       slot.handle.drawableMatrix(slot.template, null, matrix);
       scratchSphere.copy(local).applyMatrix4(matrix);
       if (culled(scratchSphere)) continue;
       const materials = slot.handle.materialsOf(slot.template);
       const representative = firstMaterial(materials);
-      // Treatments are few (untreated, ghosted, dimmed): a linear scan.
+      // Treatments and substitutes are few: a linear scan. Draws in use this
+      // fill come first; an idle draw of the same geometry is reused.
       let index = 0;
       while (
         index < used &&
-        firstMaterial(group.draws[index].material as Materials) !==
-          representative
+        (group.draws[index].geometry !== geometry ||
+          firstMaterial(group.draws[index].material as Materials) !==
+            representative)
       )
         index++;
       if (index === used) {
-        if (index === group.draws.length)
-          group.draws.push(this.newDraw(group, materials));
+        let spare = used;
+        while (
+          spare < group.draws.length &&
+          group.draws[spare].geometry !== geometry
+        )
+          spare++;
+        if (spare === group.draws.length)
+          group.draws.push(this.newDraw(group, materials, geometry));
+        if (spare !== used) {
+          const idle = group.draws[spare];
+          group.draws[spare] = group.draws[used];
+          group.draws[used] = idle;
+        }
         const draw = group.draws[index];
         draw.material = materials;
         if (group.lines)
@@ -1050,8 +1289,95 @@ export class RenderBatches {
     }
     return count;
   }
+  /**
+   * Whether neighbour-dependent substitutes are exact now: every batched part
+   * is drawn, untreated and where it was classified, and nothing is cut.
+   */
+  private isPlainView() {
+    if (!this.variantProvider || this.clipPlane) return false;
+    for (let i = 0; i < this.batched.length; i++) {
+      const handle = this.batched[i][1];
+      if (!handle.visible || handle.treatments || !this.inPlace(i))
+        return false;
+    }
+    return true;
+  }
+  /** The handle is where it was when classified. */
+  private inPlace(index: number) {
+    const places = this.builtPlaces;
+    if (places.length !== this.batched.length * 3) return false;
+    const e = this.batched[index][1].matrix.elements;
+    return (
+      e[12] === places[index * 3] &&
+      e[13] === places[index * 3 + 1] &&
+      e[14] === places[index * 3 + 2]
+    );
+  }
+  /** The geometry a slot draws in this fill (see DrawVariant); null: none. */
+  private drawnGeometry(
+    slot: Slot,
+    group: SlotGroup,
+  ): THREE.BufferGeometry | null {
+    const own = slot.object.geometry;
+    if (slot.plain === undefined && !slot.opening) return own;
+    const closed =
+      !!slot.opening && !this.openings.sees(slot.opening, this.eye);
+    // Exact options for this view, most left out first.
+    const options: Array<THREE.BufferGeometry | null | undefined> = [];
+    if (this.plainView) {
+      if (closed) options.push(slot.plainClosed, slot.closed, slot.plain);
+      else options.push(slot.plain);
+    } else if (
+      closed &&
+      !this.clipPlane &&
+      !slot.handle.treatments &&
+      this.inPlace(slot.index)
+    )
+      options.push(slot.closed);
+    let drawn: THREE.BufferGeometry | null = own;
+    for (const option of options)
+      if (
+        option === null ||
+        (option && (!group.allowed || group.allowed.has(option)))
+      ) {
+        drawn = option;
+        break;
+      }
+    if (drawn === null) this.counters.omitted++;
+    else if (drawn !== own) this.counters.culled++;
+    return drawn;
+  }
+  /**
+   * Where the eye is (parts' openings face down: a camera above a part cannot
+   * see into it). A change of side of any opening refills the instances.
+   */
+  private viewFrom(camera: THREE.Camera) {
+    if (!this.variantProvider) return;
+    camera.updateMatrixWorld();
+    const parent = this.root.parent;
+    parent?.updateWorldMatrix(true, false);
+    const inverse = scratchMatrix
+      .copy(parent?.matrixWorld || new THREE.Matrix4())
+      .invert();
+    const eye = this.eye;
+    if ((camera as THREE.OrthographicCamera).isOrthographicCamera) {
+      // Towards the viewer: the camera's +Z axis.
+      const e = camera.matrixWorld.elements;
+      scratchVector.set(e[8], e[9], e[10]).transformDirection(inverse);
+      eye.set(scratchVector.x, scratchVector.y, scratchVector.z, 0);
+    } else {
+      scratchVector
+        .setFromMatrixPosition(camera.matrixWorld)
+        .applyMatrix4(inverse);
+      eye.set(scratchVector.x, scratchVector.y, scratchVector.z, 1);
+    }
+    if (this.openings.update(eye)) this.fillStale = true;
+  }
   private synchronize() {
-    if (this.structureStale) this.buildStructure();
+    if (this.structureStale) {
+      this.buildStructure();
+      this.openings.update(this.eye);
+    }
     if (this.visibilityChanged()) this.fillStale = true;
     if (!this.fillStale) return;
     this.builtVisibility = this.scratchVisibility.slice();
@@ -1145,6 +1471,7 @@ export class RenderBatches {
     scene: THREE.Scene,
     camera: THREE.Camera,
   ) {
+    this.viewFrom(camera);
     if (!this.deferredUntil || performance.now() > this.deferredUntil) {
       this.deferredUntil = 0;
       this.synchronize();
@@ -1236,6 +1563,8 @@ export class RenderBatches {
       cells: this.buckets.reduce((n, b) => n + (b.cells?.length ?? 0), 0),
       cellSize: Math.round(this.builtCellSize),
       cellsInUse: this.cellsInUse,
+      openingPlanes: this.openings.size,
+      plainView: this.plainView,
       ...this.counters,
     };
   }
