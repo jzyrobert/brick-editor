@@ -824,6 +824,16 @@ export class Editor {
   get project() {
     return structuredClone(this.state);
   }
+  /**
+   * The current document itself, not a copy. The editor never mutates a
+   * document once installed (commands copy it and install the result), so
+   * this stays valid; callers must treat it as immutable. The UI's commit
+   * subscriber uses it: deep-copying a 20,000-part document on every commit
+   * cost a few hundred ms.
+   */
+  get snapshot(): Readonly<Project> {
+    return this.state;
+  }
   /** Cheap reads for hot paths; `project` deep-copies the whole document. */
   get revision() {
     return this.state.revision;

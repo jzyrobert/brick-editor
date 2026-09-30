@@ -94,6 +94,80 @@ test("a 6,000-part, 200-variant official-parts model renders completely and is w
   expect(views.cut.occurrencesDrawn).toBeGreaterThan(0);
   expect(views.cut.occurrencesDrawn).toBeLessThan(6000);
   expect(views.whole.occurrencesDrawn).toBe(6000);
+  // Occurrence handles are records: no Object3D tree per part in the scene,
+  // only the batches under the model root.
+  const scene = await page.evaluate(() => {
+    const s = window.__brickScene as unknown as {
+      handles: { values(): Iterable<{ object: unknown }>; size: number };
+      root: { children: unknown[] };
+    };
+    return {
+      handles: s.handles.size,
+      trees: [...s.handles.values()].filter((h) => h.object).length,
+      rootChildren: s.root.children.length,
+    };
+  });
+  expect(scene).toEqual({ handles: 6000, trees: 0, rootChildren: 1 });
+  // Adaptive culling cells: a whole-model view draws one draw per bucket; a
+  // camera at eye level inside the village draws the large buckets per
+  // spatial cell, so the cells behind and beside it are culled; fitting the
+  // whole model again switches back without rebuilding the batches.
+  const culling = await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    const frame = async () => {
+      const before = (await a.render.budget()).lastFrame.frames;
+      for (let i = 0; i < 300; i++) {
+        await new Promise((r) => requestAnimationFrame(r));
+        if ((await a.render.budget()).lastFrame.frames > before) break;
+      }
+      const budget = await a.render.budget();
+      return { batches: budget.batches, frame: budget.lastFrame };
+    };
+    await a.camera.fit();
+    const whole = await frame();
+    // Stand in the middle of the village at eye level, looking along X.
+    const range = (axis: "x" | "y" | "z") =>
+      (
+        window.__brickScene as unknown as {
+          modelRange(axis: string): { min: number; max: number };
+        }
+      ).modelRange(axis);
+    const x = range("x"),
+      y = range("y"),
+      z = range("z");
+    const cx = (x.min + x.max) / 2,
+      cz = (z.min + z.max) / 2,
+      eye = y.max - 40;
+    await a.camera.set({
+      space: "ldraw",
+      projection: "perspective",
+      position: [cx, eye, cz],
+      target: [x.max, eye, cz],
+      up: [0, -1, 0],
+      fovDeg: 60,
+      near: 1,
+      far: 20000,
+    });
+    const inside = await frame();
+    await a.camera.fit();
+    const again = await frame();
+    return { whole, inside, again };
+  });
+  expect(culling.whole.batches.cellsInUse).toBe(false);
+  expect(culling.whole.batches.cells).toBeGreaterThan(0);
+  expect(culling.inside.batches.cellsInUse).toBe(true);
+  expect(culling.inside.batches.structures).toBe(
+    culling.whole.batches.structures,
+  );
+  // Every occurrence is still filled; the view culls whole cells.
+  expect(culling.inside.batches.occurrencesDrawn).toBe(6000);
+  expect(culling.inside.frame.triangles).toBeLessThan(
+    culling.whole.frame.triangles * 0.95,
+  );
+  expect(culling.again.batches.cellsInUse).toBe(false);
+  expect(culling.again.batches.structures).toBe(
+    culling.whole.batches.structures,
+  );
   const play = await page.evaluate(async () => {
     const a = window.brickEditor!;
     const snapshot = await a.play.enter({

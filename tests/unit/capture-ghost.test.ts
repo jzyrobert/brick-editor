@@ -2,6 +2,7 @@ import { expect, it, vi } from "vitest";
 import * as THREE from "three";
 import { SceneAdapter } from "../../src/render/adapter";
 import { LayerGhost } from "../../src/render/layerGhost";
+import { OccurrenceHandles } from "../../src/render/occurrence-handles";
 import { importLDraw } from "../../src/ldraw/io";
 import { occurrences } from "../../src/core/document";
 import { resolveQuality } from "../../src/render/quality";
@@ -21,9 +22,19 @@ it.each([false, true])(
     };
     const occurrence = occurrences(project)[0];
     const original = new THREE.MeshBasicMaterial({ color: "red" });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(), original);
-    const group = new THREE.Group();
-    group.add(mesh);
+    const handles = new OccurrenceHandles(new THREE.Group());
+    const group = handles.materialize(
+      handles.place(
+        occurrence.id,
+        new THREE.Group().add(
+          new THREE.Mesh(new THREE.BoxGeometry(), original),
+        ),
+      ),
+    );
+    const mesh = group.children[0] as THREE.Mesh<
+      THREE.BufferGeometry,
+      THREE.MeshBasicMaterial
+    >;
     let release!: () => void;
     let started!: () => void;
     const entered = new Promise<void>((resolve) => {
@@ -42,7 +53,7 @@ it.each([false, true])(
     const adapter = Object.assign(Object.create(SceneAdapter.prototype), {
       revision: project.revision,
       project,
-      handles: new Map([[occurrence.id, group]]),
+      handles,
       layerGhost: new LayerGhost(),
       instructionDimming: new LayerGhost(0.3),
       ghostLayerId: null,
@@ -96,6 +107,7 @@ it.each([false, true])(
         rebuild: vi.fn(),
         refresh: vi.fn(),
         setLinesSuppressed: vi.fn(),
+        setCellsActive: vi.fn(),
       },
     }) as SceneAdapter;
     const capture = adapter.image({

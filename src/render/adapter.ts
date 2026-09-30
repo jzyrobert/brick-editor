@@ -46,7 +46,13 @@ import {
   type QualityControls,
   type RenderProfile,
 } from "./quality";
-import { isTreated, RenderBatches } from "./batching";
+import { isTreated, RenderBatches, type BatchOptions } from "./batching";
+import {
+  cloneTree,
+  writeBoxHelper,
+  OccurrenceHandles,
+  type OccurrenceHandle,
+} from "./occurrence-handles";
 import {
   resolveLook,
   lookUsesPipeline,
@@ -348,41 +354,24 @@ function compilationKey(source: string) {
     compilationKeys.delete(compilationKeys.keys().next().value!);
   return value;
 }
+/**
+ * Culling cells: adaptive by default (see SceneAdapter.cellsWanted);
+ * `?batchCells=<LDU>` always draws cells of that size (a diagnostic), and
+ * `?batchCells=0` turns cells off.
+ */
+/** Culled-triangle shares that turn adaptive cells on and off (hysteresis). */
+const CELLS_ON_SHARE = 0.5,
+  CELLS_OFF_SHARE = 0.3;
+function batchCellOptions(): Partial<BatchOptions> {
+  const param = new URLSearchParams(location.search).get("batchCells");
+  if (param === null) return { adaptiveCells: true };
+  return { cellSize: Math.max(0, Number(param) || 0) };
+}
 export type LoadProgress = {
   /** Distinct part/colour variants compiled so far, and in all. */
   done: number;
   total: number;
 };
-/**
- * `object.clone(true)` for compiled part trees, without the throwaway default
- * geometry and material every Mesh/Line constructor allocates when cloning
- * (about a third of the time to create 20,000 occurrence handles).
- */
-function cloneTree<T extends THREE.Object3D>(source: T): T {
-  let copy: THREE.Object3D;
-  const mesh = source as unknown as THREE.Mesh;
-  const lines = source as unknown as THREE.LineSegments & {
-    isConditionalLine?: boolean;
-  };
-  if (
-    mesh.isMesh &&
-    !(source as unknown as THREE.InstancedMesh).isInstancedMesh &&
-    !(source as unknown as THREE.SkinnedMesh).isSkinnedMesh
-  )
-    copy = new THREE.Mesh(mesh.geometry, mesh.material).copy(mesh, false);
-  else if (lines.isLineSegments) {
-    copy = new THREE.LineSegments(lines.geometry, lines.material).copy(
-      lines,
-      false,
-    );
-    if (lines.isConditionalLine)
-      (copy as typeof lines).isConditionalLine = true;
-  } else if ((source as unknown as THREE.Group).isGroup)
-    copy = new THREE.Group().copy(source, false);
-  else copy = source.clone(false);
-  for (const child of source.children) copy.add(cloneTree(child));
-  return copy as T;
-}
 const triangleCounts = new WeakMap<THREE.Object3D, number>();
 /** Surface triangles one occurrence of this prototype draws (memoized). */
 function prototypeTriangleCount(prototype: THREE.Object3D) {
@@ -415,7 +404,9 @@ export class SceneAdapter {
   error: unknown;
   private project?: Project;
   private pending: Promise<void> = Promise.resolve();
-  private handles = new Map<string, THREE.Group>();
+  /** Occurrence handles: lightweight records (occurrence-handles.ts); real
+   * trees exist only for moving parts and the reference renderer. */
+  private handles = new OccurrenceHandles(this.root);
   private cache = new Map<string, Promise<THREE.Group>>();
   private allPrototypes = new Set<THREE.Group>();
   /** Pinned official definitions by canonical name, each as a `0 FILE` block. */
@@ -460,12 +451,7 @@ export class SceneAdapter {
   });
   /** `?batchCells=<LDU>` splits large buckets into spatial cells (a
    * diagnostic for measuring culling granularity; off by default). */
-  private batches = new RenderBatches({
-    cellSize: Math.max(
-      0,
-      Number(new URLSearchParams(location.search).get("batchCells")) || 0,
-    ),
-  });
+  private batches = new RenderBatches(batchCellOptions());
   private layerGhost = new LayerGhost();
   private instructionDimming = new LayerGhost(0.3);
   private instructionNewIds: Set<string> | null = null;
@@ -1269,8 +1255,8 @@ export class SceneAdapter {
    * not retained. Colour variants share geometry and palette materials, so a
    * resource is disposed only once nothing retained still draws with it. */
   private evictPrototypes(refused?: ReadonlySet<THREE.Group>) {
-    const inUse = new Set(
-      [...this.handles.values()].map((g) => g.userData.prototype),
+    const inUse = new Set<THREE.Object3D>(
+      [...this.handles.values()].map((g) => g.prototype),
     );
     if (this.ghost.userData.prototype) inUse.add(this.ghost.userData.prototype);
     const budget = renderBudget(this.lookResourceProfile);
@@ -1452,28 +1438,13 @@ export class SceneAdapter {
     this.fitOnFirstParts = on;
   }
   private fitOnFirstParts = false;
-  private cloneHandle(o: Occurrence, prototype: THREE.Group) {
-    const group = cloneTree(prototype);
-    group.userData = { occurrenceId: o.id, prototype };
-    group.matrixAutoUpdate = false;
-    return group;
-  }
   /** Create (or reuse) the handle of one occurrence and place it. */
-  private placeHandle(
-    o: Occurrence,
-    prototype: THREE.Group,
-    prepared?: THREE.Group,
-  ) {
-    let group = this.handles.get(o.id);
-    if (!group || group.userData.prototype !== prototype) {
-      if (group) this.root.remove(group);
-      group = prepared ?? this.cloneHandle(o, prototype);
-      this.handles.set(o.id, group);
-      this.root.add(group);
-    }
+  private placeHandle(o: Occurrence, prototype: THREE.Group) {
+    const group = this.handles.place(o.id, prototype);
+    // The reference renderer draws every occurrence from its own tree.
+    if (!this.batchingEnabled) this.handles.materialize(group);
     const b = o.transform.basis,
       v = o.transform.position;
-    group.matrixAutoUpdate = false;
     group.matrix.set(
       b[0],
       b[1],
@@ -1498,7 +1469,7 @@ export class SceneAdapter {
       (this.instructionVisibility
         ? this.instructionVisibility.has(o.id)
         : o.visible) && !this.floorHidden.has(o.id);
-    group.updateMatrixWorld(true);
+    group.moved();
   }
   /**
    * Compile and draw one project snapshot. Work is split into tasks of about
@@ -1690,11 +1661,8 @@ export class SceneAdapter {
         // First parts of a newly opened model: take the previous one down.
         this.instructionDimming.restore();
         this.layerGhost.restore();
-        for (const [id, g] of this.handles)
-          if (!keep.has(id)) {
-            this.root.remove(g);
-            this.handles.delete(id);
-          }
+        for (const id of [...this.handles.keys()])
+          if (!keep.has(id)) this.handles.delete(id);
         const exploded = this.explodeGap
           ? explodeLifts(snapshot, this.explodeGap)
           : { lifts: new Map<string, number>(), levels: [] };
@@ -1728,16 +1696,20 @@ export class SceneAdapter {
         shown.push(batch[n]);
         if ((n & 63) === 63 && !(await pace())) return;
       }
-      this.batches.rebuild(this.handles);
+      this.batches.rebuild(this.handles, { defer: true });
       this.tuneMaterials();
       this.applyQuality(this.qualityProfile, true);
       if (this.fitOnFirstParts) {
         this.fitOnFirstParts = false;
         this.fit();
       }
+      // Batches and new programs ahead of the partial frame, in tasks of
+      // their own (waiting for the GPU is not counted as flush cost).
+      const prepared = await this.prepareFrame(current);
+      if (!current()) return;
       this.invalidate();
       lastFlush = performance.now();
-      flushCost = lastFlush - flushStart;
+      flushCost = lastFlush - flushStart - prepared.waitMs;
       flushFrame = this.frameStats.frames;
     }
     await everything;
@@ -1776,30 +1748,14 @@ export class SceneAdapter {
     try {
       checkRenderBudget(profile, usage);
     } catch (e) {
-      for (const i of shown) {
-        const id = all[i].id;
-        const g = this.handles.get(id);
-        if (g) this.root.remove(g);
-        this.handles.delete(id);
-      }
+      for (const i of shown) this.handles.delete(all[i].id);
       if (shown.length) this.batches.rebuild(this.handles);
       this.evictPrototypes(counted);
       throw e;
     }
     // Render-side post-process (frame cost, not compilation): index each
-    // new prototype's triangles once, before any handle clones it.
+    // new prototype's triangles once, before any handle draws it.
     this.indexPrototypes(loaded.map((entry) => entry!.prototype));
-    // Clone new handles ahead of the swap (the costly part, paced); the swap
-    // below then only places them.
-    const prepared = new Map<string, THREE.Group>();
-    if (!fresh)
-      for (let i = 0; i < loaded.length; i++) {
-        const { o, prototype } = loaded[i]!;
-        const g = this.handles.get(o.id);
-        if (!g || g.userData.prototype !== prototype)
-          prepared.set(o.id, this.cloneHandle(o, prototype));
-        if ((i & 63) === 63 && !(await pace())) return;
-      }
     this.renderUsage = { profile, ...usage };
     if (this.reducedQuality && !this.reducedNotice)
       this.report(
@@ -1808,11 +1764,8 @@ export class SceneAdapter {
     this.reducedNotice = this.reducedQuality;
     this.instructionDimming.restore();
     this.layerGhost.restore();
-    for (const [id, g] of this.handles)
-      if (!keep.has(id)) {
-        this.root.remove(g);
-        this.handles.delete(id);
-      }
+    for (const id of [...this.handles.keys()])
+      if (!keep.has(id)) this.handles.delete(id);
     const exploded = this.explodeGap
       ? explodeLifts(snapshot, this.explodeGap)
       : { lifts: new Map<string, number>(), levels: [] };
@@ -1821,7 +1774,7 @@ export class SceneAdapter {
     this.computeFloorFocus(snapshot);
     for (let i = 0; i < loaded.length; i++) {
       const { o, prototype } = loaded[i]!;
-      this.placeHandle(o, prototype, prepared.get(o.id));
+      this.placeHandle(o, prototype);
       // A newly opened model is already on screen part by part; an edit
       // swaps in within one task.
       if (fresh && (i & 63) === 63 && !(await pace())) return;
@@ -1829,7 +1782,7 @@ export class SceneAdapter {
     this.evictPrototypes();
     // The handle set and prototypes changed: reclassify the batches once.
     // Later view changes (quality, look, treatments, steps) only refill them.
-    this.batches.rebuild(this.handles);
+    this.batches.rebuild(this.handles, { defer: true });
     this.project = snapshot;
     this.tuneMaterials();
     this.applyLayerGhost();
@@ -1844,13 +1797,184 @@ export class SceneAdapter {
     this.revision = snapshot.revision;
     this.error = undefined;
     this.select([]);
+    const { warmMs } = await this.prepareFrame(current);
     this.invalidate();
     this.lastLoad = {
       ms: Math.round(performance.now() - started),
       variants: variants.size,
       progressive: shown.length > 0,
       tasks: slicer.yields - yieldsBefore,
+      programWarmMs: warmMs,
     };
+  }
+  /**
+   * Classify the batches, fill them and warm the programs they need, each in
+   * tasks of its own ahead of the frame that draws them (that frame used to
+   * do all three in one long task). Frames are held meanwhile, so none draws
+   * a half-prepared scene or links every new program at once.
+   */
+  private async prepareFrame(current: () => boolean) {
+    const started = performance.now();
+    let waitMs = 0,
+      warmMs = 0;
+    this.framesHeldUntil = started + 10000;
+    try {
+      const next = async () => {
+        await this.mainSlicer.yield();
+        return current() && !this.lost;
+      };
+      if (!(await next())) return { waitMs, warmMs };
+      this.batches.build();
+      if (!(await next())) return { waitMs, warmMs };
+      this.batches.prepare(() => this.cellsWanted());
+      if (!(await next())) return { waitMs, warmMs };
+      const warmStart = performance.now();
+      await this.warmPrograms(current);
+      warmMs = Math.round(performance.now() - warmStart);
+      waitMs = warmMs;
+    } finally {
+      this.releaseFrames();
+    }
+    return { waitMs, warmMs };
+  }
+  private releaseFrames() {
+    this.framesHeldUntil = 0;
+    if (this.frameHeld) {
+      this.frameHeld = false;
+      this.invalidate({ cameraOnly: true });
+    }
+  }
+  /**
+   * Create the programs the scene's materials need without drawing, then
+   * finish them one per task: with KHR_parallel_shader_compile, wait (without
+   * blocking) until each has linked; either way, take its first-use status
+   * and uniform queries — the synchronous wait on the GPU a first frame would
+   * otherwise pay for every new program at once. Bounded: after `timeoutMs`
+   * the frame finishes the rest.
+   */
+  private async warmPrograms(current: () => boolean, timeoutMs = 8000) {
+    if (this.lost || this.captureActive) return;
+    const started = performance.now();
+    // No frame may link the new programs all at once in between.
+    const held = this.framesHeldUntil > 0;
+    this.framesHeldUntil = Math.max(this.framesHeldUntil, started + timeoutMs);
+    try {
+      await this.warmNewPrograms(current, started, timeoutMs);
+    } finally {
+      if (!held) this.releaseFrames();
+    }
+  }
+  private async warmNewPrograms(
+    current: () => boolean,
+    started: number,
+    timeoutMs: number,
+  ) {
+    // One drawable per distinct program input (materials, object kind,
+    // geometry attributes, shadows): compile() prepares every object it
+    // visits, which cost most of a second for a large model's draws.
+    const representatives: THREE.Object3D[] = [];
+    const seen = new Set<string>();
+    this.scene.traverseVisible((object) => {
+      const drawable = object as THREE.Mesh & {
+        isLine?: boolean;
+        isPoints?: boolean;
+        isSprite?: boolean;
+      };
+      if (
+        !drawable.material ||
+        !(
+          drawable.isMesh ||
+          drawable.isLine ||
+          drawable.isPoints ||
+          drawable.isSprite
+        )
+      )
+        return;
+      const geometry = drawable.geometry;
+      const key = [
+        (Array.isArray(drawable.material)
+          ? drawable.material
+          : [drawable.material]
+        )
+          .map((m) => m.uuid)
+          .join(","),
+        drawable.type,
+        !!(drawable as unknown as THREE.InstancedMesh).isInstancedMesh,
+        !!(drawable as unknown as THREE.InstancedMesh).instanceColor,
+        drawable.receiveShadow,
+        geometry
+          ? Object.keys(geometry.attributes).sort().join(",") +
+            "|" +
+            Object.keys(geometry.morphAttributes).join(",")
+          : "",
+      ].join(";");
+      if (seen.has(key)) return;
+      seen.add(key);
+      representatives.push(object);
+    });
+    type Program = { isReady(): boolean; getUniforms(): unknown };
+    const known = new Set(
+      (this.renderer.info.programs ?? []) as unknown as Program[],
+    );
+    // compile() walks `children` only; the drawables keep their parents.
+    const batch = new THREE.Scene();
+    for (let i = 0; i < representatives.length; i += 24) {
+      batch.children = representatives.slice(i, i + 24);
+      try {
+        this.renderer.compile(batch, this.camera, this.scene);
+      } catch {
+        return;
+      } finally {
+        batch.children = [];
+      }
+      await this.mainSlicer.yield();
+      if (!current() || this.lost) return;
+    }
+    const fresh = (
+      (this.renderer.info.programs ?? []) as unknown as Program[]
+    ).filter((program) => !known.has(program));
+    const parallel = this.renderer.extensions.has(
+      "KHR_parallel_shader_compile",
+    );
+    if (!fresh.length) return;
+    if (!parallel) {
+      // Without completion queries, first let the GPU work through what is
+      // queued (compiles, and a software rasterizer's earlier frames) behind
+      // a fence, polled without blocking; the first status query would
+      // otherwise wait for all of it in one task.
+      const gl = this.renderer.getContext() as WebGL2RenderingContext;
+      const fence = this.markGpu();
+      try {
+        while (
+          fence &&
+          gl.getSyncParameter(fence, gl.SYNC_STATUS) !== gl.SIGNALED &&
+          performance.now() - started < timeoutMs
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, 16));
+          if (!current() || this.lost) return;
+        }
+      } finally {
+        if (fence && !this.lost) gl.deleteSync(fence);
+      }
+    }
+    for (const program of fresh) {
+      while (
+        parallel &&
+        !program.isReady() &&
+        performance.now() - started < timeoutMs
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 16));
+        if (!current() || this.lost) return;
+      }
+      if (performance.now() - started >= timeoutMs) return;
+      try {
+        program.getUniforms();
+      } catch {
+        return;
+      }
+      await this.mainSlicer.yield();
+      if (!current() || this.lost) return;
+    }
   }
   /** A fence behind the last progressive frame's GPU commands. */
   private gpuFence?: WebGLSync | null;
@@ -1885,6 +2009,8 @@ export class SceneAdapter {
     variants: number;
     progressive: boolean;
     tasks: number;
+    /** Waiting for new shader programs before the first full frame. */
+    programWarmMs: number;
   };
   async ready(minRevision?: number, strict = false) {
     // A newer update supersedes queued work, which then settles without rendering;
@@ -2131,8 +2257,8 @@ export class SceneAdapter {
       camera.right = camera.top = 1500;
     } else {
       const box = new THREE.Box3();
-      this.root.updateMatrixWorld(true);
-      for (const group of this.handles.values()) box.expandByObject(group);
+      const world = this.rootWorld();
+      for (const group of this.handles.values()) group.expandBox(box, world);
       if (box.isEmpty())
         box.set(new THREE.Vector3(-80, 0, -80), new THREE.Vector3(80, 48, 80));
       const sphere = box.getBoundingSphere(new THREE.Sphere());
@@ -2201,16 +2327,26 @@ export class SceneAdapter {
       this.keyLight.shadow.map = null;
       this.keyLight.shadow.mapSize.setScalar(shadowMapSize);
     }
-    for (const handle of this.handles.values())
-      handle.traverse((object) => {
-        if (!(object as THREE.LineSegments).isLineSegments) return;
-        const conditional = !!(
-          object as THREE.LineSegments
-        ).geometry.getAttribute("control0");
-        object.visible =
-          edges === "all" || (edges === "ordinary" && !conditional);
-      });
+    // Edge modes apply to every handle (the batches and any materialized tree).
+    this.handles.setEdges(edges);
     this.batches.refresh();
+  }
+  private cellsOn = false;
+  /**
+   * Adaptive culling cells (see RenderBatches): large, triangle-heavy
+   * buckets are drawn per spatial cell only when at least half of their
+   * triangles lie in cells wholly outside the view (Play and first-person
+   * views inside a large build), and back to one draw per bucket below 30 %
+   * (whole-model views, where cells would only multiply draw calls).
+   */
+  private cellsWanted() {
+    // Ghosted or dimmed views (instruction steps, layer and floor ghosting)
+    // would need a second draw per cell: keep whole buckets.
+    if (this.layerGhost.active || this.instructionDimming.active)
+      return (this.cellsOn = false);
+    const culled = this.batches.culledShare(this.camera);
+    this.cellsOn = culled >= (this.cellsOn ? CELLS_OFF_SHARE : CELLS_ON_SHARE);
+    return this.cellsOn;
   }
   /** Continuous Play frames cap the backing store; phones report DPR 3. A
    * large scene on a phone drops further while its view moves. */
@@ -2335,6 +2471,7 @@ export class SceneAdapter {
     const reduce = this.moving && this.motionReducible;
     this.reducedFrame = reduce;
     this.batches.setLinesSuppressed(reduce);
+    this.batches.setCellsActive(this.cellsWanted());
     this.applyPixelRatio(reduce);
     const info = this.renderer.info;
     info.autoReset = false;
@@ -2428,8 +2565,20 @@ export class SceneAdapter {
     this.root.updateMatrixWorld(true);
     // Place the backdrop's ground for this camera before it is traced.
     this.environment.update(this.camera);
-    const visible = [...this.handles.values()].filter((group) => group.visible);
-    const { meshes, triangles } = traceMeshes(visible);
+    // Count first: proxy meshes are made only for a still the tracer takes.
+    let triangles = 0;
+    for (const handle of this.handles.values()) {
+      if (!handle.visible) continue;
+      for (const template of handle.drawables) {
+        if (!template.mesh || !handle.drawableShown(template)) continue;
+        const geometry = template.object.geometry,
+          position = geometry.getAttribute("position");
+        if (position)
+          triangles += Math.floor(
+            (geometry.index ? geometry.index.count : position.count) / 3,
+          );
+      }
+    }
     const gl = this.renderer;
     const choice: PhotoRendererChoice = choosePhotoRenderer({
       look,
@@ -2443,6 +2592,10 @@ export class SceneAdapter {
       sectionCut: this.renderer.clippingPlanes.length > 0,
       play: this.playViewActive,
     });
+    const meshes =
+      choice.renderer === "path"
+        ? this.traceProxyMeshes()
+        : (this.traceProxies.clear(), []);
     const bounds = new THREE.Box3();
     for (const mesh of meshes) bounds.expandByObject(mesh, false);
     // A scene environment (ground, props) composes with Photo by flagging its
@@ -2478,6 +2631,44 @@ export class SceneAdapter {
       bounds,
       backdrop,
     };
+  }
+  /** Stable stand-in meshes of the visible handles for the path tracer (their
+   * IDs feed its scene signature). Kept while Photo traces, freed with it. */
+  private traceProxies = new Map<OccurrenceHandle, THREE.Mesh[]>();
+  private traceProxyMeshes() {
+    const world = this.rootWorld();
+    const meshes: THREE.Mesh[] = [];
+    const seen = new Set<OccurrenceHandle>();
+    for (const handle of this.handles.values()) {
+      if (!handle.visible) continue;
+      seen.add(handle);
+      const templates = handle.drawables;
+      let proxies = this.traceProxies.get(handle);
+      if (!proxies) {
+        proxies = templates.map((template) => {
+          const mesh = new THREE.Mesh(
+            template.object.geometry,
+            template.object.material,
+          );
+          mesh.matrixAutoUpdate = false;
+          mesh.userData = { occurrenceId: handle.id };
+          return mesh;
+        });
+        this.traceProxies.set(handle, proxies);
+      }
+      templates.forEach((template, i) => {
+        if (!template.mesh || !handle.drawableShown(template)) return;
+        const mesh = proxies[i];
+        mesh.geometry = template.object.geometry;
+        mesh.material = handle.materialsOf(template);
+        handle.drawableMatrix(template, world, mesh.matrixWorld);
+        mesh.matrix.copy(mesh.matrixWorld);
+        meshes.push(mesh);
+      });
+    }
+    for (const handle of [...this.traceProxies.keys()])
+      if (!seen.has(handle)) this.traceProxies.delete(handle);
+    return meshes;
   }
   private traceSources(meshes: readonly THREE.Mesh[]): TraceSource[] {
     return meshes.map((mesh) => ({
@@ -2574,6 +2765,7 @@ export class SceneAdapter {
   /** Free the tracer's BVH, textures and targets (look changed away from photo). */
   private releasePhoto(dispose = false) {
     this.stopPhoto();
+    this.traceProxies.clear();
     if (dispose) {
       this.photo?.dispose();
       this.photo = undefined;
@@ -2910,10 +3102,18 @@ export class SceneAdapter {
     if (this.raf) return;
     this.raf = requestAnimationFrame(() => {
       this.raf = 0;
+      // Programs are being warmed for the next frame: keep the last image
+      // (warmPrograms() draws once it is done, or when it times out).
+      if (performance.now() < this.framesHeldUntil) {
+        this.frameHeld = true;
+        return;
+      }
       // A capture owns the renderer; its cleanup redraws the view.
       if (!this.lost && !this.disposed && !this.captureActive) this.drawScene();
     });
   }
+  private framesHeldUntil = 0;
+  private frameHeld = false;
   resize() {
     const w = this.element.clientWidth,
       h = this.element.clientHeight;
@@ -3123,7 +3323,8 @@ export class SceneAdapter {
     const selected = [...this.handles].filter(
       ([id]) => !((include && !include.has(id)) || exclude.has(id)),
     );
-    for (const [, group] of selected) group.updateMatrixWorld(true);
+    const world = this.rootWorld().clone(),
+      drawMatrix = new THREE.Matrix4();
     // A world whose rendered surface exceeds the collision budget collides with
     // simplified official parts instead of refusing to walk (collision-proxy.ts):
     // first without studs and underside tubes; if that is still over budget,
@@ -3131,7 +3332,7 @@ export class SceneAdapter {
     const BUDGET = 1_000_000;
     let surface = 0;
     for (const [, group] of selected)
-      surface += prototypeTriangleCount(group.userData.prototype ?? group);
+      surface += prototypeTriangleCount(group.prototype);
     const byId =
       surface > BUDGET && this.project
         ? new Map(this.projectOccurrences().map((o) => [o.id, o]))
@@ -3150,7 +3351,7 @@ export class SceneAdapter {
         const proxy = proxyOf(id);
         detailed += proxy
           ? proxy.detail.length / 9
-          : prototypeTriangleCount(group.userData.prototype ?? group);
+          : prototypeTriangleCount(group.prototype);
       }
       boxes = detailed > BUDGET;
     }
@@ -3162,15 +3363,12 @@ export class SceneAdapter {
       const proxy =
         found && (boxes && !found.openings ? found.box : found.detail);
       if (found && proxy) {
-        let frame: THREE.Object3D | undefined;
-        group.traverse((object) => {
-          if (!frame && (object as THREE.Mesh).isMesh) frame = object;
-        });
+        const frame = group.drawables.find((template) => template.mesh);
         if (frame) {
           simplified++;
           if (proxy === found.box) boxed++;
           append(
-            frame.matrixWorld.elements,
+            group.drawableMatrix(frame, world, drawMatrix).elements,
             proxy.length / 3,
             (i, axis) => proxy[i * 3 + axis],
             proxy.length / 3,
@@ -3179,15 +3377,14 @@ export class SceneAdapter {
           continue;
         }
       }
-      group.traverse((object) => {
-        const mesh = object as THREE.Mesh;
-        if (!mesh.isMesh || overBudget) return;
-        const geometry = mesh.geometry,
+      for (const template of group.drawables) {
+        if (!template.mesh || overBudget) continue;
+        const geometry = template.object.geometry,
           position = geometry.getAttribute("position");
-        if (!position) return;
+        if (!position) continue;
         const index = geometry.index;
         append(
-          mesh.matrixWorld.elements,
+          group.drawableMatrix(template, world, drawMatrix).elements,
           position.count,
           (i, axis) =>
             axis === 0
@@ -3198,7 +3395,7 @@ export class SceneAdapter {
           index ? index.count : position.count,
           index,
         );
-      });
+      }
     }
     if (overBudget) {
       warnings.push(
@@ -3286,6 +3483,8 @@ export class SceneAdapter {
       );
       const plane = this.renderer.clippingPlanes[0],
         matrix = new THREE.Matrix4(),
+        handleWorld = new THREE.Matrix4(),
+        root = this.rootWorld(),
         world = new THREE.Box3(),
         far = new THREE.Vector3();
       const list: Footprint[] = [];
@@ -3293,8 +3492,9 @@ export class SceneAdapter {
         if (!group.visible || excluded?.has(id)) continue;
         const box = this.handleBounds(group);
         if (!box) continue;
+        handleWorld.multiplyMatrices(root, group.matrix);
         if (plane) {
-          world.copy(box).applyMatrix4(group.matrixWorld);
+          world.copy(box).applyMatrix4(handleWorld);
           const n = plane.normal;
           // Even its corner furthest along the kept side is cut away: not drawn.
           far.set(
@@ -3304,7 +3504,7 @@ export class SceneAdapter {
           );
           if (plane.distanceToPoint(far) < 0) continue;
         }
-        matrix.multiplyMatrices(viewProjection, group.matrixWorld);
+        matrix.multiplyMatrices(viewProjection, handleWorld);
         const f = boxFootprint(id, box, matrix, width, height);
         if (f) list.push(f);
       }
@@ -3320,8 +3520,8 @@ export class SceneAdapter {
     // Moving mechanism parts draw live from their handles.
     for (const id of this.batches.dynamicIds) {
       const group = this.handles.get(id);
-      if (!group?.visible) continue;
-      group.traverseVisible((object) => {
+      if (!group?.visible || !group.object) continue;
+      group.object.traverseVisible((object) => {
         const mesh = object as THREE.Mesh;
         if (!mesh.isMesh || skip([mesh.material].flat())) return;
         sources.push({ kind: "single", object: mesh, occurrenceId: id });
@@ -3392,12 +3592,15 @@ export class SceneAdapter {
         0, 1, 1, 3, 3, 2, 2, 0, 4, 5, 5, 7, 7, 6, 6, 4, 0, 4, 1, 5, 2, 6, 3, 7,
       ];
       const positions = new Float32Array(ids.length * edges.length * 3);
-      const corner = new THREE.Vector3();
+      const corner = new THREE.Vector3(),
+        handleWorld = new THREE.Matrix4(),
+        root = this.rootWorld();
       let n = 0;
       for (const id of ids) {
         const group = this.handles.get(id);
         const box = group && this.handleBounds(group);
         if (!group || !box) continue;
+        handleWorld.multiplyMatrices(root, group.matrix);
         for (const e of edges) {
           corner
             .set(
@@ -3405,7 +3608,7 @@ export class SceneAdapter {
               e & 2 ? box.max.y : box.min.y,
               e & 4 ? box.max.z : box.min.z,
             )
-            .applyMatrix4(group.matrixWorld);
+            .applyMatrix4(handleWorld);
           positions[n++] = corner.x;
           positions[n++] = corner.y;
           positions[n++] = corner.z;
@@ -3454,11 +3657,12 @@ export class SceneAdapter {
       "Select a part to show transform handles",
     );
     this.scene.updateMatrixWorld(true);
-    const bounds = new THREE.Box3();
+    const bounds = new THREE.Box3(),
+      world = this.rootWorld();
     for (const id of options.occurrenceIds) {
       const group = this.handles.get(id);
       ensure(group, "INVALID_INPUT", "Selection is not ready in the renderer");
-      bounds.union(new THREE.Box3().setFromObject(group));
+      bounds.union(group.expandBox(new THREE.Box3(), world));
     }
     const pivot = conversion(
       bounds.getCenter(new THREE.Vector3()).toArray() as Vec3,
@@ -3499,10 +3703,10 @@ export class SceneAdapter {
         const group = this.handles.get(id);
         if (group) {
           group.matrix.copy(matrix);
-          group.updateMatrixWorld(true);
+          group.moved();
         }
       }
-      if (!this.batches.setDynamic([])) this.batches.refresh();
+      this.setDynamic([]);
       this.invalidate();
     };
   }
@@ -3522,7 +3726,7 @@ export class SceneAdapter {
     // matrices instead of re-merging every static batch each frame.
     const dynamic = this.batches.dynamicIds;
     if (ids.some((id) => !dynamic.has(id)))
-      this.batches.setDynamic([...dynamic, ...ids]);
+      this.setDynamic([...dynamic, ...ids]);
     for (const [id, transform] of Object.entries(transforms)) {
       const group = this.handles.get(id)!;
       const b = transform.basis,
@@ -3545,9 +3749,29 @@ export class SceneAdapter {
         0,
         1,
       );
-      group.updateMatrixWorld(true);
+      group.moved();
     }
     this.invalidate();
+  }
+  /**
+   * Moving mechanism parts draw live from materialized trees (see
+   * occurrence-handles.ts) instead of the batches; everything else stays a
+   * record. Returns whether the set changed (the batches rebuild once).
+   */
+  private setDynamic(ids: Iterable<string>) {
+    const next = new Set(ids);
+    for (const id of this.batches.dynamicIds)
+      if (!next.has(id) && this.batchingEnabled) {
+        const handle = this.handles.get(id);
+        if (handle) this.handles.release(handle);
+      }
+    for (const id of next) {
+      const handle = this.handles.get(id);
+      if (handle) this.handles.materialize(handle);
+    }
+    if (this.batches.setDynamic(next)) return true;
+    this.batches.refresh();
+    return false;
   }
   beginPlayView(includedOccurrenceIds?: string[]) {
     const included = new Set(includedOccurrenceIds ?? this.handles.keys());
@@ -3621,7 +3845,16 @@ export class SceneAdapter {
     this.invalidate({ cameraOnly: true });
   }
   fit() {
-    const box = new THREE.Box3().setFromObject(this.root);
+    // The batches (and any materialized tree) under the root, plus every
+    // handle's bounds, as when handles were trees under the root. Draws of a
+    // structure being replaced (a deferred rebuild) are left out, as they
+    // were when a rebuild cleared them at once.
+    const box = new THREE.Box3(),
+      world = this.rootWorld();
+    for (const child of this.root.children)
+      if (child !== this.batches.root || !this.batches.deferred)
+        box.expandByObject(child);
+    for (const handle of this.handles.values()) handle.expandBox(box, world);
     if (box.isEmpty()) {
       this.setCamera(defaultCamera);
       return;
@@ -3661,10 +3894,16 @@ export class SceneAdapter {
       helper.geometry.dispose();
       (helper.material as THREE.Material).dispose();
     }
+    const world = this.rootWorld(),
+      box = new THREE.Box3();
     for (const id of ids) {
       const obj = this.handles.get(id);
       if (obj) {
-        const helper = new THREE.BoxHelper(obj, 0xea883c);
+        // A BoxHelper of the handle's world bounds (the box setFromObject
+        // gave for its tree), without materializing the tree.
+        const helper = new THREE.BoxHelper(new THREE.Object3D(), 0xea883c);
+        obj.expandBox(box.makeEmpty(), world);
+        writeBoxHelper(helper, box);
         this.selection.add(helper);
       }
     }
@@ -3702,7 +3941,7 @@ export class SceneAdapter {
         after = next.lifts.get(id) ?? 0;
       if (before === after) continue;
       group.matrix.elements[13] += before - after;
-      group.updateMatrixWorld(true);
+      group.moved();
     }
     this.explodeLift = next.lifts;
     this.explodeLevels = "levels" in next ? next.levels : [];
@@ -3745,9 +3984,10 @@ export class SceneAdapter {
   }
   /** LDraw extent of the visible model along an axis. */
   modelRange(axis: "x" | "y" | "z"): { min: number; max: number } | null {
-    this.scene.updateMatrixWorld(true);
-    const box = new THREE.Box3();
-    for (const g of this.handles.values()) if (g.visible) box.expandByObject(g);
+    const box = new THREE.Box3(),
+      world = this.rootWorld();
+    for (const g of this.handles.values())
+      if (g.visible) g.expandBox(box, world);
     if (box.isEmpty()) return null;
     const round = (v: number) => Math.round(v * 1e4) / 1e4 || 0;
     // World → LDraw: (x, −y, −z).
@@ -3774,6 +4014,11 @@ export class SceneAdapter {
   /** Handles keep their world matrices current as they move (see RenderBatches);
    * a pick only needs the camera and, once, the model root. Forcing a
    * scene-wide matrix update per pick cost milliseconds at 20,000 parts. */
+  /** The model root's world matrix, current. */
+  private rootWorld() {
+    this.root.updateWorldMatrix(true, false);
+    return this.root.matrixWorld;
+  }
   private syncPickMatrices() {
     this.camera.updateMatrixWorld();
     this.root.updateWorldMatrix(true, false);
@@ -3782,21 +4027,17 @@ export class SceneAdapter {
       this.pickRootMatrix = this.root.matrixWorld.clone();
     }
   }
-  private handleBounds(group: THREE.Group) {
-    const key =
-      (group.userData.prototype as THREE.Object3D | undefined) ?? group;
+  private handleBounds(group: OccurrenceHandle) {
+    const key = group.prototype;
     if (this.pickBounds.has(key)) return this.pickBounds.get(key)!;
-    const inverse = group.matrixWorld.clone().invert();
     const box = new THREE.Box3(),
-      part = new THREE.Box3(),
-      relative = new THREE.Matrix4();
-    group.traverse((object) => {
-      const mesh = object as THREE.Mesh;
-      if (!mesh.isMesh) return;
-      if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
-      relative.multiplyMatrices(inverse, mesh.matrixWorld);
-      box.union(part.copy(mesh.geometry.boundingBox!).applyMatrix4(relative));
-    });
+      part = new THREE.Box3();
+    for (const template of group.drawables) {
+      if (!template.mesh) continue;
+      const geometry = template.object.geometry;
+      if (!geometry.boundingBox) geometry.computeBoundingBox();
+      box.union(part.copy(geometry.boundingBox!).applyMatrix4(template.local));
+    }
     const bounds = box.isEmpty() ? null : box;
     this.pickBounds.set(key, bounds);
     return bounds;
@@ -3809,27 +4050,31 @@ export class SceneAdapter {
    */
   private raycastHandles(
     ray: THREE.Raycaster,
-    include: (id: string, group: THREE.Group) => boolean,
+    include: (id: string, group: OccurrenceHandle) => boolean,
     accept: (hit: THREE.Intersection, id: string) => boolean = () => true,
   ): { hit: THREE.Intersection; id: string } | null {
     this.syncPickMatrices();
+    const root = this.root.matrixWorld;
     const inverse = new THREE.Matrix4(),
+      handleWorld = new THREE.Matrix4(),
       local = new THREE.Ray(),
       entry = new THREE.Vector3();
-    const candidates: Array<{ id: string; group: THREE.Group; near: number }> =
-      [];
+    const candidates: Array<{
+      id: string;
+      group: OccurrenceHandle;
+      near: number;
+    }> = [];
     for (const [id, group] of this.handles) {
       if (!include(id, group)) continue;
       const box = this.handleBounds(group);
       if (!box) continue;
-      local
-        .copy(ray.ray)
-        .applyMatrix4(inverse.copy(group.matrixWorld).invert());
+      handleWorld.multiplyMatrices(root, group.matrix);
+      local.copy(ray.ray).applyMatrix4(inverse.copy(handleWorld).invert());
       if (!local.intersectBox(box, entry)) continue;
       candidates.push({
         id,
         group,
-        near: entry.applyMatrix4(group.matrixWorld).distanceTo(ray.ray.origin),
+        near: entry.applyMatrix4(handleWorld).distanceTo(ray.ray.origin),
       });
     }
     candidates.sort((a, b) => a.near - b.near);
@@ -3838,9 +4083,21 @@ export class SceneAdapter {
     for (const candidate of candidates) {
       if (best && best.hit.distance <= candidate.near) break;
       hits.length = 0;
-      candidate.group.traverse((object) => {
-        if ((object as THREE.Mesh).isMesh) object.raycast(ray, hits);
-      });
+      // Test stand-in meshes of the handle's triangle drawables (hits keep
+      // them: a hit's object has the drawable's world matrix and material).
+      for (const template of candidate.group.drawables) {
+        if (!template.mesh) continue;
+        const mesh = new THREE.Mesh(
+          template.object.geometry,
+          candidate.group.materialsOf(template),
+        );
+        mesh.visible = template.shown;
+        mesh.userData = { occurrenceId: candidate.id };
+        mesh.matrixAutoUpdate = false;
+        candidate.group.drawableMatrix(template, root, mesh.matrixWorld);
+        mesh.matrix.copy(mesh.matrixWorld);
+        mesh.raycast(ray, hits);
+      }
       hits.sort((a, b) => a.distance - b.distance);
       for (const hit of hits) {
         if (best && hit.distance >= best.hit.distance) break;
@@ -4034,9 +4291,9 @@ export class SceneAdapter {
     const lift = (y: number) =>
       this.explodeGap ? liftAt(y, this.explodeLevels, this.explodeGap) : 0;
     if (this.guidesShown && floors.length) {
-      this.root.updateMatrixWorld(true);
-      const box = new THREE.Box3();
-      for (const g of this.handles.values()) box.expandByObject(g);
+      const box = new THREE.Box3(),
+        world = this.rootWorld();
+      for (const g of this.handles.values()) g.expandBox(box, world);
       if (box.isEmpty())
         box.set(
           new THREE.Vector3(-200, 0, -200),
@@ -4469,8 +4726,10 @@ export class SceneAdapter {
     );
     this.captureActive = true;
     this.controls.enabled = false;
-    // Captures keep full detail whatever the interactive view last drew.
+    // Captures keep full detail whatever the interactive view last drew,
+    // and draw whole buckets (the capture's own transparent sort order).
     this.batches.setLinesSuppressed(false);
+    this.batches.setCellsActive(false);
     try {
       this.instructionDimming.restore();
       this.layerGhost.restore();

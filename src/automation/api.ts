@@ -555,7 +555,9 @@ export function createAPI(
           "REVISION_CONFLICT",
           "Document changed during import",
         );
-        return editor.replace(p);
+        // The import worker validated its result, and the structured clone
+        // it arrived as belongs to this call alone.
+        return editor.replace(p, { trusted: input.format === "ldraw" });
       },
       export: async (input: {
         format: "ldraw" | "native";

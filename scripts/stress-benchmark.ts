@@ -65,6 +65,29 @@ async function measure(context: BrowserContext, profile: string) {
   const page = await context.newPage();
   // tsx keeps function names with an injected helper that page code lacks.
   await page.addInitScript("window.__name = (f) => f");
+  // Main-thread long tasks (start time and duration), for load and recovery.
+  await page.addInitScript(() => {
+    const w = window as unknown as { __long: Array<[number, number]> };
+    w.__long = [];
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries())
+        w.__long.push([e.startTime, e.duration]);
+    }).observe({ type: "longtask", buffered: true });
+  });
+  const longTasks = (from: number, to = Infinity) =>
+    page.evaluate(
+      ({ from, to }) => {
+        const all = (
+          window as unknown as { __long: Array<[number, number]> }
+        ).__long.filter(([s]) => s >= from && s <= to);
+        return {
+          count: all.length,
+          longestMs: Math.round(Math.max(0, ...all.map(([, d]) => d))),
+          totalMs: Math.round(all.reduce((t, [, d]) => t + d, 0)),
+        };
+      },
+      { from, to },
+    );
   const cdp = await context.newCDPSession(page);
   await cdp.send("Performance.enable");
   const heapMb = async () => {
@@ -111,6 +134,8 @@ async function measure(context: BrowserContext, profile: string) {
     const firstFrameMs = performance.now() - t0;
     const q = await a.query();
     return {
+      t0,
+      firstFrameAt: t0 + firstFrameMs,
       importMs: Math.round(importMs),
       readyMs: Math.round(readyMs),
       timeToFirstRenderMs: Math.round(firstFrameMs),
@@ -119,7 +144,27 @@ async function measure(context: BrowserContext, profile: string) {
       budget: await a.render.budget(),
     };
   }, model.text);
+  // Long tasks from the import to the first frame, and until the autosave of
+  // the imported project completed.
+  const loadLongTasks = await longTasks(load.t0, load.firstFrameAt);
+  let savedAt = 0;
+  try {
+    await page
+      .locator(".save-state")
+      .filter({ hasText: /^Saved revision/ })
+      .waitFor({ timeout: 300000 });
+    savedAt = await page.evaluate(() => performance.now());
+  } catch {
+    /* no save indicator */
+  }
+  const loadToSavedLongTasks = savedAt
+    ? await longTasks(load.t0, savedAt)
+    : undefined;
   const heapAfterLoad = await heapMb();
+  const recovery =
+    load.failure || !savedAt || process.argv.includes("--no-recovery")
+      ? undefined
+      : await measureRecovery(context, load.occurrences);
   const rssAfterLoad = await rssMb();
   const orbit = load.failure
     ? undefined
@@ -424,6 +469,21 @@ async function measure(context: BrowserContext, profile: string) {
           const realistic = await walk();
           await a.render.look.set("standard");
           await a.play.exit();
+          // First person inside the village, looking along a street.
+          let inside:
+            | Awaited<ReturnType<typeof walk>>
+            | { error: string }
+            | undefined;
+          try {
+            await a.play.enter({
+              position: [1000, -0.3, 1000],
+              realtime: true,
+            });
+            inside = await walk();
+            await a.play.exit();
+          } catch (e) {
+            inside = { error: (e as Error).message };
+          }
           return {
             enterMs: Math.round(enterMs),
             reenterMs: Math.round(reenterMs),
@@ -436,6 +496,7 @@ async function measure(context: BrowserContext, profile: string) {
             frameIntervalMedianMs: standard.frameIntervalMedianMs,
             standard,
             realistic,
+            inside,
             warnings: snapshot.warnings,
           };
         }, playFrames);
@@ -454,11 +515,75 @@ async function measure(context: BrowserContext, profile: string) {
       afterLoad: rssAfterLoad,
       afterPlay: rssAfterPlay,
     },
+    longTasks: { toFirstFrame: loadLongTasks, toSaved: loadToSavedLongTasks },
+    recovery,
     orbit,
     interaction,
     play: playResult,
     errors,
   };
+}
+
+/** Open the app in a new page of the same context (the imported project is
+ * this device's current one) and measure long tasks until every part is
+ * drawn, and the JS heap then. */
+async function measureRecovery(
+  context: BrowserContext,
+  parts: number,
+): Promise<Record<string, number>> {
+  const page = await context.newPage();
+  await page.addInitScript("window.__name = (f) => f");
+  await page.addInitScript(() => {
+    const w = window as unknown as { __long: Array<[number, number]> };
+    w.__long = [];
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries())
+        w.__long.push([e.startTime, e.duration]);
+    }).observe({ type: "longtask", buffered: true });
+  });
+  const cdp = await context.newCDPSession(page);
+  await cdp.send("Performance.enable");
+  try {
+    await page.goto(url + "?automation=1" + (query ? "&" + query : ""));
+    await page.waitForFunction(() => !!window.brickEditor, undefined, {
+      timeout: 180000,
+    });
+    const done = await page.evaluate(async (parts) => {
+      const a = window.brickEditor!;
+      for (let i = 0; i < 6000; i++) {
+        await a.ready().catch(() => {});
+        if ((await a.render.budget()).usage?.partOccurrences === parts) break;
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      const before = (await a.render.budget()).lastFrame.frames;
+      for (let i = 0; i < 600; i++) {
+        await new Promise((r) => requestAnimationFrame(r));
+        if ((await a.render.budget()).lastFrame.frames > before) break;
+      }
+      await new Promise((r) => setTimeout(r, 300));
+      return performance.now();
+    }, parts);
+    const tasks = await page.evaluate((to) => {
+      const all = (
+        window as unknown as { __long: Array<[number, number]> }
+      ).__long.filter(([s]) => s <= to);
+      return {
+        count: all.length,
+        longestMs: Math.round(Math.max(0, ...all.map(([, d]) => d))),
+        totalMs: Math.round(all.reduce((t, [, d]) => t + d, 0)),
+      };
+    }, done);
+    await cdp.send("HeapProfiler.collectGarbage");
+    const { metrics } = await cdp.send("Performance.getMetrics");
+    const used = metrics.find((m) => m.name === "JSHeapUsedSize")!.value;
+    return {
+      readyMs: Math.round(done),
+      ...tasks,
+      heapMb: Math.round(used / 1024 / 1024),
+    };
+  } finally {
+    await page.close();
+  }
 }
 
 const results = [];

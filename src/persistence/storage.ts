@@ -12,10 +12,28 @@ export interface StorageAdapter {
   key(index: number): string | null;
   length: number;
 }
+/** A storage with nothing in it (a worker has no localStorage). */
+export const EMPTY_STORAGE: StorageAdapter = {
+  getItem: () => null,
+  setItem: () => {
+    throw new Error("Empty storage is read-only");
+  },
+  removeItem: () => {},
+  key: () => null,
+  length: 0,
+};
 export class LocalProjects {
   constructor(private storage: StorageAdapter) {}
   private prefix(id: string) {
     return "brick-editor:" + encodeURIComponent(id) + ":";
+  }
+  /** Whether any legacy snapshot of `id` is stored (no parsing). */
+  hasCopy(id: string) {
+    const prefix = this.prefix(id);
+    if (this.storage.getItem(prefix + "head") !== null) return true;
+    for (let i = 0; i < this.storage.length; i++)
+      if (this.storage.key(i)?.startsWith(prefix + "snapshot:")) return true;
+    return false;
   }
   async load(id: string) {
     const prefix = this.prefix(id),

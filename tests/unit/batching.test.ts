@@ -10,6 +10,10 @@ import {
   supportsInstancedLines,
   type InstancedLineSegments,
 } from "../../src/render/batching";
+import {
+  OccurrenceHandles,
+  type Treatment,
+} from "../../src/render/occurrence-handles";
 
 function fixture() {
   const scene = new THREE.Scene(),
@@ -18,14 +22,11 @@ function fixture() {
   parent.rotation.x = Math.PI;
   const material = new THREE.MeshBasicMaterial(),
     geometry = new THREE.BoxGeometry(2, 2, 2);
-  const handles = new Map<string, THREE.Group>();
-  for (let i = 0; i < 3; i++) {
-    const group = new THREE.Group();
-    group.position.set(i * 10, 2, 0);
-    group.add(new THREE.Mesh(geometry, material));
-    parent.add(group);
-    handles.set(String(i), group);
-  }
+  const prototype = new THREE.Group();
+  prototype.add(new THREE.Mesh(geometry, material));
+  const handles = new OccurrenceHandles(parent);
+  for (let i = 0; i < 3; i++)
+    handles.place(String(i), prototype).matrix.makeTranslation(i * 10, 2, 0);
   const batches = new RenderBatches();
   parent.add(batches.root);
   batches.rebuild(handles);
@@ -40,12 +41,15 @@ describe("render-only batching", () => {
     batches.render(
       {
         render: () => {
-          // Batched handles are left out of the draw traversal (not merely hidden),
-          // so three neither draws them nor recomposes their matrices per frame.
-          const reached = new Set<THREE.Object3D>();
-          scene.traverse((o) => reached.add(o));
-          expect([...handles.values()].some((g) => reached.has(g))).toBe(false);
-          expect([...handles.values()].every((g) => !!g.parent)).toBe(true);
+          // Handles are records, not scene objects: the draw's traversal
+          // reaches only the batches (no tree per occurrence).
+          const reached: THREE.Object3D[] = [];
+          scene.traverse((o) => reached.push(o));
+          expect(reached.every((o) => o === scene || o.parent)).toBe(true);
+          expect(reached.filter((o) => (o as THREE.Mesh).isMesh)).toHaveLength(
+            1,
+          );
+          expect([...handles.values()].every((g) => !g.object)).toBe(true);
         },
       },
       scene,
@@ -82,10 +86,10 @@ describe("render-only batching", () => {
       ),
     ).toThrow("context failure");
     expect([...handles.values()].every((g) => g.visible)).toBe(true);
-    // The scene graph is restored too: every handle is reachable again.
+    // The scene graph is untouched: the batches are still in place.
     const reached = new Set<THREE.Object3D>();
     scene.traverse((o) => reached.add(o));
-    expect([...handles.values()].every((g) => reached.has(g))).toBe(true);
+    expect(reached.has(batches.root)).toBe(true);
     batches.dispose();
   });
   it("draws moving (dynamic) occurrences live so later poses do not re-merge", () => {
@@ -106,16 +110,19 @@ describe("render-only batching", () => {
     expect((batches.root.children[0] as THREE.InstancedMesh).count).toBe(3);
     expect(batches.setDynamic(["1"])).toBe(true);
     expect(batches.setDynamic(["1"])).toBe(false);
+    // The owner draws dynamic occurrences from materialized trees.
+    const live = handles.materialize(handles.get("1")!);
     draw((reached) => {
-      expect(reached.has(handles.get("1")!)).toBe(true);
-      expect(reached.has(handles.get("0")!)).toBe(false);
+      expect(reached.has(live)).toBe(true);
+      expect(handles.get("0")!.object).toBe(null);
     });
     const packed = batches.root.children[0] as THREE.InstancedMesh;
     expect(packed.count).toBe(2);
     expect(packed.userData.occurrenceIds).toEqual(["0", "2"]);
     // Moving the live handle only needs its matrix; the batches are reused as-is.
-    handles.get("1")!.position.x = 55;
-    handles.get("1")!.updateMatrixWorld(true);
+    handles.get("1")!.matrix.makeTranslation(55, 2, 0);
+    handles.get("1")!.moved();
+    expect(live.matrixWorld.elements[12]).toBe(55);
     draw();
     expect(batches.root.children[0]).toBe(packed);
     // Visibility of batched handles is still detected without a rebuild call,
@@ -143,8 +150,8 @@ describe("render-only batching", () => {
     ghost.opacity = 0.18;
     registerTreatment(ghost, material);
     expect(treatmentBase(ghost)).toBe(material);
-    const mesh = handles.get("1")!.children[0] as THREE.Mesh;
-    mesh.material = ghost;
+    const treatment: Treatment = { treat: () => ghost };
+    handles.get("1")!.treatments = [treatment];
     batches.refresh();
     draw();
     expect(batches.stats().structures).toBe(structures);
@@ -158,9 +165,8 @@ describe("render-only batching", () => {
     expect(draws[1].count).toBe(1);
     expect(draws[1].userData.occurrenceIds).toEqual(["1"]);
     // A transform-only change (explode) moves the instance without a rebuild.
-    handles.get("0")!.position.y = 50;
-    handles.get("0")!.updateMatrixWorld(true);
-    mesh.material = material;
+    handles.get("0")!.matrix.makeTranslation(0, 50, 0);
+    handles.get("1")!.treatments = null;
     batches.refresh();
     draw();
     expect(batches.stats().structures).toBe(structures);
@@ -224,6 +230,67 @@ describe("render-only batching", () => {
     expect(small.root.children).toHaveLength(1);
     small.dispose();
   });
+  it("draws adaptive cells only while they are active, by refilling", () => {
+    const scene = new THREE.Scene(),
+      parent = new THREE.Group();
+    scene.add(parent);
+    // 1,200 triangles each: 120,000 in all, enough to split into cells.
+    const prototype = new THREE.Group().add(
+      new THREE.Mesh(
+        new THREE.BoxGeometry(2, 2, 2, 10, 10, 10),
+        new THREE.MeshBasicMaterial(),
+      ),
+    );
+    const handles = new OccurrenceHandles(parent);
+    for (let i = 0; i < 100; i++)
+      handles.place(String(i), prototype).matrix.makeTranslation(i * 10, 0, 0);
+    const batches = new RenderBatches({ adaptiveCells: true });
+    parent.add(batches.root);
+    batches.rebuild(handles);
+    const draw = () =>
+      batches.render({ render: () => {} }, scene, new THREE.Camera());
+    const drawn = () =>
+      batches.root.children.filter(
+        (o) => o.visible && (o as THREE.InstancedMesh).count > 0,
+      ) as THREE.InstancedMesh[];
+    draw();
+    // Whole-model views: one draw for the bucket.
+    expect(drawn()).toHaveLength(1);
+    expect(drawn()[0].count).toBe(100);
+    const stats = batches.stats();
+    // 990 LDU of extent over ADAPTIVE_CELLS_ACROSS (6): 165 LDU cells.
+    expect(stats).toMatchObject({ cellSize: 165, cellsInUse: false });
+    expect(stats.cells).toBe(7);
+    // Share of the celled triangles a camera's view would cull: none from
+    // afar, most when it looks at the first cell only.
+    const far = new THREE.PerspectiveCamera(45, 1, 1, 10000);
+    far.position.set(500, 0, 2000);
+    far.lookAt(500, 0, 0);
+    expect(batches.culledShare(far)).toBe(0);
+    const near = new THREE.PerspectiveCamera(30, 1, 1, 10000);
+    near.position.set(0, 0, 40);
+    near.lookAt(0, 0, 0);
+    expect(batches.culledShare(near)).toBeGreaterThan(0.8);
+    batches.setCellsActive(true);
+    draw();
+    const cells = drawn();
+    expect(cells).toHaveLength(7);
+    expect(cells.reduce((n, d) => n + d.count, 0)).toBe(100);
+    // Each cell's culling sphere covers only its own instances.
+    for (const cell of cells)
+      expect(cell.boundingSphere!.radius).toBeLessThan(120);
+    expect(batches.stats()).toMatchObject({
+      structures: stats.structures,
+      cellsInUse: true,
+      occurrencesDrawn: 100,
+    });
+    batches.setCellsActive(false);
+    draw();
+    expect(drawn()).toHaveLength(1);
+    expect(drawn()[0].count).toBe(100);
+    expect(batches.stats().structures).toBe(stats.structures);
+    batches.dispose();
+  });
   it("suppresses instanced lines while moving without refilling", () => {
     const scene = new THREE.Scene(),
       parent = new THREE.Group();
@@ -235,21 +302,22 @@ describe("render-only batching", () => {
     const box = new THREE.BoxGeometry(),
       surface = new THREE.MeshBasicMaterial(),
       edge = new THREE.LineBasicMaterial();
-    const handles = new Map<string, THREE.Group>();
-    for (let i = 0; i < 3; i++) {
-      const group = new THREE.Group();
-      group.position.x = i * 10;
-      group.add(new THREE.Mesh(box, surface));
-      // The third occurrence's lines use their own material: a single copy.
-      group.add(
-        new THREE.LineSegments(
-          lineGeometry,
-          i < 2 ? edge : new THREE.LineBasicMaterial(),
-        ),
-      );
-      parent.add(group);
-      handles.set(String(i), group);
-    }
+    const handles = new OccurrenceHandles(parent);
+    const shared = new THREE.Group(),
+      own = new THREE.Group();
+    shared.add(
+      new THREE.Mesh(box, surface),
+      new THREE.LineSegments(lineGeometry, edge),
+    );
+    // The third occurrence's lines use their own material: a single copy.
+    own.add(
+      new THREE.Mesh(box, surface),
+      new THREE.LineSegments(lineGeometry, new THREE.LineBasicMaterial()),
+    );
+    for (let i = 0; i < 3; i++)
+      handles
+        .place(String(i), i < 2 ? shared : own)
+        .matrix.makeTranslation(i * 10, 0, 0);
     const batches = new RenderBatches();
     parent.add(batches.root);
     batches.rebuild(handles);
@@ -275,8 +343,8 @@ describe("render-only batching", () => {
     batches.setLinesSuppressed(false);
     draw();
     expect(lines.every((o) => o.visible)).toBe(true);
-    // Edge-mode changes hide child lines on the handles: a refill, no rebuild.
-    for (const group of handles.values()) group.children[1].visible = false;
+    // Edge-mode changes hide every handle's lines: a refill, no rebuild.
+    handles.setEdges("none");
     batches.refresh();
     draw();
     expect(lines.some((o) => o.visible)).toBe(false);
@@ -285,11 +353,11 @@ describe("render-only batching", () => {
   });
   it("keeps reflected, sheared and transparent meshes on the reference path", () => {
     const { scene, handles, batches, camera, material } = fixture();
-    handles.get("0")!.scale.x = -1;
-    handles.get("1")!.matrixAutoUpdate = false;
+    handles.get("0")!.matrix.makeScale(-1, 1, 1).setPosition(0, 2, 0);
     handles
       .get("1")!
       .matrix.set(1, 0.5, 0, 10, 0, 1, 0, 2, 0, 0, 1, 0, 0, 0, 0, 1);
+    batches.rebuild(handles);
     batches.render({ render: () => {} }, scene, camera);
     expect(
       batches.root.children.some(
@@ -357,14 +425,11 @@ describe("render-only batching", () => {
     );
     geometry.addGroup(0, 2, 0);
     geometry.addGroup(2, 2, 1);
-    const handles = new Map<string, THREE.Group>();
-    for (let i = 0; i < 2; i++) {
-      const group = new THREE.Group();
-      group.position.x = i * 10;
-      group.add(new THREE.LineSegments(geometry, material));
-      parent.add(group);
-      handles.set(String(i), group);
-    }
+    const handles = new OccurrenceHandles(parent);
+    const prototype = new THREE.Group();
+    prototype.add(new THREE.LineSegments(geometry, material));
+    for (let i = 0; i < 2; i++)
+      handles.place(String(i), prototype).matrix.makeTranslation(i * 10, 0, 0);
     const batches = new RenderBatches();
     parent.add(batches.root);
     batches.rebuild(handles);

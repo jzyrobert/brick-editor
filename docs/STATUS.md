@@ -270,6 +270,15 @@ Batches are classified once per model update and then refilled in place: instruc
 
 - **Limits.** Opening a few-hundred-part template used to compile its parts on the main thread (about 10 s for the house on the test VM, page unresponsive); see "Fast, non-blocking model loading" below. Screenshots: [chooser](screenshots/templates/chooser-1440.png), [phone chooser](screenshots/templates/chooser-390.png), [house](screenshots/templates/house-1440.png), [castle](screenshots/templates/castle-1440.png), [car](screenshots/templates/car-1440.png), [door open in Play](screenshots/templates/house-door-open.png), [save prompt on a phone](screenshots/templates/replace-prompt-390.png).
 
+## Lighter handles, prepared frames and adaptive culling (2026-09-30)
+
+On the 20,000-part village the page's JS heap after loading fell from 193 MB to 59–77 MB, the longest main-thread task while importing it from 9.1 s to 0.35–1.2 s (long-task total 15.1 s → 1.4–5.1 s) and while recovering it after a reload from 4.7 s to 0.24–0.45 s (12.4 s → 1.6–3.1 s), measured on the loaded software-GPU VM. See [verification](VERIFICATION.md#lighter-handles-prepared-frames-and-adaptive-culling-30-september-2026).
+
+- **Record handles.** Each placed part is a small record (ID, compiled prototype, matrix, visibility, treatments) instead of a cloned object tree; picking, selection boxes, region selection, collision, bounds and path-traced stills read the record and its prototype's drawables. Real trees exist only for parts that move on their own (mechanisms, transform previews) and in the reference renderer.
+- **Prepared frames.** A model's batches are classified, filled and its new shader programs warmed in tasks of their own while the view keeps its last image, instead of all in the first frame; batch draw objects are reused across rebuilds.
+- **Off the main thread.** Imports are validated in the import worker; autosave (validation, JSON, hashing, checking the stored copy, the write) runs in a save worker under the same cross-tab lock; the UI no longer deep-copies the document on each change; complete-library arrivals re-derive the workspace once per burst.
+- **Adaptive culling.** Large buckets are drawn per spatial cell only when at least half of their triangles are out of view (Play and cameras inside a large build): 18–21 % fewer triangles walking into the village, unchanged whole-model views. Phone GPU benefit is unmeasured; LOD is not implemented.
+
 ## Fast, non-blocking model loading (2026-09-29)
 
 Opening the house template froze the page for about 16 s on the test VM. It now responds throughout: parts appear about 0.8 s after choosing it, it is complete in about 3 s, and after a reload it reopens in about 0.5 s without compiling anything.

@@ -6,23 +6,20 @@ import {
   RAW_BATCH_LIMITS,
 } from "../../src/render/batching";
 import { RawPrimitiveCompiler } from "../../src/render/raw-primitives";
+import { OccurrenceHandles } from "../../src/render/occurrence-handles";
 const colors = "0 !COLOUR White CODE 15 VALUE #FFFFFF EDGE #333333";
 async function fixture(records: string[]) {
   const compiler = new RawPrimitiveCompiler(colors),
     scene = new THREE.Scene(),
-    handles = new Map<string, THREE.Group>(),
+    handles = new OccurrenceHandles(scene),
     batches = new RenderBatches();
   scene.add(batches.root);
   for (let i = 0; i < records.length; i++) {
     const proto = await compiler.compile(records[i], "15", {
-        source: "0 BFC CERTIFY CCW",
-        forceDoubleSided: false,
-      }),
-      handle = proto.clone(true);
-    handle.userData = { prototype: proto };
-    handle.position.x = i * 10;
-    scene.add(handle);
-    handles.set(String(i), handle);
+      source: "0 BFC CERTIFY CCW",
+      forceDoubleSided: false,
+    });
+    handles.place(String(i), proto).matrix.makeTranslation(i * 10, 0, 0);
   }
   batches.rebuild(handles);
   const draw = () =>
@@ -35,7 +32,7 @@ it("merges mixed triangle/quad primitives, preserves handles and cumulative mate
     "4 15 0 0 0 1 0 0 1 1 0 0 1 0",
   ]);
   const original = f.handles.get("0")!,
-    geometry = (original.children[0] as THREE.Mesh).geometry,
+    geometry = original.drawables[0].object.geometry,
     positions = Array.from(geometry.getAttribute("position").array);
   f.draw();
   expect(f.batches.root.children).toHaveLength(1);
@@ -122,7 +119,7 @@ it("keeps transparent primitives separate and bakes conditional-line control att
   expect(merged.getAttribute("control0").count).toBe(4);
   expect(Array.from(merged.getAttribute("control0").array)).toContain(10);
   for (const h of f.handles.values()) {
-    const m = (h.children[0] as THREE.LineSegments).material as THREE.Material;
+    const m = h.drawables[0].object.material as THREE.Material;
     m.transparent = true;
   }
   f.batches.rebuild(f.handles);
@@ -134,13 +131,10 @@ it("keeps transparent primitives separate and bakes conditional-line control att
 it("chunks large opaque source sets and disposes generated geometry without source ownership", async () => {
   const f = await fixture(["3 15 0 0 0 1 0 0 0 1 0"]),
     source = f.handles.get("0")!;
-  for (let i = 1; i < 22000; i++) {
-    const h = source.clone(true);
-    h.userData = source.userData;
-    h.position.x = i;
-    f.scene.add(h);
-    f.handles.set(String(i), h);
-  }
+  for (let i = 1; i < 22000; i++)
+    f.handles
+      .place(String(i), source.prototype)
+      .matrix.makeTranslation(i, 0, 0);
   f.batches.rebuild(f.handles);
   f.draw();
   expect(f.batches.root.children).toHaveLength(2);
@@ -149,7 +143,7 @@ it("chunks large opaque source sets and disposes generated geometry without sour
       (child as THREE.Mesh).geometry.getAttribute("position").count,
     ).toBeLessThanOrEqual(RAW_BATCH_LIMITS.chunkVertices);
   const sourceDispose = vi.spyOn(
-    (source.children[0] as THREE.Mesh).geometry,
+    source.drawables[0].object.geometry,
     "dispose",
   );
   f.batches.dispose();
@@ -162,18 +156,14 @@ function physical(
   box = new THREE.BoxGeometry(1, 1, 1),
 ) {
   const scene = new THREE.Scene(),
-    handles = new Map<string, THREE.Group>(),
+    handles = new OccurrenceHandles(scene),
     batches = new RenderBatches(),
     geometry = box.toNonIndexed(),
     material = new THREE.MeshStandardMaterial();
   scene.add(batches.root);
-  for (let i = 0; i < count; i++) {
-    const handle = new THREE.Group().add(new THREE.Mesh(geometry, material));
-    handle.matrixAutoUpdate = false;
-    handle.matrix.copy(matrix(i));
-    scene.add(handle);
-    handles.set(String(i), handle);
-  }
+  const prototype = new THREE.Group().add(new THREE.Mesh(geometry, material));
+  for (let i = 0; i < count; i++)
+    handles.place(String(i), prototype).matrix.copy(matrix(i));
   batches.rebuild(handles);
   batches.render({ render: () => {} }, scene, new THREE.PerspectiveCamera());
   return { batches, geometry };

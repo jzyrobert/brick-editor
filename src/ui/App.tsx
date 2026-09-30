@@ -195,6 +195,36 @@ type PlaceFits = {
   tap?: { point: Vec3; normal: Vec3 };
 };
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+/**
+ * Complete-library names, bounds and sources arrive in bursts while a large
+ * model loads, and each change re-derives every occurrence of the workspace
+ * (a few hundred ms at 20,000 parts). Coalesce a burst into one change
+ * (400 ms quiet, at most three seconds late).
+ */
+let publishedLibraryGeneration = fullLibraryGeneration();
+/** The library generation views derive from (it lags bursts; see below). */
+const coalescedLibraryGeneration = () => publishedLibraryGeneration;
+function onFullLibraryChangeCoalesced(notify: () => void) {
+  let timer: ReturnType<typeof setTimeout> | undefined,
+    first = 0;
+  const publish = () => {
+    timer = undefined;
+    publishedLibraryGeneration = fullLibraryGeneration();
+    notify();
+  };
+  const unsubscribe = onFullLibraryChange(() => {
+    const now = performance.now();
+    if (timer === undefined) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(publish, now - first >= 3000 ? 0 : 400);
+  });
+  // Changes made while nothing listened are published at once.
+  if (publishedLibraryGeneration !== fullLibraryGeneration()) publish();
+  return () => {
+    clearTimeout(timer);
+    unsubscribe();
+  };
+}
 /** Status line for the fit on show. */
 function fitStatus(
   mode: PlaceFits["mode"],
@@ -581,8 +611,8 @@ function Workspace() {
   };
   // Re-derive the scene when complete-library names, bounds or sources arrive.
   const fullLibraryVersion = useSyncExternalStore(
-    onFullLibraryChange,
-    fullLibraryGeneration,
+    onFullLibraryChangeCoalesced,
+    coalescedLibraryGeneration,
   );
   const available = editor.materialization.status === "available";
   // Walking every occurrence of a 20,000-part model takes a few hundred ms:
@@ -841,7 +871,8 @@ function Workspace() {
   }, []);
   useEffect(() => {
     const unsubscribe = editor.subscribe(() => {
-      const p = editor.project;
+      // Shared, never mutated (see Editor.snapshot): no deep copy per commit.
+      const p = editor.snapshot as Project;
       play.current?.sourceChanged();
       if (observedProjectId.current !== p.id) {
         observedProjectId.current = p.id;

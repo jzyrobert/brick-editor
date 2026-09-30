@@ -145,6 +145,170 @@ async function publish(
   }
 }
 
+/** A worker save that must be redone on the main thread (nothing was written). */
+export const SAVE_ON_MAIN_THREAD = "SAVE_ON_MAIN_THREAD";
+/**
+ * The save transaction: validate, serialize and hash `project`, then, under
+ * the cross-tab write lock, compare it with the stored copy and publish.
+ * `legacy` is the localStorage adapter for copies not yet in IndexedDB; a
+ * worker passes EMPTY_STORAGE when the page found no legacy copy, else null,
+ * and is then told to hand the save back (SAVE_ON_MAIN_THREAD) if it would
+ * need that copy.
+ */
+export async function saveSnapshot(
+  project: Project,
+  expectedStoredRevision: number | null,
+  legacy: StorageAdapter | null,
+) {
+  validate("project", project);
+  validateSourceDocument(project);
+  const json = JSON.stringify(project),
+    snapshot = { json, hash: await sha256(json), revision: project.revision };
+  return withStorageWriteLock(
+    legacy ?? workerLockOwner,
+    project.id,
+    async (assertHeld) => {
+      const record = await readRecord(project.id),
+        valid = await validSnapshot(project.id, record);
+      if (!record?.deleted && !valid && !legacy)
+        throw new Error(SAVE_ON_MAIN_THREAD);
+      const previous = record?.deleted
+        ? null
+        : (valid?.project ??
+          (await new LocalProjects(legacy!).load(project.id)));
+      ensure(
+        (previous?.revision ?? null) === expectedStoredRevision,
+        "REVISION_CONFLICT",
+        "Another tab saved this project. Export a backup or fork it.",
+      );
+      if (previous) {
+        ensure(
+          project.revision >= previous.revision,
+          "REVISION_CONFLICT",
+          "Cannot replace a newer saved revision",
+        );
+        if (project.revision === previous.revision)
+          ensure(
+            json === JSON.stringify(previous),
+            "REVISION_CONFLICT",
+            "Saved revision has different content",
+          );
+      }
+      const previousSnapshot =
+        valid?.snapshot ??
+        (previous
+          ? {
+              json: JSON.stringify(previous),
+              hash: await sha256(JSON.stringify(previous)),
+              revision: previous.revision,
+            }
+          : undefined);
+      const snapshots = [snapshot];
+      if (previousSnapshot && previousSnapshot.revision !== snapshot.revision)
+        snapshots.push(previousSnapshot);
+      await publish(
+        project.id,
+        record,
+        {
+          token: crypto.randomUUID(),
+          snapshots,
+        },
+        assertHeld,
+      );
+      return project.revision;
+    },
+  );
+}
+/** Lock owner for worker saves (Web Locks only; never the memory queue). */
+const workerLockOwner = {} as StorageAdapter;
+
+let saveWorker: Worker | null | undefined;
+let saveSequence = 0;
+const saveReplies = new Map<
+  number,
+  (reply: {
+    revision?: number;
+    fallback?: boolean;
+    error?: { code: string; message: string };
+  }) => void
+>();
+/** The persistent save worker, or null where workers cannot run. */
+function projectSaveWorker() {
+  if (saveWorker !== undefined) return saveWorker;
+  saveWorker = null;
+  if (
+    typeof Worker === "undefined" ||
+    typeof navigator === "undefined" ||
+    !navigator.locks
+  )
+    return null;
+  try {
+    const worker = new Worker(
+      new URL("../workers/project-save.worker.ts", import.meta.url),
+      { type: "module" },
+    );
+    worker.onmessage = (e) => {
+      const reply = saveReplies.get(e.data?.sequence);
+      saveReplies.delete(e.data?.sequence);
+      reply?.(e.data);
+    };
+    worker.onerror = (e) => {
+      e.preventDefault();
+      // A worker that cannot start (or crashed): every waiting save and all
+      // later ones run on the main thread.
+      saveWorker = null;
+      worker.terminate();
+      for (const reply of saveReplies.values()) reply({ fallback: true });
+      saveReplies.clear();
+    };
+    saveWorker = worker;
+  } catch {
+    saveWorker = null;
+  }
+  return saveWorker;
+}
+/** Save through the worker: the new revision, or undefined when the save
+ * must run on the main thread instead (nothing was written). */
+async function saveInWorker(
+  project: Project,
+  expectedStoredRevision: number | null,
+  legacyCopy: boolean,
+): Promise<number | undefined> {
+  // The page's own coordination decides: without Web Locks or IndexedDB here
+  // the main-thread path reports saving as unavailable, as it always has.
+  if (
+    typeof navigator === "undefined" ||
+    !navigator.locks ||
+    typeof indexedDB === "undefined" ||
+    !indexedDB
+  )
+    return undefined;
+  const worker = projectSaveWorker();
+  if (!worker) return undefined;
+  const sequence = ++saveSequence;
+  const reply = await new Promise<{
+    revision?: number;
+    fallback?: boolean;
+    error?: { code: string; message: string };
+  }>((resolve) => {
+    saveReplies.set(sequence, resolve);
+    try {
+      worker.postMessage({
+        sequence,
+        project,
+        expectedStoredRevision,
+        legacyCopy,
+      });
+    } catch {
+      saveReplies.delete(sequence);
+      resolve({ fallback: true });
+    }
+  });
+  if (reply.error)
+    throw new AppError(reply.error.code as never, reply.error.message);
+  return reply.fallback ? undefined : reply.revision;
+}
+
 /** Durable browser default. LocalProjects remains the injectable legacy adapter.
  * Legacy snapshots are read without mutation and migrated only after a verified
  * save. A tombstone prevents deleted legacy copies reappearing in the library. */
@@ -165,65 +329,30 @@ export class BrowserProjects {
     if (stored === null) return null;
     return stored?.project ?? new LocalProjects(this.legacyStorage).load(id);
   }
+  /**
+   * Save a verified snapshot. The work — schema and source validation, JSON,
+   * hashing and verifying the stored copy it replaces — runs in a worker
+   * (`project-save.worker.ts`) when one can take the cross-tab lock itself;
+   * otherwise (no workers or Web Locks, a legacy localStorage copy to
+   * migrate) on the main thread as before.
+   */
   async save(input: Project, expectedStoredRevision: number | null) {
-    const project = structuredClone(input);
-    validate("project", project);
-    validateSourceDocument(project);
-    const json = JSON.stringify(project),
-      snapshot = { json, hash: await sha256(json), revision: project.revision };
-    return withStorageWriteLock(
-      this.legacyStorage,
-      project.id,
-      async (assertHeld) => {
-        const record = await readRecord(project.id),
-          valid = await validSnapshot(project.id, record);
-        const previous = record?.deleted
-          ? null
-          : (valid?.project ??
-            (await new LocalProjects(this.legacyStorage).load(project.id)));
-        ensure(
-          (previous?.revision ?? null) === expectedStoredRevision,
-          "REVISION_CONFLICT",
-          "Another tab saved this project. Export a backup or fork it.",
-        );
-        if (previous) {
-          ensure(
-            project.revision >= previous.revision,
-            "REVISION_CONFLICT",
-            "Cannot replace a newer saved revision",
-          );
-          if (project.revision === previous.revision)
-            ensure(
-              json === JSON.stringify(previous),
-              "REVISION_CONFLICT",
-              "Saved revision has different content",
-            );
-        }
-        const previousSnapshot =
-          valid?.snapshot ??
-          (previous
-            ? {
-                json: JSON.stringify(previous),
-                hash: await sha256(JSON.stringify(previous)),
-                revision: previous.revision,
-              }
-            : undefined);
-        const snapshots = [snapshot];
-        if (previousSnapshot && previousSnapshot.revision !== snapshot.revision)
-          snapshots.push(previousSnapshot);
-        await publish(
-          project.id,
-          record,
-          {
-            token: crypto.randomUUID(),
-            snapshots,
-          },
-          assertHeld,
-        );
-        this.notify(project.id);
-        return project.revision;
-      },
+    const saved = await saveInWorker(
+      input,
+      expectedStoredRevision,
+      new LocalProjects(this.legacyStorage).hasCopy(input.id),
     );
+    if (saved !== undefined) {
+      this.notify(input.id);
+      return saved;
+    }
+    const revision = await saveSnapshot(
+      structuredClone(input),
+      expectedStoredRevision,
+      this.legacyStorage,
+    );
+    this.notify(input.id);
+    return revision;
   }
   async list() {
     const db = await database();

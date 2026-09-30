@@ -11,6 +11,7 @@ import { importLDraw, exportLDraw } from "../../src/ldraw/io";
 import { uid } from "../../src/core/types";
 import { encodeNative, decodeNative } from "../../src/persistence/native";
 import { LayerGhost } from "../../src/render/layerGhost";
+import { OccurrenceHandles } from "../../src/render/occurrence-handles";
 const command = (
   e: Editor,
   type: string,
@@ -187,17 +188,15 @@ it("ghosts shared materials per object and restores shadows without mutating or 
   const material = new THREE.MeshStandardMaterial({ opacity: 0.8 }),
     originalDispose = vi.spyOn(material, "dispose"),
     geometry = new THREE.BoxGeometry();
-  const a = new THREE.Mesh(geometry, material),
-    b = new THREE.Mesh(geometry, material);
-  a.castShadow = b.castShadow = true;
-  const ga = new THREE.Group(),
-    gb = new THREE.Group();
-  ga.add(a);
-  gb.add(b);
-  const handles = new Map([
-      ["a", ga],
-      ["b", gb],
-    ]),
+  const prototype = new THREE.Group().add(new THREE.Mesh(geometry, material));
+  (prototype.children[0] as THREE.Mesh).castShadow = true;
+  // Materialized trees follow their handle's treatments.
+  const handles = new OccurrenceHandles(new THREE.Group()),
+    tree = (id: string) =>
+      handles.materialize(handles.place(id, prototype))
+        .children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.Material>;
+  const a = tree("a"),
+    b = tree("b"),
     ghost = new LayerGhost();
   ghost.apply(handles, new Set(["b"]));
   const clone = b.material;
