@@ -83,8 +83,10 @@ import {
   PHOTO_SCHEDULE,
   choosePhotoRenderer,
   nextTilesPerFrame,
-  photoDenoise,
+  photoDone,
   photoProgress,
+  samplesToClean,
+  traceSize,
   traceMeshes,
   traceSignature,
   type PhotoRendererChoice,
@@ -515,6 +517,15 @@ export class SceneAdapter {
     triangles: number;
     samples: number;
     buildMs: number;
+    /** Tracing shader compile time (the page's first still). */
+    compileMs?: number;
+    /** Size the still is traced at (upscaled to the canvas). */
+    width?: number;
+    height?: number;
+    /** Estimated noise of the presented still (8-bit display levels, RMS). */
+    noise?: number | null;
+    /** Milliseconds from the first traced sample to the finished still. */
+    refineMs?: number | null;
   } = {
     renderer: "raster",
     reason: null,
@@ -522,6 +533,11 @@ export class SceneAdapter {
     samples: 0,
     buildMs: 0,
   };
+  /** Highest progress shown for the current still (the toast never goes back). */
+  private photoPercent = 0;
+  private photoRefineStart = 0;
+  /** Whole samples of the still last presented by the refinement loop. */
+  private photoPresented = -1;
   onPhotoProgress?: (progress: PhotoProgressReport | null) => void;
   /** Whether the next draw must re-render a cached shadow map. */
   private shadowDirty = true;
@@ -2860,7 +2876,13 @@ export class SceneAdapter {
   ) {
     const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
     const photo = this.photo;
-    const view = this.photoView(look, size.x, size.y, trace.bounds);
+    const traced = this.photoTraceSize();
+    const view = this.photoView(
+      look,
+      traced.width,
+      traced.height,
+      trace.bounds,
+    );
     const viewKey = this.photoViewSignature(view, trace.key);
     const schedule = PHOTO_SCHEDULE[this.lookResourceProfile];
     const current =
@@ -2870,7 +2892,7 @@ export class SceneAdapter {
       !photo.compiling;
     if (current && photo.samples >= schedule.displaySamples) {
       this.presentPhoto(look);
-      if (photo.samples < look.pathSamples) this.schedulePhoto(look, trace, 0);
+      if (!this.photoFinished(photo, look)) this.schedulePhoto(look, trace, 0);
       return;
     }
     this.drawLookFrame({ ...look, samples: 1 }, null, size.x, size.y, 0, {
@@ -2899,6 +2921,26 @@ export class SceneAdapter {
       });
     }, delay);
   }
+  /** The interactive still's traced size: the drawing buffer, scaled down to
+   * the profile's pixel budget. */
+  private photoTraceSize() {
+    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
+    return traceSize(
+      size.x,
+      size.y,
+      PHOTO_SCHEDULE[this.lookResourceProfile].tracePixels,
+    );
+  }
+  /** Whether an interactive still is done: clean (its estimated noise after
+   * denoising is below the profile's threshold) or at `pathSamples`. */
+  private photoFinished(photo: PhotoTracer, look: LookControls) {
+    return photoDone({
+      samples: photo.samples,
+      noise: photo.noise,
+      schedule: photo.schedule,
+      maxSamples: look.pathSamples,
+    });
+  }
   private photoCurrent(token: number) {
     return (
       token === this.photoToken &&
@@ -2920,18 +2962,47 @@ export class SceneAdapter {
       return;
     }
     const target = look.pathSamples;
-    const report = (phase: PhotoProgressReport["phase"], samples: number) =>
+    const schedule = PHOTO_SCHEDULE[this.lookResourceProfile];
+    const report = (phase: PhotoProgressReport["phase"], samples: number) => {
+      if (phase === "refining") {
+        // Against the samples the still is expected to need (from its noise;
+        // before the first estimate, a prior of four times the minimum).
+        const needed = Number.isFinite(photo.noise)
+          ? samplesToClean(samples, photo.noise, schedule.cleanNoise)
+          : schedule.minSamples * 4;
+        this.photoPercent = Math.max(
+          this.photoPercent,
+          Math.min(99, photoProgress(samples, target, needed)),
+        );
+      }
       this.reportPhoto({
         phase,
-        percent: phase === "preparing" ? 0 : photoProgress(samples, target),
+        percent:
+          phase === "preparing"
+            ? 0
+            : phase === "done"
+              ? 100
+              : this.photoPercent,
         samples,
         target,
         renderer: "path",
         note: null,
       });
-    if (!this.photo?.hasScene(trace.key)) report("preparing", 0);
+    };
+    if (!this.photo?.hasScene(trace.key))
+      this.reportPhoto({
+        phase: "preparing",
+        percent: 0,
+        samples: 0,
+        target,
+        renderer: "path",
+        note: null,
+      });
     const photo = await this.ensurePhoto();
     if (!this.photoCurrent(token)) return;
+    // Compile the tracing shader while the BVH builds (in a worker): its
+    // defines depend only on the camera type, lens and background.
+    photo.compileFor(this.camera, this.photoBackground());
     if (!photo.hasScene(trace.key)) {
       const built = await photo.prepare(
         trace.key,
@@ -2940,14 +3011,23 @@ export class SceneAdapter {
       );
       if (!built || !this.photoCurrent(token)) return;
     }
-    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
-    const view = this.photoView(look, size.x, size.y, trace.bounds);
+    const traced = this.photoTraceSize();
+    const view = this.photoView(
+      look,
+      traced.width,
+      traced.height,
+      trace.bounds,
+    );
     const viewKey = this.photoViewSignature(view, trace.key);
     const background = photo.setBackground(this.photoBackground());
     if (viewKey !== this.photoViewKey || background) {
+      photo.denoise = true;
       photo.setView(view);
       photo.reset();
       this.photoViewKey = viewKey;
+      this.photoPercent = 0;
+      this.photoRefineStart = 0;
+      this.photoPresented = -1;
     }
     this.photoInfo = {
       renderer: "path",
@@ -2955,6 +3035,11 @@ export class SceneAdapter {
       triangles: photo.triangles,
       samples: photo.samples,
       buildMs: photo.buildMs,
+      compileMs: Math.round(photo.compileMs),
+      width: traced.width,
+      height: traced.height,
+      noise: Number.isFinite(photo.noise) ? photo.noise : null,
+      refineMs: null,
     };
     photo.compile();
     const frame = () => {
@@ -2980,12 +3065,29 @@ export class SceneAdapter {
         ),
       );
       photo.sync();
+      // Refinement time counts from the first traced sample (after the
+      // shader, which software WebGL compiles only at the first draw).
+      if (!this.photoRefineStart && photo.samples >= 1)
+        this.photoRefineStart = performance.now();
       const samples = Math.floor(photo.samples);
       this.photoInfo.samples = samples;
-      if (photo.samples >= photo.schedule.displaySamples)
+      this.photoInfo.compileMs = Math.round(photo.compileMs);
+      // Present each whole sample once (a sample may span several frames).
+      if (
+        photo.samples >= photo.schedule.displaySamples &&
+        samples !== this.photoPresented
+      ) {
+        this.photoPresented = samples;
         this.presentPhoto(look);
-      if (photo.samples >= target) {
+      }
+      this.photoInfo.noise = Number.isFinite(photo.noise)
+        ? Math.round(photo.noise * 100) / 100
+        : null;
+      if (this.photoFinished(photo, look)) {
         this.photoLastFrame = 0;
+        this.photoInfo.refineMs = this.photoRefineStart
+          ? Math.round(performance.now() - this.photoRefineStart)
+          : null;
         report("done", samples);
         return;
       }
@@ -3003,12 +3105,11 @@ export class SceneAdapter {
     info.autoReset = false;
     pipeline.presentImage({
       renderer: this.renderer,
-      texture: photo.texture,
+      texture: photo.image(),
       target: null,
       background: this.photoBackground(),
       vignette: look.vignette,
       grade: this.lookGrade(look),
-      denoise: photoDenoise(photo.samples),
     });
     this.lookStats = { passes: 1, samples: Math.floor(photo.samples) };
     const scene = this.scene;
@@ -3070,6 +3171,9 @@ export class SceneAdapter {
     );
     alive();
     photo.setBackground(background);
+    // Captures are traced at full size; the denoiser's targets are skipped for
+    // very large ones.
+    photo.denoise = width * height <= photo.schedule.denoisePixels;
     photo.setView(this.photoView(look, width, height, trace.bounds));
     photo.compile();
     while (photo.compiling) {
@@ -3091,13 +3195,13 @@ export class SceneAdapter {
     const pipeline = (this.pipeline ??= new LookPipeline());
     pipeline.presentImage({
       renderer: this.renderer,
-      texture: photo.texture,
+      texture: photo.image(),
       target,
       background,
       vignette: look.vignette,
       grade: this.lookGrade(look),
-      denoise: photoDenoise(photo.samples),
     });
+    photo.denoise = true;
     return {
       calls: 0,
       triangles: photo.triangles,

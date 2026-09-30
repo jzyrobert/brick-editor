@@ -4,10 +4,15 @@ import { resolveLook } from "../../src/render/look";
 import {
   PHOTO_SCHEDULE,
   choosePhotoRenderer,
+  MAX_SAMPLES_PER_FRAME,
+  estimateNoise,
+  isNoiseCheckpoint,
   nextTilesPerFrame,
-  photoDenoise,
+  photoDone,
   photoLens,
   photoProgress,
+  samplesToClean,
+  traceSize,
   traceMeshes,
   traceSignature,
 } from "../../src/render/photo-policy";
@@ -92,31 +97,113 @@ describe("photo look: path-traced stills", () => {
         support: { ...support, maxTextureSize: 256 },
       }).reason,
     ).toMatch(/texture limit/);
-    // Phones trace smaller scenes than desktops, in more, smaller tiles.
+    // Phones trace smaller scenes than desktops, at fewer pixels, with fewer
+    // bounces, and stop at a slightly higher noise level.
     expect(RENDER_BUDGETS.mobile.photoTriangles).toBeLessThan(
       RENDER_BUDGETS.desktop.photoTriangles,
     );
     const phone = PHOTO_SCHEDULE.mobile,
       desktop = PHOTO_SCHEDULE.desktop;
-    expect(phone.tiles[0] * phone.tiles[1]).toBeGreaterThan(
+    expect(phone.tiles[0] * phone.tiles[1]).toBeGreaterThanOrEqual(
       desktop.tiles[0] * desktop.tiles[1],
     );
     expect(phone.tilesPerFrame).toBeLessThanOrEqual(desktop.tilesPerFrame);
+    expect(phone.tracePixels).toBeLessThan(desktop.tracePixels);
+    expect(phone.bounces).toBeLessThan(desktop.bounces);
+    expect(phone.cleanNoise).toBeGreaterThanOrEqual(desktop.cleanNoise);
   });
 
   it("schedules tiles per frame from the measured frame interval", () => {
-    expect(nextTilesPerFrame(4, 120, 9)).toBe(2);
-    expect(nextTilesPerFrame(1, 500, 9)).toBe(1);
-    expect(nextTilesPerFrame(2, 16, 9)).toBe(3);
-    expect(nextTilesPerFrame(9, 16, 9)).toBe(9);
-    expect(nextTilesPerFrame(3, 40, 9)).toBe(3);
-    expect(nextTilesPerFrame(3, NaN, 9)).toBe(3);
-    // Progress and smoothing follow the sample count.
+    expect(nextTilesPerFrame(4, 120, 4)).toBe(2);
+    expect(nextTilesPerFrame(1, 500, 4)).toBe(1);
+    // A frame at the display rate doubles the work; a busier one steps it.
+    expect(nextTilesPerFrame(2, 16, 4)).toBe(4);
+    expect(nextTilesPerFrame(2, 30, 4)).toBe(3);
+    expect(nextTilesPerFrame(3, 50, 4)).toBe(3);
+    expect(nextTilesPerFrame(3, NaN, 4)).toBe(3);
+    // Fast GPUs trace several whole samples per frame, up to a cap.
+    expect(nextTilesPerFrame(4, 16, 4)).toBe(8);
+    expect(nextTilesPerFrame(4 * MAX_SAMPLES_PER_FRAME, 16, 4)).toBe(
+      4 * MAX_SAMPLES_PER_FRAME,
+    );
+    // Progress follows the samples the still is expected to need.
     expect(photoProgress(0, 64)).toBe(0);
     expect(photoProgress(32, 64)).toBe(50);
     expect(photoProgress(80, 64)).toBe(100);
-    expect(photoDenoise(1)).toBeGreaterThan(photoDenoise(16));
-    expect(photoDenoise(16)).toBeGreaterThan(photoDenoise(256));
+    expect(photoProgress(8, 256, 16)).toBe(50);
+    expect(photoProgress(8, 4, 16)).toBe(100);
+  });
+
+  it("traces interactive stills at a pixel budget, keeping the aspect", () => {
+    expect(traceSize(800, 600, 1_000_000)).toEqual({
+      width: 800,
+      height: 600,
+      scale: 1,
+    });
+    const phone = traceSize(1080, 1800, 480_000);
+    expect(phone.width * phone.height).toBeLessThanOrEqual(481_000);
+    expect(phone.width / phone.height).toBeCloseTo(1080 / 1800, 2);
+    expect(traceSize(0, 0, 100)).toMatchObject({ width: 1, height: 1 });
+  });
+
+  it("estimates the noise of a still from two sample counts, without a reference", () => {
+    // A synthetic still: a smooth image plus per-sample noise of σ = 20 levels.
+    const random = (() => {
+      let a = 7;
+      return () => {
+        a = (Math.imul(a, 1103515245) + 12345) >>> 0;
+        return a / 4294967296;
+      };
+    })();
+    const gaussian = () =>
+      Math.sqrt(-2 * Math.log(1 - random())) * Math.cos(2 * Math.PI * random());
+    const pixels = 20_000,
+      sigma = 20;
+    const truth = Array.from({ length: pixels }, (_, i) => 60 + (i % 100));
+    const sum = new Float64Array(pixels);
+    const snapshot = (samples: number) =>
+      Uint8Array.from({ length: pixels * 4 }, (_, i) =>
+        i % 4 === 3
+          ? 255
+          : Math.max(0, Math.min(255, Math.round(sum[i >> 2] / samples))),
+      );
+    let traced = 0;
+    const trace = (to: number) => {
+      for (; traced < to; traced++)
+        for (let p = 0; p < pixels; p++)
+          sum[p] += truth[p] + sigma * gaussian();
+    };
+    trace(16);
+    const at16 = snapshot(16);
+    trace(64);
+    const at64 = snapshot(64);
+    const noise = estimateNoise(at16, at64, 16, 64);
+    expect(noise).toBeGreaterThan((sigma / 8) * 0.85);
+    expect(noise).toBeLessThan((sigma / 8) * 1.15);
+    expect(estimateNoise(at16, at64, 64, 16)).toBeNaN();
+    // Noise falls as 1/√samples: 2.5 levels at 64 samples reach 1.25 at 256.
+    expect(samplesToClean(64, 2.5, 1.25)).toBe(256);
+    expect(samplesToClean(64, NaN, 1.25)).toBe(64);
+    expect(isNoiseCheckpoint(8)).toBe(true);
+    expect(isNoiseCheckpoint(8.5)).toBe(false);
+    expect(isNoiseCheckpoint(2)).toBe(false);
+    // Done when clean (after the minimum) or at the cap.
+    const schedule = { minSamples: 8, cleanNoise: 1.5 };
+    expect(
+      photoDone({ samples: 4, noise: 0.5, schedule, maxSamples: 64 }),
+    ).toBe(false);
+    expect(
+      photoDone({ samples: 8, noise: 1.4, schedule, maxSamples: 64 }),
+    ).toBe(true);
+    expect(photoDone({ samples: 8, noise: 2, schedule, maxSamples: 64 })).toBe(
+      false,
+    );
+    expect(
+      photoDone({ samples: 8, noise: NaN, schedule, maxSamples: 64 }),
+    ).toBe(false);
+    expect(photoDone({ samples: 4, noise: NaN, schedule, maxSamples: 4 })).toBe(
+      true,
+    );
   });
 
   it("scales the lens aperture with the focus distance", () => {

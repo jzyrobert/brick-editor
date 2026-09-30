@@ -319,6 +319,45 @@ test("photo captures are path traced, repeatable, and clearly unlike realistic; 
   expect(errors).toEqual([]);
 });
 
+test("a photo still stops refining once its denoised image is clean, well before the sample cap", async ({
+  page,
+}) => {
+  // Software WebGL: the shader compile alone takes about a minute, and a
+  // sample of this view about a second. Thresholds are generous.
+  test.setTimeout(600000);
+  await page.setViewportSize({ width: 480, height: 360 });
+  await page.goto("./?automation=1");
+  await page.waitForFunction(() => !!window.brickEditor);
+  await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    const imported = await a.project.import({
+      format: "template",
+      template: "jeep",
+    });
+    await a.ready({ minRevision: imported.revision, strict: true });
+    await a.camera.fit();
+    await a.render.look.set("photo");
+  });
+  const status = page.locator(".status-bar");
+  await expect(status).toContainText(/Photo refined: \d+ path-traced samples/, {
+    timeout: 540000,
+  });
+  const stats = await page.evaluate(() =>
+    window.brickEditor!.render.look.photo(),
+  );
+  const look = await page.evaluate(() => window.brickEditor!.render.look.get());
+  expect(stats).toMatchObject({ renderer: "path", reason: null });
+  // Stopped by the noise estimate, not the cap.
+  expect(stats.samples).toBeGreaterThanOrEqual(8);
+  expect(stats.samples).toBeLessThan(look.pathSamples);
+  expect(stats.noise).not.toBeNull();
+  expect(stats.noise!).toBeLessThanOrEqual(1.5);
+  expect(stats.width! * stats.height!).toBeLessThanOrEqual(1_600_000);
+  // Refinement (after the shader and BVH) within a generous software budget.
+  expect(stats.refineMs!).toBeGreaterThan(0);
+  expect(stats.refineMs!).toBeLessThan(240000);
+});
+
 test("phones trace fewer samples within the phone budget", async ({ page }) => {
   test.setTimeout(300000);
   await page.setViewportSize({ width: 720, height: 520 });

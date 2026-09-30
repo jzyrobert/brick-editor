@@ -4,8 +4,26 @@ import { PathTracingRenderer } from "three-gpu-pathtracer/src/core/PathTracingRe
 import { PhysicalPathTracingMaterial } from "three-gpu-pathtracer/src/materials/pathtracing/PhysicalPathTracingMaterial.js";
 import { GenerateMeshBVHWorker } from "three-mesh-bvh/src/workers/GenerateMeshBVHWorker.js";
 import { treatmentBase } from "./batching";
+import {
+  PhotoSampler,
+  decorrelatePixels,
+  highestTupleIndex,
+  tupleTextureSize,
+} from "./photo-sampling";
 import { classifyFinish } from "./look";
-import { photoLens, type PhotoSchedule } from "./photo-policy";
+import {
+  GUIDE_FRONT_ONLY,
+  GUIDE_OPAQUE,
+  GUIDE_SKIP,
+  PhotoDenoiser,
+  type GuideSlot,
+} from "./photo-denoise";
+import {
+  estimateNoise,
+  isNoiseCheckpoint,
+  photoLens,
+  type PhotoSchedule,
+} from "./photo-policy";
 
 /**
  * Path-traced stills for the photo look (three-gpu-pathtracer). A still view is
@@ -447,8 +465,24 @@ export type PhotoView = {
 };
 
 const bvhOptions = { strategy: SAH, maxLeafTris: 1, indirect: true };
-/** Above this many triangles the BVH is built in a worker. */
-const WORKER_TRIANGLES = 60_000;
+/** Above this many triangles the BVH is built in a worker (all model scenes:
+ * even a small model's build would block input for a few hundred ms on a phone). */
+const WORKER_TRIANGLES = 2_000;
+
+/** How the denoiser sees a traced material: its albedo, and whether it is in the
+ * guides at all (glass and see-through parts show what is behind them). */
+export function guideSlot(
+  material: THREE.MeshPhysicalMaterial,
+  frontOnly = false,
+): GuideSlot {
+  const seeThrough =
+    material.transmission > 0 ||
+    (material.transparent && material.opacity < 0.6);
+  return {
+    color: material.color.clone(),
+    flag: seeThrough ? GUIDE_SKIP : frontOnly ? GUIDE_FRONT_ONLY : GUIDE_OPAQUE,
+  };
+}
 
 /**
  * Progressive path tracer for photo stills. Owns the BVH, the trace materials,
@@ -471,9 +505,21 @@ export class PhotoTracer {
   private building: Promise<boolean> | null = null;
   private buildEpoch = 0;
   private compileStarted = false;
+  private compileStart = 0;
+  private denoiser: PhotoDenoiser;
+  /** Denoise presented stills (off for captures too large for its targets). */
+  denoise = true;
+  /** The presented (denoised) image and the sample count it shows. */
+  private presented: { samples: number; texture: THREE.Texture } | null = null;
+  /** Tone-mapped probes of the presented still at checkpoints (noise). */
+  private probes = new Map<number, Float32Array>();
+  /** Estimated RMS noise of the presented still, 8-bit display levels. */
+  noise = NaN;
   triangles = 0;
   /** Milliseconds spent building the last trace scene (merge + BVH). */
   buildMs = 0;
+  /** Milliseconds the tracing shader took to compile (first still only). */
+  compileMs = 0;
   tilesPerFrame: number;
   constructor(
     private renderer: THREE.WebGLRenderer,
@@ -481,6 +527,23 @@ export class PhotoTracer {
   ) {
     this.tracer = new PathTracingRenderer(renderer);
     this.tracer.material = this.material;
+    // The library compiles for the canvas (its tone mapping and colour
+    // space), but traces into a linear float target: a second, different
+    // program. Compile for the target that is drawn to.
+    const tracer = this.tracer as unknown as {
+      compileMaterial(): Promise<unknown>;
+      _fsQuad: { _mesh: THREE.Mesh };
+      _primaryTarget: THREE.WebGLRenderTarget;
+    };
+    tracer.compileMaterial = () => {
+      const previous = renderer.getRenderTarget();
+      renderer.setRenderTarget(tracer._primaryTarget);
+      try {
+        return renderer.compileAsync(tracer._fsQuad._mesh, new THREE.Camera());
+      } finally {
+        renderer.setRenderTarget(previous);
+      }
+    };
     this.tracer.tiles.set(...schedule.tiles);
     // Deterministic noise: the same view and sample count give the same image.
     this.tracer.stableNoise = true;
@@ -488,16 +551,43 @@ export class PhotoTracer {
     this.material.bounces = schedule.bounces;
     this.material.transmissiveBounces = schedule.transmissiveBounces;
     this.material.filterGlossyFactor = 0.5;
+    // Random numbers: size the tuple texture so every tuple the shader reads
+    // exists, and replace the library's sampler (see photo-sampling.ts). The
+    // texture keeps its sampler while its size is unchanged, and the tracer
+    // asks for the library's size before every sample: clamp that request.
+    const stratified = this.material.uniforms.stratifiedTexture.value as {
+      init(count: number, depth: number): void;
+      sampler: unknown;
+      image: { data: Float32Array };
+    };
+    const highest = highestTupleIndex(this.material.fragmentShader);
+    const init = stratified.init.bind(stratified);
+    const bounces = this.material.bounces + this.material.transmissiveBounces;
+    stratified.init = (count: number, depth: number) => {
+      const size = tupleTextureSize({ count, depth }, highest, bounces);
+      init(size.count, size.depth);
+    };
+    stratified.init(20, bounces + 5);
+    stratified.sampler = new PhotoSampler(stratified.image.data);
+    this.material.fragmentShader = decorrelatePixels(
+      this.material.fragmentShader,
+    );
     this.environment = equirectTexture(studioEnvironmentData(), 512, 256);
     this.material.envMapInfo.updateFrom(this.environment);
     this.material.environmentIntensity = 1;
+    this.denoiser = new PhotoDenoiser(renderer);
   }
   /** Whether a trace scene for `key` is built. */
   hasScene(key: string) {
     return this.sceneKey === key && !this.building;
   }
   get compiling() {
-    return this.tracer.isCompiling;
+    const compiling = this.tracer.isCompiling;
+    if (!compiling && this.compileStart) {
+      this.compileMs = performance.now() - this.compileStart;
+      this.compileStart = 0;
+    }
+    return compiling;
   }
   get samples() {
     return this.tracer.samples;
@@ -654,6 +744,10 @@ export class PhotoTracer {
     material.materialIndexAttribute.updateFrom(
       geometry.getAttribute("materialIndex") as THREE.BufferAttribute,
     );
+    this.denoiser.setGeometry(
+      geometry,
+      materials.map((m) => guideSlot(m, m === this.stageMaterial)),
+    );
     // Only the BVH's GPU copy is needed from here on; drop CPU-side copies.
     geometry.deleteAttribute("normal");
     geometry.deleteAttribute("materialIndex");
@@ -694,8 +788,10 @@ export class PhotoTracer {
     // unavailable (mirrors WebGLPathTracer).
     this.tracer.alpha =
       transparent || !this.renderer.extensions.has("EXT_float_blend");
-    if (this.traceMaterials.length)
+    if (this.traceMaterials.length) {
       material.materials.updateFrom(this.traceMaterials, []);
+      this.denoiser.setSlot(0, guideSlot(stageMaterial, true));
+    }
     this.reset();
     return true;
   }
@@ -722,13 +818,29 @@ export class PhotoTracer {
     physical.apertureRotation = 0.3;
     physical.anamorphicRatio = 1;
     this.material.environmentRotation.makeRotationY(view.azimuth).invert();
+    if (this.denoise) {
+      // Blur radius in pixels of a point at infinity: aperture radius over
+      // the size of a pixel on the focus plane.
+      const fov = (view.camera as THREE.PerspectiveCamera).fov ?? 45;
+      const pixel =
+        (2 * lens.focusDistance * Math.tan(THREE.MathUtils.degToRad(fov) / 2)) /
+        height;
+      this.denoiser.setLens(
+        lens.focusDistance,
+        perspective ? lens.apertureRadius / pixel : 0,
+      );
+      this.denoiser.setSize(width, height);
+      this.denoiser.renderGuides(view.camera);
+    } else this.denoiser.releaseTargets();
   }
   reset() {
     this.tracer.reset();
-    // The stratified sampler reshuffles before it reseeds (three-gpu-pathtracer
-    // 0.0.23), so one reset leaves it in a state that depends on history. A second
-    // reset starts from the reseeded generator: the same view and sample count
-    // then trace the same image (repeatable captures).
+    this.denoiser.reset();
+    this.presented = null;
+    this.probes.clear();
+    this.noise = NaN;
+    // Restart the seeded sampler (photo-sampling.ts): the same view and sample
+    // count then trace the same image (repeatable captures).
     const stratified = (
       this.material.uniforms.stratifiedTexture as {
         value: { reset(): void };
@@ -736,10 +848,41 @@ export class PhotoTracer {
     ).value;
     stratified.reset();
   }
+  /** Start compiling the tracing shader for a camera and background before the
+   * scene is built (the shader's variant depends only on them). */
+  compileFor(
+    camera: THREE.PerspectiveCamera | THREE.OrthographicCamera,
+    background: THREE.Color | null,
+  ) {
+    if (this.compileStarted) return;
+    this.setBackground(background);
+    camera.updateMatrixWorld();
+    this.tracer.setCamera(camera);
+    // The depth-of-field variant is always compiled (see setView).
+    const physical = this.material.physicalCamera;
+    physical.bokehSize = Math.max(1e-4, physical.bokehSize);
+    this.compile();
+  }
   /** Start compiling the tracing shader (asynchronously where supported). */
   compile() {
     if (this.compileStarted) return;
     this.compileStarted = true;
+    this.compileStart = performance.now();
+    // Settle the shader's defines first, without compiling after each one:
+    // the library compiles on every define change, which linked three
+    // variants of the 115 KB shader before the one used (each one is the
+    // slow part of a first still, seconds on a phone).
+    const material = this.material;
+    const dispatch = material.dispatchEvent;
+    material.dispatchEvent = () => {};
+    try {
+      (material as unknown as { onBeforeRender(): void }).onBeforeRender();
+    } finally {
+      material.dispatchEvent = dispatch;
+    }
+    // One compile, through the asynchronous path (KHR_parallel_shader_compile
+    // where available), of the variant that is drawn (see the constructor).
+    material.needsUpdate = true;
     this.tracer.update();
   }
   /** Trace `tiles` tiles (a full sample is totalTiles tiles). */
@@ -757,7 +900,49 @@ export class PhotoTracer {
     for (let i = 0; i < tiles; i++) {
       this.tracer.update();
       if (this.tracer.isCompiling) return;
+      const samples = this.tracer.samples;
+      if (this.denoise && this.denoiser.wantsSnapshot(samples))
+        this.denoiser.snapshot(this.texture, samples);
+      // Stop at a noise checkpoint so the caller presents (and measures) it.
+      if (isNoiseCheckpoint(samples)) return;
     }
+  }
+  /**
+   * The still to present: the accumulation, denoised. At noise checkpoints the
+   * presented image is also probed and compared with an earlier checkpoint
+   * (estimateNoise), which updates `noise`.
+   */
+  image(): THREE.Texture {
+    if (!this.denoise) return this.texture;
+    // Denoised once per whole sample: between them (a sample traced in
+    // tiles over several frames) the last one is shown.
+    const samples = this.tracer.samples;
+    const whole = Math.floor(samples);
+    if (this.presented?.samples === whole) return this.presented.texture;
+    const texture = this.denoiser.denoise(this.texture, Math.max(1, whole));
+    this.presented = { samples: whole, texture };
+    if (isNoiseCheckpoint(samples) && !this.probes.has(samples)) {
+      const probe = this.denoiser.probe(
+        texture,
+        this.renderer.toneMapping,
+        this.renderer.toneMappingExposure,
+      );
+      let earlier = 0;
+      for (const n of this.probes.keys())
+        if (n * 2 <= samples && n > earlier) earlier = n;
+      if (earlier)
+        this.noise = estimateNoise(
+          this.probes.get(earlier)!,
+          probe,
+          earlier,
+          samples,
+        );
+      this.probes.set(samples, probe);
+      // Later checkpoints compare with this one or a later one.
+      for (const n of [...this.probes.keys()])
+        if (n < earlier) this.probes.delete(n);
+    }
+    return texture;
   }
   /**
    * Wait for the traced tiles to finish on the GPU (a one-pixel readback). Called
@@ -776,6 +961,7 @@ export class PhotoTracer {
     this.step(count * this.totalTiles);
   }
   releaseScene() {
+    this.presented = null;
     this.buildEpoch++;
     this.building = null;
     this.sceneKey = null;
@@ -806,9 +992,11 @@ export class PhotoTracer {
     ]);
     this.triangles = 0;
     this.tracer.setSize(1, 1);
+    this.denoiser.releaseTargets();
   }
   dispose() {
     this.releaseScene();
+    this.denoiser.dispose();
     this.worker?.dispose();
     this.worker = undefined;
     this.traceMaterials.forEach((m) => m.dispose());
