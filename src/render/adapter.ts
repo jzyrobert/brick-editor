@@ -137,6 +137,16 @@ import {
   openIndexedDbStore,
 } from "./geometry-cache";
 import { TimeSlicer } from "./scheduling";
+import {
+  LoadSkeleton,
+  occurrenceSteps,
+  planReveal,
+  prefersReducedMotion,
+  SKELETON_ANIMATED_LIMIT,
+  takeRevealable,
+  type RevealPlan,
+} from "./load-skeleton";
+import { projectBounds, type Bounds } from "../core/spatial";
 import { prepareFullLibrary } from "../catalog/full-library-loader";
 import { loadTextureImage } from "../catalog/full-textures";
 import { TexmapTextures, texmapBudget } from "./texmap-textures";
@@ -331,13 +341,19 @@ function mainMaterials(group: THREE.Object3D, code?: string): MainMaterials {
 }
 /** Longest stretch of model loading work in one main-thread task. */
 const LOAD_SLICE_MS = 12;
+/** A newly opened model still loading after this long shows its skeleton. */
+const SKELETON_DELAY_MS = 150;
+/** Models this large show their skeleton as soon as it is planned, even when
+ * every part is cached: placing and batching them alone takes long enough to
+ * be worth covering. */
+const SKELETON_ALWAYS_PARTS = 4000;
 /** Persistent compiled-geometry budget per resource profile. */
 const GEOMETRY_CACHE_BYTES: Record<ResourceProfileName, number> = {
   desktop: 128 * 1024 * 1024,
   mobile: 48 * 1024 * 1024,
 };
 /** Diagnostic URL switches: `geometryCache=0`, `compileWorkers=0|N`,
- * `progressive=0`. */
+ * `progressive=0`, `skeleton=0`. */
 const loadOption = (name: string) =>
   typeof location === "undefined"
     ? null
@@ -1495,6 +1511,15 @@ export class SceneAdapter {
         ...this.hiddenView.lastStats,
       },
       textures: this.texmaps.stats(),
+      /** The loading skeleton on screen (parts it stands for, boxes drawn,
+       * and parts already drawn in place of their boxes), or null. */
+      skeleton: this.skeleton
+        ? {
+            instances: this.skeleton.view.instances,
+            boxes: this.skeleton.view.boxCount,
+            revealed: this.skeleton.view.revealed,
+          }
+        : null,
     };
   }
   /**
@@ -1573,6 +1598,89 @@ export class SceneAdapter {
    * variants first); edits of the open model swap in all at once.
    */
   private async applyUpdate(snapshot: Project, epoch: number) {
+    try {
+      await this.loadModel(snapshot, epoch);
+    } finally {
+      // Superseded, refused or failed: the skeleton goes with its load.
+      if (this.skeleton?.epoch === epoch) this.clearSkeleton();
+      if (this.loadHoldsFrames) {
+        this.loadHoldsFrames = false;
+        this.releaseFrames();
+      }
+    }
+  }
+  /** Whether the load in progress holds frames (holdFramesForLoad). */
+  private loadHoldsFrames = false;
+  /**
+   * While the skeleton is on screen, frames keep being drawn during a load
+   * (it appears, grows in, and parts replace it). Hold them while a flush or
+   * the final swap places parts and changes materials, until prepareFrame()
+   * has warmed the programs: a frame in between would link every new
+   * program synchronously (seconds on a software rasterizer). Without a
+   * skeleton nothing invalidates the view there, as before.
+   */
+  private holdFramesForLoad(epoch: number) {
+    if (this.skeleton?.epoch !== epoch) return;
+    this.loadHoldsFrames = true;
+    this.framesHeldUntil = Math.max(
+      this.framesHeldUntil,
+      performance.now() + 10000,
+    );
+  }
+  /** The loading skeleton of the load in progress (load-skeleton.ts). */
+  private skeleton?: { epoch: number; view: LoadSkeleton; buildMs: number };
+  private clearSkeleton() {
+    if (!this.skeleton) return;
+    this.skeleton.view.dispose();
+    this.skeleton = undefined;
+    this.invalidate();
+  }
+  /** Draws the skeleton of a newly opened model: takes the previous model
+   * down (unless parts of the new one are drawn already), frames the new one when asked, and grows the boxes in upward
+   * (unless reduced motion is preferred or the model is large). */
+  private showSkeleton(
+    plan: RevealPlan,
+    epoch: number,
+    shown: readonly number[],
+  ) {
+    this.clearSkeleton();
+    const now = performance.now();
+    const view = new LoadSkeleton(plan, {
+      now,
+      animate:
+        plan.rank.length <= SKELETON_ANIMATED_LIMIT && !prefersReducedMotion(),
+    });
+    this.skeleton = {
+      epoch,
+      view,
+      buildMs: Math.round(performance.now() - now),
+    };
+    this.scene.add(view.mesh);
+    if (shown.length) view.reveal(shown);
+    else {
+      // Nothing of the new model drawn yet: take the previous one down.
+      this.root.visible = false;
+      this.select([]);
+    }
+    if (this.fitOnFirstParts) {
+      this.fitOnFirstParts = false;
+      // LDraw → world is a half turn about x (as the model root).
+      this.fitBox(
+        new THREE.Box3(
+          new THREE.Vector3(plan.min[0], -plan.max[1], -plan.max[2]),
+          new THREE.Vector3(plan.max[0], -plan.min[1], -plan.min[2]),
+        ),
+      );
+    }
+    this.invalidate();
+    const tick = () => {
+      if (this.skeleton?.view !== view) return;
+      this.invalidate({ cameraOnly: true });
+      if (view.animating(performance.now())) requestAnimationFrame(tick);
+    };
+    if (view.animating(now)) requestAnimationFrame(tick);
+  }
+  private async loadModel(snapshot: Project, epoch: number) {
     await this.load;
     ensure(
       snapshot.library.manifestSha256 === libraryLock.manifestSha256,
@@ -1593,9 +1701,13 @@ export class SceneAdapter {
      * the variant count is known. Placement and frame preparation report too,
      * so a load whose parts compile quickly still shows its progress. */
     let reportProgress = () => {};
+    /** Shows the loading skeleton once the load has taken a noticeable time;
+     * set once the reveal plan exists. */
+    let maybeShowSkeleton = () => {};
     /** Ends the task when its budget is spent; false once superseded. */
     const pace = async () => {
       reportProgress();
+      maybeShowSkeleton();
       if (slicer.due) await slicer.yield();
       return current();
     };
@@ -1607,6 +1719,74 @@ export class SceneAdapter {
       partOccurrences: physical.length,
       rawOccurrences: all.length - physical.length,
     });
+    // A newly opened model is drawn as its parts arrive; the open model's
+    // edits keep showing the previous state until everything is ready.
+    const fresh =
+      !this.handles.size || !this.project || this.project.id !== snapshot.id;
+    // Where each part's box is and the order to reveal parts in: by
+    // instruction step, else from the ground up (load-skeleton.ts).
+    // (Only for another project: the first part placed in an empty one is an
+    // edit and appears as soon as it compiles.)
+    let plan: RevealPlan | undefined,
+      planMs = 0;
+    if (
+      fresh &&
+      this.project?.id !== snapshot.id &&
+      all.length &&
+      loadOption("skeleton") !== "0"
+    ) {
+      const sources = projectBounds(
+        snapshot,
+        installedBounds.bounds as unknown as Record<string, Bounds | null>,
+        installedBounds.dependencies.transitive,
+      );
+      const localBounds = (o: Occurrence) => {
+        try {
+          return o.node.kind === "geometry"
+            ? sources.primitive(occurrenceRawRecord(snapshot, o))
+            : sources.model(o.node.ref);
+        } catch {
+          return null;
+        }
+      };
+      const planStart = performance.now();
+      const planned = await planReveal(
+        all,
+        localBounds,
+        occurrenceSteps(snapshot, all),
+        pace,
+      );
+      if (!planned) return;
+      plan = planned;
+      planMs = Math.round(performance.now() - planStart);
+    }
+    /** Occurrences drawn while loading (indices into `all`). */
+    const shown: number[] = [];
+    /** Set once every requested part has compiled (or failed). */
+    let finished = false;
+    let skeletonMs: number | undefined, firstPartsMs: number | undefined;
+    if (plan) {
+      const skeletonPlan = plan;
+      maybeShowSkeleton = () => {
+        if (skeletonMs !== undefined) return;
+        const now = performance.now();
+        const large = all.length >= SKELETON_ALWAYS_PARTS;
+        if (!large && now - started < SKELETON_DELAY_MS) return;
+        // A small load that is nearly done anyway (every part cached) goes
+        // straight to its parts.
+        if (finished && !large) {
+          skeletonMs = -1;
+          return;
+        }
+        skeletonMs = Math.round(now - started);
+        this.showSkeleton(skeletonPlan, epoch, shown);
+      };
+      maybeShowSkeleton();
+    }
+    const phases: Record<string, number> = {};
+    const phase = (name: string) =>
+      (phases[name] = Math.round(performance.now() - started));
+    phase("planned");
     // Each occurrence's render context, once (it also keys its prototype).
     const contexts = new Array<ReturnType<typeof occurrenceRenderContext>>(
       all.length,
@@ -1664,8 +1844,11 @@ export class SceneAdapter {
         "Custom geometry compilation exceeds its bounded dependency source budget.",
       );
     }
-    // Request every distinct prototype once, most used variants first, so the
-    // compile workers finish what shows the most parts soonest.
+    // Request every distinct prototype once. A newly opened model's parts
+    // come in reveal order (the variant of its first-revealed occurrence
+    // first), so the model builds upward; an edit asks for the most used
+    // variants first, so the compile workers finish what shows the most parts
+    // soonest.
     const loaded = new Array<
       { o: Occurrence; prototype: THREE.Group } | undefined
     >(all.length);
@@ -1683,6 +1866,7 @@ export class SceneAdapter {
     };
     /** Loaded occurrences not yet drawn progressively. */
     const arrived: number[] = [];
+    let arrivedTotal = 0;
     const waits: Promise<void>[] = [];
     const request = (indices: number[]) => {
       const first = indices[0];
@@ -1691,34 +1875,43 @@ export class SceneAdapter {
           (prototype) => {
             for (const i of indices) loaded[i] = { o: all[i], prototype };
             for (const i of indices) arrived.push(i);
+            arrivedTotal += indices.length;
             progress.done++;
           },
         ),
       );
     };
-    const order = [...variants.values()].sort((a, b) => b.length - a.length);
-    for (let v = 0; v < order.length; v++) {
-      request(order[v]);
+    const requests = [...variants.values()];
+    for (const r of rawIndices) requests.push([r]);
+    if (plan) {
+      const rank = plan.rank;
+      const firstRank = (indices: number[]) => {
+        let low = Infinity;
+        for (const i of indices) if (rank[i] < low) low = rank[i];
+        return low;
+      };
+      const keyed = requests.map((indices) => ({
+        indices,
+        first: firstRank(indices),
+      }));
+      keyed.sort((a, b) => a.first - b.first);
+      for (let r = 0; r < keyed.length; r++) requests[r] = keyed[r].indices;
+    } else
+      // Stable: part variants keep their place ahead of raw faces.
+      requests.sort((a, b) => b.length - a.length);
+    for (let v = 0; v < requests.length; v++) {
+      request(requests[v]);
       if ((v & 31) === 31 && !(await pace())) return;
     }
-    for (let r = 0; r < rawIndices.length; r++) {
-      request([rawIndices[r]]);
-      if ((r & 31) === 31 && !(await pace())) return;
-    }
+    phase("requested");
     const everything = Promise.all(waits);
-    let finished = false;
     everything.then(
-      () => (finished = true),
+      () => ((finished = true), phase("compiled")),
       () => (finished = true),
     );
-    // A newly opened model is drawn as its parts arrive; the open model's
-    // edits keep showing the previous state until everything is ready.
-    const fresh =
-      !this.handles.size || !this.project || this.project.id !== snapshot.id;
     // A newly opened model starts assembled.
     if (fresh) this.anatomyView.reset();
     const budget = renderBudget(profile);
-    const shown: number[] = [];
     let progressive = fresh && loadOption("progressive") !== "0",
       shownTriangles = 0,
       shownPrototypeTriangles = 0,
@@ -1741,6 +1934,7 @@ export class SceneAdapter {
       if (finished) break;
       const now = performance.now();
       reportProgress();
+      maybeShowSkeleton();
       // Draw what has compiled: first after a short delay (a fast load swaps
       // in at once), then when the drawn set would at least double (else
       // after a second), never so often that redrawing partial scenes
@@ -1762,6 +1956,13 @@ export class SceneAdapter {
       )
         continue;
       const flushStart = performance.now();
+      // Newly opened with a plan: only parts ranked below the number arrived
+      // so far, so upper copies of an early part wait for what is below them.
+      const batch = plan
+        ? takeRevealable(arrived, plan.rank, arrivedTotal)
+        : arrived.splice(0);
+      if (!batch.length) continue;
+      this.holdFramesForLoad(epoch);
       if (!shown.length) {
         // First parts of a newly opened model: take the previous one down.
         this.instructionDimming.restore();
@@ -1777,7 +1978,7 @@ export class SceneAdapter {
         this.select([]);
         this.root.visible = true;
       }
-      const batch = arrived.splice(0);
+      const shownBefore = shown.length;
       // Index new prototypes' triangles before any handle clones or draws
       // them (records from the compile workers arrive indexed already).
       this.indexPrototypes(batch.map((i) => loaded[i]!.prototype));
@@ -1812,12 +2013,17 @@ export class SceneAdapter {
       // their own (waiting for the GPU is not counted as flush cost).
       const prepared = await this.prepareFrame(current);
       if (!current()) return;
+      // The same frame draws the parts and drops their boxes.
+      if (this.skeleton?.epoch === epoch)
+        this.skeleton.view.reveal(shown.slice(shownBefore));
+      firstPartsMs ??= Math.round(performance.now() - started);
       this.invalidate();
       lastFlush = performance.now();
       flushCost = lastFlush - flushStart - prepared.waitMs;
       flushFrame = this.frameStats.frames;
     }
     await everything;
+    phase("flushed");
     if (!current()) return;
     // Geometry budgets need compiled prototypes; refuse before touching the
     // scene so an over-budget model is never drawn (beyond budget-checked
@@ -1874,6 +2080,7 @@ export class SceneAdapter {
     }
     // Render-side post-process (frame cost, not compilation): index each
     // new prototype's triangles once, before any handle draws it.
+    phase("counted");
     this.indexPrototypes(loaded.map((entry) => entry!.prototype));
     this.renderUsage = { profile, ...usage, sceneTrianglesFull };
     if (this.reducedQuality && !this.reducedNotice)
@@ -1881,6 +2088,7 @@ export class SceneAdapter {
         "Large model on a phone: conditional edge lines are hidden and pixel density is reduced while viewing. Every part is drawn; captures keep full quality.",
       );
     this.reducedNotice = this.reducedQuality;
+    this.holdFramesForLoad(epoch);
     this.instructionDimming.restore();
     this.layerGhost.restore();
     for (const id of [...this.handles.keys()])
@@ -1919,14 +2127,36 @@ export class SceneAdapter {
     this.error = undefined;
     this.select([]);
     reportProgress();
+    phase("placed");
     const { warmMs } = await this.prepareFrame(current);
+    const skeleton =
+      this.skeleton?.epoch === epoch
+        ? {
+            instances: this.skeleton.view.instances,
+            boxes: this.skeleton.view.boxCount,
+            cell: Math.round(this.skeleton.view.cell),
+            buildMs: this.skeleton.buildMs,
+            revealedProgressively: this.skeleton.view.revealed,
+          }
+        : undefined;
+    // The complete model replaces what is left of the skeleton.
+    if (skeleton) this.clearSkeleton();
     this.invalidate();
+    const ms = Math.round(performance.now() - started);
     this.lastLoad = {
-      ms: Math.round(performance.now() - started),
+      ms,
       variants: variants.size,
       progressive: shown.length > 0,
       tasks: slicer.yields - yieldsBefore,
       programWarmMs: warmMs,
+      firstPartsMs: firstPartsMs ?? ms,
+      phases,
+      skeleton: skeleton && {
+        ...skeleton,
+        shownMs: skeletonMs!,
+        planMs,
+        bySteps: plan!.bySteps,
+      },
     };
   }
   /**
@@ -1961,6 +2191,7 @@ export class SceneAdapter {
   }
   private releaseFrames() {
     this.framesHeldUntil = 0;
+    this.loadHoldsFrames = false;
     if (this.frameHeld) {
       this.frameHeld = false;
       this.invalidate({ cameraOnly: true });
@@ -2133,6 +2364,28 @@ export class SceneAdapter {
     tasks: number;
     /** Waiting for new shader programs before the first full frame. */
     programWarmMs: number;
+    /** When the first compiled parts were drawn (or the whole model, when
+     * it was not drawn progressively), from the start of the load. */
+    firstPartsMs: number;
+    /** When each stage of the load ended, from its start (diagnostics):
+     * planned, requested, compiled, flushed, counted, placed. */
+    phases: Record<string, number>;
+    /** The loading skeleton, when one was shown: its boxes, when it was
+     * drawn, how many were replaced by parts while loading, and whether it
+     * was revealed in instruction-step order. */
+    skeleton?: {
+      instances: number;
+      shownMs: number;
+      /** Boxes drawn, and the grid cell size (LDU) when parts share boxes. */
+      boxes: number;
+      cell: number;
+      /** Planning the boxes and order (wall time, in short tasks), and
+       * building the instanced draw (one task). */
+      planMs: number;
+      buildMs: number;
+      revealedProgressively: number;
+      bySteps: boolean;
+    };
   };
   async ready(minRevision?: number, strict = false) {
     // A newer update supersedes queued work, which then settles without rendering;
@@ -4065,6 +4318,10 @@ export class SceneAdapter {
       if (child !== this.batches.root || !this.batches.deferred)
         box.expandByObject(child);
     for (const handle of this.handles.values()) handle.expandBox(box, world);
+    this.fitBox(box);
+  }
+  /** Frame a world-space box (the default camera when it is empty). */
+  private fitBox(box: THREE.Box3) {
     if (box.isEmpty()) {
       this.setCamera(defaultCamera);
       return;

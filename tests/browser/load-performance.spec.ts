@@ -149,6 +149,105 @@ test("the house template loads in short tasks, progressively, and reopens from t
   expect(errors).toEqual([]);
 });
 
+test("a newly opened model shows its skeleton first on a phone, then its parts; edits do not", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 1080, height: 1800 },
+    deviceScaleFactor: 1,
+    isMobile: true,
+    hasTouch: true,
+  });
+  const page = await context.newPage();
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("./?automation=1");
+  await page.waitForFunction(() => !!window.brickEditor);
+  const result = await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    await a.ready();
+    await a.resources.setProfile({
+      profile: "mobile",
+      acknowledgeImpact: true,
+    });
+    type Seen = { skeleton: number; revealed: number; drawn: number };
+    const frames: Seen[] = [];
+    let ready = false;
+    const poll = (async () => {
+      let last = (await a.render.budget()).lastFrame.frames;
+      while (!ready) {
+        await new Promise((r) => requestAnimationFrame(r));
+        const b = await a.render.budget();
+        if (b.lastFrame.frames <= last) continue;
+        last = b.lastFrame.frames;
+        frames.push({
+          skeleton: b.skeleton?.instances ?? 0,
+          revealed: b.skeleton?.revealed ?? 0,
+          drawn: b.batches.occurrencesDrawn,
+        });
+      }
+    })();
+    const imported = await a.project.import({
+      format: "template",
+      template: "house",
+    });
+    await a.ready({ minRevision: imported.revision, strict: true });
+    ready = true;
+    await poll;
+    const opened = (await a.render.compileStats()).lastLoad;
+    const after = (await a.render.budget()).skeleton;
+    // An edit of the open model swaps in without a skeleton.
+    const q = await a.query();
+    const edited = await a.dispatch({
+      schemaVersion: 1,
+      commandId: "recolor",
+      expectedRevision: q.revision,
+      type: "parts.recolor",
+      payload: { occurrenceIds: [q.occurrences[0].id], colorCode: "1" },
+    });
+    await a.ready({ minRevision: edited.revision, strict: true });
+    const edit = (await a.render.compileStats()).lastLoad;
+    return { frames, opened, after, edit };
+  });
+  console.log(
+    "skeleton load",
+    JSON.stringify({ ...result, frames: result.frames.slice(0, 12) }),
+  );
+  // The first frame showing anything of the house shows all of it as boxes.
+  const first = result.frames.find((f) => f.skeleton || f.drawn);
+  expect(first?.skeleton).toBe(281);
+  expect(result.opened?.skeleton?.instances).toBe(281);
+  expect(result.opened!.skeleton!.shownMs).toBeLessThan(result.opened!.ms);
+  // Parts replaced their boxes while the rest compiled.
+  expect(result.opened?.progressive).toBe(true);
+  expect(result.opened!.skeleton!.revealedProgressively).toBeGreaterThan(0);
+  expect(result.frames.some((f) => f.skeleton && f.drawn)).toBe(true);
+  // Gone with the complete model; never shown for an edit.
+  expect(result.after).toBeNull();
+  expect(result.edit?.skeleton).toBeUndefined();
+  expect(errors).toEqual([]);
+  await context.close();
+});
+
+test("the loading skeleton can be switched off", async ({ page }) => {
+  await page.goto("./?automation=1&skeleton=0");
+  await page.waitForFunction(() => !!window.brickEditor);
+  const off = await page.evaluate(async () => {
+    const a = window.brickEditor!;
+    await a.ready();
+    const r = await a.project.import({ format: "template", template: "car" });
+    await a.ready({ minRevision: r.revision, strict: true });
+    return (await a.render.compileStats()).lastLoad;
+  });
+  expect(off?.skeleton).toBeUndefined();
+  expect(off?.firstPartsMs).toBeGreaterThan(0);
+  expect(
+    await page.evaluate(() => window.brickEditor!.render.budget()),
+  ).toMatchObject({
+    skeleton: null,
+  });
+});
+
 test("a corrupt geometry cache entry is recompiled, not drawn", async ({
   page,
 }) => {

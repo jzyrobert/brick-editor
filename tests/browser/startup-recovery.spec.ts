@@ -71,12 +71,26 @@ test("a large autosaved project recovers without freezing the page @perf", async
   await page.waitForFunction(() => !!window.brickEditor);
   const result = await page.evaluate(async (parts) => {
     const a = window.brickEditor!;
+    // The loading skeleton on screen while the model recovers (a later
+    // update of the same project may replace `lastLoad`, so watch it too).
+    let skeletonSeen = 0,
+      done = false;
+    const watch = (async () => {
+      while (!done) {
+        const s = (await a.render.budget()).skeleton;
+        if (s) skeletonSeen = Math.max(skeletonSeen, s.instances);
+        await new Promise((r) => setTimeout(r, 50));
+      }
+    })();
     for (;;) {
       await a.ready().catch(() => {});
       if ((await a.render.budget()).usage?.partOccurrences === parts) break;
       await new Promise((r) => setTimeout(r, 50));
     }
     const doneAt = performance.now();
+    done = true;
+    await watch;
+    const lastLoad = (await a.render.compileStats()).lastLoad;
     await new Promise((r) => setTimeout(r, 500));
     const w = window as unknown as {
       __long: number[];
@@ -84,6 +98,7 @@ test("a large autosaved project recovers without freezing the page @perf", async
     };
     return {
       doneAt,
+      skeleton: Math.max(skeletonSeen, lastLoad?.skeleton?.instances ?? 0),
       pressedAt: w.__projectPressedAt,
       longest: Math.max(0, ...w.__long),
       longTasks: w.__long.length,
@@ -95,6 +110,8 @@ test("a large autosaved project recovers without freezing the page @perf", async
   expect(result.pressedAt).toBeDefined();
   expect(result.pressedAt!).toBeLessThan(result.doneAt);
   expect(result.longest).toBeLessThan(LONGEST_TASK_MS);
+  // The recovered model showed as a skeleton of every part while it loaded.
+  expect(result.skeleton).toBe(PARTS);
   // Every recovered part is drawn.
   const drawn = await page.evaluate(async () => {
     const a = window.brickEditor!;
