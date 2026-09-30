@@ -30,7 +30,9 @@
     "library:update": "tsx scripts/library-update.ts",
     "library:review-mappings": "tsx scripts/review-mappings.ts",
     "templates": "tsx scripts/build-templates.ts",
-    "deploy:check": "tsx scripts/check-deploy-limits.ts"
+    "deploy:check": "tsx scripts/check-deploy-limits.ts",
+    "omr:index": "tsx scripts/build-omr-index.ts",
+    "omr:coverage": "tsx scripts/omr-coverage.ts"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "0.21.0",

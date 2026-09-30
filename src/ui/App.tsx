@@ -38,6 +38,9 @@ import { QualityPanel } from "./QualityPanel";
 import { MechanismBrowser } from "../mechanisms/browser";
 import { MechanismPanel } from "./MechanismPanel";
 import { ProjectLibrary } from "./ProjectLibrary";
+import { OfficialSets } from "./OfficialSets";
+import { omrAttribution, omrCredit, type OmrSet } from "../catalog/omr";
+import { fetchOmrModel, loadOmrIndex } from "../catalog/omr-loader";
 import { InventoryResolution } from "./InventoryResolution";
 import { LibraryUpdatePanel } from "./LibraryUpdatePanel";
 import { ResourceProfilePanel } from "./ResourceProfilePanel";
@@ -753,6 +756,36 @@ function Workspace() {
     "not-produced": "Not made",
     unknown: "Unknown",
   };
+  // Credit for an open LDraw OMR model, read from its own header (so it
+  // survives saving and reopening), linked to its set page when the set
+  // number is in the index.
+  const omrHeader = useMemo(
+    () =>
+      omrAttribution(
+        project.models[project.rootModelId]?.records
+          .slice(0, 200)
+          .map((r) => r.raw) ?? [],
+      ),
+    [project.models, project.rootModelId],
+  );
+  const [omrSets, setOmrSets] = useState<OmrSet[]>();
+  useEffect(() => {
+    if (omrHeader && !omrSets)
+      void loadOmrIndex()
+        .then((i) => setOmrSets(i.sets))
+        .catch(() => {});
+  }, [omrHeader, omrSets]);
+  const omrCreditInfo = useMemo(() => {
+    if (!omrHeader) return undefined;
+    const n = omrHeader.setNumber,
+      title = project.title;
+    const set = omrSets?.find(
+      (s) =>
+        title.startsWith(s.number + " ") ||
+        (n && (s.number === n || s.number === n + "-1")),
+    );
+    return { attribution: omrHeader, set };
+  }, [omrHeader, omrSets, project.title]);
   const inspection = useMemo(
     () => inspectSelection(project, selected),
     // `selected` derives from these two (and resolved library names).
@@ -1869,6 +1902,49 @@ function Workspace() {
       await store.delete(id, saved.revision);
       saveRevisions.current.delete(id);
     }
+  }
+  /** Opens an official set's model from the LDraw OMR (through the proxy,
+   * or this device's cache) as a new project; its header keeps the author
+   * and licence, and its STEP lines become the imported steps. */
+  function openOfficialSet(set: OmrSet) {
+    void replaceProject(`${set.number} ${set.name}`, () =>
+      run(async () => {
+        const epoch = ++operationEpoch.current;
+        setBusy(true);
+        try {
+          setStatus(`Loading ${set.number} ${set.name} from LDraw.org…`);
+          const { text } = await fetchOmrModel(
+            set,
+            resourceLimits(editor.resourceProfile).importBytes,
+          );
+          ensure(
+            epoch === operationEpoch.current,
+            "CANCELLED",
+            "Import cancelled",
+          );
+          renderer.current?.requestFitOnFirstParts();
+          const result = await api.current!.project.import({
+            format: "ldraw",
+            text,
+            name: `${set.number} ${set.name}.mpd`,
+          });
+          if (result.materialization.status === "limited") return;
+          setMode("Build");
+          setPanel("Canvas");
+          const credit = omrAttribution(text.split("\n", 400));
+          setStatus(
+            `Opened ${set.number} ${set.name}` +
+              (credit ? ` — ${omrCredit(credit)}` : ""),
+          );
+          await renderer.current?.ready();
+          renderer.current?.fit();
+          setSelectionSafe([]);
+        } finally {
+          renderer.current?.requestFitOnFirstParts(false);
+          setBusy(false);
+        }
+      }).then(() => undefined),
+    );
   }
   function chooseTemplate(name: TemplateName) {
     const card = TEMPLATE_CARDS.find((c) => c.name === name);
@@ -4406,6 +4482,11 @@ function Workspace() {
                   );
                 })}
               </div>
+              <OfficialSets
+                open={openOfficialSet}
+                credit={omrCreditInfo}
+                busy={busy}
+              />
               <ExportProfiles project={project} selection={selection} />
               <SharePanel
                 project={project}
