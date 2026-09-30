@@ -30,6 +30,9 @@ import {
   type PlayMechanismSource,
 } from "./mechanism";
 import type { AutoDoor, AutoDoorSkip } from "./auto-doors";
+import { TrainWorld, type CarPose, type DerivedTrains } from "./trains";
+import { frameRotation } from "./physics-frame";
+import { inverse } from "../core/math";
 import {
   PlayDynamicsWorld,
   validateDynamicRigSources,
@@ -50,7 +53,12 @@ import {
   wrapAngle,
   type AvatarMotionState,
 } from "./avatar-motion";
-import { ensure, type CameraSpec, type Vec3 } from "../core/types";
+import {
+  ensure,
+  type CameraSpec,
+  type Transform,
+  type Vec3,
+} from "../core/types";
 import {
   CHARACTER_PROFILE as P,
   type CollisionSnapshot,
@@ -107,8 +115,22 @@ function keys(o: object, allowed: string[]) {
   );
 }
 /** Fixed-step isolated session. No authored project references or mutations. */
+/** Moving triangles all trains may collide with (their own budget). */
+export const TRAIN_TRIANGLE_BUDGET = 300000;
+/** Derived trains and each car's collision mesh (keyed `trainId/carIndex`). */
+export type PlayTrainSource = {
+  derived: DerivedTrains;
+  meshes: Record<string, CollisionSnapshot>;
+};
 export class PlaySession {
   private mechanisms = new Map<string, PlayMechanism>();
+  private trains?: TrainWorld;
+  private trainProxies = new Map<
+    string,
+    { collider: RAPIER.Collider; radius: number; rest: Transform }
+  >();
+  private trainPosed = "";
+  private riding?: { trainId: string; reference: number };
   /** Optional dynamic rigid-body world; absent unless dynamic rigs were requested. */
   private dynamics?: PlayDynamicsWorld;
   private vehicleWorld?: PlayVehicleWorld;
@@ -186,6 +208,7 @@ export class PlaySession {
     request: PlayRequest,
     mechanismSource?: PlayMechanismSource | PlayMechanismSource[],
     autoDoors?: { doors: AutoDoor[]; skipped: AutoDoorSkip[] },
+    trains?: PlayTrainSource,
   ) {
     this.worldProfile = {
       ...validatePlayWorldProfile(
@@ -388,6 +411,54 @@ export class PlaySession {
       this.world.free();
       throw error;
     }
+    if (trains?.derived.trains.length) {
+      this.trains = new TrainWorld(trains.derived);
+      // Each car collides as one moving trimesh in its rest pivot frame.
+      for (const train of trains.derived.trains) {
+        const shapes: Array<{
+          id: string;
+          vertices: Float32Array;
+          indices: Uint32Array;
+        }> = [];
+        this.trains.carFrames(train.id).forEach(({ rest }, i) => {
+          const mesh = trains.meshes[`${train.id}/${i}`];
+          if (!mesh?.indices.length) return;
+          const inv = inverse(rest),
+            b = inv.basis,
+            vertices = new Float32Array(mesh.vertices.length);
+          let radius = 0;
+          for (let v = 0; v < vertices.length; v += 3) {
+            const x = mesh.vertices[v],
+              y = mesh.vertices[v + 1],
+              z = mesh.vertices[v + 2];
+            const l: Vec3 = [
+              inv.position[0] + b[0] * x + b[1] * y + b[2] * z,
+              inv.position[1] + b[3] * x + b[4] * y + b[5] * z,
+              inv.position[2] + b[6] * x + b[7] * y + b[8] * z,
+            ];
+            radius = Math.max(radius, Math.hypot(...l));
+            vertices[v] = l[0] * S;
+            vertices[v + 1] = -l[1] * S;
+            vertices[v + 2] = -l[2] * S;
+          }
+          const collider = this.world.createCollider(
+            RAPIER.ColliderDesc.trimesh(vertices, mesh.indices),
+          );
+          collider.setTranslation(physics(rest.position));
+          collider.setRotation(frameRotation(rest));
+          this.trainProxies.set(`${train.id}/${i}`, {
+            collider,
+            radius,
+            rest,
+          });
+          shapes.push({ id: String(i), vertices, indices: mesh.indices });
+        });
+        if (this.dynamics) {
+          this.dynamics.addKinematicRig(train.id, shapes);
+          this.syncTrainDynamics(train.id, true);
+        }
+      }
+    }
     this.controller = this.world.createCharacterController(0.15 * S);
     // Rapier's own autostep handles plate-height ledges; taller risers up
     // to the profile's step height use stepUp() (large autostep heights
@@ -528,6 +599,7 @@ export class PlaySession {
     request: PlayRequest = {},
     mechanismSource?: PlayMechanismSource | PlayMechanismSource[],
     autoDoors?: { doors: AutoDoor[]; skipped: AutoDoorSkip[] },
+    trains?: PlayTrainSource,
   ): Promise<PlaySession> {
     ensure(
       request && typeof request === "object",
@@ -548,6 +620,7 @@ export class PlaySession {
       "autoDoors",
       "cameraSettings",
       "worldProfile",
+      "trains",
     ]);
     const requestedWorld = validatePlayWorldProfile(request.worldProfile);
     const resolvedWorld = validatePlayWorldProfile(
@@ -677,12 +750,34 @@ export class PlaySession {
         "INVALID_INPUT",
         "Automatic doors need their derived kinematic rig sources",
       );
+    if (trains) {
+      let triangles = 0;
+      for (const train of trains.derived.trains)
+        train.cars.forEach((_, i) => {
+          const mesh = trains.meshes[`${train.id}/${i}`];
+          ensure(
+            mesh &&
+              mesh.revision === snapshot.revision &&
+              !mesh.unsupported &&
+              validMesh(mesh.vertices, mesh.indices),
+            "INVALID_INPUT",
+            "Train cars require valid complete geometry from the source revision",
+          );
+          triangles += mesh.indices.length / 3;
+        });
+      ensure(
+        triangles <= TRAIN_TRIANGLE_BUDGET,
+        "LIMIT_EXCEEDED",
+        `Trains exceed ${TRAIN_TRIANGLE_BUDGET.toLocaleString("en")} moving triangles`,
+      );
+    }
     return new PlaySession(
       snapshot.revision,
       snapshot,
       request,
       mechanismSource,
       autoDoors,
+      trains,
     );
   }
   private alive() {
@@ -1072,6 +1167,9 @@ export class PlaySession {
       run: input.run ?? false,
       jump: input.jump ?? false,
     };
+    // Riding along a train: the explorer waits; only the look turns.
+    if (this.riding)
+      this.input = { ...this.input, moveX: 0, moveZ: 0, vertical: 0 };
     if (input.yaw !== undefined)
       this.yaw = ((input.yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     if (input.pitch !== undefined) this.pitch = this.clampPitch(input.pitch);
@@ -1232,9 +1330,11 @@ export class PlaySession {
       this.mechanisms.get(id)!.step();
       if (this.occupied?.request.rigId === id) this.updateOccupant();
     }
+    if (this.trains) this.stepTrains();
     if (this.dynamics) {
       for (const [id, mechanism] of this.mechanisms)
         this.dynamics.syncKinematicRig(id, mechanism.groupFrames());
+      for (const id of this.trains?.ids ?? []) this.syncTrainDynamics(id);
       this.dynamics.step(
         this.feet,
         this.locomotion === "walk" && !this.occupied,
@@ -1248,7 +1348,8 @@ export class PlaySession {
       this.tick++;
       return;
     }
-    if (this.mechanisms.size || this.dynamics) this.world.step();
+    if (this.mechanisms.size || this.dynamics || this.trainProxies.size)
+      this.world.step();
     this.previous = [...this.feet];
     const i = this.input;
     let x = i.moveX,
@@ -1749,6 +1850,22 @@ export class PlaySession {
   }
   camera(interpolate = false): CameraSpec {
     this.alive();
+    if (this.riding && this.trains) {
+      const { target, look, arm } = this.rideCamera();
+      const pos = target.map((v, k) => v - look[k] * arm) as Vec3;
+      return {
+        space: "ldraw",
+        projection: "perspective",
+        position: pos,
+        target: arm
+          ? target
+          : (target.map((v, k) => v + look[k] * 100) as Vec3),
+        up: [0, -1, 0],
+        fovDeg: this.cameraSettings.fovDeg,
+        near: this.cameraSafety().effectiveNear,
+        far: 100000,
+      };
+    }
     const alpha = interpolate ? this.accumulator / DT : 1;
     const feet = this.presentedFeet(alpha, "camera");
     const follow = this.followRig(feet);
@@ -1855,6 +1972,195 @@ export class PlaySession {
     if (target.kind === "kinematic") this.world.step();
     return this.snapshot();
   }
+  // ---- Trains ----------------------------------------------------------------
+  /**
+   * A car may not sweep into the walking explorer: its collider, inflated by
+   * how far any of its points can move this tick, must stay clear of the
+   * capsule (the same conservative test moving mechanisms use).
+   */
+  private trainGuard = (
+    trainId: string,
+    before: CarPose[],
+    after: CarPose[],
+  ): string | undefined => {
+    if (this.locomotion !== "walk" || this.occupied) return undefined;
+    for (let i = 0; i < after.length; i++) {
+      const proxy = this.trainProxies.get(`${trainId}/${i}`);
+      if (!proxy) continue;
+      const a = before[i].frame,
+        b = after[i].frame;
+      const angle = frameRotation(a).angleTo(frameRotation(b));
+      const distance =
+        Math.hypot(...a.position.map((v, k) => v - b.position[k])) +
+        proxy.radius * angle;
+      if (distance < 1e-8) continue;
+      const inflated = new RAPIER.Capsule(
+        (P.height / 2 - P.radius) * S,
+        (P.radius + distance + 0.05) * S,
+      );
+      if (
+        proxy.collider.intersectsShape(
+          inflated,
+          physics([this.feet[0], this.feet[1] - P.height / 2, this.feet[2]]),
+          rot,
+        )
+      )
+        return "Waiting for you to step off the track";
+    }
+    return undefined;
+  };
+  private stepTrains() {
+    const trains = this.trains!;
+    trains.step(this.trainGuard, DT);
+    // Move the colliders only when a car moved.
+    const posed = JSON.stringify(
+      trains.ids.map((id) => trains.carFrames(id).map((f) => f.now.position)),
+    );
+    if (posed === this.trainPosed) return;
+    this.trainPosed = posed;
+    for (const id of trains.ids)
+      trains.carFrames(id).forEach(({ now }, i) => {
+        const proxy = this.trainProxies.get(`${id}/${i}`);
+        if (!proxy) return;
+        proxy.collider.setTranslation(physics(now.position));
+        proxy.collider.setRotation(frameRotation(now));
+      });
+  }
+  private syncTrainDynamics(trainId: string, immediate = false) {
+    const frames: Record<string, Transform> = {};
+    this.trains!.carFrames(trainId).forEach(({ now }, i) => {
+      frames[String(i)] = now;
+    });
+    this.dynamics!.syncKinematicRig(trainId, frames, immediate);
+  }
+  private requireTrains() {
+    this.alive();
+    ensure(this.trains, "INVALID_INPUT", "No running train in this world");
+    return this.trains;
+  }
+  /** World transforms of every moving train occurrence (for rendering). */
+  trainTransforms(): Record<string, Transform> {
+    return this.trains?.transforms() ?? {};
+  }
+  /** Throttle −1..1 of full speed (negative backwards); 0 coasts to a stop. */
+  setTrainThrottle(input: { trainId?: string; throttle: number }) {
+    const trains = this.requireTrains();
+    ensure(
+      input && typeof input === "object",
+      "INVALID_INPUT",
+      "Train input must be an object",
+    );
+    keys(input, ["trainId", "throttle"]);
+    ensure(
+      finite(input.throttle) && Math.abs(input.throttle) <= 1,
+      "INVALID_INPUT",
+      "Throttle must be between -1 and 1",
+    );
+    trains.setThrottle(input.throttle, input.trainId);
+    return this.snapshot();
+  }
+  stopTrain(input: { trainId?: string } = {}) {
+    const trains = this.requireTrains();
+    keys(input, ["trainId"]);
+    trains.stop(input.trainId);
+    return this.snapshot();
+  }
+  /** Set (or toggle) a switch's route. Refused while a train stands on it. */
+  setPoints(input: { occurrenceId: string; route?: "straight" | "branch" }) {
+    const trains = this.requireTrains();
+    ensure(
+      input &&
+        typeof input === "object" &&
+        typeof input.occurrenceId === "string",
+      "INVALID_INPUT",
+      "Points need a track occurrenceId",
+    );
+    keys(input, ["occurrenceId", "route"]);
+    ensure(
+      input.route === undefined ||
+        input.route === "straight" ||
+        input.route === "branch",
+      "INVALID_INPUT",
+      'Points route is "straight" or "branch"',
+    );
+    trains.setPoints(
+      input.occurrenceId,
+      input.route === undefined ? undefined : input.route === "branch" ? 1 : 0,
+    );
+    return this.snapshot();
+  }
+  /**
+   * Ride along: the camera follows a train (chase view in third person,
+   * the cab in first person). The explorer stays where it stood; its
+   * movement input is ignored until the ride ends.
+   */
+  rideTrain(input: { trainId?: string | null } = {}) {
+    const trains = this.requireTrains();
+    keys(input, ["trainId"]);
+    if (input.trainId === null) {
+      this.riding = undefined;
+      return this.snapshot();
+    }
+    const id =
+      input.trainId ?? (trains.ids.length === 1 ? trains.ids[0] : undefined);
+    ensure(
+      id && trains.ids.includes(id),
+      "INVALID_INPUT",
+      id ? "Unknown train " + id : "Specify trainId when several trains run",
+    );
+    ensure(!this.occupied, "INVALID_INPUT", "Exit the vehicle first");
+    const yaw = this.trainYaw(id);
+    this.riding = { trainId: id, reference: yaw };
+    this.yaw = ((yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    // Looking a little down on the train (LDraw −Y is up: negative pitch).
+    this.pitch = this.clampPitch(
+      this.cameraMode === "first-person" ? 0 : -0.35,
+    );
+    this.input = { ...this.input, moveX: 0, moveZ: 0, vertical: 0 };
+    return this.snapshot();
+  }
+  private trainYaw(id: string) {
+    const lead = this.trains!.carFrames(id)[0].now.basis;
+    // Look yaw convention: forward = (sin yaw, ·, −cos yaw).
+    return Math.atan2(lead[0], -lead[6]);
+  }
+  private rideCamera(): { target: Vec3; look: Vec3; arm: number } {
+    const id = this.riding!.trainId,
+      frames = this.trains!.carFrames(id),
+      lead = frames[0].now;
+    const turn = this.trainYaw(id) - this.riding!.reference;
+    const yaw = this.yaw + turn,
+      pitch = this.pitch;
+    const look: Vec3 = [
+      Math.sin(yaw) * Math.cos(pitch),
+      -Math.sin(pitch),
+      -Math.cos(yaw) * Math.cos(pitch),
+    ];
+    if (this.cameraMode === "first-person") {
+      // The cab: above the head pivot, looking along the look direction.
+      const b = lead.basis,
+        report = this.trains!.report().trains.find((t) => t.id === id)!;
+      return {
+        target: [
+          report.position[0] - b[0] * 45,
+          report.position[1] - 165,
+          report.position[2] - b[6] * 45,
+        ],
+        look,
+        arm: 0,
+      };
+    }
+    const mid = frames[Math.floor((frames.length - 1) / 2)].now.position;
+    return {
+      target: [
+        (lead.position[0] + mid[0]) / 2,
+        lead.position[1] - 90,
+        (lead.position[2] + mid[2]) / 2,
+      ],
+      look,
+      arm: 520 + 80 * Math.min(frames.length, 6),
+    };
+  }
   snapshot(): PlaySnapshotReport {
     this.alive();
     const mechanisms = Object.fromEntries(
@@ -1870,6 +2176,14 @@ export class PlaySession {
     const rigCount = Object.keys(mechanisms).length;
     return {
       ...(this.autoDoors ? { autoDoors: structuredClone(this.autoDoors) } : {}),
+      ...(this.trains
+        ? {
+            trains: {
+              ...this.trains.report(),
+              ...(this.riding ? { riding: this.riding.trainId } : {}),
+            },
+          }
+        : {}),
       ...(rigCount ? { mechanisms } : {}),
       ...(rigCount === 1 ? { mechanism: Object.values(mechanisms)[0] } : {}),
       positionAnchor: this.occupied ? "seated-avatar-root" : "standing-feet",
@@ -1933,6 +2247,9 @@ export class PlaySession {
     this.seatedColliders = [];
     this.vehicleWorld?.dispose();
     this.vehicleWorld = undefined;
+    this.trainProxies.clear();
+    this.trains = undefined;
+    this.riding = undefined;
     this.world.free();
     this.disposed = true;
   }

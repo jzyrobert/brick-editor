@@ -155,6 +155,100 @@
   pointer-events: auto;
 }
 
+/* ---- Train controls: one slab under the top row, right thumb side ---- */
+.play-train {
+  position: absolute;
+  top: calc(var(--play-top) + 58px);
+  right: var(--play-right);
+  max-width: calc(100% - var(--play-left) - var(--play-right));
+  box-sizing: border-box;
+  padding: 2px;
+  background: var(--hud);
+  border: 2px solid var(--hud-line);
+  border-radius: var(--r-slab);
+  box-shadow: var(--shadow-slab);
+  color: var(--chalk);
+  pointer-events: auto;
+  z-index: 4;
+}
+.play-train-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2px;
+}
+.play-train-key,
+.play-train-go {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 44px;
+  min-width: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-key);
+  background: transparent;
+  color: var(--chalk);
+  font: inherit;
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+.play-train-go {
+  min-width: 76px;
+  padding: 0 12px 0 10px;
+  background: var(--accent);
+  color: var(--card);
+}
+.play-train-go.is-running {
+  background: var(--chalk);
+  color: var(--ink);
+}
+.play-train-key[aria-pressed="true"] {
+  background: var(--sun-wash);
+  color: var(--sun);
+  box-shadow: inset 0 0 0 2px var(--sun);
+}
+.play-train-key:disabled {
+  opacity: 0.45;
+}
+.play-train-key:active,
+.play-train-go:active {
+  transform: scale(0.94);
+}
+.play-train-points span {
+  font-size: var(--text-title);
+  line-height: 1;
+}
+.play-train-speed {
+  display: flex;
+  align-items: center;
+  width: 96px;
+  padding: 0 6px;
+}
+.play-train-speed input {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--sun);
+}
+.play-train-status {
+  margin: 0;
+  padding: 0 8px 4px;
+  font-size: var(--text-label);
+  font-weight: 650;
+  color: var(--hud-mute);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* The centred message drops below the train slab. */
+.play-overlay.has-train .play-message {
+  top: calc(var(--play-top) + 170px);
+}
+
 /* ---- Movement stick: floats to wherever the left thumb lands ---- */
 .play-stick-zone {
   position: absolute;
@@ -1058,4 +1152,7 @@
 }
 .seat-authoring p {
   overflow-wrap: anywhere;
+}
+.play-overlay.has-train .play-start-hint {
+  top: 44%;
 }

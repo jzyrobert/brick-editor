@@ -14,7 +14,39 @@ export type PlayInteraction = {
 } & (
   | { kind: "vehicle" }
   | { kind: "joint"; jointId: string; target: number; speed: number }
+  | { kind: "points"; occurrenceId: string }
 );
+/** Reach for throwing a track switch by hand (LDU from the explorer's body). */
+export const POINTS_REACH = 150;
+/** Nearby track switches (points) of running trains. */
+export function nearbyPoints(
+  report: PlaySnapshotReport,
+): PlayInteraction | undefined {
+  let best: PlayInteraction | undefined;
+  for (const s of report.trains?.switches ?? []) {
+    const d = Math.hypot(
+      s.position[0] - report.position[0],
+      s.position[1] - (report.position[1] - report.profile.height / 2),
+      s.position[2] - report.position[2],
+    );
+    // Points under a train are left out (the train slab shows them greyed).
+    if (s.occupied) continue;
+    if (d > POINTS_REACH * 1.6 || (best && d >= best.distance)) continue;
+    best = {
+      kind: "points",
+      occurrenceId: s.occurrenceId,
+      rigId: "",
+      label:
+        s.route === "straight"
+          ? "Switch points to branch"
+          : "Switch points to straight",
+      name: "Track points",
+      available: d <= POINTS_REACH,
+      distance: d,
+    };
+  }
+  return best;
+}
 
 /** Nearby authored anchors, measured from the middle of the explorer's body. */
 export function nearbyInteraction(

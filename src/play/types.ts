@@ -1,5 +1,6 @@
 import type { MechanismSnapshot } from "../mechanisms/types";
 import type { Vec3 } from "../core/types";
+import type { PlayTrainsReport } from "./trains";
 /** Public coordinates are LDraw LDU: up is -Y. Angles are radians. */
 export type PlayLocomotion = "walk" | "fly-noclip";
 export type PlayCameraMode = "first-person" | "third-person";
@@ -50,6 +51,11 @@ export type PlayRequest = {
    * rigs are session-only and never written to the project.
    */
   autoDoors?: boolean;
+  /**
+   * Run trains standing on official LDraw track (default true). Derived
+   * trains are session-only and never written to the project.
+   */
+  trains?: boolean;
   locomotion?: PlayLocomotion;
   cameraMode?: PlayCameraMode;
   position?: Vec3;
@@ -252,6 +258,8 @@ export type PlayAutoDoorsReport = {
 };
 export type PlaySnapshotReport = {
   autoDoors?: PlayAutoDoorsReport;
+  /** Running trains on official track (session-only; docs/PLAY-TRAINS.md). */
+  trains?: PlayTrainsReport & { riding?: string };
   occupancy?: PlayOccupancy;
   positionAnchor: "standing-feet" | "seated-avatar-root";
   mechanism?: PlayMechanismReport;

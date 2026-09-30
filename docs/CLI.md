@@ -49,6 +49,12 @@ npm run cli -- play --input physics.brickproj --rigs all --dynamic-rigs all --ve
 
 `--rigs all|JSON-array` activates authored rigs, and `--dynamic-rigs all|JSON-array` simulates them dynamically. `--joint-targets`, `--motors` and `--vehicle` take the same objects as `play.setJointTarget`, `play.setMotor` and `play.setMechanismVehicleInput`. They are applied after entry and before the input and ticks. Official LDraw doors hinge automatically: `--open-doors` opens every free door at 90 degrees/s, and `--no-auto-doors` keeps them static. `--posed-output` writes a static posed MPD of the final pose. The source file is never modified. The report's `playRun` records the applied targets, motors and vehicle input. Identical flags reproduce identical reports on the same machine and browser.
 
+Trains ([running trains](PLAY-TRAINS.md)) run by default: `--train-throttle N` (−1..1 of full speed) starts every train before the ticks, `--points '[{"occurrenceId":"…","route":"branch"}]'` sets switches first, `--ride-train` puts the camera on the first train and `--no-trains` leaves rolling stock static. The report's `playRun` records the throttle and points, and `final.trains` the trains' positions, speeds and statuses:
+
+```sh
+npm run cli -- play --input fixtures/ldraw/templates/railway-station.mpd --train-throttle 1 --ticks 600 --ride-train --camera-mode third-person --output train.png --report train.json
+```
+
 Output reports default to `<output>.report.json`; `--report` overrides that path. Unknown flags, duplicate singleton flags, missing flag values, and out-of-range numeric inputs fail without writing a result. Existing files are overwritten only after a successful operation.
 
 Model export profiles run without Chromium:

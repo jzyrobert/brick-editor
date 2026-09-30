@@ -24,9 +24,15 @@ import type {
 import type { Vec3 } from "../core/types";
 import { posedLDraw } from "../mechanisms/posed-export";
 import type { PlaySession } from "./session";
-import { nearbyInteraction, type PlayInteraction } from "./interaction";
+import {
+  nearbyInteraction,
+  nearbyPoints,
+  type PlayInteraction,
+} from "./interaction";
 import { occurrences } from "../core/document";
 import { deriveDoorRigs, type DerivedDoors } from "./auto-doors";
+import { deriveTrains, occurrenceBounds, type DerivedTrains } from "./trains";
+import type { CollisionSnapshot } from "./types";
 import type { DynamicRigSource } from "./dynamics";
 import { BrickAvatar, loadAvatarGeometry } from "./avatar";
 import {
@@ -223,13 +229,38 @@ export class BrowserPlay {
       // collision snapshot, so walking is not refused for a transient fault.
       if (project) await this.loadOnDemandParts(project, r);
       ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      // Trains on official track (session-only). Their parts leave the
+      // static world and move as whole cars.
+      let trains: DerivedTrains | undefined;
+      if (project && request.trains !== false) {
+        trains = deriveTrains({
+          all,
+          included: worldProfile
+            ? new Set(worldProfile.includedOccurrenceIds)
+            : undefined,
+          reserved: new Set(ids),
+          bounds: occurrenceBounds(project),
+        });
+        if (!trains.graph.pieces.length) trains = undefined;
+      }
       const [{ PlaySession }, geometry] = await Promise.all([
         import("./session"),
         r.playGeometry({
           include: worldProfile?.includedOccurrenceIds,
-          exclude: ids,
+          exclude: [...ids, ...(trains?.occurrenceIds ?? [])],
         }),
       ]);
+      const trainMeshes: Record<string, CollisionSnapshot> = {};
+      for (const train of trains?.trains ?? [])
+        for (const [i, car] of train.cars.entries()) {
+          trainMeshes[`${train.id}/${i}`] = await r.playGeometry({
+            include: [
+              ...car.occurrenceIds,
+              ...car.bogies.flatMap((b) => b.occurrenceIds),
+            ],
+          });
+          ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+        }
       const mechanismSources: PlayMechanismSource[] = [];
       let triangles = 0;
       for (const rig of rigs) {
@@ -302,6 +333,7 @@ export class BrowserPlay {
         derived
           ? { doors: derived.doors, skipped: derived.skipped }
           : undefined,
+        trains ? { derived: trains, meshes: trainMeshes } : undefined,
       );
       if (epoch !== this.epoch) {
         session.dispose();
@@ -330,7 +362,8 @@ export class BrowserPlay {
       }
       this.sessionRigs = { ...(project?.motionRigs ?? {}), ...doorRigs };
       this.held = {};
-      if (rigs.length) this.restorePose = r.beginTransientPose();
+      if (rigs.length || trains?.trains.length)
+        this.restorePose = r.beginTransientPose();
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
       if (figureGeometry instanceof Error)
@@ -377,9 +410,14 @@ export class BrowserPlay {
           ? { [report.mechanism.rigId]: report.mechanism }
           : {}),
     );
-    const transforms = mechanisms.length
-      ? Object.assign({}, ...mechanisms.map((m) => m.transforms))
-      : undefined;
+    const transforms =
+      mechanisms.length || report.trains?.trains.length
+        ? Object.assign(
+            {},
+            ...mechanisms.map((m) => m.transforms),
+            this.session.trainTransforms(),
+          )
+        : undefined;
     const interpolate = this.realtime && !this.state.paused;
     const camera = this.session.camera(interpolate);
     // The figure uses the same interpolation factor as the camera, so both
@@ -436,8 +474,21 @@ export class BrowserPlay {
     };
   }
   private nearby(report: PlaySnapshotReport) {
-    if (report.occupancy) return undefined;
+    if (report.occupancy || report.trains?.riding) return undefined;
     const rigs = this.sessionRigs;
+    const points = nearbyPoints(report);
+    const rig = this.nearbyRig(report, rigs);
+    if (!points) return rig;
+    if (!rig) return points;
+    return Number(points.available) - Number(rig.available) > 0 ||
+      (points.available === rig.available && points.distance < rig.distance)
+      ? points
+      : rig;
+  }
+  private nearbyRig(
+    report: PlaySnapshotReport,
+    rigs: Project["motionRigs"],
+  ): PlayInteraction | undefined {
     return Object.keys(
       report.mechanisms ??
         (report.mechanism
@@ -784,6 +835,10 @@ export class BrowserPlay {
       target?.blockedReason ?? "Move closer to the authored joint or vehicle",
     );
     this.clearInput();
+    if (target.kind === "points") {
+      this.setPoints({ occurrenceId: target.occurrenceId });
+      return;
+    }
     if (target.kind === "vehicle") {
       const seat =
         report.mechanisms?.[target.rigId]?.mode === "dynamic"
@@ -811,6 +866,39 @@ export class BrowserPlay {
     this.emit();
     return report;
   }
+  /** Train throttle −1..1 of full speed (negative backwards). */
+  setTrainThrottle(input: { trainId?: string; throttle: number }) {
+    this.assertMutable();
+    const report = this.current().setTrainThrottle(input);
+    this.draw();
+    this.emit();
+    return report;
+  }
+  stopTrain(input: { trainId?: string } = {}) {
+    this.assertMutable();
+    const report = this.current().stopTrain(input);
+    this.draw();
+    this.emit();
+    return report;
+  }
+  setPoints(input: { occurrenceId: string; route?: "straight" | "branch" }) {
+    this.assertMutable();
+    const report = this.current().setPoints(input);
+    this.draw();
+    this.emit();
+    return report;
+  }
+  /** Ride along with a train (`trainId: null` ends the ride). */
+  rideTrain(input: { trainId?: string | null } = {}) {
+    this.assertMutable();
+    this.releaseVehicle();
+    this.clearInput();
+    const report = this.current().rideTrain(input);
+    this.lastVisual = "";
+    this.draw();
+    this.emit();
+    return report;
+  }
   setMotor(request: PlayMotorRequest) {
     this.assertMutable();
     const report = this.current().setMotor(request);
@@ -834,6 +922,7 @@ export class BrowserPlay {
     const transforms = Object.assign(
       {},
       ...mechanisms.map((mechanism) => mechanism.transforms),
+      this.current().trainTransforms(),
     );
     const posed = posedLDraw(project, transforms);
     return {
@@ -841,7 +930,10 @@ export class BrowserPlay {
       text: posed.text,
       sourceRevision: report.sourceRevision,
       tick: report.tick,
-      rigIds: mechanisms.map((mechanism) => mechanism.rigId).sort(),
+      rigIds: [
+        ...mechanisms.map((mechanism) => mechanism.rigId),
+        ...(report.trains?.trains.map((t) => t.id) ?? []),
+      ].sort(),
       posedOccurrenceIds: posed.posedOccurrenceIds,
       warnings: posed.warnings,
     };

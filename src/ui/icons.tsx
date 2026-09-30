@@ -217,6 +217,31 @@ const paths = {
       <circle cx="9" cy="17" r="2" />
     </>
   ),
+  train: (
+    <>
+      <path d="M5 16V7.5A2.5 2.5 0 0 1 7.5 5h9A2.5 2.5 0 0 1 19 7.5V16z" />
+      <path d="M5 11h14M9 5v6M15 5v6" />
+      <circle cx="8.5" cy="18.5" r="1.5" />
+      <circle cx="15.5" cy="18.5" r="1.5" />
+    </>
+  ),
+  stop: <rect x="6.5" y="6.5" width="11" height="11" rx="1.5" />,
+  reverse: (
+    <path d="M7 4.5 3.5 8 7 11.5M3.5 8H16M17 12.5l3.5 3.5-3.5 3.5M20.5 16H8" />
+  ),
+  horn: (
+    <>
+      <path d="M4 10v4h3l6 4V6L7 10z" />
+      <path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11" />
+    </>
+  ),
+  points: <path d="M6 20V4M6 12c0-4 12-4 12-8M18 20v-4" />,
+  camera: (
+    <>
+      <path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </>
+  ),
 };
 export type IconName = keyof typeof paths;
 export function Icon({

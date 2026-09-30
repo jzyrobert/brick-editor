@@ -12,6 +12,7 @@ import { windmillProject } from "./builds/windmill";
 import { cafeProject } from "./builds/cafe";
 import { lighthouseProject } from "./builds/lighthouse";
 import { playgroundProject } from "./builds/playground";
+import { trainProject } from "./builds/train";
 import type { TemplateName } from "./template-names";
 import type { BackdropName } from "../core/scene";
 import { explorationSource } from "./exploration";
@@ -29,6 +30,7 @@ export const TEMPLATE_BACKDROPS: Partial<Record<TemplateName, BackdropName>> = {
   cafe: "street",
   lighthouse: "beach",
   playground: "grass",
+  train: "grass",
 };
 export function template(name: TemplateName) {
   const project = templateProject(name);
@@ -49,6 +51,7 @@ function templateProject(name: TemplateName) {
   if (name === "cafe") return cafeProject();
   if (name === "lighthouse") return lighthouseProject();
   if (name === "playground") return playgroundProject();
+  if (name === "train") return trainProject();
   if (name === "seated-vehicle") return openBenchFixture();
   if (name === "physics") return physicsFixture();
   if (name === "door-room") {

@@ -61,6 +61,8 @@ import {
   type SnapCandidate,
 } from "../edit/snap";
 import { connectedAssembly } from "../core/connectivity";
+import { trackCandidates } from "../edit/track-snap";
+import { trackPart } from "../play/track";
 import {
   checkConnection,
   checkMove,
@@ -190,7 +192,7 @@ type ViewTab = "Angle" | "Cut" | "Floors" | "Look";
 type PlaceFits = {
   list: SnapCandidate[];
   index: number;
-  mode: "stud" | "side" | "hinge";
+  mode: "stud" | "side" | "hinge" | "track";
   /** The tapped surface, for re-fitting after a turn. */
   tap?: { point: Vec3; normal: Vec3 };
 };
@@ -234,11 +236,15 @@ function fitStatus(
   const fit = list[index];
   const of = list.length > 1 ? ` Fit ${index + 1} of ${list.length}.` : "";
   const lead =
-    mode === "hinge"
-      ? `Seated in the frame: ${plural(fit.contacts, "hinge pin")}.`
-      : mode === "side"
-        ? `Turned onto the side studs: ${plural(fit.contacts, "stud connection")}.`
-        : `Snapped to ${plural(fit.contacts, "stud connection")}.`;
+    mode === "track"
+      ? fit.contacts > 1
+        ? `Joins the track at ${fit.contacts} ends.`
+        : "Joins the track."
+      : mode === "hinge"
+        ? `Seated in the frame: ${plural(fit.contacts, "hinge pin")}.`
+        : mode === "side"
+          ? `Turned onto the side studs: ${plural(fit.contacts, "stud connection")}.`
+          : `Snapped to ${plural(fit.contacts, "stud connection")}.`;
   return lead + of + " Choose Place part to commit.";
 }
 
@@ -1391,6 +1397,28 @@ function Workspace() {
           occurrences(project),
           (o) => o.visible,
         );
+        // Track snaps end to end with the placed track near the tap (every
+        // way one of its ends meets a free rail end; Next fit or Rotate
+        // cycles them, so a curve bends either way).
+        if (trackPart(s.part)) {
+          const point =
+            surface?.point ??
+            r.planeIntersection(e.clientX, e.clientY, s.workplane);
+          const list = point
+            ? trackCandidates(s.part, { point }, scene.occupants ?? [])
+            : [];
+          if (list.length) {
+            const index = chooseFit(
+              list,
+              s.placeOrientation
+                ? { position: s.position, basis: s.placeOrientation }
+                : null,
+            );
+            applyFit({ list, index, mode: "track" });
+            setStatus(fitStatus("track", list, index));
+            return;
+          }
+        }
         // A hinged leaf tapped onto a frame seats in its hinge sockets; a part
         // tapped onto a face with sideways studs turns to them. The previous
         // fit is kept (hysteresis) while it is still nearly the nearest.
@@ -3914,7 +3942,10 @@ function Workspace() {
                 aria-label="Rotate placement"
                 onClick={() => {
                   // A door in its frame turns by swapping the hinge side.
-                  if (placeFits?.mode === "hinge") {
+                  if (
+                    placeFits?.mode === "hinge" ||
+                    placeFits?.mode === "track"
+                  ) {
                     nextFit();
                     return;
                   }

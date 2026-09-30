@@ -104,6 +104,7 @@ describe("sample builds", () => {
         "jeep",
         "lighthouse",
         "playground",
+        "train",
         "windmill",
       ].sort(),
     );

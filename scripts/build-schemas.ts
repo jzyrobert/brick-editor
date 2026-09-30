@@ -976,6 +976,7 @@ const playRequest = obj(
     rigIds: { ...arr(id, 32), uniqueItems: true },
     dynamicRigIds: { ...arr(id, 14), uniqueItems: true },
     autoDoors: { type: "boolean" },
+    trains: { type: "boolean" },
     locomotion: { enum: ["walk", "fly-noclip"] },
     cameraMode: { enum: ["first-person", "third-person"] },
     position: vec,
@@ -1170,6 +1171,85 @@ playSnapshot.properties.autoDoors = obj({
   ),
   skipped: arr(obj({ occurrenceId, part: id, reason: str }), 100000),
 });
+const trackEnd = obj({ occurrenceId, end: integer });
+playSnapshot.properties.trains = obj(
+  {
+    trains: arr(
+      obj(
+        {
+          id,
+          name: str,
+          cars: arr(
+            obj({
+              id,
+              locomotive: { type: "boolean" },
+              parts: integer,
+              bogies: integer,
+            }),
+            64,
+          ),
+          throttle: { type: "number", minimum: -1, maximum: 1 },
+          speed: num,
+          status: {
+            enum: ["stopped", "running", "end-of-track", "blocked", "waiting"],
+          },
+          reason: str,
+          odometer: num,
+          position: vec,
+          heading: vec,
+          pieces: arr(occurrenceId, 10000),
+        },
+        [
+          "id",
+          "name",
+          "cars",
+          "throttle",
+          "speed",
+          "status",
+          "odometer",
+          "position",
+          "heading",
+          "pieces",
+        ],
+      ),
+      16,
+    ),
+    track: obj({
+      pieces: integer,
+      gaps: arr(obj({ a: trackEnd, b: trackEnd, distance: num, angle: num })),
+      deadEnds: integer,
+      skipped: arr(obj({ occurrenceId, part: id, reason: str })),
+    }),
+    switches: arr(
+      obj(
+        {
+          occurrenceId,
+          part: id,
+          route: { enum: ["straight", "branch"] },
+          occupied: { type: "boolean" },
+          trailed: { type: "boolean" },
+          position: vec,
+        },
+        ["occurrenceId", "part", "route", "occupied", "position"],
+      ),
+      10000,
+    ),
+    skipped: arr(obj({ occurrenceIds: arr(occurrenceId), reason: str })),
+    tick: integer,
+    riding: id,
+  },
+  ["trains", "track", "switches", "skipped", "tick"],
+);
+const playTrainThrottle = obj(
+  { trainId: id, throttle: { type: "number", minimum: -1, maximum: 1 } },
+  ["throttle"],
+);
+const playTrainSelect = obj({ trainId: id }, []);
+const playTrainRide = obj({ trainId: { anyOf: [id, { type: "null" }] } }, []);
+const playPoints = obj(
+  { occurrenceId, route: { enum: ["straight", "branch"] } },
+  ["occurrenceId"],
+);
 playSnapshot.properties.spawn = {
   ...playSpawn,
   required: ["position", "yaw", "pitch"],
@@ -1246,6 +1326,10 @@ const api = {
     "play.setInput": { $ref: "playInput" },
     "play.setJointTarget": { $ref: "playJointTarget" },
     "play.setMotor": { $ref: "playMotorRequest" },
+    "play.setTrainThrottle": { $ref: "playTrainThrottle" },
+    "play.stopTrain": { $ref: "playTrainSelect" },
+    "play.setPoints": { $ref: "playPoints" },
+    "play.rideTrain": { $ref: "playTrainRide" },
     "play.exportPosedModel": obj({}),
     "play.setMechanismJoint": obj({ jointId: id, value: num, rigId: id }, [
       "jointId",
@@ -1443,6 +1527,10 @@ const schemas = {
   playInput,
   playJointTarget,
   playMotorRequest,
+  playTrainThrottle,
+  playTrainSelect,
+  playTrainRide,
+  playPoints,
   playTeleport,
   playSeatRequest,
   playSeatExit,

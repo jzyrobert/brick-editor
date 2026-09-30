@@ -307,6 +307,75 @@ for (const viewport of [
     await context.close();
   });
 
+// The railway station sample adds the train slab under the top row.
+for (const viewport of [
+  { width: 360, height: 600 },
+  { width: 600, height: 360 },
+  { width: 800, height: 360 },
+])
+  test(`Train controls never overlap at ${viewport.width}x${viewport.height}`, async ({
+    browser,
+  }) => {
+    test.setTimeout(180000);
+    const context = await browser.newContext({
+      viewport,
+      hasTouch: true,
+      isMobile: true,
+    });
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto("./?automation=1");
+    await page.waitForFunction(() => !!window.brickEditor);
+    await page.evaluate(async () => {
+      const a = window.brickEditor!;
+      await a.project.import({ format: "template", template: "train" });
+      await a.ready();
+    });
+    const slots = [...PLAY_SLOTS, ".play-train"];
+    const check = async (state: string) => {
+      await page.waitForTimeout(300);
+      expect(await collisions(page, slots), state).toEqual([]);
+    };
+    await openMode(page, "Play");
+    await page.getByRole("button", { name: "Enter Play", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Pause" })).toBeVisible({
+      timeout: 60000,
+    });
+    await dismissRotatePrompt(page);
+    await expect(page.locator(".play-train")).toBeVisible();
+    await check("train stopped");
+    // The train pulls off the points; beside them their action joins the HUD.
+    await page.getByRole("button", { name: "Start the train" }).tap();
+    await page.evaluate(() => window.brickEditor!.play.stepTicks(600));
+    await check("train running");
+    const points = await page.evaluate(
+      async () =>
+        (await window.brickEditor!.play.snapshot()).trains!.switches[0]
+          .position,
+    );
+    await page.evaluate(
+      (p) =>
+        window.brickEditor!.play.teleport({
+          position: [p[0], -0.3, p[2] - 110],
+          policy: "safe",
+        }),
+      points,
+    );
+    await expect(page.locator(".play-interaction .play-prompt")).toBeVisible();
+    await check("near the points");
+    await page.getByRole("button", { name: "Ride along" }).tap();
+    await check("riding along");
+    await page.screenshot({
+      path: test
+        .info()
+        .outputPath(`play-train-hud-${viewport.width}x${viewport.height}.png`),
+    });
+    await page.evaluate(() => window.brickEditor!.play.exit());
+    expect(errors).toEqual([]);
+    await context.close();
+  });
+
 // Notched phones: the page runs edge to edge (viewport-fit=cover). Playwright
 // cannot emulate safe-area insets, so the test sets the --safe-* tokens that
 // default to env(safe-area-inset-*) (src/ui/tokens.css).

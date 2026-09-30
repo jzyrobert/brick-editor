@@ -19,6 +19,8 @@ import { compose, inverse } from "../../core/math";
 import { localOccupancy } from "../../edit/snap";
 import { hingeData } from "../connectors";
 import { FULL_LIBRARY_BOUNDS } from "./kit";
+import { TRAIN_TRACK_PARTS, onRails, trainPartKey } from "../train-parts";
+import { deriveTrains, occurrenceBounds } from "../../play/trains";
 import type { Occurrence, Project } from "../../core/types";
 
 // Derived occupancy widens thin faces to 0.6 LDU; ignore overlaps up to that.
@@ -78,7 +80,7 @@ const exempt = (a: Occurrence, b: Occurrence) => {
       x.transform.position[0] - y.transform.position[0],
       x.transform.position[2] - y.transform.position[2],
     ) < 40;
-  return pair(a, b) || pair(b, a);
+  return pair(a, b) || pair(b, a) || onRails(a.node.ref, b.node.ref);
 };
 
 export type BuildReport = {
@@ -158,12 +160,27 @@ export function checkBuild(
     });
     if (clash) found.push([a.o.id, b.o.id]);
   }
+  // Track follows its own curves and rail vehicles stand on their wheels
+  // on the rails, off the stud grid by design.
+  const rolling = new Set(
+    deriveTrains({
+      all,
+      reserved: new Set(),
+      bounds: occurrenceBounds(project),
+    }).occurrenceIds,
+  );
   const offGrid = all
     .filter((o) => {
       const [x, y, z] = o.transform.position;
       // Door leaves hang on their frame's hinge pins, off the stud grid, and
       // parts turned onto side studs follow those studs.
-      if (!bounds[o.node.ref] || DOORS[o.node.ref] || AXLED.has(o.node.ref))
+      if (
+        !bounds[o.node.ref] ||
+        DOORS[o.node.ref] ||
+        AXLED.has(o.node.ref) ||
+        rolling.has(o.id) ||
+        TRAIN_TRACK_PARTS.has(trainPartKey(o.node.ref))
+      )
         return false;
       if (Math.abs(o.transform.basis[4] - 1) > 1e-6) return false;
       const onGrid = (v: number) =>
@@ -177,6 +194,7 @@ export function checkBuild(
   const groupMembers = withoutLooseObjects(
     project,
     connectedGroups(graph),
+    all,
   ).groups;
   return {
     parts: all.length,

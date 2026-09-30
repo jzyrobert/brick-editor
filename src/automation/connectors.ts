@@ -16,6 +16,8 @@ import {
   connectionGraph,
 } from "../core/connectivity";
 import { occurrences } from "../core/document";
+import { trackCandidates } from "../edit/track-snap";
+import { trackPart } from "../play/track";
 import { rotationY } from "../core/math";
 import { ensure, type Basis, type Project, type Vec3 } from "../core/types";
 import {
@@ -157,6 +159,15 @@ export function connectorService(
       );
       await ready(input.part);
       const scene = visibleScene();
+      // Track joins a free rail end of the placed track near the point.
+      const track = trackPart(input.part)
+        ? trackCandidates(input.part, input, scene.occupants ?? [])
+        : [];
+      if (track.length)
+        return {
+          mode: "track",
+          fits: track.map(({ distance: _d, ...fit }) => fit),
+        };
       const hinge = hingeCandidates(input.part, input, scene);
       const fits = hinge.length
         ? hinge

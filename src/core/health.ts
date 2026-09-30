@@ -1,4 +1,10 @@
 import installedBounds from "../catalog/bounds.json";
+import {
+  TRAIN_TRACK_PARTS,
+  TRAIN_WHEEL_PARTS,
+  onRails,
+  trainPartKey,
+} from "../catalog/train-parts";
 import { connectedGroups, connectionGraph } from "./connectivity";
 import { occurrences } from "./document";
 import { transformBounds, type Bounds } from "./spatial";
@@ -126,21 +132,66 @@ function candidatePairs(boxes: Bounds[], cell = 80) {
  * one rig group explicitly marked loose (`dynamics.groups[id].anchored ===
  * false`, e.g. a playground crate) is free-standing by design.
  */
-export function withoutLooseObjects(project: Project, groups: string[][]) {
+export function withoutLooseObjects(
+  project: Project,
+  groups: string[][],
+  all?: Occurrence[],
+) {
   const owner = new Map<string, string>();
   for (const rig of Object.values(project.motionRigs))
     for (const group of rig.groups)
       if (rig.dynamics?.groups?.[group.id]?.anchored === false)
         for (const id of group.occurrenceIds)
           owner.set(id, rig.id + "\u0000" + group.id);
+  const rolling = railVehicles(project, all);
   const kept: string[][] = [];
-  let loose = 0;
+  let loose = 0,
+    vehicles = 0;
   for (const g of groups) {
     const key = owner.get(g[0]);
     if (key !== undefined && g.every((id) => owner.get(id) === key)) loose++;
+    else if (rolling(g)) vehicles++;
     else kept.push(g);
   }
-  return { groups: kept, loose };
+  return { groups: kept, loose, rolling: vehicles };
+}
+/**
+ * Rail vehicles stand on their wheels on the track, not on studs: a group
+ * with no track part that touches a train wheel or bogie part is one.
+ */
+function railVehicles(project: Project, all?: Occurrence[]) {
+  const list = all ?? occurrences(project);
+  const wheels = list.filter((o) =>
+    TRAIN_WHEEL_PARTS.has(trainPartKey(o.node.ref)),
+  );
+  if (!wheels.length) return () => false;
+  const byId = new Map(list.map((o) => [o.id, o]));
+  const box = (o: Occurrence) => {
+    const b = (
+      installedBounds.bounds as unknown as Record<string, Bounds | null>
+    )[o.node.ref];
+    return b ? transformBounds(b, o.transform) : null;
+  };
+  const wheelBoxes = wheels.map(box).filter((b): b is Bounds => !!b);
+  return (group: string[]) => {
+    const members = group
+      .map((id) => byId.get(id))
+      .filter(Boolean) as Occurrence[];
+    if (members.some((o) => TRAIN_TRACK_PARTS.has(trainPartKey(o.node.ref))))
+      return false;
+    return members.some((o) => {
+      if (TRAIN_WHEEL_PARTS.has(trainPartKey(o.node.ref))) return true;
+      const b = box(o);
+      return (
+        !!b &&
+        wheelBoxes.some((w) =>
+          [0, 1, 2].every(
+            (k) => b.min[k] <= w.max[k] + 0.5 && w.min[k] <= b.max[k] + 0.5,
+          ),
+        )
+      );
+    });
+  };
 }
 
 /**
@@ -191,17 +242,22 @@ export function modelHealth(
   const graph = connectionGraph(project, all);
   const covered = graph.covered.length,
     uncovered = graph.uncovered.length;
-  const { groups: connected, loose: looseObjects } = withoutLooseObjects(
-    project,
-    connectedGroups(graph),
-  );
+  const {
+    groups: connected,
+    loose: looseObjects,
+    rolling: railVehicleCount,
+  } = withoutLooseObjects(project, connectedGroups(graph), all);
   const inConnected = new Set(connected.flat());
   const floating = graph.covered.filter(
     (id) => !graph.edges.get(id)!.size && inConnected.has(id),
   );
-  const looseNote = looseObjects
-    ? ` ${looseObjects} loose object${looseObjects === 1 ? "" : "s"} (rig groups marked loose) stand${looseObjects === 1 ? "s" : ""} on ${looseObjects === 1 ? "its" : "their"} own by design.`
-    : "";
+  const looseNote =
+    (looseObjects
+      ? ` ${looseObjects} loose object${looseObjects === 1 ? "" : "s"} (rig groups marked loose) stand${looseObjects === 1 ? "s" : ""} on ${looseObjects === 1 ? "its" : "their"} own by design.`
+      : "") +
+    (railVehicleCount
+      ? ` ${railVehicleCount} rail vehicle${railVehicleCount === 1 ? "" : "s"} stand${railVehicleCount === 1 ? "s" : ""} on ${railVehicleCount === 1 ? "its" : "their"} wheels on the track.`
+      : "");
   const studs = graph.contacts - graph.hingeContacts;
   const unverifiedNote = uncovered
     ? ` ${uncovered} part${uncovered === 1 ? " has" : "s have"} no verified connector data (custom, tilted or not yet verified); ${uncovered === 1 ? "it" : "they"} may join these groups.`
@@ -258,7 +314,11 @@ export function modelHealth(
    * these quarter-turn placements), else by their boxes. */
   const clash = (i: number, j: number) => {
     if (!overlaps(bodies[i], bodies[j], TOLERANCE)) return false;
-    if (glazed(boxed[i], boxed[j])) return false;
+    if (
+      glazed(boxed[i], boxed[j]) ||
+      onRails(boxed[i].node.ref, boxed[j].node.ref)
+    )
+      return false;
     // Parts joined by a verified connection (a door's pins in its frame's
     // sockets, a stud in its receptor) are seated, not intersecting.
     if (graph.edges.get(boxed[i].id)?.has(boxed[j].id)) return false;
@@ -319,9 +379,11 @@ export function modelHealth(
     groups.set(root, [...(groups.get(root) ?? []), o.id]);
   });
   // Loose objects (rig groups marked loose) stand apart by design.
-  const sorted = withoutLooseObjects(project, [...groups.values()]).groups.sort(
-    (a, b) => b.length - a.length,
-  );
+  const sorted = withoutLooseObjects(
+    project,
+    [...groups.values()],
+    all,
+  ).groups.sort((a, b) => b.length - a.length);
   const loose = sorted.slice(1).flat();
   checks.push({
     id: "assemblies",

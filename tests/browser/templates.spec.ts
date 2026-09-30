@@ -17,7 +17,8 @@ type Sample =
   | "house"
   | "castle"
   | "car"
-  | "playground";
+  | "playground"
+  | "train";
 /** Every sample: its title and part count. */
 const SAMPLES: [Sample, string, number][] = [
   ["cafe", "Corner café", 358],
@@ -28,6 +29,7 @@ const SAMPLES: [Sample, string, number][] = [
   ["castle", "Small castle", 237],
   ["car", "Roadster", 58],
   ["playground", "Playground park", 110],
+  ["train", "Railway station", 415],
 ];
 /** Chooser cards in display order (the blank canvas last). */
 const CARDS = [
@@ -35,6 +37,7 @@ const CARDS = [
   "Windmill farm",
   "Lighthouse",
   "Off-road jeep",
+  "Railway station",
   "Playground park",
   "House with garden",
   "Small castle",

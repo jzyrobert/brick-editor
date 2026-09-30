@@ -269,7 +269,33 @@ export function createAPI(
         validateRequest("playMotorRequest", input);
         return player().setMotor(input);
       },
-      /** The contextual E/touch action: nearest door, joint or vehicle. */
+      /** Train throttle −1..1 of full speed; 0 coasts to a stop. */
+      setTrainThrottle: async (input: {
+        trainId?: string;
+        throttle: number;
+      }) => {
+        validateRequest("playTrainThrottle", input);
+        return player().setTrainThrottle(input);
+      },
+      /** Stop a train at once. */
+      stopTrain: async (input: { trainId?: string } = {}) => {
+        validateRequest("playTrainSelect", input);
+        return player().stopTrain(input);
+      },
+      /** Set or toggle (no route) a track switch; refused under a train. */
+      setPoints: async (input: {
+        occurrenceId: string;
+        route?: "straight" | "branch";
+      }) => {
+        validateRequest("playPoints", input);
+        return player().setPoints(input);
+      },
+      /** Ride along with a train's camera; `{trainId:null}` ends the ride. */
+      rideTrain: async (input: { trainId?: string | null } = {}) => {
+        validateRequest("playTrainRide", input);
+        return player().rideTrain(input);
+      },
+      /** The contextual E/touch action: nearest door, joint, vehicle or points. */
       interact: async () => {
         player().interact();
         return player().snapshot();

@@ -132,6 +132,10 @@ export async function main(argv: string[]) {
       "motors",
       "vehicle",
       "posed-output",
+      "train-throttle",
+      "points",
+      "no-trains",
+      "ride-train",
     ],
   };
   ensure(
@@ -149,6 +153,8 @@ export async function main(argv: string[]) {
       "no-ground",
       "no-auto-doors",
       "open-doors",
+      "no-trains",
+      "ride-train",
       "include-official",
       "include-complete",
       "acknowledge-scoped-metadata",
@@ -756,6 +762,20 @@ export async function main(argv: string[]) {
       "INVALID_INPUT",
       "--joint-targets and --motors take JSON arrays; --vehicle takes a JSON object",
     );
+    // Trains: one throttle for every train (−1..1), points to set first.
+    const trainThrottle =
+      flag("train-throttle") === undefined
+        ? undefined
+        : numberFlag("train-throttle", 0, -1, 1);
+    const points = (json("points") ?? []) as Array<{
+      occurrenceId: string;
+      route?: "straight" | "branch";
+    }>;
+    ensure(
+      Array.isArray(points) && points.length <= 256,
+      "INVALID_INPUT",
+      "--points takes a JSON array of {occurrenceId, route}",
+    );
     const posedOutput = flag("posed-output");
     if (posedOutput)
       ensure(
@@ -785,6 +805,9 @@ export async function main(argv: string[]) {
           motors,
           vehicle,
           openDoors,
+          trainThrottle,
+          points,
+          rideTrain,
           posed,
         }) => {
           const a = window.brickEditor!,
@@ -805,6 +828,15 @@ export async function main(argv: string[]) {
                   : {}),
               });
               for (const motor of motors) await a.play.setMotor(motor);
+              for (const p of points) await a.play.setPoints(p);
+              if (trainThrottle !== undefined)
+                for (const train of before.trains?.trains ?? [])
+                  await a.play.setTrainThrottle({
+                    trainId: train.id,
+                    throttle: trainThrottle,
+                  });
+              if (rideTrain && before.trains?.trains.length)
+                await a.play.rideTrain({ trainId: before.trains.trains[0].id });
               if (openDoors)
                 for (const door of before.autoDoors?.doors ?? [])
                   if (door.swing !== "blocked")
@@ -854,6 +886,10 @@ export async function main(argv: string[]) {
                         ...(motors.length ? { motors } : {}),
                         ...(vehicle ? { vehicle } : {}),
                         ...(openDoors ? { openDoors: true } : {}),
+                        ...(trainThrottle !== undefined
+                          ? { trainThrottle }
+                          : {}),
+                        ...(points.length ? { points } : {}),
                       },
                     }
                   : {}),
@@ -880,6 +916,7 @@ export async function main(argv: string[]) {
             ground: !args.includes("--no-ground"),
             realtime: false,
             ...(args.includes("--no-auto-doors") ? { autoDoors: false } : {}),
+            ...(args.includes("--no-trains") ? { trains: false } : {}),
           },
           rigs,
           dynamicRigs,
@@ -887,6 +924,9 @@ export async function main(argv: string[]) {
           motors,
           vehicle,
           openDoors: args.includes("--open-doors"),
+          trainThrottle,
+          points,
+          rideTrain: args.includes("--ride-train"),
           posed: !!posedOutput,
           input: {
             moveX,

@@ -19,6 +19,7 @@ import { windmillSource } from "../src/catalog/builds/windmill";
 import { lighthouseSource } from "../src/catalog/builds/lighthouse";
 import { cafeSource } from "../src/catalog/builds/cafe";
 import { playgroundSource } from "../src/catalog/builds/playground";
+import { trainSource } from "../src/catalog/builds/train";
 import { checkBuild } from "../src/catalog/builds/check";
 import { template } from "../src/catalog/templates";
 import {
@@ -48,6 +49,11 @@ export const TEMPLATE_BUILDS = [
     file: "playground-park.mpd",
     source: playgroundSource,
   },
+  {
+    name: "train",
+    file: "railway-station.mpd",
+    source: trainSource,
+  },
 ] as const;
 
 const cam = (position: number[], target: number[], fovDeg = 40) =>
@@ -71,6 +77,7 @@ const CAMERAS: Partial<Record<TemplateName, CameraSpec>> = {
   lighthouse: cam([600, -620, -980], [-10, -230, -20]),
   cafe: cam([600, -560, -940], [-40, -140, -30]),
   playground: cam([560, -520, -900], [-10, -60, -20]),
+  train: cam([1500, -1500, -2300], [200, -40, 500], 40),
 };
 
 registerFullLibraryFromDisk();

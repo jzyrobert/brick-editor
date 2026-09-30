@@ -230,6 +230,11 @@
         "swing": "Free direction decided by sweeping an inset leaf proxy against the Play world; two-way doors open away from the explorer",
         "control": "E / on-screen Open door action, play.interact(), play.setJointTarget, CLI --open-doors; disable with autoDoors:false"
       },
+      "trains": {
+        "track": "src/play/track.ts: rail centrelines of 21 official track parts (plastic, 9V, 4.5V/12V straights and R40 curves; 9V switches) pinned by their geometry",
+        "runtime": "Session-only trains derived from wheels on the rails; fixed-tick deterministic motion along the rail graph with bogie pivots, coupling spacing, points, end stops and explorer waiting",
+        "control": "Train slab (Go/Stop, speed, reverse, ride along, horn, points), play.setTrainThrottle/stopTrain/setPoints/rideTrain, CLI --train-throttle/--points/--ride-train/--no-trains; disable with trains:false"
+      },
       "posedExport": "play.exportPosedModel() / mechanisms.exportPosedModel() / CLI --posed-output: static posed LDraw MPD; project and rest pose unchanged"
     },
     "sharing": {

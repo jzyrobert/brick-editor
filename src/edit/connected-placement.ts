@@ -26,6 +26,9 @@ import { add, mv, physical } from "../core/math";
 import { projectBounds, transformBounds, type Bounds } from "../core/spatial";
 import type { Occurrence, Project, Transform, Vec3 } from "../core/types";
 import { clashes, sceneConnectors, type SceneConnectors } from "./snap";
+import { onRails } from "../catalog/train-parts";
+import { trackPart } from "../play/track";
+import { sceneTrack, trackJoins } from "./track-snap";
 
 /** World LDraw height of the ground (LDraw −Y is up). */
 export const GROUND_Y = 0;
@@ -34,7 +37,13 @@ export const CONTACT_TOLERANCE = 0.5;
 const STUD = 4; // a stud row rises 4 LDU above a body top
 const OVERLAP = 0.5; // least footprint overlap for resting contact
 
-export type Holder = "studs" | "hinge" | "ground" | "resting" | "unchecked";
+export type Holder =
+  | "studs"
+  | "hinge"
+  | "rails"
+  | "ground"
+  | "resting"
+  | "unchecked";
 export type ConnectionCheck = {
   ok: boolean;
   /** How the part holds; null when it does not. */
@@ -198,10 +207,34 @@ export function checkConnection(
     clashes(
       ref,
       transform,
-      scene.occupants.filter((o) => !frames.has(o.occurrenceId)),
+      scene.occupants.filter(
+        (o) =>
+          !frames.has(o.occurrenceId) &&
+          // Track interlocks at its ends; wheels run inside the rail heads.
+          !(o.ref && onRails(ref, o.ref)),
+      ),
     )
   )
     return refused("clash");
+  // A track piece joined end to end with the placed track holds by its rails.
+  const rails =
+    ref && scene.occupants && trackPart(ref)
+      ? trackJoins(ref, transform, sceneTrack(scene.occupants))
+      : undefined;
+  if (rails?.overlaps) return refused("clash");
+  if (rails?.joined.length)
+    return {
+      ok: true,
+      via: "rails",
+      verified: true,
+      reason: null,
+      contacts: rails.joined.length,
+      targetIds: rails.joined,
+      message:
+        rails.joined.length > 1
+          ? `Joins the track at ${rails.joined.length} ends.`
+          : "Joins the track.",
+    };
   if (contacts)
     return {
       ok: true,

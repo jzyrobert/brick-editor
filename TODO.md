@@ -77,6 +77,8 @@ Suggested order for the next implementation pass:
 - [x] A sample that shows dynamic physics: the Playground park (loose crates and barrels, see-saw, roundabout, swing) starts Play in Dynamic with a “Push the crates” hint.
 - [ ] Backdrop follow-ups: measure frame times on a real phone; night lighting for the Night city backdrop; optional scattered 3D scenery (trees, lamp posts) with collision; more street-map tile variety.
 - [ ] Remaining M5/M6: riding moving platforms and seated driving of dynamic vehicles; clutch/breaking behaviour; compound-rig and arbitrary-frame authoring UI; auto-rig proposals beyond official door leaves; advanced assembly planning.
+- [x] Running trains (user question, 2026-09-30): LDraw has the train parts (434 in its Train category; plastic, 9V and 4.5V/12V track and 9V switches, no modern plastic switches or Powered Up motors). Play follows the rail centrelines of 21 official track parts (pinned by their geometry), runs derived trains with bogies on the rails, speed, reverse, points, end stops and ride-along camera, with a train slab on phones; track snaps end to end in the editor; the **Railway station** sample. See [running trains](docs/PLAY-TRAINS.md).
+- [ ] Train follow-ups: coupling and uncoupling in Play, riding a train as the walking figure, ramps and crossings, flexible and 4.5V/12V points, signals and level crossings that react, wheel spin and connecting rods, trains colliding with the rest of the build.
 
 Use [docs/VERIFICATION.md](docs/VERIFICATION.md) for the existing test evidence and its limits. Update the status report and capability declarations when closing items; keep remaining compatibility and acceptance gaps explicit.
 

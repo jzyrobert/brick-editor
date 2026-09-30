@@ -27,6 +27,7 @@ const finePointerQuery = "(hover: hover) and (pointer: fine)";
 const hasFinePointer = () =>
   typeof matchMedia === "function" && matchMedia(finePointerQuery).matches;
 import { PlayMechanismControls } from "./PlayMechanismControls";
+import { PlayTrainControls } from "./PlayTrainControls";
 import { Icon, type IconName } from "./icons";
 import {
   choosePortrait,
@@ -635,15 +636,27 @@ export function PlayPanel({
       }
     : state.vehicleControl
       ? { icon: "wheel", text: "Controlling vehicle · on foot" }
-      : walking
-        ? { icon: "play", text: "Walking" }
-        : { icon: "fly", text: "Flying · through walls" };
+      : report.trains?.riding
+        ? {
+            icon: "train",
+            text:
+              "Riding · " +
+              (report.trains.trains.find((t) => t.id === report.trains!.riding)
+                ?.name ?? "train"),
+          }
+        : walking
+          ? { icon: "play", text: "Walking" }
+          : { icon: "fly", text: "Flying · through walls" };
   const interactIcon: IconName =
     state.vehicleControl || state.interaction?.kind === "vehicle"
       ? "wheel"
-      : /door/i.test(state.interaction?.label ?? "")
-        ? "door"
-        : "hand";
+      : state.interaction?.kind === "points"
+        ? "points"
+        : /door/i.test(state.interaction?.label ?? "")
+          ? "door"
+          : "hand";
+  const trains = report.trains?.trains.length ? report.trains : undefined;
+  const showTrains = !!trains && !state.paused && !inVehicle && !remoteOpen;
   const keyHint = (key: string) =>
     finePointer && key ? <kbd aria-hidden="true">{key}</kbd> : null;
   const showRemote =
@@ -659,6 +672,7 @@ export function PlayPanel({
         "play-overlay" +
         (state.paused ? " is-paused" : "") +
         (occupied ? " is-seated" : "") +
+        (showTrains ? " has-train" : "") +
         (inVehicle ? " is-vehicle" : "") +
         (finePointer ? " has-mouse" : "") +
         (locked ? " is-locked" : "")
@@ -740,6 +754,15 @@ export function PlayPanel({
           />
         )}
       </div>
+      {showTrains && (
+        <PlayTrainControls
+          play={play}
+          trains={trains!}
+          onError={setMessage}
+          bound={Object.values(bindings)}
+          showKeys={finePointer}
+        />
+      )}
       {state.paused ? (
         <div
           className="play-menu"

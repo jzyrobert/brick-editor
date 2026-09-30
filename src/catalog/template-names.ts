@@ -13,6 +13,7 @@ export const SAMPLE_TEMPLATES = [
   "lighthouse",
   "cafe",
   "playground",
+  "train",
 ] as const;
 /**
  * Older technical starts kept only as test fixtures for the automation API
@@ -45,6 +46,7 @@ export const TEMPLATE_CARDS: { name: SampleTemplateName; title: string }[] = [
   { name: "windmill", title: "Windmill farm" },
   { name: "lighthouse", title: "Lighthouse" },
   { name: "jeep", title: "Off-road jeep" },
+  { name: "train", title: "Railway station" },
   { name: "playground", title: "Playground park" },
   { name: "house", title: "House with garden" },
   { name: "castle", title: "Small castle" },

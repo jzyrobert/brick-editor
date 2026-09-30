@@ -54,6 +54,8 @@ The samples carry authored kinematic rigs: the windmill's sails and the lighthou
 
 Official LDraw doors open without rigging: the house, café, farm and lighthouse samples use real 60596 frames with 60616a/60623 doors, and Play hinges each to its frame automatically (E or tap **Open door**). The **Playground park** sample starts Play in **Mechanism physics → Dynamic** (its rigs set `dynamics.startDynamic`); the `physics` test fixture (automation only) adds a loose crate and a motorised spinner. Under Dynamic, rigs become Rapier bodies with gravity, joint motors, suspension and pushing. Play never edits the build, and a static posed MPD is available from automation (`play.exportPosedModel`, CLI `--posed-output`). See [Play physics](docs/PLAY-PHYSICS.md). Riding and seated driving of dynamic vehicles remain unimplemented.
 
+Trains standing on official LDraw track run in Play: press **Go**, set the speed, reverse, throw the points and ride along. The **Railway station** sample has an oval with a siding and a three-car train, and track pieces snap end to end in the editor. See [running trains](docs/PLAY-TRAINS.md).
+
 ## Browser automation
 
 Open `/?automation=1` to expose `window.brickEditor`; the API is absent by default. See [docs/API.md](docs/API.md), [CLI examples](docs/CLI.md), and the generated [schemas](schemas).

@@ -42,6 +42,11 @@ export const FULL_LIBRARY_BOUNDS: Record<string, Box> = {
   "3010p20.dat": { min: [-40, -4, -10], max: [40, 24, 10] },
   "3068bp25.dat": { min: [-20, 0, -20], max: [20, 8, 20] },
   "2454adfa.dat": { min: [-20, -4, -10.25], max: [20, 120, 10] },
+  // Railway station.
+  "92088.dat": { min: [-240, -4, -60], max: [240, 16, 60] },
+  "2924bc01.dat": { min: [-60, -104, -20], max: [60, 24, 20] },
+  "4033c01.dat": { min: [-40, -4, -10], max: [40, 72, 10] },
+  "4035c01.dat": { min: [-20, -4, -10], max: [20, 72, 10] },
 };
 
 const bounds = installedBounds.bounds as unknown as Record<string, Box | null>;

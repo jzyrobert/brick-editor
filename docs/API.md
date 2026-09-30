@@ -232,12 +232,23 @@ await api.play.exit();
 - `play.setMotor({rigId?,jointId,enabled})` enables or stops an authored revolute or prismatic motor. Reports include `motors[jointId]` with `mode`, `target`, `enabled`, `status` (`running`, `holding`, `blocked`, `at-limit`, `stopped`), `units`, `targetUnits` and `simulation` (`kinematic-rate` or `dynamic-motor`).
 - Dynamic mechanism reports use `mode:"dynamic"` and add `dynamics` with the engine, gravity (m/s²), per-group `bodies` (anchored, massKg, colliders, sleeping, linearVelocity in LDU/s, angularSpeed in degrees/s), per-wheel `wheels` (contact, suspensionLength in LDU, steering and rotation in degrees) and chassis `speed` (LDU/s). `setMechanismJoint` is refused for dynamic rigs; use `setJointTarget`, which drives the joint motor.
 - `snapshot.autoDoors` lists derived door rigs (`rigId` `auto-door:N`, `jointId`, door and holder occurrence IDs, part, world `pivot`, `axis`, `leaf` and `swing`: `positive`, `negative`, `both` or `blocked`). It also lists `skipped` doors with a reason. Open a door with `play.interact()` near it, or with `setJointTarget`.
-- `play.interact()` performs the contextual E/tap action and returns the snapshot.
+- `play.interact()` performs the contextual E/tap action (a door, joint, vehicle or, beside a track switch, the points) and returns the snapshot.
 - `play.exportPosedModel()` and `mechanisms.exportPosedModel()` return a static posed MPD of all active mechanisms: `{format:"ldraw-mpd",text,sourceRevision,tick,rigIds,posedOccurrenceIds,warnings}`. The project is not edited.
 - `mechanisms.list()` returns authored rigs with their joints, motors and optional `dynamics` settings.
 - `dynamics.startDynamic: true` on any rig makes the Play card start with **Mechanism physics → Dynamic** chosen (the playground park sample sets it); automation still names `dynamicRigIds` explicitly.
 
 Rig `dynamics` settings (optional, schema `motionRig`): `groups` keyed by group ID with `massKg` (0.001–100,000) and `anchored`; `friction` (0–4); `suspension` for vehicles, with `restLength` and `travel` in LDU (0.5–200), `stiffness` (1–500) and `damping` (0.05–50); and `engineForce` in simulation N. A dynamic vehicle chassis or wheel cannot be anchored.
+
+## Trains
+
+Play runs trains standing on official LDraw track (see [running trains](PLAY-TRAINS.md)); they are derived at entry and session-only. `play.enter({trains:false})` leaves them static.
+
+- `play.setTrainThrottle({trainId?,throttle})`: −1..1 of full speed (480 LDU/s); negative runs backwards, 0 coasts to a stop. Omit `trainId` when one train runs.
+- `play.stopTrain({trainId?})` stops a train at once.
+- `play.setPoints({occurrenceId,route?})` sets a switch to `"straight"` or `"branch"`, or toggles it without `route`; refused while a train covers it.
+- `play.rideTrain({trainId?})` puts the camera on a train (chase view in third person, the cab in first); `{trainId:null}` ends the ride. Walking input is ignored while riding.
+- `snapshot().trains`: `trains[]` (`id` `train:N`, `name`, `cars[]` with `locomotive`, `parts` and `bogies`, `throttle`, `speed` LDU/s, `status` `stopped`/`running`/`end-of-track`/`blocked`/`waiting`, `reason`, `odometer` LDU, head `position` and `heading`, `pieces` on its route), `track` (`pieces`, `gaps` with distance and angle, `deadEnds`, `skipped`), `switches[]` (`occurrenceId`, `part`, `route`, `occupied`, `trailed`, `position`), `skipped` rolling stock with reasons, `tick` and `riding`.
+- `connectors.orient({part,point,normal})` returns rail-end fits (`mode:"track"`) for a track part near the placed track; `connectors.validatePlacement` reports a track piece joined end to end as held by its rails (`via:"rails"`).
 
 ## Renderer budgets
 

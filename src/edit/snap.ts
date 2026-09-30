@@ -44,6 +44,8 @@ export const MAX_FITS = 12;
 /** Body occupancy of one scene part, for clash tests. */
 export type Occupant = {
   occurrenceId: string;
+  /** Its part reference (track and wheels nest by design). */
+  ref?: string;
   /** World box of all its occupancy boxes (broad phase). */
   world: Bounds;
   transform: Transform;
@@ -150,6 +152,7 @@ export function sceneConnectors(
     if (boxes)
       occupants.push({
         occurrenceId: o.id,
+        ref: o.node.ref,
         world: transformBounds(union(boxes), o.transform),
         transform: o.transform,
         boxes,
