@@ -6,6 +6,10 @@ import { CAR_PELVIS } from "../../src/catalog/builds/car";
 import { windmillSource } from "../../src/catalog/builds/windmill";
 import { lighthouseSource } from "../../src/catalog/builds/lighthouse";
 import { cafeSource } from "../../src/catalog/builds/cafe";
+import {
+  PLAYGROUND_HINT,
+  playgroundSource,
+} from "../../src/catalog/builds/playground";
 import { checkBuild } from "../../src/catalog/builds/check";
 import {
   FIXTURE_TEMPLATES,
@@ -99,6 +103,7 @@ describe("sample builds", () => {
         "house",
         "jeep",
         "lighthouse",
+        "playground",
         "windmill",
       ].sort(),
     );
@@ -407,6 +412,108 @@ describe("sample builds", () => {
         // On the landing (x −220..−200) at the slab's top (level 22).
         expect(up[0]).toBeLessThan(-190);
         expect(up[1]).toBeLessThan(-170);
+      } finally {
+        session.dispose();
+      }
+    },
+  );
+
+  it("playground: every moving thing is a rig, loose objects are checked as loose", () => {
+    const project = template("playground");
+    expect(project.title).toBe("Playground park");
+    expect(project.scene).toEqual({
+      backdrop: "grass",
+      playHint: PLAYGROUND_HINT,
+    });
+    const r = report(project);
+    expect(r.overlaps).toEqual([]);
+    expect(r.offGrid).toEqual([]);
+    expect(r.groups).toBe(1);
+    const rigs = Object.values(project.motionRigs);
+    expect(rigs.map((rig) => rig.id).sort()).toEqual(
+      [
+        "barrel-1",
+        "barrel-2",
+        "crate-1",
+        "crate-2",
+        "crate-3",
+        "crate-4",
+        "roundabout",
+        "seesaw",
+        "swing",
+      ].sort(),
+    );
+    // Within dynamic Play's limits (14 rigs, 64 bodies).
+    expect(rigs.length).toBeLessThanOrEqual(14);
+    expect(rigs.reduce((n, rig) => n + rig.groups.length, 0)).toBeLessThan(64);
+    for (const rig of rigs) {
+      validateRig(project, rig);
+      validate("motionRig", rig);
+      expect(rig.dynamics?.startDynamic).toBe(true);
+    }
+    const health = modelHealth(project).checks.find(
+      (c) => c.id === "connectivity",
+    )!;
+    expect(health.status).toBe("ok");
+    expect(health.detail).toMatch(/7 loose objects/);
+    expect(
+      readFileSync("fixtures/ldraw/templates/playground-park.mpd", "utf8"),
+    ).toBe(playgroundSource());
+  });
+
+  it(
+    "playground: in dynamic Play the explorer pushes a crate and the swing swings",
+    { timeout: 180000 },
+    async () => {
+      const project = template("playground");
+      const ids = Object.keys(project.motionRigs);
+      const { geometry, sources } = await officialSources(
+        project,
+        project.motionRigs,
+        { min: [-340, -200, -340], max: [340, 0, 340] },
+      );
+      const create = (dynamic: boolean, position: Vec3, yaw = 0) =>
+        PlaySession.create(
+          geometry,
+          {
+            rigIds: ids,
+            ...(dynamic ? { dynamicRigIds: ids } : {}),
+            position,
+            yaw,
+          },
+          sources,
+        );
+      // Crate 3 stands on the plaza at x -260..-220, z -160..-120.
+      for (const dynamic of [false, true]) {
+        const session = await create(dynamic, [-240, -8.3, -70]);
+        try {
+          session.stepTicks(30);
+          const crate = () =>
+            session.snapshot().mechanisms!["crate-3"].groupFrames.body.position;
+          const before = crate();
+          // Push it a little way across the plaza (not off its edge).
+          session.setInput({ moveZ: 1 });
+          session.stepTicks(40);
+          const after = crate();
+          if (dynamic) {
+            expect(session.snapshot().mechanisms!["crate-3"].mode).toBe(
+              "dynamic",
+            );
+            expect(after[2]).toBeLessThan(before[2] - 20);
+            // It slides on the tiles rather than sinking or flying off.
+            expect(Math.abs(after[1] - before[1])).toBeLessThan(3);
+          } else expect(after).toEqual(before);
+        } finally {
+          session.dispose();
+        }
+      }
+      // Walk into the swing seat (x -220..-140, z 160..180, 40-48 up).
+      const session = await create(true, [-180, -0.3, 60], Math.PI);
+      try {
+        session.setInput({ moveZ: 1, yaw: Math.PI });
+        session.stepTicks(90);
+        const swing = session.snapshot().mechanisms!.swing;
+        expect(Math.abs(swing.pose.jointPositions.pivot)).toBeGreaterThan(3);
       } finally {
         session.dispose();
       }

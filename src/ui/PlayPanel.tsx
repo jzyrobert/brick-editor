@@ -47,6 +47,7 @@ export function PlayPanel({
   children,
   rigs = {},
   layers = {},
+  playHint,
 }: {
   play: BrowserPlay;
   bookmark: () => void;
@@ -54,6 +55,8 @@ export function PlayPanel({
   children?: React.ReactNode;
   rigs?: Record<string, MotionRig>;
   layers?: Record<string, Layer>;
+  /** The build's one-line Play hint (project.scene.playHint). */
+  playHint?: string;
 }) {
   const state = useSyncExternalStore(play.subscribe, play.getState);
   const [message, setMessage] = useState("");
@@ -62,7 +65,16 @@ export function PlayPanel({
     "all" | "single" | "static"
   >("all");
   const [remoteRigId, setRemoteRigId] = useState("");
-  const [physics, setPhysics] = useState<"kinematic" | "dynamic">("kinematic");
+  // A build whose rigs ask for it (dynamics.startDynamic) starts in Dynamic.
+  const startDynamic = Object.values(rigs).some(
+    (rig) => rig.dynamics?.startDynamic,
+  );
+  const [physics, setPhysics] = useState<"kinematic" | "dynamic">(
+    startDynamic ? "dynamic" : "kinematic",
+  );
+  useEffect(() => {
+    setPhysics(startDynamic ? "dynamic" : "kinematic");
+  }, [startDynamic]);
   const [remoteOpen, setRemoteOpen] = useState(false);
   let allOption = "__all_mechanisms__";
   while (rigs[allOption]) allOption += "_";
@@ -337,6 +349,16 @@ export function PlayPanel({
     landscape.addEventListener?.("change", turned);
     return () => landscape.removeEventListener?.("change", turned);
   }, [rotateAsk]);
+  // The build's Play hint shows for a few seconds once per session.
+  const [hintDone, setHintDone] = useState(false);
+  useEffect(() => {
+    if (!state.active) {
+      setHintDone(false);
+      return;
+    }
+    const timer = setTimeout(() => setHintDone(true), 6000);
+    return () => clearTimeout(timer);
+  }, [state.active]);
   // The look hint shows until the first look drag, or a few seconds.
   useEffect(() => {
     if (!state.active || looked) return;
@@ -438,6 +460,7 @@ export function PlayPanel({
           Your build stays unchanged. Choose which layers and ground to explore
           below. Character height: 72 LDU.
         </p>
+        {playHint && <p className="play-intro-hint">{playHint}</p>}
         {Object.keys(rigs).length > 0 && (
           <label>
             Explore with mechanism
@@ -484,7 +507,10 @@ export function PlayPanel({
         )}
         {Object.keys(rigs).length > 0 && mechanismMode !== "static" && (
           <details className="play-world-settings play-physics-settings">
-            <summary>Mechanism physics</summary>
+            <summary>
+              Mechanism physics ·{" "}
+              {physics === "dynamic" ? "Dynamic" : "Kinematic"}
+            </summary>
             <label>
               <input
                 type="radio"
@@ -838,6 +864,11 @@ export function PlayPanel({
             {bindings.camera || "—"} camera · {bindings.interact || "—"}{" "}
             interact
           </div>
+          {playHint && !hintDone && (
+            <div className="play-start-hint" role="status">
+              {playHint}
+            </div>
+          )}
           {!finePointer && !looked && !remoteOpen && (
             <div className="play-look-hint" aria-hidden="true">
               <Icon name="hand" size={16} />

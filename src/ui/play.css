@@ -385,6 +385,28 @@
   pointer-events: none;
   animation: play-hint-life 6s ease-out forwards;
 }
+/* The build's own Play hint ("Push the crates!"): a short line above the
+   crosshair that fades after a few seconds. */
+.play-start-hint {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  max-width: min(420px, calc(100% - 2 * var(--play-right, 16px) - 120px));
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 18px;
+  background: var(--play-glass);
+  color: var(--chalk);
+  font-size: var(--text-body);
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+  animation: play-hint-life 6s ease-out forwards;
+}
+.play-intro-hint {
+  margin: 0;
+  font-weight: 650;
+}
 @keyframes play-hint-life {
   0% {
     opacity: 0;
@@ -861,7 +883,8 @@
   .play-rotate-card {
     animation: none;
   }
-  .play-look-hint {
+  .play-look-hint,
+  .play-start-hint {
     animation-duration: 6s;
     animation-timing-function: steps(1, end);
   }

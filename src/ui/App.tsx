@@ -154,9 +154,17 @@ import { FillOptions, defaultFillOptions } from "./FillOptions";
 import { type FillRequest, fillPreview } from "../edit/fill";
 import { zipSync, strToU8 } from "fflate";
 import {
+  loadGridPreference,
   loadLookPreference,
+  saveGridPreference,
   saveLookPreference,
 } from "../persistence/look-preference";
+import {
+  BACKDROP_NAMES,
+  BACKDROPS,
+  backdropOf,
+  type BackdropName,
+} from "../core/scene";
 import { LOOK_NAMES, lookControls, type LookName } from "../render/look";
 import "./styles.css";
 import "./hud.css";
@@ -457,6 +465,7 @@ function Workspace() {
     [measurePoints, setMeasurePoints] = useState<Vec3[]>([]),
     [explodeBricks, setExplodeBricks] = useState(0),
     [renderLook, setRenderLook] = useState<LookName>(loadLookPreference),
+    [gridOn, setGridOn] = useState(loadGridPreference),
     [sectionRange, setSectionRange] = useState<{
       min: number;
       max: number;
@@ -966,6 +975,7 @@ function Workspace() {
       // Phones degrade the realistic looks; apply the viewer's saved look.
       renderer.current.setLookResourceProfile(editor.resourceProfile);
       renderer.current.setLook(loadLookPreference());
+      renderer.current.setGridVisible(loadGridPreference());
     } catch (e) {
       setStatus(e instanceof Error ? e.message : String(e));
     }
@@ -2098,6 +2108,21 @@ function Workspace() {
     } catch (e) {
       setStatus(e instanceof Error ? e.message : String(e));
     }
+  };
+  const backdrop = backdropOf(project);
+  const chooseBackdrop = (name: BackdropName) => {
+    if (name === backdrop) return;
+    try {
+      command("scene.set", { backdrop: name });
+      setStatus(`${BACKDROPS[name].label} backdrop. ${BACKDROPS[name].hint}`);
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : String(e));
+    }
+  };
+  const toggleGrid = (on: boolean) => {
+    setGridOn(on);
+    saveGridPreference(on);
+    renderer.current?.setGridVisible(on);
   };
   // On touch layouts the status toast shows briefly after each change.
   useEffect(() => {
@@ -3647,6 +3672,40 @@ function Workspace() {
                       ? "Shiny plastic and soft shadows."
                       : "Sharpens itself while the view is still."}
                 </p>
+                <div className="backdrop-control">
+                  <div className="backdrop-head">
+                    <span id="backdrop-title">Backdrop</span>
+                    <label className="backdrop-grid">
+                      <input
+                        type="checkbox"
+                        checked={gridOn}
+                        onChange={(e) => toggleGrid(e.target.checked)}
+                      />
+                      Grid
+                    </label>
+                  </div>
+                  <div
+                    className="backdrop-swatches"
+                    role="group"
+                    aria-labelledby="backdrop-title"
+                  >
+                    {BACKDROP_NAMES.map((name) => (
+                      <button
+                        key={name}
+                        aria-pressed={backdrop === name}
+                        aria-label={BACKDROPS[name].label}
+                        title={BACKDROPS[name].label}
+                        onClick={() => chooseBackdrop(name)}
+                      >
+                        <i style={{ background: BACKDROPS[name].swatch }} />
+                      </button>
+                    ))}
+                  </div>
+                  <p className="view-hint">
+                    <strong>{BACKDROPS[backdrop].label}</strong> ·{" "}
+                    {BACKDROPS[backdrop].hint} Saved with this build.
+                  </p>
+                </div>
               </div>
             )}
           </div>
@@ -4155,6 +4214,7 @@ function Workspace() {
               play={play.current}
               layers={project.layers}
               rigs={project.motionRigs}
+              playHint={project.scene?.playHint}
               exit={() => setMode("Build")}
               bookmark={() => {
                 const view = play.current!.camera();

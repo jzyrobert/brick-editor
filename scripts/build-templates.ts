@@ -2,6 +2,7 @@
 //
 //   npm run templates            sources, checks and previews
 //   npm run templates -- --check sources and checks only (no browser)
+//   npm run templates -- --only=playground  previews of the named samples only
 //
 // Sources: fixtures/ldraw/templates/*.mpd, written from the generators in
 // src/catalog/builds/ (the app builds the same text at runtime; a unit test
@@ -17,6 +18,7 @@ import { jeepSource } from "../src/catalog/builds/jeep";
 import { windmillSource } from "../src/catalog/builds/windmill";
 import { lighthouseSource } from "../src/catalog/builds/lighthouse";
 import { cafeSource } from "../src/catalog/builds/cafe";
+import { playgroundSource } from "../src/catalog/builds/playground";
 import { checkBuild } from "../src/catalog/builds/check";
 import { template } from "../src/catalog/templates";
 import {
@@ -41,6 +43,11 @@ export const TEMPLATE_BUILDS = [
   { name: "windmill", file: "windmill-farm.mpd", source: windmillSource },
   { name: "lighthouse", file: "lighthouse.mpd", source: lighthouseSource },
   { name: "cafe", file: "corner-cafe.mpd", source: cafeSource },
+  {
+    name: "playground",
+    file: "playground-park.mpd",
+    source: playgroundSource,
+  },
 ] as const;
 
 const cam = (position: number[], target: number[], fovDeg = 40) =>
@@ -63,6 +70,7 @@ const CAMERAS: Partial<Record<TemplateName, CameraSpec>> = {
   windmill: cam([600, -660, -960], [-30, -160, -20]),
   lighthouse: cam([600, -620, -980], [-10, -230, -20]),
   cafe: cam([600, -560, -940], [-40, -140, -30]),
+  playground: cam([560, -520, -900], [-10, -60, -20]),
 };
 
 registerFullLibraryFromDisk();
@@ -88,7 +96,14 @@ if (failed) throw new Error("A template build failed its checks");
 
 if (!process.argv.includes("--check")) {
   mkdirSync("public/templates", { recursive: true });
-  const cards = TEMPLATE_CARDS.filter((c) => c.name !== "blank");
+  // `-- --only playground,jeep` renders just those previews.
+  const only = process.argv
+    .find((a) => a.startsWith("--only="))
+    ?.slice(7)
+    .split(",");
+  const cards = TEMPLATE_CARDS.filter(
+    (c) => c.name !== "blank" && (!only || only.includes(c.name)),
+  );
   await withHeadlessPage(template("blank"), async (page) => {
     await page.setViewportSize({ width: 800, height: 600 });
     for (const card of cards) {
@@ -108,6 +123,8 @@ if (!process.argv.includes("--check")) {
             format: "png",
             visibility: { mode: "all" },
             background: { type: "solid", color: "#ffffff" },
+            // Chooser cards stay on white; the sample's backdrop shows once open.
+            backdrop: "blank",
             quality: "photo",
             strict: true,
           });

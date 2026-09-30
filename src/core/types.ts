@@ -1,5 +1,6 @@
 import type { MotionRig } from "../mechanisms/types";
 import type { Architecture } from "./architecture";
+import type { ProjectScene } from "./scene";
 export type Vec3 = [number, number, number];
 export type Basis = [
   number,
@@ -100,6 +101,8 @@ export type Project = {
   cameraBookmarks: Record<string, CameraSpec>;
   /** Floor guides, room labels and camera floor views (authoring aids, spec §20.2). */
   architecture?: Architecture;
+  /** Backdrop and Play hint (view data, native projects only; see scene.ts). */
+  scene?: ProjectScene;
   motionRigs: Record<string, MotionRig>;
   metadata: Record<string, unknown>;
   assets: Record<string, string>;

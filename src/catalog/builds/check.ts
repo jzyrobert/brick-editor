@@ -13,7 +13,7 @@
 import installedBounds from "../bounds.json";
 import { occurrences } from "../../core/document";
 import { connectedGroups, connectionGraph } from "../../core/connectivity";
-import { modelHealth } from "../../core/health";
+import { modelHealth, withoutLooseObjects } from "../../core/health";
 import { transformBounds, type Bounds } from "../../core/spatial";
 import { compose, inverse } from "../../core/math";
 import { localOccupancy } from "../../edit/snap";
@@ -160,7 +160,7 @@ export function checkBuild(
     overlaps: found,
     offGrid,
     unmeasured: [...new Set(unmeasured)],
-    groups: connectedGroups(graph).length,
+    groups: withoutLooseObjects(project, connectedGroups(graph)).groups.length,
     covered: graph.covered.length,
     uncovered: graph.uncovered.length,
     studContacts: graph.contacts - graph.hingeContacts,

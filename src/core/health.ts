@@ -121,6 +121,28 @@ function candidatePairs(boxes: Bounds[], cell = 80) {
   return [...pairs].map((p) => p.split(":").map(Number) as [number, number]);
 }
 
+/**
+ * Connected groups without loose objects: a group whose parts all belong to
+ * one rig group explicitly marked loose (`dynamics.groups[id].anchored ===
+ * false`, e.g. a playground crate) is free-standing by design.
+ */
+export function withoutLooseObjects(project: Project, groups: string[][]) {
+  const owner = new Map<string, string>();
+  for (const rig of Object.values(project.motionRigs))
+    for (const group of rig.groups)
+      if (rig.dynamics?.groups?.[group.id]?.anchored === false)
+        for (const id of group.occurrenceIds)
+          owner.set(id, rig.id + "\u0000" + group.id);
+  const kept: string[][] = [];
+  let loose = 0;
+  for (const g of groups) {
+    const key = owner.get(g[0]);
+    if (key !== undefined && g.every((id) => owner.get(id) === key)) loose++;
+    else kept.push(g);
+  }
+  return { groups: kept, loose };
+}
+
 export function modelHealth(project: Project): HealthReport {
   const all = occurrences(project);
   const checks: HealthCheck[] = [];
@@ -161,8 +183,17 @@ export function modelHealth(project: Project): HealthReport {
   const graph = connectionGraph(project, all);
   const covered = graph.covered.length,
     uncovered = graph.uncovered.length;
-  const connected = connectedGroups(graph);
-  const floating = graph.covered.filter((id) => !graph.edges.get(id)!.size);
+  const { groups: connected, loose: looseObjects } = withoutLooseObjects(
+    project,
+    connectedGroups(graph),
+  );
+  const inConnected = new Set(connected.flat());
+  const floating = graph.covered.filter(
+    (id) => !graph.edges.get(id)!.size && inConnected.has(id),
+  );
+  const looseNote = looseObjects
+    ? ` ${looseObjects} loose object${looseObjects === 1 ? "" : "s"} (rig groups marked loose) stand${looseObjects === 1 ? "s" : ""} on ${looseObjects === 1 ? "its" : "their"} own by design.`
+    : "";
   const studs = graph.contacts - graph.hingeContacts;
   const unverifiedNote = uncovered
     ? ` ${uncovered} part${uncovered === 1 ? " has" : "s have"} no verified connector data (custom, tilted or not yet verified); ${uncovered === 1 ? "it" : "they"} may join these groups.`
@@ -190,6 +221,7 @@ export function modelHealth(project: Project): HealthReport {
               : covered === 1
                 ? "One part with verified connectors."
                 : `All ${covered} parts with verified connectors are connected (${studs} stud connection${studs === 1 ? "" : "s"}${graph.hingeContacts ? `, ${graph.hingeContacts} hinge pin${graph.hingeContacts === 1 ? "" : "s"}` : ""}).`) +
+            looseNote +
             unverifiedNote,
           // Uncovered parts can bridge groups, so only full coverage is exact.
           basis: uncovered ? "approximate" : "exact",
@@ -278,7 +310,10 @@ export function modelHealth(project: Project): HealthReport {
     const root = find(i);
     groups.set(root, [...(groups.get(root) ?? []), o.id]);
   });
-  const sorted = [...groups.values()].sort((a, b) => b.length - a.length);
+  // Loose objects (rig groups marked loose) stand apart by design.
+  const sorted = withoutLooseObjects(project, [...groups.values()]).groups.sort(
+    (a, b) => b.length - a.length,
+  );
   const loose = sorted.slice(1).flat();
   checks.push({
     id: "assemblies",

@@ -26,9 +26,13 @@ Motors start running when Play starts. `play.setMotor({rigId,jointId,enabled})` 
 
 Reproducibility follows spec 19.4: identical inputs and tick counts give identical reports in the pinned engine and browser (unit and CLI tests replay runs byte-for-byte). This is not a cross-platform numerical guarantee. The simulation settings describe the chosen simulation, not measured clutch power.
 
+### The playground park sample
+
+The **Playground park** sample (see [templates](TEMPLATES.md)) shows dynamic physics out of the box: its rigs set `dynamics.startDynamic`, so the Play card opens with **Mechanism physics · Dynamic** chosen, and its one-line Play hint (“Push the crates and barrels, then swing!”) shows on the Play card and for six seconds when Play starts (`project.scene.playHint`, `scene.set` command). Walking into a crate or barrel pushes it across the tiled plaza; walking into the swing seat swings it up to its ±70° limit; the see-saw tips about its post and the roundabout turns. Unit and browser tests push crate 3 at least 20 LDU with its height within 3 LDU, and swing the seat.
+
 ### Physics settings (rig authoring)
 
-**Inspector → More tools → Physics settings** loads an existing rig and edits which groups are anchored, group masses, friction, and for vehicles the suspension (spring length and travel in LDU, stiffness, damping) and engine force. Review runs a dry run; saving is one undoable `rigs.upsert`. `buildRigDynamicsDraft` changes only `rig.dynamics` (`null` removes it). Mechanical rig editing preserves these settings, and they round-trip through native projects. Standard LDraw export ignores them.
+**Inspector → More tools → Physics settings** loads an existing rig and edits which groups are anchored, group masses, friction, and for vehicles the suspension (spring length and travel in LDU, stiffness, damping) and engine force, and **Start Play with dynamic physics** (`startDynamic`). Review runs a dry run; saving is one undoable `rigs.upsert`. `buildRigDynamicsDraft` changes only `rig.dynamics` (`null` removes it). Mechanical rig editing preserves these settings, and they round-trip through native projects. Standard LDraw export ignores them.
 
 ## Automatic doors (official LDraw doors)
 

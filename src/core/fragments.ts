@@ -190,6 +190,7 @@ export function copyFragment(
   p.cameraBookmarks = {};
   // Floor guides and room labels are whole-project authoring aids, not fragment content.
   delete p.architecture;
+  delete p.scene;
   p.diagnostics = p.diagnostics.filter(
     (d) =>
       d.occurrenceIds.length === 0 ||

@@ -737,6 +737,27 @@
       ],
       "additionalProperties": false
     },
+    "scene": {
+      "type": "object",
+      "properties": {
+        "backdrop": {
+          "enum": [
+            "blank",
+            "grass",
+            "street",
+            "beach",
+            "night",
+            "studio"
+          ]
+        },
+        "playHint": {
+          "type": "string",
+          "maxLength": 80
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
     "motionRigs": {
       "type": "object",
       "maxProperties": 10000,

@@ -364,7 +364,18 @@ export const RIG_DYNAMICS_LIMITS = Object.freeze({
 function validateRigDynamics(rig: MotionRig, groupIds: Set<string>) {
   const d = rig.dynamics!,
     L = RIG_DYNAMICS_LIMITS;
-  fields(d, ["groups", "friction", "suspension", "engineForce"]);
+  fields(d, [
+    "groups",
+    "friction",
+    "suspension",
+    "engineForce",
+    "startDynamic",
+  ]);
+  ensure(
+    d.startDynamic === undefined || typeof d.startDynamic === "boolean",
+    "INVALID_INPUT",
+    "startDynamic must be boolean.",
+  );
   const within = (n: unknown, range: { min: number; max: number }) =>
     finite(n) && n >= range.min && n <= range.max;
   if (d.groups !== undefined) {

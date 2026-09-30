@@ -20,7 +20,8 @@ import type {
   PlayMotorRequest,
 } from "../play/types";
 import { type Editor } from "../core/commands";
-import { type CameraSpec, type Command, ensure } from "../core/types";
+import { type CameraSpec, type Command, ensure, uid } from "../core/types";
+import { backdropOf, requireBackdrop, type BackdropName } from "../core/scene";
 import { importLDraw, exportLDraw, scopedLDraw } from "../ldraw/io";
 import {
   loadFullLibraryIndex,
@@ -619,6 +620,49 @@ export function createAPI(
          * triangles, samples so far and BVH build time. */
         photo: async () => renderer().photoStats,
       },
+      /** Scene backdrop (sky, textured ground, horizon) saved with the project:
+       * `set({name})` is one undoable `scene.set` command; `grid` toggles the
+       * editor grid overlay (a view preference, not saved in the project). */
+      backdrop: {
+        get: async () => ({
+          ...renderer().backdrop,
+          name: backdropOf(editor.project),
+        }),
+        set: async (input: { name?: BackdropName; grid?: boolean }) => {
+          ensure(
+            input &&
+              typeof input === "object" &&
+              Object.keys(input).length > 0 &&
+              Object.keys(input).every((k) => k === "name" || k === "grid"),
+            "INVALID_INPUT",
+            "render.backdrop.set takes name and grid.",
+          );
+          if (input.grid !== undefined) {
+            ensure(
+              typeof input.grid === "boolean",
+              "INVALID_INPUT",
+              "grid must be true or false.",
+            );
+            renderer().setGridVisible(input.grid);
+          }
+          if (
+            input.name !== undefined &&
+            requireBackdrop(input.name) !== backdropOf(editor.project)
+          )
+            await editor.dispatch({
+              schemaVersion: 1,
+              commandId: uid(),
+              expectedRevision: editor.revision,
+              type: "scene.set",
+              payload: { backdrop: input.name },
+            });
+          return {
+            ...renderer().backdrop,
+            name: backdropOf(editor.project),
+            revision: editor.revision,
+          };
+        },
+      },
       image: captureImage,
       /** Renderer budget of the active resource profile and the last rendered
        * model's measured use (part occurrences, variants, triangles). */
@@ -702,6 +746,7 @@ export function createAPI(
         quality?: RenderRequest["quality"];
         look?: RenderRequest["look"];
         lookControls?: RenderRequest["lookControls"];
+        backdrop?: RenderRequest["backdrop"];
         background?: RenderRequest["background"];
         visibility?: RenderRequest["visibility"];
       }) => {
@@ -760,6 +805,7 @@ export function createAPI(
               ...(input.lookControls
                 ? { lookControls: input.lookControls }
                 : {}),
+              ...(input.backdrop ? { backdrop: input.backdrop } : {}),
             });
             first ??= shot.manifest;
             shots.push({

@@ -193,6 +193,19 @@ export function RigPhysicsAuthoring({
           {number("Friction", settings.friction, L.friction, (friction) =>
             change({ ...settings, friction }),
           )}
+          <label>
+            <input
+              type="checkbox"
+              checked={!!settings.startDynamic}
+              onChange={(e) => {
+                const next = { ...settings };
+                if (e.target.checked) next.startDynamic = true;
+                else delete next.startDynamic;
+                change(next);
+              }}
+            />
+            Start Play with dynamic physics
+          </label>
           {rig.vehicle && (
             <fieldset>
               <legend>Suspension and engine</legend>

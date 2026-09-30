@@ -16,7 +16,8 @@ type Sample =
   | "jeep"
   | "house"
   | "castle"
-  | "car";
+  | "car"
+  | "playground";
 /** Every sample: its title and part count. */
 const SAMPLES: [Sample, string, number][] = [
   ["cafe", "Corner café", 358],
@@ -26,6 +27,7 @@ const SAMPLES: [Sample, string, number][] = [
   ["house", "House with garden", 281],
   ["castle", "Small castle", 237],
   ["car", "Roadster", 58],
+  ["playground", "Playground park", 110],
 ];
 /** Chooser cards in display order (the blank canvas last). */
 const CARDS = [
@@ -33,6 +35,7 @@ const CARDS = [
   "Windmill farm",
   "Lighthouse",
   "Off-road jeep",
+  "Playground park",
   "House with garden",
   "Small castle",
   "Roadster car",
@@ -137,6 +140,7 @@ for (const viewport of [
             ["Windmill farm", "Windmill farm", "windmill"],
             ["Lighthouse", "Lighthouse", "lighthouse"],
             ["Off-road jeep", "Off-road jeep", "jeep"],
+            ["Playground park", "Playground park", "playground"],
             ["House with garden", "House with garden", "house"],
             ["Small castle", "Small castle", "castle"],
             ["Roadster car", "Roadster", "car"],

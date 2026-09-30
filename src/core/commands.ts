@@ -47,6 +47,7 @@ import {
 import { identity, compose, inverse, add, mv } from "./math";
 import { validate } from "./validate";
 import { applyArchitectureCommand } from "./architecture";
+import { applySceneCommand } from "./scene";
 import { canonical } from "../ldraw/path";
 import { stable } from "./hash";
 type Patch = { path: string[]; before: unknown; after: unknown };
@@ -231,6 +232,9 @@ function mutate(
       }
       break;
     }
+    case "scene.set":
+      applySceneCommand(p, v);
+      break;
     case "project.rename":
       fields(v, ["title"]);
       ensure(

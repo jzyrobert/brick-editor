@@ -6,6 +6,7 @@ import { importLDraw } from "../../src/ldraw/io";
 import { occurrences } from "../../src/core/document";
 import { resolveQuality } from "../../src/render/quality";
 import { resolveLook } from "../../src/render/look";
+import { SceneEnvironment } from "../../src/render/environment";
 
 it.each([false, true])(
   "restores view materials after readback failure (capture dimming: %s)",
@@ -59,7 +60,10 @@ it.each([false, true])(
         await gate;
       },
       scene: new THREE.Scene(),
-      grid: new THREE.Group(),
+      grid: new THREE.GridHelper(10, 1),
+      shadowGround: new THREE.Mesh(),
+      environment: new SceneEnvironment(),
+      viewBackdrop: "blank",
       selection: new THREE.Group(),
       ghost: new THREE.Group(),
       controls: { enabled: true },

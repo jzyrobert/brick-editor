@@ -11,10 +11,11 @@ The actual contract is the exported TypeScript API in `src/automation/api.ts` pl
 - `transaction({commandId,expectedRevision,commands,dryRun?})` commits multiple commands as one undo entry. Each child command must use the same expected revision. A history command must stand alone.
 - `inventory.preview(request)` and `inventory.export(request)` use the documented spec shapes. The extension `acceptUnknownColors:true` explicitly acknowledges unknown part/colour combination coverage. It does not lift `INVALID_PART_COLOR` (a reviewed item BrickLink does not list in that colour and no source records). Each preview row carries `colorExistence`: `verified` (BrickLink), `derived` (Rebrickable), `not-recorded`, `unknown` or `not-produced`. Revision, mapping hash and project hash are validated at export.
 - `camera.set(spec)` sets an exact transient perspective/orthographic camera; it never fits the build automatically.
-- `render.image(request)` returns `{blob,manifest}`. PNG only, explicit visibility, 16 megapixels maximum plus GPU limits. It rejects concurrent document revisions and overlapping captures.
+- `render.image(request)` returns `{blob,manifest}`. PNG only, explicit visibility, 16 megapixels maximum plus GPU limits. It rejects concurrent document revisions and overlapping captures. `backdrop` (`blank|grass|street|beach|night|studio`) draws that backdrop instead of the project's; the manifest records `backdrop: {name, drawn}` (`drawn` is false for Blank and over a transparent background).
+- `render.backdrop.get()` returns `{name, grid, stats}`; `render.backdrop.set({name?, grid?})` saves `name` in the project as one undoable `scene.set` command and toggles the editor grid overlay (a view preference). `stats` reports the drawn objects, texture sizes, texture bytes and build time. See [rendering](RENDERING.md#backdrops).
 - `jobs.list()`, `jobs.status(id)`, `jobs.cancel(id)`, `jobs.wait(id)` expose parsing jobs. `project.import()` waits for its job by default; another caller can list/cancel it while pending. Fill UI workers have direct cancellation controls.
 
-Supported command types and payloads are in `schemas/command.v1.json`. Families: project rename; part add/remove/transform/recolour/replace/duplicate; layer add/update/rename/reorder/remove/assign; group create; camera bookmark; inventory override; layer instruction generation; undo/redo. No arbitrary script evaluation, external file operations or network fetch commands exist.
+Supported command types and payloads are in `schemas/command.v1.json`. Families: project rename; scene settings (`scene.set` with `backdrop` and a one-line `playHint`, `null` clears); part add/remove/transform/recolour/replace/duplicate; layer add/update/rename/reorder/remove/assign; group create; camera bookmark; inventory override; layer instruction generation; undo/redo. No arbitrary script evaluation, external file operations or network fetch commands exist.
 
 A world-space translation:
 
@@ -233,6 +234,7 @@ await api.play.exit();
 - `play.interact()` performs the contextual E/tap action and returns the snapshot.
 - `play.exportPosedModel()` and `mechanisms.exportPosedModel()` return a static posed MPD of all active mechanisms: `{format:"ldraw-mpd",text,sourceRevision,tick,rigIds,posedOccurrenceIds,warnings}`. The project is not edited.
 - `mechanisms.list()` returns authored rigs with their joints, motors and optional `dynamics` settings.
+- `dynamics.startDynamic: true` on any rig makes the Play card start with **Mechanism physics → Dynamic** chosen (the playground park sample sets it); automation still names `dynamicRigIds` explicitly.
 
 Rig `dynamics` settings (optional, schema `motionRig`): `groups` keyed by group ID with `massKg` (0.001–100,000) and `anchored`; `friction` (0–4); `suspension` for vehicles, with `restLength` and `travel` in LDU (0.5–200), `stiffness` (1–500) and `damping` (0.05–50); and `engineForce` in simulation N. A dynamic vehicle chassis or wheel cannot be anchored.
 

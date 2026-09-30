@@ -69,6 +69,9 @@ export type RigDynamics = {
     /** Compression/relaxation damping factor (0.1–20). */
     damping: number;
   };
+  /** Play starts with Dynamic mechanism physics chosen when any rig in the
+   * build sets this (the player can still pick Kinematic). */
+  startDynamic?: boolean;
   /** Total engine force at full throttle, simulation N. */
   engineForce?: number;
 };

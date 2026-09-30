@@ -85,6 +85,13 @@ import {
   partTitle,
 } from "../play/collision-proxy";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { SceneEnvironment } from "./environment";
+import {
+  BACKDROPS,
+  backdropOf,
+  requireBackdrop,
+  type BackdropName,
+} from "../core/scene";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { LDrawLoader } from "./vendor/LDrawLoader.js";
@@ -159,6 +166,9 @@ export type RenderRequest = {
   qualityControls?: Partial<QualityControls>;
   /** Shading look for this capture; defaults to "standard" so captures stay reproducible. */
   look?: LookName;
+  /** Backdrop for this capture; defaults to the project's (project.scene). A
+   * transparent background draws no backdrop at all. */
+  backdrop?: BackdropName;
   lookControls?: Partial<LookControls>;
   /** Keep these additions opaque while dimming all other captured occurrences. */
   instructionNewIds?: string[];
@@ -509,6 +519,12 @@ export class SceneAdapter {
   onPhotoProgress?: (progress: PhotoProgressReport | null) => void;
   /** Whether the next draw must re-render a cached shadow map. */
   private shadowDirty = true;
+  /** Sky, ground and horizon of the project's backdrop (environment.ts). */
+  private environment: SceneEnvironment;
+  /** The project's backdrop; captures may draw another and restore this. */
+  private viewBackdrop: BackdropName = "blank";
+  /** The user's grid overlay preference (Play and captures hide it anyway). */
+  private gridWanted = true;
   constructor(
     private element: HTMLElement,
     private report: (message: string) => void,
@@ -554,6 +570,10 @@ export class SceneAdapter {
     this.grid = new THREE.GridHelper(2000, 100, 0xaab6bd, 0xd1d9de);
     this.grid.position.y = -0.1;
     this.scene.add(this.grid);
+    this.environment = new SceneEnvironment(
+      this.renderer.capabilities.getMaxAnisotropy(),
+    );
+    this.scene.add(this.environment.group, this.environment.stage);
     this.annotations.name = "architectural-annotations";
     this.scene.add(this.annotations);
     this.shadowGround = new THREE.Mesh(
@@ -1384,6 +1404,8 @@ export class SceneAdapter {
   update(p: Project, options: { owned?: boolean } = {}) {
     const snapshot = options.owned ? p : structuredClone(p);
     this.requested = snapshot;
+    this.viewBackdrop = backdropOf(snapshot);
+    if (!this.captureActive) this.applyBackdrop(this.viewBackdrop);
     const epoch = ++this.updateEpoch;
     this.pending = this.pending
       .catch(() => {})
@@ -1931,6 +1953,7 @@ export class SceneAdapter {
     this.lookResourceProfile = profile;
     // The photo tracer's schedule (tiles, bounces) follows the profile.
     if (!this.captureActive) this.releasePhoto(true);
+    if (this.environment.setMobile(profile === "mobile")) this.invalidate();
     this.compiler?.setSize(this.compileWorkerCount());
     void sharedGeometryCache()?.setMaxBytes(GEOMETRY_CACHE_BYTES[profile]);
     // Renderer budgets follow the profile: re-assess the current model, so a
@@ -1949,11 +1972,7 @@ export class SceneAdapter {
     this.hemisphereLight.intensity = ibl ? LOOK_LIGHTING.hemisphere : 3;
     this.keyLight.intensity = ibl ? LOOK_LIGHTING.key : 3;
     this.fillLight.intensity = ibl ? LOOK_LIGHTING.fill : 1.5;
-    this.shadowGround.visible = look.ground === "shadow";
-    const gridMaterial = this.grid.material as THREE.LineBasicMaterial;
-    gridMaterial.transparent = look.ground === "shadow";
-    gridMaterial.opacity = look.ground === "shadow" ? 0.45 : 1;
-    gridMaterial.needsUpdate = true;
+    this.applyGroundTreatment();
     this.tuneMaterials();
     // Ghost/dimming clones copy material parameters when they are applied.
     if (refreshTreatments) this.applyLayerGhost();
@@ -1967,6 +1986,45 @@ export class SceneAdapter {
     // A capture switches looks temporarily; keep the tracer until it ends.
     if (look.renderer !== "path" && !this.captureActive) this.releasePhoto();
     this.invalidate();
+  }
+  /** The shadow-catcher plane and grid opacity follow the look and backdrop:
+   * a backdrop's textured ground receives the shadows itself. */
+  private applyGroundTreatment() {
+    const look = this.look;
+    this.shadowGround.visible =
+      look.ground === "shadow" && !this.environment.hasGround;
+    const gridMaterial = this.grid.material as THREE.LineBasicMaterial;
+    const opacity = Math.min(
+      look.ground === "shadow" ? 0.45 : 1,
+      this.environment.hasGround
+        ? BACKDROPS[this.environment.name].gridOpacity
+        : 1,
+    );
+    gridMaterial.transparent = opacity < 1;
+    gridMaterial.opacity = opacity;
+    gridMaterial.needsUpdate = true;
+  }
+  /** Draw a backdrop (view only; the project command stores the choice). */
+  private applyBackdrop(name: BackdropName) {
+    if (!this.environment.set(name)) return;
+    this.scene.background = new THREE.Color(BACKDROPS[name].background);
+    this.applyGroundTreatment();
+    this.invalidate();
+  }
+  get backdrop() {
+    return {
+      name: this.environment.name,
+      grid: this.gridWanted,
+      stats: this.environment.stats(),
+    };
+  }
+  /** Show or hide the editor grid overlay (a view preference). */
+  setGridVisible(visible: boolean) {
+    this.gridWanted = visible;
+    if (!this.playViewActive && !this.captureActive) {
+      this.grid.visible = visible;
+      this.invalidate();
+    }
   }
   private ensureEnvironment() {
     if (!this.environmentMap) {
@@ -2190,6 +2248,7 @@ export class SceneAdapter {
   }
   /** Draw the scene into the current render target (the canvas when none). */
   private drawDirect() {
+    this.environment.update(this.camera);
     // Shadows (a look's forced shadows or the photo quality profile) re-render
     // the shadow map only after a scene change, not for every orbit or Play
     // camera frame (the shadow pass doubles the draw calls).
@@ -2339,6 +2398,8 @@ export class SceneAdapter {
    * tracer takes it (see choosePhotoRenderer). */
   private photoTrace(look: LookControls) {
     this.root.updateMatrixWorld(true);
+    // Place the backdrop's ground for this camera before it is traced.
+    this.environment.update(this.camera);
     const visible = [...this.handles.values()].filter((group) => group.visible);
     const { meshes, triangles } = traceMeshes(visible);
     const gl = this.renderer;
@@ -2661,6 +2722,8 @@ export class SceneAdapter {
         child !== this.root &&
         child !== this.grid &&
         child !== this.shadowGround &&
+        child !== this.environment.group &&
+        child !== this.environment.stage &&
         child !== this.keyLight.target &&
         !(child as THREE.Light).isLight,
     );
@@ -3495,7 +3558,7 @@ export class SceneAdapter {
         const group = this.handles.get(id);
         if (group) group.visible = value;
       }
-      this.grid.visible = grid;
+      this.grid.visible = grid && this.gridWanted;
       this.selection.visible = selection;
       this.annotations.visible = annotations;
       if (this.transformHandles && transformVisible !== undefined)
@@ -4346,6 +4409,12 @@ export class SceneAdapter {
       request.lookControls,
       this.lookResourceProfile,
     );
+    const captureBackdrop =
+      request.backdrop === undefined
+        ? backdropOf(this.project!)
+        : requireBackdrop(request.backdrop);
+    const backdropDrawn =
+      captureBackdrop !== "blank" && request.background.type !== "transparent";
     let captureLighting: ReturnType<SceneAdapter["lightingManifest"]>;
     let captureStats: typeof this.renderer.info.render;
     let capturedFloorFocus: FloorFocus | null = null,
@@ -4377,7 +4446,10 @@ export class SceneAdapter {
     try {
       this.instructionDimming.restore();
       this.layerGhost.restore();
+      this.environment.set(captureBackdrop);
+      this.environment.setDrawn(request.background.type !== "transparent");
       this.applyLook(captureLook, false);
+      this.applyGroundTreatment();
       this.applyQuality(captureProfile);
       captureLighting = this.lightingManifest();
       const selectedOccurrences = new Set(
@@ -4425,7 +4497,11 @@ export class SceneAdapter {
       this.scene.background =
         request.background.type === "transparent"
           ? null
-          : new THREE.Color(request.background.color || "#ffffff");
+          : new THREE.Color(
+              backdropDrawn
+                ? BACKDROPS[captureBackdrop].background
+                : request.background.color || "#ffffff",
+            );
       this.aspect(request.width / request.height);
       this.shadowDirty = true;
       await this.withContext(this.compileForCapture());
@@ -4516,7 +4592,10 @@ export class SceneAdapter {
     } finally {
       this.captureActive = false;
       this.computeFloorFocus();
+      this.environment.setDrawn(true);
+      this.environment.set(this.viewBackdrop);
       this.applyLook(savedLook, false);
+      this.applyGroundTreatment();
       this.applyLayerGhost();
       this.batches.refresh();
       this.applyQuality(savedQuality);
@@ -4590,6 +4669,8 @@ export class SceneAdapter {
         ...(captureLook.name === "photo" && capturePhoto
           ? { photo: capturePhoto }
           : {}),
+        /** The backdrop drawn behind the model (none over a transparent background). */
+        backdrop: { name: captureBackdrop, drawn: backdropDrawn },
         lighting: captureLighting!,
         clipping: {
           space: "renderer-world",
@@ -4643,6 +4724,7 @@ export class SceneAdapter {
     this.environmentMap = disposeTexture(this.environmentMap);
     this.shadowGround.geometry.dispose();
     this.shadowGround.material.dispose();
+    this.environment.dispose();
     this.resizeObserver.disconnect();
     this.controls.dispose();
     this.renderer.domElement.removeEventListener(

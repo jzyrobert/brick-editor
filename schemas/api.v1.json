@@ -1169,6 +1169,67 @@
           "const": "1.0"
         },
         "method": {
+          "const": "render.backdrop.get"
+        },
+        "input": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "render.backdrop.set"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "enum": [
+                "blank",
+                "grass",
+                "street",
+                "beach",
+                "night",
+                "studio"
+              ]
+            },
+            "grid": {
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "minProperties": 1
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "project.status"
         },
         "input": {

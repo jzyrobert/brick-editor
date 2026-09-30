@@ -11,13 +11,32 @@ import { jeepProject } from "./builds/jeep";
 import { windmillProject } from "./builds/windmill";
 import { cafeProject } from "./builds/cafe";
 import { lighthouseProject } from "./builds/lighthouse";
+import { playgroundProject } from "./builds/playground";
 import type { TemplateName } from "./template-names";
+import type { BackdropName } from "../core/scene";
 import { explorationSource } from "./exploration";
 import { importLDraw } from "../ldraw/io";
 import { createProject } from "../core/document";
 import { identity, rotationY } from "../core/math";
 import { uid, type Vec3 } from "../core/types";
+/** Each sample opens on a backdrop that suits it (saved in project.scene). */
+export const TEMPLATE_BACKDROPS: Partial<Record<TemplateName, BackdropName>> = {
+  house: "grass",
+  castle: "grass",
+  windmill: "grass",
+  car: "street",
+  jeep: "street",
+  cafe: "street",
+  lighthouse: "beach",
+  playground: "grass",
+};
 export function template(name: TemplateName) {
+  const project = templateProject(name);
+  const backdrop = TEMPLATE_BACKDROPS[name];
+  if (backdrop) project.scene = { ...project.scene, backdrop };
+  return project;
+}
+function templateProject(name: TemplateName) {
   if (name === "house") {
     const project = importLDraw(houseSource(), "house-with-garden.mpd");
     project.title = "House with garden";
@@ -29,6 +48,7 @@ export function template(name: TemplateName) {
   if (name === "windmill") return windmillProject();
   if (name === "cafe") return cafeProject();
   if (name === "lighthouse") return lighthouseProject();
+  if (name === "playground") return playgroundProject();
   if (name === "seated-vehicle") return openBenchFixture();
   if (name === "physics") return physicsFixture();
   if (name === "door-room") {

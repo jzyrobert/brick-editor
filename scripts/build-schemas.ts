@@ -1,4 +1,5 @@
 import Ajv from "ajv";
+import { BACKDROP_NAMES, PLAY_HINT_MAX_LENGTH } from "../src/core/scene";
 import standaloneCode from "ajv/dist/standalone/index.js";
 import { writeFileSync } from "node:fs";
 import {
@@ -183,13 +184,21 @@ const project = obj({
     labels: arr(roomLabel, 500),
     views: dictionary(floorFocus),
   }),
+  scene: obj(
+    {
+      backdrop: { enum: [...BACKDROP_NAMES] },
+      playHint: { type: "string", maxLength: PLAY_HINT_MAX_LENGTH },
+    },
+    [],
+  ),
   motionRigs: dictionary({}),
   metadata: dictionary({}),
   assets: dictionary(str),
   diagnostics: arr(diagnostic),
 });
 project.required = project.required.filter(
-  (key: string) => key !== "layerFolders" && key !== "architecture",
+  (key: string) =>
+    key !== "layerFolders" && key !== "architecture" && key !== "scene",
 );
 const scoped = {
   occurrenceIds: { ...arr(occurrenceId), minItems: 1, uniqueItems: true },
@@ -331,6 +340,7 @@ const motionRig = obj(
           damping: { type: "number", minimum: 0.05, maximum: 50 },
         }),
         engineForce: { type: "number", minimum: 0, maximum: 1000000 },
+        startDynamic: { type: "boolean" },
       },
       [],
     ),
@@ -372,6 +382,19 @@ const payloads: Record<string, any> = {
     ["rigId", "sourceRevision", "pose"],
   ),
   "project.rename": obj({ title: { type: "string", maxLength: 200 } }),
+  "scene.set": {
+    ...obj(
+      {
+        backdrop: { enum: [...BACKDROP_NAMES, null] },
+        playHint: {
+          type: ["string", "null"],
+          maxLength: PLAY_HINT_MAX_LENGTH,
+        },
+      },
+      [],
+    ),
+    minProperties: 1,
+  },
   "parts.add": obj(
     {
       parts: {
@@ -697,6 +720,7 @@ const render = obj(
       [],
     ),
     look: { enum: ["standard", "realistic", "photo"] },
+    backdrop: { enum: [...BACKDROP_NAMES] },
     lookControls: obj(
       {
         environment: { enum: ["none", "room"] },
@@ -1213,6 +1237,14 @@ const api = {
       },
       ["name"],
     ),
+    "render.backdrop.get": obj({}),
+    "render.backdrop.set": {
+      ...obj(
+        { name: render.properties.backdrop, grid: { type: "boolean" } },
+        [],
+      ),
+      minProperties: 1,
+    },
     "project.status": obj({}),
     "project.import": { $ref: "importRequest" },
     "project.export": { $ref: "exportRequest" },

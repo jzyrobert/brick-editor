@@ -105,7 +105,9 @@
       "interruptedCaptureRefusal": true,
       "looks": ["standard", "realistic", "photo"],
       "lookApi": "render.look.get() / render.look.set(name, controls?); render.image({ look?, lookControls? }) defaults to standard",
-      "lookFeatures": "Room-environment IBL (generated, no asset), tuned LDraw finishes incl. procedural glitter/speckle, depth-based GTAO, fitted soft shadows on a shadow-catcher ground, hidden outlines, PBR Neutral tone mapping, jittered still accumulation (photo); phones drop AO and vignette"
+      "lookFeatures": "Room-environment IBL (generated, no asset), tuned LDraw finishes incl. procedural glitter/speckle, depth-based GTAO, fitted soft shadows on a shadow-catcher ground, hidden outlines, PBR Neutral tone mapping, jittered still accumulation (photo); phones drop AO and vignette",
+      "backdrops": ["blank", "grass", "street", "beach", "night", "studio"],
+      "backdropApi": "render.backdrop.get() / render.backdrop.set({ name?, grid? }); name is saved in the project (scene.set command); render.image({ backdrop? }) defaults to the project's backdrop; manifest.backdrop records it"
     },
     "instructions": {
       "layerPlans": true,
