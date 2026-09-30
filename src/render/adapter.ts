@@ -1495,8 +1495,13 @@ export class SceneAdapter {
     const slicer = this.mainSlicer;
     slicer.reset();
     const yieldsBefore = slicer.yields;
+    /** Shows load progress once a load has taken a noticeable time; set once
+     * the variant count is known. Placement and frame preparation report too,
+     * so a load whose parts compile quickly still shows its progress. */
+    let reportProgress = () => {};
     /** Ends the task when its budget is spent; false once superseded. */
     const pace = async () => {
+      reportProgress();
       if (slicer.due) await slicer.yield();
       return current();
     };
@@ -1574,6 +1579,14 @@ export class SceneAdapter {
       done: 0,
       total: variants.size + rawIndices.length,
     };
+    let reportedAt = 0;
+    reportProgress = () => {
+      const now = performance.now();
+      if (now - started > 250 && now - reportedAt > 200) {
+        reportedAt = now;
+        this.onProgress?.({ ...progress });
+      }
+    };
     /** Loaded occurrences not yet drawn progressively. */
     const arrived: number[] = [];
     const waits: Promise<void>[] = [];
@@ -1615,8 +1628,7 @@ export class SceneAdapter {
       shownPrototypeTriangles = 0,
       lastFlush = 0,
       flushCost = 0,
-      flushFrame = 0,
-      lastReport = 0;
+      flushFrame = 0;
     const shownPrototypes = new Set<THREE.Group>();
     // A fence left by an earlier load (or a lost context) says nothing now.
     if (this.gpuFence && !this.lost)
@@ -1632,10 +1644,7 @@ export class SceneAdapter {
       if (!current()) return;
       if (finished) break;
       const now = performance.now();
-      if (now - started > 250 && now - lastReport > 200) {
-        lastReport = now;
-        this.onProgress?.({ ...progress });
-      }
+      reportProgress();
       // Draw what has compiled: first after a short delay (a fast load swaps
       // in at once), then when the drawn set would at least double (else
       // after a second), never so often that redrawing partial scenes
@@ -1797,6 +1806,7 @@ export class SceneAdapter {
     this.revision = snapshot.revision;
     this.error = undefined;
     this.select([]);
+    reportProgress();
     const { warmMs } = await this.prepareFrame(current);
     this.invalidate();
     this.lastLoad = {
