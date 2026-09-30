@@ -12,15 +12,20 @@ const args = process.argv.slice(2);
 const quick = args.includes("--quick");
 const rest = args.filter((a) => a !== "--quick");
 
-const phases: { projects: string[]; results: string }[] = quick
-  ? [{ projects: ["main"], results: "test-results/browser-results.json" }]
-  : [
-      {
-        projects: ["main", "heavy"],
-        results: "test-results/browser-results.json",
-      },
-      { projects: ["perf"], results: "test-results/browser-results-perf.json" },
-    ];
+const first = {
+  projects: quick ? ["main"] : ["main", "heavy"],
+  env: { BROWSER_RESULTS: "test-results/browser-results.json" },
+};
+// Playwright cleans its output directory when a run starts, so the second
+// phase writes below the first phase's directory instead of replacing it.
+const perf = {
+  projects: ["perf"],
+  env: {
+    BROWSER_RESULTS: "test-results/browser-results-perf.json",
+    BROWSER_OUTPUT_DIR: "test-results/perf",
+  },
+};
+const phases = quick ? [first] : [first, perf];
 
 let failed = false;
 for (const phase of phases) {
@@ -36,7 +41,7 @@ for (const phase of phases) {
     ],
     {
       stdio: "inherit",
-      env: { ...process.env, BROWSER_RESULTS: phase.results },
+      env: { ...process.env, ...phase.env },
     },
   );
   const minutes = ((Date.now() - started) / 60000).toFixed(1);

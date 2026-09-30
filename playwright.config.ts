@@ -21,6 +21,9 @@ const workers =
 
 export default defineConfig({
   testDir: "tests/browser",
+  // Cleaned at the start of each run; scripts/test-browser.ts gives its
+  // second (perf) phase a subdirectory so the first phase's traces survive.
+  outputDir: process.env.BROWSER_OUTPUT_DIR ?? "test-results",
   timeout: 60000,
   expect: { timeout: 10000 },
   fullyParallel: true,

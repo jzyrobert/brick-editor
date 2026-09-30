@@ -49,14 +49,32 @@ jobs:
           node-version: 22.14.0
           cache: npm
       - run: npm ci
+      # The headless CLI integration tests drive Chromium too.
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        id: browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
+      - name: Install browser test runtime
+        if: steps.browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps --only-shell chromium
+      - name: Install browser system dependencies
+        if: steps.browsers.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
       - run: npm run format:check
       - run: npm test
       - run: npm run library:validate
 
   # Browser acceptance tests on software WebGL, split across parallel jobs:
-  # the main project in four shards, the path-traced Photo tests (@heavy) in
-  # their own job, and the wall-clock budget tests (@perf) alone, one at a
-  # time, so no other test competes for the CPU they are timing.
+  # the main project in eight shards, the path-traced Photo tests (@heavy) in
+  # two, and the wall-clock budget tests (@perf) alone, one at a time, so no
+  # other test competes for the CPU they are timing. SwiftShader is
+  # CPU-bound: two workers on a 4-vCPU runner gain little over one, so the
+  # speed-up comes from more jobs, not more workers per job.
   browser:
     needs: build
     runs-on: ubuntu-latest
@@ -65,11 +83,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { id: main-1, project: main, shard: 1/4 }
-          - { id: main-2, project: main, shard: 2/4 }
-          - { id: main-3, project: main, shard: 3/4 }
-          - { id: main-4, project: main, shard: 4/4 }
-          - { id: heavy, project: heavy, shard: 1/1 }
+          - { id: main-1, project: main, shard: 1/8 }
+          - { id: main-2, project: main, shard: 2/8 }
+          - { id: main-3, project: main, shard: 3/8 }
+          - { id: main-4, project: main, shard: 4/8 }
+          - { id: main-5, project: main, shard: 5/8 }
+          - { id: main-6, project: main, shard: 6/8 }
+          - { id: main-7, project: main, shard: 7/8 }
+          - { id: main-8, project: main, shard: 8/8 }
+          - { id: heavy-1, project: heavy, shard: 1/2 }
+          - { id: heavy-2, project: heavy, shard: 2/2 }
           - { id: perf, project: perf, shard: 1/1 }
     name: browser (${{ matrix.id }})
     steps:
