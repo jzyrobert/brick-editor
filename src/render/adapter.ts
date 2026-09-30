@@ -259,6 +259,8 @@ function textSprite(text: string, style: TextStyle) {
   };
   return sprite;
 }
+/** Placement ghost tint where "Snap together" finds nothing to hold on. */
+const REFUSED_TINT = new THREE.Color(0xd64530);
 /** Sentinel main colour for shared part geometry. It is not an LDConfig code, so
  * no official part draws it as a fixed colour: every material in this code is
  * exactly the inherited main colour (16) or its edges (24). */
@@ -4010,11 +4012,13 @@ export class SceneAdapter {
     this.applyVisibility();
     this.invalidate();
   }
+  /** Placement ghost; `refused` tints it red ("Snap together" found no hold). */
   async previewPart(
     ref: string,
     colorCode: string,
     position: Vec3,
     basis: number[],
+    refused = false,
   ) {
     const token = ++this.ghostToken;
     this.clearGhost(false);
@@ -4048,8 +4052,11 @@ export class SceneAdapter {
         ).map((material) => {
           const copy = material.clone();
           copy.transparent = true;
-          copy.opacity = 0.4;
+          copy.opacity = refused ? 0.55 : 0.4;
           copy.depthWrite = false;
+          const tinted = copy as THREE.Material & { color?: THREE.Color };
+          if (refused && tinted.color instanceof THREE.Color)
+            tinted.color.lerp(REFUSED_TINT, 0.7);
           return copy;
         });
         if (mesh.material.length === 1) mesh.material = mesh.material[0];
@@ -4077,6 +4084,7 @@ export class SceneAdapter {
       1,
     );
     this.ghost.userData.prototype = proto;
+    this.ghost.userData.refused = refused;
     this.ghost.add(group);
     this.invalidate();
   }

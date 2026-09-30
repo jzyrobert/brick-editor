@@ -110,6 +110,11 @@ test("new catalogue parts can be searched and placed on the stud grid", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  // The three parts share the default spot; Snap together would refuse the
+  // overlap (tests/browser/snap-together.spec.ts covers that).
+  await page.addInitScript(() =>
+    localStorage.setItem("brick-editor-snap-together", "off"),
+  );
   await page.goto("./?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
   const place = async (query: string, name: RegExp) => {

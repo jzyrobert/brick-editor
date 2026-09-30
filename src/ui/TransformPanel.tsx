@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Editor } from "../core/commands";
 import type { SceneAdapter } from "../render/adapter";
 import { TransformGesture } from "../edit/transform-gesture";
-import { ensure, type Vec3 } from "../core/types";
+import { ensure, type Transform, type Vec3 } from "../core/types";
 import { identity, mv } from "../core/math";
 import { occurrences } from "../core/document";
 import { axisRotation } from "../mechanisms/kinematic";
@@ -15,6 +15,9 @@ export function TransformPanel({
   activeLayerId,
   report,
   modeRequest,
+  snapTogether,
+  onSnapTogether,
+  guard,
 }: {
   editor: Editor;
   renderer: () => SceneAdapter | undefined;
@@ -24,18 +27,25 @@ export function TransformPanel({
   activeLayerId?: string;
   report: (message: string) => void;
   modeRequest?: { mode: "off" | "translate" | "rotate"; nonce: number };
+  /** "Snap together" is on (the checkbox shows only when a setter is given). */
+  snapTogether?: boolean;
+  onSnapTogether?: (on: boolean) => void;
+  /** Refusal message for a move to these world transforms, or null to allow. */
+  guard?: (transforms: Record<string, Transform>) => string | null;
 }) {
   const [mode, setMode] = useState<"off" | "translate" | "rotate">("off"),
     [snap, setSnap] = useState(true),
     [dragging, setDragging] = useState(false),
     [delta, setDelta] = useState<Vec3>([0, 0, 0]),
     [degrees, setDegrees] = useState(15),
-    [axis, setAxis] = useState<"X" | "Y" | "Z">("Y");
+    [axis, setAxis] = useState<"X" | "Y" | "Z">("Y"),
+    // Bumped after a refused drag so the handles return to the selection.
+    [rebind, setRebind] = useState(0);
   const binding = useRef<
       { cancel: () => void; dispose: () => void } | undefined
     >(undefined),
-    refs = useRef({ renderer, report });
-  refs.current = { renderer, report };
+    refs = useRef({ renderer, report, guard });
+  refs.current = { renderer, report, guard };
   useEffect(() => {
     if (modeRequest) setMode(modeRequest.mode);
   }, [modeRequest]);
@@ -44,7 +54,8 @@ export function TransformPanel({
     if (!enabled || !selection.length || mode === "off") return;
     let cancelled = false,
       gesture: TransformGesture | undefined,
-      handles: typeof binding.current;
+      handles: typeof binding.current,
+      pending: Record<string, Transform> | undefined;
     const r = refs.current.renderer();
     if (!r) return;
     void r
@@ -62,14 +73,25 @@ export function TransformPanel({
           translationSnap: snap ? 20 : null,
           rotationSnapDegrees: snap ? 15 : null,
           onStart: () => {
+            pending = undefined;
             gesture!.begin(request);
             setDragging(true);
             refs.current.report(
               "Transform preview: release to apply, Escape or Cancel to discard.",
             );
           },
-          onPreview: (d) => gesture!.preview(d),
+          onPreview: (d) => {
+            pending = gesture!.preview(d);
+          },
           onCommit: () => {
+            const refusal = pending && refs.current.guard?.(pending);
+            if (refusal) {
+              gesture!.cancel();
+              setDragging(false);
+              setRebind((n) => n + 1);
+              refs.current.report(refusal);
+              return;
+            }
             gesture!.commit();
             setDragging(false);
             refs.current.report("Transform applied as one undoable edit.");
@@ -92,7 +114,16 @@ export function TransformPanel({
       gesture?.dispose();
       if (binding.current === handles) binding.current = undefined;
     };
-  }, [editor, enabled, selectionKey, revision, mode, snap, activeLayerId]);
+  }, [
+    editor,
+    enabled,
+    selectionKey,
+    revision,
+    mode,
+    snap,
+    activeLayerId,
+    rebind,
+  ]);
   const numeric = async (kind: "move" | "rotate") => {
     let gesture: TransformGesture | undefined;
     try {
@@ -132,7 +163,13 @@ export function TransformPanel({
           position: pivot.map((v, i) => v - rotated[i]) as Vec3,
         };
       }
-      gesture.preview(transform);
+      const transforms = gesture.preview(transform);
+      const refusal = refs.current.guard?.(transforms);
+      if (refusal) {
+        gesture.cancel();
+        refs.current.report(refusal);
+        return;
+      }
       gesture.commit();
       refs.current.report("Transform applied as one undoable edit.");
     } catch (error) {
@@ -172,6 +209,16 @@ export function TransformPanel({
         />{" "}
         Snap handles to 20 LDU / 15°
       </label>
+      {onSnapTogether && (
+        <label>
+          <input
+            type="checkbox"
+            checked={!!snapTogether}
+            onChange={(e) => onSnapTogether(e.target.checked)}
+          />{" "}
+          Snap together: moved parts must stay connected
+        </label>
+      )}
       <p className="muted">
         Drag an arrow or ring on the model. Two fingers cancel.
       </p>

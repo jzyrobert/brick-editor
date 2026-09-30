@@ -567,8 +567,9 @@ small {
   flex-wrap: wrap;
 }
 .placement-card > div:first-child {
-  min-width: 110px;
-  flex: 1;
+  /* A header row: what you hold and the Snap together switch; controls below. */
+  min-width: 0;
+  flex: 1 1 100%;
 }
 .placement-card strong {
   display: block;
@@ -584,6 +585,66 @@ small {
   display: flex;
   gap: 5px;
   width: 195px;
+}
+/* "Snap together" switch and its refusal line (docs/CONNECTORS.md). */
+.placement-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.placement-title strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.placement-card .snap-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 4px 10px 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.snap-switch i {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--sheet-handle);
+  transition: background 0.15s ease-out;
+}
+.snap-switch i::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--card);
+  transition: transform 0.15s ease-out;
+}
+.snap-switch[aria-checked="true"] i {
+  background: var(--accent);
+}
+.snap-switch[aria-checked="true"] i::after {
+  transform: translateX(12px);
+}
+.placement-card.refused {
+  border-color: var(--caution-line);
+}
+.placement-card .placement-refusal {
+  color: var(--danger);
+  font-weight: 600;
 }
 .placement-card button {
   font-size: var(--text-label);

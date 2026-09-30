@@ -321,7 +321,30 @@
         "side anti-studs"
       ]
     },
-    "api": "connectors.coverage(), connectors.part({ ref }) (with hinge/sockets), connectors.snap({ part, position, angle? | basis?, up?, previous? }), connectors.fits({ part, position, angle? | basis?, up? }), connectors.orient({ part, point, normal, angle?, up? }), connectors.connected({ occurrenceIds }), connectors.groups()",
+    "api": "connectors.coverage(), connectors.part({ ref }) (with hinge/sockets), connectors.snap({ part, position, angle? | basis?, up?, previous? }), connectors.fits({ part, position, angle? | basis?, up? }), connectors.orient({ part, point, normal, angle?, up? }), connectors.connected({ occurrenceIds }), connectors.groups(), connectors.validatePlacement({ part, position, angle? | basis? }), connectors.validateMove({ transforms })",
+    "connectedBuilding": {
+      "name": "Snap together",
+      "kind": "UI tool setting (per device, localStorage; not document data)",
+      "default": true,
+      "enforcedIn": [
+        "Place tool",
+        "Move and rotate handles",
+        "exact move and rotation",
+        "Inspector Rotate 90° and 1 plate up/down"
+      ],
+      "notEnforced": [
+        "dispatch commands and transactions",
+        "paste",
+        "duplicate",
+        "arrays",
+        "fill",
+        "typed Inspector positions",
+        "undo/redo",
+        "imports and templates"
+      ],
+      "rule": "a placement holds when it clashes with nothing and a verified stud, side-stud, jumper or hinge connector mates, or its lowest point is on the ground (y = 0), or (only where connector data is missing on either side) it rests on a part's top; moves are refused only when the moved parts held before and would float or clash after",
+      "query": "connectors.validatePlacement and connectors.validateMove return { ok, via, verified, reason, contacts, targetIds, message }"
+    },
     "cli": "brick-cli connectors --input file [--connected JSON-array-of-occurrence-IDs]",
     "snapping": "Place previews move to the nearest fit within one stud where the new part makes verified connections (anti-studs on studs, studs in anti-studs), keeping the chosen turn; tapping a face with sideways studs turns the part onto them (spun by Rotate); a door or window pane tapped onto a frame seats closed in its hinge sockets. Fits whose occupancy boxes would pass through another part are refused; otherwise bounds-based stacking",
     "cycling": "Next fit on the placement card (keys N or Tab) cycles the ranked fits; a new tap keeps the previous fit while no other is nearer by more than 6 LDU (hysteresis)",

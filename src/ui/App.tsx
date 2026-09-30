@@ -56,6 +56,15 @@ import {
 } from "../edit/snap";
 import { connectedAssembly } from "../core/connectivity";
 import {
+  checkConnection,
+  checkMove,
+  placementScene,
+} from "../edit/connected-placement";
+import {
+  loadConnectedPreference,
+  saveConnectedPreference,
+} from "../persistence/connected-preference";
+import {
   catalogCategories,
   relatedParts,
   searchCatalog,
@@ -103,6 +112,7 @@ import { occurrences } from "../core/document";
 import {
   type Vec3,
   type Basis,
+  type Transform,
   type Scope,
   type CameraSpec,
   type Project,
@@ -421,6 +431,8 @@ function Workspace() {
     [placeFits, setPlaceFits] = useState<PlaceFits | null>(null),
     /** Orientation from a side-stud or hinge fit; null keeps the workplane turn. */
     [placeOrientation, setPlaceOrientation] = useState<Basis | null>(null),
+    /** "Snap together": Place and Move accept only parts that connect. */
+    [snapTogether, setSnapTogether] = useState(loadConnectedPreference),
     [pickingFace, setPickingFace] = useState<false | "face" | "stud">(false),
     [status, setStatus] = useState("Ready to build"),
     [statusFresh, setStatusFresh] = useState(false),
@@ -528,6 +540,7 @@ function Workspace() {
       position,
       placeFits,
       placeOrientation,
+      snapTogether,
     });
   const ownsTransientView = () => {
     const playing = play.current?.getState(),
@@ -559,6 +572,54 @@ function Workspace() {
       ? activePlanId
       : (Object.keys(project.instructionPlans)[0] ?? ""),
     plan = project.instructionPlans[currentPlanId];
+  // "Snap together" (docs/CONNECTORS.md, Connected building): whether the
+  // placement preview holds on studs, hinges, the ground or (unverified parts)
+  // on a part's top. The scene is derived once per project revision.
+  const placingConnected =
+    tool === "Place" && mode === "Build" && snapTogether && available;
+  const placeScene = useMemo(
+    () => (placingConnected ? placementScene(project, all) : null),
+    [placingConnected, project, all],
+  );
+  // The tap handler (bound once) reads the same scene.
+  const placeSceneRef = useRef(placeScene);
+  placeSceneRef.current = placeScene;
+  const placeCheck = useMemo(
+    () =>
+      placeScene
+        ? checkConnection(
+            part,
+            {
+              position,
+              basis: placeOrientation ?? placeBasis(workplane, angle),
+            },
+            placeScene,
+          )
+        : null,
+    [placeScene, part, position, placeOrientation, workplane, angle],
+  );
+  const placeRefused = !!placeCheck && !placeCheck.ok;
+  /** Snap together: why moving parts to these transforms is refused, or null. */
+  const moveRefusal = (transforms: Record<string, Transform>) => {
+    if (!snapTogether) return null;
+    const check = checkMove(editor.project, transforms);
+    return check.ok
+      ? null
+      : check.reason === "clash"
+        ? "Not moved: another part is in the way there."
+        : "Not moved: it would float with nothing to connect to. Move it onto studs or the ground, or turn off Snap together.";
+  };
+  /** The selection's transforms after a world-space nudge. */
+  const nudged = (delta: Vec3) =>
+    Object.fromEntries(
+      selected.map((o) => [
+        o.id,
+        {
+          position: o.transform.position.map((v, i) => v + delta[i]) as Vec3,
+          basis: o.transform.basis,
+        },
+      ]),
+    );
   modeRef.current = mode;
   projectRef.current = project;
   selectionRef.current = selection;
@@ -578,6 +639,7 @@ function Workspace() {
     position,
     placeFits,
     placeOrientation,
+    snapTogether,
   };
   /** Shows one connector fit in the preview. */
   const applyFit = (fits: PlaceFits) => {
@@ -1034,6 +1096,7 @@ function Workspace() {
           color,
           position,
           placeOrientation ?? placeBasis(workplane, angle),
+          placeRefused,
         )
         .catch((e) => setStatus(e.message));
     else renderer.current?.clearGhost();
@@ -1047,6 +1110,7 @@ function Workspace() {
     project.revision,
     workplane,
     placeOrientation,
+    placeRefused,
   ]);
   // Fits belong to one part, tool and workplane.
   useEffect(() => {
@@ -1305,6 +1369,23 @@ function Workspace() {
           list,
           s.placeOrientation ? null : { position: s.position, basis },
         );
+        // Snap together: a proposal that holds nowhere is shown, tinted, but
+        // cannot be placed; say why.
+        const refusal =
+          s.snapTogether && index < 0
+            ? checkConnection(
+                s.part,
+                { position: proposal, basis },
+                placeSceneRef.current ?? placementScene(project),
+              )
+            : null;
+        if (refusal && !refusal.ok) {
+          setPlaceFits(null);
+          setPlaceOrientation(null);
+          setPosition(proposal);
+          setStatus(refusal.message);
+          return;
+        }
         if (index >= 0) applyFit({ list, index, mode: "stud" });
         else {
           setPlaceFits(null);
@@ -2886,19 +2967,25 @@ function Workspace() {
                     "INVALID_INPUT",
                     "Select one part to rotate",
                   );
+                  const transform = {
+                    position: selected[0].transform.position,
+                    basis: compose(
+                      { position: [0, 0, 0], basis: rotationY(90) },
+                      {
+                        position: [0, 0, 0],
+                        basis: selected[0].transform.basis,
+                      },
+                    ).basis,
+                  };
+                  const refusal = moveRefusal({ [selected[0].id]: transform });
+                  if (refusal) {
+                    setStatus(refusal);
+                    return;
+                  }
                   command("parts.transform", {
                     ...scoped(),
                     space: "ldraw",
-                    transform: {
-                      position: selected[0].transform.position,
-                      basis: compose(
-                        { position: [0, 0, 0], basis: rotationY(90) },
-                        {
-                          position: [0, 0, 0],
-                          basis: selected[0].transform.basis,
-                        },
-                      ).basis,
-                    },
+                    transform,
                   });
                 })
               }
@@ -2907,26 +2994,36 @@ function Workspace() {
             </button>
             <button
               onClick={() =>
-                void run(() =>
+                void run(() => {
+                  const refusal = moveRefusal(nudged([0, -8, 0]));
+                  if (refusal) {
+                    setStatus(refusal);
+                    return;
+                  }
                   command("parts.transform", {
                     ...scoped(),
                     delta: [0, -8, 0],
                     space: "ldraw",
-                  }),
-                )
+                  });
+                })
               }
             >
               <Icon name="arrowUp" size={16} /> 1 plate
             </button>
             <button
               onClick={() =>
-                void run(() =>
+                void run(() => {
+                  const refusal = moveRefusal(nudged([0, 8, 0]));
+                  if (refusal) {
+                    setStatus(refusal);
+                    return;
+                  }
                   command("parts.transform", {
                     ...scoped(),
                     delta: [0, 8, 0],
                     space: "ldraw",
-                  }),
-                )
+                  });
+                })
               }
             >
               <Icon name="arrowDown" size={16} /> 1 plate
@@ -3521,18 +3618,55 @@ function Workspace() {
             </div>
           )}
           {tool === "Place" && mode === "Build" && (
-            <div className={"placement-card" + (placeExact ? " exact" : "")}>
+            <div
+              className={
+                "placement-card" +
+                (placeExact ? " exact" : "") +
+                (placeRefused ? " refused" : "")
+              }
+            >
               <div>
-                <strong>
-                  {currentPart.name} ·{" "}
-                  {colors.find((c) => c.code === color)?.name}
-                </strong>
-                <span>
-                  Tap the ground, or a part to stack on or beside ·{" "}
-                  {workplane.free
-                    ? "free placement"
-                    : `${workplane.grid} LDU grid`}
-                </span>
+                <div className="placement-title">
+                  <strong>
+                    {currentPart.name} ·{" "}
+                    {colors.find((c) => c.code === color)?.name}
+                  </strong>
+                  <button
+                    className="snap-switch"
+                    role="switch"
+                    aria-checked={snapTogether}
+                    title={
+                      snapTogether
+                        ? "Snap together is on: parts must connect to studs or the ground"
+                        : "Snap together is off: parts can go anywhere"
+                    }
+                    onClick={() => {
+                      const next = !snapTogether;
+                      setSnapTogether(next);
+                      saveConnectedPreference(next);
+                      setStatus(
+                        next
+                          ? "Snap together is on: parts must connect to studs or the ground."
+                          : "Snap together is off: parts can go anywhere.",
+                      );
+                    }}
+                  >
+                    <i aria-hidden="true" />
+                    Snap together
+                  </button>
+                </div>
+                {placeRefused ? (
+                  <span className="placement-refusal" aria-live="polite">
+                    {placeCheck!.message}
+                  </span>
+                ) : (
+                  <span>
+                    Tap the ground, or a part to stack on or beside ·{" "}
+                    {workplane.free
+                      ? "free placement"
+                      : `${workplane.grid} LDU grid`}
+                  </span>
+                )}
               </div>
               <button
                 className="placement-exact"
@@ -3650,8 +3784,11 @@ function Workspace() {
               )}
               <button
                 className="primary"
+                disabled={placeRefused}
+                title={placeRefused ? placeCheck!.message : undefined}
                 onClick={() =>
                   void run(() => {
+                    if (placeRefused) return;
                     command("parts.add", {
                       layerId: activeLayer,
                       parts: [
@@ -4179,6 +4316,12 @@ function Workspace() {
               activeLayerId={crossLayer ? undefined : activeLayer}
               report={setStatus}
               modeRequest={transformModeRequest}
+              snapTogether={snapTogether}
+              onSnapTogether={(next) => {
+                setSnapTogether(next);
+                saveConnectedPreference(next);
+              }}
+              guard={snapTogether ? moveRefusal : undefined}
             />
           </div>
           {panel === "Inspector" && (

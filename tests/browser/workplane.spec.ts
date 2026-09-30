@@ -11,6 +11,11 @@ for (const size of [
       viewport: size,
       hasTouch: size.touch,
     });
+    // A brick laid against a raw-geometry wall on a face workplane holds on
+    // no connector, so Snap together (on by default) would refuse it.
+    await context.addInitScript(() =>
+      localStorage.setItem("brick-editor-snap-together", "off"),
+    );
     const page = await context.newPage();
     try {
       await page.goto(`${baseURL}/?automation=1`);

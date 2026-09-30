@@ -190,6 +190,10 @@ Verified stud/anti-stud connectors ([method and coverage](CONNECTORS.md)):
 - `connectors.snap({ part, position, angle? | basis?, up? })` snaps a proposed placement to the visible parts' verified connectors exactly as the Place tool does: `{ position, basis, contacts, targetIds }`, or `null` when nothing connects within one stud. The orientation is never changed; commit the result with `parts.add`.
 - `connectors.connected({ occurrenceIds })` returns every occurrence joined to them by verified stud connections, plus the seeds without verified data (`uncoveredSeeds`).
 - `connectors.groups()` returns connected groups (largest first), uncovered occurrence IDs and the number of stud contacts.
+- `connectors.validatePlacement({ part, position, angle? | basis? })` tests a proposed placement against the editor's **Snap together** rule ([Connected building](CONNECTORS.md#connected-building-snap-together)) over the visible parts: `{ revision, ok, via, verified, reason, contacts, targetIds, message }`. `via` is `studs`, `hinge`, `ground`, `resting` (unverified contact), `unchecked` (part shape unknown) or `null`; `reason` is `floating`, `clash` or `null`.
+- `connectors.validateMove({ transforms })` tests moving occurrences to the given world transforms (`{ [occurrenceId]: { position, basis } }`) as the Move and rotate handles do: the same fields plus `heldBefore`. A move is refused (`ok: false`) only when the parts held where they were and would float or clash where they go.
+
+Snap together is a tool setting of the editor UI (on by default, remembered per device), not document data. Commands and transactions (`parts.add`, `parts.transform`, paste, arrays, fills) are never restricted by it; an automation client that wants the same behaviour calls the two queries above before dispatching. `capabilities().connectors.connectedBuilding` describes the rule and where the UI enforces it.
 
 `health.check()` reports the Connections check from the same data.
 

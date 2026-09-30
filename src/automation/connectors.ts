@@ -25,6 +25,11 @@ import {
   sceneConnectors,
   snapCandidates,
 } from "../edit/snap";
+import {
+  checkConnection,
+  checkMove,
+  placementScene,
+} from "../edit/connected-placement";
 
 const finite = (v: unknown, n: number) =>
   Array.isArray(v) && v.length === n && v.every((x) => Number.isFinite(x));
@@ -166,6 +171,49 @@ export function connectorService(
         mode: hinge.length ? "hinge" : fits.length ? "side" : "none",
         fits: fits.map(({ distance: _d, ...fit }) => fit),
       };
+    },
+    /**
+     * Whether a proposed placement would hold under the editor's "Snap
+     * together" rule (docs/CONNECTORS.md, Connected building): verified stud
+     * or hinge connections to the visible parts, the ground, or (where
+     * connector data is missing) resting on a part's top; clashes are refused.
+     * A query only: commands stay unrestricted.
+     */
+    validatePlacement: async (input: Proposal) => {
+      checkProposal(input);
+      await ready(input.part);
+      const p = project();
+      const basis = input.basis ?? rotationY(input.angle ?? 0);
+      return {
+        revision: p.revision,
+        ...checkConnection(
+          input.part,
+          { position: input.position, basis },
+          placementScene(p),
+        ),
+      };
+    },
+    /**
+     * Whether moving occurrences to the given world transforms keeps them
+     * held (the rule the Move and rotate handles apply in "Snap together"):
+     * refused only when the group held before and would float or clash after.
+     */
+    validateMove: async (input: {
+      transforms: Record<string, { position: Vec3; basis: Basis }>;
+    }) => {
+      const t = input?.transforms;
+      ensure(
+        !!t &&
+          typeof t === "object" &&
+          Object.values(t).every(
+            (v) => finite(v?.position, 3) && finite(v?.basis, 9),
+          ),
+        "INVALID_INPUT",
+        "transforms must map occurrence IDs to { position, basis }",
+      );
+      const p = project();
+      const { before, ...check } = checkMove(p, t);
+      return { revision: p.revision, heldBefore: before, ...check };
     },
     /** Every part connected to the given ones through verified connections. */
     connected: async (input: { occurrenceIds: string[] }) => {

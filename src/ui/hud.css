@@ -1649,6 +1649,10 @@ a .icon {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* Why a part cannot go here is worth its second line. */
+  .placement-card > div:first-child span.placement-refusal {
+    white-space: normal;
+  }
   .placement-card:not(.exact) .placement-values {
     display: none;
   }
