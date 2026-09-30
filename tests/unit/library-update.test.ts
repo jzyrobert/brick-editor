@@ -26,6 +26,7 @@ import {
 } from "../../scripts/library-update";
 import { validateFullConnectors } from "../../scripts/validate-full-connectors";
 import { buildFullConnectors } from "../../scripts/build-full-connectors";
+import { validateFullTextures } from "../../scripts/validate-full-textures";
 import { fullLockUnaffected } from "../../src/catalog/catalog";
 import { importLDraw } from "../../src/ldraw/io";
 
@@ -60,13 +61,28 @@ function archive(variant: "a" | "b") {
     "ldraw/parts/9003.dat":
       header("9003.dat", "Plate  1 x  1 Test") + box(-10, 10),
   };
-  if (variant === "b")
+  if (variant === "b") {
     files["ldraw/parts/9004.dat"] =
       header("9004.dat", "Tile  1 x  1 Test") + box(-10, 10);
-  return zipSync(
-    Object.fromEntries(Object.entries(files).map(([k, v]) => [k, strToU8(v)])),
-  );
+    // A textured part: its image and a texture-mapped subpart reference.
+    files["ldraw/parts/9005.dat"] =
+      header("9005.dat", "Tile  1 x  1 with Test Pattern") +
+      box(-10, 10) +
+      "0 !TEXMAP START PLANAR -10 0 -10 10 0 -10 -10 0 10 9005.png\n" +
+      "0 !: 1 16 0 0 0 1 0 0 0 1 0 0 0 1 stud.dat\n" +
+      "0 !TEXMAP FALLBACK\n0 !TEXMAP END\n";
+  }
+  const zipped = Object.fromEntries(
+    Object.entries(files).map(([k, v]) => [k, strToU8(v)]),
+  ) as Record<string, Uint8Array>;
+  if (variant === "b") zipped["ldraw/parts/textures/9005.png"] = PNG;
+  return zipSync(zipped);
 }
+/** A 2 × 1 PNG header (only its signature and IHDR are read). */
+const PNG = new Uint8Array([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44,
+  0x52, 0, 0, 0, 2, 0, 0, 0, 1, 8, 6, 0, 0, 0,
+]);
 const sha = (b: Uint8Array) => createHash("sha256").update(b).digest("hex");
 
 describe("complete-library update path", () => {
@@ -76,6 +92,7 @@ describe("complete-library update path", () => {
     configPath: root + "/full-library.json",
     lockPath: root + "/full-library-lock.json",
     connectorLockPath: root + "/full-connectors-lock.json",
+    textureLockPath: root + "/full-textures-lock.json",
     retiredPath: root + "/full-library-retired.json",
   };
   mkdirSync(paths.librariesDir, { recursive: true });
@@ -141,7 +158,21 @@ describe("complete-library update path", () => {
       full: lock,
       samples: ["9001.dat", "9004.dat"],
     });
-    expect(v.parts).toBe(4);
+    expect(v.parts).toBe(5);
+    // The texture pack is built for, and bound to, the new release.
+    const textureLock = JSON.parse(readFileSync(paths.textureLockPath, "utf8"));
+    expect(textureLock).toEqual(r.textureLock);
+    const t = validateFullTextures({
+      librariesDir: paths.librariesDir,
+      lock: textureLock,
+      full: lock,
+    });
+    expect(t).toMatchObject({
+      id: "textures-" + r.releaseId,
+      textures: 1,
+      parts: 1,
+      texmapReferences: 1,
+    });
     // The old release is a retired lock naming exactly what changed: the
     // edited subpart and the part using it; the new part is not "affected"
     // (nothing pinned to the old release can use it).

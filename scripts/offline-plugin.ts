@@ -88,11 +88,13 @@ export function offlinePlugin(): Plugin {
     apply: "build",
     enforce: "post",
     generateBundle(_options, bundle) {
-      // The complete LDraw pack (~90 MB) and its derived connector pack are never precached: the app loads and
-      // caches the parts a model uses on demand (src/catalog/full-library-loader.ts).
+      // The complete LDraw pack (~90 MB), its derived connector pack and its
+      // texture pack (~43 MB of !TEXMAP images) are never precached: the app loads and
+      // caches the parts (and textures) a model uses on demand
+      // (src/catalog/full-library-loader.ts, src/catalog/full-textures.ts).
       // Its content-addressed files are all pinned by its manifest, so hashing
       // the manifest alone versions it.
-      const full = /^libraries\/(connectors-)?ldraw-full-[^/]+\//;
+      const full = /^libraries\/(connectors-|textures-)?ldraw-full-[^/]+\//;
       // Its sprite-sheet thumbnails (~25 MB) likewise load and cache on demand
       // (src/catalog/part-thumbnails-loader.ts); the bundle pins their index.
       const thumbnails = /^thumbnails\/ldraw-full-[^/]+\//;

@@ -17,8 +17,12 @@
 //
 //   npx tsx scripts/build-part-thumbnails.ts [--render] [--pack]
 //        [--batches 0-9] [--workers 2] [--list <batch>] [--partial]
+//   npx tsx scripts/build-part-thumbnails.ts --textured
 // (--list prints a batch's parts; --partial packs whatever is rendered, for
-// previews only: validation then fails on the missing parts.)
+// previews only: validation then fails on the missing parts. --textured
+// re-renders only the parts that map a !TEXMAP texture, with their textures,
+// and patches their cells into the published sheets: the sheets holding them
+// are decoded, re-encoded and re-addressed, and the index and lock updated.)
 import { createHash } from "node:crypto";
 import {
   existsSync,
@@ -53,9 +57,12 @@ const option = (name: string) => {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
 };
+const texturedOnly = args.includes("--textured");
 const phases = {
-  render: args.includes("--render") || !args.includes("--pack"),
-  pack: args.includes("--pack") || !args.includes("--render"),
+  render:
+    !texturedOnly && (args.includes("--render") || !args.includes("--pack")),
+  pack:
+    !texturedOnly && (args.includes("--pack") || !args.includes("--render")),
 };
 /** Output cell size (px); parts are rendered at twice this and downscaled. */
 const CELL = 80;
@@ -116,9 +123,10 @@ function fixedColour(name: string, stack = new Set<string>()): boolean {
   const text = texts.get(name);
   if (!text || stack.has(name)) return false;
   stack.add(name);
-  let fixed = false;
-  for (const line of text.split(/\r?\n/)) {
-    const m = /^\s*([1-5])\s+(\S+)/.exec(line);
+  // A !TEXMAP image is print: drawn over the body, never tinted.
+  let fixed = /^\s*0\s+!TEXMAP\s/m.test(text);
+  for (const line of fixed ? [] : text.split(/\r?\n/)) {
+    const m = /^\s*(?:0\s+!:\s*)?([1-5])\s+(\S+)/.exec(line);
     if (!m) continue;
     if (m[1] !== "2" && m[1] !== "5" && m[2] !== "16") {
       fixed = true;
@@ -664,6 +672,140 @@ if (phases.pack) {
       files: readdirSync(outDir + "sheets").length + 1,
       bytes,
       indexBytes: lock.indexBytes,
+    }),
+  );
+}
+
+if (texturedOnly) {
+  // Parts that map a !TEXMAP texture (the texture pack's part table).
+  const textureLock = JSON.parse(
+    readFileSync("src/catalog/full-textures-lock.json", "utf8"),
+  ) as { texturePackId: string };
+  const textureManifest = JSON.parse(
+    readFileSync(
+      `public/libraries/${textureLock.texturePackId}/manifest.json`,
+      "utf8",
+    ),
+  ) as { parts: Record<string, string[]> };
+  const ids = placeable
+    .map((p) => p.id)
+    .filter((id) => Object.hasOwn(textureManifest.parts, id))
+    .sort();
+  const thumbIndex = JSON.parse(
+    readFileSync(outDir + "index.json", "utf8"),
+  ) as PartThumbnailIndex;
+  const rendered: Cells = { cells: {}, masks: {} };
+  const failed: string[] = [];
+  const t0 = Date.now();
+  await withBrowser(async (url, browser) => {
+    const page = await browser.newPage();
+    page.setDefaultTimeout(900000);
+    page.on("pageerror", (e) => console.error("page error:", e.message));
+    for (let i = 0; i < ids.length; i += PER_SHEET) {
+      // Rendered as print (white and black bodies): textures are not tinted.
+      const r = await renderBatch(page, url, {
+        key: "textured-" + i / PER_SHEET,
+        ids: ids.slice(i, i + PER_SHEET),
+        fixed: true,
+      });
+      Object.assign(rendered.cells, r.cells);
+      Object.assign(rendered.masks, r.masks);
+      failed.push(...r.failed);
+    }
+    // Patch the sheets that hold them (their other cells are re-encoded).
+    for (const sheet of thumbIndex.sheets) {
+      if (!sheet.parts.some((id) => rendered.cells[id])) continue;
+      const file = (entry: [string, number]) =>
+        readFileSync(`${outDir}sheets/${entry[0]}.webp`).toString("base64");
+      const cellsOf = (list: Record<string, string>) =>
+        sheet.parts.map((id) => list[id] ?? null);
+      const out = await page.evaluate(
+        async ({ image, mask, cells, masks, CELL, GRID, quality, rows }) => {
+          const decode = async (b64: string) =>
+            createImageBitmap(
+              new Blob([Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))]),
+            );
+          const patch = async (
+            base: string | null,
+            list: (string | null)[],
+            replace: boolean[],
+          ) => {
+            const canvas = new OffscreenCanvas(CELL * GRID, CELL * rows);
+            const ctx = canvas.getContext("2d")!;
+            if (base) ctx.drawImage(await decode(base), 0, 0);
+            for (let i = 0; i < list.length; i++) {
+              if (!replace[i]) continue;
+              const x = (i % GRID) * CELL,
+                y = Math.floor(i / GRID) * CELL;
+              ctx.clearRect(x, y, CELL, CELL);
+              if (list[i]) ctx.drawImage(await decode(list[i]!), x, y);
+            }
+            const blob = await canvas.convertToBlob({
+              type: "image/webp",
+              quality,
+            });
+            const b = new Uint8Array(await blob.arrayBuffer());
+            let binary = "";
+            for (const x of b) binary += String.fromCharCode(x);
+            return btoa(binary);
+          };
+          const replace = cells.map((c) => c !== null);
+          return {
+            image: await patch(image, cells, replace),
+            mask:
+              mask || masks.some(Boolean)
+                ? await patch(mask, masks, replace)
+                : undefined,
+          };
+        },
+        {
+          image: file(sheet.image),
+          mask: sheet.mask ? file(sheet.mask) : null,
+          cells: cellsOf(rendered.cells),
+          masks: cellsOf(rendered.masks),
+          CELL,
+          GRID: SHEET_COLUMNS,
+          quality: WEBP_QUALITY,
+          rows: Math.ceil(sheet.parts.length / SHEET_COLUMNS),
+        },
+      );
+      const pin = (b64: string, old?: [string, number]) => {
+        const data = Buffer.from(b64, "base64");
+        if (data.subarray(8, 12).toString() !== "WEBP")
+          throw new Error("Not a WebP image");
+        const sha = hash(data);
+        writeFileSync(`${outDir}sheets/${sha}.webp`, data);
+        if (old && old[0] !== sha) rmSync(`${outDir}sheets/${old[0]}.webp`);
+        return [sha, data.length] as [string, number];
+      };
+      sheet.image = pin(out.image, sheet.image);
+      if (out.mask) sheet.mask = pin(out.mask, sheet.mask);
+      const printed = new Set(sheet.printed);
+      sheet.parts.forEach((id, i) => {
+        if (!rendered.cells[id]) return;
+        if (rendered.masks[id]) printed.add(i);
+        else printed.delete(i);
+      });
+      sheet.printed = [...printed].sort((a, b) => a - b);
+    }
+  });
+  const text = JSON.stringify(thumbIndex);
+  writeFileSync(outDir + "index.json", text);
+  writeFileSync(
+    "src/catalog/part-thumbnails-lock.json",
+    JSON.stringify(
+      { packId, indexSha256: hash(text), indexBytes: Buffer.byteLength(text) },
+      null,
+      2,
+    ) + "\n",
+  );
+  console.log(
+    JSON.stringify({
+      textured: ids.length,
+      rendered: Object.keys(rendered.cells).length,
+      printed: Object.keys(rendered.masks).length,
+      failed,
+      seconds: Math.round((Date.now() - t0) / 1000),
     }),
   );
 }

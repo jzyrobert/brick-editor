@@ -70,6 +70,7 @@ export function importLDraw(
   const lines = text.replace(/\r\n?/g, "\n").split("\n");
   const mpd = lines.some((l) => /^0\s+FILE\s+/i.test(l.trim()));
   const preamble: string[] = [];
+  const texmapModels = new Set<Model>();
   for (const raw of lines) {
     const line = raw.trim();
     const file = line.match(/^0\s+FILE\s+(.+)$/i);
@@ -99,12 +100,17 @@ export function importLDraw(
       /^0\s+!LDRAW_ORG\s+(?:Unofficial_)?(?:Part|Subpart|Primitive)/i.test(line)
     )
       m.classification = "custom";
-    if (/^0\s+!TEXMAP|^0\s+!DATA/i.test(line))
+    // Texture mapping inside a custom part is compiled with the part and
+    // drawn when its images are official library textures (the renderer
+    // reports parts drawn with fallback geometry). Anywhere else, and embedded
+    // `!DATA` images, it is kept but not rendered.
+    if (/^0\s+!TEXMAP/i.test(line)) texmapModels.add(m);
+    if (/^0\s+!DATA/i.test(line))
       p.diagnostics.push({
         code: "UNSUPPORTED_RENDER_FEATURE",
         severity: "warning",
         message:
-          "Texture source retained; texture projection is not supported.",
+          "Embedded image data (!DATA) retained; embedded textures are not rendered.",
         occurrenceIds: [],
       });
     if (/^0\s+!COLOUR.*\b(?:GLITTER|SPECKLE)\b/i.test(line))
@@ -164,6 +170,14 @@ export function importLDraw(
   }
   ensure(first, "INVALID_INPUT", "Empty document");
   p.rootModelId = first;
+  for (const m of texmapModels)
+    if (m.classification !== "custom")
+      p.diagnostics.push({
+        code: "UNSUPPORTED_RENDER_FEATURE",
+        severity: "warning",
+        message: `Texture source retained; texture mapping outside a part definition (${m.name}) is not rendered.`,
+        occurrenceIds: [],
+      });
   p.metadata.preamble = preamble;
   for (const m of Object.values(p.models))
     for (const n of m.nodes) {

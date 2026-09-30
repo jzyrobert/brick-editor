@@ -86,13 +86,18 @@ describe("source-aware scoped interchange", () => {
   });
   it("accepts leading whitespace MPD boundaries and diagnoses indented texture metadata", () => {
     const p = importLDraw(
-      "  0 FILE main.ldr  \n1 4 0 0 0 1 0 0 0 1 0 0 0 1 custom.dat\n\t0 FILE custom.dat\n 0 !LDRAW_ORG Unofficial_Part\n 0 !TEXMAP START PLANAR 0 0 0 1 0 0 0 1 0 x.png\n3 16 0 0 0 1 0 0 0 1 0\n 0 NOFILE",
+      "  0 FILE main.ldr  \n  0 !TEXMAP START PLANAR 0 0 0 1 0 0 0 1 0 y.png\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 custom.dat\n\t0 FILE custom.dat\n 0 !LDRAW_ORG Unofficial_Part\n 0 !TEXMAP START PLANAR 0 0 0 1 0 0 0 1 0 x.png\n3 16 0 0 0 1 0 0 0 1 0\n 0 NOFILE",
     );
     expect(p.rootModelId).toBe("main.ldr");
     expect(p.models["custom.dat"].classification).toBe("custom");
-    expect(
-      p.diagnostics.some((d) => d.code === "UNSUPPORTED_RENDER_FEATURE"),
-    ).toBe(true);
+    // Texture mapping over references in a model is not rendered; inside a
+    // custom part it compiles with the part (the renderer reports a missing
+    // image such as x.png when it draws the fallback).
+    const unsupported = p.diagnostics.filter(
+      (d) => d.code === "UNSUPPORTED_RENDER_FEATURE",
+    );
+    expect(unsupported).toHaveLength(1);
+    expect(unsupported[0].message).toContain("main.ldr");
     p.models[p.rootModelId].records.push({
       id: "injected",
       raw: " 0 FILE injected.ldr",

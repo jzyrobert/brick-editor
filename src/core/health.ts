@@ -8,7 +8,7 @@ import {
   partOccupancy,
   verifiedConnectors,
 } from "../catalog/connectors";
-import type { Occurrence, Project } from "./types";
+import type { Diagnostic, Occurrence, Project } from "./types";
 
 /** Model-health report (spec §20.3). Each check says how certain it is. */
 export type HealthStatus = "ok" | "warning" | "unknown";
@@ -143,7 +143,15 @@ export function withoutLooseObjects(project: Project, groups: string[][]) {
   return { groups: kept, loose };
 }
 
-export function modelHealth(project: Project): HealthReport {
+/**
+ * `renderDiagnostics` are the renderer's own warnings for this project (e.g.
+ * textured parts drawn with fallback geometry, render/texmap-textures.ts);
+ * they join the source's unsupported-rendering findings.
+ */
+export function modelHealth(
+  project: Project,
+  renderDiagnostics: Diagnostic[] = [],
+): HealthReport {
   const all = occurrences(project);
   const checks: HealthCheck[] = [];
 
@@ -161,7 +169,7 @@ export function modelHealth(project: Project): HealthReport {
     count: missing.length,
   });
 
-  const unsupported = project.diagnostics.filter(
+  const unsupported = [...project.diagnostics, ...renderDiagnostics].filter(
     (d) => d.code === "UNSUPPORTED_RENDER_FEATURE",
   );
   checks.push({

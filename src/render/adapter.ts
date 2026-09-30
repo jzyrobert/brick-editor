@@ -119,6 +119,8 @@ import {
 } from "./geometry-cache";
 import { TimeSlicer } from "./scheduling";
 import { prepareFullLibrary } from "../catalog/full-library-loader";
+import { loadTextureImage } from "../catalog/full-textures";
+import { TexmapTextures, texmapBudget } from "./texmap-textures";
 import { directReferences } from "../catalog/full-pack";
 import installedBounds from "../catalog/bounds.json";
 import { canonical } from "../ldraw/path";
@@ -451,6 +453,11 @@ export class SceneAdapter {
   private ghostToken = 0;
   private disposed = false;
   private captureActive = false;
+  /** `!TEXMAP` textures, shared by every textured part (texmap-textures.ts). */
+  private texmaps = new TexmapTextures({
+    load: loadTextureImage,
+    budget: () => texmapBudget(this.lookResourceProfile),
+  });
   /** `?batchCells=<LDU>` splits large buckets into spatial cells (a
    * diagnostic for measuring culling granularity; off by default). */
   private batches = new RenderBatches({
@@ -802,7 +809,9 @@ export class SceneAdapter {
       }
     }
     const used = new Set(["16", "24"]);
-    for (const m of source.matchAll(/^\s*[1-5]\s+(\d+)\s/gm)) used.add(m[1]);
+    // `0 !:` lines are geometry to the texture-aware loader.
+    for (const m of source.matchAll(/^\s*(?:0\s+!:\s*)?[1-5]\s+(\d+)\s/gm))
+      used.add(m[1]);
     const out: string[] = [];
     for (const code of used) {
       const l = this.colourLines.get(code);
@@ -980,6 +989,9 @@ export class SceneAdapter {
                 renderContext.forceDoubleSided,
               ),
             );
+      // Textured parts: textured form, or fallback geometry when a texture
+      // is unavailable (reported by ready()).
+      await this.texmaps.resolve(group, o.node.ref);
       this.allPrototypes.add(group);
       this.resolvedCache.set(key, group);
       return group;
@@ -1056,8 +1068,9 @@ export class SceneAdapter {
     group.traverse((object) => {
       // Loader metadata (file names, categories, building steps) is unused,
       // and Object3D.clone() JSON-copies user data for every object of every
-      // occurrence handle.
-      object.userData = {};
+      // occurrence handle. `!TEXMAP` tags are kept for texmaps.resolve().
+      const texmap = object.userData.texmap;
+      object.userData = texmap ? { texmap } : {};
       if ((object as THREE.Mesh).isMesh) {
         if (forceDoubleSided) {
           const mesh = object as THREE.Mesh;
@@ -1379,6 +1392,13 @@ export class SceneAdapter {
         after,
       };
   }
+  /** Warnings for textured parts of the current model drawn with fallback
+   * geometry because a texture was unavailable (health, ready()). */
+  textureDiagnostics() {
+    return this.project && this.texmaps.hasFallback()
+      ? this.texmaps.diagnostics(occurrences(this.project))
+      : [];
+  }
   /** Measured size of the last rendered model against its profile budget. */
   renderBudgetStatus() {
     return {
@@ -1394,6 +1414,7 @@ export class SceneAdapter {
       lastFrame: this.lastFrameStats,
       geometryIndex: { ...this.geometryIndexStats },
       batches: this.batches.stats(),
+      textures: this.texmaps.stats(),
     };
   }
   /**
@@ -1896,6 +1917,13 @@ export class SceneAdapter {
         "Strict render refuses unresolved parts",
       );
     }
+    const textureWarnings = this.textureDiagnostics();
+    ensure(
+      !strict || !textureWarnings.length,
+      "UNSUPPORTED_RENDER_FEATURE",
+      "Strict render refuses textured parts drawn without their textures: " +
+        textureWarnings[0]?.message,
+    );
     if (strict && this.project) {
       ensure(
         occurrences(this.project).every(
@@ -1915,7 +1943,7 @@ export class SceneAdapter {
     return {
       revision: this.revision,
       ready: true,
-      warnings: this.project?.diagnostics || [],
+      warnings: [...(this.project?.diagnostics || []), ...textureWarnings],
     };
   }
   currentQuality() {
@@ -4710,6 +4738,7 @@ export class SceneAdapter {
     clearTimeout(this.motionTimer);
     this.contextWork.abort();
     this.compiler?.dispose();
+    this.texmaps.dispose();
     this.transformHandles?.dispose();
     this.transformHandles = undefined;
     this.instructionDimming.restore();

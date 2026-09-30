@@ -58,7 +58,12 @@ export function normalizeBfcSource(text: string) {
       ccw = true,
       invertNext = false;
     for (const raw of file.lines) {
-      const line = raw.trim(),
+      // `0 !:` (TEXMAP) geometry is geometry to a texture-aware loader: its
+      // references and winding are normalized like any other line.
+      const texmapped = /^\s*0\s+!:\s?(.*)$/.exec(raw);
+      const prefix =
+        texmapped && /^\s*[1-5]\s/.test(texmapped[1]) ? "0 !: " : "";
+      const line = (prefix ? texmapped![1] : raw).trim(),
         bfc = line.match(/^0\s+BFC\s+(.+)$/);
       if (bfc) {
         const tokens = bfc[1].split(/\s+/);
@@ -94,7 +99,7 @@ export function normalizeBfcSource(text: string) {
           depth + 1,
           childNonsingular,
         );
-        variant.lines.push(reference[1] + target);
+        variant.lines.push(prefix + reference[1] + target);
       } else {
         if (/^[34]\s/.test(line)) {
           variant.lines.push(

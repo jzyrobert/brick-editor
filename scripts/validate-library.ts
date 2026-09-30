@@ -14,6 +14,8 @@ import {
 import { fullLibraryLock } from "../src/catalog/full-library";
 import { fullConnectorLock } from "../src/catalog/full-connectors";
 import { validateFullConnectors } from "./validate-full-connectors";
+import { validateFullTextures } from "./validate-full-textures";
+import fullTexturesLock from "../src/catalog/full-textures-lock.json";
 import mappings from "../src/catalog/mappings.json";
 import { validateFullLibrary } from "./validate-full-library";
 import { validateAvatarPack } from "./validate-avatar-pack";
@@ -158,6 +160,12 @@ const fullConnectors = validateFullConnectors({
   lock: fullConnectorLock,
   full: fullLibraryLock,
 });
+// Its texture pack (!TEXMAP images, loaded on demand like the geometry).
+const fullTextures = validateFullTextures({
+  librariesDir: "public/libraries/",
+  lock: fullTexturesLock,
+  full: fullLibraryLock,
+});
 // Retired complete-library locks record what changed since them.
 for (const l of retiredFullLibraryLocks)
   if (l.releaseId === fullLibraryLock.releaseId)
@@ -184,6 +192,7 @@ console.log(
       retiredMappingLocks: retiredMappingLocks.map((l) => l.mappingPackId),
       full,
       fullConnectors,
+      fullTextures,
       retiredFullLibraryLocks: retiredFullLibraryLocks.map((l) => l.releaseId),
       partThumbnails,
       colorAvailability,

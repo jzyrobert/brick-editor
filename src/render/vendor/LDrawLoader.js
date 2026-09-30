@@ -1,6 +1,8 @@
 // Vendored from three@0.174.0 examples/jsm/loaders/LDrawLoader.js (MIT,
 // Copyright © 2010-2025 three.js authors). Brick Editor patches, each marked
-// "Brick Editor patch": smoothNormals() is linear instead of quadratic.
+// "Brick Editor patch": smoothNormals() is linear instead of quadratic, and
+// the !TEXMAP extension is implemented (src/render/texmap.ts; see
+// docs/RENDERING.md "Textured parts").
 // Keep in step with the pinned three release (tests/unit/ldraw-vendor.test.ts
 // compares this copy with upstream output).
 import {
@@ -19,6 +21,8 @@ import {
 	Vector3,
 	Ray
 } from 'three';
+// Brick Editor patch: !TEXMAP projections.
+import { parseTexmapCommand, projectPolygon, texmapProjector } from '../texmap';
 
 // Special surface finish tag types.
 // Note: "MATERIAL" tag (e.g. GLITTER, SPECKLE) is not implemented
@@ -524,7 +528,12 @@ class LDrawParsedCache {
 				material: face.material,
 				vertices: face.vertices.map( v => v.clone() ),
 				normals: face.normals.map( () => null ),
-				faceNormal: null
+				faceNormal: null,
+				// Brick Editor patch: !TEXMAP state.
+				tex: face.tex,
+				uvs: face.uvs ? face.uvs.slice() : undefined,
+				tv: face.tv,
+				fv: face.fv
 			};
 
 		} );
@@ -535,7 +544,9 @@ class LDrawParsedCache {
 				colorCode: face.colorCode,
 				material: face.material,
 				vertices: face.vertices.map( v => v.clone() ),
-				controlPoints: face.controlPoints.map( v => v.clone() )
+				controlPoints: face.controlPoints.map( v => v.clone() ),
+				tv: face.tv,
+				fv: face.fv
 			};
 
 		} );
@@ -545,7 +556,9 @@ class LDrawParsedCache {
 			return {
 				colorCode: face.colorCode,
 				material: face.material,
-				vertices: face.vertices.map( v => v.clone() )
+				vertices: face.vertices.map( v => v.clone() ),
+				tv: face.tv,
+				fv: face.fv
 			};
 
 		} );
@@ -687,10 +700,40 @@ class LDrawParsedCache {
 
 		let startingBuildingStep = false;
 
+		// Brick Editor patch: !TEXMAP state. Each entry is { tex, fallback, next };
+		// `tex` is { texture, method, extent, project } shared by every element it
+		// maps. Elements record `tex` (the texture that maps them), `uvs` (faces:
+		// image-space coordinates, computed here in this file's coordinates) and
+		// `tv`/`fv` (drawn when textures are / are not available; undefined = true).
+		const texmapStack = [];
+		const texmapState = ( comment ) => {
+
+			let tv = true;
+			for ( const entry of texmapStack ) if ( entry.fallback ) tv = false;
+			const top = texmapStack[ texmapStack.length - 1 ];
+			const tex = tv && top && ! top.fallback ? top.tex : null;
+			return { tex, tv, fv: ! comment };
+
+		};
+		const addTexmap = ( element, state ) => {
+
+			if ( state.tex ) element.tex = state.tex;
+			if ( ! state.tv ) element.tv = false;
+			if ( ! state.fv ) element.fv = false;
+			return element;
+
+		};
+		const mapFace = ( face ) => {
+
+			if ( face.tex ) face.uvs = projectPolygon( face.tex.project, face.tex.method, face.vertices, face.tex.extent );
+			return face;
+
+		};
+
 		// Parse all line commands
 		for ( let lineIndex = 0; lineIndex < numLines; lineIndex ++ ) {
 
-			const line = lines[ lineIndex ];
+			let line = lines[ lineIndex ];
 
 			if ( line.length === 0 ) continue;
 
@@ -715,6 +758,19 @@ class LDrawParsedCache {
 
 			}
 
+			// Brick Editor patch: `0 !:` marks geometry drawn only with its texture.
+			let texmapComment = false;
+			const textured = line.indexOf( '!:' ) !== - 1 ? /^\s*0\s+!:\s?(.*)$/.exec( line ) : null;
+			if ( textured ) {
+
+				const state = texmapState( true );
+				// Outside a START…FALLBACK section it maps nothing: ignored.
+				if ( ! texmapStack.length || ! state.tv ) continue;
+				line = textured[ 1 ];
+				texmapComment = true;
+
+			}
+
 			const lp = new LineParser( line, lineIndex + 1 );
 			lp.seekNonSpace();
 
@@ -727,6 +783,12 @@ class LDrawParsedCache {
 
 			// Parse the line type
 			const lineType = lp.getToken();
+
+			// Brick Editor patch: NEXT maps only the next geometry line; a type 0
+			// line first cancels it (render BFC normalization lines excepted).
+			const texmapTop = texmapStack[ texmapStack.length - 1 ];
+			if ( texmapTop && texmapTop.next && lineType === '0' && ! /^\s*0\s+BFC\s/.test( line ) ) texmapStack.pop();
+			const texState = lineType === '0' ? null : texmapState( texmapComment );
 
 			let material;
 			let colorCode;
@@ -861,8 +923,44 @@ class LDrawParsedCache {
 							case 'STEP':
 
 								startingBuildingStep = true;
+								// Brick Editor patch: a STEP ends every texture.
+								texmapStack.length = 0;
 
 								break;
+
+							case '!TEXMAP': {
+
+								// Brick Editor patch: texture mapping.
+								const command = parseTexmapCommand( lp.getRemainingString() );
+								if ( ! command ) break;
+								if ( command.command === 'START' || command.command === 'NEXT' ) {
+
+									const texmap = command.texmap;
+									texmapStack.push( {
+										tex: {
+											texture: texmap.texture,
+											method: texmap.method,
+											extent: texmap.a,
+											project: texmapProjector( texmap )
+										},
+										fallback: false,
+										next: command.command === 'NEXT'
+									} );
+
+								} else if ( command.command === 'FALLBACK' ) {
+
+									const top = texmapStack[ texmapStack.length - 1 ];
+									if ( top && ! top.next ) top.fallback = true;
+
+								} else if ( texmapStack.length ) {
+
+									texmapStack.pop();
+
+								}
+
+								break;
+
+							}
 
 							case 'Author:':
 
@@ -928,14 +1026,14 @@ class LDrawParsedCache {
 
 					}
 
-					subobjects.push( {
+					subobjects.push( addTexmap( {
 						material: material,
 						colorCode: colorCode,
 						matrix: matrix,
 						fileName: fileName,
 						inverted: bfcInverted,
 						startingBuildingStep: startingBuildingStep
-					} );
+					}, texState ) );
 
 					startingBuildingStep = false;
 					bfcInverted = false;
@@ -956,7 +1054,7 @@ class LDrawParsedCache {
 						vertices: [ v0, v1 ],
 					};
 
-					lineSegments.push( segment );
+					lineSegments.push( addTexmap( segment, { tv: texState.tv, fv: texState.fv } ) );
 
 					break;
 
@@ -977,7 +1075,7 @@ class LDrawParsedCache {
 						controlPoints: [ c0, c1 ],
 					};
 
-					conditionalSegments.push( segment );
+					conditionalSegments.push( addTexmap( segment, { tv: texState.tv, fv: texState.fv } ) );
 
 					break;
 
@@ -1003,24 +1101,24 @@ class LDrawParsedCache {
 
 					}
 
-					faces.push( {
+					faces.push( mapFace( addTexmap( {
 						material: material,
 						colorCode: colorCode,
 						faceNormal: null,
 						vertices: [ v0, v1, v2 ],
 						normals: [ null, null, null ],
-					} );
+					}, texState ) ) );
 					totalFaces ++;
 
 					if ( doubleSided === true ) {
 
-						faces.push( {
+						faces.push( mapFace( addTexmap( {
 							material: material,
 							colorCode: colorCode,
 							faceNormal: null,
 							vertices: [ v2, v1, v0 ],
 							normals: [ null, null, null ],
-						} );
+						}, texState ) ) );
 						totalFaces ++;
 
 					}
@@ -1053,24 +1151,24 @@ class LDrawParsedCache {
 
 					// specifically place the triangle diagonal in the v0 and v1 slots so we can
 					// account for the doubling of vertices later when smoothing normals.
-					faces.push( {
+					faces.push( mapFace( addTexmap( {
 						material: material,
 						colorCode: colorCode,
 						faceNormal: null,
 						vertices: [ v0, v1, v2, v3 ],
 						normals: [ null, null, null, null ],
-					} );
+					}, texState ) ) );
 					totalFaces += 2;
 
 					if ( doubleSided === true ) {
 
-						faces.push( {
+						faces.push( mapFace( addTexmap( {
 							material: material,
 							colorCode: colorCode,
 							faceNormal: null,
 							vertices: [ v3, v2, v1, v0 ],
 							normals: [ null, null, null, null ],
-						} );
+						}, texState ) ) );
 						totalFaces += 2;
 
 					}
@@ -1079,6 +1177,14 @@ class LDrawParsedCache {
 
 				default:
 					throw new Error( 'LDrawLoader: Unknown line type "' + lineType + '"' + lp.getLineNumberString() + '.' );
+
+			}
+
+			// Brick Editor patch: NEXT maps exactly one geometry line.
+			if ( texState ) {
+
+				const top = texmapStack[ texmapStack.length - 1 ];
+				if ( top && top.next ) texmapStack.pop();
 
 			}
 
@@ -1262,6 +1368,15 @@ class LDrawPartsGeometryCache {
 					loader.applyMaterialsToMesh( subobjectGroup, subobject.colorCode, info.materials );
 					subobjectGroup.userData.colorCode = subobject.colorCode;
 
+					// Brick Editor patch: a separately built model inside a !TEXMAP
+					// section keeps its visibility (its own geometry is not re-projected).
+					if ( subobject.tv === false && subobject.fv === false ) continue;
+					if ( subobject.tv === false || subobject.fv === false ) {
+
+						subobjectGroup.userData.texmap = { t: null, m: subobject.tv === false ? 'F' : 'T' };
+
+					}
+
 					group.add( subobjectGroup );
 					continue;
 
@@ -1298,6 +1413,7 @@ class LDrawPartsGeometryCache {
 					vertices[ 1 ].applyMatrix4( matrix );
 					ls.colorCode = ls.colorCode === MAIN_EDGE_COLOUR_CODE ? lineColorCode : ls.colorCode;
 					ls.material = ls.material || getMaterialFromCode( ls.colorCode, ls.colorCode, info.materials, true );
+					inheritTexmapVisibility( ls, subobject );
 
 					parentLineSegments.push( ls );
 
@@ -1314,6 +1430,7 @@ class LDrawPartsGeometryCache {
 					controlPoints[ 1 ].applyMatrix4( matrix );
 					os.colorCode = os.colorCode === MAIN_EDGE_COLOUR_CODE ? lineColorCode : os.colorCode;
 					os.material = os.material || getMaterialFromCode( os.colorCode, os.colorCode, info.materials, true );
+					inheritTexmapVisibility( os, subobject );
 
 					parentConditionalSegments.push( os );
 
@@ -1338,6 +1455,17 @@ class LDrawPartsGeometryCache {
 					if ( matrixScaleInverted !== inverted ) {
 
 						vertices.reverse();
+						if ( tri.uvs ) reverseUvs( tri.uvs );
+
+					}
+
+					// Brick Editor patch: a texture active at the reference maps the
+					// subfile's untextured faces, projected in this file's coordinates.
+					inheritTexmapVisibility( tri, subobject );
+					if ( ! tri.tex && subobject.tex && tri.tv !== false ) {
+
+						tri.tex = subobject.tex;
+						tri.uvs = projectPolygon( tri.tex.project, tri.tex.method, vertices, tri.tex.extent );
 
 					}
 
@@ -1381,21 +1509,29 @@ class LDrawPartsGeometryCache {
 
 		// Add the primitive objects and metadata.
 		const group = info.group;
-		if ( info.faces.length > 0 ) {
+		// Brick Editor patch: !TEXMAP geometry becomes separate objects, keyed by
+		// when it is drawn (userData.texmap.m: T textured only, F fallback only,
+		// B both) and the texture mapping it (userData.texmap.t, with a uv
+		// attribute). Untextured parts build exactly the objects they did before.
+		const faceParts = texmapPartitions( info.faces );
+		for ( const [ key, faces ] of faceParts ) {
 
-			group.add( createObject( this.loader, info.faces, 3, false, info.totalFaces ) );
+			if ( ! faces.length ) continue;
+			const total = faces === info.faces ? info.totalFaces : faces.reduce( ( n, f ) => n + ( f.vertices.length === 4 ? 2 : 1 ), 0 );
+			const texture = key.split( '|' )[ 1 ];
+			group.add( tagTexmap( createObject( this.loader, faces, 3, false, total, !! texture ), key ) );
 
 		}
 
-		if ( info.lineSegments.length > 0 ) {
+		for ( const [ key, segments ] of texmapPartitions( info.lineSegments ) ) {
 
-			group.add( createObject( this.loader, info.lineSegments, 2 ) );
+			if ( segments.length ) group.add( tagTexmap( createObject( this.loader, segments, 2 ), key ) );
 
 		}
 
-		if ( info.conditionalSegments.length > 0 ) {
+		for ( const [ key, segments ] of texmapPartitions( info.conditionalSegments ) ) {
 
-			group.add( createObject( this.loader, info.conditionalSegments, 2, true ) );
+			if ( segments.length ) group.add( tagTexmap( createObject( this.loader, segments, 2, true ), key ) );
 
 		}
 
@@ -1485,6 +1621,75 @@ class LDrawPartsGeometryCache {
 
 }
 
+// Brick Editor patch: !TEXMAP helpers.
+function inheritTexmapVisibility( element, subobject ) {
+
+	if ( subobject.tv === false ) element.tv = false;
+	if ( subobject.fv === false ) element.fv = false;
+
+}
+
+function reverseUvs( uvs ) {
+
+	for ( let i = 0, j = uvs.length - 2; i < j; i += 2, j -= 2 ) {
+
+		const u = uvs[ i ], v = uvs[ i + 1 ];
+		uvs[ i ] = uvs[ j ];
+		uvs[ i + 1 ] = uvs[ j + 1 ];
+		uvs[ j ] = u;
+		uvs[ j + 1 ] = v;
+
+	}
+
+}
+
+// Elements grouped by `mode|texture` ('' for plain geometry, listed first);
+// elements drawn in neither mode are dropped.
+function texmapPartitions( elements ) {
+
+	const parts = new Map( [ [ '', [] ] ] );
+	let plain = true;
+	for ( const element of elements ) {
+
+		const tv = element.tv !== false, fv = element.fv !== false;
+		if ( ! tv && ! fv ) {
+
+			plain = false;
+			continue;
+
+		}
+
+		const texture = tv && element.tex ? element.tex.texture : '';
+		const key = tv && fv && ! texture ? '' : ( tv && fv ? 'B' : tv ? 'T' : 'F' ) + '|' + texture;
+		if ( key !== '' ) plain = false;
+		let list = parts.get( key );
+		if ( ! list ) parts.set( key, list = [] );
+		list.push( element );
+
+	}
+
+	// Keep the original array (and its order) for untextured geometry.
+	if ( plain ) parts.set( '', elements );
+	return parts;
+
+}
+
+function tagTexmap( object, key ) {
+
+	if ( key !== '' ) {
+
+		const [ m, t ] = key.split( '|' );
+		object.userData.texmap = { t: t || null, m };
+
+	}
+
+	return object;
+
+}
+
+const TRIANGLE_CORNERS = [ 0, 1, 2 ];
+const QUAD_CORNERS = [ 0, 1, 2, 0, 2, 3 ];
+
 function sortByMaterial( a, b ) {
 
 	if ( a.colorCode === b.colorCode ) {
@@ -1503,7 +1708,7 @@ function sortByMaterial( a, b ) {
 
 }
 
-function createObject( loader, elements, elementSize, isConditionalSegments = false, totalElements = null ) {
+function createObject( loader, elements, elementSize, isConditionalSegments = false, totalElements = null, withUvs = false ) {
 
 	// Creates a LineSegments (elementSize = 2) or a Mesh (elementSize = 3 )
 	// With per face / segment material, implemented with mesh groups and materials array
@@ -1519,6 +1724,8 @@ function createObject( loader, elements, elementSize, isConditionalSegments = fa
 
 	const positions = new Float32Array( elementSize * totalElements * 3 );
 	const normals = elementSize === 3 ? new Float32Array( elementSize * totalElements * 3 ) : null;
+	// Brick Editor patch: texture coordinates of !TEXMAP faces.
+	const uvs = withUvs ? new Float32Array( elementSize * totalElements * 2 ) : null;
 	const materials = [];
 
 	const quadArray = new Array( 6 );
@@ -1551,6 +1758,19 @@ function createObject( loader, elements, elementSize, isConditionalSegments = fa
 			positions[ index + 0 ] = v.x;
 			positions[ index + 1 ] = v.y;
 			positions[ index + 2 ] = v.z;
+
+		}
+
+		if ( uvs !== null && elem.uvs ) {
+
+			const corners = elem.vertices.length === 4 ? QUAD_CORNERS : TRIANGLE_CORNERS;
+			const base = ( offset / 3 ) * 2;
+			for ( let j = 0; j < corners.length; j ++ ) {
+
+				uvs[ base + j * 2 ] = elem.uvs[ corners[ j ] * 2 ];
+				uvs[ base + j * 2 + 1 ] = elem.uvs[ corners[ j ] * 2 + 1 ];
+
+			}
 
 		}
 
@@ -1667,6 +1887,12 @@ function createObject( loader, elements, elementSize, isConditionalSegments = fa
 	if ( normals !== null ) {
 
 		bufferGeometry.setAttribute( 'normal', new BufferAttribute( normals, 3 ) );
+
+	}
+
+	if ( uvs !== null ) {
+
+		bufferGeometry.setAttribute( 'uv', new BufferAttribute( uvs, 2 ) );
 
 	}
 

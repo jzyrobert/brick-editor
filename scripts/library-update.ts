@@ -6,8 +6,9 @@
 // 1. Pins the archive (sha256, size) in scripts/full-library.json under a new
 //    release ID (default ldraw-full-<retrieved>); an unchanged archive is a no-op.
 // 2. Builds the new complete pack (scripts/build-full-library.ts) next to the
-//    current one and its derived connector/occupancy pack
-//    (scripts/build-full-connectors.ts), and writes both locks.
+//    current one, its derived connector/occupancy pack
+//    (scripts/build-full-connectors.ts) and its texture pack (the !TEXMAP
+//    images; scripts/build-full-textures.ts), and writes the three locks.
 // 3. Retires the previous release: its lock is appended to
 //    src/catalog/full-library-retired.json with `affected`, every file whose
 //    bytes or dependency closure differ between the two releases. Projects
@@ -39,6 +40,8 @@ import {
   buildFullConnectors,
   connectorPackIdFor,
 } from "./build-full-connectors";
+import { buildFullTextures } from "./build-full-textures";
+import { texturePackIdFor } from "../src/catalog/full-texture-pack";
 import {
   chunkPath,
   directReferences,
@@ -121,6 +124,8 @@ export type UpdatePaths = {
   lockPath: string;
   /** src/catalog/full-connectors-lock.json */
   connectorLockPath: string;
+  /** src/catalog/full-textures-lock.json */
+  textureLockPath: string;
   /** src/catalog/full-library-retired.json */
   retiredPath: string;
 };
@@ -129,6 +134,7 @@ export const DEFAULT_PATHS: UpdatePaths = {
   configPath: "scripts/full-library.json",
   lockPath: "src/catalog/full-library-lock.json",
   connectorLockPath: "src/catalog/full-connectors-lock.json",
+  textureLockPath: "src/catalog/full-textures-lock.json",
   retiredPath: "src/catalog/full-library-retired.json",
 };
 
@@ -196,6 +202,12 @@ export async function updateFullLibrary(options: {
     workers: options.workers,
     log,
   });
+  log("Packing textures");
+  const textures = buildFullTextures({
+    config,
+    zipPath: options.zipPath,
+    librariesDir: paths.librariesDir,
+  });
   log("Comparing with " + previous.releaseId);
   const oldDir = `${paths.librariesDir}${previous.releaseId}/`;
   const affected = affectedFiles(
@@ -214,6 +226,10 @@ export async function updateFullLibrary(options: {
     JSON.stringify(connectors.lock, null, 2) + "\n",
   );
   writeFileSync(
+    paths.textureLockPath,
+    JSON.stringify(textures.lock, null, 2) + "\n",
+  );
+  writeFileSync(
     paths.retiredPath,
     JSON.stringify(
       [
@@ -229,6 +245,7 @@ export async function updateFullLibrary(options: {
     for (const dir of [
       previous.releaseId,
       connectorPackIdFor(previous.releaseId),
+      texturePackIdFor(previous.releaseId),
     ])
       if (existsSync(paths.librariesDir + dir)) {
         rmSync(paths.librariesDir + dir, { recursive: true });
@@ -239,6 +256,7 @@ export async function updateFullLibrary(options: {
     releaseId,
     lock: built.lock,
     connectorLock: connectors.lock,
+    textureLock: textures.lock,
     retired: retiredLock,
     summary: built.summary,
     coverage: connectors.manifest.coverage,

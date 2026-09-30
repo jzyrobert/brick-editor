@@ -63,10 +63,17 @@ export function locateFiles(index: FullPackIndex) {
   return where;
 }
 
-/** Direct references of an LDraw file (lower-cased, `\` → `/`). */
-export function directReferences(text: string): string[] {
+/** Direct references of an LDraw file (lower-cased, `\` → `/`). With
+ * `texmapped` (the default) they include texture-mapped references (`0 !: 1 …`,
+ * drawn when the part is textured); the pinned index closures (format 1)
+ * were built without them, so loaders reach those files in a further round. */
+export function directReferences(text: string, texmapped = true): string[] {
   const refs = new Set<string>();
-  for (const m of text.matchAll(/^\s*1\s+\S+(?:\s+\S+){12}\s+(.+?)\s*$/gm))
+  for (const m of text.matchAll(
+    texmapped
+      ? /^\s*(?:0\s+!:\s*)?1\s+\S+(?:\s+\S+){12}\s+(.+?)\s*$/gm
+      : /^\s*1\s+\S+(?:\s+\S+){12}\s+(.+?)\s*$/gm,
+  ))
     refs.add(m[1].replaceAll("\\", "/").toLowerCase());
   return [...refs];
 }

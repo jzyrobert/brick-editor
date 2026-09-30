@@ -332,7 +332,12 @@ export function createAPI(
     health: {
       check: async () => {
         editor.requireMaterialization();
-        return modelHealth(editor.project);
+        // The renderer's own findings (textured parts drawn without their
+        // textures) join the source's.
+        return modelHealth(
+          editor.project,
+          render()?.textureDiagnostics() ?? [],
+        );
       },
     },
     /** Verified stud/anti-stud connectors (docs/CONNECTORS.md). */

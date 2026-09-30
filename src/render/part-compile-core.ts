@@ -12,7 +12,7 @@ import { indexPrototypeGeometry } from "./geometry-index";
  * repair, triangle indexing (geometry-index.ts) and the record layout. Bump it whenever any of those change so
  * persistent caches never serve geometry from an older compiler.
  */
-export const PART_COMPILER_VERSION = `bpc3:three-r${THREE.REVISION}`;
+export const PART_COMPILER_VERSION = `bpc4:three-r${THREE.REVISION}`;
 
 /**
  * Parses one self-contained LDraw compile source (every referenced file is

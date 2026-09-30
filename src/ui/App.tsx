@@ -4357,9 +4357,9 @@ function Workspace() {
                 <p>
                   Six pinned LDraw parts, local files, clipboard and arrays,
                   layers, inventory, image and instruction publishing, Play
-                  exploration and kinematic mechanisms. Texture projection,
-                  connector snapping, dynamic suspension and advanced assembly
-                  planning remain unavailable.
+                  exploration and kinematic mechanisms. Official textured parts
+                  show their printed images. Connector snapping, dynamic
+                  suspension and advanced assembly planning remain unavailable.
                 </p>
                 <a
                   href={import.meta.env.BASE_URL + "notices/LDRAW.txt"}

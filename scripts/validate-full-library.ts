@@ -143,7 +143,9 @@ export function validateFullLibrary(curated: {
   const unresolved: { from: string; ref: string }[] = [];
   const direct = new Map<string, string[]>();
   for (const [name, text] of texts) {
-    const refs = directReferences(text).map((r) => canonical(r));
+    // Pinned closures follow ordinary references; texture-mapped ones are
+    // checked with the texture pack (validate-full-textures.ts).
+    const refs = directReferences(text, false).map((r) => canonical(r));
     for (const ref of refs)
       if (!texts.has(ref))
         unresolved.push({

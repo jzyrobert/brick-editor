@@ -39,6 +39,11 @@ export type RenderBudget = {
    * textures cost about 200 bytes per triangle); larger views fall back to the
    * accumulated raster photo. */
   photoTriangles: number;
+  /** Decoded `!TEXMAP` texture memory (RGBA with mipmaps). Textures beyond it
+   * are not decoded: those parts draw their fallback geometry and report it. */
+  textureBytes: number;
+  /** Longest side a texture is decoded at; larger images are downscaled. */
+  textureSize: number;
 };
 
 export const RENDER_BUDGETS: Readonly<
@@ -54,6 +59,8 @@ export const RENDER_BUDGETS: Readonly<
     reducedQualityTriangles: 60_000_000,
     motionReductionTriangles: 4_000_000,
     photoTriangles: 2_000_000,
+    textureBytes: 256 * 1024 * 1024,
+    textureSize: 2048,
   }),
   mobile: Object.freeze({
     partOccurrences: RESOURCE_PROFILES.mobile.occurrences,
@@ -65,6 +72,8 @@ export const RENDER_BUDGETS: Readonly<
     reducedQualityTriangles: 4_000_000,
     motionReductionTriangles: 500_000,
     photoTriangles: 600_000,
+    textureBytes: 64 * 1024 * 1024,
+    textureSize: 1024,
   }),
 });
 

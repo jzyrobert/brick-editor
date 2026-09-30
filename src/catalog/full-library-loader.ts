@@ -72,7 +72,7 @@ async function openCache() {
 
 /** Verified bytes of one pack file: cache first (re-verified; a corrupt entry
  * is dropped), then network. A network response that fails its pin is rejected. */
-async function verified(
+export async function verified(
   path: string,
   expected: string,
   bytes?: number,
