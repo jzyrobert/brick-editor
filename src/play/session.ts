@@ -22,6 +22,7 @@ import {
 } from "./collision-mesh";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import { isOccurrenceId } from "../core/occurrence-id";
+import { RESOURCE_PROFILES } from "../core/resource-profile";
 import { validatePlayWorldProfile } from "./world-profile";
 import { resolvePlayCameraSettings, playCameraSafety } from "./camera-settings";
 import {
@@ -636,7 +637,8 @@ export class PlaySession {
     if (snapshot.worldProfile)
       ensure(
         Array.isArray(snapshot.worldProfile.includedOccurrenceIds) &&
-          snapshot.worldProfile.includedOccurrenceIds.length <= 100000 &&
+          snapshot.worldProfile.includedOccurrenceIds.length <=
+            RESOURCE_PROFILES.desktop.occurrences &&
           snapshot.worldProfile.includedOccurrenceIds.every(isOccurrenceId) &&
           new Set(snapshot.worldProfile.includedOccurrenceIds).size ===
             snapshot.worldProfile.includedOccurrenceIds.length,

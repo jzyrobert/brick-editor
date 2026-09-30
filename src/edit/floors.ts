@@ -96,7 +96,10 @@ export function floorLevels(project: Project) {
     return { all, groups, levels: [] as number[], bottom: () => 0 };
   const bottoms = occurrenceBottoms(project, all);
   const groupBottom = new Map(
-    groups.map((g) => [g, Math.max(...g.map((o) => bottoms.get(o.id)!))]),
+    groups.map((g) => [
+      g,
+      g.reduce((y, o) => Math.max(y, bottoms.get(o.id)!), -Infinity),
+    ]),
   );
   const bottom = (g: Occurrence[]) => groupBottom.get(g)!;
   const significant = Math.max(1, Math.ceil(all.length * 0.02));
@@ -141,7 +144,12 @@ export function detectFloors(project: Project): FloorGuide[] {
   const found = levels.length
     ? levels
     : all.length
-      ? [Math.max(...occurrenceBottoms(project, all).values())]
+      ? [
+          [...occurrenceBottoms(project, all).values()].reduce(
+            (a, b) => Math.max(a, b),
+            -Infinity,
+          ),
+        ]
       : [];
   return found.map((y, i) => ({
     id: `floor-${i}`,

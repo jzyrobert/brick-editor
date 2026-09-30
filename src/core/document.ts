@@ -18,6 +18,7 @@ import {
   projectLibraryLock,
 } from "../catalog/catalog";
 import {
+  EXPANSION_HARD_LIMITS,
   expansionLimits,
   preflightExpansion,
   assertExpansionResource,
@@ -339,12 +340,15 @@ export function validateSourceDocument(p: Project): void {
   };
   for (const id of Object.keys(p.models)) check(id);
   const estimate = estimateExpansion(p, {
-    ceilings: { leafCount: 100000, visitedNodes: 200000 },
+    ceilings: {
+      leafCount: EXPANSION_HARD_LIMITS.leafCount,
+      visitedNodes: EXPANSION_HARD_LIMITS.visitedNodes,
+    },
   });
   ensure(
     !estimate.saturated.leafCount,
     "LIMIT_EXCEEDED",
-    "Expanded occurrences exceed 100,000",
+    `Expanded occurrences exceed ${EXPANSION_HARD_LIMITS.leafCount.toLocaleString("en-US")}`,
   );
   ensure(
     !estimate.saturated.visitedNodes,

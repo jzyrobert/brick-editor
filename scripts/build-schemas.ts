@@ -3,6 +3,7 @@ import { BACKDROP_NAMES, PLAY_HINT_MAX_LENGTH } from "../src/core/scene";
 import standaloneCode from "ajv/dist/standalone/index.js";
 import { writeFileSync } from "node:fs";
 import { buildScriptJsonSchema } from "../src/build-script/spec";
+import { RESOURCE_PROFILES } from "../src/core/resource-profile";
 import {
   FIXTURE_TEMPLATES,
   SAMPLE_TEMPLATES,
@@ -30,7 +31,10 @@ const obj = (
   required = Object.keys(properties),
   extra = false,
 ) => ({ type: "object", properties, required, additionalProperties: extra });
-const arr = (items: any, maxItems = 100000) => ({
+/** Default list cap: the largest project's placed occurrences (desktop), so
+ * node, occurrence and per-occurrence lists hold any admitted project. */
+const MAX_LIST = RESOURCE_PROFILES.desktop.occurrences;
+const arr = (items: any, maxItems = MAX_LIST) => ({
   type: "array",
   items,
   maxItems,
@@ -1169,7 +1173,7 @@ playSnapshot.properties.autoDoors = obj({
     }),
     1000,
   ),
-  skipped: arr(obj({ occurrenceId, part: id, reason: str }), 100000),
+  skipped: arr(obj({ occurrenceId, part: id, reason: str })),
 });
 const trackEnd = obj({ occurrenceId, end: integer });
 playSnapshot.properties.trains = obj(

@@ -398,9 +398,9 @@
     "cli": "--resource-profile desktop|mobile",
     "mobile": {
       "importBytes": 10485760,
-      "decompressedBytes": 41943040,
+      "decompressedBytes": 67108864,
       "embeddedFiles": 5000,
-      "occurrences": 25000,
+      "occurrences": 150000,
       "additionsPerCommand": 2000,
       "imagePixels": 4000000
     }
@@ -409,12 +409,12 @@
     "importBytes": 26214400,
     "decompressedBytes": 104857600,
     "referenceDepth": 64,
-    "occurrences": 100000,
+    "occurrences": 200000,
     "additions": 10000,
     "imagePixels": 16000000,
-    "renderOccurrences": 5000,
-    "renderRawPrimitiveOccurrences": 100000,
-    "renderPrototypeVariants": 128,
+    "renderOccurrences": 200000,
+    "renderRawPrimitiveOccurrences": 200000,
+    "renderPrototypeVariants": 2048,
     "customCompilationSourceBytes": 52428800,
     "rawBatchVertices": 2000000,
     "rawBatchAttributeBytes": 134217728,

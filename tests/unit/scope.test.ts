@@ -114,11 +114,11 @@ describe("bounded occurrence scope matching", () => {
       ids(resolveScope(project, { kind: "selection", occurrenceIds: chosen })),
     ).toEqual(['["__proto__"]', JSON.stringify([unicode])]);
   });
-  it("resolves the supported 100,000 ordinary selections with work bounded by total occurrence paths", () => {
+  it("resolves the supported 200,000 ordinary selections with work bounded by total occurrence paths", () => {
     const project = document.createProject();
     project.models.root.nodes = [part("sample")];
     const sample = document.occurrences(project)[0],
-      count = 100000;
+      count = 200000;
     let pathReads = 0;
     const all: Occurrence[] = Array.from({ length: count }, (_, index) => ({
       ...sample,
@@ -139,7 +139,7 @@ describe("bounded occurrence scope matching", () => {
       });
     expect(found).toHaveLength(count);
     expect(found[0].id).toBe('["n0"]');
-    expect(found[count - 1].id).toBe('["n99999"]');
+    expect(found[count - 1].id).toBe('["n199999"]');
     expect(pathReads).toBeLessThanOrEqual(count * 2);
   });
   it("uses exact editable membership and preserves atomic hidden, locked and unknown-ID refusals", () => {

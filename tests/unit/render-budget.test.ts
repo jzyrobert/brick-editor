@@ -81,15 +81,15 @@ describe("renderer budgets follow the resource profile", () => {
     }
   });
   it("refuses a desktop-sized model on the phone profile and points to desktop limits", () => {
-    const usage = { partOccurrences: 30000, variants: 300 };
+    const usage = { partOccurrences: 160000, variants: 300 };
     expect(() => checkRenderBudget("desktop", usage)).not.toThrow();
     const e = refusal(() => checkRenderBudget("mobile", usage));
     expect(e.message).toMatch(
-      /30,000 part occurrences; the phone renderer budget is 25,000/,
+      /160,000 part occurrences; the phone renderer budget is 150,000/,
     );
     expect(e.message).toContain("Device limits");
     const triangles = refusal(() =>
-      checkRenderBudget("mobile", { sceneTriangles: 20_000_000 }),
+      checkRenderBudget("mobile", { sceneTriangles: 30_000_000 }),
     );
     expect(triangles.message).toContain("scene triangles");
   });

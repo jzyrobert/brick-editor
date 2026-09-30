@@ -67,10 +67,17 @@ const localBounds = installedBounds.bounds as unknown as Record<
   string,
   Bounds | null
 >;
-const union = (boxes: Bounds[]): Bounds => ({
-  min: [0, 1, 2].map((i) => Math.min(...boxes.map((b) => b.min[i]))) as Vec3,
-  max: [0, 1, 2].map((i) => Math.max(...boxes.map((b) => b.max[i]))) as Vec3,
-});
+const union = (boxes: Bounds[]): Bounds => {
+  // A loop, not Math.min(...list): large selections overflow a spread.
+  const min: Vec3 = [Infinity, Infinity, Infinity],
+    max: Vec3 = [-Infinity, -Infinity, -Infinity];
+  for (const b of boxes)
+    for (let i = 0; i < 3; i++) {
+      if (b.min[i] < min[i]) min[i] = b.min[i];
+      if (b.max[i] > max[i]) max[i] = b.max[i];
+    }
+  return { min, max };
+};
 /**
  * A part's body in its own space: the derived occupancy boxes of a catalogue
  * part (studs excluded), else its source box without the top stud row.

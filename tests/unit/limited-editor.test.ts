@@ -119,7 +119,7 @@ it("copies trusted policy and refuses overrides not implemented by every consume
   expect(
     () =>
       new Editor(undefined, {
-        limits: { retainedIdCharacters: 128 * 1024 * 1024 },
+        limits: { retainedIdCharacters: 256 * 1024 * 1024 },
         acknowledgeDerivedImpact: true,
       }),
   ).toThrow(/not supported/);

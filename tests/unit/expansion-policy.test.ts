@@ -113,12 +113,12 @@ it("charges traversal before constructing over-budget paths even if source chang
     phase: "traversal",
   });
 });
-it("keeps desktop 100k flat support and mobile count limits independent of imported metadata", () => {
+it("keeps desktop 200k flat support and mobile count limits independent of imported metadata", () => {
   const p = createProject();
-  p.models.root.nodes = Array.from({ length: 100000 }, (_, i) =>
+  p.models.root.nodes = Array.from({ length: 200000 }, (_, i) =>
     part(`00000000-0000-0000-0000-${String(i).padStart(12, "0")}`),
   );
-  expect(occurrences(p)).toHaveLength(100000);
+  expect(occurrences(p)).toHaveLength(200000);
   p.metadata.expansionOptions = {
     profile: "desktop",
     acknowledgeDerivedImpact: true,
@@ -128,10 +128,10 @@ it("keeps desktop 100k flat support and mobile count limits independent of impor
   ).toBe("leafCount");
   expect(
     occurrences(p, {
-      limits: { retainedIdCharacters: 128 * 1024 * 1024 },
+      limits: { retainedIdCharacters: 256 * 1024 * 1024 },
       acknowledgeDerivedImpact: true,
     }),
-  ).toHaveLength(100000);
+  ).toHaveLength(200000);
 });
 it("requires bounded acknowledged desktop overrides, never raising structural caps", () => {
   const raised = EXPANSION_PROFILES.desktop.retainedIdCharacters + 1;
@@ -147,13 +147,13 @@ it("requires bounded acknowledged desktop overrides, never raising structural ca
   expect(() =>
     expansionLimits({
       profile: "mobile",
-      limits: { leafCount: 25001 },
+      limits: { leafCount: 150001 },
       acknowledgeDerivedImpact: true,
     }),
   ).toThrow(/acknowledged/);
   for (const limits of [
-    { leafCount: 100001 },
-    { visitedNodes: 200001 },
+    { leafCount: 200001 },
+    { visitedNodes: 400001 },
     { maxDepth: 65 },
     { referenceDepth: 65 },
     { retainedIdCharacters: 512 * 1024 * 1024 + 1 },

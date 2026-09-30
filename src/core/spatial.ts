@@ -10,10 +10,16 @@ import {
 export type Bounds = { min: Vec3; max: Vec3 };
 export function pointsBounds(points: Vec3[]): Bounds | null {
   if (!points.length) return null;
-  return {
-    min: [0, 1, 2].map((i) => Math.min(...points.map((p) => p[i]))) as Vec3,
-    max: [0, 1, 2].map((i) => Math.max(...points.map((p) => p[i]))) as Vec3,
-  };
+  // Loops, not Math.min(...list): spreading more than ~120,000 arguments
+  // overflows the stack, and a whole-model point list can be longer.
+  const min: Vec3 = [Infinity, Infinity, Infinity],
+    max: Vec3 = [-Infinity, -Infinity, -Infinity];
+  for (const p of points)
+    for (let i = 0; i < 3; i++) {
+      if (p[i] < min[i]) min[i] = p[i];
+      if (p[i] > max[i]) max[i] = p[i];
+    }
+  return { min, max };
 }
 export function unionBounds(a: Bounds | null, b: Bounds | null): Bounds | null {
   if (!a) return b;

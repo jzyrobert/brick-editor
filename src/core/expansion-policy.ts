@@ -1,5 +1,6 @@
 import { ensure, type Project } from "./types";
 import { estimateExpansion, type ExpansionMetrics } from "./expansion";
+import { RESOURCE_PROFILES } from "./resource-profile";
 
 export type ExpansionOptions = {
   profile?: "desktop" | "mobile";
@@ -12,22 +13,22 @@ const Mi = 1024 * 1024;
 /** Character budgets count encoded UTF-16 code units, not bytes or actual heap. */
 export const EXPANSION_PROFILES = Object.freeze({
   desktop: Object.freeze({
-    leafCount: 100000,
-    visitedNodes: 200000,
+    leafCount: RESOURCE_PROFILES.desktop.occurrences,
+    visitedNodes: 400000,
+    maxDepth: 64,
+    referenceDepth: 64,
+    retainedIdCharacters: 128 * Mi,
+    generatedIdCharacters: 256 * Mi,
+    pathSlots: 12800000,
+  }),
+  mobile: Object.freeze({
+    leafCount: RESOURCE_PROFILES.mobile.occurrences,
+    visitedNodes: 300000,
     maxDepth: 64,
     referenceDepth: 64,
     retainedIdCharacters: 64 * Mi,
     generatedIdCharacters: 128 * Mi,
     pathSlots: 6400000,
-  }),
-  mobile: Object.freeze({
-    leafCount: 25000,
-    visitedNodes: 200000,
-    maxDepth: 64,
-    referenceDepth: 64,
-    retainedIdCharacters: 16 * Mi,
-    generatedIdCharacters: 32 * Mi,
-    pathSlots: 1600000,
   }),
 });
 /** Desktop overrides may expand character budgets, never established graph caps. */

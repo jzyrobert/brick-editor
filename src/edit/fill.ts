@@ -7,6 +7,7 @@ import {
 } from "../core/types";
 import { catalog, type CatalogPart } from "../catalog/catalog";
 import { occurrences } from "../core/document";
+import { RESOURCE_PROFILES } from "../core/resource-profile";
 import { identity, mv, add, physical, compose, rotationY } from "../core/math";
 type CommonFill = {
   colorCode: string;
@@ -199,7 +200,7 @@ export function fillPreview(p: Project, r: FillRequest) {
     covered = new Uint8Array(r.columns * r.rows);
   const maxParts = Math.min(
     r.maxAdditions,
-    Math.max(0, 100000 - existing.length),
+    Math.max(0, RESOURCE_PROFILES.desktop.occurrences - existing.length),
   );
   let work = 0,
     budgetGaps = 0;

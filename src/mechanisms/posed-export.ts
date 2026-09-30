@@ -1,5 +1,6 @@
 import { ensure, type Project, type Transform } from "../core/types";
 import { occurrences } from "../core/document";
+import { RESOURCE_PROFILES } from "../core/resource-profile";
 import { compose, inverse, physical } from "../core/math";
 import { parentTransform, uniqueNode } from "../core/commands";
 import { exportLDraw } from "../ldraw/io";
@@ -26,7 +27,11 @@ export function posedLDraw(
   const copy = structuredClone(project);
   const all = new Map(occurrences(copy).map((o) => [o.id, o]));
   const ids = Object.keys(transforms).sort();
-  ensure(ids.length <= 100000, "LIMIT_EXCEEDED", "Too many posed occurrences");
+  ensure(
+    ids.length <= RESOURCE_PROFILES.desktop.occurrences,
+    "LIMIT_EXCEEDED",
+    "Too many posed occurrences",
+  );
   for (const id of ids) {
     const o = all.get(id);
     ensure(o, "INVALID_INPUT", "Posed transform names an unknown occurrence");

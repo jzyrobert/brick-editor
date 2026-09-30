@@ -91,7 +91,7 @@ Method: `npm run test:stress -- --model city …` (the new plain-brick city, `te
 | Parts left out entirely (enclosed)         |                                     – |                8,316 |                                                      8,148 |
 | Occlusion (per classification)             |                                     – |               382 ms |                                                     987 ms |
 
-These two runs need occurrence limits above today's (desktop 100,000, phone 25,000); they were measured on a local build with desktop 200,000, phone 150,000 and (phone column) a 24 M phone scene budget.
+These two runs were measured on a local build with the limits that have since been adopted (desktop 200,000, phone 150,000, a 24 M phone scene budget); see [At the raised limits](#at-the-raised-limits).
 
 | Village, 20,000 parts (desktop) |                    Base |                    Culled |
 | ------------------------------- | ----------------------: | ------------------------: |
@@ -112,7 +112,29 @@ The village is mostly windows, doors, arches, slopes, round parts and glass: stu
 ### Budget changes
 
 - **Made:** the scene-triangle budget counts what the plain view draws after culling (with every downward opening assumed in sight), not the sum of full parts. `render.budget().usage.sceneTrianglesFull` keeps the old figure. The 150,480-part city now passes the desktop budget (17.4 M) instead of being refused (63.6 M).
-- **Proposed, not made:** raise occurrence limits to desktop 200,000 / phone 150,000 and the phone scene budget to 24 M, so a 150,000-part plain build opens on a phone. Evidence above: heap ≈ 1.1 KB per part (160 MB at 147,000), phone frames of 6.3–6.8 M triangles in ~800 draws, occlusion ≈ 1 s per classification. Not made here because (a) the occurrence limit is a domain policy in five places (`resource-profile.ts`, `expansion-policy.ts`, `document.ts` ceilings, `scope.ts`, the render budget) with spec §21.2 behind it, (b) views that are not plain (instruction steps, floor focus, layer ghosting, explode) draw neighbour-covered studs again (only cavities facing away are left out: roughly half of the full 63.6 M triangles for this city), which a phone should not be asked to draw until neighbour culling also works against the visible set, and (c) there is no physical-phone measurement yet.
+- **Made (30 September 2026):** occurrence limits desktop 200,000 / phone 150,000 (were 100,000 / 25,000) and the phone scene budget 24 M (was 16 M); the desktop scene budget stays 60 M, which a 199,120-part city (23.1 M) is well inside. The occurrence limit is now read from `resource-profile.ts` by `expansion-policy.ts`, the `document.ts` source ceilings, `scope.ts`, posed export, fill, the Play world profile and the generated schemas' list caps instead of being repeated. Derived expansion budgets scale with it (below). The earlier reservations still stand: non-plain views draw far more than the budget counts (measured below), and no physical phone has been measured.
+
+### At the raised limits
+
+Same method as section 4 (production bundle, SwiftShader, 4-core ARM VM, load average 3–10), `npm run test:stress -- --model city --no-play` with `--flat` for a one-model version of the same parts (every placement a line of the root model, so the project JSON, autosave and recovery carry every part).
+
+| City at the ceiling               | Phone, 148,960 (98 blocks) |   Phone, flat 148,960 | Desktop, 199,120 (131 blocks) | Desktop, flat 199,120 |
+| --------------------------------- | -------------------------: | --------------------: | ----------------------------: | --------------------: |
+| Scene triangles (budget count)    |         17,265,248 of 24 M |    17,265,248 of 24 M |            23,079,056 of 60 M |    23,079,056 of 60 M |
+| Triangles / lines drawn, orbit    |            6.56 M / 4.70 M |       6.56 M / 4.70 M |               12.5 M / 11.3 M |       12.5 M / 11.3 M |
+| Draw calls, orbit                 |                        801 |                   801 |                           115 |                   115 |
+| Frame CPU, orbit median (max)     |          10.3–11.8 (52) ms |          12.2 (46) ms |                   5.5 (15) ms |           4.4 (13) ms |
+| Import / ready / first frame      |          0.3 / 8.7 / 9.4 s |   3.5 / 10.6 / 14.3 s |           0.4 / 14.4 / 15.3 s |  10.2 / 21.9 / 32.7 s |
+| Longest long task to first frame  |                      1.9 s |                 2.7 s |                         3.9 s |                 4.6 s |
+| JS heap after load                |                     162 MB |                226 MB |                        207 MB |                290 MB |
+| Renderer + GPU process RSS        |                     644 MB |                969 MB |                        753 MB |                858 MB |
+| Autosave, then recovery on reload |      saved; 10.2 s, 161 MB | saved; 10.9 s, 215 MB |         saved; 13.2 s, 205 MB | saved; 18.3 s, 275 MB |
+| Occlusion (per classification)    |                     374 ms |                     – |                        905 ms |                     – |
+
+- **Memory.** About 1.1 KB of JS heap per part for a city of submodels and 1.5 KB for a flat model, so the phone ceiling costs ≈ 160–230 MB of heap. Save and load hold in Node at the same sizes: the flat 148,960-part project is 35.0 MiB of project JSON plus a 6.5 MiB full LDraw copy (native zip 3.2 MiB, encode 5.7 s, decode 5.0 s); the flat 199,120-part one 47.4 + 8.8 MiB (zip 4.3 MiB). A phone could not reopen the first under the old 40 MiB decompressed-archive limit, so the phone's limit is now 64 MiB (desktop keeps 100 MiB, the native encoder's own cap). The flat LDraw files fit the import limits (6.5 of 10 MiB, 8.8 of 25 MiB). Checkpoints (64 Mi characters) hold the 47.4 MiB JSON.
+- **Expansion budgets.** Leaves follow the occurrence limit; visited nodes 400,000 / 300,000 (a leaf plus its submodel levels), retained path-ID characters 128 / 64 Mi, generated 256 / 128 Mi and path slots 12.8 / 6.4 million. The 199,120-part city uses 3.0 M characters and 398,240 slots; these caps only bound hostile graphs.
+- **Fixed at the ceiling:** "Detect floors" threw `RangeError: Maximum call stack size exceeded` on the 148,960-part city (`Math.max(...bottoms)`: V8 refuses to spread more than about 120,000 arguments). That spread and the others that can reach a whole model (`pointsBounds`, snap's box union, instruction-step merge/assign/remove, submodel record moves, progressive-load arrival lists) are now loops or `concat`; `tests/unit/large-models.test.ts` covers bounds of 200,000 points and floors of a 130,000-part model.
+- **Non-plain views exceed the phone budget.** The 90 % / 95 % instruction steps of the 148,960-part city on the phone profile draw 55.7 M and 59.3 M triangles (37–40 M line segments) in one frame, 450 and 265 ms of CPU on SwiftShader, against 9.4 M for the plain view from the same camera; the step view does not cull against neighbours (only cavities facing away) and is not checked against the scene budget. It rendered and returned on the VM, but a real phone GPU may time out on it. Neighbour culling against the visible set (TODO) is what closes this; until then, building steps, floor focus and ghosting of a phone-limit model are best-effort.
 
 ## 5. Techniques considered and not built
 

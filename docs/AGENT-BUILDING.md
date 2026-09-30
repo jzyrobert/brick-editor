@@ -152,7 +152,7 @@ Common fixes: `overlap` — two ops fill the same space (parts overlapping parts
 
 ## Limits
 
-Builds are bounded by the resource profile (docs/RESOURCE-LIMITS.md): desktop 100,000 parts, mobile 25,000 (`--resource-profile mobile`; `limits.maxParts` lowers it further). Massing is limited to 4 million cells and 200,000 ops after repeats. Coordinates stay within ±4096 studs. Everything is deterministic: the same script always compiles to the same file.
+Builds are bounded by the resource profile (docs/RESOURCE-LIMITS.md): desktop 200,000 parts, mobile 150,000 (`--resource-profile mobile`; `limits.maxParts` lowers it further). Massing is limited to 4 million cells and 200,000 ops after repeats. Coordinates stay within ±4096 studs. Everything is deterministic: the same script always compiles to the same file.
 
 ## Worked examples
 

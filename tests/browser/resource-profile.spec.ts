@@ -9,6 +9,17 @@ const flat = (n: number) =>
       z = Math.floor(i / 200) * 4;
     return `3 4 ${x} 0 ${z} ${x + 4} 0 ${z} ${x} 0 ${z + 4}`;
   }).join("\n");
+/** `rows` × 1,000 triangles through a row submodel, plus `extra` at the root:
+ * past the phone limit without a multi-megabyte import. */
+const rows = (rows: number, extra: number) =>
+  flat(extra) +
+  "\n" +
+  Array.from(
+    { length: rows },
+    (_, i) => `1 16 0 0 ${(i + 1) * 1000} 1 0 0 0 1 0 0 0 1 row.ldr`,
+  ).join("\n") +
+  "\n0 FILE row.ldr\n" +
+  flat(1000).slice("0 FILE root.ldr\n".length);
 
 test.describe("phone", () => {
   test.use({
@@ -63,7 +74,7 @@ test.describe("phone", () => {
     );
     expect(denied).toMatch(/acknowledge/);
 
-    // 25,001 parts exceed the phone budget: source-only view with the limits control.
+    // 150,001 parts exceed the phone budget: source-only view with the limits control.
     await page.evaluate(
       (text) =>
         window.brickEditor!.project.import({
@@ -71,23 +82,23 @@ test.describe("phone", () => {
           text,
           name: "wide.ldr",
         }),
-      flat(25001),
+      rows(150, 1),
     );
     await expect(
       page.getByRole("heading", { name: "Too big for phone limits" }),
     ).toBeVisible();
     await expect(page.locator("main")).toContainText(
-      "25,001 parts and shapes; phone limits allow 25,000",
+      "150,001 parts and shapes; phone limits allow 150,000",
     );
     const panel = page.getByRole("region", { name: "Device limits" });
-    await expect(panel).toContainText("This project has 25,001 parts");
+    await expect(panel).toContainText("This project has 150,001 parts");
     // The primary action opens the confirmation directly.
     await page
       .getByRole("button", { name: "Open with desktop limits…" })
       .click();
     await expect(panel.getByLabel("Desktop limits")).toBeChecked();
     const warning = panel.getByRole("alert");
-    await expect(warning).toContainText("including this one (25,001)");
+    await expect(warning).toContainText("including this one (150,001)");
     await expect(
       warning.getByRole("button", { name: "Download backup" }),
     ).toBeVisible();
@@ -98,13 +109,16 @@ test.describe("phone", () => {
     await expect(
       page.getByRole("heading", { name: "Too big for phone limits" }),
     ).toBeHidden();
-    await expect(page.locator(".canvas-bottom")).toContainText("25,001 parts", {
-      timeout: 60000,
-    });
+    await expect(page.locator(".canvas-bottom")).toContainText(
+      "150,001 parts",
+      {
+        timeout: 60000,
+      },
+    );
     // The model is shown (not the catalogue sheet) and the change is announced.
     await expect(
       page.getByText(
-        "Desktop limits on. Project opened: 25,001 parts and shapes.",
+        "Desktop limits on. Project opened: 150,001 parts and shapes.",
       ),
     ).toBeVisible();
     await expect(

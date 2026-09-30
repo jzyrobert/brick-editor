@@ -1,5 +1,6 @@
 import { occurrences } from "./document";
 import { parseOccurrenceId } from "./occurrence-id";
+import { RESOURCE_PROFILES } from "./resource-profile";
 import { ensure, type Occurrence, type Project, type Scope } from "./types";
 
 type Prefix = {
@@ -27,9 +28,9 @@ export function resolveScope(project: Project, scope: Scope): Occurrence[] {
   const selected =
     scope.kind === "selection" ? scope.occurrenceIds : [scope.occurrenceId];
   ensure(
-    selected.length <= 100000,
+    selected.length <= RESOURCE_PROFILES.desktop.occurrences,
     "LIMIT_EXCEEDED",
-    "Scope exceeds 100,000 selected occurrences",
+    `Scope exceeds ${RESOURCE_PROFILES.desktop.occurrences.toLocaleString("en-US")} selected occurrences`,
   );
   const root: Prefix = {};
   let unmatched = 0;

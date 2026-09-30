@@ -67,7 +67,7 @@ export const RENDER_BUDGETS: Readonly<
     rawOccurrences: RESOURCE_PROFILES.mobile.occurrences,
     variants: 768,
     prototypeTriangles: 600_000,
-    sceneTriangles: 16_000_000,
+    sceneTriangles: 24_000_000,
     retainedUnusedPrototypes: 64,
     reducedQualityTriangles: 4_000_000,
     motionReductionTriangles: 500_000,

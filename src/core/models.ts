@@ -209,7 +209,8 @@ export function makeSubmodel(
     if (state.certified === true && !state.clip)
       child.records.push(childRecord("0 BFC NOCLIP"));
     if (state.invert) child.records.push(childRecord("0 BFC INVERTNEXT"));
-    child.records.push(...structuredClone(records.slice(first, last + 1)));
+    for (const record of structuredClone(records.slice(first, last + 1)))
+      child.records.push(record);
     const sourceId = uid();
     const replacement: Model["records"] = [
       ...(state.certified === true ? [childRecord("0 BFC CLIP CCW")] : []),

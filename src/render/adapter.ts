@@ -1664,7 +1664,7 @@ export class SceneAdapter {
         this.prototype(all[first], snapshot, contexts[first]).then(
           (prototype) => {
             for (const i of indices) loaded[i] = { o: all[i], prototype };
-            arrived.push(...indices);
+            for (const i of indices) arrived.push(i);
             progress.done++;
           },
         ),

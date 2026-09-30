@@ -136,7 +136,7 @@ export function editInstructions(
     if (v.disposition === "move") {
       const target = index(v.targetIndex);
       ensure(target !== i, "INVALID_INPUT", "Choose another target step.");
-      plan.steps[target].push(...plan.steps[i]);
+      plan.steps[target] = plan.steps[target].concat(plan.steps[i]);
     }
     plan.steps.splice(i, 1);
     meta.splice(i, 1);
@@ -146,7 +146,7 @@ export function editInstructions(
     const moved = ids(v.occurrenceIds),
       chosen = new Set(moved);
     plan.steps = plan.steps.map((step) => step.filter((id) => !chosen.has(id)));
-    plan.steps[i].push(...moved);
+    plan.steps[i] = plan.steps[i].concat(moved);
     return;
   }
   if (type === "instructions.step.split") {
@@ -175,7 +175,7 @@ export function editInstructions(
     "INVALID_INPUT",
     "Choose a step with a following step to merge.",
   );
-  plan.steps[i].push(...plan.steps[i + 1]);
+  plan.steps[i] = plan.steps[i].concat(plan.steps[i + 1]);
   const notes = [meta[i].notes, meta[i + 1].notes].filter(Boolean).join("\n\n");
   ensure(
     notes.length <= 4096,

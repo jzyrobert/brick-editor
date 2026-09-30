@@ -1156,10 +1156,10 @@ The following are proposed application defaults, not browser guarantees. Make pr
 | Resource | Desktop default proposal | Mobile default proposal | Required handling |
 |---|---:|---:|---|
 | Imported source/archive bytes | 25 MiB | 10 MiB | Reject before expensive processing |
-| Total decompressed project bytes | 100 MiB | 40 MiB | Enforce incrementally; abort on overflow |
+| Total decompressed project bytes | 100 MiB | 64 MiB | Enforce incrementally; abort on overflow |
 | Embedded files | 10,000 | 5,000 | Count before allocating all file objects |
 | Reference nesting depth | 64 | 64 | Also detect graph cycles explicitly |
-| Expanded placed occurrences | 100,000 | 25,000 | Count expansion, not just unique definitions |
+| Expanded placed occurrences | 200,000 | 150,000 | Count expansion, not just unique definitions |
 | Generated additions per command | 10,000 | 2,000 | Preview count and require budget |
 | Output image pixels | 16 megapixels | 4 megapixels | Also respect device texture/renderbuffer limits |
 | Individual decoded texture | 16 megapixels | 4 megapixels | Verify decoded dimensions and supported type |

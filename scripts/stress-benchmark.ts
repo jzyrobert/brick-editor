@@ -7,7 +7,7 @@
  *   npm run build && npx vite preview --port 4190 --strictPort --host 127.0.0.1 &
  *   BRICK_BENCH_URL=http://127.0.0.1:4190/ npm run test:stress -- [--parts N]
  *     [--variants N] [--profiles desktop,mobile] [--label name] [--no-play]
- *     [--play-frames N] [--query key=value]
+ *     [--play-frames N] [--query key=value] [--model village|city] [--flat]
  *
  * Software WebGL (SwiftShader) numbers are only meaningful relative to each other.
  * Results go to .local/perf/stress-<label>.json.
@@ -17,6 +17,8 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import { architecturalStressModel } from "../tests/helpers/architectural-stress";
 import { brickCityModel } from "../tests/helpers/brick-city";
+import { importLDraw } from "../src/ldraw/io";
+import { occurrences } from "../src/core/document";
 
 const arg = (name: string, fallback: string) => {
   const i = process.argv.indexOf("--" + name);
@@ -35,19 +37,35 @@ const url = process.env.BRICK_BENCH_URL || "http://127.0.0.1:4173/";
  * Minebench-like build of bricks, plates and tiles. */
 const kind = arg("model", "village");
 const city = kind === "city" ? brickCityModel({ parts }) : undefined;
+/** `--flat` (city only): the same parts as one flat model, one line per part,
+ * so the project, its autosave and recovery carry every placement. */
+const flat = !!city && process.argv.includes("--flat");
+function flatten(text: string) {
+  const all = occurrences(importLDraw(text, "city.mpd"));
+  return all
+    .map(
+      (o) =>
+        `1 ${o.colorCode} ${o.transform.position.join(" ")} ${o.transform.basis.join(" ")} ${o.node.ref}`,
+    )
+    .join("\n");
+}
 const model = city
   ? {
-      text: city.text,
+      text: flat ? flatten(city.text) : city.text,
       parts: city.parts,
       variants: 0,
       floors: 0,
-      name: "brick-city.mpd",
+      name: flat ? "brick-city-flat.ldr" : "brick-city.mpd",
     }
   : {
       ...architecturalStressModel({ parts, variants }),
       name: "stress-village.mpd",
     };
-const interact = !city && !process.argv.includes("--no-interaction");
+/** The city skips the interaction pass unless `--interaction` asks for it
+ * (instruction steps and floor focus draw more than the plain view). */
+const interact =
+  (!city || process.argv.includes("--interaction")) &&
+  !process.argv.includes("--no-interaction");
 /** Orbit centre, radius and height (LDraw, −Y up). */
 const orbitView = city
   ? (() => {
@@ -182,7 +200,8 @@ async function measure(context: BrowserContext, profile: string) {
     await page
       .locator(".save-state")
       .filter({ hasText: /^Saved revision/ })
-      .waitFor({ timeout: 300000 });
+      // Attached, not visible: the phone layout hides the save indicator.
+      .waitFor({ state: "attached", timeout: 300000 });
     savedAt = await page.evaluate(() => performance.now());
   } catch {
     /* no save indicator */
@@ -287,17 +306,21 @@ async function measure(context: BrowserContext, profile: string) {
       });
     // Drag the view with the right button (OrbitControls pan; the left button
     // orbits only with the Navigate tool), frame by frame.
-    await page.evaluate(() =>
-      window.brickEditor!.camera.set({
-        space: "ldraw",
-        projection: "perspective",
-        position: [4200, -2200, 4200],
-        target: [1000, -300, 1000],
-        up: [0, -1, 0],
-        fovDeg: 45,
-        near: 1,
-        far: 20000,
-      }),
+    await page.evaluate(
+      ({ view, city }) =>
+        window.brickEditor!.camera.set({
+          space: "ldraw",
+          projection: "perspective",
+          position: city
+            ? [view.cx + view.radius, view.height, view.cz + view.radius]
+            : [4200, -2200, 4200],
+          target: city ? [view.cx, view.ty, view.cz] : [1000, -300, 1000],
+          up: [0, -1, 0],
+          fovDeg: 45,
+          near: 1,
+          far: city ? Math.max(20000, view.radius * 4) : 20000,
+        }),
+      { view: orbitView, city: !!city },
     );
     const idleBefore = await nextFrame();
     await page.mouse.move(center.x, center.y);

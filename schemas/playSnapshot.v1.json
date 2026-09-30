@@ -24,7 +24,7 @@
             "maxLength": 393409,
             "format": "occurrence-id"
           },
-          "maxItems": 100000,
+          "maxItems": 200000,
           "uniqueItems": true
         }
       },
@@ -235,7 +235,7 @@
         "type": "string",
         "maxLength": 4096
       },
-      "maxItems": 100000
+      "maxItems": 200000
     },
     "avatar": {
       "type": "object",
@@ -476,7 +476,7 @@
             ],
             "additionalProperties": false
           },
-          "maxItems": 100000
+          "maxItems": 200000
         }
       },
       "required": [
@@ -673,7 +673,7 @@
                 ],
                 "additionalProperties": false
               },
-              "maxItems": 100000
+              "maxItems": 200000
             },
             "deadEnds": {
               "type": "integer",
@@ -708,7 +708,7 @@
                 ],
                 "additionalProperties": false
               },
-              "maxItems": 100000
+              "maxItems": 200000
             }
           },
           "required": [
@@ -780,7 +780,7 @@
                   "maxLength": 393409,
                   "format": "occurrence-id"
                 },
-                "maxItems": 100000
+                "maxItems": 200000
               },
               "reason": {
                 "type": "string",
@@ -793,7 +793,7 @@
             ],
             "additionalProperties": false
           },
-          "maxItems": 100000
+          "maxItems": 200000
         },
         "tick": {
           "type": "integer",
@@ -1207,7 +1207,7 @@
             "type": "string",
             "maxLength": 4096
           },
-          "maxItems": 100000
+          "maxItems": 200000
         },
         "blocked": {
           "type": "boolean"
@@ -1713,7 +1713,7 @@
               "type": "string",
               "maxLength": 4096
             },
-            "maxItems": 100000
+            "maxItems": 200000
           },
           "blocked": {
             "type": "boolean"

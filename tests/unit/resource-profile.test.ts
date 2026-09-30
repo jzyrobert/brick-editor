@@ -32,6 +32,15 @@ const flat = (n: number) =>
     { length: n },
     (_, i) => `1 4 ${i * 20} 0 0 1 0 0 0 1 0 0 0 1 3005.dat`,
   ).join("\n");
+/** `rows` copies of a `perRow`-brick row submodel: a large model in a small file. */
+const rows = (rows: number, perRow: number) =>
+  "0 FILE root.ldr\n" +
+  Array.from(
+    { length: rows },
+    (_, i) => `1 16 0 0 ${i * 20} 1 0 0 0 1 0 0 0 1 row.ldr`,
+  ).join("\n") +
+  "\n0 FILE row.ldr\n" +
+  flat(perRow).slice("0 FILE root.ldr\n".length);
 
 describe("resource profiles", () => {
   it("detects phone-class devices and keeps tablets/desktops on desktop limits", () => {
@@ -62,7 +71,7 @@ describe("resource profiles", () => {
       false,
     );
     expect(resourceLimits("mobile")).toMatchObject({
-      occurrences: 25000,
+      occurrences: 150000,
       additionsPerCommand: 2000,
       importBytes: 10 * 1024 * 1024,
       imagePixels: 4000000,
@@ -71,7 +80,8 @@ describe("resource profiles", () => {
   });
 
   it("switching profile re-assesses the document without a new revision and is reversible", () => {
-    const e = new Editor(importLDraw(flat(25001)));
+    // 151,000 parts, over the phone's 150,000: a 1,000-brick row placed 151 times.
+    const e = new Editor(importLDraw(rows(151, 1000)));
     expect(e.materialization.status).toBe("available");
     const revision = e.project.revision;
     let notified = 0;

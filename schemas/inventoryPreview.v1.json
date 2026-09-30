@@ -69,7 +69,7 @@
               "maxLength": 393409,
               "format": "occurrence-id"
             },
-            "maxItems": 100000
+            "maxItems": 200000
           },
           "layers": {
             "type": "object",
@@ -116,7 +116,7 @@
         ],
         "additionalProperties": false
       },
-      "maxItems": 100000
+      "maxItems": 200000
     },
     "resolution": {
       "type": "array",
@@ -162,7 +162,7 @@
               "maxLength": 393409,
               "format": "occurrence-id"
             },
-            "maxItems": 100000
+            "maxItems": 200000
           },
           "tier": {
             "enum": [
@@ -260,7 +260,7 @@
         ],
         "additionalProperties": false
       },
-      "maxItems": 100000
+      "maxItems": 200000
     },
     "diagnostics": {
       "type": "array",
@@ -290,7 +290,7 @@
               "maxLength": 393409,
               "format": "occurrence-id"
             },
-            "maxItems": 100000
+            "maxItems": 200000
           },
           "details": {}
         },
@@ -302,7 +302,7 @@
         ],
         "additionalProperties": false
       },
-      "maxItems": 100000
+      "maxItems": 200000
     },
     "excludedOccurrenceIds": {
       "type": "array",
@@ -312,7 +312,7 @@
         "maxLength": 393409,
         "format": "occurrence-id"
       },
-      "maxItems": 100000
+      "maxItems": 200000
     },
     "substitutions": {
       "type": "array",
@@ -322,7 +322,7 @@
         "maxLength": 393409,
         "format": "occurrence-id"
       },
-      "maxItems": 100000
+      "maxItems": 200000
     },
     "request": {
       "$ref": "inventory"
