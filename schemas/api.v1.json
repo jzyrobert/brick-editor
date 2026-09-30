@@ -1433,6 +1433,63 @@
           "const": "1.0"
         },
         "method": {
+          "const": "library.updateStatus"
+        },
+        "input": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "library.update"
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "checkpoint": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "expectedRevision"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "ready"
         },
         "input": {

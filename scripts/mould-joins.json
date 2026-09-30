@@ -1,0 +1,160 @@
+{
+  "note": "Checked LDraw ↔ Rebrickable mould table (scripts/part-joins.ts). Candidates are placeable plain LDraw parts that no other rule joins, that Rebrickable lacks and whose files name no Rebrickable number, where a Rebrickable part with the same digits (bare or another mould letter) has mould (M) or alternate (A) relationships. Each row needs a human decision: accept only when the LDraw title and the Rebrickable name describe the same mould and no other LDraw part already joins that Rebrickable part. Accepted rows give derived colours (j=m); pending and rejected rows join nothing. Rebuilds keep decisions.",
+  "rebrickable": {
+    "retrieved": "2026-09-30",
+    "sha256": "181b974e43ed303b4de0adec3cb1909f676a0895f51ffb40bb1733242ac619a2"
+  },
+  "library": "ldraw-full-2026-09-28",
+  "rows": [
+    {
+      "ldraw": "794a.dat",
+      "rebrickable": "794",
+      "ldrawTitle": "Container Storage Box 24 x 40 with Red Handle",
+      "rebrickableName": "Brick 2 x 2 Arm Holder Upper Part without Hole",
+      "relationships": ["A:793"],
+      "decision": "reject",
+      "note": "Different parts: a storage box vs an arm holder brick; only the digits agree.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "3049b.dat",
+      "rebrickable": "3049a",
+      "ldrawTitle": "Slope Brick 45  1 x  2 Double / Inverted",
+      "rebrickableName": "Brick Sloped 45° 2 x 1 Double / Inverted with Bottom Tube",
+      "relationships": ["M:3049c", "M:3049d"],
+      "decision": "reject",
+      "note": "Three Rebrickable moulds (bottom tube, hollow, stud holder); the LDraw title does not say which, and the curated pack leaves 3049b unmapped for the same reason.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "3049b.dat",
+      "rebrickable": "3049c",
+      "ldrawTitle": "Slope Brick 45  1 x  2 Double / Inverted",
+      "rebrickableName": "Brick Sloped 45° 2 x 1 Double / Inverted with Hollow Bottom",
+      "relationships": ["M:3049a", "M:3049d"],
+      "decision": "reject",
+      "note": "See 3049a: mould not identifiable from the LDraw title.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "3049b.dat",
+      "rebrickable": "3049d",
+      "ldrawTitle": "Slope Brick 45  1 x  2 Double / Inverted",
+      "rebrickableName": "Brick Sloped 45° 2 x 1 Double / Inverted with Bottom Stud Holder",
+      "relationships": ["M:3049a", "M:3049c"],
+      "decision": "reject",
+      "note": "See 3049a: mould not identifiable from the LDraw title.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "3940c.dat",
+      "rebrickable": "3940a",
+      "ldrawTitle": "Support  2 x  2 x  2 Round with Blind Hole and Bottom Stud Holders",
+      "rebrickableName": "Support Round 2 x 2 x 2 Stand with Blocked Center Hole",
+      "relationships": ["M:19798", "M:3940b"],
+      "decision": "reject",
+      "note": "Rebrickable 3940a (blocked hole) already joins LDraw 3940a; Rebrickable does not separate the bottom-stud-holder mould, so its colours would be shared, not this mould's.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "3940c.dat",
+      "rebrickable": "3940b",
+      "ldrawTitle": "Support  2 x  2 x  2 Round with Blind Hole and Bottom Stud Holders",
+      "rebrickableName": "Support Round 2 x 2 x 2 Stand with Reach-Through Center Hole",
+      "relationships": ["M:19798", "M:3940a"],
+      "decision": "reject",
+      "note": "Rebrickable 3940b has a reach-through hole; LDraw 3940c has a blind hole.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "6217a.dat",
+      "rebrickable": "6217",
+      "ldrawTitle": "Arm Piece with Pin with Friction and 3 Fingers",
+      "rebrickableName": "Arm Piece with Pin, 3 Fingers",
+      "relationships": ["M:6217b"],
+      "decision": "accept",
+      "note": "LDraw 6217.dat is \"~Moved to 6217a\", LDraw's own record that 6217a is the part once numbered 6217; Rebrickable 6217 \"Arm Piece with Pin, 3 Fingers\" is the base mould, linked (M) to 6217b, the later thread-groove mould LDraw does not model.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "6217a.dat",
+      "rebrickable": "6217b",
+      "ldrawTitle": "Arm Piece with Pin with Friction and 3 Fingers",
+      "rebrickableName": "Arm Piece with Pin, 3 Fingers and Outside Thread Grooves",
+      "relationships": ["M:6217"],
+      "decision": "reject",
+      "note": "Rebrickable 6217b is the later mould with outside thread grooves, not described by the LDraw title.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "7049c.dat",
+      "rebrickable": "7049a",
+      "ldrawTitle": "Brick  2 x  4 with 4 Black Axle Bushes and Trans-Clear Underside",
+      "rebrickableName": "Brick Special 2 x 4 with Wheel Holder Old, Opaque Bottom",
+      "relationships": ["M:7049bc01"],
+      "decision": "reject",
+      "note": "LDraw 7049c has a trans-clear underside; Rebrickable 7049a has an opaque bottom.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "11187a.dat",
+      "rebrickable": "11187",
+      "ldrawTitle": "=Minifig Snowshoe with Short Toe Webbing",
+      "rebrickableName": "Minifig Footwear Snowshoe [Short Front End]",
+      "relationships": ["M:30284"],
+      "decision": "accept",
+      "note": "Same snowshoe: LDraw \"with Short Toe Webbing\", Rebrickable \"[Short Front End]\"; LDraw 11187.dat is the obsolete stub of the same number and Rebrickable links 11187 (M) to 30284, which LDraw models separately.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "55707c.dat",
+      "rebrickable": "55707a",
+      "ldrawTitle": "=Minifig Bar with Bat Wings",
+      "rebrickableName": "Weapon Gun Semiautomatic Pistol",
+      "relationships": ["M:62885"],
+      "decision": "reject",
+      "note": "Different parts: a bar with bat wings vs a pistol.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "62821.dat",
+      "rebrickable": "62821a",
+      "ldrawTitle": "Technic Differential with One Gear 28 Tooth Bevel",
+      "rebrickableName": "Technic Gear Differential with Inner Tabs and Open Center, 28 Bevel Teeth",
+      "relationships": ["M:62821b", "M:62821c"],
+      "decision": "reject",
+      "note": "Three Rebrickable differential moulds; the LDraw title does not say which.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "62821.dat",
+      "rebrickable": "62821b",
+      "ldrawTitle": "Technic Differential with One Gear 28 Tooth Bevel",
+      "rebrickableName": "Technic Gear Differential with Inner Tabs and Closed Center, 28 Bevel Teeth [Beveled Edge]",
+      "relationships": ["M:62821a"],
+      "decision": "reject",
+      "note": "See 62821a: mould not identifiable from the LDraw title.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "62821.dat",
+      "rebrickable": "62821c",
+      "ldrawTitle": "Technic Differential with One Gear 28 Tooth Bevel",
+      "rebrickableName": "Technic Gear Differential with Inner Tabs and Closed Center, 28 Bevel Teeth [Sharp Edge]",
+      "relationships": ["M:62821a"],
+      "decision": "reject",
+      "note": "See 62821a: mould not identifiable from the LDraw title.",
+      "checked": "2026-09-30"
+    },
+    {
+      "ldraw": "64567b.dat",
+      "rebrickable": "64567",
+      "ldrawTitle": "Minifig Lightsaber Hilt with Slight Sloping Fingers without Bottom Ring",
+      "rebrickableName": "Weapon Lightsaber Hilt with Bottom Ring",
+      "relationships": ["M:23306"],
+      "decision": "reject",
+      "note": "LDraw 64567b is without the bottom ring; Rebrickable 64567 has it (LDraw 64567a names Rebrickable 64567 itself).",
+      "checked": "2026-09-30"
+    }
+  ]
+}

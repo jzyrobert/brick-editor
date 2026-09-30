@@ -28,6 +28,11 @@ export type PackPart = {
   /** Derived colours (LDraw codes) of Rebrickable part_num `rb`. */
   d?: number[];
   rb?: string;
+  /** How `rb` was joined (scripts/part-joins.ts): absent when it is the LDraw
+   * number itself; "k" the Rebrickable number the LDraw file states (printed
+   * variants join this way), "b" the part's BrickLink number, "m" a checked
+   * mould-table row. */
+  j?: "k" | "b" | "m";
 };
 export type ColorAvailabilityPack = {
   format: typeof COLOR_AVAILABILITY_FORMAT;

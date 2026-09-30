@@ -38,6 +38,8 @@ import { QualityPanel } from "./QualityPanel";
 import { MechanismBrowser } from "../mechanisms/browser";
 import { MechanismPanel } from "./MechanismPanel";
 import { ProjectLibrary } from "./ProjectLibrary";
+import { InventoryResolution } from "./InventoryResolution";
+import { LibraryUpdatePanel } from "./LibraryUpdatePanel";
 import { ResourceProfilePanel } from "./ResourceProfilePanel";
 import { ReplacePanel } from "./ReplacePanel";
 import { CheckpointsPanel } from "./CheckpointsPanel";
@@ -1806,9 +1808,24 @@ function Workspace() {
         acceptUnknownColors: acceptUnknown,
         acceptDerivedMappings: acceptUnknown,
       });
+      listShown.current = true;
       setPreview(result);
     });
   }
+  // Undo, redo or any other edit while the parts list is open refreshes it,
+  // so the list never shows (or exports) a stale preview.
+  // (Every document change clears the preview; `listShown` remembers that
+  // the user had asked for one.)
+  const listShown = useRef(false);
+  useEffect(() => {
+    if (!inventoryOpen) listShown.current = false;
+    else if (
+      listShown.current &&
+      (!preview || preview.documentRevision !== project.revision)
+    )
+      void previewInventory();
+    // previewInventory reads the current editor state.
+  }, [inventoryOpen, project.revision]);
   async function exportInventory(partial = false, copy = false) {
     await run(async () => {
       ensure(preview, "INVALID_INPUT", "Generate a preview first");
@@ -4236,6 +4253,13 @@ function Workspace() {
           )}
           {mode === "Project" && (
             <div className="mode-card">
+              {api.current && (
+                <LibraryUpdatePanel
+                  api={api.current}
+                  project={project}
+                  onStatus={setStatus}
+                />
+              )}
               <h2>Keep the things you make.</h2>
               <p>
                 Download a native backup to preserve your project. Browser
@@ -4815,96 +4839,121 @@ function Workspace() {
                 <div className="inventory-stats">
                   <div>
                     <strong>{preview.sourceOccurrenceCount}</strong>
-                    <span>source parts</span>
+                    <span>parts in the build</span>
                   </div>
                   <div>
                     <strong>{preview.resolvedPhysicalUnitCount}</strong>
-                    <span>resolved units</span>
+                    <span>pieces to buy</span>
                   </div>
                   <div>
                     <strong>{preview.lotCount}</strong>
-                    <span>distinct lots</span>
+                    <span>lines in the list</span>
                   </div>
                   <div>
                     <strong>{preview.excludedOccurrenceIds.length}</strong>
-                    <span>omitted parts</span>
+                    <span>not in the list</span>
                   </div>
                 </div>
-                <div className="table-scroll">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Part</th>
-                        <th>Colour ID</th>
-                        <th>Quantity</th>
-                        <th>Mapping</th>
-                        <th>Colour made</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {preview.rows.map((row) => (
-                        <tr key={row.itemId + ":" + row.colorId}>
-                          <td>{row.itemId}</td>
-                          <td>{row.colorId}</td>
-                          <td>{row.quantity}</td>
-                          <td>{row.verification}</td>
-                          <td>{colourExistenceLabel[row.colorExistence]}</td>
+                <InventoryResolution
+                  preview={preview}
+                  decisions={project.marketplace.partDecisions ?? {}}
+                  decide={(part, decision) =>
+                    void run(async () => {
+                      command("inventory.override", { part, decision });
+                      await previewInventory();
+                    })
+                  }
+                  show={(ids) => {
+                    setInventoryOpen(false);
+                    setMode("Build");
+                    setPanel("Canvas");
+                    setSelectionSafe(ids);
+                    setStatus(
+                      `${ids.length} part${ids.length === 1 ? "" : "s"} selected from the parts list.`,
+                    );
+                  }}
+                />
+                <details className="dialog-more">
+                  <summary>
+                    Technical details ({preview.lotCount} lots,{" "}
+                    {preview.diagnostics.length} notes)
+                  </summary>
+                  <div className="table-scroll">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Part</th>
+                          <th>Colour ID</th>
+                          <th>Quantity</th>
+                          <th>Mapping</th>
+                          <th>Colour made</th>
                         </tr>
+                      </thead>
+                      <tbody>
+                        {preview.rows.map((row) => (
+                          <tr key={row.itemId + ":" + row.colorId}>
+                            <td>{row.itemId}</td>
+                            <td>{row.colorId}</td>
+                            <td>{row.quantity}</td>
+                            <td>{row.verification}</td>
+                            <td>{colourExistenceLabel[row.colorExistence]}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {preview.diagnostics.length > 0 && (
+                    <div className="diagnostics">
+                      {preview.diagnostics.map((d, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setSelectionSafe(d.occurrenceIds);
+                            setOverrideId(d.occurrenceIds[0] || "");
+                          }}
+                        >
+                          <strong>{d.code}</strong>
+                          <span>{d.message}</span>
+                        </button>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
-                {preview.diagnostics.length > 0 && (
-                  <div className="diagnostics">
-                    {preview.diagnostics.map((d, i) => (
+                    </div>
+                  )}
+                  {overrideId && (
+                    <div className="resolution">
+                      <h3>Explicit mapping for selected problem</h3>
+                      <input
+                        aria-label="BrickLink part ID"
+                        placeholder="BrickLink part ID"
+                        value={overridePart}
+                        onChange={(e) => setOverridePart(e.target.value)}
+                      />
+                      <input
+                        aria-label="BrickLink colour ID"
+                        placeholder="BrickLink colour ID"
+                        value={overrideColor}
+                        onChange={(e) => setOverrideColor(e.target.value)}
+                      />
                       <button
-                        key={i}
-                        onClick={() => {
-                          setSelectionSafe(d.occurrenceIds);
-                          setOverrideId(d.occurrenceIds[0] || "");
-                        }}
+                        onClick={() =>
+                          void run(() => {
+                            command("inventory.override", {
+                              occurrenceId: overrideId,
+                              mapping: {
+                                itemId: overridePart,
+                                colorId: overrideColor,
+                                acknowledged: true,
+                                substitution: true,
+                              },
+                            });
+                            setOverrideId("");
+                          })
+                        }
                       >
-                        <strong>{d.code}</strong>
-                        <span>{d.message}</span>
+                        Acknowledge this unverified substitution
                       </button>
-                    ))}
-                  </div>
-                )}
-                {overrideId && (
-                  <div className="resolution">
-                    <h3>Explicit mapping for selected problem</h3>
-                    <input
-                      aria-label="BrickLink part ID"
-                      placeholder="BrickLink part ID"
-                      value={overridePart}
-                      onChange={(e) => setOverridePart(e.target.value)}
-                    />
-                    <input
-                      aria-label="BrickLink colour ID"
-                      placeholder="BrickLink colour ID"
-                      value={overrideColor}
-                      onChange={(e) => setOverrideColor(e.target.value)}
-                    />
-                    <button
-                      onClick={() =>
-                        void run(() => {
-                          command("inventory.override", {
-                            occurrenceId: overrideId,
-                            mapping: {
-                              itemId: overridePart,
-                              colorId: overrideColor,
-                              acknowledged: true,
-                              substitution: true,
-                            },
-                          });
-                          setOverrideId("");
-                        })
-                      }
-                    >
-                      Acknowledge this unverified substitution
-                    </button>
-                  </div>
-                )}
+                    </div>
+                  )}
+                </details>
                 <div className="button-row">
                   <button
                     className="primary"

@@ -224,11 +224,66 @@ writeFileSync(
   "src/catalog/mappings-derived.json",
   JSON.stringify(derived) + "\n",
 );
+// Reviewed tier (scripts/review-mappings.ts, scripts/mapping-review.json):
+// derived mappings a reviewer cross-checked against Rebrickable. A row is kept
+// only while the part file still states the same BrickLink number; otherwise
+// the part falls back to its derived mapping (or none) until reviewed again.
+type ReviewRow = {
+  itemId: string;
+  decision: "promote" | "reject";
+  method: string;
+  confidence: "cross-checked";
+  reviewed: string;
+  evidence: { rebrickablePart: string };
+};
+const mappingReview = existsSync("scripts/mapping-review.json")
+  ? (JSON.parse(readFileSync("scripts/mapping-review.json", "utf8")) as {
+      parts: Record<string, ReviewRow>;
+    })
+  : { parts: {} };
+const reviewedParts: Record<
+  string,
+  {
+    itemId: string;
+    confidence: "cross-checked";
+    method: string;
+    reviewed: string;
+    rebrickable: string;
+  }
+> = {};
+const staleReviews: string[] = [];
+for (const [name, r] of Object.entries(mappingReview.parts)) {
+  if (r.decision !== "promote") continue;
+  if (derived.parts[name] !== r.itemId) {
+    staleReviews.push(name);
+    continue;
+  }
+  reviewedParts["official:" + name] = {
+    itemId: r.itemId,
+    confidence: r.confidence,
+    method: r.method,
+    reviewed: r.reviewed,
+    rebrickable: r.evidence.rebrickablePart,
+  };
+}
+if (staleReviews.length)
+  console.warn(
+    "Reviewed mappings no longer stated by their part files (left derived):",
+    staleReviews.join(", "),
+  );
+const reviewedDate = Object.values(reviewedParts)
+  .map((r) => r.reviewed)
+  .sort()
+  .at(-1);
 // A new complete-library release changes the derived table, and with it the
 // pack's identity; the previous pack is then retired (kept in scripts/retired/).
+// So does a new review batch (its latest date is part of the identity).
 const mapping = {
-  id: "curated-catalogue-4+" + derived.id,
-  version: 4,
+  id:
+    "curated-catalogue-4+" +
+    (reviewedDate ? `reviewed-${reviewedDate}+` : "") +
+    derived.id,
+  version: 5,
   license:
     "CC0-1.0 (original curated factual correspondences); derived table CC BY 4.0 (LDraw part metadata, see derived.license)",
   verifiedDate: "2026-09-29",
@@ -238,6 +293,12 @@ const mapping = {
   parts: mappedParts,
   unmapped,
   colors: paletteToBrickLink,
+  reviewed: {
+    confidence: "cross-checked",
+    source:
+      "Derived mappings (the BrickLink number the LDraw part file states) that a reviewer checked against Rebrickable's database downloads: Rebrickable uses the same number for the part and its name agrees with the LDraw title (scripts/review-mappings.ts, evidence in scripts/mapping-review.json). Not checked against BrickLink's catalogue: reported as reviewed, not verified, and exported only when accepted.",
+    parts: reviewedParts,
+  },
   derived: {
     id: derived.id,
     path: "src/catalog/mappings-derived.json",

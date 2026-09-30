@@ -4,8 +4,10 @@ import {
   type Project,
   type Scope,
   type Diagnostic,
+  type Occurrence,
   ensure,
 } from "../core/types";
+import { partKey } from "./decisions";
 import { resolveScope } from "../core/scope";
 export { resolveScope } from "../core/scope";
 import { physical } from "../core/math";
@@ -45,6 +47,52 @@ export type Lot = {
    * pack; the weakest of the lot's occurrences). */
   colorExistence: ColorExistence;
 };
+/** Mapping tier of a part in the mapping pack (spec §6.6), strongest first. */
+export type MappingTier =
+  /** Curated catalogue: BrickLink catalogue page reviewed (verified). */
+  | "verified"
+  /** Derived, then cross-checked against Rebrickable by a maintainer. */
+  | "reviewed"
+  /** The BrickLink number the LDraw part file states (not reviewed). */
+  | "derived"
+  /** The part file names several BrickLink numbers: a person must choose. */
+  | "ambiguous"
+  /** No mapping. */
+  | "unmapped"
+  /** Project-local geometry: not orderable unless mapped by hand. */
+  | "custom";
+/**
+ * One line of the parts-list resolution list: every occurrence of one part in
+ * one colour, whether or not it can be exported, with what the pack knows,
+ * what the user decided and what still needs attention.
+ */
+export type ResolutionRow = {
+  /** Decision key ("official:3001.dat"). */
+  part: string;
+  ref: string;
+  namespace: "official" | "project" | "missing";
+  colorCode: string;
+  colorId?: string;
+  quantity: number;
+  occurrenceIds: string[];
+  tier: MappingTier;
+  /** What the list uses: the tier, the user's part decision ("user"), an
+   * occurrence override or an exclusion. */
+  mapping: MappingTier | "user" | "override" | "excluded";
+  /** Item bought (decision, else the pack's mapping). */
+  itemId?: string;
+  /** The pack's own mapping, when it has one. */
+  suggestedItemId?: string;
+  /** Numbers the part file names when ambiguous. */
+  candidates?: string[];
+  origin?: "candidate" | "derived" | "reviewed" | "user";
+  colorExistence: ColorExistence;
+  /** The user accepted this colour's uncertain existence. */
+  colorAccepted: boolean;
+  status: "ready" | "accepted" | "needs-attention" | "excluded";
+  /** Codes of the diagnostics that block this row. */
+  problems: string[];
+};
 /** Weakest first: a lot is only as certain as its least certain occurrence. */
 const existenceOrder: ColorExistence[] = [
   "not-produced",
@@ -53,6 +101,43 @@ const existenceOrder: ColorExistence[] = [
   "derived",
   "verified",
 ];
+const weakest = (a: ColorExistence, b: ColorExistence) =>
+  existenceOrder.indexOf(b) < existenceOrder.indexOf(a) ? b : a;
+function groupFor(
+  groups: Map<string, ResolutionRow>,
+  o: Occurrence,
+  key: string,
+  tier: MappingTier,
+  suggested: string | undefined,
+  candidates: string[] | undefined,
+  multiplier: number,
+) {
+  const id = key + "|" + o.colorCode;
+  let g = groups.get(id);
+  if (!g)
+    groups.set(
+      id,
+      (g = {
+        part: key,
+        ref: o.node.ref,
+        namespace: o.namespace,
+        colorCode: o.colorCode,
+        quantity: 0,
+        occurrenceIds: [],
+        tier,
+        mapping: tier,
+        ...(suggested ? { itemId: suggested, suggestedItemId: suggested } : {}),
+        ...(candidates ? { candidates: [...candidates] } : {}),
+        colorExistence: "verified",
+        colorAccepted: false,
+        status: "ready",
+        problems: [],
+      }),
+    );
+  g.quantity += multiplier;
+  g.occurrenceIds.push(o.id);
+  return g;
+}
 export type Preview = {
   previewId: string;
   documentRevision: number;
@@ -62,6 +147,9 @@ export type Preview = {
   lotCount: number;
   canExportComplete: boolean;
   rows: Lot[];
+  /** Every part/colour in scope with its mapping and colour status, needing
+   * attention first (the Export dialog's resolution list). */
+  resolution: ResolutionRow[];
   diagnostics: Diagnostic[];
   excludedOccurrenceIds: string[];
   substitutions: string[];
@@ -113,7 +201,10 @@ export function wantedXML(rows: Lot[], r: InventoryRequest) {
     "\n</INVENTORY>\n"
   );
 }
-type DerivedTable = { parts: Record<string, string> };
+type DerivedTable = {
+  parts: Record<string, string>;
+  ambiguous?: Record<string, string[]>;
+};
 let derivedLoad: Promise<DerivedTable> | undefined;
 /** The derived mapping table (src/catalog/mappings-derived.json), pinned by
  * hash in mappings.json and loaded only when an inventory is built. */
@@ -147,25 +238,36 @@ export class InventoryService {
       lots = new Map<string, Lot>(),
       diagnostics: Diagnostic[] = [],
       excluded: string[] = [],
-      substitutions: string[] = [];
+      substitutions: string[] = [],
+      groups = new Map<string, ResolutionRow>();
     let units = 0;
     const multiplier = r.buildMultiplier ?? 1;
+    const decisions = p.marketplace.partDecisions ?? {};
     // The derived table is only needed (and loaded) when an official part in
-    // scope has no reviewed mapping. Loaded lazily, it can be unavailable
+    // scope has no curated mapping. Loaded lazily, it can be unavailable
     // offline before first use: those parts then stay unmapped (blocked).
-    const reviewedParts = mappings.parts as Record<string, unknown>;
+    const curatedParts = mappings.parts as Record<
+      string,
+      { itemId: string; verifiedColors: string[] }
+    >;
+    const reviewedParts =
+      (
+        mappings as unknown as {
+          reviewed?: { parts: Record<string, { itemId: string }> };
+        }
+      ).reviewed?.parts ?? {};
     let derivedMissing = false;
     const derived = scope.some(
       (o) =>
         o.namespace === "official" &&
-        !Object.hasOwn(reviewedParts, "official:" + o.node.ref),
+        !Object.hasOwn(curatedParts, "official:" + o.node.ref),
     )
       ? await derivedMappings().catch(() => {
           derivedLoad = undefined;
           derivedMissing = true;
-          return { parts: {} } as DerivedTable;
+          return { parts: {}, ambiguous: {} } as DerivedTable;
         })
-      : ({ parts: {} } as DerivedTable);
+      : ({ parts: {}, ambiguous: {} } as DerivedTable);
     // Colour availability (verified/derived part colours) is its own field of
     // each lot; unavailable offline before first use, it counts as unknown.
     await loadColorAvailability().catch(() => undefined);
@@ -176,7 +278,24 @@ export class InventoryService {
       message: string,
       id: string,
       severity: "warning" | "error" = "error",
-    ) => diagnostics.push({ code, message, severity, occurrenceIds: [id] });
+      details?: unknown,
+    ) =>
+      diagnostics.push({
+        code,
+        message,
+        severity,
+        occurrenceIds: [id],
+        ...(details !== undefined ? { details } : {}),
+      });
+    /** Custom colour definitions of the project (need an explicit mapping). */
+    const customColours = new Set<string>();
+    for (const m of Object.values(p.models))
+      for (const line of m.records) {
+        const c = /^0\s+!COLOUR.+\sCODE\s+(\d+)(?:\s|$)/.exec(line.raw);
+        if (c) customColours.add(c[1]);
+      }
+    /** Parts left out by a decision: one warning per part, not per copy. */
+    const excludedByDecision = new Map<string, string[]>();
     for (const o of scope) {
       if (
         r.excludeAuthoredFigures &&
@@ -186,29 +305,65 @@ export class InventoryService {
         excluded.push(o.id);
         continue;
       }
+      const key = partKey(o);
       const override = p.marketplace.overrides[o.id];
-      // A reviewed mapping first; else, for official parts only, the item
-      // number the LDraw part file itself names (derived, never verified).
-      const reviewed = (
-        mappings.parts as Record<
-          string,
-          { itemId: string; verifiedColors: string[] }
-        >
-      )[o.namespace + ":" + o.node.ref];
+      const decision = override ? undefined : decisions[key];
+      // Mapping tiers, strongest first: curated (catalogue verified), reviewed
+      // (cross-checked), derived (the LDraw file's own BrickLink keyword),
+      // ambiguous (the file names several numbers). Official parts only.
+      const official = o.namespace === "official";
+      const curated = curatedParts[o.namespace + ":" + o.node.ref];
+      const reviewed =
+        !curated && official
+          ? reviewedParts["official:" + o.node.ref]
+          : undefined;
       const keyword =
+        !curated &&
         !reviewed &&
-        o.namespace === "official" &&
+        official &&
         Object.hasOwn(derived.parts, o.node.ref)
           ? derived.parts[o.node.ref]
           : undefined;
-      const rule = reviewed
-        ? { ...reviewed, derived: false }
-        : keyword
-          ? { itemId: keyword, verifiedColors: [] as string[], derived: true }
+      const candidates =
+        !curated && !reviewed && !keyword && official
+          ? derived.ambiguous?.[o.node.ref]
           : undefined;
+      const tier: ResolutionRow["mapping"] = curated
+        ? "verified"
+        : reviewed
+          ? "reviewed"
+          : keyword
+            ? "derived"
+            : candidates
+              ? "ambiguous"
+              : o.namespace === "project"
+                ? "custom"
+                : "unmapped";
+      const suggested = curated?.itemId ?? reviewed?.itemId ?? keyword;
+      const group = groupFor(
+        groups,
+        o,
+        key,
+        tier,
+        suggested,
+        candidates,
+        multiplier,
+      );
+      if (decision?.exclude) {
+        excluded.push(o.id);
+        excludedByDecision.set(key, [
+          ...(excludedByDecision.get(key) ?? []),
+          o.id,
+        ]);
+        group.mapping = "excluded";
+        group.status = "excluded";
+        continue;
+      }
+      const codes: string[] = [];
       let blocked = false;
-      const block = (code: string, msg: string) => {
-        problem(code, msg, o.id);
+      const block = (code: string, msg: string, details?: unknown) => {
+        problem(code, msg, o.id, "error", details);
+        codes.push(code);
         blocked = true;
       };
       if (!physical(o.transform) && !override?.acknowledged)
@@ -216,15 +371,19 @@ export class InventoryService {
           "NONPHYSICAL_TRANSFORM",
           "Mirrored, scaled or sheared occurrence needs an acknowledged purchasing decision.",
         );
-      let itemId = override?.itemId || rule?.itemId,
+      const chosen = decision?.itemId;
+      let itemId = override?.itemId || chosen || suggested,
         colorId =
           override?.colorId ||
           (mappings.colors as Record<string, string>)[o.colorCode];
       let verification: Lot["verification"] = "verified";
+      // Colour existence is recorded per LDraw part; it no longer describes
+      // an item the user typed themselves.
       const existence: ColorExistence =
-        o.namespace === "official" && !override
+        official && !override && decision?.origin !== "user"
           ? colorExistence(o.node.ref, o.colorCode)
           : "unknown";
+      let colourAccepted = false;
       if (override) {
         ensure(
           override.acknowledged,
@@ -232,6 +391,7 @@ export class InventoryService {
           "Unacknowledged override",
         );
         verification = "acknowledged";
+        group.mapping = "override";
         problem(
           "ACKNOWLEDGED_MAPPING",
           "User mapping is acknowledged, not catalogue verified.",
@@ -240,30 +400,46 @@ export class InventoryService {
         );
         if (override.substitution) substitutions.push(o.id);
       } else {
-        if (!rule)
+        if (chosen) {
+          verification = "acknowledged";
+          group.mapping = "user";
+          group.itemId = chosen;
+          group.origin = decision!.origin;
+          problem(
+            "ACKNOWLEDGED_MAPPING",
+            `You chose BrickLink ${chosen} for ${o.node.ref}${decision!.checked ? " and checked it yourself" : ""}; it is acknowledged, not catalogue verified.`,
+            o.id,
+            "warning",
+          );
+        } else if (candidates)
+          block(
+            "AMBIGUOUS_MAPPING",
+            `${o.node.ref} could be BrickLink ${candidates.join(" or ")}; choose one.`,
+            { candidates },
+          );
+        else if (!suggested)
           block(
             o.namespace === "project"
               ? "NON_ORDERABLE_GEOMETRY"
               : "UNMAPPED_PART",
             "No verified purchasing rule for " +
               o.node.ref +
-              (derivedMissing && o.namespace === "official"
+              (derivedMissing && official
                 ? " (the derived mapping table could not be loaded; it loads once online)"
                 : ""),
           );
-        else if (rule.derived) {
+        else if (!curated) {
+          const code = reviewed ? "REVIEWED_MAPPING" : "DERIVED_MAPPING";
+          const origin = reviewed
+            ? `BrickLink ${suggested} comes from the LDraw part file's own BrickLink keyword and was cross-checked against Rebrickable by a maintainer, not against BrickLink's catalogue`
+            : `BrickLink ${suggested} comes from the LDraw part file's own BrickLink keyword, not a reviewed catalogue page`;
           if (r.acceptDerivedMappings) {
             verification = "acknowledged";
-            problem(
-              "DERIVED_MAPPING",
-              `BrickLink ${rule.itemId} comes from the LDraw part file's own BrickLink keyword, not a reviewed catalogue page; accepted explicitly.`,
-              o.id,
-              "warning",
-            );
+            problem(code, origin + "; accepted explicitly.", o.id, "warning");
           } else
             block(
-              "DERIVED_MAPPING",
-              `BrickLink ${rule.itemId} for ${o.node.ref} comes from the LDraw part file's own BrickLink keyword and has not been reviewed; accept derived mappings or map it yourself.`,
+              code,
+              `${origin} (${o.node.ref}); accept it or map it yourself.`,
             );
         }
         if (!colorId || o.colorCode === "16")
@@ -271,27 +447,20 @@ export class InventoryService {
             "UNMAPPED_COLOR",
             "No verified colour mapping for " + o.colorCode,
           );
-        const customColor = Object.values(p.models).some((m) =>
-          m.records.some((line) =>
-            new RegExp(
-              "^0\\s+!COLOUR.+\\sCODE\\s+" + o.colorCode + "(?:\\s|$)",
-            ).test(line.raw),
-          ),
-        );
-        if (customColor)
+        if (customColours.has(o.colorCode))
           block(
             "UNMAPPED_COLOR",
             "Project colour definition needs an explicit mapping",
           );
         if (
-          rule &&
+          itemId &&
           colorId &&
-          (rule.derived || !rule.verifiedColors.includes(o.colorCode))
+          (!curated || chosen || !curated.verifiedColors.includes(o.colorCode))
         ) {
           if (existence === "not-produced")
             block(
               "INVALID_PART_COLOR",
-              `BrickLink's catalogue lists no ${rule.itemId} in ${colourName(o.colorCode)}: it is not known to have been made. Choose another colour or map it yourself.`,
+              `BrickLink's catalogue lists no ${itemId} in ${colourName(o.colorCode)}: it is not known to have been made. Choose another colour or map it yourself.`,
             );
           else {
             const why =
@@ -300,7 +469,10 @@ export class InventoryService {
                 : existence === "not-recorded"
                   ? "No source records this part in this colour; it may never have been made"
                   : "Whether this part was made in this colour is unknown";
-            if (r.acceptUnknownColors) {
+            colourAccepted =
+              r.acceptUnknownColors === true ||
+              !!decision?.acceptedColors?.includes(o.colorCode);
+            if (colourAccepted) {
               verification = "acknowledged";
               problem(
                 "UNVERIFIED_PART_COLOR",
@@ -317,7 +489,15 @@ export class InventoryService {
           }
         }
       }
+      group.colorExistence = weakest(group.colorExistence, existence);
+      if (colourAccepted) group.colorAccepted = true;
+      if (colorId) group.colorId = colorId;
+      if (verification === "acknowledged" && group.status === "ready")
+        group.status = "accepted";
+      for (const c of codes)
+        if (!group.problems.includes(c)) group.problems.push(c);
       if (blocked || !itemId || !colorId) {
+        group.status = "needs-attention";
         excluded.push(o.id);
         continue;
       }
@@ -326,8 +506,8 @@ export class InventoryService {
         "INVALID_INPUT",
         "Invalid catalogue identifiers",
       );
-      const key = itemId + "|" + colorId;
-      const lot = lots.get(key) || {
+      const lotKey = itemId + "|" + colorId;
+      const lot = lots.get(lotKey) || {
         itemId,
         colorId,
         quantity: 0,
@@ -341,6 +521,7 @@ export class InventoryService {
         !Number.isSafeInteger(units + multiplier)
       ) {
         block("QUANTITY_OVERFLOW", "Quantity exceeds safe integer range");
+        group.status = "needs-attention";
         excluded.push(o.id);
         continue;
       }
@@ -349,13 +530,16 @@ export class InventoryService {
       lot.occurrenceIds.push(o.id);
       lot.layers[o.layerId] = (lot.layers[o.layerId] || 0) + multiplier;
       if (verification === "acknowledged") lot.verification = verification;
-      if (
-        existenceOrder.indexOf(existence) <
-        existenceOrder.indexOf(lot.colorExistence)
-      )
-        lot.colorExistence = existence;
-      lots.set(key, lot);
+      lot.colorExistence = weakest(lot.colorExistence, existence);
+      lots.set(lotKey, lot);
     }
+    for (const [key, ids] of excludedByDecision)
+      diagnostics.push({
+        code: "EXCLUDED_BY_USER",
+        message: `You left ${key.slice(key.indexOf(":") + 1)} out of the parts list (${ids.length} ${ids.length === 1 ? "copy" : "copies"}).`,
+        severity: "warning",
+        occurrenceIds: ids,
+      });
     const rows = [...lots.values()].sort(
       (a, b) =>
         a.itemId.localeCompare(b.itemId, "en") ||
@@ -368,6 +552,14 @@ export class InventoryService {
         severity: "error",
         occurrenceIds: [],
       });
+    const statusOrder = ["needs-attention", "accepted", "ready", "excluded"];
+    const resolution = [...groups.values()].sort(
+      (a, b) =>
+        statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status) ||
+        a.ref.localeCompare(b.ref, "en") ||
+        Number(a.colorCode) - Number(b.colorCode) ||
+        a.colorCode.localeCompare(b.colorCode),
+    );
     const projectHash = await sha256(stable(p)),
       previewId = await sha256(stable({ projectHash, request: r }));
     const preview: Preview = {
@@ -380,6 +572,7 @@ export class InventoryService {
       lotCount: rows.length,
       canExportComplete: !diagnostics.some((d) => d.severity === "error"),
       rows,
+      resolution,
       diagnostics,
       excludedOccurrenceIds: excluded,
       substitutions,

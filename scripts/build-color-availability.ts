@@ -2,16 +2,22 @@
 // LDraw colours it has really been produced in, with provenance.
 //   npm run library:colors              (from the pinned snapshot)
 //   npm run library:colors -- --refresh (new Rebrickable + BrickLink snapshot)
+//   npm run library:colors -- --refresh-rebrickable (new Rebrickable snapshot
+//                                          only; BrickLink colours kept)
 //
 // Sources (see docs/ARCHITECTURE.md "Colour availability"):
 // - verified: the known colours BrickLink lists for each reviewed catalogue
 //   item (scripts/bricklink-review.json), for curated parts only;
 // - derived: Rebrickable's database downloads (elements.csv and
 //   inventory_parts.csv: the colours each part_num was made in as an element
-//   or appears in in a set inventory), joined by part number: the LDraw number
+//   or appears in in a set inventory), joined by the rules of
+//   scripts/part-joins.ts: the Rebrickable number the LDraw file states in its
+//   own keywords (this is how printed variants join), else the LDraw number
 //   itself, else the BrickLink number of the part's reviewed or LDraw-keyword
-//   mapping. No suffix is stripped and no mould is assumed equivalent: a part
-//   no rule reaches has unknown availability.
+//   mapping, else a hand-checked row of the mould table
+//   (scripts/mould-joins.json). No suffix is stripped and no mould is assumed
+//   equivalent without a checked row: a part no rule reaches has unknown
+//   availability.
 // - colour identities: scripts/color-joins.ts (LEGO colour numbers recorded
 //   by LDConfig and by BrickLink's colour guide; Rebrickable names).
 //
@@ -25,7 +31,6 @@
 //   public/notices/REBRICKABLE.txt       attribution
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { gunzipSync } from "node:zlib";
 import {
   colourGroup,
   joinBrickLink,
@@ -38,35 +43,46 @@ import {
   type ColorAvailabilityPack,
   type PackPart,
 } from "../src/catalog/color-availability";
+import { printVariants } from "../src/catalog/print-variants";
+import {
+  SNAPSHOT,
+  csv,
+  download,
+  snapshotFile,
+  type Snapshot,
+} from "./rebrickable-data";
+import {
+  acceptedMoulds,
+  joinRebrickablePart,
+  mergeMouldDecisions,
+  mouldCandidates,
+  type MouldRow,
+} from "./part-joins";
 
 const refresh = process.argv.includes("--refresh");
+const refreshRebrickable =
+  refresh || process.argv.includes("--refresh-rebrickable");
 const hash = (b: Uint8Array | string) =>
   createHash("sha256").update(b).digest("hex");
-const AGENT = "Mozilla/5.0 (brick-editor colour availability build)";
 const RB_BASE = "https://cdn.rebrickable.com/media/downloads/";
-const RB_FILES = ["colors", "parts", "elements", "inventory_parts"] as const;
-const SNAPSHOT = "scripts/rebrickable-snapshot.json";
+const RB_FILES = [
+  "colors",
+  "parts",
+  "elements",
+  "inventory_parts",
+  // Mould (M) and alternate (A) links: candidates for the mould table only.
+  "part_relationships",
+] as const;
+const MOULDS = "scripts/mould-joins.json";
 const BL_COLOURS = "scripts/bricklink-colors.json";
 const BL_GUIDE = "https://www.bricklink.com/catalogColors.asp";
 const today = new Date().toISOString().slice(0, 10);
-
-type Snapshot = {
-  retrieved: string;
-  source: string;
-  license: string;
-  files: Record<string, { url: string; sha256: string; bytes: number }>;
-};
-async function download(url: string) {
-  const res = await fetch(url, { headers: { "User-Agent": AGENT } });
-  if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
-  return new Uint8Array(await res.arrayBuffer());
-}
 
 // ---- 1. Pinned Rebrickable snapshot.
 let snapshot: Snapshot | undefined = existsSync(SNAPSHOT)
   ? JSON.parse(readFileSync(SNAPSHOT, "utf8"))
   : undefined;
-if (refresh || !snapshot) {
+if (refreshRebrickable || !snapshot) {
   const dir = `.cache/rebrickable/${today}/`;
   mkdirSync(dir, { recursive: true });
   const files: Snapshot["files"] = {};
@@ -84,6 +100,8 @@ if (refresh || !snapshot) {
     files,
   };
   writeFileSync(SNAPSHOT, JSON.stringify(snapshot, null, 2) + "\n");
+}
+if (refresh || !existsSync(BL_COLOURS)) {
   // BrickLink's colour guide: id, name, LEGO name and type of every colour.
   const page = new TextDecoder()
     .decode(await download(BL_GUIDE))
@@ -114,54 +132,8 @@ if (refresh || !snapshot) {
     ) + "\n",
   );
 }
-const csvCache = `.cache/rebrickable/${snapshot.retrieved}/`;
-/** Verified bytes of one snapshot file: cache, else the same URL (which
- * must still serve identical bytes; otherwise run with --refresh). */
-async function rebrickable(name: string) {
-  const f = snapshot!.files[name];
-  const path = csvCache + name + ".csv.gz";
-  let bytes = existsSync(path) ? new Uint8Array(readFileSync(path)) : undefined;
-  if (!bytes || hash(bytes) !== f.sha256) {
-    bytes = await download(f.url);
-    if (hash(bytes) !== f.sha256)
-      throw new Error(
-        `${name}.csv.gz no longer matches the pinned snapshot of ${snapshot!.retrieved}; run with --refresh to take a new one`,
-      );
-    mkdirSync(csvCache, { recursive: true });
-    writeFileSync(path, bytes);
-  }
-  return gunzipSync(bytes).toString("utf8");
-}
-/** Minimal RFC 4180 CSV reader (quoted fields, doubled quotes). */
-function* csv(text: string) {
-  let header: string[] | undefined;
-  let row: string[] = [],
-    field = "",
-    quoted = false;
-  for (let i = 0; i <= text.length; i++) {
-    const ch = text[i];
-    if (quoted) {
-      if (ch === '"' && text[i + 1] === '"') {
-        field += '"';
-        i++;
-      } else if (ch === '"') quoted = false;
-      else field += ch;
-      continue;
-    }
-    if (ch === '"') quoted = true;
-    else if (ch === ",") {
-      row.push(field);
-      field = "";
-    } else if (ch === "\n" || ch === undefined) {
-      if (ch === undefined && !field && !row.length) break;
-      row.push(field.replace(/\r$/, ""));
-      field = "";
-      if (!header) header = row;
-      else yield Object.fromEntries(header.map((h, j) => [h, row[j]]));
-      row = [];
-    } else field += ch;
-  }
-}
+const pinned = snapshot;
+const rebrickable = (name: string) => snapshotFile(pinned, name);
 
 // ---- 2. Colour identities.
 const catalogueLock = JSON.parse(readFileSync("src/catalog/data.json", "utf8"))
@@ -236,9 +208,58 @@ for (const r of csv(await rebrickable("elements")))
   addRb(r.part_num, r.color_id);
 for (const r of csv(await rebrickable("inventory_parts")))
   addRb(r.part_num, r.color_id);
-const rbParts = new Set(
-  [...csv(await rebrickable("parts"))].map((r) => r.part_num),
+const rbNames = new Map(
+  [...csv(await rebrickable("parts"))].map((r) => [r.part_num, r.name]),
 );
+const rbParts = new Set(rbNames.keys());
+const relationships = new Map<string, string[]>();
+for (const r of csv(await rebrickable("part_relationships"))) {
+  if (r.rel_type !== "M" && r.rel_type !== "A") continue;
+  for (const [a, b] of [
+    [r.child_part_num, r.parent_part_num],
+    [r.parent_part_num, r.child_part_num],
+  ]) {
+    const list = relationships.get(a) ?? [];
+    if (!list.includes(r.rel_type + ":" + b)) list.push(r.rel_type + ":" + b);
+    relationships.set(a, list);
+  }
+}
+const coloured = (part: string) => rbColoursOf.has(part);
+const brickLinkItemOf = (name: string) =>
+  reviews[name.replace(/\.dat$/, "")]?.itemId ??
+  derivedMappings.parts[name] ??
+  undefined;
+
+// ---- 4b. Mould table: candidates from the rules, decisions by hand
+// (scripts/mould-joins.json keeps them across rebuilds; new candidates are
+// "pending" and join nothing until a maintainer accepts them).
+const joinedWithoutMoulds = new Set(
+  entries
+    .filter(([name, , , keywords]) =>
+      joinRebrickablePart({
+        name,
+        keywords,
+        brickLinkItem: brickLinkItemOf(name),
+        coloured,
+        exists: (p) => rbParts.has(p),
+      }),
+    )
+    .map(([name]) => name),
+);
+const previousMoulds = existsSync(MOULDS)
+  ? (JSON.parse(readFileSync(MOULDS, "utf8")).rows as MouldRow[])
+  : [];
+const mouldRows = mergeMouldDecisions(
+  mouldCandidates({
+    entries,
+    joined: joinedWithoutMoulds,
+    exists: (p) => rbParts.has(p),
+    rbName: (p) => rbNames.get(p),
+    relationships,
+  }),
+  previousMoulds,
+);
+const moulds = acceptedMoulds(mouldRows);
 
 // ---- 5. Per-part availability.
 const byCode = (a: string, b: string) => Number(a) - Number(b);
@@ -248,12 +269,20 @@ const coverage = {
   known: 0,
   verified: 0,
   derivedExact: 0,
+  derivedByRebrickableKeyword: 0,
+  /** Of those: printed or stickered variants (LDraw p/d suffix). */
+  printedByRebrickableKeyword: 0,
+  /** Keyword joins where Rebrickable also has the LDraw number itself (the
+   * LDraw file says that number is another part). */
+  keywordOverridesExact: 0,
   derivedByBrickLinkItem: 0,
+  derivedByMouldTable: 0,
   rebrickablePartWithoutColours: 0,
   unknown: 0,
   /** LDraw category → [placeable, known]. */
   byCategory: {} as Record<string, [number, number]>,
 };
+const printed = printVariants(entries).baseOf;
 const droppedBrickLink = new Map<number, number>();
 for (const [name, , category, keywords] of entries) {
   const number = name.replace(/\.dat$/, "");
@@ -269,22 +298,26 @@ for (const [name, , category, keywords] of entries) {
     entry.v = [...codes].sort(byCode).map(Number);
     entry.bl = review.itemId;
   }
-  const brickLinkItem =
-    review?.itemId ?? derivedMappings.parts[name] ?? undefined;
-  void keywords;
-  if (rbColoursOf.has(number)) {
-    entry.d = [...rbColoursOf.get(number)!].sort(byCode).map(Number);
-    entry.rb = number;
-    coverage.derivedExact++;
-  } else if (
-    !rbParts.has(number) &&
-    brickLinkItem &&
-    brickLinkItem !== number &&
-    rbColoursOf.has(brickLinkItem)
-  ) {
-    entry.d = [...rbColoursOf.get(brickLinkItem)!].sort(byCode).map(Number);
-    entry.rb = brickLinkItem;
-    coverage.derivedByBrickLinkItem++;
+  const join = joinRebrickablePart({
+    name,
+    keywords,
+    brickLinkItem: brickLinkItemOf(name),
+    mould: moulds,
+    coloured,
+    exists: (p) => rbParts.has(p),
+  });
+  if (join) {
+    entry.d = [...rbColoursOf.get(join.rb)!].sort(byCode).map(Number);
+    entry.rb = join.rb;
+    if (join.rule !== "=") entry.j = join.rule;
+    if (join.rule === "=") coverage.derivedExact++;
+    else if (join.rule === "k") {
+      coverage.derivedByRebrickableKeyword++;
+      if (printed.has(name)) coverage.printedByRebrickableKeyword++;
+      if (join.rb !== number && rbParts.has(number))
+        coverage.keywordOverridesExact++;
+    } else if (join.rule === "b") coverage.derivedByBrickLinkItem++;
+    else coverage.derivedByMouldTable++;
   } else if (rbParts.has(number)) coverage.rebrickablePartWithoutColours++;
   const row = (coverage.byCategory[category || "Other"] ??= [0, 0]);
   row[0]++;
@@ -405,6 +438,22 @@ writeFileSync(
   "scripts/color-joins.json",
   JSON.stringify(joins, null, 2) + "\n",
 );
+writeFileSync(
+  MOULDS,
+  JSON.stringify(
+    {
+      note: "Checked LDraw ↔ Rebrickable mould table (scripts/part-joins.ts). Candidates are placeable plain LDraw parts that no other rule joins, that Rebrickable lacks and whose files name no Rebrickable number, where a Rebrickable part with the same digits (bare or another mould letter) has mould (M) or alternate (A) relationships. Each row needs a human decision: accept only when the LDraw title and the Rebrickable name describe the same mould and no other LDraw part already joins that Rebrickable part. Accepted rows give derived colours (j=m); pending and rejected rows join nothing. Rebuilds keep decisions.",
+      rebrickable: {
+        retrieved: snapshot.retrieved,
+        sha256: snapshot.files.part_relationships?.sha256,
+      },
+      library: fullLock.releaseId,
+      rows: mouldRows,
+    },
+    null,
+    2,
+  ) + "\n",
+);
 
 const packId = `rebrickable-${snapshot.retrieved}+bricklink-review+${fullLock.releaseId}`;
 const pack: ColorAvailabilityPack = {
@@ -423,7 +472,7 @@ const pack: ColorAvailabilityPack = {
     derived: {
       provenance: "derived",
       source:
-        "Rebrickable database downloads (elements.csv, inventory_parts.csv); attribution in public/notices/REBRICKABLE.txt",
+        "Rebrickable database downloads (elements.csv, inventory_parts.csv; part_relationships.csv for mould-table candidates); attribution in public/notices/REBRICKABLE.txt",
       retrieved: snapshot.retrieved,
       sha256: Object.fromEntries(
         Object.entries(snapshot.files).map(([k, f]) => [k, f.sha256]),
@@ -435,8 +484,9 @@ const pack: ColorAvailabilityPack = {
   rules: [
     "v: LDraw colours of the BrickLink item's known colours (reviewed catalogue parts only): produced, catalogue verified. A colour absent from v is known not produced per BrickLink's catalogue.",
     "d: LDraw colours Rebrickable records for part_num `rb` as an element or in a set inventory: produced, derived (not catalogue verified). A colour absent from d is not recorded, which is not proof it was never made.",
-    "rb is the LDraw number itself when Rebrickable has that part_num; otherwise the BrickLink number of the part's reviewed or LDraw-keyword mapping, only when Rebrickable has no part with the LDraw number.",
-    "No suffix is stripped and no mould variant is merged: Rebrickable's mould relationships only link its own numbers, never an LDraw number it lacks, so such parts stay unknown.",
+    "rb, in order: (j=k) the one Rebrickable number the LDraw part file states in its own keywords (`Rebrickable <part_num>`; this joins printed variants: LDraw p suffixes, Rebrickable pr suffixes); (no j) the LDraw number itself when Rebrickable has that part_num with colours; (j=b) the BrickLink number of the part's reviewed or LDraw-keyword mapping, only when Rebrickable has no part with the LDraw number; (j=m) an accepted row of the hand-checked mould table scripts/mould-joins.json.",
+    "A part whose file names several Rebrickable numbers, or another number Rebrickable records no colours for, is not joined at all.",
+    "No suffix is stripped, no print borrows its base part's colours and no mould variant is merged without a checked mould-table row (candidates: unjoined plain parts differing by a mould letter from a Rebrickable part with mould M or alternate A relationships).",
     "Parts absent from `parts` have unknown availability.",
   ],
   coverage,

@@ -28,11 +28,31 @@ export const projectLibraryLock: Project["library"] = {
  * automatically). A project pinned to a retired release is re-pinned only when
  * none of its official references outside the curated pack is affected.
  */
-export const retiredFullLibraryLocks: {
+type RetiredFullLock = {
   releaseId: string;
   manifestSha256: string;
   affected: string[] | null;
-}[] = retiredFull;
+};
+export const retiredFullLibraryLocks: RetiredFullLock[] = [
+  ...(retiredFull as RetiredFullLock[]),
+  // Test seam: browser tests declare a synthetic retired release (with the
+  // parts it "changed") before the app loads, since the shipped list is empty
+  // until LDraw publishes a new complete release. Never set by the app.
+  ...retiredTestLocks(),
+];
+function retiredTestLocks(): RetiredFullLock[] {
+  const injected = (globalThis as { __brickTestRetiredFullLocks?: unknown })
+    .__brickTestRetiredFullLocks;
+  return Array.isArray(injected)
+    ? injected.filter(
+        (l) =>
+          l &&
+          typeof l.releaseId === "string" &&
+          typeof l.manifestSha256 === "string" &&
+          (l.affected === null || Array.isArray(l.affected)),
+      )
+    : [];
+}
 /** Locks of superseded library releases whose every file is byte-identical in
  * the current pack (checked by `npm run library:validate`). */
 export const retiredLibraryLocks: Project["library"][] =

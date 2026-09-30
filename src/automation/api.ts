@@ -29,6 +29,7 @@ import {
   unresolvedCuratedRefs,
 } from "../catalog/full-library-loader";
 import { curatedHas } from "../catalog/full-library";
+import { libraryUpdateStatus } from "../catalog/library-update";
 import { encodeNative, decodeNative } from "../persistence/native";
 import {
   InventoryService,
@@ -592,6 +593,47 @@ export function createAPI(
       export: async (input: Parameters<InventoryService["export"]>[1]) => {
         editor.requireMaterialization();
         return inventory.export(editor.project, input);
+      },
+    },
+    library: {
+      /** What re-pinning to the current complete library would change. */
+      updateStatus: async () => libraryUpdateStatus(editor.project),
+      /** Re-pins the project (undoable), optionally after a checkpoint. */
+      update: async (input: {
+        expectedRevision: number;
+        checkpoint?: boolean;
+      }) => {
+        ensure(
+          input?.expectedRevision === editor.revision,
+          "REVISION_CONFLICT",
+          "The project changed; preview the update again.",
+        );
+        const status = libraryUpdateStatus(editor.project);
+        ensure(
+          status.needed && status.pinned,
+          "INVALID_INPUT",
+          "This project already uses the latest parts library.",
+        );
+        const checkpoint = input.checkpoint
+          ? await createCheckpoint(
+              editor.project,
+              `Before parts library update (${status.pinned!.releaseId})`,
+              editor.materialization.estimate.metrics.leafCount,
+            )
+          : undefined;
+        ensure(
+          input.expectedRevision === editor.revision,
+          "REVISION_CONFLICT",
+          "The project changed; preview the update again.",
+        );
+        const result = editor.dispatch({
+          schemaVersion: 1,
+          commandId: uid(),
+          expectedRevision: editor.revision,
+          type: "library.update",
+          payload: { expected: status.pinned },
+        });
+        return { ...result, status, checkpoint };
       },
     },
     query: async (input: QueryRequest = {}) => {

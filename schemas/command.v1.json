@@ -2533,52 +2533,176 @@
           "const": "inventory.override"
         },
         "payload": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "occurrenceId": {
+                  "type": "string",
+                  "minLength": 5,
+                  "maxLength": 393409,
+                  "format": "occurrence-id"
+                },
+                "mapping": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "itemId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1024
+                        },
+                        "colorId": {
+                          "type": "string",
+                          "pattern": "^[0-9]+$"
+                        },
+                        "acknowledged": {
+                          "const": true
+                        },
+                        "substitution": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "itemId",
+                        "colorId",
+                        "acknowledged",
+                        "substitution"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "occurrenceId",
+                "mapping"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "part": {
+                  "type": "string",
+                  "pattern": "^(official|project|missing):[^\\s:][^:]{0,1023}$"
+                },
+                "decision": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "itemId": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,39}$"
+                        },
+                        "origin": {
+                          "enum": [
+                            "candidate",
+                            "derived",
+                            "reviewed",
+                            "user"
+                          ]
+                        },
+                        "checked": {
+                          "type": "boolean"
+                        },
+                        "exclude": {
+                          "type": "boolean"
+                        },
+                        "acceptedColors": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                          },
+                          "maxItems": 1000
+                        },
+                        "acknowledged": {
+                          "const": true
+                        }
+                      },
+                      "required": [
+                        "acknowledged"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "part",
+                "decision"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "dryRun": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "commandId",
+        "expectedRevision",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "library.update"
+        },
+        "payload": {
           "type": "object",
           "properties": {
-            "occurrenceId": {
-              "type": "string",
-              "minLength": 5,
-              "maxLength": 393409,
-              "format": "occurrence-id"
-            },
-            "mapping": {
-              "oneOf": [
-                {
-                  "type": "null"
+            "expected": {
+              "type": "object",
+              "properties": {
+                "releaseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "itemId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 1024
-                    },
-                    "colorId": {
-                      "type": "string",
-                      "pattern": "^[0-9]+$"
-                    },
-                    "acknowledged": {
-                      "const": true
-                    },
-                    "substitution": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "itemId",
-                    "colorId",
-                    "acknowledged",
-                    "substitution"
-                  ],
-                  "additionalProperties": false
+                "manifestSha256": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
                 }
-              ]
+              },
+              "required": [
+                "releaseId",
+                "manifestSha256"
+              ],
+              "additionalProperties": false
             }
           },
           "required": [
-            "occurrenceId",
-            "mapping"
+            "expected"
           ],
           "additionalProperties": false
         },

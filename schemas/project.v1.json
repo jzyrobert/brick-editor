@@ -144,6 +144,52 @@
             "maxLength": 393409,
             "format": "occurrence-id"
           }
+        },
+        "partDecisions": {
+          "type": "object",
+          "maxProperties": 10000,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,39}$"
+              },
+              "origin": {
+                "enum": [
+                  "candidate",
+                  "derived",
+                  "reviewed",
+                  "user"
+                ]
+              },
+              "checked": {
+                "type": "boolean"
+              },
+              "exclude": {
+                "type": "boolean"
+              },
+              "acceptedColors": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                },
+                "maxItems": 1000
+              },
+              "acknowledged": {
+                "const": true
+              }
+            },
+            "required": [
+              "acknowledged"
+            ],
+            "additionalProperties": false
+          },
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^(official|project|missing):[^\\s:][^:]{0,1023}$"
+          }
         }
       },
       "required": [

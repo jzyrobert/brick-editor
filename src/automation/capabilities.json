@@ -90,7 +90,17 @@
       "mappedParts": 209,
       "completeExportBlocksUnresolved": true,
       "partialReportArchive": true,
-      "liveDestinationTest": false
+      "liveDestinationTest": false,
+      "mappingTiers": [
+        "verified",
+        "reviewed",
+        "derived",
+        "ambiguous",
+        "unmapped",
+        "custom"
+      ],
+      "resolutionList": "inventory.preview returns resolution rows (part × colour: tier, mapping, candidates, colour existence, status, blocking codes); decisions via the inventory.override command with { part, decision } (choose a candidate, accept or replace a mapping, mark checked, accept colours, exclude), undoable and saved in native projects",
+      "libraryUpdate": "library.updateStatus() previews which parts change when a project pinned to an older complete library is re-pinned; library.update({ expectedRevision, checkpoint? }) applies the undoable library.update command and records metadata.previousLocks"
     },
     "render": {
       "webgl2": true,

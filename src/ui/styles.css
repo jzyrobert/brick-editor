@@ -975,6 +975,220 @@ th {
   width: 100%;
 }
 
+/* Parts list check: one compact row per part and colour, needing attention
+ * first; a row opens in place to show what is known and what to do. */
+.resolution-list {
+  margin: 18px 0 14px;
+}
+.resolution-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-bottom: 8px;
+}
+.resolution-head h3 {
+  margin: 0;
+  font-size: var(--text-title);
+}
+.resolution-head .segmented {
+  flex: 0 1 340px;
+}
+.resolution-head .segmented button {
+  white-space: nowrap;
+}
+.resolution-done {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 10px;
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+.resolution-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: min(46dvh, 420px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-field);
+  background: var(--card);
+}
+.resolution-row + .resolution-row {
+  border-top: 1px solid var(--line);
+}
+.resolution-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+}
+.resolution-summary[aria-expanded="true"] {
+  background: var(--paper);
+}
+.resolution-swatch {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid rgba(29, 34, 48, 0.25);
+}
+.resolution-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.resolution-name strong,
+.resolution-name small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.resolution-name strong {
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+.resolution-name small {
+  margin-top: 2px;
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--secondary);
+}
+.resolution-badge {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: var(--text-label);
+  font-weight: 650;
+  white-space: nowrap;
+}
+.badge-ok {
+  background: rgba(46, 125, 67, 0.12);
+  color: var(--accent-deep);
+}
+.badge-act {
+  background: var(--caution-wash);
+  border: 1px solid var(--caution-line);
+  color: var(--caution-ink);
+}
+.badge-muted {
+  background: var(--tab-well);
+  color: var(--secondary);
+}
+.resolution-detail {
+  padding: 4px 12px 14px 38px;
+  background: var(--paper);
+  font-size: var(--text-label);
+}
+.resolution-detail p {
+  margin: 6px 0;
+  line-height: 1.5;
+}
+.resolution-candidates {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0;
+}
+.resolution-candidate {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.resolution-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+.resolution-actions button,
+.resolution-candidate button {
+  min-height: 40px;
+  font-size: var(--text-label);
+}
+.resolution-actions .link-button {
+  background: transparent;
+  border-color: transparent;
+  text-decoration: underline;
+}
+.resolution-own label {
+  display: grid;
+  gap: 6px;
+  color: var(--secondary);
+}
+.resolution-own label > span {
+  display: flex;
+  gap: 6px;
+}
+.resolution-own input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+}
+.resolution-own small {
+  display: block;
+  margin-top: 5px;
+}
+@media (max-width: 650px) {
+  .resolution-detail {
+    padding-left: 12px;
+  }
+  .resolution-head .segmented {
+    flex-basis: 100%;
+  }
+  .resolution-actions button {
+    flex: 1 1 calc(50% - 6px);
+  }
+}
+
+/* Project: update a build pinned to an older complete parts library. */
+.library-update {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--caution-line);
+  border-radius: var(--r-card);
+  background: var(--caution-wash);
+}
+.library-update h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  font-size: var(--text-title);
+  color: var(--caution-ink);
+}
+.library-update p {
+  margin: 6px 0;
+  line-height: 1.5;
+}
+.library-update-parts {
+  list-style: none;
+  margin: 8px 0 12px;
+  padding: 0;
+  max-height: 180px;
+  overflow: auto;
+}
+.library-update-parts li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--caution-line);
+  font-size: var(--text-label);
+}
+.library-update-parts small {
+  color: var(--secondary);
+  white-space: nowrap;
+}
+
 /* Panel tools: selection, layers, shortcuts, instructions, rigs, fill, replace. */
 .selection-tools {
   margin: 12px 0;

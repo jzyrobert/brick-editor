@@ -57,6 +57,27 @@ export type InventoryOverride = {
   acknowledged: boolean;
   substitution: boolean;
 };
+/**
+ * The user's purchasing decision for every occurrence of one part (keyed
+ * "namespace:ref"), made in the parts-list resolution list (spec §6.6). An
+ * occurrence override (`overrides`) still wins for its own occurrence.
+ * Decisions are acknowledged, never catalogue verified.
+ */
+export type InventoryPartDecision = {
+  /** BrickLink item to buy instead of the mapping pack's (none: keep it). */
+  itemId?: string;
+  /** Where `itemId` came from: one of the part file's ambiguous candidates,
+   * the pack's derived or reviewed mapping accepted as is, or typed. */
+  origin?: "candidate" | "derived" | "reviewed" | "user";
+  /** The user says they checked the number on BrickLink themselves. */
+  checked?: boolean;
+  /** Leave every occurrence of this part out of the list (reported). */
+  exclude?: boolean;
+  /** LDraw colour codes of this part whose uncertain existence the user
+   * accepted (never a colour known not to be produced). */
+  acceptedColors?: string[];
+  acknowledged: true;
+};
 export type InstructionStepMetadata = { notes?: string; camera?: CameraSpec };
 export type InstructionPlan = {
   name: string;
@@ -90,6 +111,8 @@ export type Project = {
     mappingPackId: string;
     mappingPackSha256: string;
     overrides: Record<string, InventoryOverride>;
+    /** Part-level decisions ("official:3001.dat" → decision). */
+    partDecisions?: Record<string, InventoryPartDecision>;
   };
   models: Record<string, Model>;
   layers: Record<string, Layer>;

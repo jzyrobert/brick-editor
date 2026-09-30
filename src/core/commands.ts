@@ -11,6 +11,8 @@ import {
 } from "./resource-profile";
 import { assertRequestBudget } from "./request-budget";
 import { editInstructions } from "../instructions/edit";
+import { partKey, setPartDecision } from "../inventory/decisions";
+import { updateFullLibraryLock } from "../catalog/library-update";
 import { makeSubmodel, sharedDefinitionTargets } from "./models";
 import { duplicateLayer, mutateFolder } from "./layers";
 import {
@@ -234,6 +236,10 @@ function mutate(
     }
     case "scene.set":
       applySceneCommand(p, v);
+      break;
+    case "library.update":
+      fields(v, ["expected"]);
+      updateFullLibraryLock(p, v.expected);
       break;
     case "project.rename":
       fields(v, ["title"]);
@@ -678,6 +684,18 @@ function mutate(
       for (const o of editable(p, v)) p.layerAssignments[o.id] = v.layerId;
       break;
     case "inventory.override":
+      if ("part" in v) {
+        // Part-level parts-list decision (src/inventory/decisions.ts).
+        fields(v, ["part", "decision"]);
+        ensure(
+          v.decision === null ||
+            occurrences(p).some((o) => partKey(o) === v.part),
+          "INVALID_INPUT",
+          "That part is not in this build",
+        );
+        setPartDecision(p, v.part, v.decision);
+        break;
+      }
       fields(v, ["occurrenceId", "mapping"]);
       ensure(
         occurrences(p).some((o) => o.id === v.occurrenceId),

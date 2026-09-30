@@ -97,6 +97,26 @@ const scope = {
     obj({ kind: { const: "submodel" }, occurrenceId }),
   ],
 };
+// Parts-list decisions (src/inventory/decisions.ts keeps the same patterns).
+const partKey = {
+  type: "string",
+  pattern: "^(official|project|missing):[^\\s:][^:]{0,1023}$",
+};
+const brickLinkItem = {
+  type: "string",
+  pattern: "^[A-Za-z0-9][A-Za-z0-9._-]{0,39}$",
+};
+const partDecision = obj(
+  {
+    itemId: brickLinkItem,
+    origin: { enum: ["candidate", "derived", "reviewed", "user"] },
+    checked: { type: "boolean" },
+    exclude: { type: "boolean" },
+    acceptedColors: arr({ type: "string", pattern: "^[0-9]+$" }, 1000),
+    acknowledged: { const: true },
+  },
+  ["acknowledged"],
+);
 const project = obj({
   schemaVersion: { const: 1 },
   id,
@@ -124,18 +144,26 @@ const project = obj({
     },
     ["releaseId", "manifestSha256", "colorConfigSha256"],
   ),
-  marketplace: obj({
-    mappingPackId: id,
-    mappingPackSha256: id,
-    overrides: occurrenceDictionary(
-      obj({
-        itemId: id,
-        colorId: id,
-        acknowledged: { type: "boolean" },
-        substitution: { type: "boolean" },
-      }),
-    ),
-  }),
+  marketplace: obj(
+    {
+      mappingPackId: id,
+      mappingPackSha256: id,
+      overrides: occurrenceDictionary(
+        obj({
+          itemId: id,
+          colorId: id,
+          acknowledged: { type: "boolean" },
+          substitution: { type: "boolean" },
+        }),
+      ),
+      // Part-level parts-list decisions ("official:3001.dat" → decision).
+      partDecisions: {
+        ...dictionary(partDecision),
+        propertyNames: partKey,
+      },
+    },
+    ["mappingPackId", "mappingPackSha256", "overrides"],
+  ),
   models: dictionary(
     obj({
       id,
@@ -609,19 +637,34 @@ const payloads: Record<string, any> = {
     "occurrenceIds",
     "layerId",
   ]),
-  "inventory.override": obj({
-    occurrenceId,
-    mapping: {
-      oneOf: [
-        { type: "null" },
-        obj({
-          itemId: id,
-          colorId: { type: "string", pattern: "^[0-9]+$" },
-          acknowledged: { const: true },
-          substitution: { type: "boolean" },
-        }),
-      ],
-    },
+  // One occurrence's explicit mapping, or (with `part`) the parts-list
+  // decision for every occurrence of one part; null clears either.
+  "inventory.override": {
+    oneOf: [
+      obj({
+        occurrenceId,
+        mapping: {
+          oneOf: [
+            { type: "null" },
+            obj({
+              itemId: id,
+              colorId: { type: "string", pattern: "^[0-9]+$" },
+              acknowledged: { const: true },
+              substitution: { type: "boolean" },
+            }),
+          ],
+        },
+      }),
+      obj({
+        part: partKey,
+        decision: { oneOf: [{ type: "null" }, partDecision] },
+      }),
+    ],
+  },
+  // Re-pin the complete official library to the current release (the
+  // project's previous lock goes to metadata.previousLocks; undoable).
+  "library.update": obj({
+    expected: obj({ releaseId: id, manifestSha256: id }),
   }),
   "instructions.create": obj({ name: str, occurrenceIds: arr(occurrenceId) }, [
     "name",
@@ -835,6 +878,21 @@ const query = obj(
   },
   [],
 );
+const colorExistence = [
+  "verified",
+  "derived",
+  "not-produced",
+  "not-recorded",
+  "unknown",
+];
+const mappingTiers = [
+  "verified",
+  "reviewed",
+  "derived",
+  "ambiguous",
+  "unmapped",
+  "custom",
+];
 const inventoryPreview = obj({
   previewId: id,
   documentRevision: integer,
@@ -852,16 +910,45 @@ const inventoryPreview = obj({
       occurrenceIds: arr(occurrenceId),
       layers: dictionary(integer),
       verification: { enum: ["verified", "acknowledged"] },
-      colorExistence: {
-        enum: [
-          "verified",
-          "derived",
-          "not-produced",
-          "not-recorded",
-          "unknown",
-        ],
-      },
+      colorExistence: { enum: colorExistence },
     }),
+  ),
+  resolution: arr(
+    obj(
+      {
+        part: partKey,
+        ref: id,
+        namespace: { enum: ["official", "project", "missing"] },
+        colorCode: id,
+        colorId: id,
+        quantity: integer,
+        occurrenceIds: arr(occurrenceId),
+        tier: { enum: mappingTiers },
+        mapping: { enum: [...mappingTiers, "user", "override", "excluded"] },
+        itemId: id,
+        suggestedItemId: id,
+        candidates: arr(id, 100),
+        origin: { enum: ["candidate", "derived", "reviewed", "user"] },
+        colorExistence: { enum: colorExistence },
+        colorAccepted: { type: "boolean" },
+        status: { enum: ["ready", "accepted", "needs-attention", "excluded"] },
+        problems: arr(id, 100),
+      },
+      [
+        "part",
+        "ref",
+        "namespace",
+        "colorCode",
+        "quantity",
+        "occurrenceIds",
+        "tier",
+        "mapping",
+        "colorExistence",
+        "colorAccepted",
+        "status",
+        "problems",
+      ],
+    ),
   ),
   diagnostics: arr(diagnostic),
   excludedOccurrenceIds: arr(occurrenceId),
@@ -1255,6 +1342,14 @@ const api = {
     "render.image": { $ref: "render" },
     "inventory.preview": { $ref: "inventory" },
     "inventory.export": { $ref: "inventoryExport" },
+    "library.updateStatus": obj({}),
+    "library.update": obj(
+      {
+        expectedRevision: integer,
+        checkpoint: { type: "boolean" },
+      },
+      ["expectedRevision"],
+    ),
     ready: obj({ minRevision: integer, strict: { type: "boolean" } }, []),
     capabilities: obj({}),
     "jobs.status": obj({ id }),

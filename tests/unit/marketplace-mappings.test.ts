@@ -90,7 +90,13 @@ describe("derived mapping rules", () => {
     expect(hash(readFileSync("src/catalog/mappings.json"))).toBe(
       mappingLock.mappingPackSha256,
     );
-    expect(mappings.id).toBe("curated-catalogue-4+" + derivedTable.id);
+    const reviewedDate = Object.values(mappings.reviewed.parts)
+      .map((r) => r.reviewed)
+      .sort()
+      .at(-1);
+    expect(mappings.id).toBe(
+      `curated-catalogue-4+reviewed-${reviewedDate}+${derivedTable.id}`,
+    );
     expect(mappings.derived.mapped).toBe(
       Object.keys(derivedTable.parts).length,
     );

@@ -118,6 +118,150 @@
       },
       "maxItems": 100000
     },
+    "resolution": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "part": {
+            "type": "string",
+            "pattern": "^(official|project|missing):[^\\s:][^:]{0,1023}$"
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "namespace": {
+            "enum": [
+              "official",
+              "project",
+              "missing"
+            ]
+          },
+          "colorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "colorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "occurrenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 5,
+              "maxLength": 393409,
+              "format": "occurrence-id"
+            },
+            "maxItems": 100000
+          },
+          "tier": {
+            "enum": [
+              "verified",
+              "reviewed",
+              "derived",
+              "ambiguous",
+              "unmapped",
+              "custom"
+            ]
+          },
+          "mapping": {
+            "enum": [
+              "verified",
+              "reviewed",
+              "derived",
+              "ambiguous",
+              "unmapped",
+              "custom",
+              "user",
+              "override",
+              "excluded"
+            ]
+          },
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "suggestedItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "maxItems": 100
+          },
+          "origin": {
+            "enum": [
+              "candidate",
+              "derived",
+              "reviewed",
+              "user"
+            ]
+          },
+          "colorExistence": {
+            "enum": [
+              "verified",
+              "derived",
+              "not-produced",
+              "not-recorded",
+              "unknown"
+            ]
+          },
+          "colorAccepted": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "ready",
+              "accepted",
+              "needs-attention",
+              "excluded"
+            ]
+          },
+          "problems": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "part",
+          "ref",
+          "namespace",
+          "colorCode",
+          "quantity",
+          "occurrenceIds",
+          "tier",
+          "mapping",
+          "colorExistence",
+          "colorAccepted",
+          "status",
+          "problems"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 100000
+    },
     "diagnostics": {
       "type": "array",
       "items": {
@@ -194,6 +338,7 @@
     "lotCount",
     "canExportComplete",
     "rows",
+    "resolution",
     "diagnostics",
     "excludedOccurrenceIds",
     "substitutions",

@@ -29,6 +29,15 @@ import {
 import { InventoryService } from "../../src/inventory/service";
 import { importLDraw } from "../../src/ldraw/io";
 import { validateColorAvailability } from "../../scripts/validate-color-availability";
+import {
+  acceptedMoulds,
+  joinRebrickablePart,
+  mergeMouldDecisions,
+  mouldCandidates,
+  rebrickableKeywords,
+  titlesAgree,
+  type MouldRow,
+} from "../../scripts/part-joins";
 
 const pack = packJson as unknown as ColorAvailabilityPack;
 const sha = (b: Buffer | string) =>
@@ -94,31 +103,188 @@ describe("colour availability pack", () => {
     expect(colorExistence("6541.dat", "17")).toBe("not-recorded");
   });
   it("leaves parts no join rule reaches unknown", () => {
-    // A printed brick: LDraw 3001p01 is BrickLink 3001pb079; Rebrickable
-    // has neither number, and the base part's colours are not lent to it.
-    expect(pack.parts["3001p01.dat"]).toBeUndefined();
-    expect(partAvailability("3001p01.dat").status).toBe("unknown");
-    expect(colorExistence("3001p01.dat", "4")).toBe("unknown");
-    expect(madeIn("3001p01.dat", "4")).toBe(true);
+    // Lipstick 25866p01: its file names two BrickLink numbers and no
+    // Rebrickable number, and the base part's colours are not lent to it.
+    expect(pack.parts["25866p01.dat"]).toBeUndefined();
+    expect(partAvailability("25866p01.dat").status).toBe("unknown");
+    expect(colorExistence("25866p01.dat", "4")).toBe("unknown");
+    expect(madeIn("25866p01.dat", "4")).toBe(true);
   });
-  it("joins part numbers only exactly or through a stated BrickLink number", () => {
+  it("joins printed variants through the Rebrickable number their file states", () => {
+    // LDraw 3001p01 names Rebrickable 3001pr0004 (a yellow printed brick);
+    // the plain 3001's many colours are not lent to it.
+    expect(pack.parts["3001p01.dat"]).toEqual({
+      d: [14],
+      rb: "3001pr0004",
+      j: "k",
+    });
+    expect(colorExistence("3001p01.dat", "14")).toBe("derived");
+    expect(colorExistence("3001p01.dat", "4")).toBe("not-recorded");
+    const coverage = pack.coverage as Record<string, number>;
+    expect(coverage.printedByRebrickableKeyword).toBeGreaterThan(6000);
+  });
+  it("prefers the file's own Rebrickable number over an equal number", () => {
+    // LDraw 4738a (with slots) is Rebrickable 4738b; Rebrickable's 4738a is
+    // the chest without slots.
+    expect(pack.parts["4738a.dat"].rb).toBe("4738b");
+    expect(pack.parts["4738a.dat"].j).toBe("k");
+    expect(
+      (pack.coverage as Record<string, number>).keywordOverridesExact,
+    ).toBe(48);
+  });
+  it("joins moulds only through checked mould-table rows", () => {
+    const table = JSON.parse(
+      readFileSync("scripts/mould-joins.json", "utf8"),
+    ) as { rows: MouldRow[] };
+    const accepted = acceptedMoulds(table.rows);
+    expect([...accepted]).toEqual([
+      ["6217a.dat", "6217"],
+      ["11187a.dat", "11187"],
+    ]);
+    for (const r of table.rows) {
+      expect(r.decision, r.ldraw).not.toBe("pending");
+      expect(r.note, r.ldraw).toBeTruthy();
+      expect(r.relationships.length, r.ldraw).toBeGreaterThan(0);
+    }
+    expect(pack.parts["6217a.dat"]).toMatchObject({ rb: "6217", j: "m" });
+    // Rejected: LDraw 64567b has no bottom ring, Rebrickable 64567 has one.
+    expect(pack.parts["64567b.dat"]).toBeUndefined();
+    for (const [name, p] of Object.entries(pack.parts))
+      if (p.j === "m") expect(accepted.get(name), name).toBe(p.rb);
+  });
+  it("joins part numbers only by a stated number, exactly or by a checked row", () => {
     const reviewed = mappings.parts as Record<string, { itemId: string }>;
     const derived = derivedMappings.parts as Record<string, string>;
-    let viaItem = 0;
+    const full = new Map(
+      (
+        JSON.parse(
+          readFileSync(
+            `public/libraries/${fullLibraryLock.releaseId}/catalog.json`,
+            "utf8",
+          ),
+        ) as string[][]
+      ).map((e) => [e[0], e[3]]),
+    );
+    const moulds = acceptedMoulds(
+      JSON.parse(readFileSync("scripts/mould-joins.json", "utf8")).rows,
+    );
+    const by: Record<string, number> = {};
     for (const [name, p] of Object.entries(pack.parts)) {
       if (p.v) expect(p.bl, name).toBe(reviewed["official:" + name].itemId);
       if (!p.rb) continue;
       const number = name.replace(/\.dat$/, "");
-      if (p.rb === number) continue;
-      viaItem++;
-      expect(
-        [reviewed["official:" + name]?.itemId, derived[name]],
-        name,
-      ).toContain(p.rb);
+      by[p.j ?? "="] = (by[p.j ?? "="] ?? 0) + 1;
+      if (!p.j) expect(p.rb, name).toBe(number);
+      else if (p.j === "k")
+        expect(rebrickableKeywords(full.get(name)), name).toEqual([p.rb]);
+      else if (p.j === "b")
+        expect(
+          [reviewed["official:" + name]?.itemId, derived[name]],
+          name,
+        ).toContain(p.rb);
+      else expect(moulds.get(name), name).toBe(p.rb);
     }
-    expect(viaItem).toBeGreaterThan(100);
-    // 27c names BrickLink 27 in its own keywords.
+    expect(by.k).toBeGreaterThan(7000);
+    expect(by["="]).toBeGreaterThan(4000);
+    // 27c names Rebrickable 27 in its own keywords.
     expect(pack.parts["27c.dat"].rb).toBe("27");
+  });
+  it("applies the join rules in order and refuses unclear numbers", () => {
+    const has = new Set(["3001", "3001pr0004", "4738a", "4738b", "27", "x"]);
+    const coloured = (p: string) => has.has(p);
+    const base = { coloured, exists: coloured };
+    expect(
+      joinRebrickablePart({
+        ...base,
+        name: "3001p01.dat",
+        keywords: "BrickLink 3001pb079, Rebrickable 3001pr0004",
+      }),
+    ).toEqual({ rb: "3001pr0004", rule: "k" });
+    expect(
+      joinRebrickablePart({
+        ...base,
+        name: "4738a.dat",
+        keywords: "Rebrickable 4738b",
+      }),
+    ).toEqual({ rb: "4738b", rule: "k" });
+    expect(joinRebrickablePart({ ...base, name: "3001.dat" })).toEqual({
+      rb: "3001",
+      rule: "=",
+    });
+    // Two stated numbers, or a stated number without colours: no join, not
+    // even the exact one.
+    expect(
+      joinRebrickablePart({
+        ...base,
+        name: "3001.dat",
+        keywords: "Rebrickable 3001, Rebrickable 3001a",
+      }),
+    ).toBeNull();
+    expect(
+      joinRebrickablePart({
+        ...base,
+        name: "3001.dat",
+        keywords: "Rebrickable 3001z",
+      }),
+    ).toBeNull();
+    expect(
+      joinRebrickablePart({ ...base, name: "27c.dat", brickLinkItem: "27" }),
+    ).toEqual({ rb: "27", rule: "b" });
+    expect(
+      joinRebrickablePart({
+        ...base,
+        name: "99a.dat",
+        mould: new Map([["99a.dat", "x"]]),
+      }),
+    ).toEqual({ rb: "x", rule: "m" });
+    // No rule strips a print suffix.
+    expect(joinRebrickablePart({ ...base, name: "3001p02.dat" })).toBeNull();
+  });
+  it("proposes mould candidates only with Rebrickable M/A links and keeps decisions", () => {
+    const rows = mouldCandidates({
+      entries: [
+        ["500a.dat", "Brick 1 x 2 Old", "Brick"],
+        ["501a.dat", "Brick 1 x 3 Old", "Brick"],
+        ["502a.dat", "Brick 1 x 4", "Brick", "Rebrickable 502"],
+      ],
+      joined: new Set(),
+      exists: (p) => ["500", "501", "502"].includes(p),
+      rbName: (p) => "Brick " + p,
+      relationships: new Map([
+        ["500", ["M:500b"]],
+        ["502", ["M:502b"]],
+      ]),
+    });
+    expect(rows.map((r) => [r.ldraw, r.rebrickable, r.decision])).toEqual([
+      ["500a.dat", "500", "pending"],
+    ]);
+    const merged = mergeMouldDecisions(rows, [
+      { ...rows[0], decision: "accept", note: "same mould", checked: "d" },
+    ]);
+    expect(acceptedMoulds(merged)).toEqual(new Map([["500a.dat", "500"]]));
+    expect(() =>
+      acceptedMoulds([{ ...merged[0] }, { ...merged[0], rebrickable: "500c" }]),
+    ).toThrow(/two parts/);
+  });
+  it("checks titles for dimensions, negations and shared words", () => {
+    expect(
+      titlesAgree("=Tile  1 x  4 with Groove", "Tile 1 x 4 with Groove"),
+    ).toMatchObject({ agree: true });
+    expect(
+      titlesAgree("Wing  2 x  3 Right with Chamfer", "Wedge Plate 3 x 2 Right"),
+    ).toMatchObject({ agree: true });
+    expect(
+      titlesAgree(
+        "Brick  1 x  2 without Bottom Tube",
+        "Brick 1 x 2 with Bottom Tube",
+      ),
+    ).toMatchObject({ agree: false });
+    expect(titlesAgree("Brick  1 x  2", "Brick 1 x 3")).toMatchObject({
+      agree: false,
+    });
+    expect(titlesAgree("Minifig Goblet", "Wheel Rim")).toMatchObject({
+      agree: false,
+    });
   });
   it("covers the common bricks, plates and tiles", () => {
     for (const part of [
