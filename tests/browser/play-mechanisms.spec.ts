@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { openMode } from "./helpers/mode";
+import { enterPlay, openRemoteControls } from "./helpers/play";
 test("Play uses posed door colliders, refuses actor-crossing motion and restores authored geometry", async ({
   page,
 }) => {
@@ -121,12 +122,8 @@ test("1080×1800 touch UI selects an authored door rig and controls its live col
   );
   await openMode(page, "Play");
   await page.getByLabel("Explore with mechanism").selectOption("door");
-  await page.getByRole("button", { name: "Enter Play", exact: true }).click();
-  const doorControls = page.getByRole("button", {
-    name: "Original hinged door controls",
-  });
-  await expect(doorControls).toBeVisible();
-  await doorControls.click();
+  await enterPlay(page);
+  await openRemoteControls(page);
   const slider = await page.getByLabel("Explore joint hinge").boundingBox();
   await page.touchscreen.tap(
     slider!.x + slider!.width / 2,
