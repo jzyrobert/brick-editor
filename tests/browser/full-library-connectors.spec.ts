@@ -114,9 +114,12 @@ test("roadster and castle health compare every part by derived shape; the roadst
     expect(r.missing).toBe("ok");
     // Every part now has derived shape data: nothing falls back to outer boxes.
     expect(r.detail).not.toMatch(/outer boxes/);
-    // What remains nests through connections that are not modelled yet
-    // (a flag's clips on its pole, wheels on pins, tyres on rims).
-    expect(r.detail).toMatch(/connection .*is not modelled/);
+    // Anything left nests through connections that are not modelled yet (a
+    // flag's clips on its pole, tyres on rims); wheels on their holders are
+    // now recognised, so a build may report no overlaps at all.
+    expect(r.detail).toMatch(
+      /connection .*is not modelled|No overlapping part bodies/,
+    );
   }
   expect(result.unmapped).toBe(0);
   expect(result.items).toEqual(
