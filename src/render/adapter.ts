@@ -8,9 +8,16 @@ import {
   type Workplane,
 } from "../edit/workplane";
 import {
-  selectRegion as selectRenderedRegion,
+  boxFootprint,
+  DEFAULT_CONTAINMENT,
+  renderIdCoverage,
+  snapshotSelect,
+  type Containment,
+  type Footprint,
+  type IdSource,
   type Point2,
   type RegionMode,
+  type RegionSnapshot,
 } from "./region-selection";
 import {
   TransformHandles,
@@ -39,7 +46,7 @@ import {
   type QualityControls,
   type RenderProfile,
 } from "./quality";
-import { RenderBatches } from "./batching";
+import { isTreated, RenderBatches } from "./batching";
 import {
   resolveLook,
   lookUsesPipeline,
@@ -3151,20 +3158,190 @@ export class SceneAdapter {
       warnings,
     };
   }
-  selectRegion(polygon: Point2[], mode: RegionMode) {
+  /**
+   * Capture what a box or lasso gesture needs from the current view, once per
+   * gesture: Visible renders one depth-tested ID pass through the render
+   * batches (one draw per batch, not per part); Through projects each shown
+   * part's box. Hidden parts (layers, floors above a focus, instruction steps)
+   * and parts wholly beyond a section cut are never included; ghosted parts
+   * neither occlude nor count as seen. `floorOnly` keeps a focused floor's
+   * parts and leaves out the floors below it.
+   */
+  regionSnapshot(
+    mode: RegionMode,
+    options: { floorOnly?: boolean } = {},
+  ): RegionSnapshot {
     ensure(
       !this.captureActive,
       "CAPTURE_BUSY",
       "Wait for capture before selecting a region",
     );
-    this.scene.updateMatrixWorld(true);
-    return selectRenderedRegion(
+    ensure(
+      mode === "visible" || mode === "through",
+      "INVALID_INPUT",
+      "Region mode is visible or through",
+    );
+    const rect = this.renderer.domElement.getBoundingClientRect(),
+      width = Math.ceil(rect.width),
+      height = Math.ceil(rect.height);
+    ensure(width > 0 && height > 0, "INVALID_INPUT", "The view has no size");
+    this.syncPickMatrices();
+    const excluded =
+      options.floorOnly && this.floorFocusSpec ? this.floorBelow : null;
+    const footprints = () => {
+      const viewProjection = new THREE.Matrix4().multiplyMatrices(
+        this.camera.projectionMatrix,
+        this.camera.matrixWorldInverse,
+      );
+      const plane = this.renderer.clippingPlanes[0],
+        matrix = new THREE.Matrix4(),
+        world = new THREE.Box3(),
+        far = new THREE.Vector3();
+      const list: Footprint[] = [];
+      for (const [id, group] of this.handles) {
+        if (!group.visible || excluded?.has(id)) continue;
+        const box = this.handleBounds(group);
+        if (!box) continue;
+        if (plane) {
+          world.copy(box).applyMatrix4(group.matrixWorld);
+          const n = plane.normal;
+          // Even its corner furthest along the kept side is cut away: not drawn.
+          far.set(
+            n.x >= 0 ? world.max.x : world.min.x,
+            n.y >= 0 ? world.max.y : world.min.y,
+            n.z >= 0 ? world.max.z : world.min.z,
+          );
+          if (plane.distanceToPoint(far) < 0) continue;
+        }
+        matrix.multiplyMatrices(viewProjection, group.matrixWorld);
+        const f = boxFootprint(id, box, matrix, width, height);
+        if (f) list.push(f);
+      }
+      return list;
+    };
+    if (mode === "through") return { mode, footprints: footprints() };
+    this.batches.root.updateWorldMatrix(true, true);
+    const skip = (materials: THREE.Material[]) =>
+      materials.every(
+        (m) => !m.visible || m.opacity === 0 || (isTreated(m) && m.transparent),
+      );
+    const sources: IdSource[] = this.batches.idSources(skip);
+    // Moving mechanism parts draw live from their handles.
+    for (const id of this.batches.dynamicIds) {
+      const group = this.handles.get(id);
+      if (!group?.visible) continue;
+      group.traverseVisible((object) => {
+        const mesh = object as THREE.Mesh;
+        if (!mesh.isMesh || skip([mesh.material].flat())) return;
+        sources.push({ kind: "single", object: mesh, occurrenceId: id });
+      });
+    }
+    const coverage = renderIdCoverage(
       this.renderer,
       this.camera,
-      this.handles,
-      polygon,
-      mode,
+      sources,
+      width,
+      height,
     );
+    if (excluded) {
+      // The floors below still occlude (they are drawn); they just never count.
+      const keep = coverage.ids.map((id) => !excluded.has(id));
+      for (let i = 0; i < coverage.pixels.length; i++) {
+        const v = coverage.pixels[i];
+        if (v >= 0 && !keep[v]) coverage.pixels[i] = -1;
+      }
+      for (let i = 0; i < keep.length; i++)
+        if (!keep[i]) coverage.totals[i] = 0;
+    }
+    let cached: Map<string, Footprint> | undefined;
+    return {
+      mode,
+      coverage,
+      footprints: () =>
+        (cached ??= new Map(footprints().map((f) => [f.id, f]))),
+    };
+  }
+  /** Re-evaluate a captured snapshot (what each pointer move of a gesture does). */
+  selectFromSnapshot(
+    snapshot: RegionSnapshot,
+    polygon: Point2[],
+    rule: Containment,
+  ) {
+    return snapshotSelect(snapshot, polygon, rule);
+  }
+  /** One-shot region selection (automation and tests); gestures reuse a snapshot. */
+  selectRegion(
+    polygon: Point2[],
+    mode: RegionMode,
+    rule: Containment = DEFAULT_CONTAINMENT[mode],
+    options: { floorOnly?: boolean } = {},
+  ) {
+    return snapshotSelect(this.regionSnapshot(mode, options), polygon, rule);
+  }
+  private regionPreviewLines?: THREE.LineSegments;
+  /**
+   * Outline the parts a region gesture would select (one line draw for all of
+   * them), in the selection colour, or red when they would be removed.
+   */
+  previewRegion(
+    ids: string[] | null,
+    tone: "add" | "remove" = "add",
+    /** Keep today's selection outlines (adding or removing) instead of replacing. */
+    keepSelection = false,
+  ) {
+    const old = this.regionPreviewLines;
+    if (old) {
+      old.removeFromParent();
+      old.geometry.dispose();
+      (old.material as THREE.Material).dispose();
+      this.regionPreviewLines = undefined;
+    }
+    if (ids?.length) {
+      const edges = [
+        0, 1, 1, 3, 3, 2, 2, 0, 4, 5, 5, 7, 7, 6, 6, 4, 0, 4, 1, 5, 2, 6, 3, 7,
+      ];
+      const positions = new Float32Array(ids.length * edges.length * 3);
+      const corner = new THREE.Vector3();
+      let n = 0;
+      for (const id of ids) {
+        const group = this.handles.get(id);
+        const box = group && this.handleBounds(group);
+        if (!group || !box) continue;
+        for (const e of edges) {
+          corner
+            .set(
+              e & 1 ? box.max.x : box.min.x,
+              e & 2 ? box.max.y : box.min.y,
+              e & 4 ? box.max.z : box.min.z,
+            )
+            .applyMatrix4(group.matrixWorld);
+          positions[n++] = corner.x;
+          positions[n++] = corner.y;
+          positions[n++] = corner.z;
+        }
+      }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(positions.subarray(0, n), 3),
+      );
+      const lines = new THREE.LineSegments(
+        geometry,
+        new THREE.LineBasicMaterial({
+          color: tone === "remove" ? 0xd6453d : 0xea883c,
+          depthTest: false,
+          transparent: true,
+          opacity: 0.9,
+        }),
+      );
+      lines.name = "region selection preview";
+      lines.renderOrder = 10;
+      lines.frustumCulled = false;
+      this.scene.add(lines);
+      this.regionPreviewLines = lines;
+    }
+    this.selection.visible = !ids || keepSelection;
+    this.invalidate();
   }
   get transformDragging() {
     return this.transformHandles?.dragging ?? false;
@@ -3622,6 +3799,8 @@ export class SceneAdapter {
   private floorFocusSpec: FloorFocus | null = null;
   private floorHidden = new Set<string>();
   private floorGhosted = new Set<string>();
+  /** Parts on floors below the focused one (ghosted or not). */
+  private floorBelow = new Set<string>();
   private bottomsCache?: { project: Project; bottoms: Map<string, number> };
   private bottomParts: BottomCache = new Map();
   private guidesShown = false;
@@ -3630,6 +3809,7 @@ export class SceneAdapter {
   private computeFloorFocus(p = this.project) {
     this.floorHidden = new Set();
     this.floorGhosted = new Set();
+    this.floorBelow = new Set();
     const focus = this.floorFocusSpec;
     if (!p || !focus) return;
     if (this.bottomsCache?.project !== p)
@@ -3645,6 +3825,7 @@ export class SceneAdapter {
     }
     this.floorHidden = sets.hidden;
     this.floorGhosted = sets.ghosted;
+    this.floorBelow = sets.below;
   }
   /** Editor visibility: the instruction step (or layer visibility) minus hidden floors. */
   private applyVisibility() {

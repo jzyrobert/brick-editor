@@ -179,8 +179,13 @@ for (const viewport of [
       .locator(".mobile-panel.mobile-open")
       .getByRole("button", { name: "Collapse panel" })
       .click();
-    await hotbar
-      .getByRole("button", { name: "Inspector", exact: true })
+    // Box select mode: the sheet steps aside for its chip of switches.
+    await page.getByRole("button", { name: "Box or lasso select" }).click();
+    await expect(page.getByRole("group", { name: "Box select" })).toBeVisible();
+    await check("box select mode");
+    await page
+      .getByRole("group", { name: "Box select" })
+      .getByRole("button", { name: "Done" })
       .click();
 
     for (const mode of ["Instructions", "Photo", "Project", "Play"] as const) {

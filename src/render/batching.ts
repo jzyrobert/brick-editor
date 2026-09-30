@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { ensure } from "../core/types";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import type { IdSource } from "./region-selection";
 
 /** Transform conditional-line control points and vectors along with ordinary geometry. */
 export function transformLineGeometry(
@@ -194,6 +195,10 @@ export function registerTreatment(
 }
 export function treatmentBase(material: THREE.Material): THREE.Material {
   return treatmentBases.get(material) ?? material;
+}
+/** A temporary treatment (ghosted layer or floor, dimmed step) is in use. */
+export function isTreated(material: THREE.Material) {
+  return treatmentBases.has(material);
 }
 const firstMaterial = (materials: Materials) =>
   Array.isArray(materials) ? materials[0] : materials;
@@ -843,6 +848,12 @@ export class RenderBatches {
     drawable.receiveShadow = first.receiveShadow;
     drawable.userData = {
       occurrenceIds: entries.map((entry) => entry.occurrenceId),
+      // Vertices each entry contributes, in order (ID pass entry attribute).
+      vertexCounts: entries.map(
+        (entry) =>
+          entry.object.geometry.index?.count ||
+          entry.object.geometry.getAttribute("position").count,
+      ),
       rawPrimitiveBatch: true,
     };
     this.generated.push(merged);
@@ -894,6 +905,43 @@ export class RenderBatches {
       parent.children = children;
       traversal.length = 0;
     }
+  }
+  /**
+   * The triangle drawables the batches draw right now, with the occurrence of
+   * each instance or merged entry, for the selection ID pass. Lines are left
+   * out, and so are drawables `skip` rejects (ghosted treatments).
+   */
+  idSources(skip: (materials: THREE.Material[]) => boolean): IdSource[] {
+    this.synchronize();
+    const sources: IdSource[] = [];
+    for (const child of this.root.children) {
+      const mesh = child as THREE.Mesh;
+      if (!mesh.isMesh || !child.visible) continue;
+      if (skip(materialList(mesh.material))) continue;
+      const data = child.userData;
+      if ((child as THREE.InstancedMesh).isInstancedMesh) {
+        const draw = child as THREE.InstancedMesh;
+        if (draw.count > 0)
+          sources.push({
+            kind: "instanced",
+            object: draw,
+            occurrenceIds: data.occurrenceIds,
+          });
+      } else if (data.rawPrimitiveBatch)
+        sources.push({
+          kind: "merged",
+          object: mesh,
+          occurrenceIds: data.occurrenceIds,
+          vertexCounts: data.vertexCounts,
+        });
+      else if (data.occurrenceId)
+        sources.push({
+          kind: "single",
+          object: mesh,
+          occurrenceId: data.occurrenceId,
+        });
+    }
+    return sources;
   }
   /** What the last filled batches draw (diagnostics and budget tests). */
   stats() {

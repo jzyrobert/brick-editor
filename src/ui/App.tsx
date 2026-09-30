@@ -22,14 +22,18 @@ import {
 } from "../edit/workplane";
 import { TransformPanel } from "./TransformPanel";
 import { folderPath } from "./LayerFolders";
-import { SelectionTools, type SelectionShape } from "./SelectionTools";
-import { attachRegionGesture } from "../edit/region-gesture";
+import { Segmented, SelectionTools } from "./SelectionTools";
+import { attachRegionGesture, type RegionShape } from "../edit/region-gesture";
 import {
   combineSelection,
   eligibleSelection,
   type SelectionOperation,
 } from "../edit/selection";
-import type { RegionMode } from "../render/region-selection";
+import {
+  DEFAULT_CONTAINMENT,
+  type Containment,
+  type RegionMode,
+} from "../render/region-selection";
 import { QualityPanel } from "./QualityPanel";
 import { MechanismBrowser } from "../mechanisms/browser";
 import { MechanismPanel } from "./MechanismPanel";
@@ -116,6 +120,7 @@ import {
   type Scope,
   type CameraSpec,
   type Project,
+  type Occurrence,
   AppError,
   uid,
   ensure,
@@ -393,7 +398,8 @@ function Workspace() {
     [mode, setMode] = useState(
       location.hash.startsWith("#v=") ? "Project" : "Build",
     ),
-    [tool, setTool] = useState("Select"),
+    // Navigate is the resting tool: a new visitor can turn the build at once.
+    [tool, setTool] = useState("Navigate"),
     [shortcuts, setShortcuts] = useState<Shortcuts>(loadShortcuts),
     [transformModeRequest, setTransformModeRequest] = useState<{
       mode: "off" | "translate" | "rotate";
@@ -417,7 +423,13 @@ function Workspace() {
       loadRecent((id) => !!catalog[id]),
     ),
     [selection, setSelection] = useState<string[]>([]),
-    [selectionShape, setSelectionShape] = useState<SelectionShape>("click"),
+    [regionShape, setRegionShape] = useState<RegionShape>("box"),
+    /** Explicit box/lasso mode: one finger draws (a mouse drag always can). */
+    [regionMode, setRegionMode] = useState(false),
+    [regionRules, setRegionRules] = useState<Record<RegionMode, Containment>>(
+      () => ({ ...DEFAULT_CONTAINMENT }),
+    ),
+    [floorOnly, setFloorOnly] = useState(true),
     [selectionOperation, setSelectionOperation] =
       useState<SelectionOperation>("replace"),
     [selectionDepth, setSelectionDepth] = useState<RegionMode>("visible"),
@@ -524,9 +536,13 @@ function Workspace() {
     nextOpenStored = useRef(false),
     projectRef = useRef(project),
     selectionRef = useRef(selection),
+    allRef = useRef<Occurrence[]>([]),
     interact = useRef({
       tool,
-      selectionShape,
+      regionShape,
+      regionMode,
+      regionRules,
+      floorOnly,
       selectionOperation,
       selectionDepth,
       part,
@@ -623,9 +639,13 @@ function Workspace() {
   modeRef.current = mode;
   projectRef.current = project;
   selectionRef.current = selection;
+  allRef.current = all;
   interact.current = {
     tool,
-    selectionShape,
+    regionShape,
+    regionMode,
+    regionRules,
+    floorOnly,
     selectionOperation,
     selectionDepth,
     part,
@@ -738,7 +758,11 @@ function Workspace() {
   const receiveSelection = (ids: string[], operation?: SelectionOperation) => {
     const p = editor.project,
       s = interact.current,
-      all = occurrences(p);
+      // The memoised list when it is current (walking 20,000 parts is slow).
+      all =
+        projectRef.current === p && allRef.current.length
+          ? allRef.current
+          : occurrences(p);
     const eligible = eligibleSelection(
       p,
       all,
@@ -762,28 +786,40 @@ function Workspace() {
     () =>
       attachRegionGesture(
         viewport.current!,
-        () => ({
-          enabled:
-            modeRef.current === "Build" &&
-            interact.current.tool === "Select" &&
-            !interact.current.pickingFace,
-          shape: interact.current.selectionShape,
-          depth: interact.current.selectionDepth,
-          renderer: renderer.current,
-          revision: editor.revision,
-        }),
-        (ids) => receiveSelection(ids),
+        () => {
+          const s = interact.current,
+            p = editor.project;
+          let everything: Occurrence[] | undefined;
+          return {
+            enabled:
+              modeRef.current === "Build" &&
+              s.tool === "Select" &&
+              !s.pickingFace,
+            regionMode: s.regionMode,
+            shape: s.regionShape,
+            depth: s.selectionDepth,
+            rule: s.regionRules[s.selectionDepth],
+            operation: s.selectionOperation,
+            floorOnly: s.floorOnly,
+            renderer: renderer.current,
+            revision: editor.revision,
+            eligible: (ids) =>
+              eligibleSelection(
+                p,
+                (everything ??=
+                  projectRef.current === p && allRef.current.length
+                    ? allRef.current
+                    : occurrences(p)),
+                ids,
+                s.activeLayer,
+                s.crossLayer,
+              ),
+          };
+        },
+        (ids, operation) => receiveSelection(ids, operation),
         setStatus,
       ),
-    [
-      mode,
-      tool,
-      selectionShape,
-      selectionDepth,
-      activeLayer,
-      crossLayer,
-      pickingFace,
-    ],
+    [],
   );
   useEffect(() => {
     const openSharedPreview = () => {
@@ -798,6 +834,9 @@ function Workspace() {
       play.current?.sourceChanged();
       if (observedProjectId.current !== p.id) {
         observedProjectId.current = p.id;
+        // A newly opened build starts in Navigate, like the first one.
+        setTool("Navigate");
+        setRegionMode(false);
         setSaveConflict(false);
         opened.current = {
           id: p.id,
@@ -1041,6 +1080,9 @@ function Workspace() {
     if (!r || ownsTransientView()) return;
     r.controls.enableRotate = mode === "Build" || mode === "Photo";
     r.controls.mouseButtons.LEFT = tool === "Navigate" ? 0 : (null as any);
+    // Right-drag orbits in the editing tools (Shift+right-drag pans), so the
+    // left button stays free for taps, boxes and lassos; Navigate keeps pan.
+    r.controls.mouseButtons.RIGHT = tool === "Navigate" ? 2 : 0;
     r.controls.touches.ONE = tool === "Navigate" ? 0 : (null as any);
     r.controls.enabled = mode !== "Play";
   }, [tool, mode, transientView]);
@@ -1495,6 +1537,21 @@ function Workspace() {
         return;
       }
       const action = shortcutAction(e, shortcuts);
+      // L switches box and lasso for Select drags (unless remapped).
+      if (
+        !action &&
+        interact.current.tool === "Select" &&
+        e.key.toLowerCase() === "l" &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey
+      ) {
+        e.preventDefault();
+        const next = interact.current.regionShape === "box" ? "lasso" : "box";
+        setRegionShape(next);
+        setStatus(next === "box" ? "Drag draws a box." : "Drag draws a lasso.");
+        return;
+      }
       if (!action) return;
       e.preventDefault();
       if (e.repeat && !["undo", "redo"].includes(action)) return;
@@ -1549,7 +1606,7 @@ function Workspace() {
           return;
         }
         setTool("Select");
-        setSelectionShape("click");
+        setRegionMode(false);
         setPickingFace(false);
         setTransformModeRequest({
           mode: action === "move" ? "translate" : "rotate",
@@ -1562,9 +1619,15 @@ function Workspace() {
           setStatus("Picking cancelled.");
           return;
         }
+        if (interact.current.regionMode) {
+          setRegionMode(false);
+          setStatus("Box select finished.");
+          return;
+        }
         setSelectionSafe([]);
         setFillOpen(false);
-        setTool("Select");
+        // Leaving Place, Paint or Measure returns to the resting tool.
+        setTool((t) => (t === "Select" ? t : "Navigate"));
       }
     };
     window.addEventListener("keydown", listener);
@@ -2729,18 +2792,34 @@ function Workspace() {
   );
   const selectionTools = (
     <SelectionTools
-      shape={selectionShape}
+      shape={regionShape}
       operation={selectionOperation}
       depth={selectionDepth}
-      onShape={(v) => {
-        setSelectionShape(v);
-        setTool("Select");
-      }}
+      rule={regionRules[selectionDepth]}
+      floorOnly={floorOnly}
+      regionMode={regionMode}
+      onShape={setRegionShape}
       onOperation={setSelectionOperation}
       onDepth={setSelectionDepth}
+      onRule={(rule) =>
+        setRegionRules((rules) => ({ ...rules, [selectionDepth]: rule }))
+      }
+      onFloorOnly={setFloorOnly}
+      onRegionMode={(on) => {
+        setRegionMode(on);
+        if (!on) return;
+        setTool("Select");
+        setPickingFace(false);
+        // Phones and tablets: put the sheet away so the model is free to draw on.
+        if (window.matchMedia("(max-width: 1100px)").matches)
+          setPanel("Canvas");
+        setStatus("Drag on the model to select.");
+      }}
       hasSelection={selected.length > 0}
       onClear={() => setSelectionSafe([])}
       onMatch={(kind) => {
+        // A selection made here is for editing: hold Select (handles need it).
+        if (interact.current.tool !== "Select") pickTool("Select");
         const matches = all.filter(
           (o) =>
             kind === "all" ||
@@ -2756,6 +2835,7 @@ function Workspace() {
         receiveSelection(matches.map((o) => o.id));
       }}
       onConnected={() => {
+        if (interact.current.tool !== "Select") pickTool("Select");
         const p = editor.project,
           s = interact.current,
           seeds = selectionRef.current;
@@ -3813,7 +3893,7 @@ function Workspace() {
               >
                 Place part
               </button>
-              <button onClick={() => setTool("Select")}>Cancel</button>
+              <button onClick={() => setTool("Navigate")}>Cancel</button>
             </div>
           )}
           {mode === "Photo" && (
@@ -4241,14 +4321,63 @@ function Workspace() {
                   : "Tap two points on the model to measure"}
             </div>
           )}
+          {mode === "Build" && tool === "Select" && regionMode && (
+            <div
+              className="measure-chip region-chip hud-el hud-slab"
+              role="group"
+              aria-label="Box select"
+            >
+              <div className="region-chip-row">
+                <Segmented
+                  label="Region shape"
+                  value={regionShape}
+                  options={[
+                    ["box", "Box"],
+                    ["lasso", "Lasso"],
+                  ]}
+                  onChange={setRegionShape}
+                />
+                <button
+                  className="region-done"
+                  onClick={() => {
+                    setRegionMode(false);
+                    setStatus("Box select finished.");
+                  }}
+                >
+                  Done
+                </button>
+              </div>
+              <div className="region-chip-row">
+                <Segmented
+                  label="Region depth"
+                  value={selectionDepth}
+                  options={[
+                    ["visible", "Visible"],
+                    ["through", "Through"],
+                  ]}
+                  onChange={setSelectionDepth}
+                />
+                <Segmented
+                  label="Region action"
+                  value={selectionOperation}
+                  options={[
+                    ["replace", "New"],
+                    ["add", "Add"],
+                    ["remove", "Remove"],
+                  ]}
+                  onChange={setSelectionOperation}
+                />
+              </div>
+            </div>
+          )}
           <div className="canvas-bottom hud-el hud-slab">
             <span>
               {all.length.toLocaleString()} parts <b>·</b> {selection.length}{" "}
               selected
             </span>
             <span className="grid-state">
-              {tool === "Select" && selectionShape !== "click"
-                ? `${selectionShape === "box" ? "Box" : "Lasso"} · ${selectionDepth === "visible" ? "Visible surfaces" : "Through"}`
+              {tool === "Select"
+                ? `${regionShape === "box" ? "Box" : "Lasso"} · ${selectionDepth === "visible" ? "Visible" : "Through"}`
                 : workplane.free
                   ? "Free placement"
                   : `Grid · ${workplane.grid} LDU`}
@@ -4310,7 +4439,7 @@ function Workspace() {
               enabled={
                 mode === "Build" &&
                 tool === "Select" &&
-                selectionShape === "click" &&
+                !regionMode &&
                 !pickingFace
               }
               activeLayerId={crossLayer ? undefined : activeLayer}

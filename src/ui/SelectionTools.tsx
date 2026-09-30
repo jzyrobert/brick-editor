@@ -1,24 +1,74 @@
 import type { SelectionOperation } from "../edit/selection";
-import type { RegionMode } from "../render/region-selection";
-export type SelectionShape = "click" | "box" | "lasso";
+import type { RegionShape } from "../edit/region-gesture";
+import type { Containment, RegionMode } from "../render/region-selection";
+export const RULE_LABELS: Record<Containment, string> = {
+  touching: "Touching the region",
+  centre: "Centre inside",
+  inside: "Fully inside",
+};
+export const DEPTH_HELP: Record<RegionMode, string> = {
+  visible: "Only parts you can see from here.",
+  through: "Everything inside the outline, front to back.",
+};
+/** A small two- or three-way switch of pressed buttons. */
+export function Segmented<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+  className = "",
+}: {
+  label: string;
+  value: T;
+  options: [T, string][];
+  onChange: (v: T) => void;
+  className?: string;
+}) {
+  return (
+    <div className={"segmented " + className} role="group" aria-label={label}>
+      {options.map(([v, text]) => (
+        <button
+          key={v}
+          type="button"
+          aria-pressed={value === v}
+          onClick={() => onChange(v)}
+        >
+          {text}
+        </button>
+      ))}
+    </div>
+  );
+}
 export function SelectionTools({
   shape,
   operation,
   depth,
+  rule,
+  floorOnly,
+  regionMode,
   onShape,
   onOperation,
   onDepth,
+  onRule,
+  onFloorOnly,
+  onRegionMode,
   onMatch,
   onConnected,
   onClear,
   hasSelection,
 }: {
-  shape: SelectionShape;
+  shape: RegionShape;
   operation: SelectionOperation;
   depth: RegionMode;
-  onShape: (v: SelectionShape) => void;
+  rule: Containment;
+  floorOnly: boolean;
+  regionMode: boolean;
+  onShape: (v: RegionShape) => void;
   onOperation: (v: SelectionOperation) => void;
   onDepth: (v: RegionMode) => void;
+  onRule: (v: Containment) => void;
+  onFloorOnly: (v: boolean) => void;
+  onRegionMode: (v: boolean) => void;
   onMatch: (v: "part" | "color" | "layer" | "all") => void;
   /** Adds every part joined to the selection by verified stud connections. */
   onConnected: () => void;
@@ -28,17 +78,57 @@ export function SelectionTools({
   return (
     <details className="selection-tools drawer">
       <summary>Selection tools</summary>
+      <button
+        className="region-start"
+        aria-pressed={regionMode}
+        onClick={() => onRegionMode(!regionMode)}
+      >
+        {regionMode ? "Stop box select" : "Box or lasso select"}
+      </button>
+      <p className="muted">
+        One finger draws, two fingers still move the view. With a mouse, drag
+        with Select: Shift adds, Alt removes, L switches box and lasso.
+      </p>
+      <Segmented
+        label="Region shape"
+        value={shape}
+        options={[
+          ["box", "Box"],
+          ["lasso", "Lasso"],
+        ]}
+        onChange={onShape}
+      />
+      <Segmented
+        label="Selection depth"
+        value={depth}
+        options={[
+          ["visible", "Visible"],
+          ["through", "Through"],
+        ]}
+        onChange={onDepth}
+      />
+      <p className="muted">{DEPTH_HELP[depth]}</p>
       <label>
-        Gesture
+        A part counts when
         <select
-          aria-label="Selection gesture"
-          value={shape}
-          onChange={(e) => onShape(e.target.value as SelectionShape)}
+          aria-label="Region rule"
+          value={rule}
+          onChange={(e) => onRule(e.target.value as Containment)}
         >
-          <option value="click">Click / tap</option>
-          <option value="box">Box</option>
-          <option value="lasso">Lasso</option>
+          {(Object.keys(RULE_LABELS) as Containment[]).map((r) => (
+            <option key={r} value={r}>
+              {RULE_LABELS[r]}
+            </option>
+          ))}
         </select>
+      </label>
+      <label className="floor-check">
+        <input
+          type="checkbox"
+          checked={floorOnly}
+          onChange={(e) => onFloorOnly(e.target.checked)}
+        />
+        Only the focused floor
       </label>
       <label>
         Selection action
@@ -53,24 +143,6 @@ export function SelectionTools({
           <option value="toggle">Toggle selection</option>
         </select>
       </label>
-      {shape !== "click" && (
-        <>
-          <label>
-            Depth
-            <select
-              aria-label="Selection depth"
-              value={depth}
-              onChange={(e) => onDepth(e.target.value as RegionMode)}
-            >
-              <option value="visible">Visible surfaces</option>
-              <option value="through">Through the build</option>
-            </select>
-          </label>
-          <p className="muted">
-            Drag on the model. Escape or a second finger cancels.
-          </p>
-        </>
-      )}
       <div className="selection-match">
         {(["part", "color", "layer"] as const).map((kind) => (
           <button
@@ -88,8 +160,8 @@ export function SelectionTools({
         <button onClick={onClear}>Clear selection</button>
       </div>
       <p className="muted">
-        Hidden and locked parts are skipped. Select connected follows verified
-        stud connections only.
+        Hidden, cut-away and locked parts are skipped. Select connected follows
+        verified stud connections only.
       </p>
     </details>
   );

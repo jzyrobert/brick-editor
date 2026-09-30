@@ -24,6 +24,8 @@ test("clipboard UI copies, previews arrays without changes, commits and transfer
       far: 10000,
     });
   });
+  // The editor opens in Navigate; taps select with the Select tool.
+  await page.getByRole("button", { name: "Select", exact: true }).click();
   const viewport = page.locator(".viewport"),
     box = (await viewport.boundingBox())!;
   await viewport.click({ position: { x: box.width / 2, y: box.height / 2 } });

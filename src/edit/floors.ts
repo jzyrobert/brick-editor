@@ -174,13 +174,17 @@ export function floorFocusSets(
   );
   const index = floors.findIndex((f) => f.id === focus.floorId);
   const hidden = new Set<string>(),
-    ghosted = new Set<string>();
-  if (index < 0) return { index, hidden, ghosted };
+    ghosted = new Set<string>(),
+    below = new Set<string>();
+  if (index < 0) return { index, hidden, ghosted, below };
   for (const [id, floor] of byId) {
     if (floor > index) hidden.add(id);
-    else if (floor < index && focus.ghostBelow) ghosted.add(id);
+    else if (floor < index) {
+      below.add(id);
+      if (focus.ghostBelow) ghosted.add(id);
+    }
   }
-  return { index, hidden, ghosted };
+  return { index, hidden, ghosted, below };
 }
 /** Summary for automation: floors bottom-up with part counts and room labels. */
 export function floorReport(project: Project) {

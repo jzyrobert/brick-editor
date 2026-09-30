@@ -262,6 +262,8 @@ Depth is ambient and navy-tinted: floating things cast soft, low-contrast shadow
 
 ### Named Rules
 
+**The Region Rule.** A press on the canvas is a tap until it travels 6px. With the mouse in Select, a longer left drag draws a box (L switches to lasso; Shift adds, Alt or Ctrl/Cmd removes); in Select, Place, Paint and Measure right-drag orbits (Shift+right-drag pans). On touch, one finger draws only inside box select mode; a second finger always cancels the region and navigates. What will be selected is shown before release.
+
 **The Recede Rule.** While a pointer or finger drags on the canvas, every HUD element fades to 0.18 opacity and becomes click-through (150ms ease-out), then restores after release. New HUD elements must join this behaviour.
 
 ## Shapes
@@ -304,7 +306,9 @@ Solid, key-like and bold.
 
 ### Tool Dock (signature)
 
-A navy dock of labelled keys grouped by 2px dividers: Select/Place/Paint/Navigate, Undo/Redo, then Fit view, Camera views and More tools (a small navy menu holding Measure and Rectangular fill; the More key lights when Measure is in hand). The held tool is Lit Grass with dark ink. On touch it becomes a right-edge column of 46px icon keys whose names stay accessible, with hairlines between groups.
+A navy dock of labelled keys grouped by 2px dividers: Select/Place/Paint/Navigate, Undo/Redo, then Fit view, Camera views and More tools (a small navy menu holding Measure and Rectangular fill; the More key lights when Measure is in hand). The held tool is Lit Grass with dark ink. On touch it becomes a right-edge column of 46px icon keys whose names stay accessible, with hairlines between groups. Navigate is the resting tool: it is held when the editor opens and whenever another build is opened, and Escape from Place, Paint or Measure returns to it; Select stays one tap (or V) away.
+
+**Box select chip:** Inspector → Selection tools → Box or lasso select puts the sheet away and shows one navy chip in the measure readout's slot: Box/Lasso and a grass Done key on the first row, Visible/Through and New/Add/Remove segmented switches on the second (they wrap to a third row on the narrowest phones). While a region is drawn a small navy pill at its corner counts the parts it would take ("12 parts", "+ 12 parts", a red "− 12 parts" for removal), and those parts are outlined in the selection orange (red when removing).
 
 **Camera views popover:** one navy popover with four segmented tabs (Angle, Cut, Floors, Look) so only one small set of choices shows at a time; a grass dot on a tab means something there is switched on (a section cut, exploded floors, a focused floor).
 
