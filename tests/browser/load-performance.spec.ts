@@ -101,7 +101,7 @@ async function reloadBlank(page: Page) {
   await page.evaluate(() => window.brickEditor!.ready());
 }
 
-test("the house template loads in short tasks, progressively, and reopens from the geometry cache", async ({
+test("the house template loads in short tasks, progressively, and reopens from the geometry cache @perf", async ({
   page,
 }) => {
   const errors: string[] = [];

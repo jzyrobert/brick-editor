@@ -47,7 +47,7 @@ async function load(page: Page) {
   }, fixture);
 }
 
-test("render looks switch from the views popover, persist, and captures request them explicitly", async ({
+test("render looks switch from the views popover, persist, and captures request them explicitly @heavy", async ({
   page,
 }) => {
   // Realistic frames cost about a second each on software WebGL, and the photo
@@ -172,7 +172,7 @@ test("render looks switch from the views popover, persist, and captures request 
   expect(errors).toEqual([]);
 });
 
-test("the photo look path-traces a still view with progress, then stops drawing; Play never accumulates", async ({
+test("the photo look path-traces a still view with progress, then stops drawing; Play never accumulates @heavy", async ({
   page,
 }) => {
   // The first photo still compiles the path-tracing shader, and every traced
@@ -236,7 +236,7 @@ test("the photo look path-traces a still view with progress, then stops drawing;
   await page.evaluate(() => window.brickEditor!.play.exit());
 });
 
-test("photo captures are path traced, repeatable, and clearly unlike realistic; section cuts fall back to the raster photo", async ({
+test("photo captures are path traced, repeatable, and clearly unlike realistic; section cuts fall back to the raster photo @heavy", async ({
   page,
 }) => {
   test.setTimeout(300000);
@@ -319,7 +319,7 @@ test("photo captures are path traced, repeatable, and clearly unlike realistic; 
   expect(errors).toEqual([]);
 });
 
-test("a photo still stops refining once its denoised image is clean, well before the sample cap", async ({
+test("a photo still stops refining once its denoised image is clean, well before the sample cap @heavy", async ({
   page,
 }) => {
   // Software WebGL: the shader compile alone takes about a minute, and a
@@ -358,7 +358,9 @@ test("a photo still stops refining once its denoised image is clean, well before
   expect(stats.refineMs!).toBeLessThan(240000);
 });
 
-test("phones trace fewer samples within the phone budget", async ({ page }) => {
+test("phones trace fewer samples within the phone budget @heavy", async ({
+  page,
+}) => {
   test.setTimeout(300000);
   await page.setViewportSize({ width: 720, height: 520 });
   await load(page);

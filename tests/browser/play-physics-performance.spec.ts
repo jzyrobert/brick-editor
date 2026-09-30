@@ -76,7 +76,7 @@ async function measure(page: Page, mode: Mode) {
   }, mode);
 }
 for (const device of ["desktop", "phone"] as const)
-  test(`Play physics cost on the ${device} profile`, async ({
+  test(`Play physics cost on the ${device} profile @perf`, async ({
     browser,
     baseURL,
   }) => {

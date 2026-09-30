@@ -501,7 +501,9 @@ for (const viewport of [
     }
   });
 
-test("box selection stays fast on a 20,000-part model", async ({ page }) => {
+test("box selection stays fast on a 20,000-part model @perf", async ({
+  page,
+}) => {
   // Software WebGL spends minutes on the first full draw of ~10 M triangles
   // (an ordinary frame of this view included); the ID pass is timed and
   // logged, and its work is bounded structurally (one draw per batch).

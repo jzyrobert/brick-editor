@@ -18,7 +18,7 @@ const PARTS = 20000;
 const LONGEST_TASK_MS = 1500;
 test.describe.configure({ timeout: 600000 });
 
-test("a large autosaved project recovers without freezing the page", async ({
+test("a large autosaved project recovers without freezing the page @perf", async ({
   page,
 }) => {
   await page.addInitScript(() => {

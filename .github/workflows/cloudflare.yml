@@ -3,16 +3,22 @@ name: Validate and deploy Cloudflare Pages
 on:
   push:
     branches: [main]
+  # Manual runs on any branch validate only; publish is main-only (below).
   workflow_dispatch:
 
 permissions:
   contents: read
 
+# One run per ref at a time. Superseded branch runs are cancelled; main runs
+# queue so every main commit is validated. Publication itself is serialised
+# separately on the publish job.
 concurrency:
-  group: cloudflare-pages
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  # Build the production bundle once; every browser shard tests this artifact
+  # and publish deploys the same one.
   build:
     runs-on: ubuntu-latest
     steps:
@@ -22,13 +28,7 @@ jobs:
           node-version: 22.14.0
           cache: npm
       - run: npm ci
-      - name: Install browser test runtime
-        run: npx playwright install --with-deps chromium
-      - run: npm run format:check
-      - run: npm test
-      - run: npm run library:validate
-      - name: Browser acceptance tests
-        run: npm run test:browser
+      - run: npm run build
       # dist includes the committed complete LDraw pack (~3,100 content-addressed
       # chunks); keep the deployment within Cloudflare Pages file limits.
       - name: Check Cloudflare Pages limits
@@ -39,9 +39,126 @@ jobs:
           path: dist
           retention-days: 7
 
-  publish:
+  # Static checks and unit tests, in parallel with the build and browser tests.
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run library:validate
+
+  # Browser acceptance tests on software WebGL, split across parallel jobs:
+  # the main project in four shards, the path-traced Photo tests (@heavy) in
+  # their own job, and the wall-clock budget tests (@perf) alone, one at a
+  # time, so no other test competes for the CPU they are timing.
+  browser:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { id: main-1, project: main, shard: 1/4 }
+          - { id: main-2, project: main, shard: 2/4 }
+          - { id: main-3, project: main, shard: 3/4 }
+          - { id: main-4, project: main, shard: 4/4 }
+          - { id: heavy, project: heavy, shard: 1/1 }
+          - { id: perf, project: perf, shard: 1/1 }
+    name: browser (${{ matrix.id }})
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - run: npm ci
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        id: browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
+      - name: Install browser test runtime
+        if: steps.browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps --only-shell chromium
+      - name: Install browser system dependencies
+        if: steps.browsers.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+      - uses: actions/download-artifact@v4
+        with:
+          name: cloudflare-static-site
+          path: dist
+      - name: Browser acceptance tests (${{ matrix.id }})
+        run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}
+        env:
+          PLAYWRIGHT_BLOB_OUTPUT_NAME: report-${{ matrix.id }}.zip
+      - name: Upload blob report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.id }}
+          path: blob-report
+          retention-days: 7
+
+  # One HTML (and JSON) report for all shards, including traces of failures.
+  report:
+    needs: browser
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+      - name: Merge browser test reports
+        run: npx playwright merge-reports --reporter html,json all-blob-reports
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: playwright-report/results.json
+          PLAYWRIGHT_HTML_OPEN: never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 14
+
+  # Single required gate: everything above passed.
+  verified:
+    needs: [build, checks, browser]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: All validation jobs passed
+        run: |
+          echo "build=${{ needs.build.result }} checks=${{ needs.checks.result }} browser=${{ needs.browser.result }}"
+          test "${{ needs.build.result }}" = success
+          test "${{ needs.checks.result }}" = success
+          test "${{ needs.browser.result }}" = success
+
+  publish:
+    needs: verified
+    # Only main is ever published, whatever triggered the run.
+    if: ${{ success() && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: cloudflare-pages
+      cancel-in-progress: false
     permissions:
       contents: write
     env:

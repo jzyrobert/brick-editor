@@ -190,7 +190,7 @@ test("captures draw the chosen backdrop and record it in the manifest", async ({
   ).rejects.toThrow(/Backdrop must be one of/);
 });
 
-test("the path-traced Photo look traces the backdrop's ground instead of its studio sweep", async ({
+test("the path-traced Photo look traces the backdrop's ground instead of its studio sweep @heavy", async ({
   page,
 }) => {
   await page.goto("./?automation=1");
