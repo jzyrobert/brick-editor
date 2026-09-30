@@ -24,7 +24,9 @@ export default defineConfig({
   // Cleaned at the start of each run; scripts/test-browser.ts gives its
   // second (perf) phase a subdirectory so the first phase's traces survive.
   outputDir: process.env.BROWSER_OUTPUT_DIR ?? "test-results",
-  timeout: 60000,
+  // Two workers share the CPU, so software-GL tests take up to twice their
+  // one-at-a-time duration; 120 s keeps a 30 s test clear of the limit.
+  timeout: 120000,
   expect: { timeout: 10000 },
   fullyParallel: true,
   workers,
