@@ -33,6 +33,9 @@ const SAMPLES: [Sample, string, number][] = [
 ];
 /** Chooser cards in display order (the blank canvas last). */
 const CARDS = [
+  "Market town",
+  "Cathedral",
+  "Harbour",
   "Corner café",
   "Windmill farm",
   "Lighthouse",

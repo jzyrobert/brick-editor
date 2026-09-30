@@ -129,6 +129,17 @@ export const PART_ROLES: Record<string, string[]> = {
   log: ["30136.dat"],
   masonry: ["98283.dat"],
   grille: ["2877.dat", "2412b.dat"],
+  // Found wanting while writing the cathedral, harbour and town samples.
+  "pointed arch": ["13965.dat"],
+  "gothic arch": ["13965.dat"],
+  spire: ["3685.dat", "3684a.dat", "4460b.dat", "3942c.dat"],
+  "spire corner": ["3685.dat"],
+  sail: ["u9494c01.dat", "85651c01.dat"],
+  clock: ["3003p0b.dat", "3960p09.dat", "4150p03.dat"],
+  "train base": ["92088.dat"],
+  bogie: ["2878c01.dat"],
+  "train front": ["2924bc01.dat"],
+  track: ["53401.dat", "53400.dat"],
 };
 /** Word-level synonyms: a query word also matches these words. */
 const SYNONYMS: Record<string, string[]> = {
@@ -147,6 +158,7 @@ const SYNONYMS: Record<string, string[]> = {
   wedge: ["wedge", "wing"],
   panel: ["panel", "wall"],
   plant: ["plant", "flower", "leaves"],
+  corner: ["corner", "convex"],
 };
 const PENALISED =
   /pattern|sticker|duplo|fabuland|quatro|primo|minifig torso|minifig head\b|constraction|technic panel/i;

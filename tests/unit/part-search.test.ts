@@ -26,6 +26,11 @@ describe("agent part search", () => {
     expect(top("window 1x2x3 with glass")[0]).toBe("60593.dat");
     expect(top("door 1x4x6")[0]).toBe("60596.dat");
     expect(top("lamp post")[0]).toBe("2039.dat");
+    // Found wanting while building the big samples.
+    expect(top("slope 75 corner")[0]).toBe("3685.dat");
+    expect(top("pointed arch")[0]).toBe("13965.dat");
+    expect(top("clock")[0]).toBe("3003p0b.dat");
+    expect(top("sail")[0]).toBe("u9494c01.dat");
     // A role word inside a longer query only narrows it.
     expect(top("arch 1x6")[0]).toBe("3455.dat");
     expect(top("arch 1x6")).not.toContain("3659.dat");

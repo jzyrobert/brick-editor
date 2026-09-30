@@ -83,18 +83,18 @@ Each **section** becomes an LDraw submodel and a layer (`layer` groups several s
 
 **Parts** — real components; they reserve their cells and **carve any massing there** (parts win):
 
-| op          | what                                                   | key fields                                                                          |
-| ----------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `window`    | frame + glass (1x2x2, 1x2x3, 1x4x3)                    | `at`, `facing`, `size`, `frame`, `glass`                                            |
-| `door`      | 1x4x6 frame + hinged door (Play opens it)              | `at`, `facing`, `frame`, `colour`, `opens` in\|out                                  |
+| op          | what                                                   | key fields                                                                                                     |
+| ----------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `window`    | frame + glass (1x2x2, 1x2x3, 1x4x3)                    | `at`, `facing`, `size`, `frame`, `glass`                                                                       |
+| `door`      | 1x4x6 frame + hinged door (Play opens it)              | `at`, `facing`, `frame`, `colour`, `opens` in\|out                                                             |
 | `roof`      | 45° `gable`, `hip` or `shed` (lean-to) slopes, `flat`  | `at` (y = wall top), `size [w,d]`, `ridge`, `overhang`, `ends`, `pitch`, `facing`, `gable`, `holes`, `parapet` |
-| `place`     | any part                                               | `part`, `at`, `colour`, `turn`, `anchor`, `wheels`                                  |
-| `column`    | round bricks 1/2/4 studs across, cap cone/plate/tile   | `at`, `height`, `diameter`, `cap`                                                   |
-| `fence`     | fence/railing along a path, corners allowed            | `path [[x,z]...]`, `y`, `style` picket\|lattice\|lattice-low\|spindle\|panel        |
-| `baseplate` | 16/32/48-stud baseplates tiled over an area, top y = 0 | `at [x,z]`, `size` (multiples of 16)                                                |
-| `instance`  | a component (real submodel)                            | `component`, `at` (plot corner), `turn`, `palette`, `with`                          |
-| `track`     | official train track, piece by piece (Play runs it)    | `at [x,y,z]` (grid point), `dir` ±x\|±z, `pieces` "SSLL…", `branch`, `colour`       |
-| `railcar`   | a train car on the track: base, bogies, a body         | `at [x,y,z]` (car centre on the track), `dir`, `component`, `palette`, `with`       |
+| `place`     | any part                                               | `part`, `at`, `colour`, `turn`, `anchor`, `wheels`                                                             |
+| `column`    | round bricks 1/2/4 studs across, cap cone/plate/tile   | `at`, `height`, `diameter`, `cap`                                                                              |
+| `fence`     | fence/railing along a path, corners allowed            | `path [[x,z]...]`, `y`, `style` picket\|lattice\|lattice-low\|spindle\|panel                                   |
+| `baseplate` | 16/32/48-stud baseplates tiled over an area, top y = 0 | `at [x,z]`, `size` (multiples of 16)                                                                           |
+| `instance`  | a component (real submodel)                            | `component`, `at` (plot corner), `turn`, `palette`, `with`                                                     |
+| `track`     | official train track, piece by piece (Play runs it)    | `at [x,y,z]` (grid point), `dir` ±x\|±z, `pieces` "SSLL…", `branch`, `colour`                                  |
+| `railcar`   | a train car on the track: base, bogies, a body         | `at [x,y,z]` (car centre on the track), `dir`, `component`, `palette`, `with`                                  |
 
 **Structure** — `repeat {count, step [dx,dy,dz], ops}`, `mirror {axis x|z, about, ops, keep}` (cell `x` maps to `2·about − 1 − x`; windows, slopes, shed roofs and left/right parts mirror correctly), `group {at, turn, ops}` (a local frame; `turn: 90` turns local front to face left).
 
@@ -116,7 +116,7 @@ Each **section** becomes an LDraw submodel and a layer (`layer` groups several s
 
 **Colours**: a palette key, a colour name (`"light bluish grey"`, `"dark tan"`, `"trans-clear"`, `"medium azure"` — BrickLink/LDraw names work) or an LDraw code. `{"mix": [...]}` picks per piece, deterministically — good for stone and rock. The compiler only uses brick/plate sizes that exist in the colour and warns (`colour-unavailable`) when a placed part is not known in it.
 
-**Parts**: `"3001"`, `"3001.dat"`, `"@alias"` (from `parts`), `{"find": "1x2 tile"}` or just a phrase (`"window 1x2x3 with glass"`). Searches resolve deterministically at compile time and are listed in the report under `resolved`. Check which way a library part faces before relying on `turn`: the Arch 1 × 3 × 3 Pointed (13965) runs along Z at `turn: 0`, the arches 1 × 4/1 × 6 (6182, 3307, 6183) along X.
+**Parts**: `"3001"`, `"3001.dat"`, `"@alias"` (from `parts`), `{"find": "1x2 tile"}` or just a phrase (`"window 1x2x3 with glass"`). Searches resolve deterministically at compile time and are listed in the report under `resolved`. Part search also answers `"pointed arch"`, `"spire"`, `"sail"`, `"clock"`, `"train base"`, `"bogie"`, `"train front"` and `"track"`, and "corner" matches "convex" (`"slope 75 corner"` finds the spire corner 3685). Check which way a library part faces before relying on `turn`: the Arch 1 × 3 × 3 Pointed (13965) runs along Z at `turn: 0`, the arches 1 × 4/1 × 6 (6182, 3307, 6183) along X.
 
 ## Unseen sections: interior fill
 
@@ -133,18 +133,18 @@ On the Santorini example, switching the terraces from `fill` to `empty` removed 
 
 Curated parts (snap and count for connectivity). `npm run cli -- parts search "<words>"` finds anything else in the complete LDraw library.
 
-| role             | parts                                                                                                                                                                 |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| walls            | massing (`wall`/`room`/`box`) — bricks 1×1…1×16, 2×2…2×10 chosen for you; masonry `98283`, log `30136`, grille `2877`                                                 |
-| floors & paving  | `floor` — plates up to 8×16, tiles 1×1…2×4 with `top: "tile"`; baseplates `3867` 16², `3811` 32², `4186` 48²                                                          |
-| roofs            | `roof` op; slopes 45° `3040b` `3039` `3038` `3037`, ridge `3043`, hip corner `3045`, valley `3046`, 33° `3298` `4161`                                                 |
-| windows & doors  | `window` (1x2x2 `60592`, 1x2x3 `60593`, 1x4x3 `60594` + glass), `door` (`60596` + `60616a`), shutters `60608`, arches `3659` `6182` `3307` `2339`                     |
-| columns & towers | `column` (round bricks `3062b` `3941` `87081`, cones `4589` `3942c` `3943b`), `cylinder` for big towers, pillar `2453b`                                               |
-| detailing        | cheese slope `54200`, tiles `3070b` `3069b`, grille tile `2412b`, jumper `3794b`, SNOT `87087` `4070` `11211`, brackets `99781` `44728`, fences `33303` `3185` `3633` |
+| role             | parts                                                                                                                                                                                                            |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| walls            | massing (`wall`/`room`/`box`) — bricks 1×1…1×16, 2×2…2×10 chosen for you; masonry `98283`, log `30136`, grille `2877`                                                                                            |
+| floors & paving  | `floor` — plates up to 8×16, tiles 1×1…2×4 with `top: "tile"`; baseplates `3867` 16², `3811` 32², `4186` 48²                                                                                                     |
+| roofs            | `roof` op; slopes 45° `3040b` `3039` `3038` `3037`, ridge `3043`, hip corner `3045`, valley `3046`, 33° `3298` `4161`                                                                                            |
+| windows & doors  | `window` (1x2x2 `60592`, 1x2x3 `60593`, 1x4x3 `60594` + glass), `door` (`60596` + `60616a`), shutters `60608`, arches `3659` `6182` `3307` `2339`                                                                |
+| columns & towers | `column` (round bricks `3062b` `3941` `87081`, cones `4589` `3942c` `3943b`), `cylinder` for big towers, pillar `2453b`                                                                                          |
+| detailing        | cheese slope `54200`, tiles `3070b` `3069b`, grille tile `2412b`, jumper `3794b`, SNOT `87087` `4070` `11211`, brackets `99781` `44728`, fences `33303` `3185` `3633`                                            |
 | landscape        | trees `3470` `3471` `2435`, bush `6255`, leaves `2423`, flowers `24866` `33291`, water: `floor` in trans light blue/trans dark blue with `top: "tile"`, or a blue baseplate (`4186` and `3811` are made in blue) |
-| vehicles         | wheel holder plate `4600` (`wheels`), mudguard `3788`, windscreen `3823`, seat `4079`, steering `3829c01`; train front `2924bc01`, windows `4033c01` `4035c01`         |
-| gothic           | pointed arch `13965` over a 1-wide slot of stained glass (a `box` of trans 1 × 1 bricks: `{"mix": ["trans red", "trans dark blue", "trans yellow"]}`), spires `pitch: 75` |
-| ships            | sails `u9494c01` `85651c01` (`anchor: "origin"`), masts from `column`, clock brick `3003p0b` (tan)                                                                     |
+| vehicles         | wheel holder plate `4600` (`wheels`), mudguard `3788`, windscreen `3823`, seat `4079`, steering `3829c01`; train front `2924bc01`, windows `4033c01` `4035c01`                                                   |
+| gothic           | pointed arch `13965` over a 1-wide slot of stained glass (a `box` of trans 1 × 1 bricks: `{"mix": ["trans red", "trans dark blue", "trans yellow"]}`), spires `pitch: 75`                                        |
+| ships            | sails `u9494c01` `85651c01` (`anchor: "origin"`), masts from `column`, clock brick `3003p0b` (tan)                                                                                                               |
 
 ## Workflow
 
@@ -185,14 +185,14 @@ Builds are bounded by the resource profile (docs/RESOURCE-LIMITS.md): desktop 20
 
 Script sizes are minified JSON (what an agent emits); the files are laid out one op per line (`python3 scripts/format-build-script.py file.json`).
 
-| script                                                     | parts | script | LDraw  | notes                                                                                                     |
-| ---------------------------------------------------------- | ----- | ------ | ------ | --------------------------------------------------------------------------------------------------------- |
-| [house.json](../fixtures/build-scripts/house.json)         | 275   | 5.0 KB | 13 KB  | the House sample (its TypeScript generator is 11 KB for 285 parts)                                        |
-| [castle.json](../fixtures/build-scripts/castle.json)       | 255   | 4.5 KB | 12 KB  | the Small castle sample (generator 11.8 KB, 245 parts); the towers are one component                      |
-| [santorini.json](../fixtures/build-scripts/santorini.json) | 4,089 | 5.4 KB | 110 KB | from a one-paragraph brief: four hollow terraces, 30 houses from three components, chapel, harbour, boats |
-| [market-town.json](../fixtures/build-scripts/market-town.json) | 5,940 | 24 KB | 270 KB | the Market town sample: 11 houses from 4 components in 11 palettes, town hall, oval of track, a train, cars |
-| [cathedral.json](../fixtures/build-scripts/cathedral.json)     | 11,817 | 22 KB | 520 KB | the Cathedral sample: mirrored towers and aisles, 75° spires, stained-glass lancets, interior with stairs |
-| [harbour.json](../fixtures/build-scripts/harbour.json)         | 6,963 | 17 KB | 320 KB | the Harbour sample: 19 houses from one component with flags, warehouses, ships with sails, lighthouse   |
+| script                                                         | parts  | script | LDraw  | notes                                                                                                       |
+| -------------------------------------------------------------- | ------ | ------ | ------ | ----------------------------------------------------------------------------------------------------------- |
+| [house.json](../fixtures/build-scripts/house.json)             | 263    | 5.0 KB | 13 KB  | the House sample (its TypeScript generator is 11 KB for 285 parts)                                          |
+| [castle.json](../fixtures/build-scripts/castle.json)           | 255    | 4.5 KB | 12 KB  | the Small castle sample (generator 11.8 KB, 245 parts); the towers are one component                        |
+| [santorini.json](../fixtures/build-scripts/santorini.json)     | 4,098  | 5.4 KB | 110 KB | from a one-paragraph brief: four hollow terraces, 30 houses from three components, chapel, harbour, boats   |
+| [market-town.json](../fixtures/build-scripts/market-town.json) | 6,083  | 28 KB  | 280 KB | the Market town sample: 11 houses from 4 components in 11 palettes, town hall, oval of track, a train, cars |
+| [cathedral.json](../fixtures/build-scripts/cathedral.json)     | 11,817 | 26 KB  | 540 KB | the Cathedral sample: mirrored towers and aisles, 75° spires, stained-glass lancets, interior with stairs   |
+| [harbour.json](../fixtures/build-scripts/harbour.json)         | 6,966  | 19 KB  | 305 KB | the Harbour sample: 19 houses from one component with flags, warehouses, ships with sails, lighthouse       |
 
 The Santorini script's first draft compiled to 6,213 parts with 5 overlaps, 3,745 floating parts and 2 colour warnings; the report named the ops (terraces a plate above the terrace below, a chimney above its roof, flowers with tabs against the chapel), one revision fixed them all, and hollow terraces saved about 2,100 parts with no visible change.
 

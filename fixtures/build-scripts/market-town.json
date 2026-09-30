@@ -232,7 +232,7 @@
     ]}
   },
   "sections": [
-    {"name": "Ground", "layer": "Town", "ops": [
+    {"name": "Ground", "layer": "Ground", "ops": [
       {"op": "baseplate", "at": [-80, -48], "size": [160, 96], "colour": "grass"}
     ]},
     {"name": "Railway", "layer": "Railway", "ops": [
@@ -250,7 +250,10 @@
       {"op": "instance", "component": "bench", "at": [-10, 3, -32]},
       {"op": "instance", "component": "bench", "at": [6, 3, -32]},
       {"op": "instance", "component": "lamp", "at": [-22, 3, -32]},
-      {"op": "instance", "component": "lamp", "at": [20, 3, -32]}
+      {"op": "instance", "component": "lamp", "at": [20, 3, -32]},
+      {"op": "stairs", "note": "footbridge over the track: up from the fields", "at": [9, 0, -47], "width": 2, "steps": 17, "dir": "+x", "rise": 2, "colour": "dark green", "top": "tile"},
+      {"op": "floor", "note": "footbridge deck, clear of the train", "at": [25, 32, -47], "size": [4, 17], "colour": "dark green", "layers": 2, "top": "tile"},
+      {"op": "stairs", "note": "footbridge: down into the town", "at": [44, 0, -32], "width": 2, "steps": 17, "dir": "-x", "rise": 2, "colour": "dark green", "top": "tile"}
     ]},
     {"name": "Streets", "layer": "Streets", "ops": [
       {"op": "floor", "at": [-48, 0, -30], "size": [96, 2], "colour": "pave", "top": "tile"},
@@ -382,7 +385,6 @@
       {"op": "place", "part": "@smallpine", "at": [60, 0, -15], "colour": "green"},
       {"op": "box", "at": [-44, 0, 32], "size": [88, 3, 2], "colour": "hedge", "interior": "solid"},
       {"op": "box", "at": [-40, 0, -33], "size": [14, 3, 2], "colour": "hedge", "interior": "solid"},
-      {"op": "box", "at": [26, 0, -33], "size": [14, 3, 2], "colour": "hedge", "interior": "solid"},
       {"op": "scatter", "region": {"at": [-44, 32], "size": [88, 2]}, "parts": ["24866"], "colours": ["red", "yellow", "white"], "density": 0.15}
     ]}
   ]

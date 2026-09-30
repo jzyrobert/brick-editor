@@ -192,6 +192,45 @@ describe("build-script samples", () => {
   );
 
   it(
+    "town: over the footbridge from the fields, across the track and into the town",
+    { timeout: 300000 },
+    async () => {
+      const project = template("town");
+      // Stairs up along +x at z -47..-46 (x 9..25), a deck at level 34 across
+      // the track (x 25..28, z -47..-31), stairs down along +x (x 28..44).
+      const { session } = await playIn(
+        project,
+        { min: [120, -400, -980], max: [960, 10, -560] },
+        { position: [160, -0.3, -930], yaw: Math.PI / 2 },
+      );
+      try {
+        session.setInput({ moveZ: 1, yaw: Math.PI / 2 });
+        session.stepTicks(150);
+        let p = session.snapshot().position;
+        // On the deck (x 500..580).
+        expect(p[0]).toBeGreaterThan(500);
+        expect(p[0]).toBeLessThan(580);
+        expect(p[1]).toBeLessThan(-260);
+        // Along the deck over the rails.
+        session.setInput({ moveZ: 1, yaw: Math.PI });
+        for (let i = 0; i < 40 && session.snapshot().position[2] < -625; i++)
+          session.stepTicks(5);
+        p = session.snapshot().position;
+        expect(p[2]).toBeGreaterThan(-640);
+        expect(p[1]).toBeLessThan(-260);
+        // Down the far stairs (z -640..-600) onto the grass inside the oval.
+        session.setInput({ moveZ: 1, yaw: Math.PI / 2 });
+        session.stepTicks(300);
+        p = session.snapshot().position;
+        expect(p[0]).toBeGreaterThan(880);
+        expect(p[1]).toBeGreaterThan(-20);
+      } finally {
+        session.dispose();
+      }
+    },
+  );
+
+  it(
     "cathedral: in at the west door and up the stairs to the organ gallery",
     { timeout: 300000 },
     async () => {
@@ -214,6 +253,31 @@ describe("build-script samples", () => {
         expect(up[2]).toBeLessThan(-600);
         // On the gallery (level 31: y -248).
         expect(up[1]).toBeLessThan(-240);
+      } finally {
+        session.dispose();
+      }
+    },
+  );
+
+  it(
+    "harbour: up the steps from the water onto the quay",
+    { timeout: 300000 },
+    async () => {
+      const project = template("harbour");
+      // Steps rise a plate at a time from z -11 to -7 (x -4..-1) up to the
+      // quay six plates above the sea.
+      const { session } = await playIn(
+        project,
+        { min: [-240, -300, -420], max: [140, 10, -20] },
+        { position: [-50, -0.3, -300], yaw: Math.PI },
+      );
+      try {
+        session.setInput({ moveZ: 1, yaw: Math.PI });
+        session.stepTicks(90);
+        // On the quay (z > -120), six plates up.
+        const p = session.snapshot().position;
+        expect(p[2]).toBeGreaterThan(-120);
+        expect(p[1]).toBeLessThan(-46);
       } finally {
         session.dispose();
       }

@@ -828,7 +828,9 @@ export class PlaySession {
         { x: 0, y: -S, z: 0 },
         this.capsule,
         0,
-        2000,
+        // Far enough to reach the ground from above the tallest build
+        // (the default spawn starts over its highest point).
+        Math.max(2000, -start[1] + 400),
         true,
         undefined,
         undefined,

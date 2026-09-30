@@ -13,7 +13,12 @@
 import installedBounds from "../bounds.json";
 import { occurrences } from "../../core/document";
 import { connectedGroups, connectionGraph } from "../../core/connectivity";
-import { modelHealth, withoutLooseObjects } from "../../core/health";
+import {
+  WHEEL_NESTING,
+  modelHealth,
+  seatedBump as seated,
+  withoutLooseObjects,
+} from "../../core/health";
 import { transformBounds, type Bounds } from "../../core/spatial";
 import { compose, inverse } from "../../core/math";
 import { localOccupancy } from "../../edit/snap";
@@ -45,30 +50,12 @@ const AXLED = new Set(["4624.dat", "3641.dat", "6014b.dat", "56890.dat"]);
  */
 const CLIPPED: Record<string, string[]> = {
   "2335.dat": ["3957a.dat"],
-  "4624.dat": ["4600.dat", "3641.dat", "3788.dat"],
-  "3641.dat": ["4600.dat", "3788.dat"],
-  // The jeep: Wheel Rim 12 × 11 (6014b) on the same wheel holder, its
-  // balloon tyre (56890) on the rim, both under Car Mudguard 50745's arch.
-  "6014b.dat": ["4600.dat", "56890.dat", "50745.dat"],
-  "56890.dat": ["4600.dat", "50745.dat"],
+  ...WHEEL_NESTING,
 };
 const overlaps = (a: Bounds, b: Bounds) =>
   [0, 1, 2].every(
     (i) => Math.min(a.max[i], b.max[i]) - Math.max(a.min[i], b.min[i]) > MARGIN,
   );
-/**
- * A stud-high bump on top of one part sitting in the underside of the part
- * resting on it (a window frame's end studs in the frame above, its glass's
- * pivots in the plate above): at most a stud (4 LDU) deep, at the interface
- * where the lower part's top meets the upper part's bottom (LDraw −Y up).
- */
-const seated = (p: Bounds, q: Bounds) => {
-  const bump = (lower: Bounds, upper: Bounds) =>
-    lower.max[1] >= upper.max[1] - 0.01 &&
-    lower.min[1] < upper.max[1] &&
-    upper.max[1] - lower.min[1] <= 4.01;
-  return bump(p, q) || bump(q, p);
-};
 const bounds = installedBounds.bounds as unknown as Record<
   string,
   Bounds | null

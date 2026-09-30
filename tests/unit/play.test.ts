@@ -122,6 +122,26 @@ function boxes(
     indices: new Uint32Array(indices),
   };
 }
+describe("default spawn", () => {
+  it("stands in front of a build taller than 2,000 LDU, walking", async () => {
+    // A 2,500 LDU tower (the cathedral's spires reach 2,008): the spawn
+    // search starts over its top and must still reach the ground.
+    const s = await PlaySession.create({
+      ...boxes([
+        [
+          [-100, -2500, -100],
+          [100, 0, 100],
+        ],
+      ]),
+      bounds: { min: [-100, -2500, -100], max: [100, 0, 100] },
+    });
+    const snap = s.snapshot();
+    expect(snap.locomotion).toBe("walk");
+    expect(snap.position[2]).toBeLessThan(-100);
+    expect(Math.abs(snap.position[1])).toBeLessThan(1);
+    s.dispose();
+  });
+});
 describe("static triangle world collisions", () => {
   it("sweeps thin walls at run speed and slides parallel without tunnelling", async () => {
     const s = await PlaySession.create(

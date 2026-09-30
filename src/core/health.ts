@@ -45,6 +45,32 @@ const STUD = 4; // LDU a stud row rises above a brick or plate top.
 const TOLERANCE = 0.5; // LDU of overlap ignored as numeric noise.
 // Derived occupancy widens faces thinner than 0.6 LDU to 0.6 (CONNECTORS.md).
 const OCCUPANCY_TOLERANCE = 0.65;
+/**
+ * Car wheels nest by design: a rim on its wheel holder's pin, a tyre on its
+ * rim, both turning under a mudguard's arch (the round clearances are finer
+ * than occupancy boxes). The build checks share this table.
+ */
+export const WHEEL_NESTING: Record<string, string[]> = {
+  "4624.dat": ["4600.dat", "3641.dat", "3788.dat"],
+  "3641.dat": ["4600.dat", "3788.dat"],
+  "6014b.dat": ["4600.dat", "56890.dat", "50745.dat"],
+  "56890.dat": ["4600.dat", "50745.dat"],
+};
+const nested = (a: string, b: string) =>
+  !!WHEEL_NESTING[a]?.includes(b) || !!WHEEL_NESTING[b]?.includes(a);
+/**
+ * A stud-high bump on one part's top sitting in the underside of the part
+ * resting on it (a window frame's end studs in the frame above, its glass's
+ * pivots in the plate above): at most a stud deep, at the interface where
+ * the lower part's top meets the upper part's bottom (LDraw −Y up).
+ */
+export function seatedBump(p: Bounds, q: Bounds) {
+  const bump = (lower: Bounds, upper: Bounds) =>
+    lower.max[1] >= upper.max[1] - 0.01 &&
+    lower.min[1] < upper.max[1] &&
+    upper.max[1] - lower.min[1] <= STUD + 0.01;
+  return bump(p, q) || bump(q, p);
+}
 /** Window glass sits in its frame's groove, sharing the frame's origin. */
 const GLAZING: Record<string, string> = {
   "60601.dat": "60592.dat",
@@ -386,7 +412,8 @@ export function modelHealth(
     if (!overlaps(bodies[i], bodies[j], TOLERANCE)) return false;
     if (
       glazed(boxed[i], boxed[j]) ||
-      onRails(boxed[i].node.ref, boxed[j].node.ref)
+      onRails(boxed[i].node.ref, boxed[j].node.ref) ||
+      nested(boxed[i].node.ref, boxed[j].node.ref)
     )
       return false;
     // Parts joined by a verified connection (a door's pins in its frame's
@@ -396,9 +423,14 @@ export function modelHealth(
       b = shapes[j];
     if (!a || !b) return true;
     const rel = compose(inverse(boxed[j].transform), boxed[i].transform);
+    const upright = Math.abs(Math.abs(rel.basis[4]) - 1) < 1e-6;
     return a.some((box) => {
       const t = transformBounds(box, rel);
-      return b.some((other) => overlaps(t, other, OCCUPANCY_TOLERANCE));
+      return b.some(
+        (other) =>
+          overlaps(t, other, OCCUPANCY_TOLERANCE) &&
+          !(upright && seatedBump(t, other)),
+      );
     });
   };
   const colliding = new Set<number>();
