@@ -1,5 +1,11 @@
 import { expect, it } from "vitest";
-import { nearbyInteraction } from "../../src/play/interaction";
+import {
+  nearbyInteraction,
+  nearbyTrain,
+  promptVisible,
+  PROMPT_REACH,
+  type PlayInteraction,
+} from "../../src/play/interaction";
 import { mechanismFixture } from "../../src/mechanisms/fixtures";
 import { KinematicSession } from "../../src/mechanisms/kinematic";
 import { CHARACTER_PROFILE } from "../../src/play/types";
@@ -123,4 +129,63 @@ it("labels prismatic travel in LDU with a 40 LDU/s contextual default", () => {
     label: "Close joint",
     progress: "Opening · 4.0 LDU / 20.0 LDU",
   });
+});
+it("offers an action only in reach, or near with a reason why not", () => {
+  const target = (patch: Partial<PlayInteraction>) =>
+    ({
+      kind: "vehicle",
+      rigId: "car",
+      label: "Drive vehicle",
+      name: "Car",
+      available: false,
+      distance: 500,
+      ...patch,
+    }) as PlayInteraction;
+  expect(promptVisible(undefined)).toBe(false);
+  // Far away: nothing, not a greyed "move closer" prompt.
+  expect(promptVisible(target({}))).toBe(false);
+  expect(promptVisible(target({ blockedReason: "Blocked" }))).toBe(false);
+  // Near but blocked: the reason is worth showing.
+  expect(
+    promptVisible(
+      target({
+        distance: PROMPT_REACH,
+        blockedReason: "Driver seat access is obstructed",
+      }),
+    ),
+  ).toBe(true);
+  expect(promptVisible(target({ distance: 100 }))).toBe(false);
+  expect(promptVisible(target({ available: true, distance: 90 }))).toBe(true);
+});
+it("offers Drive train beside the locomotive, not along the rest of the train", () => {
+  // Feet on the ground (y = 0; LDraw up is −Y); the head pivot is on the
+  // rail tops, running towards +X.
+  const report = (position: number[]) =>
+    ({
+      position,
+      profile: CHARACTER_PROFILE,
+      trains: {
+        trains: [
+          {
+            id: "train:1",
+            name: "Train 1",
+            position: [0, -16, 0],
+            heading: [1, 0, 0],
+          },
+        ],
+        switches: [],
+      },
+    }) as unknown as PlaySnapshotReport;
+  expect(nearbyTrain(report([-200, 0, 110]))).toMatchObject({
+    kind: "train",
+    trainId: "train:1",
+    label: "Drive train",
+    available: true,
+  });
+  // Beyond the locomotive's length, beside the coaches: nothing offered.
+  expect(nearbyTrain(report([-900, 0, 110]))).toBeUndefined();
+  // Riding already: nothing to offer.
+  const riding = report([-200, 0, 110]);
+  riding.trains!.riding = "train:1";
+  expect(nearbyTrain(riding)).toBeUndefined();
 });

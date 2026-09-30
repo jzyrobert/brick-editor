@@ -71,7 +71,9 @@ it("rejects invalid/far requests without entry mutation", async () => {
     play.teleport({ position: [300, -0.3, -188] });
     const far = play.snapshot();
     expect(play.vehicleSeatEligibility(request).eligible).toBe(false);
-    expect(() => play.enterVehicle(request)).toThrow(/96 LDU/);
+    expect(() => play.enterVehicle(request)).toThrow(
+      /closer to the driver's seat/,
+    );
     expect(play.snapshot()).toEqual(far);
   } finally {
     play.dispose();

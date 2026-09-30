@@ -41,13 +41,11 @@ for (const width of [360, 1080, 1440])
         }),
       );
       const enter = page.getByRole("button", {
-        name: "Enter driver seat",
+        name: "Get in",
         exact: true,
       });
       await expect(enter).toBeEnabled();
-      await page
-        .getByRole("button", { name: "Control vehicle from here" })
-        .click();
+      await page.getByRole("button", { name: "Drive from here" }).click();
       await expect(
         page.getByText("Controlling vehicle · on foot", { exact: true }),
       ).toBeVisible();
@@ -55,11 +53,11 @@ for (const width of [360, 1080, 1440])
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))
           .occupancy,
       ).toBeUndefined();
-      await page.getByRole("button", { name: "Release vehicle" }).click();
+      await page.getByRole("button", { name: "Stop driving" }).click();
       if (width === 1440) await page.keyboard.press("e");
       else await enter.tap();
       await expect(
-        page.getByRole("button", { name: "Exit vehicle", exact: true }),
+        page.getByRole("button", { name: "Get out", exact: true }),
       ).toBeVisible();
       const seated = await page.evaluate(() =>
         window.brickEditor!.play.snapshot(),
@@ -191,9 +189,7 @@ for (const width of [360, 1080, 1440])
       await page
         .getByRole("button", { name: "Resume driving", exact: true })
         .click();
-      await page
-        .getByRole("button", { name: "Exit vehicle", exact: true })
-        .click();
+      await page.getByRole("button", { name: "Get out", exact: true }).click();
       const outside = await page.evaluate(() =>
         window.brickEditor!.play.snapshot(),
       );
@@ -375,16 +371,14 @@ test("blocked seat exits retain the driver and become usable after reversing cle
       realtime: false,
     }),
   );
-  await page
-    .getByRole("button", { name: "Enter driver seat", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Get in", exact: true }).click();
   await page.evaluate(async () => {
     const a = window.brickEditor!;
     await a.play.setInput({ moveZ: 1 });
     await a.play.stepTicks(30);
     await a.play.setInput({});
   });
-  const exit = page.getByRole("button", { name: "Exit vehicle", exact: true });
+  const exit = page.getByRole("button", { name: "Get out", exact: true });
   await exit.click();
   await expect(page.locator(".play-interaction")).toContainText("Exit blocked");
   expect(

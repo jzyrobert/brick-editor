@@ -56,9 +56,10 @@ export const TRAIN_KEYS = {
 } as const;
 
 /**
- * Train driving controls in Play: Go/Stop, a speed slider, reverse, ride
- * along, horn and the points. One tap starts the train; everything is at
- * least 44 px for fingers.
+ * Train driving controls in Play. At rest they are one chip: the train's
+ * status and Go/Stop, so one tap starts the train. The chip opens a drawer
+ * with the less-used controls (reverse, speed, ride along, horn, points,
+ * next train), which stays open while riding. Everything is at least 44 px.
  */
 export function PlayTrainControls({
   play,
@@ -66,6 +67,8 @@ export function PlayTrainControls({
   onError,
   bound = [],
   showKeys = false,
+  expanded,
+  onExpandedChange,
 }: {
   play: BrowserPlay;
   trains: Trains;
@@ -74,7 +77,11 @@ export function PlayTrainControls({
   bound?: string[];
   /** Show the key hints (a fine pointer is present). */
   showKeys?: boolean;
+  /** The drawer of less-used controls is open (kept across a pause). */
+  expanded: boolean;
+  onExpandedChange: (open: boolean) => void;
 }) {
+  const setExpanded = onExpandedChange;
   const [index, setIndex] = useState(0);
   const [level, setLevel] = useState(0.6);
   const [backwards, setBackwards] = useState(false);
@@ -128,7 +135,15 @@ export function PlayTrainControls({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [boundKeys]);
+  // Riding a train shows that train's controls.
+  useEffect(() => {
+    if (trains.riding) {
+      const ridden = trains.trains.findIndex((t) => t.id === trains.riding);
+      if (ridden >= 0) setIndex(ridden);
+    }
+  }, [trains.riding]);
   if (!train) return null;
+  const open = expanded || riding;
   const key = (action: keyof typeof TRAIN_KEYS) =>
     showKeys && !bound.some((k) => k.toUpperCase() === TRAIN_KEYS[action]) ? (
       <kbd aria-hidden="true">{TRAIN_KEYS[action]}</kbd>
@@ -139,17 +154,34 @@ export function PlayTrainControls({
     (train.status === "running"
       ? `${STATUS.running} · ${speedStuds} studs/s${train.speed < 0 ? " backwards" : ""}`
       : STATUS[train.status]);
+  const summary = (
+    <>
+      <Icon name="train" size={16} />
+      <span className="play-train-status" role="status">
+        {train.name} · {caption}
+      </span>
+    </>
+  );
   return (
-    <section className="play-train" aria-label="Train controls">
+    <section
+      className={"play-train" + (open ? " is-open" : "")}
+      aria-label="Train controls"
+    >
       <div className="play-train-row">
-        {trains.trains.length > 1 && (
+        {riding ? (
+          // Riding: the driver's controls stay open; the ride ends from the
+          // contextual action (Get off) or C.
+          <div className="play-train-chip">{summary}</div>
+        ) : (
           <button
-            className="play-train-key"
-            aria-label={`Next train (now ${train.name})`}
-            title={train.name}
-            onClick={() => setIndex((index + 1) % trains.trains.length)}
+            className="play-train-chip"
+            aria-expanded={open}
+            aria-controls="play-train-drawer"
+            title={open ? "Fewer train controls" : "More train controls"}
+            onClick={() => setExpanded(!expanded)}
           >
-            <Icon name="train" />
+            {summary}
+            <i className="play-train-chevron" aria-hidden="true" />
           </button>
         )}
         <button
@@ -162,74 +194,105 @@ export function PlayTrainControls({
           <span>{moving ? "Stop" : "Go"}</span>
           {key("go")}
         </button>
-        <div className="play-train-speed">
-          <input
-            type="range"
-            aria-label="Train speed"
-            min={0.2}
-            max={1}
-            step={0.1}
-            value={level}
-            onChange={(e) => {
-              const next = Number(e.target.value);
-              setLevel(next);
-              if (moving) drive((backwards ? -1 : 1) * next);
-            }}
-          />
-        </div>
-        <button
-          className="play-train-key"
-          aria-label="Reverse direction"
-          aria-pressed={backwards}
-          aria-keyshortcuts={TRAIN_KEYS.reverse}
-          title={`Reverse (${TRAIN_KEYS.reverse})`}
-          onClick={actions.reverse}
-        >
-          <Icon name="reverse" />
-        </button>
-        <button
-          className="play-train-key"
-          aria-label={riding ? "Stop riding along" : "Ride along"}
-          aria-pressed={riding}
-          aria-keyshortcuts={TRAIN_KEYS.ride}
-          title={`${riding ? "Stop riding" : "Ride along"} (${TRAIN_KEYS.ride})`}
-          onClick={actions.ride}
-        >
-          <Icon name="camera" />
-        </button>
-        <button
-          className="play-train-key"
-          aria-label="Sound the horn"
-          aria-keyshortcuts={TRAIN_KEYS.horn}
-          title={`Horn (${TRAIN_KEYS.horn})`}
-          onClick={horn}
-        >
-          <Icon name="horn" />
-        </button>
-        {trains.switches.slice(0, 2).map((s, i) => (
-          <button
-            key={s.occurrenceId}
-            className="play-train-key play-train-points"
-            aria-label={`Points ${trains.switches.length > 1 ? i + 1 + " " : ""}set to ${s.route}; switch to ${s.route === "straight" ? "branch" : "straight"}`}
-            aria-keyshortcuts={i === 0 ? TRAIN_KEYS.points : undefined}
-            title={
-              s.occupied
-                ? "A train is on these points"
-                : `Switch points${i === 0 ? ` (${TRAIN_KEYS.points})` : ""}`
-            }
-            disabled={s.occupied}
-            onClick={() =>
-              attempt(() => play.setPoints({ occurrenceId: s.occurrenceId }))
-            }
-          >
-            <Icon name="points" />
-            <span aria-hidden="true">{s.route === "straight" ? "│" : "╱"}</span>
-          </button>
-        ))}
       </div>
-      <p className="play-train-status" role="status">
-        {train.name} · {caption}
-      </p>
+      {open && (
+        <div className="play-train-drawer" id="play-train-drawer">
+          {/* Direction and speed, then the labelled extras. */}
+          <div className="play-train-row play-train-drive">
+            <button
+              className="play-train-key"
+              aria-label="Reverse direction"
+              aria-pressed={backwards}
+              aria-keyshortcuts={TRAIN_KEYS.reverse}
+              title={`Reverse (${TRAIN_KEYS.reverse})`}
+              onClick={actions.reverse}
+            >
+              <Icon name="reverse" />
+              <span>Reverse</span>
+              {key("reverse")}
+            </button>
+            <div className="play-train-speed">
+              <input
+                type="range"
+                aria-label="Train speed"
+                min={0.2}
+                max={1}
+                step={0.1}
+                value={level}
+                onChange={(e) => {
+                  const next = Number(e.target.value);
+                  setLevel(next);
+                  if (moving) drive((backwards ? -1 : 1) * next);
+                }}
+              />
+            </div>
+          </div>
+          <div className="play-train-row play-train-extras">
+            {!riding && (
+              <button
+                className="play-train-key"
+                aria-label="Ride along"
+                aria-keyshortcuts={TRAIN_KEYS.ride}
+                title={`Ride along (${TRAIN_KEYS.ride})`}
+                onClick={actions.ride}
+              >
+                <Icon name="seat" />
+                <span>Ride along</span>
+                {key("ride")}
+              </button>
+            )}
+            <button
+              className="play-train-key"
+              aria-label="Sound the horn"
+              aria-keyshortcuts={TRAIN_KEYS.horn}
+              title={`Horn (${TRAIN_KEYS.horn})`}
+              onClick={horn}
+            >
+              <Icon name="horn" />
+              <span>Horn</span>
+              {key("horn")}
+            </button>
+            {trains.switches.slice(0, 2).map((s, i) => (
+              <button
+                key={s.occurrenceId}
+                className="play-train-key play-train-points"
+                aria-label={`Points ${trains.switches.length > 1 ? i + 1 + " " : ""}set to ${s.route}; switch to ${s.route === "straight" ? "branch" : "straight"}`}
+                aria-keyshortcuts={i === 0 ? TRAIN_KEYS.points : undefined}
+                title={
+                  s.occupied
+                    ? "A train is on these points"
+                    : `Switch points${i === 0 ? ` (${TRAIN_KEYS.points})` : ""}`
+                }
+                disabled={s.occupied}
+                onClick={() =>
+                  attempt(() =>
+                    play.setPoints({ occurrenceId: s.occurrenceId }),
+                  )
+                }
+              >
+                <Icon name="points" />
+                <span>
+                  {s.route === "straight"
+                    ? "Points: straight"
+                    : "Points: branch"}
+                </span>
+                {i === 0 && key("points")}
+              </button>
+            ))}
+            {trains.trains.length > 1 && (
+              <button
+                className="play-train-key"
+                aria-label={`Next train (now ${train.name})`}
+                title={train.name}
+                onClick={() => setIndex((index + 1) % trains.trains.length)}
+              >
+                <Icon name="train" />
+                <span>Next train</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

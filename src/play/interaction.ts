@@ -15,7 +15,68 @@ export type PlayInteraction = {
   | { kind: "vehicle" }
   | { kind: "joint"; jointId: string; target: number; speed: number }
   | { kind: "points"; occurrenceId: string }
+  | { kind: "train"; trainId: string }
 );
+/**
+ * How near (LDU from the explorer's body) a target must be before the HUD
+ * shows its action at all. Beyond it nothing is offered: a prompt appears
+ * only when the explorer can act, or is close enough that the reason they
+ * cannot (a blocked door, an obstructed seat) is useful.
+ */
+export const PROMPT_REACH = 160;
+/** Whether the contextual action is worth showing (see PROMPT_REACH). */
+export function promptVisible(target: PlayInteraction | undefined) {
+  if (!target) return false;
+  if (target.available) return true;
+  return (
+    target.distance <= PROMPT_REACH &&
+    !!(target.blockedReason || target.progress)
+  );
+}
+/** Reach for taking the controls of a train (LDU from its locomotive). */
+export const TRAIN_REACH = 150;
+/** Typical locomotive length behind the head pivot (a 6 × 24 base). */
+const LOCOMOTIVE_LENGTH = 480;
+/** The train whose locomotive the explorer stands beside, if any. */
+export function nearbyTrain(
+  report: PlaySnapshotReport,
+): PlayInteraction | undefined {
+  if (report.trains?.riding) return undefined;
+  const body: Vec3 = [
+    report.position[0],
+    report.position[1] - report.profile.height / 2,
+    report.position[2],
+  ];
+  let best: PlayInteraction | undefined;
+  for (const train of report.trains?.trains ?? []) {
+    // Distance to the locomotive: a segment from the head pivot back along
+    // the track direction (the report carries the head and heading only).
+    const [hx, hy, hz] = train.heading;
+    const length = Math.hypot(hx, hy, hz) || 1;
+    const offset = body.map((v, i) => v - train.position[i]);
+    const back = Math.max(
+      0,
+      Math.min(
+        LOCOMOTIVE_LENGTH,
+        -(offset[0] * hx + offset[1] * hy + offset[2] * hz) / length,
+      ),
+    );
+    const d = Math.hypot(
+      ...offset.map((v, i) => v + (train.heading[i] / length) * back),
+    );
+    if (d > TRAIN_REACH * 1.6 || (best && d >= best.distance)) continue;
+    best = {
+      kind: "train",
+      trainId: train.id,
+      rigId: "",
+      label: "Drive train",
+      name: train.name,
+      available: d <= TRAIN_REACH,
+      distance: d,
+    };
+  }
+  return best;
+}
 /** Reach for throwing a track switch by hand (LDU from the explorer's body). */
 export const POINTS_REACH = 150;
 /** Nearby track switches (points) of running trains. */
@@ -69,7 +130,7 @@ export function nearbyInteraction(
       targets.push({
         kind: "vehicle",
         rigId: rig.id,
-        label: "Control vehicle",
+        label: "Drive vehicle",
         name: rig.name,
         available: d <= 96 && mechanism.vehicleCollision?.supported !== false,
         ...(mechanism.vehicleCollision?.supported === false

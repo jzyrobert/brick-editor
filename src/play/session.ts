@@ -922,7 +922,7 @@ export class PlaySession {
     ensure(
       Math.hypot(...access.map((v, i) => v - this.feet[i])) <= 96,
       "INVALID_INPUT",
-      "Move within 96 LDU of the driver seat access point",
+      "Move closer to the driver's seat",
     );
     const eye: Vec3 = [
         this.feet[0],

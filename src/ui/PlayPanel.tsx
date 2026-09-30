@@ -28,6 +28,7 @@ const hasFinePointer = () =>
   typeof matchMedia === "function" && matchMedia(finePointerQuery).matches;
 import { PlayMechanismControls } from "./PlayMechanismControls";
 import { PlayTrainControls } from "./PlayTrainControls";
+import { promptVisible } from "../play/interaction";
 import { Icon, type IconName } from "./icons";
 import {
   choosePortrait,
@@ -77,6 +78,7 @@ export function PlayPanel({
     setPhysics(startDynamic ? "dynamic" : "kinematic");
   }, [startDynamic]);
   const [remoteOpen, setRemoteOpen] = useState(false);
+  const [trainOpen, setTrainOpen] = useState(false);
   let allOption = "__all_mechanisms__";
   while (rigs[allOption]) allOption += "_";
   const [excludedLayerIds, setExcludedLayerIds] = useState<string[]>([]);
@@ -237,7 +239,12 @@ export function PlayPanel({
       if (play.getState().paused) return;
       if (!e.repeat && action === "interact") {
         clear();
-        attempt(() => play.interact());
+        // While riding, the action gets off the train.
+        attempt(() =>
+          play.snapshot().trains?.riding
+            ? play.rideTrain({ trainId: null })
+            : play.interact(),
+        );
       } else if (!e.repeat && action === "fly")
         attempt(() =>
           play.setLocomotion(
@@ -336,6 +343,8 @@ export function PlayPanel({
   useEffect(() => {
     if (!state.active) {
       setRotateAsk(false);
+      setRemoteOpen(false);
+      setTrainOpen(false);
       leavePlayScreen();
     }
   }, [state.active]);
@@ -360,12 +369,14 @@ export function PlayPanel({
     const timer = setTimeout(() => setHintDone(true), 6000);
     return () => clearTimeout(timer);
   }, [state.active]);
-  // The look hint shows until the first look drag, or a few seconds.
+  // The look hint shows until the first look drag, or a few seconds. It
+  // waits for the build's own hint so the two never share the screen.
+  const lookHintDue = !playHint || hintDone;
   useEffect(() => {
-    if (!state.active || looked) return;
+    if (!state.active || looked || !lookHintDue) return;
     const timer = setTimeout(() => setLooked(true), 6000);
     return () => clearTimeout(timer);
-  }, [state.active, looked]);
+  }, [state.active, looked, lookHintDue]);
   /** Floating stick: a touch inside the resting ring steers from its centre;
    * a touch anywhere else in the left thumb zone moves the ring under the
    * thumb and steers from there. */
@@ -459,7 +470,7 @@ export function PlayPanel({
         </p>
         <p className="muted">
           Your build stays unchanged. Choose which layers and ground to explore
-          below. Character height: 72 LDU.
+          below.
         </p>
         {playHint && <p className="play-intro-hint">{playHint}</p>}
         {Object.keys(rigs).length > 0 && (
@@ -652,19 +663,35 @@ export function PlayPanel({
       ? "wheel"
       : state.interaction?.kind === "points"
         ? "points"
-        : /door/i.test(state.interaction?.label ?? "")
-          ? "door"
-          : "hand";
+        : state.interaction?.kind === "train"
+          ? "train"
+          : /door/i.test(state.interaction?.label ?? "")
+            ? "door"
+            : "hand";
   const trains = report.trains?.trains.length ? report.trains : undefined;
+  const riding = !!report.trains?.riding;
   const showTrains = !!trains && !state.paused && !inVehicle && !remoteOpen;
   const keyHint = (key: string) =>
     finePointer && key ? <kbd aria-hidden="true">{key}</kbd> : null;
-  const showRemote =
-    !state.paused &&
+  // Remote controls for the build's mechanisms: rarely needed, so they open
+  // from the pause menu rather than holding a key on the HUD.
+  const canRemote =
     !inVehicle &&
+    !riding &&
     !!activeRigId &&
     !!rigs[activeRigId] &&
     !!mechanisms[activeRigId];
+  const showRemote = canRemote && remoteOpen && !state.paused;
+  const remoteTitle =
+    activeRigs.length > 1
+      ? "Remote controls"
+      : `${rigs[activeRigId ?? ""]?.name ?? "Mechanism"} controls`;
+  // The contextual action shows only when there is something to do here
+  // (or a nearby reason why not): never a greyed "move closer" prompt.
+  const showPrompt =
+    !state.paused &&
+    (!remoteOpen || inVehicle) &&
+    (inVehicle || riding || promptVisible(state.interaction));
 
   return (
     <div
@@ -673,7 +700,9 @@ export function PlayPanel({
         (state.paused ? " is-paused" : "") +
         (occupied ? " is-seated" : "") +
         (showTrains ? " has-train" : "") +
+        (showTrains && (trainOpen || riding) ? " has-train-open" : "") +
         (inVehicle ? " is-vehicle" : "") +
+        (riding ? " is-riding" : "") +
         (finePointer ? " has-mouse" : "") +
         (locked ? " is-locked" : "")
       }
@@ -739,21 +768,25 @@ export function PlayPanel({
             <span>{status.text}</span>
           </span>
         </div>
-        {showRemote && (
-          <PlayMechanismControls
-            play={play}
-            rig={rigs[activeRigId!]}
-            report={mechanisms[activeRigId!]}
-            choices={activeRigs}
-            onOpenChange={setRemoteOpen}
-            onRigChange={(id) => {
-              clear();
-              setRemoteRigId(id);
-            }}
-            onError={setMessage}
-          />
-        )}
       </div>
+      {showRemote && (
+        <PlayMechanismControls
+          play={play}
+          rig={rigs[activeRigId!]}
+          report={mechanisms[activeRigId!]}
+          choices={activeRigs}
+          title={remoteTitle}
+          onClose={() => {
+            clear();
+            setRemoteOpen(false);
+          }}
+          onRigChange={(id) => {
+            clear();
+            setRemoteRigId(id);
+          }}
+          onError={setMessage}
+        />
+      )}
       {showTrains && (
         <PlayTrainControls
           play={play}
@@ -761,6 +794,8 @@ export function PlayPanel({
           onError={setMessage}
           bound={Object.values(bindings)}
           showKeys={finePointer}
+          expanded={trainOpen}
+          onExpandedChange={setTrainOpen}
         />
       )}
       {state.paused ? (
@@ -826,6 +861,20 @@ export function PlayPanel({
               <Icon name="photo" size={24} />
               <span>Save this view to Photo</span>
             </button>
+            {canRemote && (
+              <button
+                className="play-tile"
+                onClick={() => {
+                  clear();
+                  setRemoteRigId(activeRigId!);
+                  setRemoteOpen(true);
+                  play.pause(false);
+                }}
+              >
+                <Icon name="sliders" size={24} />
+                <span>{remoteTitle}</span>
+              </button>
+            )}
           </div>
           {inVehicle && (
             <p className="play-menu-note">
@@ -892,44 +941,47 @@ export function PlayPanel({
               {playHint}
             </div>
           )}
-          {!finePointer && !looked && !remoteOpen && (
+          {!finePointer && !looked && !remoteOpen && lookHintDue && (
             <div className="play-look-hint" aria-hidden="true">
               <Icon name="hand" size={16} />
               Drag to look
             </div>
           )}
-          <div
-            className="play-stick-zone"
-            onPointerDown={stickDown}
-            onPointerMove={stickMove}
-            onPointerUp={releaseStick}
-            onPointerCancel={releaseStick}
-            onLostPointerCapture={releaseStick}
-          >
+          {/* Riding a train ignores walking input: no stick or actions. */}
+          {!riding && (
             <div
-              ref={stickRing}
-              className={
-                "play-stick" +
-                (floating ? " is-floating" : "") +
-                (floating || stick[0] || stick[1] ? " is-held" : "")
-              }
-              role="group"
-              aria-label="Movement joystick"
-              style={
-                floating ? { left: floating.x, top: floating.y } : undefined
-              }
+              className="play-stick-zone"
+              onPointerDown={stickDown}
+              onPointerMove={stickMove}
+              onPointerUp={releaseStick}
+              onPointerCancel={releaseStick}
+              onLostPointerCapture={releaseStick}
             >
-              <span
-                className="play-stick-knob"
-                style={{
-                  transform: `translate(${stick[0] * 34}px,${-stick[1] * 34}px)`,
-                }}
+              <div
+                ref={stickRing}
+                className={
+                  "play-stick" +
+                  (floating ? " is-floating" : "") +
+                  (floating || stick[0] || stick[1] ? " is-held" : "")
+                }
+                role="group"
+                aria-label="Movement joystick"
+                style={
+                  floating ? { left: floating.x, top: floating.y } : undefined
+                }
               >
-                {inVehicle ? "Drive" : "Move"}
-              </span>
+                <span
+                  className="play-stick-knob"
+                  style={{
+                    transform: `translate(${stick[0] * 34}px,${-stick[1] * 34}px)`,
+                  }}
+                >
+                  {inVehicle ? "Drive" : "Move"}
+                </span>
+              </div>
             </div>
-          </div>
-          {!inVehicle && !remoteOpen && (
+          )}
+          {!inVehicle && !remoteOpen && !riding && (
             <div className="play-actions">
               <button
                 className="play-round play-run"
@@ -959,104 +1011,105 @@ export function PlayPanel({
           )}
         </>
       )}
-      {!state.paused &&
-        (!remoteOpen || inVehicle) &&
-        (state.interaction || inVehicle) && (
-          <div className="play-interaction">
-            {occupied ? (
-              <>
-                {message && (
-                  <small className="play-note" role="status">
-                    {message}
-                  </small>
-                )}
-                {nearbyReport?.blocked && (
+      {showPrompt && (
+        <div className="play-interaction">
+          {riding && !inVehicle ? (
+            <button
+              className="play-prompt"
+              aria-keyshortcuts={bindings.interact || undefined}
+              onClick={() => {
+                clear();
+                attempt(() => play.rideTrain({ trainId: null }));
+              }}
+            >
+              <Icon name="exit" />
+              Get off train
+              {keyHint(bindings.interact)}
+            </button>
+          ) : occupied ? (
+            <>
+              {message && (
+                <small className="play-note" role="status">
+                  {message}
+                </small>
+              )}
+              {nearbyReport?.blocked && (
+                <small className="play-note" role="status">
+                  {nearbyReport.blockedReason}
+                </small>
+              )}
+              <button
+                className="play-prompt"
+                onClick={() => {
+                  clear();
+                  attempt(() => play.exitVehicle({}));
+                }}
+              >
+                <Icon name="exit" />
+                Get out
+              </button>
+            </>
+          ) : !state.vehicleControl && seatRig ? (
+            <PlaySeatEntry
+              play={play}
+              rig={seatRig}
+              report={report}
+              message={message}
+              eligibility={{
+                eligible: state.interaction?.available ?? false,
+                reason: state.interaction?.blockedReason,
+              }}
+              action={(fn) => {
+                clear();
+                attempt(fn);
+              }}
+            />
+          ) : (
+            <>
+              {!state.vehicleControl && state.interaction?.blockedReason ? (
+                <small className="play-note" role="status">
+                  {state.interaction.blockedReason}
+                </small>
+              ) : (
+                nearbyReport?.blocked && (
                   <small className="play-note" role="status">
                     {nearbyReport.blockedReason}
                   </small>
-                )}
-                <button
-                  className="play-prompt"
-                  onClick={() => {
-                    clear();
-                    attempt(() => play.exitVehicle({}));
-                  }}
-                >
-                  <Icon name="exit" />
-                  Exit vehicle
-                </button>
-              </>
-            ) : !state.vehicleControl && seatRig ? (
-              <PlaySeatEntry
-                play={play}
-                rig={seatRig}
-                report={report}
-                message={message}
-                eligibility={{
-                  eligible: state.interaction?.available ?? false,
-                  reason: state.interaction?.blockedReason,
-                }}
-                action={(fn) => {
+                )
+              )}
+              {!state.vehicleControl && state.interaction?.progress && (
+                <small className="play-caption">
+                  {state.interaction.progress}
+                </small>
+              )}
+              <button
+                className="play-prompt"
+                disabled={
+                  !state.vehicleControl && !state.interaction?.available
+                }
+                title={
+                  state.vehicleControl ? undefined : state.interaction?.name
+                }
+                aria-keyshortcuts={bindings.interact || undefined}
+                onClick={() => {
                   clear();
-                  attempt(fn);
+                  attempt(() => play.interact());
                 }}
-              />
-            ) : (
-              <>
-                {!state.vehicleControl && state.interaction?.blockedReason ? (
-                  <small className="play-note" role="status">
-                    {state.interaction.blockedReason}
-                  </small>
-                ) : (
-                  nearbyReport?.blocked && (
-                    <small className="play-note" role="status">
-                      {nearbyReport.blockedReason}
-                    </small>
-                  )
-                )}
-                {!state.vehicleControl && state.interaction?.progress && (
-                  <small className="play-caption">
-                    {state.interaction.progress}
-                  </small>
-                )}
-                <button
-                  className={
-                    "play-prompt" +
-                    (!state.vehicleControl && !state.interaction?.available
-                      ? " is-far"
-                      : "")
-                  }
-                  disabled={
-                    !state.vehicleControl && !state.interaction?.available
-                  }
-                  title={
-                    state.vehicleControl ? undefined : state.interaction?.name
-                  }
-                  aria-keyshortcuts={bindings.interact || undefined}
-                  onClick={() => {
-                    clear();
-                    attempt(() => play.interact());
-                  }}
-                >
-                  <Icon name={interactIcon} />
-                  {state.vehicleControl
-                    ? "Release vehicle"
-                    : state.interaction?.available
-                      ? state.interaction.label
-                      : state.interaction?.kind === "vehicle" &&
-                          state.interaction.blockedReason
-                        ? "Vehicle unavailable"
-                        : "Move closer to interact"}
-                  {keyHint(bindings.interact)}
-                </button>
-              </>
-            )}
-          </div>
-        )}
+              >
+                <Icon name={interactIcon} />
+                {state.vehicleControl
+                  ? "Stop driving"
+                  : state.interaction?.label}
+                {keyHint(bindings.interact)}
+              </button>
+            </>
+          )}
+        </div>
+      )}
       {message &&
         !state.paused &&
         !occupied &&
-        !(seatRig && !state.vehicleControl && !remoteOpen) && (
+        !(seatRig && showPrompt && !state.vehicleControl && !remoteOpen) && (
           <div className="play-message" role="status">
             {message}
           </div>

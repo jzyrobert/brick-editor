@@ -82,14 +82,18 @@ test("railway station: Go runs the train round the oval and through the switch",
   await expect(page.locator(".play-train-status")).toContainText(
     "The track ends here",
   );
-  // Reverse and Go backs it out again; Ride along follows it.
+  // Reverse and Go backs it out again; Ride along follows it. Riding opens
+  // the drawer of train controls, where Reverse shows it is on.
   await page.keyboard.press("r");
-  await expect(
-    page.getByRole("button", { name: "Reverse direction" }),
-  ).toHaveAttribute("aria-pressed", "true");
   await page.keyboard.press("g");
   await page.keyboard.press("c");
   await expect(page.locator(".play-status")).toContainText("Riding · Train 1");
+  await expect(
+    page.getByRole("button", { name: "Reverse direction" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByRole("button", { name: "Get off train" }),
+  ).toBeVisible();
   await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
   t = await trains(page);
   expect(t.trains[0].speed).toBeLessThan(0);
@@ -109,8 +113,11 @@ test("railway station: Go runs the train round the oval and through the switch",
   await page.screenshot({
     path: test.info().outputPath("train-desktop.png"),
   });
-  await page.keyboard.press("c");
-  await expect(page.getByRole("button", { name: "Ride along" })).toBeVisible();
+  // The interact key (E) gets off, like the Get off train action.
+  await page.keyboard.press("e");
+  await expect(page.locator(".play-status")).toContainText("Walking");
+  expect((await trains(page)).riding).toBeFalsy();
+  await expect(page.locator(".play-train-drawer")).toHaveCount(0);
   await page.evaluate(() => window.brickEditor!.play.exit());
   expect(errors).toEqual([]);
 });
@@ -134,11 +141,23 @@ test("railway station on a phone held sideways: the train slab fits the HUD", as
     timeout: 60000,
   });
   await dismissRotatePrompt(page);
+  // Walk up to the locomotive: the action says what it does. Drive train
+  // rides in the cab with the train's controls open.
+  const loco = (await trains(page)).trains[0].position;
+  await page.evaluate(
+    (p) =>
+      window.brickEditor!.play.teleport({
+        position: [p[0], -0.3, p[2] - 120],
+        policy: "safe",
+      }),
+    loco,
+  );
+  await page.getByRole("button", { name: "Drive train" }).tap();
+  expect((await trains(page)).riding).toBe("train:1");
   await page.getByRole("button", { name: "Start the train" }).tap();
   await page.evaluate(() => window.brickEditor!.play.stepTicks(240));
   expect((await trains(page)).trains[0].odometer).toBeGreaterThan(500);
   // Chase view: the train fills the phone screen.
-  await page.getByRole("button", { name: "Ride along" }).tap();
   await page.evaluate(() =>
     window.brickEditor!.play.setCameraMode("third-person"),
   );
@@ -146,6 +165,9 @@ test("railway station on a phone held sideways: the train slab fits the HUD", as
   await page.waitForTimeout(1500);
   const box = await page.locator(".play-train").boundingBox();
   expect(box!.width).toBeLessThanOrEqual(800 - 32);
+  await expect(
+    page.getByRole("button", { name: "Get off train" }),
+  ).toBeVisible();
   await page.screenshot({
     path: test.info().outputPath("train-phone-landscape.png"),
   });

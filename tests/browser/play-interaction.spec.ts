@@ -73,9 +73,18 @@ for (const viewport of [
       await page.evaluate(() =>
         window.brickEditor!.play.teleport({ position: [400, -0.3, 45] }),
       );
-      await expect(
-        page.getByRole("button", { name: "Move closer to interact" }),
-      ).toBeDisabled();
+      // Out of reach the action is not shown at all (no greyed prompt), and
+      // it comes back, labelled with what it does, beside the door again.
+      await expect(page.locator(".play-interaction")).toHaveCount(0);
+      await expect(page.locator(".play-prompt")).toHaveCount(0);
+      await page.evaluate(() =>
+        window.brickEditor!.play.teleport({ position: [20, -0.3, 45] }),
+      );
+      await expect(open).toBeVisible();
+      await page.evaluate(() =>
+        window.brickEditor!.play.teleport({ position: [400, -0.3, 45] }),
+      );
+      await expect(page.locator(".play-interaction")).toHaveCount(0);
       await page.evaluate(() =>
         window.brickEditor!.play.enter({
           rigId: "vehicle",
@@ -83,9 +92,9 @@ for (const viewport of [
           realtime: false,
         }),
       );
-      await page.getByRole("button", { name: "Control vehicle" }).click();
+      await page.getByRole("button", { name: "Drive vehicle" }).click();
       await expect(
-        page.getByRole("button", { name: "Release vehicle" }),
+        page.getByRole("button", { name: "Stop driving" }),
       ).toBeVisible();
       const start = await page.evaluate(() =>
         window.brickEditor!.play.snapshot(),
@@ -188,7 +197,7 @@ for (const viewport of [
           .mechanism!.pose.vehicle,
       ).toEqual(stopped.mechanism!.pose.vehicle);
       await page.getByRole("button", { name: "Resume exploring" }).click();
-      await page.getByRole("button", { name: "Release vehicle" }).click();
+      await page.getByRole("button", { name: "Stop driving" }).click();
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,

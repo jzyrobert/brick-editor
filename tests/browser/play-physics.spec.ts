@@ -3,7 +3,7 @@ import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
-import { enterPlay } from "./helpers/play";
+import { enterPlay, openRemoteControls } from "./helpers/play";
 
 const shots = fileURLToPath(
   new URL("../../.local/screenshots/", import.meta.url),
@@ -161,9 +161,7 @@ for (const viewport of [desktop, phone])
       ).toBeLessThan(30);
       // Motor toggle lives in the existing remote-controls drawer.
       await page.evaluate(() => window.brickEditor!.play.pause(false));
-      await page
-        .getByRole("button", { name: "Remote mechanism controls" })
-        .click();
+      await openRemoteControls(page);
       await page
         .getByRole("combobox", { name: "Remote mechanism" })
         .selectOption("spinner");

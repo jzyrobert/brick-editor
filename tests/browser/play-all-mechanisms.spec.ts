@@ -1,7 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
-import { enterPlay } from "./helpers/play";
+import {
+  closeRemoteControls,
+  enterPlay,
+  openRemoteControls,
+} from "./helpers/play";
 for (const width of [360, 1080, 1440]) {
   test(`all mechanisms default and separated remote controls at ${width}px`, async ({
     browser,
@@ -64,9 +68,7 @@ for (const width of [360, 1080, 1440]) {
           ),
         )
         .toBeGreaterThan(90);
-      await page
-        .getByRole("button", { name: "Remote mechanism controls" })
-        .click();
+      await openRemoteControls(page);
       await expect(page.locator(".play-interaction")).toHaveCount(0);
       const remote = page.locator(".play-mechanism"),
         stick = page.getByRole("group", {
@@ -127,11 +129,8 @@ for (const width of [360, 1080, 1440]) {
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))
           .mechanisms!.vehicle.pose.vehicle!.position,
       ).toEqual(driven.mechanisms!.vehicle.pose.vehicle!.position);
-      await page
-        .getByRole("button", { name: "Back to nearby actions", exact: true })
-        .click();
+      await closeRemoteControls(page);
       await expect(page.locator(".play-interaction")).toBeVisible();
-      await expect(remote).toHaveCount(0);
       await page.evaluate(async () => {
         const api = window.brickEditor!,
           report = await api.play.snapshot(),
@@ -141,11 +140,11 @@ for (const width of [360, 1080, 1440]) {
           policy: "safe",
         });
       });
-      await page.getByRole("button", { name: "Control vehicle" }).click();
+      await page.getByRole("button", { name: "Drive vehicle" }).click();
       await expect(
-        page.getByRole("button", { name: "Release vehicle" }),
+        page.getByRole("button", { name: "Stop driving" }),
       ).toBeVisible();
-      await page.getByRole("button", { name: "Release vehicle" }).click();
+      await page.getByRole("button", { name: "Stop driving" }).click();
       await page.evaluate(() => window.brickEditor!.play.exit());
       expect(await page.evaluate(() => window.brickEditor!.query())).toEqual(
         before,

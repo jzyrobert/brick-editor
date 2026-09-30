@@ -3909,7 +3909,11 @@ function Workspace() {
                     Tap the ground, or a part to stack on or beside ·{" "}
                     {workplane.free
                       ? "free placement"
-                      : `${workplane.grid} LDU grid`}
+                      : workplane.grid % 20 === 0
+                        ? `${workplane.grid / 20}-stud grid`
+                        : workplane.grid === 10
+                          ? "half-stud grid"
+                          : `${workplane.grid} LDU grid`}
                   </span>
                 )}
               </div>

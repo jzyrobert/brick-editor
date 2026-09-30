@@ -99,20 +99,23 @@ export function ClipboardTools({
   return (
     <section className="clipboard-tools">
       <h3>Copy and repeat</h3>
-      <div className="button-row">
-        <button disabled={!selection.length} onClick={() => copy()}>
-          Copy
-        </button>
-        <button disabled={!selection.length} onClick={() => copy(true)}>
-          Cut
-        </button>
-        <button disabled={!hasCopy} onClick={() => paste()}>
-          Paste in place
-        </button>
-        <button disabled={!hasCopy} onClick={() => paste(true)}>
-          Paste at cursor
-        </button>
-      </div>
+      {/* Nothing selected and nothing copied: these would all be greyed out. */}
+      {(selection.length > 0 || hasCopy) && (
+        <div className="button-row">
+          <button disabled={!selection.length} onClick={() => copy()}>
+            Copy
+          </button>
+          <button disabled={!selection.length} onClick={() => copy(true)}>
+            Cut
+          </button>
+          <button disabled={!hasCopy} onClick={() => paste()}>
+            Paste in place
+          </button>
+          <button disabled={!hasCopy} onClick={() => paste(true)}>
+            Paste at cursor
+          </button>
+        </div>
+      )}
       <details>
         <summary>Portable clipboard</summary>
         <p className="muted">
@@ -163,114 +166,121 @@ export function ClipboardTools({
           }}
         />
       </details>
-      <details>
-        <summary>Linear or circular array</summary>
-        <label>
-          Pattern
-          <select
-            value={kind}
-            onChange={(e) => {
-              setKind(e.target.value);
-              setPreview(undefined);
-            }}
-          >
-            <option value="linear">Linear</option>
-            <option value="circular">Circular about cursor</option>
-          </select>
-        </label>
-        <label>
-          New copies
-          <input
-            type="number"
-            min="1"
-            max="1000"
-            value={count}
-            onChange={(e) => {
-              setCount(Number(e.target.value));
-              setPreview(undefined);
-            }}
-          />
-        </label>
-        {kind === "linear" ? (
-          <div className="form-row">
-            {["X", "Y", "Z"].map((axis, i) => (
-              <label key={axis}>
-                {axis} spacing
-                <input
-                  type="number"
-                  value={delta[i]}
-                  onChange={(e) => {
-                    setDelta(
-                      delta.map((v, j) =>
-                        i === j ? Number(e.target.value) : v,
-                      ) as Vec3,
-                    );
-                    setPreview(undefined);
-                  }}
-                />
-              </label>
-            ))}
-          </div>
-        ) : (
+      {/* An array repeats the selection, so it waits for one. */}
+      {selection.length > 0 && (
+        <details>
+          <summary>Linear or circular array</summary>
           <label>
-            Angle per copy (degrees)
+            Pattern
+            <select
+              value={kind}
+              onChange={(e) => {
+                setKind(e.target.value);
+                setPreview(undefined);
+              }}
+            >
+              <option value="linear">Linear</option>
+              <option value="circular">Circular about cursor</option>
+            </select>
+          </label>
+          <label>
+            New copies
             <input
               type="number"
-              value={angle}
-              min="-360"
-              max="360"
+              min="1"
+              max="1000"
+              value={count}
               onChange={(e) => {
-                setAngle(Number(e.target.value));
+                setCount(Number(e.target.value));
                 setPreview(undefined);
               }}
             />
           </label>
-        )}
-        <p className="muted">
-          Circular copies turn around the placement cursor.
-        </p>
-        <button
-          disabled={!selection.length}
-          onClick={() =>
-            attempt(() => {
-              validSelection();
-              const payload = arrayPayload(),
-                result = editor.dispatch(
-                  envelope("parts.array", payload, true),
+          {kind === "linear" ? (
+            <div className="form-row">
+              {["X", "Y", "Z"].map((axis, i) => (
+                <label key={axis}>
+                  {axis} spacing
+                  <input
+                    type="number"
+                    value={delta[i]}
+                    onChange={(e) => {
+                      setDelta(
+                        delta.map((v, j) =>
+                          i === j ? Number(e.target.value) : v,
+                        ) as Vec3,
+                      );
+                      setPreview(undefined);
+                    }}
+                  />
+                </label>
+              ))}
+            </div>
+          ) : (
+            <label>
+              Angle per copy (degrees)
+              <input
+                type="number"
+                value={angle}
+                min="-360"
+                max="360"
+                onChange={(e) => {
+                  setAngle(Number(e.target.value));
+                  setPreview(undefined);
+                }}
+              />
+            </label>
+          )}
+          <p className="muted">
+            Circular copies turn around the placement cursor.
+          </p>
+          <button
+            disabled={!selection.length}
+            onClick={() =>
+              attempt(() => {
+                validSelection();
+                const payload = arrayPayload(),
+                  result = editor.dispatch(
+                    envelope("parts.array", payload, true),
+                  );
+                setPreview({
+                  revision: editor.revision,
+                  key: JSON.stringify(payload),
+                  count: result.addedIds.length,
+                });
+                setMessage(
+                  `Preview: ${result.addedIds.length} new occurrences`,
                 );
-              setPreview({
-                revision: editor.revision,
-                key: JSON.stringify(payload),
-                count: result.addedIds.length,
-              });
-              setMessage(`Preview: ${result.addedIds.length} new occurrences`);
-            })
-          }
-        >
-          Preview array count
-        </button>
-        <button
-          disabled={!preview}
-          onClick={() =>
-            attempt(() => {
-              const payload = arrayPayload();
-              ensure(
-                preview &&
-                  preview.revision === editor.revision &&
-                  preview.key === JSON.stringify(payload),
-                "REVISION_CONFLICT",
-                "Selection or build changed. Preview again.",
-              );
-              const result = editor.dispatch(envelope("parts.array", payload));
-              onSelect(result.addedIds);
-              setPreview(undefined);
-              setMessage(`Added ${result.addedIds.length} occurrences`);
-            })
-          }
-        >
-          Commit array
-        </button>
-      </details>
+              })
+            }
+          >
+            Preview array count
+          </button>
+          <button
+            disabled={!preview}
+            onClick={() =>
+              attempt(() => {
+                const payload = arrayPayload();
+                ensure(
+                  preview &&
+                    preview.revision === editor.revision &&
+                    preview.key === JSON.stringify(payload),
+                  "REVISION_CONFLICT",
+                  "Selection or build changed. Preview again.",
+                );
+                const result = editor.dispatch(
+                  envelope("parts.array", payload),
+                );
+                onSelect(result.addedIds);
+                setPreview(undefined);
+                setMessage(`Added ${result.addedIds.length} occurrences`);
+              })
+            }
+          >
+            Commit array
+          </button>
+        </details>
+      )}
       <p role="status">{message}</p>
     </section>
   );

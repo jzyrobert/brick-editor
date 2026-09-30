@@ -27,6 +27,7 @@ import type { PlaySession } from "./session";
 import {
   nearbyInteraction,
   nearbyPoints,
+  nearbyTrain,
   type PlayInteraction,
 } from "./interaction";
 import { occurrences } from "../core/document";
@@ -476,14 +477,18 @@ export class BrowserPlay {
   private nearby(report: PlaySnapshotReport) {
     if (report.occupancy || report.trains?.riding) return undefined;
     const rigs = this.sessionRigs;
-    const points = nearbyPoints(report);
-    const rig = this.nearbyRig(report, rigs);
-    if (!points) return rig;
-    if (!rig) return points;
-    return Number(points.available) - Number(rig.available) > 0 ||
-      (points.available === rig.available && points.distance < rig.distance)
-      ? points
-      : rig;
+    // The nearest target the explorer can act on wins; points and doors
+    // beside the track come before the train itself at equal reach.
+    return [
+      nearbyPoints(report),
+      this.nearbyRig(report, rigs),
+      nearbyTrain(report),
+    ]
+      .filter((target): target is PlayInteraction => !!target)
+      .sort(
+        (a, b) =>
+          Number(b.available) - Number(a.available) || a.distance - b.distance,
+      )[0];
   }
   private nearbyRig(
     report: PlaySnapshotReport,
@@ -523,7 +528,7 @@ export class BrowserPlay {
         });
         return {
           ...target,
-          label: "Enter driver seat",
+          label: "Get in",
           distance,
           available: eligibility.eligible,
           blockedReason: eligibility.reason,
@@ -837,6 +842,10 @@ export class BrowserPlay {
     this.clearInput();
     if (target.kind === "points") {
       this.setPoints({ occurrenceId: target.occurrenceId });
+      return;
+    }
+    if (target.kind === "train") {
+      this.rideTrain({ trainId: target.trainId });
       return;
     }
     if (target.kind === "vehicle") {

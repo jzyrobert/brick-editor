@@ -1,6 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
 import { openMode } from "./helpers/mode";
-import { dismissRotatePrompt } from "./helpers/play";
+import {
+  closeRemoteControls,
+  dismissRotatePrompt,
+  openRemoteControls,
+} from "./helpers/play";
 
 // Three storeys as submodels, so floors, explode and the section cut all have work to do.
 const house = `0 FILE house.ldr
@@ -30,6 +34,17 @@ const SLOTS = [
   ".mode-card",
   ".measure-chip",
 ];
+
+/** Wait for running one-shot CSS animations (sheets rising) to finish. */
+const settle = (page: Page) =>
+  page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
+  );
 
 /** Pairs of visible HUD slots whose boxes intersect, plus slots cut off by the screen edge. */
 const collisions = (page: Page, list: string[] = SLOTS) =>
@@ -75,6 +90,7 @@ for (const viewport of [
   test(`HUD slots never overlap at ${viewport.width}x${viewport.height}`, async ({
     browser,
   }) => {
+    test.setTimeout(180000);
     const context = await browser.newContext({ viewport, hasTouch: true });
     const page = await context.newPage();
     const errors: string[] = [];
@@ -95,9 +111,11 @@ for (const viewport of [
     const button = (name: string) =>
       page.getByRole("button", { name, exact: true });
     const hotbar = page.getByRole("navigation", { name: "Mobile panels" });
-    // Let fades settle so a half-faded slot is not counted twice.
+    // Let fades settle so a half-faded slot is not counted twice, and let a
+    // rising sheet finish (a slow software-GL frame can outlast 300 ms).
     const check = async (state: string) => {
       await page.waitForTimeout(300);
+      await settle(page);
       expect(await collisions(page), state).toEqual([]);
     };
 
@@ -200,7 +218,8 @@ for (const viewport of [
 // full-area touch surfaces behind them, so they are not slots.
 const PLAY_SLOTS = [
   ".play-status-slab",
-  ".play-mechanism-key",
+  ".play-train",
+  ".play-start-hint",
   ".play-mechanism",
   ".play-stick",
   ".play-actions",
@@ -255,6 +274,14 @@ for (const viewport of [
       await expect(rotate).toHaveCount(0);
     }
     await check("walking");
+    // Nothing in reach: no action is offered at all, not even a greyed one.
+    await page.evaluate(() =>
+      window.brickEditor!.play.teleport({
+        position: [400, -0.3, 400],
+        policy: "safe",
+      }),
+    );
+    await expect(page.locator(".play-interaction")).toHaveCount(0);
     // Beside the door: its action appears above the action cluster.
     await page.evaluate(() =>
       window.brickEditor!.play.teleport({
@@ -272,12 +299,10 @@ for (const viewport of [
     await expect(button("Down")).toBeVisible();
     await check("flying");
     await page.evaluate(() => window.brickEditor!.play.setLocomotion("walk"));
-    await page
-      .getByRole("button", { name: "Remote mechanism controls" })
-      .click();
-    await expect(page.locator(".play-mechanism")).toBeVisible();
+    // Remote controls are rarely needed: a pause-menu tile, not a HUD key.
+    await openRemoteControls(page);
     await check("remote mechanism controls");
-    await button("Back to nearby actions").click();
+    await closeRemoteControls(page);
     await button("Pause").click();
     await expect(page.locator(".play-menu")).toBeVisible();
     await check("pause menu");
@@ -292,9 +317,9 @@ for (const viewport of [
         policy: "safe",
       });
     });
-    await page.getByRole("button", { name: "Control vehicle" }).click();
+    await page.getByRole("button", { name: "Drive vehicle" }).click();
     await expect(
-      page.getByRole("button", { name: "Release vehicle" }),
+      page.getByRole("button", { name: "Stop driving" }),
     ).toBeVisible();
     await check("controlling a vehicle");
     await page.screenshot({
@@ -332,7 +357,7 @@ for (const viewport of [
       await a.project.import({ format: "template", template: "train" });
       await a.ready();
     });
-    const slots = [...PLAY_SLOTS, ".play-train"];
+    const slots = PLAY_SLOTS;
     const check = async (state: string) => {
       await page.waitForTimeout(300);
       expect(await collisions(page, slots), state).toEqual([]);
@@ -344,7 +369,41 @@ for (const viewport of [
     });
     await dismissRotatePrompt(page);
     await expect(page.locator(".play-train")).toBeVisible();
+    // At rest the train is one chip (status and Go); the rest is a drawer.
+    await expect(page.locator(".play-train-drawer")).toHaveCount(0);
     await check("train stopped");
+    const chip = page.locator("button.play-train-chip");
+    await chip.tap();
+    await expect(chip).toHaveAttribute("aria-expanded", "true");
+    await expect(
+      page.getByRole("button", { name: "Ride along" }),
+    ).toBeVisible();
+    await check("train drawer open");
+    await chip.tap();
+    await expect(page.locator(".play-train-drawer")).toHaveCount(0);
+    // Beside the locomotive the action says what it does: Drive train rides
+    // in the cab with the drawer open; walking controls step aside.
+    const loco = await page.evaluate(
+      async () =>
+        (await window.brickEditor!.play.snapshot()).trains!.trains[0].position,
+    );
+    await page.evaluate(
+      (p) =>
+        window.brickEditor!.play.teleport({
+          position: [p[0], -0.3, p[2] - 120],
+          policy: "safe",
+        }),
+      loco,
+    );
+    await page.getByRole("button", { name: "Drive train" }).tap();
+    await expect(page.locator(".play-status")).toContainText("Riding");
+    await expect(page.locator(".play-train-drawer")).toBeVisible();
+    await expect(page.locator(".play-stick")).toHaveCount(0);
+    await expect(page.locator(".play-actions")).toHaveCount(0);
+    await check("driving the train");
+    await page.getByRole("button", { name: "Get off train" }).tap();
+    await expect(page.locator(".play-stick")).toBeVisible();
+    await expect(page.locator(".play-train-drawer")).toHaveCount(0);
     // The train pulls off the points; beside them their action joins the HUD.
     await page.getByRole("button", { name: "Start the train" }).tap();
     await page.evaluate(() => window.brickEditor!.play.stepTicks(600));
@@ -362,8 +421,9 @@ for (const viewport of [
         }),
       points,
     );
-    await expect(page.locator(".play-interaction .play-prompt")).toBeVisible();
+    await expect(page.locator(".play-interaction .play-prompt")).toBeEnabled();
     await check("near the points");
+    await chip.tap();
     await page.getByRole("button", { name: "Ride along" }).tap();
     await check("riding along");
     await page.screenshot({

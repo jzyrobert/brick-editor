@@ -144,18 +144,8 @@
 .play-overlay.is-paused .play-status {
   display: none;
 }
-.play-mechanism-key {
-  margin-left: auto;
-  width: 48px;
-  height: 48px;
-  background: var(--hud);
-  border: 2px solid var(--hud-line);
-  border-radius: var(--r-slab);
-  box-shadow: var(--shadow-slab);
-  pointer-events: auto;
-}
-
-/* ---- Train controls: one slab under the top row, right thumb side ---- */
+/* ---- Train controls: a chip under the top row, right thumb side. The chip
+   (status and Go) opens a drawer of the less-used controls. ---- */
 .play-train {
   position: absolute;
   top: calc(var(--play-top) + 58px);
@@ -177,6 +167,76 @@
   justify-content: flex-end;
   align-items: center;
   gap: 2px;
+}
+.play-train.is-open {
+  width: min(372px, calc(100% - var(--play-left) - var(--play-right)));
+}
+.play-train-drawer {
+  display: grid;
+  gap: 2px;
+  margin-top: 2px;
+  padding-top: 2px;
+  border-top: 2px solid var(--hud-line);
+  animation: play-fade-in 0.18s ease-out;
+}
+.play-train-drawer .play-train-row {
+  justify-content: flex-start;
+}
+/* Sideways phones: a wider drawer keeps it to one row, clear of the view. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .play-train.is-open {
+    width: min(660px, calc(100% - var(--play-left) - var(--play-right)));
+  }
+  .play-train-drawer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .play-train-drawer .play-train-row {
+    display: contents;
+  }
+}
+.play-train-drawer .play-train-speed {
+  flex: 1 1 120px;
+  max-width: none;
+}
+.play-train-key span {
+  font-size: var(--text-label);
+  font-weight: 650;
+}
+.play-train-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--r-key);
+  background: transparent;
+  color: var(--chalk);
+  font: inherit;
+  text-align: left;
+}
+.play-train-chip .icon {
+  flex: none;
+  color: var(--hud-mute);
+}
+/* Drawn disclosure chevron: down when closed, up when open. */
+.play-train-chevron {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin: -3px 2px 0 4px;
+  border-right: 2px solid var(--hud-mute);
+  border-bottom: 2px solid var(--hud-mute);
+  transform: rotate(45deg);
+  transition: transform 0.18s ease-out;
+}
+.play-train-chip[aria-expanded="true"] .play-train-chevron {
+  margin-top: 3px;
+  transform: rotate(-135deg);
 }
 .play-train-key,
 .play-train-go {
@@ -217,14 +277,12 @@
 .play-train-go:active {
   transform: scale(0.94);
 }
-.play-train-points span {
-  font-size: var(--text-title);
-  line-height: 1;
-}
 .play-train-speed {
   display: flex;
   align-items: center;
-  width: 96px;
+  flex: 1 1 96px;
+  min-width: 88px;
+  max-width: 160px;
   padding: 0 6px;
 }
 .play-train-speed input {
@@ -234,19 +292,27 @@
   accent-color: var(--sun);
 }
 .play-train-status {
-  margin: 0;
-  padding: 0 8px 4px;
+  min-width: 0;
   font-size: var(--text-label);
   font-weight: 650;
-  color: var(--hud-mute);
-  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* The centred message drops below the train slab. */
+/* The centred message drops below the train chip (and its open drawer). */
 .play-overlay.has-train .play-message {
+  top: calc(var(--play-top) + 116px);
+}
+.play-overlay.has-train-open .play-message {
   top: calc(var(--play-top) + 170px);
+}
+/* The build's hint drops below the chip; both hints give way to an open drawer. */
+.play-overlay.has-train .play-start-hint {
+  top: calc(var(--play-top) + 116px);
+}
+.play-overlay.has-train-open .play-start-hint,
+.play-overlay.has-train-open .play-look-hint {
+  display: none;
 }
 
 /* ---- Movement stick: floats to wherever the left thumb lands ---- */
@@ -360,7 +426,8 @@
   pointer-events: none;
   z-index: 2;
 }
-.play-overlay.is-vehicle .play-interaction {
+.play-overlay.is-vehicle .play-interaction,
+.play-overlay.is-riding .play-interaction {
   bottom: var(--play-bottom);
 }
 .play-prompt-row {
@@ -395,8 +462,7 @@
   border-color: var(--accent);
   color: var(--card);
 }
-.play-prompt.play-seat-remote,
-.play-prompt.is-far {
+.play-prompt.play-seat-remote {
   background: var(--play-glass);
   border-color: var(--play-glass-line);
   color: var(--chalk);
@@ -485,7 +551,8 @@
   position: absolute;
   top: 28%;
   left: 50%;
-  max-width: min(420px, calc(100% - 2 * var(--play-right, 16px) - 120px));
+  max-width: min(420px, calc(100% - 2 * var(--play-right, 16px) - 32px));
+  box-sizing: border-box;
   transform: translateX(-50%);
   padding: 8px 16px;
   border-radius: 18px;
@@ -617,6 +684,15 @@
 .play-tile:disabled {
   opacity: 0.45;
 }
+/* An odd last tile (Remote controls) runs the full width. */
+.play-tile:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  min-height: 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
 .play-tile kbd {
   position: absolute;
   top: 10px;
@@ -675,12 +751,13 @@
   display: none;
 }
 
-/* ---- Remote mechanism panel, under its key ---- */
+/* ---- Remote mechanism panel (opened from the pause menu), under the top row ---- */
 .play-mechanism {
   position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: min(340px, 100%);
+  top: calc(var(--play-top) + 56px);
+  right: var(--play-right);
+  width: min(340px, calc(100% - var(--play-left) - var(--play-right)));
+  z-index: 4;
   box-sizing: border-box;
   /* Stops above the resting stick so walking stays possible. */
   max-height: calc(
@@ -696,10 +773,24 @@
   pointer-events: auto;
   user-select: text;
 }
+.play-mechanism-head {
+  position: sticky;
+  top: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 -8px 0 0;
+  padding-top: 4px;
+  background: var(--chalk);
+}
 .play-mechanism-head h2 {
-  margin: 10px 0 4px;
+  margin: 0;
   font-size: var(--text-title);
   font-weight: 700;
+}
+.play-mechanism .play-mechanism-close {
+  color: var(--ink);
 }
 .play-mechanism label {
   display: block;
@@ -822,8 +913,11 @@
   .play-key:hover {
     background: var(--hud-hover);
   }
-  .play-mechanism-key:hover {
-    border-color: var(--hud-line);
+  .play-mechanism .play-mechanism-close:hover {
+    background: var(--tab-well);
+  }
+  .play-train-chip:hover {
+    background: var(--hud-hover);
   }
   .play-round:hover {
     background: var(--hud);
@@ -843,9 +937,9 @@
   .play-key:hover {
     background: transparent;
   }
-  .play-mechanism-key:hover {
-    background: var(--hud);
-    border-color: var(--hud-line);
+  .play-mechanism .play-mechanism-close:hover,
+  .play-train-chip:hover {
+    background: transparent;
   }
   .play-round:hover {
     background: var(--play-glass);
@@ -859,8 +953,7 @@
     background: var(--accent);
     border-color: var(--accent);
   }
-  .play-prompt.play-seat-remote:hover,
-  .play-prompt.is-far:hover {
+  .play-prompt.play-seat-remote:hover {
     background: var(--play-glass);
     border-color: var(--play-glass-line);
   }
@@ -870,11 +963,6 @@
   }
 }
 .play-overlay .play-round[aria-pressed="true"] {
-  background: var(--grass);
-  border-color: var(--grass);
-  color: var(--grass-ink);
-}
-.play-overlay .play-mechanism-key[aria-expanded="true"] {
   background: var(--grass);
   border-color: var(--grass);
   color: var(--grass-ink);

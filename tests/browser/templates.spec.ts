@@ -188,13 +188,13 @@ test("the jeep drives from its driver seat and the windmill's sails turn", async
     }),
   );
   const enter = page.getByRole("button", {
-    name: "Enter driver seat",
+    name: "Get in",
     exact: true,
   });
   await expect(enter).toBeEnabled();
   await page.keyboard.press("e");
   await expect(
-    page.getByRole("button", { name: "Exit vehicle", exact: true }),
+    page.getByRole("button", { name: "Get out", exact: true }),
   ).toBeVisible();
   const drive = await page.evaluate(async () => {
     const a = window.brickEditor!;

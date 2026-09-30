@@ -27,6 +27,23 @@ export async function exitPlay(page: Page) {
   await exit.click();
 }
 
+/** Remote mechanism controls open from a pause-menu tile ("Remote controls",
+ * or "<name> controls" for a single mechanism) and resume Play. */
+export async function openRemoteControls(page: Page) {
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
+  await page
+    .locator(".play-menu .play-tile")
+    .filter({ hasText: /controls$/ })
+    .click();
+  await expect(page.locator(".play-mechanism")).toBeVisible();
+}
+
+/** Close the remote controls panel: nearby actions come back. */
+export async function closeRemoteControls(page: Page) {
+  await page.locator(".play-mechanism .play-mechanism-close").click();
+  await expect(page.locator(".play-mechanism")).toHaveCount(0);
+}
+
 /** Camera and movement switches live in the pause menu; this opens it, runs
  * the change and resumes. */
 export async function fromPauseMenu(page: Page, button: string) {

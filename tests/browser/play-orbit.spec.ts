@@ -39,7 +39,7 @@ test("the jeep drives and turns at the same time for fifteen seconds without a c
   );
   await page.keyboard.press("e");
   await expect(
-    page.getByRole("button", { name: "Exit vehicle", exact: true }),
+    page.getByRole("button", { name: "Get out", exact: true }),
   ).toBeVisible();
   await page.evaluate(() =>
     window.brickEditor!.play.setCameraMode("third-person"),
@@ -79,13 +79,13 @@ test("the roadster seats the figure, drives, and lets it out", async ({
     }),
   );
   const enter = page.getByRole("button", {
-    name: "Enter driver seat",
+    name: "Get in",
     exact: true,
   });
   await expect(enter).toBeEnabled();
   await page.keyboard.press("e");
   await expect(
-    page.getByRole("button", { name: "Exit vehicle", exact: true }),
+    page.getByRole("button", { name: "Get out", exact: true }),
   ).toBeVisible();
   const seated = await snapshot(page);
   expect(seated.occupancy).toMatchObject({ rigId: "car", seatId: "driver" });
@@ -106,7 +106,7 @@ test("the roadster seats the figure, drives, and lets it out", async ({
   await page.keyboard.up("w");
   expect(moved.mechanisms!.car.pose.vehicle!.position[2]).toBeLessThan(-100);
   expect(moved.mechanisms!.car.blockedReason).toBeUndefined();
-  await page.getByRole("button", { name: "Exit vehicle", exact: true }).click();
+  await page.getByRole("button", { name: "Get out", exact: true }).click();
   const out = await snapshot(page);
   expect(out.occupancy).toBeUndefined();
   expect(out.positionAnchor).toBe("standing-feet");

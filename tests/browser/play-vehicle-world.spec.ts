@@ -37,7 +37,7 @@ for (const width of [360, 1440])
         status: "ready",
       });
       const control = page.getByRole("button", {
-        name: /^Control vehicle/,
+        name: /^Drive vehicle/,
       });
       if (width === 360) await control.tap();
       else await control.click();

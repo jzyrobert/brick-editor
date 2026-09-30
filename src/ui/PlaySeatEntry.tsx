@@ -35,19 +35,18 @@ export function PlaySeatEntry({
         </small>
       )}
       <small className="play-caption">
-        {collision?.supported === false
-          ? collision.reason
-          : `${rig.name} · open-bench seat`}
+        {collision?.supported === false ? collision.reason : rig.name}
       </small>
       <div className="play-prompt-row">
-        <button
-          className="play-prompt play-seat-remote"
-          disabled={collision?.supported === false}
-          onClick={() => action(() => play.controlVehicle(rig.id))}
-        >
-          <Icon name="wheel" />
-          Control vehicle from here
-        </button>
+        {collision?.supported !== false && (
+          <button
+            className="play-prompt play-seat-remote"
+            onClick={() => action(() => play.controlVehicle(rig.id))}
+          >
+            <Icon name="wheel" />
+            Drive from here
+          </button>
+        )}
         <button
           className="play-prompt is-commit"
           disabled={!eligibility.eligible}
@@ -56,7 +55,7 @@ export function PlaySeatEntry({
           }
         >
           <Icon name="seat" />
-          Enter driver seat
+          Get in
         </button>
       </div>
     </>
