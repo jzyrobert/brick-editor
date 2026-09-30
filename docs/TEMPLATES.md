@@ -67,7 +67,7 @@ Loose objects are free-standing by design: a connected group whose parts all bel
 
 ## Offline
 
-The build-script samples' LDraw files are bundle assets and are precached like the rest of the app. The house, castle and roadster need only the curated pack. The other samples use a few parts from the complete library: the offline snapshot (service worker) precaches the pack index, the 30 chunks those parts need and their 14 derived-connector shards (3.7 MB in all, 2.5 MB of it the index), so every sample opens offline once the app is installed for offline use.
+The build-script samples' LDraw files (1.1 MB of text, 0.1 MB compressed) are bundle assets and are precached like the rest of the app. The house, castle and roadster need only the curated pack. The other samples use a few parts from the complete library: the offline snapshot (service worker) precaches the pack index, the 61 chunks those parts need and their 29 derived-connector shards (5.0 MB in all, 2.4 MB of it the index; the three build-script samples added 31 chunks and 15 shards), so every sample opens offline once the app is installed for offline use.
 
 ## Play fit
 
