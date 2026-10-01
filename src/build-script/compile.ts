@@ -61,7 +61,16 @@ import {
   type ValidationIssue,
 } from "./spec";
 import { colourName, colourSuggestions, resolveColourName } from "./palette";
-import { Grid, cellKey, cellOf, hash01, packGrid, type Material } from "./pack";
+import {
+  Grid,
+  TEXTURES,
+  cellKey,
+  cellOf,
+  hash01,
+  packGrid,
+  textureMadeIn,
+  type Material,
+} from "./pack";
 import { roleParts, searchParts } from "./part-search";
 import { LAYER_COMMENT, assignSectionLayers } from "./layers";
 import { placeTrackPiece, type TrackCursor } from "../play/track";
@@ -366,16 +375,42 @@ class Compiler {
       ? list[0]
       : list[Math.floor(hash01(this.seed, ...at) * list.length)];
   }
-  material(c: Colour, path: string, mode: Material["mode"] = "auto") {
+  material(
+    c: Colour,
+    path: string,
+    mode: Material["mode"] = "auto",
+    look: { texture?: string; pattern?: Material["pattern"] } = {},
+  ) {
     const colours = this.colours(c, path);
-    const key = colours.join(",") + "|" + mode;
+    let texture = look.texture ? TEXTURES[look.texture] : undefined;
+    if (texture && !textureMadeIn(texture, colours)) {
+      this.problem({
+        severity: "warning",
+        code: "texture-unavailable",
+        message: `${look.texture} bricks (${texture}) are not made in ${colours.map(colourName).join(", ")}; plain bricks used`,
+        ops: [path.replace(/\.[a-z]+$/i, "")],
+      });
+      texture = undefined;
+    }
+    const pattern = colours.length > 1 ? look.pattern : undefined;
+    const key =
+      colours.join(",") + "|" + mode + "|" + (texture ?? "") + (pattern ?? "");
     let id = this.materialIds.get(key);
     if (id === undefined) {
       id = this.materials.length;
-      this.materials.push({ colours, mode });
+      this.materials.push({
+        colours,
+        mode,
+        ...(texture ? { texture } : {}),
+        ...(pattern ? { pattern } : {}),
+      });
       this.materialIds.set(key, id);
     }
     return id;
+  }
+  /** The texture/pattern fields of a massing op. */
+  look(o: Record<string, any>) {
+    return { texture: o.texture, pattern: o.pattern };
   }
   /** Part number of a reference: a number, @alias or {find}. */
   part(ref: PartRef, path: string, colourHint?: Colour): string {
@@ -524,6 +559,58 @@ class Compiler {
       for (let k = 0; k < r.d; k++)
         for (let j = 0; j < h; j++)
           u.grid.delete(r.x + i, f.ty + y + j, r.z + k);
+  }
+
+  /**
+   * Quoins: the corner columns of a room or box recoloured course by course,
+   * the corner block reaching one stud further along the X faces on even
+   * brick courses and along the Z faces on odd ones, so the blocks
+   * interlock and the wall's joints beside them stagger. Only cells the op
+   * itself filled change (openings carved later still cut them).
+   */
+  quoins(
+    u: Unit,
+    f: Frame,
+    section: number,
+    op: number,
+    path: string,
+    colour: Colour,
+    [x, y, z]: [number, number, number],
+    { w, h, d, t }: { w: number; h: number; d: number; t: number },
+  ) {
+    const mat = this.material(colour, path + ".quoins");
+    for (let j = 0; j < h; j++) {
+      const even = Math.floor(j / 3) % 2 === 0;
+      for (let i = 0; i < w; i++)
+        for (let k = 0; k < d; k++) {
+          const ex = Math.min(i, w - 1 - i),
+            ez = Math.min(k, d - 1 - k);
+          const block = even ? ez < t && ex <= t : ex < t && ez <= t;
+          if (!block) continue;
+          const r = rect(f, x + i, z + k, 1, 1);
+          if (u.grid.get(r.x, f.ty + y + j, r.z)?.op !== op) continue;
+          this.cell(u, f, section, op, x + i, y + j, z + k, mat);
+        }
+    }
+  }
+  /** Whether core cell (i, k) of a hollow box holds a 2 × 2 support pier
+   * (`supports: n`: piers every n studs across the hollow, clear of the far
+   * walls). */
+  pier(
+    o: Record<string, any>,
+    i: number,
+    k: number,
+    w: number,
+    d: number,
+    t: number,
+  ) {
+    const n = o.supports as number | undefined;
+    if (!n) return false;
+    const a = i - t,
+      b = k - t;
+    return (
+      a % n >= n - 2 && b % n >= n - 2 && a < w - 2 * t - 2 && b < d - 2 * t - 2
+    );
   }
 
   // -- parts ----------------------------------------------------------------
@@ -686,6 +773,7 @@ class Compiler {
           o.colour,
           path + ".colour",
           o.pieces === "plates" ? "plate" : "auto",
+          this.look(o),
         );
         const inner =
           interior === "fill"
@@ -706,6 +794,8 @@ class Compiler {
         };
         const cap = open.has("top") ? 0 : 2;
         const hollow = interior === "empty" && h > cap + 1;
+        if (o.supports !== undefined && o.supports < 4)
+          this.fail(path + ".supports", "supports must be at least 4 studs");
         const tileTop = o.top === "tile";
         const capMat = this.material(o.colour, path + ".colour", "plate");
         for (let i = 0; i < w; i++)
@@ -726,10 +816,17 @@ class Compiler {
               !core &&
               faces.length > 0 &&
               faces.every((face) => open.has(face as string));
+            const pier =
+              hollow && core && !round && this.pier(o, i, k, w, d, t);
             for (let j = 0; j < h; j++) {
               const top = j >= h - cap;
               if (core && !top) {
-                if (hollow) continue;
+                if (hollow) {
+                  // Support piers carry a wide shell's lid.
+                  if (pier)
+                    this.cell(u, f, section, id, x + i, y + j, z + k, mat);
+                  continue;
+                }
                 this.cell(u, f, section, id, x + i, y + j, z + k, inner);
               } else if (!skip)
                 // A hollow shell's roof is plates spanning walls and core,
@@ -747,6 +844,13 @@ class Compiler {
                 );
             }
           }
+        if (!round && o.quoins !== undefined)
+          this.quoins(u, f, section, id, path, o.quoins, [x, y, z], {
+            w,
+            h: hollow || inner !== mat ? h - cap : h,
+            d,
+            t,
+          });
         return;
       }
       case "wall": {
@@ -765,7 +869,12 @@ class Compiler {
         const t = o.thickness ?? 1;
         const y = plates(o.y ?? 0),
           h = plates(o.height);
-        const mat = this.material(o.colour, path + ".colour");
+        const mat = this.material(
+          o.colour,
+          path + ".colour",
+          "auto",
+          this.look(o),
+        );
         const [w, d] = alongX ? [len, t] : [t, len];
         this.fill(
           u,
@@ -803,7 +912,12 @@ class Compiler {
         const [x, y, z] = y3(o.at);
         const [w, h, d] = y3(o.size);
         if (w < 3 || d < 3) this.fail(path, "rooms need at least 3 × 3 studs");
-        const mat = this.material(o.colour, path + ".colour");
+        const mat = this.material(
+          o.colour,
+          path + ".colour",
+          "auto",
+          this.look(o),
+        );
         this.fill(
           u,
           f,
@@ -833,6 +947,13 @@ class Compiler {
             d - 2,
             this.material(o.floor, path + ".floor", "plate"),
           );
+        if (o.quoins !== undefined)
+          this.quoins(u, f, section, id, path, o.quoins, [x, y, z], {
+            w,
+            h,
+            d,
+            t: 1,
+          });
         (o.openings ?? []).forEach((op: Opening, n: number) => {
           const side: Facing = op.side ?? "front";
           const alongX = side === "front" || side === "back";

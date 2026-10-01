@@ -341,6 +341,21 @@
                 "$ref": "#/definitions/colour",
                 "description": "Colour: palette key, colour name or LDraw code"
               },
+              "texture": {
+                "enum": [
+                  "masonry",
+                  "log",
+                  "grille"
+                ],
+                "description": "Textured 1 × 2 bricks instead of plain ones: masonry (98283), log (30136) or grille (2877); plain bricks where the colour lacks them"
+              },
+              "pattern": {
+                "enum": [
+                  "mix",
+                  "courses"
+                ],
+                "description": "With a {mix} colour: mix picks per piece (default); courses lays the colours course by course (a brick course = 3 plates), for stripes and bands"
+              },
               "interior": {
                 "enum": [
                   "empty",
@@ -380,6 +395,15 @@
                   "plates"
                 ],
                 "description": "auto: bricks where 3 plates fit, else plates"
+              },
+              "quoins": {
+                "$ref": "#/definitions/colour",
+                "description": "Corner blocks in this colour, interlocking course by course (2 studs along one face, 1 along the other)"
+              },
+              "supports": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Hollow boxes: a 2 × 2 pier every this many studs (at least 4) under the lid of a wide shell"
               }
             },
             "required": [
@@ -565,6 +589,21 @@
                   "tile"
                 ],
                 "description": "Top surface: studs (default) or smooth tiles"
+              },
+              "texture": {
+                "enum": [
+                  "masonry",
+                  "log",
+                  "grille"
+                ],
+                "description": "Textured 1 × 2 bricks instead of plain ones: masonry (98283), log (30136) or grille (2877); plain bricks where the colour lacks them"
+              },
+              "pattern": {
+                "enum": [
+                  "mix",
+                  "courses"
+                ],
+                "description": "With a {mix} colour: mix picks per piece (default); courses lays the colours course by course (a brick course = 3 plates), for stripes and bands"
               }
             },
             "required": [
@@ -749,6 +788,25 @@
                   "tile"
                 ],
                 "description": "Top surface: studs (default) or smooth tiles"
+              },
+              "texture": {
+                "enum": [
+                  "masonry",
+                  "log",
+                  "grille"
+                ],
+                "description": "Textured 1 × 2 bricks instead of plain ones: masonry (98283), log (30136) or grille (2877); plain bricks where the colour lacks them"
+              },
+              "pattern": {
+                "enum": [
+                  "mix",
+                  "courses"
+                ],
+                "description": "With a {mix} colour: mix picks per piece (default); courses lays the colours course by course (a brick course = 3 plates), for stripes and bands"
+              },
+              "quoins": {
+                "$ref": "#/definitions/colour",
+                "description": "Corner blocks in this colour, interlocking course by course (2 studs along one face, 1 along the other)"
               }
             },
             "required": [
@@ -1116,6 +1174,21 @@
               "colour": {
                 "$ref": "#/definitions/colour",
                 "description": "Colour: palette key, colour name or LDraw code"
+              },
+              "texture": {
+                "enum": [
+                  "masonry",
+                  "log",
+                  "grille"
+                ],
+                "description": "Textured 1 × 2 bricks instead of plain ones: masonry (98283), log (30136) or grille (2877); plain bricks where the colour lacks them"
+              },
+              "pattern": {
+                "enum": [
+                  "mix",
+                  "courses"
+                ],
+                "description": "With a {mix} colour: mix picks per piece (default); courses lays the colours course by course (a brick course = 3 plates), for stripes and bands"
               },
               "interior": {
                 "enum": [

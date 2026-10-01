@@ -36,6 +36,19 @@ export type Material = {
   /** LDraw colour codes; several: a deterministic per-piece mix. */
   colours: string[];
   mode: "auto" | "plate";
+  /** A textured 1 × 2 brick (masonry, log, grille) used for every brick of
+   * this material instead of plain bricks (1 × 1 bricks fill the gaps). */
+  texture?: string;
+  /** "courses": several colours are laid course by course (a brick course
+   * is 3 plates; colours[floor(y / 3) mod n]) instead of mixed per piece. */
+  pattern?: "mix" | "courses";
+};
+
+/** Textured bricks by name (all 1 × 2, profiled on both long faces). */
+export const TEXTURES: Record<string, string> = {
+  masonry: "98283.dat",
+  log: "30136.dat",
+  grille: "2877.dat",
 };
 /** A packed piece: part, colour and placement on the stud grid. */
 export type Piece = {
@@ -97,17 +110,34 @@ const sizeTable = () =>
 
 /** Pieces of a kind that exist in every colour of a mix (1 × 1 always). */
 const available = new Map<string, Size[]>();
-function piecesFor(kind: "brick" | "plate" | "tile", colours: string[]) {
-  const key = kind + "|" + colours.join(",");
+function piecesFor(
+  kind: "brick" | "plate" | "tile",
+  colours: string[],
+  texture?: string,
+) {
+  const key = kind + "|" + colours.join(",") + "|" + (texture ?? "");
   let list = available.get(key);
   if (!list) {
     list = sizeTable()[kind].filter(
       (s) => (s.w === 1 && s.d === 1) || colours.every((c) => madeIn(s.ref, c)),
     );
+    if (kind === "brick" && texture && textureMadeIn(texture, colours)) {
+      const p = catalog[texture];
+      const w = p.width / 20,
+        d = p.depth / 20;
+      list = [
+        { ref: texture, w, d, turn: 0 },
+        { ref: texture, w: d, d: w, turn: 90 },
+        ...list.filter((s) => s.w === 1 && s.d === 1),
+      ];
+    }
     available.set(key, list);
   }
   return list;
 }
+/** Whether a textured brick is made in every colour (else plain bricks). */
+export const textureMadeIn = (texture: string, colours: string[]) =>
+  !!catalog[texture] && colours.every((c) => madeIn(texture, c));
 /** Deterministic hash in [0, 1). */
 export function hash01(...n: number[]) {
   let h = 2166136261;
@@ -500,12 +530,13 @@ export function packGrid(
       const mat = materials[g.cell.mat];
       const emit = (r: Rect, height: number, kind: string) => {
         const id = pieces.length;
+        const n = mat.colours.length;
         const colour =
-          mat.colours.length === 1
+          n === 1
             ? mat.colours[0]
-            : mat.colours[
-                Math.floor(hash01(seed, r.x, y, r.z, r.w) * mat.colours.length)
-              ];
+            : mat.pattern === "courses"
+              ? mat.colours[((Math.floor(y / 3) % n) + n) % n]
+              : mat.colours[Math.floor(hash01(seed, r.x, y, r.z, r.w) * n)];
         if (r.w * r.d === 1)
           for (const c of mat.colours)
             if (!madeIn(r.ref, c)) {
@@ -540,7 +571,7 @@ export function packGrid(
       if (g.kind === "brick" && g.eligible.size) {
         for (const r of packSupported(
           g.eligible,
-          piecesFor("brick", mat.colours),
+          piecesFor("brick", mat.colours, mat.texture),
           below,
           rects,
           parity,

@@ -1,0 +1,45 @@
+{
+  "buildScript": 1,
+  "title": "Town house",
+  "palette": {
+    "grass": "green",
+    "pave": "light bluish grey",
+    "base": "light bluish grey",
+    "wall": "sand green",
+    "quoin": "light bluish grey",
+    "trim": "white",
+    "cornice": "tan",
+    "roof": "dark bluish grey",
+    "frame": "white",
+    "floor": "tan",
+    "chimney": "reddish brown"
+  },
+  "sections": [
+    {"name": "Street", "layer": "Landscape", "ops": [
+      {"op": "baseplate", "at": [0, 0], "size": [16, 16], "colour": "grass"},
+      {"op": "floor", "at": [0, 0, 0], "size": [16, 5], "colour": "pave", "top": "tile"},
+      {"op": "place", "part": {"find": "lamp post"}, "at": [14, 1, 1], "colour": "black"}
+    ]},
+    {"name": "Shop", "ops": [
+      {"op": "room", "at": [0, 0, 5], "size": [16, 27, 11], "colour": "base", "texture": "masonry", "floor": "floor", "openings": [{"side": "front", "at": 6, "width": 4, "height": 18, "frame": "frame", "door": "dark red"}, {"side": "front", "at": 1, "width": 4, "y": 7, "height": 9, "frame": "frame"}, {"side": "front", "at": 11, "width": 4, "y": 7, "height": 9, "frame": "frame"}]},
+      {"op": "repeat", "count": 2, "step": [10, 0, 0], "ops": [
+        {"op": "place", "part": "3039", "at": [1, 24, 3], "colour": "dark red"},
+        {"op": "place", "part": "3039", "at": [3, 24, 3], "colour": "white"}
+      ]},
+      {"op": "floor", "at": [0, 27, 4], "size": [16, 12], "colour": "trim", "layers": 2, "top": "tile", "holes": [{"at": [1, 6], "size": [14, 9]}]}
+    ]},
+    {"name": "Upper floors", "ops": [
+      {"op": "repeat", "count": 2, "step": [0, 23, 0], "ops": [
+        {"op": "room", "at": [0, 29, 5], "size": [16, 21, 11], "colour": "wall", "quoins": "quoin", "openings": [{"side": "front", "at": 2, "width": 2, "y": 6, "height": 9, "frame": "frame"}, {"side": "front", "at": 7, "width": 2, "y": 6, "height": 9, "frame": "frame"}, {"side": "front", "at": 12, "width": 2, "y": 6, "height": 9, "frame": "frame"}, {"side": "right", "at": 4, "width": 2, "y": 6, "height": 9, "frame": "frame"}]},
+        {"op": "wall", "from": [0, 5], "to": [15, 5], "y": 34, "height": 1, "colour": "trim"},
+        {"op": "wall", "from": [0, 5], "to": [15, 5], "y": 44, "height": 1, "colour": "trim"},
+        {"op": "floor", "at": [0, 50, 4], "size": [16, 12], "colour": "trim", "layers": 2, "top": "tile", "holes": [{"at": [1, 6], "size": [14, 9]}]}
+      ]}
+    ]},
+    {"name": "Roof", "ops": [
+      {"op": "floor", "at": [0, 75, 4], "size": [16, 12], "colour": "roof"},
+      {"op": "room", "at": [0, 76, 4], "size": [16, 3, 12], "colour": "cornice", "top": "tile"},
+      {"op": "box", "at": [11, 76, 12], "size": [2, 9, 2], "colour": "chimney", "texture": "masonry", "interior": "solid"}
+    ]}
+  ]
+}

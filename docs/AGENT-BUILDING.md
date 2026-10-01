@@ -2,7 +2,7 @@
 
 A **build script** is a small JSON program that compiles into real LDraw parts. An agent (or a person) describes _what_ to build — walls with doors and windows, floors, roofs, towers, domes, stairs, repeated houses — and the compiler chooses and places the bricks: largest pieces first, joints staggered course to course, only piece sizes that exist in the chosen colour. Every compile is checked for overlapping parts, off-grid parts and floating (unconnected) parts, and the report names the op that caused each problem, so an agent can fix its script and compile again.
 
-The ready-to-paste system prompt is [prompts/build-agent.md](../prompts/build-agent.md). The JSON Schema is [schemas/buildScript.v1.json](../schemas/buildScript.v1.json); `npm run cli -- build --reference` prints the op reference.
+The ready-to-paste system prompt is [prompts/build-agent.md](../prompts/build-agent.md). What official sets do that makes them look like LEGO designs, measured on 30 OMR models, is in [DESIGN-LANGUAGE.md](DESIGN-LANGUAGE.md); the rules drawn from it are [below](#design-rules-from-official-sets). The JSON Schema is [schemas/buildScript.v1.json](../schemas/buildScript.v1.json); `npm run cli -- build --reference` prints the op reference.
 
 Why this shape: [MineBench](https://github.com/Ammaar-Alam/minebench) — an LLM benchmark of large voxel builds — gets builds of thousands to millions of blocks out of models by having them emit a few high-level primitives (boxes, lines, a JavaScript loop) instead of block-by-block lists, inside a bounded grid with a fixed palette, after planning the silhouette; judges then compare the builds from every camera angle. A build script is the brick version of that: boxes and walls instead of bricks, repeat/mirror/components instead of copy-paste, palettes instead of colour codes, and a report plus rendered views instead of guessing. A 5 KB script compiles to 4,000+ parts ([Santorini example](#worked-examples)).
 
@@ -69,17 +69,17 @@ Each **section** becomes an LDraw submodel and a layer (`layer` groups several s
 
 **Massing** — volumes that the compiler packs into bricks, plates and tiles:
 
-| op         | what                                           | key fields                                                                      |
-| ---------- | ---------------------------------------------- | ------------------------------------------------------------------------------- |
-| `box`      | rectangular volume                             | `at [x,y,z]`, `size [w,h,d]`, `colour`, `interior`, `open`, `top`               |
-| `wall`     | straight wall along X or Z, running bond       | `from [x,z]`, `to [x,z]`, `height`, `y`, `thickness` 1\|2, `facing`, `openings` |
-| `room`     | four 1-stud walls, interlocking corners        | `at`, `size [w,h,d]`, `openings` (each with `side`), `floor`                    |
-| `floor`    | plate/tile area: floors, paving, water         | `at`, `size [w,d]`, `layers`, `holes`, `top: "tile"`                            |
-| `cylinder` | round massing (towers, tanks)                  | `at` (bounding square corner), `diameter`, `height`, `interior`                 |
-| `dome`     | hemisphere shell (cupolas, Santorini domes)    | `at`, `diameter`                                                                |
-| `stairs`   | flight of steps; `rise: 1` is walkable in Play | `at` (first step), `width`, `steps`, `dir` ±x\|±z, `rise`, `run`                |
-| `line`     | 1-stud line between two cells (posts, beams)   | `from [x,y,z]`, `to [x,y,z]`                                                    |
-| `carve`    | remove massing (later ops can refill)          | `at`, `size`                                                                    |
+| op         | what                                           | key fields                                                                              |
+| ---------- | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `box`      | rectangular volume                             | `at [x,y,z]`, `size [w,h,d]`, `colour`, `interior`, `open`, `top`, `quoins`, `supports` |
+| `wall`     | straight wall along X or Z, running bond       | `from [x,z]`, `to [x,z]`, `height`, `y`, `thickness` 1\|2, `facing`, `openings`         |
+| `room`     | four 1-stud walls, interlocking corners        | `at`, `size [w,h,d]`, `openings` (each with `side`), `floor`, `quoins`                  |
+| `floor`    | plate/tile area: floors, paving, water         | `at`, `size [w,d]`, `layers`, `holes`, `top: "tile"`                                    |
+| `cylinder` | round massing (towers, tanks)                  | `at` (bounding square corner), `diameter`, `height`, `interior`                         |
+| `dome`     | hemisphere shell (cupolas, Santorini domes)    | `at`, `diameter`                                                                        |
+| `stairs`   | flight of steps; `rise: 1` is walkable in Play | `at` (first step), `width`, `steps`, `dir` ±x\|±z, `rise`, `run`                        |
+| `line`     | 1-stud line between two cells (posts, beams)   | `from [x,y,z]`, `to [x,y,z]`                                                            |
+| `carve`    | remove massing (later ops can refill)          | `at`, `size`                                                                            |
 
 **Parts** — real components; they reserve their cells and **carve any massing there** (parts win):
 
@@ -106,6 +106,8 @@ Each **section** becomes an LDraw submodel and a layer (`layer` groups several s
 
 **Roof options** — `ends: 0` keeps the ridge ends flush (houses in a terrace, where an overhang would run into the neighbour; `overhang` stays on the eaves). `style: "shed"` is one slope, low along `facing`, high against a taller wall (aisles, lean-tos, porches); `mirror` flips it. `style: "hip", pitch: 75` makes a steep spire of 75° slopes (`4460b`, `3684a`, corners `3685`), a stud in per three bricks with a cone on top. Slope lengths that are not made in the roof's colour are left out (a sand green roof uses 2 × 4 and 2 × 2 slopes, not the 2 × 3).
 
+**Surface options** (from the [design-language study](DESIGN-LANGUAGE.md)) — `texture: "masonry" | "log" | "grille"` on `box`, `cylinder`, `wall` and `room` lays textured 1 × 2 bricks instead of plain ones: masonry 98283 (stone plinths, chimneys, castles), log 30136 (two vertical half-rounds: palisades, fluted pilasters, timber) and grille 2877 (siding, industrial walls), with 1 × 1 bricks at the ends. Where a colour lacks the textured brick the op keeps plain bricks and the report warns `texture-unavailable`. `pattern: "courses"` with a `{"mix": [...]}` colour lays the colours course by course (a brick course is 3 plates) instead of per piece: `{"mix": ["red", "red", "white", "white"]}` is a lighthouse's stripes. `quoins: "light bluish grey"` on `room` or `box` recolours the corners as interlocking blocks, 2 studs along the front and back faces on one course and along the sides on the next. `supports: 8` on a hollow `box` stands a 2 × 2 pier every 8 studs under its lid (wide terraces, hills).
+
 **Parts options** — `place {..., anchor: "origin"}` puts the part's own origin on a grid point `[x, z]` at plate level `y`, for parts made to fit together round a shared origin (sails on a mast, a hull and its deck); it is not snapped to the stud grid. `place {part: "4600", wheels: "light bluish grey"}` adds two wheels (rims in that colour, black tyres) to a Plate 2 × 2 with Wheel Holders; with its underside 2 plates up they clear the ground by 1 LDU. A group of parts on such plates is a parked car: the checks set it aside like a train on its wheels.
 
 **Trains** — `track {at, dir, pieces}` lays official plastic track (Straight 53401, Curve 53400; 9V points 75542/75541 with `W`/`V`) from a grid point, sleepers on level `y`: `"SSSS LLLLLLLL SSSS LLLLLLLL"` is an oval 64 + 80 studs long and 80 across, `branch` continues from the last points. The track holds the cells under its sleepers (massing is carved, parts on it are reported). `railcar {at, dir, component}` stands a Train Base 6 × 24 on two bogies with its centre on the track's centreline and the component on its deck (the component's frame: 24 long along +x with the front at x = 23, 6 wide, y = 0 the deck). Cars 26 studs apart are coupled; a car with a train front (2924bc01) leads. Play derives the train and runs it ([trains](PLAY-TRAINS.md)).
@@ -126,25 +128,70 @@ Each **section** becomes an LDraw submodel and a layer (`layer` groups several s
 - `"fill"`: solid, the inside packed with the largest bricks in `defaults.interiorColour` (light bluish grey). Use when the inside may show through gaps.
 - `"solid"`: solid in the op's own colour.
 - `open: ["top", "front", ...]` leaves shell faces out (for rooms you look into).
+- `supports: n` (hollow boxes) adds 2 × 2 piers every n studs (at least 4) under the lid: use 8–12 under lids wider than about 12 studs.
 
 On the Santorini example, switching the terraces from `fill` to `empty` removed ~2,100 parts without changing the view.
+
+## Design rules from official sets
+
+Measured on 30 official set models ([DESIGN-LANGUAGE.md](DESIGN-LANGUAGE.md)); the numbers are what the Modular Buildings and Creator houses do, and what our samples missed.
+
+**Proportions**
+
+- Storeys: ground floor 27–32 plates (9–10 bricks plus the floor), upper storeys 22–25; each lower than the one below. A plate floor at every storey (a ring with `holes` is enough) ties the walls together.
+- Street faces: an opening every 3–4 studs, with 1–3 studs of wall between windows. No plain run of one colour and depth longer than about 6 studs on a face people see; official facades change colour every 3 studs and depth every 2–3 (a mean uniform run of 2 studs; ours was 2.8).
+
+**Facade in three parts**
+
+- Base: 1–3 bricks (or the whole ground floor) in light or dark bluish grey, `texture: "masonry"` for stone.
+- Body: one wall colour. Corners in `quoins` (grey on sand green, tan, dark red) or `column` pilasters; piers between windows.
+- Bands: a string course at every floor line, 2 plates with a tiled top protruding 1 stud: `{"op": "floor", "at": [x0, y, z0 - 1], "size": [w, d + 1], "layers": 2, "top": "tile", "holes": [{"at": [x0 + 1, z0 + 1], "size": [w - 2, d - 2]}]}`. Sills and lintels: a 1-plate `wall` course (`height: 1`) in white or tan just under and just over each row of windows.
+- Top: a cornice (a protruding plate band, inverted slopes `3665a` under an overhang) and a 1-brick parapet with `top: "tile"`, or a roof.
+- A third of an official facade is plates and tiles; a facade of bricks only (ours: an eighth) reads as a wall of plain bricks.
+
+**Detail density**
+
+- An official street facade shows about 0.85 different parts per stud × brick: a 16-stud storey 8 bricks high shows about 110 parts; ours about 80.
+- Per 100 parts, official modulars use about 13 1-wide tiles, 4 SNOT parts, 4 headlight bricks, jumpers and cheese slopes, and 1–2 inverted slopes; half their parts are 1 × 1 or 1 × 2. Put small parts where people look: sills, lintels, door surrounds, window boxes (plants on a plate), lamps, awnings, signs.
+- Walls: the compiler picks the longest bricks that fit. Keep plain walls short (openings, quoins, pilasters) or give them a `texture`: official 1-wide bricks average 3 studs; ours averaged 5.
+
+**Roofs**
+
+- Houses: 45° slopes (2 × 4, 2 × 2) with a ridge, hip roofs on detached houses; bays and dormers get their own small roofs; a 1-stud overhang.
+- Town buildings: flat roofs of grey plates, left studded, behind a parapet; chimneys 2 × 2 (`texture: "masonry"`); mansards of dark slopes. Official modulars keep 35–45 % of their top view studded; do not `smooth` or tile every roof and terrace (ours: 5–45 %). Tiles belong on walkways, ledges, sills, parapet tops and floors.
+
+**Palette**
+
+- 5–8 colours per building, over half of the parts neutral: light bluish grey, dark bluish grey, white, tan, black. One wall colour for 8–20 % of the parts (dark red, sand green, dark orange, medium nougat, olive green, dark turquoise, reddish brown, tan), one accent for doors and awnings.
+- In a street, vary the wall colour from building to building (`instance.palette`) but keep base, trim and roof colours shared.
+- Stone: `{"mix": ["light bluish grey", "light bluish grey", "light bluish grey", "dark bluish grey"]}` (a 3:1 mix); castles are one or two colours with dark accents. Stripes and banded brickwork: `pattern: "courses"`.
+
+**Structure**
+
+- 1-stud walls and hollow interiors, like official models (about two-thirds of every column is empty in both). Avoid `interior: "fill"` and 2-stud walls where nobody looks: the long seam between two rows of bricks cannot be bonded across, and it costs parts. The compiler staggers joints (86–93 % of our brick end joints are covered by the course above; the modulars 91 %).
+- Wide hollow lids: `supports: 8`–`12`.
+
+**Other subjects**
+
+- Castles: grey walls with dark accents, crenellations of 1-stud merlons and gaps (`repeat` a 1 × 1 `box`), arrow slits as 1-stud `carve`s, courtyards in green.
+- Vehicles and terrain are mostly plates (2–15 plates per brick): terrain in stepped `floor` layers, with plants at 5–10 per 100 parts.
 
 ## Part cheat sheet
 
 Curated parts (snap and count for connectivity). `npm run cli -- parts search "<words>"` finds anything else in the complete LDraw library.
 
-| role             | parts                                                                                                                                                                                                            |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| walls            | massing (`wall`/`room`/`box`) — bricks 1×1…1×16, 2×2…2×10 chosen for you; masonry `98283`, log `30136`, grille `2877`                                                                                            |
-| floors & paving  | `floor` — plates up to 8×16, tiles 1×1…2×4 with `top: "tile"`; baseplates `3867` 16², `3811` 32², `4186` 48²                                                                                                     |
-| roofs            | `roof` op; slopes 45° `3040b` `3039` `3038` `3037`, ridge `3043`, hip corner `3045`, valley `3046`, 33° `3298` `4161`                                                                                            |
-| windows & doors  | `window` (1x2x2 `60592`, 1x2x3 `60593`, 1x4x3 `60594` + glass), `door` (`60596` + `60616a`), shutters `60608`, arches `3659` `6182` `3307` `2339`                                                                |
-| columns & towers | `column` (round bricks `3062b` `3941` `87081`, cones `4589` `3942c` `3943b`), `cylinder` for big towers, pillar `2453b`                                                                                          |
-| detailing        | cheese slope `54200`, tiles `3070b` `3069b`, grille tile `2412b`, jumper `3794b`, SNOT `87087` `4070` `11211`, brackets `99781` `44728`, fences `33303` `3185` `3633`                                            |
-| landscape        | trees `3470` `3471` `2435`, bush `6255`, leaves `2423`, flowers `24866` `33291`, water: `floor` in trans light blue/trans dark blue with `top: "tile"`, or a blue baseplate (`4186` and `3811` are made in blue) |
-| vehicles         | wheel holder plate `4600` (`wheels`), mudguard `3788`, windscreen `3823`, seat `4079`, steering `3829c01`; train front `2924bc01`, windows `4033c01` `4035c01`                                                   |
-| gothic           | pointed arch `13965` over a 1-wide slot of stained glass (a `box` of trans 1 × 1 bricks: `{"mix": ["trans red", "trans dark blue", "trans yellow"]}`), spires `pitch: 75`                                        |
-| ships            | sails `u9494c01` `85651c01` (`anchor: "origin"`), masts from `column`, clock brick `3003p0b` (tan)                                                                                                               |
+| role             | parts                                                                                                                                                                                                                                                                            |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| walls            | massing (`wall`/`room`/`box`) — bricks 1×1…1×16, 2×2…2×10 chosen for you; masonry `98283`, log `30136`, grille `2877`                                                                                                                                                            |
+| floors & paving  | `floor` — plates up to 8×16, tiles 1×1…2×4 with `top: "tile"`; baseplates `3867` 16², `3811` 32², `4186` 48²                                                                                                                                                                     |
+| roofs            | `roof` op; slopes 45° `3040b` `3039` `3038` `3037`, ridge `3043`, hip corner `3045`, valley `3046`, 33° `3298` `4161`                                                                                                                                                            |
+| windows & doors  | `window` (1x2x2 `60592`, 1x2x3 `60593`, 1x4x3 `60594` + glass), `door` (`60596` + `60616a`), shutters `60608`, arches `3659` `6182` `3307` `2339`                                                                                                                                |
+| columns & towers | `column` (round bricks `3062b` `3941` `87081`, cones `4589` `3942c` `3943b`), `cylinder` for big towers, pillar `2453b`                                                                                                                                                          |
+| detailing        | cheese slope `54200`, tiles `3070b` `3069b` `63864` `2431`, grille tile `2412b`, jumper `3794b`, SNOT `87087` `4070` `11211`, brackets `99781` `44728`, inverted slopes `3665a` `3660b` `4287a` (cornices, eaves), round brick `3062b` (pilasters), fences `33303` `3185` `3633` |
+| landscape        | trees `3470` `3471` `2435`, bush `6255`, leaves `2423`, flowers `24866` `33291`, water: `floor` in trans light blue/trans dark blue with `top: "tile"`, or a blue baseplate (`4186` and `3811` are made in blue)                                                                 |
+| vehicles         | wheel holder plate `4600` (`wheels`), mudguard `3788`, windscreen `3823`, seat `4079`, steering `3829c01`; train front `2924bc01`, windows `4033c01` `4035c01`                                                                                                                   |
+| gothic           | pointed arch `13965` over a 1-wide slot of stained glass (a `box` of trans 1 × 1 bricks: `{"mix": ["trans red", "trans dark blue", "trans yellow"]}`), spires `pitch: 75`                                                                                                        |
+| ships            | sails `u9494c01` `85651c01` (`anchor: "origin"`), masts from `column`, clock brick `3003p0b` (tan)                                                                                                                                                                               |
 
 ## Workflow
 
@@ -185,14 +232,15 @@ Builds are bounded by the resource profile (docs/RESOURCE-LIMITS.md): desktop 20
 
 Script sizes are minified JSON (what an agent emits); the files are laid out one op per line (`python3 scripts/format-build-script.py file.json`).
 
-| script                                                         | parts  | script | LDraw  | notes                                                                                                       |
-| -------------------------------------------------------------- | ------ | ------ | ------ | ----------------------------------------------------------------------------------------------------------- |
-| [house.json](../fixtures/build-scripts/house.json)             | 263    | 5.0 KB | 13 KB  | the House sample (its TypeScript generator is 11 KB for 285 parts)                                          |
-| [castle.json](../fixtures/build-scripts/castle.json)           | 255    | 4.5 KB | 12 KB  | the Small castle sample (generator 11.8 KB, 245 parts); the towers are one component                        |
-| [santorini.json](../fixtures/build-scripts/santorini.json)     | 4,098  | 5.4 KB | 110 KB | from a one-paragraph brief: four hollow terraces, 30 houses from three components, chapel, harbour, boats   |
-| [market-town.json](../fixtures/build-scripts/market-town.json) | 6,083  | 28 KB  | 280 KB | the Market town sample: 11 houses from 4 components in 11 palettes, town hall, oval of track, a train, cars |
-| [cathedral.json](../fixtures/build-scripts/cathedral.json)     | 11,817 | 26 KB  | 540 KB | the Cathedral sample: mirrored towers and aisles, 75° spires, stained-glass lancets, interior with stairs   |
-| [harbour.json](../fixtures/build-scripts/harbour.json)         | 6,966  | 19 KB  | 305 KB | the Harbour sample: 19 houses from one component with flags, warehouses, ships with sails, lighthouse       |
+| script                                                         | parts  | script | LDraw  | notes                                                                                                                           |
+| -------------------------------------------------------------- | ------ | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| [house.json](../fixtures/build-scripts/house.json)             | 263    | 5.0 KB | 13 KB  | the House sample (its TypeScript generator is 11 KB for 285 parts)                                                              |
+| [castle.json](../fixtures/build-scripts/castle.json)           | 255    | 4.5 KB | 12 KB  | the Small castle sample (generator 11.8 KB, 245 parts); the towers are one component                                            |
+| [santorini.json](../fixtures/build-scripts/santorini.json)     | 4,098  | 5.4 KB | 110 KB | from a one-paragraph brief: four hollow terraces, 30 houses from three components, chapel, harbour, boats                       |
+| [market-town.json](../fixtures/build-scripts/market-town.json) | 6,083  | 28 KB  | 280 KB | the Market town sample: 11 houses from 4 components in 11 palettes, town hall, oval of track, a train, cars                     |
+| [cathedral.json](../fixtures/build-scripts/cathedral.json)     | 11,817 | 26 KB  | 540 KB | the Cathedral sample: mirrored towers and aisles, 75° spires, stained-glass lancets, interior with stairs                       |
+| [harbour.json](../fixtures/build-scripts/harbour.json)         | 6,966  | 19 KB  | 305 KB | the Harbour sample: 19 houses from one component with flags, warehouses, ships with sails, lighthouse                           |
+| [townhouse.json](../fixtures/build-scripts/townhouse.json)     | 561    | 2.1 KB | 26 KB  | the [design rules](#design-rules-from-official-sets) on one modular-style building: masonry base, quoins, bands, sills, parapet |
 
 The Santorini script's first draft compiled to 6,213 parts with 5 overlaps, 3,745 floating parts and 2 colour warnings; the report named the ops (terraces a plate above the terrace below, a chimney above its roof, flowers with tabs against the chapel), one revision fixed them all, and hollow terraces saved about 2,100 parts with no visible change.
 

@@ -99,7 +99,7 @@ describe("build script schema", () => {
     });
     const ajv = new Ajv({ allErrors: true, strict: false });
     const check = ajv.compile(schema);
-    for (const f of ["house", "castle", "santorini"]) {
+    for (const f of ["house", "castle", "santorini", "townhouse"]) {
       const s = JSON.parse(
         readFileSync(`fixtures/build-scripts/${f}.json`, "utf8"),
       );
@@ -528,7 +528,7 @@ describe("build script ops", () => {
 });
 
 describe("example build scripts", () => {
-  for (const name of ["house", "castle", "santorini"])
+  for (const name of ["house", "castle", "santorini", "townhouse"])
     it(`${name} compiles without problems`, () => {
       const s = JSON.parse(
         readFileSync(`fixtures/build-scripts/${name}.json`, "utf8"),

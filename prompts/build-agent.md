@@ -32,9 +32,10 @@ Return ONLY one JSON object (no markdown, no commentary). If the interface suppo
 ## Ops (one object per op, `"op"` names it)
 
 Massing (packed into bricks automatically):
-- `box {at, size, colour, interior?: empty|fill|solid, open?: [faces], top?: "tile"}` — volumes; hollow by default.
+- `box {at, size, colour, interior?: empty|fill|solid, open?: [faces], top?: "tile", quoins?: colour, supports?: n}` — volumes; hollow by default; `supports: 8` puts 2 × 2 piers every 8 studs under a wide hollow lid.
 - `wall {from [x,z], to [x,z], height, y?, thickness?: 1|2, facing?, openings?}` — straight wall in running bond.
-- `room {at, size, colour, floor?, openings: [{side, at, width, y?, height?, fill?}]}` — four walls.
+- `room {at, size, colour, floor?, quoins?: colour, openings: [{side, at, width, y?, height?, fill?}]}` — four walls; `quoins` makes interlocking corner blocks in that colour.
+- On `box`, `cylinder`, `wall`, `room`: `texture?: masonry|log|grille` (textured 1 × 2 bricks: stone, vertical log ribs, grille siding) and `pattern?: "courses"` (a `{"mix": [...]}` colour laid course by course: stripes, bands).
 - `floor {at, size [w,d], colour, layers?, holes?, top?: "tile"}` — floors, paving, water.
 - `cylinder {at, diameter, height, colour}`, `dome {at, diameter, colour}`, `line {from, to, colour}`, `stairs {at, width, steps, dir: +x|-x|+z|-z, rise?, run?, colour}`, `carve {at, size}`.
 
@@ -55,13 +56,26 @@ Openings in walls/rooms: `at` = studs from the wall start (min x or min z), `y`/
 
 Names work: white, black, red, blue, yellow, green, bright green, dark green, sand green, tan, dark tan, reddish brown, dark brown, light bluish grey, dark bluish grey, dark red, dark blue, medium azure, dark azure, orange, bright light orange, lime, olive green, dark orange, medium nougat, trans-clear, trans light blue, trans dark blue, trans red, trans yellow, pearl gold, flat silver. Use `{"mix": [...]}` for natural stone, rock and roofs.
 
+## Look like a LEGO design
+
+Official sets (measured on 30 of them) differ from naive builds in a few countable ways:
+
+- **Three-part facades.** A grey base (1–3 bricks, or a whole ground floor, `texture: "masonry"`), a body in one wall colour with `quoins` or pilasters at the corners, a cornice or parapet at the top (`top: "tile"`).
+- **Bands.** A 2-plate string course at every floor line, tiled on top and protruding 1 stud (a `floor` ring: `layers: 2`, `top: "tile"`, `holes` = the room's inside), and 1-plate white or tan `wall` courses (`height: 1`) just under and over each row of windows.
+- **Rhythm.** On faces people see, an opening every 3–4 studs and a change of colour or depth every 2–3 studs; never more than about 6 studs of the same colour and depth in a row. Give plain stretches a `texture`, quoins, pilasters, window boxes or lamps.
+- **Proportions.** Ground storey 27–32 plates, upper storeys 22–25, a plate floor at each.
+- **Small parts.** Half of an official model is 1 × 1 and 1 × 2 parts; per 100 parts about 13 are 1-wide tiles, 4 SNOT/headlight bricks and 1–2 inverted slopes. Spend detail on entrances, sills, eaves and roof lines.
+- **Palette.** 5–8 colours per building, over half of the parts neutral (light and dark bluish grey, white, tan, black), one wall colour (dark red, sand green, dark orange, medium nougat, olive green, dark turquoise, reddish brown, tan) and one accent. Vary the wall colour between houses of a street, keep base, trim and roofs shared. Stone: a 3:1 mix of light and dark bluish grey.
+- **Tops.** Leave flat roofs studded (grey plates behind a parapet); tile walkways, ledges and sills, not every roof. Pitched roofs: 45° slopes with a ridge, a 1-stud overhang, small roofs on bays and dormers.
+- **Structure.** 1-stud walls, hollow interiors; avoid `interior: "fill"` and 2-thick walls where nobody looks.
+
 ## Part cheat sheet
 
 - Walls, floors, bodies: massing ops (the compiler uses bricks 1×1…2×10, plates up to 8×16, tiles).
 - Roofs: `roof` op; slopes 3040b/3039/3038/3037 (45°), ridge 3043, hip corner 3045, 33° slopes 3298/4161.
 - Windows & doors: `window`, `door`, arches 3659 (1×4), 6182 (1×4×2), 3307 (1×6×2), 2339 (1×5×4), shutters 60608.
 - Towers & columns: `column` (round 1/2/4), `cylinder`, cones 3943b, pillar 2453b.
-- Detail: cheese slope 54200, tiles 3070b/3069b, grille 2412b, SNOT 87087/4070, fences 33303/3185/3633, lamp post `{"find": "lamp post"}`, barrel 2489.
+- Detail: cheese slope 54200, tiles 3070b/3069b/63864/2431, grille 2412b, SNOT 87087/4070, inverted slopes 3665a/3660b (cornices, eaves), round brick 3062b (pilasters), fences 33303/3185/3633, lamp post `{"find": "lamp post"}`, barrel 2489.
 - Landscape: trees 3470/3471/2435, bush 6255, flowers 24866, plants 32607; water = `floor` in trans light blue with `top: "tile"`.
 
 ## How to build well
@@ -89,8 +103,8 @@ Compile with `brick-cli build --script build.json --output build.mpd --render vi
     {"op": "floor", "at": [-16, 0, -16], "size": [32, 6], "colour": "trans light blue", "top": "tile"},
     {"op": "fence", "path": [[-14, -9], [14, -9]], "colour": "white", "style": "picket"}]},
   {"name": "Cottage", "ops": [
-    {"op": "box", "at": [-7, 0, -4], "size": [14, 3, 10], "colour": "stone", "interior": "fill"},
-    {"op": "room", "at": [-6, 3, -3], "size": [12, "6b", 8], "colour": "wall", "floor": "tan", "openings": [
+    {"op": "box", "at": [-7, 0, -4], "size": [14, 3, 10], "colour": "stone", "texture": "masonry", "interior": "fill"},
+    {"op": "room", "at": [-6, 3, -3], "size": [12, "6b", 8], "colour": "wall", "floor": "tan", "quoins": "light bluish grey", "openings": [
       {"side": "front", "at": 4, "width": 4, "height": 18, "door": "blue", "opens": "out"},
       {"side": "front", "at": 1, "width": 2, "y": 6, "height": 9, "frame": "white"},
       {"side": "front", "at": 9, "width": 2, "y": 6, "height": 9, "frame": "white"}]},

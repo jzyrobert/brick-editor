@@ -112,7 +112,23 @@ const opening: T = {
     opens: opt({ enum: ["in", "out"] }, "Door swing (default in)"),
   },
 };
+/** Surface look of massing bricks (textured bricks, colour by course). */
+const look = {
+  texture: opt(
+    { enum: ["masonry", "log", "grille"] },
+    "Textured 1 × 2 bricks instead of plain ones: masonry (98283), log (30136) or grille (2877); plain bricks where the colour lacks them",
+  ),
+  pattern: opt(
+    { enum: ["mix", "courses"] },
+    "With a {mix} colour: mix picks per piece (default); courses lays the colours course by course (a brick course = 3 plates), for stripes and bands",
+  ),
+};
+const quoins = opt(
+  "colour",
+  "Corner blocks in this colour, interlocking course by course (2 studs along one face, 1 along the other)",
+);
 const massing = {
+  ...look,
   interior: opt(
     INTERIOR,
     "Unseen inside: empty (hollow shell), fill (cheap large bricks in the interior colour) or solid",
@@ -140,6 +156,11 @@ export const OPS: Record<string, OpSpec> = {
       size: req("size3", "[w, h, d]: studs, plates, studs"),
       colour: colour(),
       ...massing,
+      quoins,
+      supports: opt(
+        "posint",
+        "Hollow boxes: a 2 × 2 pier every this many studs (at least 4) under the lid of a wide shell",
+      ),
     },
     example: {
       op: "box",
@@ -164,6 +185,7 @@ export const OPS: Record<string, OpSpec> = {
       facing: opt("facing", "Outside of the wall, for windows and doors"),
       openings: opt({ array: opening }, "Door/window/plain openings"),
       top: massing.top,
+      ...look,
     },
     example: {
       op: "wall",
@@ -184,6 +206,8 @@ export const OPS: Record<string, OpSpec> = {
       openings: opt({ array: opening }, "Openings; each names its side"),
       floor: opt("colour", "Floor plate colour inside the walls"),
       top: massing.top,
+      ...look,
+      quoins,
     },
     example: {
       op: "room",
