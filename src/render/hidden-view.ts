@@ -213,7 +213,9 @@ export class HiddenGeometryView implements VariantProvider {
   begin(batched: ReadonlyArray<readonly [string, OccurrenceHandle]>) {
     const items: OcclusionItem[] = [];
     for (const [id, handle] of batched) {
-      if (!handle.visible) continue;
+      // See-through (treated) parts hide nothing, and keep all of their own
+      // geometry (the batches draw them unculled).
+      if (!handle.visible || handle.treatments) continue;
       const item = occlusionItem(id, handle.matrix, handle.prototype);
       if (item) items.push(item);
     }

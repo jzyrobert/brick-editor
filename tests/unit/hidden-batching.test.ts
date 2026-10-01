@@ -72,6 +72,45 @@ describe("hidden-geometry culling in the render batches", () => {
     expect(batches.stats().fills).toBeGreaterThan(1);
     expect(batches.stats().structures).toBe(1);
   });
+  it("culls against the parts shown: a step or subset reclassifies once", async () => {
+    const { batches, handles, look, draw } = await scene();
+    look(-500);
+    expect(draw()).toBe(18 + 402 + 402);
+    // Hiding the side brick keeps the low brick's studs hidden under the
+    // high one (the old fallback drew them all again: 402 + 402).
+    handles.get("side")!.visible = false;
+    expect(draw()).toBe(18 + 402);
+    expect(batches.stats()).toMatchObject({
+      plainView: true,
+      structures: 2,
+      reclassified: 1,
+    });
+    // Unchanged view: no further classification.
+    batches.refresh();
+    expect(draw()).toBe(18 + 402);
+    expect(batches.stats().structures).toBe(2);
+    // Opting out restores refill-only visibility changes (exact geometry).
+    batches.reclassifyOnView = false;
+    handles.get("side")!.visible = true;
+    expect(draw()).toBe(402 + 402 + 700);
+    expect(batches.stats().plainView).toBe(false);
+  });
+  it("draws a small view of a large scene whole instead of reclassifying", async () => {
+    const { batches, handles, look, draw } = await scene();
+    look(-500);
+    expect(draw()).toBe(18 + 402 + 402);
+    // As if the scene were large: reclassify only views above 1,000 triangles.
+    batches.reclassifyPolicy = { cheapHandles: 0, minTriangles: 1000 };
+    handles.get("side")!.visible = false;
+    // Two bricks shown (1,400 triangles whole): worth classifying.
+    expect(draw()).toBe(18 + 402);
+    expect(batches.stats().structures).toBe(2);
+    // One brick shown (700): drawn whole, no classification, every frame.
+    handles.get("high")!.visible = false;
+    expect(draw()).toBe(402);
+    expect(draw()).toBe(402);
+    expect(batches.stats()).toMatchObject({ structures: 2, plainView: false });
+  });
   it("falls back to exact geometry when a neighbour is hidden, treated, moved or cut", async () => {
     const { batches, handles, look, draw } = await scene();
     look(-500);
@@ -80,7 +119,6 @@ describe("hidden-geometry culling in the render batches", () => {
     // cannot be seen from above stay out (neighbour-independent).
     handles.get("high")!.visible = false;
     expect(draw()).toBe(402 + 402);
-    expect(batches.stats().plainView).toBe(false);
     handles.get("high")!.visible = true;
     expect(draw()).toBe(18 + 402 + 402);
     // A ghosted (see-through) neighbour.
@@ -109,7 +147,9 @@ describe("hidden-geometry culling in the render batches", () => {
     expect(draw()).toBe(700 * 3);
     batches.setClipPlane(null);
     expect(draw()).toBe(18 + 402 + 402);
-    expect(batches.stats().structures).toBe(1);
+    // Hiding, showing, treating and restoring classified again; moving and
+    // cutting did not.
+    expect(batches.stats().structures).toBe(5);
   });
   it("keeps selection sources and stats per occurrence", async () => {
     const { batches, look, draw } = await scene();

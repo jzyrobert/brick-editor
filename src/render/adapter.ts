@@ -29,6 +29,12 @@ import {
   type AnatomyInputOptions,
   type AnatomyStatus,
 } from "./anatomy-view";
+import {
+  AssemblyView,
+  easeInOut,
+  handleBox,
+  type AssemblyLot,
+} from "./assembly";
 import { indexPrototypeGeometry } from "./geometry-index";
 import {
   explodeLifts,
@@ -519,6 +525,25 @@ export class SceneAdapter {
   /** Called when the anatomy view's state changes (on, groups, focus). */
   onAnatomyChange?: (status: AnatomyStatus) => void;
   private instructionNewIds: Set<string> | null = null;
+  /** Follow-along instruction view (showGuideStep): parts shown, parts held
+   * back while they fly in, and later parts shown see-through. */
+  private guide: {
+    visible: Set<string>;
+    held: Set<string>;
+    ghost: Set<string>;
+  } | null = null;
+  private guideGhost = new LayerGhost(0.14);
+  private assembly = new AssemblyView();
+  private guideRaf = 0;
+  private cameraTween?: {
+    from: CameraSpec;
+    to: CameraSpec;
+    start: number;
+    ms: number;
+  };
+  /** Ghosting or dimming left out because it would exceed the drawing
+   * budget (see treatmentAffordable). */
+  private treatmentLimited: string[] = [];
   private playViewActive = false;
   private cameraChangeCount = 0;
   private playIncludedIds?: Set<string>;
@@ -620,7 +645,9 @@ export class SceneAdapter {
     this.root.rotation.x = Math.PI;
     this.scene.add(this.root, this.selection);
     this.root.add(this.batches.root);
+    this.root.add(this.assembly.group);
     if (this.hiddenCull) this.batches.setVariantProvider(this.hiddenView);
+    this.tuneReclassify();
     this.ghost.rotation.x = Math.PI;
     this.scene.add(this.ghost);
     this.hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xa4adb2, 3);
@@ -1975,6 +2002,7 @@ export class SceneAdapter {
       if (!shown.length) {
         // First parts of a newly opened model: take the previous one down.
         this.instructionDimming.restore();
+        this.guideGhost.restore();
         this.layerGhost.restore();
         for (const id of [...this.handles.keys()])
           if (!keep.has(id)) this.handles.delete(id);
@@ -2099,6 +2127,7 @@ export class SceneAdapter {
     this.reducedNotice = this.reducedQuality;
     this.holdFramesForLoad(epoch);
     this.instructionDimming.restore();
+    this.guideGhost.restore();
     this.layerGhost.restore();
     for (const id of [...this.handles.keys()])
       if (!keep.has(id)) this.handles.delete(id);
@@ -2493,6 +2522,7 @@ export class SceneAdapter {
   setLookResourceProfile(profile: ResourceProfileName) {
     if (profile === this.lookResourceProfile) return;
     this.lookResourceProfile = profile;
+    this.tuneReclassify();
     // The photo tracer's schedule (tiles, bounces) follows the profile.
     if (!this.captureActive) this.releasePhoto(true);
     if (this.environment.setMobile(profile === "mobile")) this.invalidate();
@@ -2503,6 +2533,12 @@ export class SceneAdapter {
     if (this.requested) this.update(this.requested).catch(() => {});
     if (this.captureActive) return;
     this.applyLook(resolveLook(this.look.name, this.lookOverrides, profile));
+  }
+  /** Views of large scenes that would draw under a quarter of the scene
+   * budget whole are drawn whole rather than reclassified (batching.ts). */
+  private tuneReclassify() {
+    this.batches.reclassifyPolicy.minTriangles =
+      renderBudget(this.lookResourceProfile).sceneTriangles / 4;
   }
   private applyLook(look: RenderLook, refreshTreatments = true) {
     if (JSON.stringify(look) === JSON.stringify(this.look)) return;
@@ -2831,7 +2867,11 @@ export class SceneAdapter {
   private cellsWanted() {
     // Ghosted or dimmed views (instruction steps, layer and floor ghosting)
     // would need a second draw per cell: keep whole buckets.
-    if (this.layerGhost.active || this.instructionDimming.active)
+    if (
+      this.layerGhost.active ||
+      this.instructionDimming.active ||
+      this.guideGhost.active
+    )
       return (this.cellsOn = false);
     const culled = this.batches.culledShare(this.camera);
     this.cellsOn = culled >= (this.cellsOn ? CELLS_OFF_SHARE : CELLS_ON_SHARE);
@@ -4360,6 +4400,7 @@ export class SceneAdapter {
     const materialsChanged =
       this.instructionDimming.active || this.layerGhost.active;
     this.instructionDimming.restore();
+    this.guideGhost.restore();
     this.layerGhost.restore();
     if (materialsChanged) this.batches.refresh();
     const camera = this.currentCamera();
@@ -4835,6 +4876,14 @@ export class SceneAdapter {
   /** Editor visibility: the instruction step (or layer visibility) minus hidden floors. */
   private applyVisibility() {
     if (!this.project || this.playViewActive) return;
+    const guide = this.guide;
+    if (guide) {
+      // The guide shows its step whatever the floor focus or layers hide.
+      for (const [id, group] of this.handles)
+        group.visible =
+          (guide.visible.has(id) && !guide.held.has(id)) || guide.ghost.has(id);
+      return;
+    }
     const base =
       this.instructionVisibility ??
       new Set(
@@ -5158,6 +5207,21 @@ export class SceneAdapter {
   private applyLayerGhost() {
     // Undo nested treatments in reverse order before replacing shared materials.
     this.instructionDimming.restore();
+    this.guideGhost.restore();
+    this.treatmentLimited = [];
+    if (this.guide) {
+      this.layerGhost.restore();
+      if (!this.playViewActive && this.guide.ghost.size) {
+        if (this.treatmentAffordable(this.guide.ghost))
+          this.guideGhost.apply(this.handles, this.guide.ghost);
+        else {
+          // Later parts stay hidden rather than drawn unculled.
+          this.treatmentLimited.push("guide");
+          this.guide.ghost = new Set();
+        }
+      }
+      return;
+    }
     const ids = new Set(
       !this.playViewActive &&
       this.project &&
@@ -5171,16 +5235,52 @@ export class SceneAdapter {
     if (!this.playViewActive) for (const id of this.floorGhosted) ids.add(id);
     const isolated = this.playViewActive ? null : this.anatomyView?.ghosted();
     if (isolated) for (const id of isolated) ids.add(id);
+    if (ids.size && !this.treatmentAffordable(ids)) {
+      this.treatmentLimited.push("ghost");
+      ids.clear();
+    }
     this.layerGhost.apply(this.handles, ids);
-    if (!this.playViewActive && this.instructionNewIds)
-      this.instructionDimming.apply(
-        this.handles,
-        new Set(
-          [...this.handles.keys()].filter(
-            (id) => !this.instructionNewIds!.has(id),
-          ),
+    if (!this.playViewActive && this.instructionNewIds) {
+      const dimmed = new Set(
+        [...this.handles.keys()].filter(
+          (id) => !this.instructionNewIds!.has(id),
         ),
       );
+      // Only the dimmed parts the step shows are drawn.
+      const shown = this.instructionVisibility;
+      if (
+        this.treatmentAffordable(
+          shown ? [...dimmed].filter((id) => shown.has(id)) : dimmed,
+        )
+      )
+        this.instructionDimming.apply(this.handles, dimmed);
+      else this.treatmentLimited.push("dimming");
+    }
+    if (this.treatmentLimited.length && !this.treatmentNoticeShown) {
+      this.treatmentNoticeShown = true;
+      this.report(
+        "Large model: see-through ghosting and dimming are left out where they would exceed this device's drawing budget; those parts are shown solid or hidden.",
+      );
+    }
+  }
+  private treatmentNoticeShown = false;
+  /**
+   * Whether drawing these occurrences see-through fits the profile's scene
+   * budget next to the solid view. Treated parts are drawn whole (occlusion
+   * culling cannot apply to see-through parts), so ghosting most of a
+   * phone-limit model would draw several times the budget.
+   */
+  private treatmentAffordable(ids: Iterable<string>) {
+    const budget = renderBudget(this.lookResourceProfile).sceneTriangles;
+    const headroom = budget - (this.renderUsage?.sceneTriangles ?? 0);
+    let total = 0;
+    for (const id of ids) {
+      const handle = this.handles.get(id);
+      if (!handle) continue;
+      total += prototypeTriangleCount(handle.prototype);
+      if (total > headroom) return false;
+    }
+    return true;
   }
   ghostOtherLayers(activeLayerId: string | null) {
     this.ghostLayerId = activeLayerId;
@@ -5199,6 +5299,200 @@ export class SceneAdapter {
     this.batches.refresh();
     this.applyVisibility();
     this.invalidate();
+  }
+  /**
+   * Follow-along instruction view (docs/INSTRUCTIONS.md): show `visible`,
+   * lay the step's parts on a tray beside it and fly its `units` into place,
+   * see-through `ghost` parts for context (left out when over the drawing
+   * budget), and frame the new parts. `insets` (CSS px) are the screen edges
+   * the viewer's panels cover. null leaves the view.
+   */
+  showGuideStep(
+    step: {
+      visible: string[];
+      units: string[][];
+      lots: AssemblyLot[];
+      ghost?: string[];
+      animate?: boolean;
+      tray?: boolean;
+      frame?: boolean;
+      insets?: { top: number; right: number; bottom: number; left: number };
+    } | null,
+  ) {
+    this.assembly.clear();
+    this.cameraTween = undefined;
+    if (!step) {
+      if (!this.guide) return this.guideState;
+      this.guide = null;
+      this.applyLayerGhost();
+      this.batches.refresh();
+      this.applyVisibility();
+      this.invalidate();
+      return this.guideState;
+    }
+    const reduced =
+      typeof matchMedia === "function" &&
+      matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const animate = step.animate !== false && !reduced;
+    const visible = new Set(step.visible);
+    const added = step.units.flat();
+    const guide = {
+      visible,
+      held: new Set(animate ? added : []),
+      ghost: new Set((step.ghost ?? []).filter((id) => !visible.has(id))),
+    };
+    this.guide = guide;
+    if (this.captureActive) return this.guideState;
+    this.applyLayerGhost();
+    this.batches.refresh();
+    this.applyVisibility();
+    const current = this.currentCamera();
+    const forward = new THREE.Vector3(...current.target).sub(
+      new THREE.Vector3(...current.position),
+    );
+    const side = forward.cross(new THREE.Vector3(...current.up));
+    const shown: OccurrenceHandle[] = [];
+    for (const id of visible)
+      if (!guide.held.has(id)) {
+        const h = this.handles.get(id);
+        if (h) shown.push(h);
+      }
+    this.assembly.begin(
+      this.handles,
+      {
+        units: step.units,
+        lots: step.lots,
+        side,
+        shown,
+        tray: step.tray !== false,
+        animate,
+      },
+      () => {
+        if (this.guide !== guide) return;
+        guide.held.clear();
+        this.applyVisibility();
+        this.invalidate();
+      },
+    );
+    if (step.frame !== false) {
+      const box = new THREE.Box3(),
+        scratch = new THREE.Box3();
+      for (const id of added) {
+        const h = this.handles.get(id);
+        if (h) box.union(handleBox(h, scratch));
+      }
+      if (this.assembly.trayBox) box.union(this.assembly.trayBox);
+      if (!box.isEmpty()) {
+        const to = this.framing(box, current, step.insets);
+        if (animate && current.projection === "perspective")
+          this.cameraTween = {
+            from: current,
+            to,
+            start: performance.now(),
+            ms: 480,
+          };
+        else this.setCamera(to);
+      }
+    }
+    this.invalidate();
+    this.runGuideFrames();
+    return this.guideState;
+  }
+  /** Skip the running fly-in and camera move (the step shows complete). */
+  finishGuideAnimation() {
+    if (this.cameraTween) {
+      const to = this.cameraTween.to;
+      this.cameraTween = undefined;
+      this.setCamera(to);
+    }
+    this.assembly.finish();
+    this.invalidate();
+  }
+  get guideState() {
+    return {
+      active: !!this.guide,
+      animating: this.assembly.animating || !!this.cameraTween,
+      shown: this.guide ? this.guide.visible.size - this.guide.held.size : 0,
+      held: this.guide?.held.size ?? 0,
+      flown: this.assembly.flown,
+      ghosted: this.guide?.ghost.size ?? 0,
+      tray: this.assembly.trayBox
+        ? {
+            min: this.assembly.trayBox.min.toArray(),
+            max: this.assembly.trayBox.max.toArray(),
+          }
+        : null,
+      limited: [...this.treatmentLimited],
+    };
+  }
+  /** Camera keeping the current view direction that fits `box` (model-root,
+   * LDraw space) in the part of the canvas the insets leave free. */
+  private framing(
+    box: THREE.Box3,
+    current: CameraSpec,
+    insets = { top: 0, right: 0, bottom: 0, left: 0 },
+  ): CameraSpec {
+    const width = Math.max(1, this.element.clientWidth),
+      height = Math.max(1, this.element.clientHeight);
+    const freeW = Math.max(width * 0.3, width - insets.left - insets.right),
+      freeH = Math.max(height * 0.3, height - insets.top - insets.bottom);
+    const center = box.getCenter(new THREE.Vector3());
+    const radius = Math.max(48, box.getSize(new THREE.Vector3()).length() / 2);
+    const fov = THREE.MathUtils.degToRad(current.fovDeg || 45);
+    const tanV = Math.tan(fov / 2) * (freeH / height);
+    const tanH = Math.tan(fov / 2) * (freeW / height);
+    const angle = Math.min(Math.atan(tanV), Math.atan(tanH));
+    const distance = (radius / Math.sin(angle)) * 1.08;
+    const back = new THREE.Vector3(...current.position)
+      .sub(new THREE.Vector3(...current.target))
+      .normalize();
+    const up = new THREE.Vector3(...current.up).normalize();
+    const right = back.clone().negate().cross(up).normalize();
+    const trueUp = right.clone().cross(back.clone().negate()).normalize();
+    // Put the box's centre at the centre of the free area.
+    const perPixel = (2 * distance * Math.tan(fov / 2)) / height;
+    const dx = ((insets.left - insets.right) / 2) * perPixel,
+      dy = ((insets.top - insets.bottom) / 2) * perPixel;
+    const target = center
+      .clone()
+      .addScaledVector(right, -dx)
+      .addScaledVector(trueUp, dy);
+    const position = target.clone().addScaledVector(back, distance);
+    return {
+      ...current,
+      position: position.toArray() as Vec3,
+      target: target.toArray() as Vec3,
+      near: Math.max(0.5, Math.min(current.near, distance / 100)),
+      far: Math.max(current.far, distance * 6),
+      span: radius * 2.3,
+    };
+  }
+  private runGuideFrames() {
+    if (this.guideRaf || this.disposed) return;
+    const frame = () => {
+      this.guideRaf = 0;
+      if (this.disposed || this.captureActive) return;
+      const now = performance.now();
+      let more = this.assembly.animating && this.assembly.tick(now);
+      const tween = this.cameraTween;
+      if (tween && this.motionHeld) this.cameraTween = undefined;
+      else if (tween) {
+        const s = Math.min(1, (now - tween.start) / tween.ms);
+        const e = easeInOut(s);
+        const mix = (a: Vec3, b: Vec3) =>
+          a.map((v, i) => v + (b[i] - v) * e) as Vec3;
+        this.playCamera({
+          ...tween.to,
+          position: mix(tween.from.position, tween.to.position),
+          target: mix(tween.from.target, tween.to.target),
+        });
+        if (s >= 1) this.cameraTween = undefined;
+        else more = true;
+      }
+      if (this.assembly.animating) this.invalidate({ cameraOnly: true });
+      if (more) this.guideRaf = requestAnimationFrame(frame);
+    };
+    this.guideRaf = requestAnimationFrame(frame);
   }
   /** Placement ghost; `refused` tints it red ("Snap together" found no hold). */
   async previewPart(
@@ -5391,6 +5685,7 @@ export class SceneAdapter {
     this.batches.setCellsActive(false);
     try {
       this.instructionDimming.restore();
+      this.guideGhost.restore();
       this.layerGhost.restore();
       this.environment.set(captureBackdrop);
       this.environment.setDrawn(request.background.type !== "transparent");
@@ -5440,6 +5735,7 @@ export class SceneAdapter {
       this.selection.visible = false;
       if (this.transformHandles) this.transformHandles.helper.visible = false;
       this.ghost.visible = false;
+      this.assembly.group.visible = false;
       this.scene.background =
         request.background.type === "transparent"
           ? null
@@ -5563,6 +5859,7 @@ export class SceneAdapter {
       if (this.transformHandles && transformVisible !== undefined)
         this.transformHandles.helper.visible = transformVisible;
       this.ghost.visible = true;
+      this.assembly.group.visible = true;
       this.resize();
     }
     const canvas = document.createElement("canvas");
@@ -5660,10 +5957,13 @@ export class SceneAdapter {
     this.transformHandles?.dispose();
     this.transformHandles = undefined;
     this.instructionDimming.restore();
+    this.guideGhost.restore();
     this.layerGhost.restore();
     this.clearGhost();
     this.clearAnnotations();
     this.anatomyView.dispose();
+    this.assembly.clear();
+    cancelAnimationFrame(this.guideRaf);
     cancelAnimationFrame(this.raf);
     cancelAnimationFrame(this.refineRaf);
     this.releasePhoto(true);

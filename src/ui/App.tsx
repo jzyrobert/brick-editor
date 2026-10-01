@@ -110,6 +110,8 @@ import { LayerActions } from "./LayerActions";
 import { ClipboardTools } from "./ClipboardTools";
 import { InstructionEditor } from "./InstructionEditor";
 import { InstructionsPublish } from "./InstructionsPublish";
+import { InstructionViewer } from "./InstructionViewer";
+import { PartsList } from "./PartsList";
 import { SharePanel } from "./SharePanel";
 import { AutosaveQueue } from "../persistence/autosave";
 import { BrowserPlay } from "../play/browser";
@@ -186,6 +188,7 @@ import { LOOK_NAMES, lookControls, type LookName } from "../render/look";
 import "./styles.css";
 import "./hud.css";
 import "./parts-picker.css";
+import "./guide.css";
 const editor = new Editor();
 // A stored preference was acknowledged when chosen; otherwise the device decides.
 try {
@@ -524,6 +527,9 @@ function Workspace() {
       max: number;
     } | null>(null),
     [inventoryOpen, setInventoryOpen] = useState(false),
+    /** The follow-along instruction viewer (InstructionViewer.tsx). */
+    [guideOpen, setGuideOpen] = useState(false),
+    [partsListOpen, setPartsListOpen] = useState(false),
     [inventoryScope, setInventoryScope] = useState<Scope["kind"]>("all"),
     [condition, setCondition] = useState("any"),
     [acceptUnknown, setAcceptUnknown] = useState(false),
@@ -576,6 +582,7 @@ function Workspace() {
     play = useRef<BrowserPlay | undefined>(undefined),
     mechanisms = useRef<MechanismBrowser | undefined>(undefined),
     modeRef = useRef(mode),
+    guideRef = useRef(false),
     fileInput = useRef<HTMLInputElement>(null),
     worker = useRef<Worker | undefined>(undefined),
     saveRevisions = useRef(knownSaveRevisions),
@@ -705,6 +712,7 @@ function Workspace() {
   const anatomyOn = !!anatomy?.on;
   const anatomyOnRef = useRef(false);
   anatomyOnRef.current = anatomyOn && mode !== "Play";
+  guideRef.current = guideOpen;
   projectRef.current = project;
   selectionRef.current = selection;
   allRef.current = all;
@@ -1189,21 +1197,36 @@ function Workspace() {
   useEffect(() => {
     const r = renderer.current;
     if (!r || ownsTransientView()) return;
-    r.controls.enableRotate = mode === "Build" || mode === "Photo";
-    r.controls.mouseButtons.LEFT = tool === "Navigate" ? 0 : (null as any);
+    // The step viewer only looks: one finger or the left button orbits.
+    const orbit = tool === "Navigate" || guideOpen;
+    r.controls.enableRotate = mode === "Build" || mode === "Photo" || guideOpen;
+    r.controls.mouseButtons.LEFT = orbit ? 0 : (null as any);
     // Right-drag orbits in the editing tools (Shift+right-drag pans), so the
     // left button stays free for taps, boxes and lassos; Navigate keeps pan.
-    r.controls.mouseButtons.RIGHT = tool === "Navigate" ? 2 : 0;
-    r.controls.touches.ONE = tool === "Navigate" ? 0 : (null as any);
+    r.controls.mouseButtons.RIGHT = orbit ? 2 : 0;
+    r.controls.touches.ONE = orbit ? 0 : (null as any);
     r.controls.enabled = mode !== "Play";
-  }, [tool, mode, transientView]);
+  }, [tool, mode, transientView, guideOpen]);
   useEffect(() => {
-    if (mode === "Instructions" && !ownsTransientView())
+    if (mode === "Instructions" && !ownsTransientView() && !guideOpen)
       renderer.current?.showStep(
         plan ? plan.steps.slice(0, step + 1).flat() : null,
         dimPrevious && plan ? plan.steps[step] : undefined,
       );
-  }, [mode, step, plan, transientView, dimPrevious]);
+  }, [mode, step, plan, transientView, dimPrevious, guideOpen]);
+  // The step viewer is a view of the Build, Instructions or Project modes.
+  useEffect(() => {
+    if (mode === "Play" || mode === "Photo") setGuideOpen(false);
+  }, [mode]);
+  useEffect(() => {
+    if (!guideOpen) return;
+    // The viewer shows its own steps: the editor's step view and the
+    // anatomy exploded view step aside (the guide places parts in place).
+    renderer.current?.showStep(null);
+    if (renderer.current?.anatomy.on)
+      renderer.current.setAnatomy({ on: false, animate: false });
+    renderer.current?.select([]);
+  }, [guideOpen]);
   useEffect(() => {
     if (mode !== "Instructions") renderer.current?.showStep(null);
     // Document replacement cancels the old session synchronously through
@@ -1320,6 +1343,8 @@ function Workspace() {
     const up = (e: PointerEvent) => {
       if (
         (modeRef.current !== "Build" && !anatomyOnRef.current) ||
+        modeRef.current !== "Build" ||
+        guideRef.current ||
         play.current?.getState().active
       )
         return;
@@ -1651,7 +1676,11 @@ function Workspace() {
   }, []);
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
-      if (modeRef.current !== "Build" || play.current?.getState().active)
+      if (
+        modeRef.current !== "Build" ||
+        guideRef.current ||
+        play.current?.getState().active
+      )
         return;
       if (
         (e.target instanceof Element &&
@@ -3485,6 +3514,7 @@ function Workspace() {
       className={
         "app mode-" +
         mode.toLowerCase() +
+        (guideOpen ? " guide-open" : "") +
         (panel !== "Canvas" ? " sheet-open" : "") +
         (sheetFull ? " sheet-full" : "")
       }
@@ -3693,6 +3723,15 @@ function Workspace() {
             onPointerUp={endCanvasGesture}
             onPointerCancel={endCanvasGesture}
           />
+          {guideOpen && available && (
+            <InstructionViewer
+              project={project}
+              all={all}
+              renderer={renderer.current ?? null}
+              onClose={() => setGuideOpen(false)}
+              onPartsList={() => setPartsListOpen(true)}
+            />
+          )}
           <div
             className={"view-controls hud-el" + (viewsOpen ? " open" : "")}
             aria-label="Camera views"
@@ -4535,9 +4574,25 @@ function Workspace() {
           {mode === "Instructions" && (
             <div className="mode-card">
               <h2>One step at a time.</h2>
+              <button
+                className="primary wide guide-open-button"
+                disabled={!available || !all.length}
+                onClick={() => setGuideOpen(true)}
+              >
+                <Icon name="instructions" /> Build it step by step
+              </button>
+              <button
+                className="wide"
+                disabled={!available}
+                onClick={() => setPartsListOpen(true)}
+              >
+                <Icon name="parts" /> Parts list
+              </button>
               <p>
-                Create an organisational sequence from your layers. This is not
-                a physically validated assembly plan.
+                Steps come from the model file when it has them, otherwise they
+                are made bottom up. Below, create an organisational sequence
+                from your layers. This is not a physically validated assembly
+                plan.
               </p>
               <button
                 className="wide"
@@ -5126,6 +5181,20 @@ function Workspace() {
           }}
         />
       )}
+      {partsListOpen && available && (
+        <PartsList
+          project={project}
+          all={all}
+          onClose={() => setPartsListOpen(false)}
+          onBrickLink={() => {
+            setPartsListOpen(false);
+            setGuideOpen(false);
+            setInventoryOpen(true);
+          }}
+          download={download}
+          onStatus={setStatus}
+        />
+      )}
       {inventoryOpen && (
         <div className="modal-backdrop">
           <section
@@ -5146,6 +5215,26 @@ function Workspace() {
               </button>
             </div>
             <div className="export-shortcuts">
+              <button
+                disabled={!available}
+                onClick={() => {
+                  setInventoryOpen(false);
+                  setPartsListOpen(true);
+                }}
+              >
+                <strong>Parts list</strong>
+                <small>Every part with counts · CSV</small>
+              </button>
+              <button
+                disabled={!available || !all.length}
+                onClick={() => {
+                  setInventoryOpen(false);
+                  setGuideOpen(true);
+                }}
+              >
+                <strong>Build steps</strong>
+                <small>Follow along, step by step</small>
+              </button>
               <button onClick={() => void exportFile("native")}>
                 <strong>Native project</strong>
                 <small>Editable .brickproj backup</small>

@@ -1,0 +1,521 @@
+/*
+ * Step viewer (InstructionViewer.tsx) and parts list (PartsList.tsx).
+ * The viewer owns the screen: the build HUD steps aside and three things
+ * stay — a navy top row (close, step count, parts list, options), the model,
+ * and one chalk panel with the step's parts and previous / scrubber / next.
+ * On phones in landscape the panel becomes a column on the right.
+ */
+.guide-open .hud-top,
+.guide-open .left-sidebar,
+.guide-open .right-sidebar,
+.guide-open .canvas-toolbar,
+.guide-open .canvas-label,
+.guide-open .view-controls,
+.guide-open .canvas-bottom,
+.guide-open .mobile-nav,
+.guide-open .measure-chip,
+.guide-open .status-bar,
+.guide-open .mobile-panel,
+.guide-open .placement-card,
+.guide-open .mode-card {
+  display: none !important;
+}
+
+.guide-overlay {
+  --guide-top: max(12px, var(--safe-top));
+  --guide-right: max(12px, var(--safe-right));
+  --guide-bottom: max(12px, var(--safe-bottom));
+  --guide-left: max(12px, var(--safe-left));
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+.guide-overlay > * {
+  pointer-events: auto;
+}
+.guide-overlay .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- Top row ---- */
+.guide-top {
+  position: absolute;
+  top: var(--guide-top);
+  left: var(--guide-left);
+  right: var(--guide-right);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.guide-top > * {
+  pointer-events: auto;
+}
+.guide-key {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--hud);
+  color: var(--chalk);
+  border: 2px solid var(--hud-line);
+  border-radius: var(--r-slab);
+  box-shadow: var(--shadow-slab);
+}
+.guide-key:hover {
+  background: var(--hud-hover);
+  border-color: var(--hud-line);
+}
+.guide-title {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: var(--hud);
+  color: var(--chalk);
+  border: 2px solid var(--hud-line);
+  border-radius: var(--r-slab);
+  box-shadow: var(--shadow-slab);
+  font-size: var(--text-title);
+  font-variant-numeric: tabular-nums;
+  margin-right: auto;
+  white-space: nowrap;
+}
+.guide-title strong {
+  font-weight: 700;
+}
+.guide-title small {
+  color: var(--hud-mute);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+.guide-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-right: 4px;
+  border-radius: 999px;
+  background: var(--sun);
+  color: var(--ink);
+  font-size: var(--text-label);
+  font-weight: 700;
+  vertical-align: 2px;
+}
+
+/* ---- Options menu ---- */
+.guide-menu {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  width: min(300px, calc(100vw - 2 * var(--guide-right)));
+  max-height: calc(100dvh - 90px);
+  overflow: auto;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  background: var(--paper);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-sheet);
+}
+.guide-field {
+  display: grid;
+  gap: 4px;
+  font-size: var(--text-label);
+  font-weight: 650;
+  padding: 4px 4px 8px;
+}
+.guide-note {
+  margin: 4px 6px 8px;
+  font-size: var(--text-label);
+  color: var(--secondary);
+}
+.guide-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 6px;
+  border-radius: var(--r-field);
+  font-size: var(--text-body);
+  cursor: pointer;
+}
+.guide-toggle:hover {
+  background: var(--card);
+}
+
+/* ---- Step panel ---- */
+.guide-panel {
+  position: absolute;
+  left: 50%;
+  bottom: var(--guide-bottom);
+  transform: translateX(-50%);
+  width: min(760px, calc(100% - var(--guide-left) - var(--guide-right)));
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: var(--paper);
+  border-radius: var(--r-sheet);
+  box-shadow: var(--shadow-rise);
+}
+.guide-empty p {
+  margin: 8px;
+}
+.guide-need {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.guide-need-title {
+  font-size: var(--text-body);
+  font-weight: 700;
+  padding: 0 4px;
+}
+.guide-lots {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 2px 2px 4px;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.guide-lot {
+  position: relative;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  padding: 6px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.guide-lot .part-thumb {
+  width: 100%;
+  height: 100%;
+}
+.guide-lot b {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  min-width: 26px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--chalk);
+  font-size: var(--text-label);
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.guide-lot-name {
+  display: none;
+}
+.guide-assembly {
+  background: var(--sun-wash);
+  border-color: var(--sun);
+}
+.guide-assembly-icon {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--ink);
+}
+.guide-nav {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.guide-step-button {
+  height: 48px;
+  min-width: 48px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--r-key);
+  font-weight: 650;
+  font-size: var(--text-body);
+}
+.guide-next {
+  min-width: 112px;
+  padding: 0 18px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--card);
+}
+.guide-next:hover {
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
+}
+.guide-scrubber {
+  accent-color: var(--accent);
+  min-height: 44px;
+  margin: 0;
+}
+
+/* Wide screens: names under the part pictures. */
+@media (min-width: 1101px) {
+  .guide-lot {
+    width: 84px;
+    height: auto;
+    padding: 8px 6px 6px;
+  }
+  .guide-lot .part-thumb,
+  .guide-assembly-icon {
+    width: 100%;
+    height: 56px;
+  }
+  .guide-lot b {
+    top: 4px;
+    right: 4px;
+    bottom: auto;
+  }
+  .guide-lot-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.25;
+    text-align: center;
+    color: var(--secondary);
+  }
+}
+
+/* Short screens held sideways: the panel is a column on the right. */
+@media (orientation: landscape) and (max-height: 540px) {
+  .guide-panel {
+    left: auto;
+    right: var(--guide-right);
+    top: calc(var(--guide-top) + 58px);
+    bottom: var(--guide-bottom);
+    transform: none;
+    width: min(260px, 40vw);
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 10px;
+  }
+  .guide-need {
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+  }
+  .guide-lots {
+    flex-wrap: wrap;
+    align-content: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  .guide-lot {
+    width: 56px;
+    height: 56px;
+    padding: 5px;
+  }
+  .guide-nav {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+  .guide-scrubber {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .guide-step-button {
+    height: 44px;
+    min-width: 44px;
+  }
+  .guide-next {
+    min-width: 0;
+    grid-column: 2 / 4;
+  }
+  .guide-top {
+    right: calc(var(--guide-right) + min(260px, 40vw) + 10px);
+  }
+  .guide-menu {
+    max-height: calc(100dvh - 80px);
+  }
+}
+
+@media (max-width: 380px) {
+  .guide-next {
+    min-width: 96px;
+    padding: 0 12px;
+  }
+  .guide-title {
+    padding: 0 12px;
+  }
+}
+
+/* ---- Parts list dialog ---- */
+.parts-list-dialog {
+  width: 620px;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+.parts-list-dialog .dialog-heading {
+  margin-bottom: 12px;
+}
+.parts-list-total {
+  margin: 2px 0 0;
+  color: var(--secondary);
+  font-variant-numeric: tabular-nums;
+}
+.parts-list-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: end;
+}
+.parts-list-tools label {
+  display: grid;
+  gap: 3px;
+  font-size: var(--text-label);
+  font-weight: 650;
+}
+.parts-list-search {
+  position: relative;
+}
+.parts-list-search .icon {
+  position: absolute;
+  left: 11px;
+  bottom: 14px;
+  color: var(--secondary);
+}
+.parts-list-search input {
+  width: 100%;
+  padding-left: 34px;
+  font-size: var(--text-field-touch);
+}
+.parts-list-note {
+  margin: 8px 0 0;
+}
+.parts-list-body {
+  margin-top: 10px;
+}
+.parts-list-body h3 {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 10px 2px 6px;
+  background: var(--paper);
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+.parts-list-body h3 small {
+  color: var(--secondary);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.parts-list-body ul {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.parts-list-body li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px 5px 5px;
+  background: var(--card);
+  border-radius: var(--r-field);
+}
+.parts-list-body li .part-thumb {
+  width: 44px;
+  height: 44px;
+}
+.parts-list-name {
+  display: grid;
+  min-width: 0;
+}
+.parts-list-name strong {
+  font-size: var(--text-body);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.parts-list-name small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--secondary);
+  font-size: var(--text-label);
+}
+.parts-list-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(29, 34, 48, 0.25);
+  flex-shrink: 0;
+}
+.parts-list-count {
+  font-size: var(--text-title);
+  font-variant-numeric: tabular-nums;
+}
+.parts-list-body li.parts-list-more {
+  display: block;
+  background: none;
+  padding: 6px 0;
+}
+.parts-list-more button {
+  width: 100%;
+}
+.parts-list-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px -27px 0;
+  padding: 12px 27px max(16px, var(--safe-bottom));
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+}
+.parts-list-actions .primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.parts-list-saved {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: var(--text-label);
+  color: var(--accent-deep);
+}
+@media (max-width: 650px) {
+  .parts-list-dialog {
+    width: 100%;
+    height: 100%;
+  }
+  .parts-list-tools {
+    grid-template-columns: 1fr 1fr;
+  }
+  .parts-list-search {
+    grid-column: 1 / -1;
+  }
+  .parts-list-actions {
+    margin: 8px -15px 0;
+    padding: 10px 15px max(12px, var(--safe-bottom));
+  }
+  .parts-list-actions button {
+    flex: 1 1 auto;
+  }
+}

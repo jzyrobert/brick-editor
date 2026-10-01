@@ -296,6 +296,30 @@ export type DrawVariant = {
   /** The part's downward opening, in the drawable's own space. */
   opening?: { normal: THREE.Vector3; point: THREE.Vector3 };
 };
+const prototypeTriangles = new WeakMap<THREE.Object3D, number>();
+/** Mesh triangles one handle draws whole (memoized per prototype). */
+function handleTriangles(handle: OccurrenceHandle) {
+  let n = prototypeTriangles.get(handle.prototype);
+  if (n === undefined) {
+    n = 0;
+    for (const t of handle.drawables)
+      if (t.mesh) {
+        const g = t.object.geometry;
+        n += Math.floor(
+          (g.index?.count ?? g.getAttribute("position")?.count ?? 0) / 3,
+        );
+      }
+    prototypeTriangles.set(handle.prototype, n);
+  }
+  return n;
+}
+/** How a batched handle draws: hidden, solid, or see-through (treated). */
+const HIDDEN = 0,
+  SOLID = 1,
+  TREATED = 2;
+export function drawState(handle: OccurrenceHandle) {
+  return !handle.visible ? HIDDEN : handle.treatments ? TREATED : SOLID;
+}
 export interface VariantProvider {
   /** Called once per structure build with the handles it classifies (drawn
    * live dynamic handles are left out and must not hide anything). */
@@ -567,7 +591,21 @@ export class RenderBatches {
     culled: 0,
     /** Drawables left out entirely (enclosed parts) in the last fill. */
     omitted: 0,
+    /** Classifications caused by a change of the parts shown. */
+    reclassified: 0,
   };
+  /** Classify again when the parts shown change (see drawStatesChanged). */
+  reclassifyOnView = true;
+  /**
+   * When a view change pays for a new classification, which walks every
+   * batched handle: always for scenes of at most `cheapHandles` handles;
+   * in larger scenes only when the parts shown would draw more than
+   * `minTriangles` triangles whole (a sub-assembly of a 150,000-part city
+   * is drawn whole instead of reclassifying the city).
+   */
+  reclassifyPolicy = { cheapHandles: 20_000, minTriangles: 0 };
+  /** Draw states a view change was not reclassified for (see above). */
+  private declinedStates?: Uint8Array;
   private variantProvider: VariantProvider | null = null;
   /** Handle translations when classified: substitutes apply only in place. */
   private builtPlaces = new Float64Array(0);
@@ -739,6 +777,9 @@ export class RenderBatches {
     const positions = new Map<Slot, [number, number, number]>();
     const extent = new THREE.Box3();
     const provider = this.variantProvider;
+    this.classifiedStates = new Uint8Array(this.batched.length);
+    for (let i = 0; i < this.batched.length; i++)
+      this.classifiedStates[i] = drawState(this.batched[i][1]);
     provider?.begin(this.batched);
     this.openings.clear();
     this.builtPlaces = new Float64Array(this.batched.length * 3);
@@ -1290,17 +1331,65 @@ export class RenderBatches {
     return count;
   }
   /**
-   * Whether neighbour-dependent substitutes are exact now: every batched part
-   * is drawn, untreated and where it was classified, and nothing is cut.
+   * Whether neighbour-dependent substitutes are exact now: the parts drawn
+   * solid are the ones that were classified (hidden-view.ts computes
+   * occlusion among the visible, untreated parts only), each where it was
+   * classified, and nothing is cut. So an instruction step, a floor focus or
+   * a Play subset culls against the parts it shows, not the whole model.
    */
   private isPlainView() {
     if (!this.variantProvider || this.clipPlane) return false;
+    const classified = this.classifiedStates;
+    if (classified.length !== this.batched.length) return false;
     for (let i = 0; i < this.batched.length; i++) {
-      const handle = this.batched[i][1];
-      if (!handle.visible || handle.treatments || !this.inPlace(i))
-        return false;
+      const state = drawState(this.batched[i][1]);
+      if (state !== classified[i]) return false;
+      if (state === SOLID && !this.inPlace(i)) return false;
     }
     return true;
+  }
+  /** drawState() of every batched handle when the structure was classified. */
+  private classifiedStates = new Uint8Array(0);
+  /**
+   * Whether the parts drawn solid (or see-through) changed since the
+   * structure was classified. The next draw then classifies again, so the
+   * hidden-geometry substitutes follow the view (docs/INSTRUCTIONS.md,
+   * "Performance"); moving parts (explode, animations) do not reclassify.
+   */
+  private drawStatesChanged() {
+    if (!this.variantProvider) return false;
+    const classified = this.classifiedStates;
+    if (classified.length !== this.batched.length) return true;
+    for (let i = 0; i < this.batched.length; i++)
+      if (drawState(this.batched[i][1]) !== classified[i]) return true;
+    return false;
+  }
+  /** Whether classifying the current view again pays (reclassifyPolicy). */
+  private reclassifyPays() {
+    const count = this.batched.length;
+    if (count <= this.reclassifyPolicy.cheapHandles) return true;
+    const declined = this.declinedStates;
+    if (declined && declined.length === count) {
+      let same = true;
+      for (let i = 0; i < count && same; i++)
+        if (drawState(this.batched[i][1]) !== declined[i]) same = false;
+      if (same) return false;
+    }
+    let triangles = 0;
+    const limit = this.reclassifyPolicy.minTriangles;
+    for (let i = 0; i < count; i++) {
+      const handle = this.batched[i][1];
+      if (!handle.visible) continue;
+      triangles += handleTriangles(handle);
+      if (triangles > limit) {
+        this.declinedStates = undefined;
+        return true;
+      }
+    }
+    const states = new Uint8Array(count);
+    for (let i = 0; i < count; i++) states[i] = drawState(this.batched[i][1]);
+    this.declinedStates = states;
+    return false;
   }
   /** The handle is where it was when classified. */
   private inPlace(index: number) {
@@ -1324,7 +1413,7 @@ export class RenderBatches {
       !!slot.opening && !this.openings.sees(slot.opening, this.eye);
     // Exact options for this view, most left out first.
     const options: Array<THREE.BufferGeometry | null | undefined> = [];
-    if (this.plainView) {
+    if (this.plainView && !slot.handle.treatments) {
       if (closed) options.push(slot.plainClosed, slot.closed, slot.plain);
       else options.push(slot.plain);
     } else if (
@@ -1374,6 +1463,15 @@ export class RenderBatches {
     if (this.openings.update(eye)) this.fillStale = true;
   }
   private synchronize() {
+    if (
+      !this.structureStale &&
+      this.reclassifyOnView &&
+      this.drawStatesChanged() &&
+      this.reclassifyPays()
+    ) {
+      this.structureStale = true;
+      this.counters.reclassified++;
+    }
     if (this.structureStale) {
       this.buildStructure();
       this.openings.update(this.eye);
