@@ -41,7 +41,7 @@ The browser tests are independent (each gets a fresh browser context) and run in
 
 Tag a new test by ending its title with ` @perf` if it asserts elapsed time, or ` @heavy` if it path-traces. Local results go to `test-results/browser-results.json` (and `browser-results-perf.json`); perf traces to `test-results/perf/`.
 
-On CI (`.github/workflows/cloudflare.yml`) the bundle is built once and shared as an artifact; the browser tests run as eleven parallel jobs — `main` in eight shards, `heavy` in two, `perf` in one — with a merged HTML/JSON report uploaded as `playwright-report`. SwiftShader is CPU-bound, so a second worker on a 4-vCPU runner roughly doubles each test's duration; the speed-up comes from more jobs, not more workers per job. Shards are contiguous by test count, not balanced by duration, so the slowest shard sets the pace.
+On CI (`.github/workflows/cloudflare.yml`) the bundle is built once and shared as an artifact; the browser tests run as eleven parallel jobs — `main` in eight shards, `heavy` in two, `perf` in one — with a merged HTML/JSON report uploaded as `playwright-report`. SwiftShader is CPU-bound, so a second worker on a 4-vCPU runner roughly doubles each test's duration; the speed-up comes from more jobs, not more workers per job. Shards are contiguous by test count, not balanced by duration, so the slowest shard sets the pace. The default test timeout is 120 s, since two workers sharing the CPU can double a test's duration.
 
 ## Expanded feature verification
 

@@ -21,7 +21,7 @@ Cloudflare project settings:
 | Base path         | /                       |
 | Custom domain     | bricks.robertj.in       |
 
-The custom domain must be attached to the Pages project before its DNS is changed. The Cloudflare `robertj.in` record is CNAME `bricks` → `brick-editor.pages.dev`, DNS only, TTL Auto. Pages itself serves through Cloudflare and handles TLS. Domain verification is active and HTTPS returned HTTP 200 with a valid certificate on 2026-09-27. Secure live Chromium checks passed at desktop, 360px and 1080px widths, including keyboard/touch steering, multiple mechanisms and capture behavior. Automatic publication remains tracked in TODO.md until its credential is configured and an upload succeeds.
+The custom domain must be attached to the Pages project before its DNS is changed. The Cloudflare `robertj.in` record is CNAME `bricks` → `brick-editor.pages.dev`, DNS only, TTL Auto. Pages itself serves through Cloudflare and handles TLS. Domain verification is active and HTTPS returned HTTP 200 with a valid certificate on 2026-09-27. Secure live Chromium checks passed at desktop, 360px and 1080px widths, including keyboard/touch steering, multiple mechanisms and capture behavior. Automatic publication has run on every green `main` push since 2026-09-28 (first deployment for 8289bb3).
 
 GitHub's former custom-domain certificate never became valid during the migration checks. The old GitHub Pages deployment workflow is replaced by the validation/publication workflow above. Do not repoint production DNS to GitHub while it still has the invalid certificate.
 

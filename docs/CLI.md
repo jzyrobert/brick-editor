@@ -93,3 +93,15 @@ npm run cli -- parts search --size 1x2x1 --category Tiles --colour white --avail
 `build` compiles a [build script](AGENT-BUILDING.md), runs the build checks (overlaps, stud grid, verified connectivity; `--no-check` skips them) and prints a summary with every problem and the op that caused it; the full report (JSON) goes to `--report` or next to `--output` (`.mpd`/`.ldr` for LDraw, `.brickproj` for a native project). The exit code is 2 when the report has errors. `--render` writes one PNG per view from `--views` (`iso`, `front`, `back`, `left`, `right`, `top`, `iso-back`; cameras frame the build's bounds) with the usual `--look` and `--backdrop`; like `render`, it launches a private Vite server and headless Chromium (software WebGL: a 4,000-part build takes about a minute per view). The output is ordinary LDraw, so `health`, `connectors`, `inventory`, `render` and `play` take it as `--input`.
 
 `parts search` ranks the curated catalogue and the complete library (see [API](API.md#build-scripts-and-part-search)); `--size` is `WxD`, `WxDxH` in plates or `WxDxHb` in bricks, `--available` keeps parts known in `--colour`, `--connectable` keeps parts with verified connectors, `--curated` searches only the catalogue. Columns: part, size (studs × studs × plates), curated or library, `snaps` when connectors are verified, colours known, existence in the colour, name.
+
+## Reports without a browser
+
+```sh
+npm run cli -- validate --input model.mpd [--resource-profile mobile]
+npm run cli -- health --input model.mpd              # overlaps, floating parts, connectivity
+npm run cli -- query --input model.mpd --request query.json --output result.json
+npm run cli -- floors --input model.mpd
+npm run cli -- compare --input before.brickproj --against after.mpd
+```
+
+Each prints JSON (or writes it to `--output`). `query` takes the same request as the API's `query()`; `compare` reports occurrence-level changes between two files. Inventory, export, apply and instructions examples are in the [README](../README.md).

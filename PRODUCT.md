@@ -20,13 +20,13 @@ A browser-based, offline-capable brick-building editor that works with real LDra
 
 ## Positioning
 
-It is a single static web app that edits real LDraw source without losing any of it, renders large imported builds (tens of thousands of parts and faces), and lets you walk around inside the build in Play. It also produces an occurrence-accurate BrickLink parts list. Everything runs locally in the browser.
+It is a single static web app that edits real LDraw source without losing any of it, renders large imported builds (up to 200,000 parts on desktop, 150,000 on phones), and lets you walk around inside the build in Play. It also produces an occurrence-accurate BrickLink parts list. Everything runs locally in the browser.
 
 ## Operating Context
 
 - Devices: desktop (mouse and keyboard, 1440px-class), tablets (1080×1800 touch) and phones (360–430px wide touch, including high-end phones from the last two years). Layout adapts to available width, not the user agent.
 - Modes: Build, Instructions, Photo, Play and Project. Play provides first/third person walking, vehicles, seats and doors.
-- Files: LDraw `.ldr` / `.mpd` / `.dat` imports, native `.brickproj` backups, LDraw/MPD export, PNG/PDF/HTML instructions, BrickLink Wanted List XML.
+- Files: LDraw `.ldr` / `.mpd` / `.dat` imports, official LEGO set models from the LDraw OMR, build scripts (`.json`), native `.brickproj` backups, LDraw/MPD export, PNG/PDF/HTML instructions, BrickLink Wanted List XML, parts-list CSV and Rebrickable CSV.
 - Storage: local projects in IndexedDB; an opt-in automation API (`?automation=1`) and CLI for agents and tests.
 - Device resource profiles: phones use tighter "phone limits" and can opt into desktop limits after acknowledging the risk.
 
@@ -36,8 +36,8 @@ It is a single static web app that edits real LDraw source without losing any of
 - Touch targets must be at least 44 CSS px, and nothing essential may depend on hover, right-click or keyboard modifiers (spec §8.1). Test at 360px, tablet and desktop widths.
 - A phone keeps Place, Select, Paint and Undo/Redo reachable without opening a menu, uses bottom sheets for the catalogue, layers and numeric properties, and shows a contextual action strip after selection (spec §8.1).
 - Automated browser tests (Playwright) depend on accessible names and roles, so renaming controls needs matching test updates.
-- The starter library is six audited parts; larger catalogues and connector snapping are not available yet.
-- Static hosting on Cloudflare Pages (bricks.robertj.in) with a strict CSP; no third-party runtime assets, fonts must be self-hosted, and there is no telemetry.
+- The placeable catalogue has 224 curated parts, and every other official LDraw part loads on demand from the complete library; connector snapping covers studs, side studs, jumpers, door hinges and train track (not clips, bars, brick hinges or Technic).
+- Static hosting on Cloudflare Pages (bricks.robertj.in) with a strict CSP; no third-party runtime assets (official set models come through the same-origin `/api/omr` proxy), fonts must be self-hosted, and there is no telemetry.
 
 ## Brand Commitments
 

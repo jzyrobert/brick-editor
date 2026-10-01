@@ -49,11 +49,12 @@ Three modules and two small hooks (`src/render/hidden-geometry.ts`, `occlusion.t
 
 **Per frame** (`batching.ts`): the batches decide per refill which geometry each drawable draws:
 
-| View                                                                | What is left out                                                                                       |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Plain view: every part drawn, untreated, in place, no section plane | Hidden studs and cavities, enclosed parts, and cavities whose downward opening faces away from the eye |
-| Steps, floor focus, hidden layers, ghosting, explode                | Only cavities facing away from the eye, for untreated parts in place (this depends on the part alone)  |
-| Section cut                                                         | Nothing: the cut exposes insides                                                                       |
+| View                                                                | What is left out                                                                                                                                                                                                       |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plain view: every part drawn, untreated, in place, no section plane | Hidden studs and cavities, enclosed parts, and cavities whose downward opening faces away from the eye                                                                                                                 |
+| Steps, floor focus, hidden layers, Play subsets                     | Classified again among the parts drawn solid when it pays ([INSTRUCTIONS.md](INSTRUCTIONS.md#performance-step-views-are-culled-against-what-they-show)); see-through (ghosted, dimmed) parts keep their whole geometry |
+| Explode and other moving parts (not reclassified)                   | Only cavities facing away from the eye, for untreated parts still in place (depends on the part alone)                                                                                                                 |
+| Section cut                                                         | Nothing: the cut exposes insides                                                                                                                                                                                       |
 
 A part's cavity opens downwards: an eye above the plane of its bottom cannot see into it. The distinct opening planes of a model are few (one per course level), the eye's side of each is checked every frame, and a change of side refills the instance arrays (no rebuild). Orthographic views use the view direction.
 

@@ -77,7 +77,7 @@ Coverage, counting hinged leaves in each main model (doors, panes, shutters, gat
 | 4954-1  | Model Town House       | 2 doors, 16 panes                                   | 18                | 18               | none                                             |
 | 6059-1  | Knight's Stronghold    | 1 gate door (4611), 2 doors (2400)                  | 3                 | 3                | none                                             |
 
-Roller and garage doors (4218b, 4219b, 822x) slide in rails rather than swing, so they stay explained exclusions. Doors hinged on clips or bricks with no frame work when a holding part touches the hinge line. The tests (`tests/unit/play-auto-doors-omr.test.ts`, `tests/browser/official-set-doors.spec.ts`) use the original fixture above, never OMR files. The browser test serves it through a mocked `/api/omr/21318-1.mpd` and opens it from Project → Official LEGO sets.
+Roller and garage doors (4218b, 4219b, 822x) slide in rails rather than swing, so they stay explained exclusions. Doors hinged on clips or bricks with no frame work when a holding part touches the hinge line. The tests (`tests/unit/play-auto-doors-omr.test.ts`, `tests/browser/official-set-doors.spec.ts`) use the original fixture above, never OMR files. The browser test serves it through a mocked `/api/omr/21318-1.mpd` and opens it from the Official LEGO sets search.
 
 ## Static posed export
 
