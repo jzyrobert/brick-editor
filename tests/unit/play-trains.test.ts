@@ -341,3 +341,47 @@ describe("running trains", () => {
     expect(w.report().trains[0].odometer).toBeGreaterThan(0);
   });
 });
+
+describe("the driver's lever (W/S while riding)", () => {
+  it("accelerates while held, holds speed when released, brakes into reverse", () => {
+    const w = new TrainWorld(derive(ovalWorld()));
+    const report = () => w.report().trains[0];
+    w.setDrive(1);
+    for (let i = 0; i < 60; i++) w.step();
+    // One second of acceleration; the notch tracks the speed.
+    expect(report().speed).toBeCloseTo(TRAIN_LIMITS.acceleration, -1);
+    expect(
+      Math.abs(report().throttle * TRAIN_LIMITS.maxSpeed - report().speed),
+    ).toBeLessThan(5);
+    // Released: the notch stays, so the train holds its speed.
+    w.setDrive(0);
+    for (let i = 0; i < 10; i++) w.step();
+    const held = report().speed;
+    for (let i = 0; i < 120; i++) w.step();
+    expect(report().speed).toBeCloseTo(held, 6);
+    expect(report().status).toBe("running");
+    // Held to full: never beyond top speed.
+    w.setDrive(1);
+    for (let i = 0; i < 600; i++) w.step();
+    expect(report().speed).toBe(TRAIN_LIMITS.maxSpeed);
+    expect(report().throttle).toBe(1);
+    // Backward: brakes to a stop at the braking rate, then reverses.
+    w.setDrive(-1);
+    const stopTicks = Math.floor(
+      (TRAIN_LIMITS.maxSpeed / TRAIN_LIMITS.braking) * 60,
+    );
+    for (let i = 0; i < stopTicks - 3; i++) w.step();
+    expect(report().speed).toBeGreaterThan(0);
+    for (let i = 0; i < 60; i++) w.step();
+    expect(report().speed).toBeLessThan(0);
+    w.setDrive(0);
+    for (let i = 0; i < 10; i++) w.step();
+    const back = report().speed;
+    for (let i = 0; i < 60; i++) w.step();
+    expect(report().speed).toBeCloseTo(back, 6);
+    // The emergency brake stops at once.
+    w.stop();
+    expect(report().speed).toBe(0);
+    expect(report().throttle).toBe(0);
+  });
+});

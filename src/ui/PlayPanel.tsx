@@ -845,6 +845,11 @@ export function PlayPanel({
           trains={trains!}
           onError={setMessage}
           bound={Object.values(bindings)}
+          driveKeys={{
+            faster: bindings.forward,
+            slower: bindings.backward,
+            brake: bindings.jump,
+          }}
           showKeys={finePointer}
           expanded={trainOpen}
           onExpandedChange={setTrainOpen}
@@ -976,11 +981,21 @@ export function PlayPanel({
             className="play-hint play-keys-hint"
             hidden={finePointer && !locked}
           >
-            {bindings.forward || "—"}/{bindings.left || "—"}/
-            {bindings.backward || "—"}/{bindings.right || "—"}{" "}
-            {occupied ? "drive" : "move"} ·{" "}
+            {riding ? (
+              // Driving a train: the lever and the brake.
+              <>
+                {bindings.forward || "—"}/{bindings.backward || "—"} speed ·{" "}
+                {bindings.jump || "—"} brake ·{" "}
+              </>
+            ) : (
+              <>
+                {bindings.forward || "—"}/{bindings.left || "—"}/
+                {bindings.backward || "—"}/{bindings.right || "—"}{" "}
+                {occupied ? "drive" : "move"} ·{" "}
+              </>
+            )}
             {locked ? "mouse to look · Esc to release" : "drag to look"} ·{" "}
-            {!occupied && (
+            {!occupied && !riding && (
               <>
                 {bindings.jump || "—"} jump · {bindings.fly || "—"} fly ·{" "}
               </>

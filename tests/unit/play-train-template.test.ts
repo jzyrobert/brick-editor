@@ -173,4 +173,86 @@ describe("railway station sample", () => {
       }
     },
   );
+
+  it(
+    "puts the driver in the cab, drives with the lever and sets them down beside the track",
+    { timeout: 300000 },
+    async () => {
+      const project = template("train");
+      const derived = derive(project);
+      const play = await session(project, derived);
+      try {
+        const start = play.snapshot();
+        expect(start.locomotion).toBe("walk");
+        let s = play.rideTrain({});
+        expect(s.trains!.riding).toBe(derived.trains[0].id);
+        /** The feet relative to the head pivot, in the train's frame. */
+        const local = (snap: typeof s) => {
+          const t = snap.trains!.trains[0],
+            [hx, , hz] = t.heading,
+            d = snap.position.map((v, k) => v - t.position[k]);
+          return {
+            back: -(d[0] * hx + d[2] * hz),
+            side: d[0] * -hz + d[2] * hx,
+            up: -(snap.position[1] - t.position[1]),
+          };
+        };
+        // In the locomotive's cab: on the centreline, behind the front,
+        // on the deck above the bogies, facing forward.
+        const cab = local(s);
+        expect(Math.abs(cab.side)).toBeLessThan(1);
+        expect(cab.back).toBeGreaterThan(0);
+        expect(cab.back).toBeLessThan(240);
+        expect(cab.up).toBeGreaterThan(63);
+        expect(cab.up).toBeLessThan(120);
+        // Facing forward: +X is look yaw π/2.
+        expect(Math.sin(s.avatar.heading)).toBeCloseTo(1, 3);
+        // W: the lever accelerates the train; the figure rides with it.
+        play.setInput({ moveZ: 1 });
+        s = play.stepTicks(90);
+        let t = s.trains!.trains[0];
+        expect(t.status).toBe("running");
+        expect(t.speed).toBeGreaterThan(200);
+        expect(t.throttle).toBeGreaterThan(0.4);
+        const moved = local(s);
+        expect(Math.abs(moved.side - cab.side)).toBeLessThan(2);
+        expect(Math.abs(moved.back - cab.back)).toBeLessThan(2);
+        expect(Math.abs(moved.up - cab.up)).toBeLessThan(1);
+        expect(Math.hypot(...s.velocity)).toBeCloseTo(Math.abs(t.speed), -1);
+        // Released: the train holds its speed.
+        play.setInput({});
+        play.stepTicks(5);
+        const held = play.snapshot().trains!.trains[0].speed;
+        s = play.stepTicks(60);
+        expect(s.trains!.trains[0].speed).toBeCloseTo(held, 3);
+        // S brakes, then runs backwards.
+        play.setInput({ moveZ: -1 });
+        s = play.stepTicks(120);
+        expect(s.trains!.trains[0].speed).toBeLessThan(0);
+        // Jump (Space) is the brake.
+        play.setInput({ jump: true });
+        s = play.stepTicks(1);
+        expect(s.trains!.trains[0].speed).toBe(0);
+        expect(s.trains!.trains[0].throttle).toBe(0);
+        play.setInput({});
+        // Walking input never moves the rider off the cab.
+        const still = [...s.position];
+        play.setInput({ moveX: 1 });
+        s = play.stepTicks(30);
+        expect(s.position).toEqual(still);
+        play.setInput({});
+        // Getting off: beside the train, on walkable ground.
+        s = play.rideTrain({ trainId: null });
+        expect(s.trains!.riding).toBeUndefined();
+        s = play.stepTicks(30);
+        expect(s.grounded).toBe(true);
+        const off = local(s);
+        expect(Math.abs(off.side)).toBeGreaterThan(60 + 12);
+        expect(Math.abs(off.side)).toBeLessThan(400);
+        expect(off.up).toBeLessThan(40);
+      } finally {
+        play.dispose();
+      }
+    },
+  );
 });

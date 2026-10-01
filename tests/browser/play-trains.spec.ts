@@ -154,6 +154,10 @@ test("railway station on a phone held sideways: the train slab fits the HUD", as
   );
   await page.getByRole("button", { name: "Drive train" }).tap();
   expect((await trains(page)).riding).toBe("train:1");
+  // The figure is aboard, in the cab (not left where it tapped).
+  const cab = await aboard(page);
+  expect(Math.abs(cab.side)).toBeLessThan(2);
+  expect(cab.up).toBeGreaterThan(60);
   await page.getByRole("button", { name: "Start the train" }).tap();
   await page.evaluate(() => window.brickEditor!.play.stepTicks(240));
   expect((await trains(page)).trains[0].odometer).toBeGreaterThan(500);
@@ -174,4 +178,100 @@ test("railway station on a phone held sideways: the train slab fits the HUD", as
   await page.evaluate(() => window.brickEditor!.play.exit());
   expect(errors).toEqual([]);
   await context.close();
+});
+
+/** The explorer's feet relative to a train's head pivot, in its frame. */
+const aboard = (page: Page) =>
+  page.evaluate(async () => {
+    const s = await window.brickEditor!.play.snapshot();
+    const t = s.trains!.trains[0],
+      [hx, , hz] = t.heading,
+      d = s.position.map((v, k) => v - t.position[k]);
+    return {
+      riding: s.trains!.riding,
+      speed: t.speed,
+      throttle: t.throttle,
+      back: -(d[0] * hx + d[2] * hz),
+      side: d[0] * -hz + d[2] * hx,
+      up: -(s.position[1] - t.position[1]),
+      grounded: s.grounded,
+    };
+  });
+
+test("drive train on a desktop: in the cab, W/S work the lever, off beside the track", async ({
+  page,
+}) => {
+  test.setTimeout(360000);
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await load(page);
+  await openMode(page, "Play");
+  await page.getByRole("button", { name: "Enter Play", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Pause" })).toBeVisible({
+    timeout: 60000,
+  });
+  // Beside the locomotive: E drives it.
+  const loco = (await trains(page)).trains[0].position;
+  await page.evaluate(
+    (p) =>
+      window.brickEditor!.play.teleport({
+        position: [p[0], -0.3, p[2] - 120],
+        policy: "safe",
+      }),
+    loco,
+  );
+  await expect(page.getByRole("button", { name: "Drive train" })).toBeVisible();
+  await page.keyboard.press("e");
+  await expect(page.locator(".play-status")).toContainText("Riding · Train 1");
+  // The figure stands in the cab, not where E was pressed.
+  let a = await aboard(page);
+  expect(a.riding).toBe("train:1");
+  expect(Math.abs(a.side)).toBeLessThan(2);
+  expect(a.back).toBeGreaterThan(0);
+  expect(a.back).toBeLessThan(240);
+  expect(a.up).toBeGreaterThan(60);
+  // The driver's keys, shown in the drawer and the key hint.
+  await expect(page.locator(".play-train-drive-keys")).toContainText(
+    "W faster",
+  );
+  // Hold W: the train pulls away and the figure goes with it.
+  await page.keyboard.down("w");
+  await page.evaluate(() => window.brickEditor!.play.stepTicks(90));
+  await page.keyboard.up("w");
+  a = await aboard(page);
+  expect(a.speed).toBeGreaterThan(200);
+  expect(Math.abs(a.side)).toBeLessThan(2);
+  expect(a.up).toBeGreaterThan(60);
+  // Released: it holds its speed; the slider shows it.
+  await page.evaluate(() => window.brickEditor!.play.stepTicks(60));
+  const held = await aboard(page);
+  expect(held.speed).toBeCloseTo(a.speed, 0);
+  await expect(page.getByRole("slider", { name: "Train speed" })).toHaveValue(
+    String(Math.round(held.throttle * 20) / 20),
+  );
+  // Hold S: brakes, then backs up.
+  await page.keyboard.down("s");
+  await page.evaluate(() => window.brickEditor!.play.stepTicks(150));
+  await page.keyboard.up("s");
+  a = await aboard(page);
+  expect(a.speed).toBeLessThan(0);
+  await expect(
+    page.getByRole("button", { name: "Reverse direction" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  // Space brakes at once.
+  await page.keyboard.press("Space");
+  a = await aboard(page);
+  expect(a.speed).toBe(0);
+  // E gets off: beside the train on walkable ground.
+  await page.keyboard.press("e");
+  await expect(page.locator(".play-status")).toContainText("Walking");
+  await page.evaluate(() => window.brickEditor!.play.stepTicks(30));
+  a = await aboard(page);
+  expect(a.riding).toBeFalsy();
+  expect(a.grounded).toBe(true);
+  expect(Math.abs(a.side)).toBeGreaterThan(72);
+  expect(Math.abs(a.side)).toBeLessThan(400);
+  expect(a.up).toBeLessThan(40);
+  await page.evaluate(() => window.brickEditor!.play.exit());
+  expect(errors).toEqual([]);
 });

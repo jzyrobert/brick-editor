@@ -66,6 +66,7 @@ export function PlayTrainControls({
   trains,
   onError,
   bound = [],
+  driveKeys,
   showKeys = false,
   expanded,
   onExpandedChange,
@@ -75,6 +76,11 @@ export function PlayTrainControls({
   onError: (message: string) => void;
   /** Keys already bound to Play actions (they keep them). */
   bound?: string[];
+  /**
+   * The Play keys that drive a ridden train (forward/backward work the
+   * lever, jump brakes), shown on a desktop while riding.
+   */
+  driveKeys?: { faster: string; slower: string; brake: string };
   /** Show the key hints (a fine pointer is present). */
   showKeys?: boolean;
   /** The drawer of less-used controls is open (kept across a pause). */
@@ -135,6 +141,16 @@ export function PlayTrainControls({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [boundKeys]);
+  // The slider and Reverse follow the train's throttle, however it was set
+  // (the driver's keys move it while riding).
+  const throttle = train?.throttle ?? 0;
+  useEffect(() => {
+    if (throttle === 0) return;
+    setLevel(
+      Math.max(0.2, Math.min(1, Math.round(Math.abs(throttle) * 20) / 20)),
+    );
+    setBackwards(throttle < 0);
+  }, [throttle]);
   // Riding a train shows that train's controls.
   useEffect(() => {
     if (trains.riding) {
@@ -217,7 +233,7 @@ export function PlayTrainControls({
                 aria-label="Train speed"
                 min={0.2}
                 max={1}
-                step={0.1}
+                step={0.05}
                 value={level}
                 onChange={(e) => {
                   const next = Number(e.target.value);
@@ -227,6 +243,13 @@ export function PlayTrainControls({
               />
             </div>
           </div>
+          {riding && showKeys && driveKeys && (
+            <p className="play-train-drive-keys">
+              <kbd>{driveKeys.faster || "—"}</kbd> faster ·{" "}
+              <kbd>{driveKeys.slower || "—"}</kbd> slower, then reverse ·{" "}
+              <kbd>{driveKeys.brake || "—"}</kbd> brake
+            </p>
+          )}
           <div className="play-train-row play-train-extras">
             {!riding && (
               <button

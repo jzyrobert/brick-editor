@@ -32,6 +32,7 @@ import {
 } from "./mechanism";
 import type { AutoDoor, AutoDoorSkip } from "./auto-doors";
 import { TrainWorld, type CarPose, type DerivedTrains } from "./trains";
+import { alightPoints, trainCab, type TrainCab } from "./train-cab";
 import { frameRotation } from "./physics-frame";
 import { inverse } from "../core/math";
 import {
@@ -132,7 +133,24 @@ export class PlaySession {
     { collider: RAPIER.Collider; radius: number; rest: Transform }
   >();
   private trainPosed = "";
-  private riding?: { trainId: string; reference: number };
+  /**
+   * Riding a train: the explorer stands in the locomotive's cab and moves
+   * with it. `boarded` is where they got on (a fallback place to get off).
+   */
+  private riding?: {
+    trainId: string;
+    reference: number;
+    cab: TrainCab;
+    boarded: Vec3;
+  };
+  /** Each train's lead car mesh in its pivot frame (LDraw), for the cab. */
+  private leadMeshes = new Map<
+    string,
+    { vertices: Float32Array; indices: Uint32Array }
+  >();
+  /** The driver's lever while riding (forward/backward keys) and brake. */
+  private driveLever: -1 | 0 | 1 = 0;
+  private brakeHeld = false;
   /** Optional dynamic rigid-body world; absent unless dynamic rigs were requested. */
   private dynamics?: PlayDynamicsWorld;
   private vehicleWorld?: PlayVehicleWorld;
@@ -429,6 +447,8 @@ export class PlaySession {
             b = inv.basis,
             vertices = new Float32Array(mesh.vertices.length);
           let radius = 0;
+          const local =
+            i === 0 ? new Float32Array(mesh.vertices.length) : undefined;
           for (let v = 0; v < vertices.length; v += 3) {
             const x = mesh.vertices[v],
               y = mesh.vertices[v + 1],
@@ -439,6 +459,7 @@ export class PlaySession {
               inv.position[2] + b[6] * x + b[7] * y + b[8] * z,
             ];
             radius = Math.max(radius, Math.hypot(...l));
+            if (local) local.set(l, v);
             vertices[v] = l[0] * S;
             vertices[v + 1] = -l[1] * S;
             vertices[v + 2] = -l[2] * S;
@@ -448,6 +469,11 @@ export class PlaySession {
           );
           collider.setTranslation(physics(rest.position));
           collider.setRotation(frameRotation(rest));
+          if (local)
+            this.leadMeshes.set(train.id, {
+              vertices: local,
+              indices: mesh.indices,
+            });
           this.trainProxies.set(`${train.id}/${i}`, {
             collider,
             radius,
@@ -1179,9 +1205,26 @@ export class PlaySession {
       run: input.run ?? false,
       jump: input.jump ?? false,
     };
-    // Riding along a train: the explorer waits; only the look turns.
-    if (this.riding)
-      this.input = { ...this.input, moveX: 0, moveZ: 0, vertical: 0 };
+    // Riding a train: the explorer stands in the cab and only the look
+    // turns. Forward/backward work the train's lever (released, the train
+    // holds its speed) and jump is the brake.
+    if (this.riding) {
+      const lever = Math.sign(this.input.moveZ) as -1 | 0 | 1;
+      if (lever !== this.driveLever) {
+        this.driveLever = lever;
+        this.trains?.setDrive(lever, this.riding.trainId);
+      }
+      if (this.input.jump && !this.brakeHeld)
+        this.trains?.stop(this.riding.trainId);
+      this.brakeHeld = this.input.jump;
+      this.input = {
+        ...this.input,
+        moveX: 0,
+        moveZ: 0,
+        vertical: 0,
+        jump: false,
+      };
+    }
     if (input.yaw !== undefined)
       this.yaw = ((input.yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     if (input.pitch !== undefined) this.pitch = this.clampPitch(input.pitch);
@@ -1219,6 +1262,7 @@ export class PlaySession {
   setLocomotion(mode: PlayLocomotion) {
     this.requireOnFoot();
     this.alive();
+    ensure(!this.riding, "INVALID_INPUT", "Get off the train first");
     ensure(
       mode === "walk" || mode === "fly-noclip",
       "INVALID_INPUT",
@@ -1253,6 +1297,11 @@ export class PlaySession {
     this.requireOnFoot();
     this.alive();
     keys(input, ["position", "policy", "yaw", "pitch"]);
+    // Teleporting (and respawning) leaves the train.
+    if (this.riding) {
+      this.releaseLever();
+      this.riding = undefined;
+    }
     point(input.position);
     ensure(
       input.policy === undefined ||
@@ -1349,8 +1398,21 @@ export class PlaySession {
       for (const id of this.trains?.ids ?? []) this.syncTrainDynamics(id);
       this.dynamics.step(
         this.feet,
-        this.locomotion === "walk" && !this.occupied,
+        this.locomotion === "walk" && !this.occupied && !this.riding,
       );
+    }
+    if (this.riding) {
+      // Standing at the controls: the feet move with the cab.
+      if (this.mechanisms.size || this.dynamics || this.trainProxies.size)
+        this.world.step();
+      this.previous = [...this.feet];
+      this.placeRider();
+      this.velocity = this.feet.map(
+        (v, k) => (v - this.previous[k]) / DT,
+      ) as Vec3;
+      this.updateRide();
+      this.tick++;
+      return;
     }
     if (this.occupied) {
       this.world.step();
@@ -1692,7 +1754,8 @@ export class PlaySession {
     time: number;
   } {
     this.alive();
-    const alpha = interpolate ? this.accumulator / DT : 1;
+    // A rider is drawn where the (uninterpolated) train is, in its cab.
+    const alpha = interpolate && !this.riding ? this.accumulator / DT : 1;
     return {
       time: (this.tick - 1 + alpha) * DT,
       position: this.presentedFeet(alpha, "figure"),
@@ -2046,7 +2109,9 @@ export class PlaySession {
     before: CarPose[],
     after: CarPose[],
   ): string | undefined => {
-    if (this.locomotion !== "walk" || this.occupied) return undefined;
+    // A rider stands in a cab, not in the way.
+    if (this.locomotion !== "walk" || this.occupied || this.riding)
+      return undefined;
     for (let i = 0; i < after.length; i++) {
       const proxy = this.trainProxies.get(`${trainId}/${i}`);
       if (!proxy) continue;
@@ -2161,7 +2226,7 @@ export class PlaySession {
     const trains = this.requireTrains();
     keys(input, ["trainId"]);
     if (input.trainId === null) {
-      this.riding = undefined;
+      this.alight();
       return this.snapshot();
     }
     const id =
@@ -2173,7 +2238,24 @@ export class PlaySession {
     );
     ensure(!this.occupied, "INVALID_INPUT", "Exit the vehicle first");
     const yaw = this.trainYaw(id);
-    this.riding = { trainId: id, reference: yaw };
+    const boarded = this.riding?.boarded ?? ([...this.feet] as Vec3);
+    if (this.riding && this.riding.trainId !== id) this.releaseLever();
+    const lead = this.leadMeshes.get(id);
+    this.riding = {
+      trainId: id,
+      reference: yaw,
+      cab: lead
+        ? trainCab(lead.vertices, lead.indices)
+        : trainCab(new Float32Array(), new Uint32Array()),
+      boarded,
+    };
+    // Step aboard: the figure stands at the controls facing forward.
+    this.placeRider();
+    this.previous = [...this.feet];
+    this.velocity = [0, 0, 0];
+    this.grounded = true;
+    this.motion = initialMotion(yaw);
+    this.settle();
     this.yaw = ((yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     // Looking a little down on the train (LDraw −Y is up: negative pitch).
     this.pitch = this.clampPitch(
@@ -2181,6 +2263,73 @@ export class PlaySession {
     );
     this.input = { ...this.input, moveX: 0, moveZ: 0, vertical: 0 };
     return this.snapshot();
+  }
+  /** Puts the feet at the ridden locomotive's controls, facing forward. */
+  private placeRider() {
+    const { trainId, cab } = this.riding!;
+    const lead = this.trains!.carFrames(trainId)[0].now;
+    this.feet = add(lead.position, mv(lead.basis, cab.feet));
+    this.grounded = true;
+    this.motion = {
+      ...initialMotion(this.trainYaw(trainId)),
+      time: this.motion.time + DT,
+    };
+    this.syncCollider();
+  }
+  /** Lets go of the driver's lever (the train holds its speed) and brake. */
+  private releaseLever() {
+    if (this.riding && this.driveLever)
+      this.trains?.setDrive(0, this.riding.trainId);
+    this.driveLever = 0;
+    this.brakeHeld = false;
+  }
+  /**
+   * Gets off the ridden train: onto walkable ground beside the locomotive
+   * (either side of the cab first, then along the car), else back where
+   * the explorer got on, else the last safe place.
+   */
+  private alight() {
+    if (!this.riding) return;
+    const { trainId, cab, boarded } = this.riding;
+    this.releaseLever();
+    this.riding = undefined;
+    const lead = this.trains!.carFrames(trainId)[0].now,
+      b = lead.basis;
+    const lateral = (p: Vec3) =>
+      Math.abs(
+        (p[0] - lead.position[0]) * b[2] +
+          (p[1] - lead.position[1]) * b[5] +
+          (p[2] - lead.position[2]) * b[8],
+      );
+    const beside = alightPoints(cab).map((local) =>
+      add(lead.position, mv(b, local)),
+    );
+    let spot: Vec3 | undefined;
+    if (this.locomotion === "walk" && this.ready) {
+      for (const p of beside) {
+        // From a figure's height above the rails down to the ground.
+        const found = this.findSafe([p[0], p[1] - P.height, p[2]]);
+        if (found && lateral(found) >= cab.extent.halfWidth + P.radius) {
+          spot = found;
+          break;
+        }
+      }
+      spot ??= this.clear(boarded)
+        ? boarded
+        : this.safe && this.clear(this.safe)
+          ? this.safe
+          : undefined;
+      spot ??= this.findSafe(this.spawn) ?? this.spawn;
+    } else spot = beside[0];
+    this.feet = [...spot];
+    this.previous = [...this.feet];
+    this.velocity = [0, 0, 0];
+    this.grounded = false;
+    this.motion = initialMotion(this.trainYaw(trainId));
+    this.settle();
+    this.syncCollider();
+    this.world.step();
+    this.updateArm(true);
   }
   private trainYaw(id: string) {
     const lead = this.trains!.carFrames(id)[0].now.basis;
@@ -2200,14 +2349,12 @@ export class PlaySession {
       -Math.cos(yaw) * Math.cos(pitch),
     ];
     if (this.cameraMode === "first-person") {
-      // The cab: above the head pivot, looking along the look direction.
-      const b = lead.basis,
-        report = this.trains!.report().trains.find((t) => t.id === id)!;
+      // The cab: the eyes of the figure standing at the controls.
       return {
         target: [
-          report.position[0] - b[0] * 45,
-          report.position[1] - 165,
-          report.position[2] - b[6] * 45,
+          this.feet[0],
+          this.feet[1] - this.cameraSettings.eyeHeight,
+          this.feet[2],
         ],
         look,
         arm: 0,
@@ -2283,7 +2430,8 @@ export class PlaySession {
       collisionReady: this.ready,
       avatarReady: true,
       avatarVisible:
-        this.cameraMode === "third-person" && this.currentArm() > 24,
+        this.cameraMode === "third-person" &&
+        (!!this.riding || this.currentArm() > 24),
       profile: P,
       units: "LDU",
       simulationHz: 60,

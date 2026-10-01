@@ -718,6 +718,8 @@ type TrainState = {
   head: number;
   speed: number;
   throttle: number;
+  /** Driver's lever held: +1 faster forwards, −1 slower / backwards. */
+  drive: -1 | 0 | 1;
   status: TrainStatus;
   reason?: string;
   odometer: number;
@@ -756,6 +758,7 @@ export class TrainWorld {
         head: def.head,
         speed: 0,
         throttle: 0,
+        drive: 0,
         status: "stopped",
         odometer: 0,
         rest: [],
@@ -815,6 +818,25 @@ export class TrainWorld {
       throttle !== 0 &&
       (t.status === "end-of-track" || t.status === "blocked")
     ) {
+      t.status = "stopped";
+      t.reason = undefined;
+    }
+  }
+  /**
+   * The driver's lever (W/S while riding): held at +1 the throttle notch
+   * rises toward full speed forwards at the acceleration rate; held at −1 it
+   * falls at the braking rate to zero, then on into reverse. Released (0),
+   * the notch stays where it is, so the train holds its speed.
+   */
+  setDrive(drive: -1 | 0 | 1, id?: string) {
+    ensure(
+      drive === -1 || drive === 0 || drive === 1,
+      "INVALID_INPUT",
+      "Drive must be -1, 0 or 1",
+    );
+    const t = this.state(id);
+    t.drive = drive;
+    if (drive && (t.status === "end-of-track" || t.status === "blocked")) {
       t.status = "stopped";
       t.reason = undefined;
     }
@@ -924,6 +946,19 @@ export class TrainWorld {
   step(guard?: TrainGuard, dt = 1 / 60) {
     this.tick++;
     for (const t of this.trains) {
+      if (t.drive) {
+        // The notch moves at the rate the speed can follow, so the speed
+        // tracks it and the slider shows the speed.
+        const rate =
+          (t.throttle === 0 || Math.sign(t.throttle) === t.drive
+            ? TRAIN_LIMITS.acceleration
+            : TRAIN_LIMITS.braking) / TRAIN_LIMITS.maxSpeed;
+        let next = t.throttle + t.drive * rate * dt;
+        // Braking stops at zero for a tick before running the other way.
+        if (t.throttle !== 0 && Math.sign(next) !== Math.sign(t.throttle))
+          next = 0;
+        t.throttle = Math.max(-1, Math.min(1, next));
+      }
       const target = t.throttle * TRAIN_LIMITS.maxSpeed;
       const accel =
         Math.sign(target - t.speed) === Math.sign(t.speed) || t.speed === 0
