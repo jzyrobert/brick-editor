@@ -22,6 +22,24 @@ export const EMPTY_STORAGE: StorageAdapter = {
   key: () => null,
   length: 0,
 };
+/** Legacy snapshot keys: `brick-editor:<id>:head` and `…:snapshot:…`. */
+export const LEGACY_KEY = /^brick-editor:([^:]+):/;
+/** The project a page load recovers. */
+export const CURRENT_PROJECT_KEY = "brick-editor-current";
+/**
+ * Keys that hold saved builds in a (local) storage: legacy project
+ * snapshots and the current-project pointer. Preferences and the part,
+ * library and thumbnail caches (`brick-editor-…` keys) are not among them.
+ */
+export function legacyProjectKeys(storage: StorageAdapter) {
+  const keys: string[] = [];
+  for (let i = 0; i < storage.length; i++) {
+    const key = storage.key(i);
+    if (key && (LEGACY_KEY.test(key) || key === CURRENT_PROJECT_KEY))
+      keys.push(key);
+  }
+  return keys;
+}
 export class LocalProjects {
   constructor(private storage: StorageAdapter) {}
   private prefix(id: string) {

@@ -4,7 +4,12 @@ import { validateSourceDocument } from "../core/document";
 import { adoptCurrentLocks } from "../catalog/catalog";
 import { sha256 } from "../core/hash";
 import { encodeNative } from "./native";
-import { LocalProjects, type StorageAdapter } from "./storage";
+import {
+  LEGACY_KEY,
+  LocalProjects,
+  legacyProjectKeys,
+  type StorageAdapter,
+} from "./storage";
 import { withStorageWriteLock } from "./write-lock";
 
 export const PROJECT_DATABASE = "brick-editor-projects";
@@ -412,5 +417,65 @@ export class BrowserProjects {
     const project = await this.load(id);
     ensure(project, "INVALID_INPUT", "Saved project is unavailable");
     return encodeNative(project);
+  }
+  /**
+   * How many projects this browser keeps (each one's autosave snapshots
+   * included), without reading them back.
+   */
+  async count() {
+    const db = await database();
+    let records: Array<[string, RecordValue | undefined]>;
+    try {
+      records = await new Promise((resolve, reject) => {
+        const tx = db.transaction("projects", "readonly"),
+          store = tx.objectStore("projects"),
+          keys = store.getAllKeys(),
+          values = store.getAll();
+        tx.oncomplete = () =>
+          resolve(
+            keys.result.map((k, i) => [String(k), values.result[i]] as const),
+          );
+        tx.onabort = tx.onerror = () => reject(storageFailure());
+      });
+    } finally {
+      db.close();
+    }
+    const ids = new Set<string>(),
+      gone = new Set<string>();
+    for (const [id, record] of records)
+      (record?.deleted || !record?.snapshots.length ? gone : ids).add(id);
+    for (const key of legacyProjectKeys(this.legacyStorage)) {
+      const match = key.match(LEGACY_KEY);
+      if (!match) continue;
+      try {
+        const id = decodeURIComponent(match[1]);
+        if (!gone.has(id)) ids.add(id);
+      } catch {
+        /* A foreign key. */
+      }
+    }
+    return ids.size;
+  }
+  /**
+   * Deletes every saved project and its autosave snapshots from this
+   * browser (IndexedDB and the legacy localStorage copies) and forgets the
+   * current project, so the next start recovers nothing. Part geometry,
+   * library and official-set caches live in other stores and are kept.
+   */
+  async clearAll() {
+    const db = await database();
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction("projects", "readwrite");
+        tx.objectStore("projects").clear();
+        tx.oncomplete = () => resolve();
+        tx.onabort = tx.onerror = () => reject(storageFailure());
+      });
+    } finally {
+      db.close();
+    }
+    for (const key of legacyProjectKeys(this.legacyStorage))
+      this.legacyStorage.removeItem(key);
+    this.notify("");
   }
 }

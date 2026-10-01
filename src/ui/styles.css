@@ -823,6 +823,27 @@ small {
 .replace-error {
   color: var(--danger);
 }
+/* Project menu, last item: under a quiet rule, destructive but not loud. */
+.clear-saved {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.clear-saved > .text-button {
+  min-height: 44px;
+  margin: 6px auto 0;
+  color: var(--danger);
+}
+.clear-saved-dialog .danger {
+  flex: 1 1 100%;
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--card);
+  font-weight: 650;
+}
+.clear-saved-dialog .danger:hover:not(:disabled) {
+  background: var(--danger);
+  filter: brightness(0.92);
+}
 .saved-project {
   padding: 12px 0;
   border-bottom: 1px solid var(--line);

@@ -140,3 +140,13 @@ export async function loadCheckpoint(id: string): Promise<{
 export async function deleteCheckpoint(id: string) {
   await run("readwrite", (store) => store.delete(id));
 }
+
+/** How many checkpoints this browser keeps, for every project. */
+export async function countAllCheckpoints() {
+  return (await run<number>("readonly", (store) => store.count())) ?? 0;
+}
+
+/** Deletes every project's checkpoints from this browser. */
+export async function clearAllCheckpoints() {
+  await run("readwrite", (store) => store.clear());
+}

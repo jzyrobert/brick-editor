@@ -46,6 +46,12 @@ import { LibraryUpdatePanel } from "./LibraryUpdatePanel";
 import { ResourceProfilePanel } from "./ResourceProfilePanel";
 import { ReplacePanel } from "./ReplacePanel";
 import { CheckpointsPanel } from "./CheckpointsPanel";
+import { ClearSavedBuilds } from "./ClearSavedBuilds";
+import {
+  browserSavedBuildStores,
+  clearSavedBuilds,
+  describeSavedBuilds,
+} from "../persistence/clear-saved";
 import { HealthPanel } from "./HealthPanel";
 import { CameraCollections } from "./CameraCollections";
 import { FloorControls } from "./FloorControls";
@@ -586,6 +592,9 @@ function Workspace() {
       stored: false,
     }),
     nextOpenStored = useRef(false),
+    /** The blank project "Clear saved builds" opened: not autosaved until
+     * it changes, so a reload finds nothing to recover. */
+    clearedBlank = useRef<string | null>(null),
     projectRef = useRef(project),
     selectionRef = useRef(selection),
     allRef = useRef<Occurrence[]>([]),
@@ -969,6 +978,12 @@ function Workspace() {
           ? "No changes"
           : "Unsaved changes",
       );
+      if (
+        clearedBlank.current === p.id &&
+        opened.current.id === p.id &&
+        opened.current.revision === p.revision
+      )
+        return;
       autosave.current?.schedule(p, { owned: true });
     });
     const save = (p: typeof project) =>
@@ -1857,6 +1872,34 @@ function Workspace() {
         name === "blank" ? "New blank project" : `Opened “${next.title}”`,
       );
     });
+  }
+  /**
+   * "Clear saved builds": drops the pending autosave, deletes every saved
+   * project, autosave snapshot and checkpoint in this browser (never the
+   * part, library or set caches) and opens a blank canvas that is not saved
+   * until it changes.
+   */
+  async function clearSavedBuildsAndReset() {
+    await autosave.current?.discard(editor.projectId);
+    // In the save queue, so no save of this tab lands halfway.
+    const cleared = await enqueueSourceSave(() =>
+      clearSavedBuilds(browserSavedBuildStores(localStorage)),
+    );
+    saveRevisions.current.clear();
+    const blank = await loadTemplate("blank");
+    clearedBlank.current = blank.id;
+    editor.replace(blank);
+    setActiveLayer("base");
+    setSelectionSafe([]);
+    setSaveConflict(false);
+    setSaveStatus("No changes");
+    setMode("Build");
+    setPanel("Canvas");
+    await renderer.current?.ready();
+    renderer.current?.fit();
+    setStatus(
+      `Deleted ${describeSavedBuilds(cleared)} from this browser. Started a blank canvas.`,
+    );
   }
   /** Whether replacing the open project would lose work: it has parts and
    * has changed since it was opened (a pristine template or an unchanged
@@ -4706,6 +4749,7 @@ function Workspace() {
                   <Icon name="external" size={14} />
                 </a>
               </details>
+              <ClearSavedBuilds onClear={clearSavedBuildsAndReset} />
             </div>
           )}
           {mode === "Build" && tool === "Measure" && (
