@@ -1,45 +1,65 @@
-// Maintainer-only: derives the hinge table for official LDraw door leaves.
-// Usage: npx tsx scripts/build-door-table.ts <ldraw-dir> [archive-sha256]
-// <ldraw-dir> contains parts/ and p/ (for example the official complete.zip
-// extracted). The runtime reads only src/play/door-parts.json; no LDraw
-// geometry beyond the pinned library pack is redistributed by this table.
-import { readdirSync, readFileSync, existsSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+// Maintainer-only: derives the hinge table for official LDraw hinged leaves
+// (doors, window panes and shutters, gates, trapdoors) from the committed
+// complete LDraw pack and its derived connector pack.
+// Usage: npx tsx scripts/build-door-table.ts && npx prettier --write src/play/door-parts.json
+// The runtime reads only src/play/door-parts.json; no LDraw geometry is
+// copied into it, only derived axes and extents.
+import { readFileSync, writeFileSync } from "node:fs";
 import {
   deriveDoorHinge,
+  doorCandidate,
   doorGeometry,
   type DoorExclusion,
   type DoorHinge,
 } from "../src/play/door-derive";
+import {
+  fullLibraryDir,
+  fullLibrarySources,
+  registerFullLibraryFromDisk,
+} from "./full-library-node";
+import { registeredFullLibrary } from "../src/catalog/full-library";
+import { fullConnectorEntry } from "../src/catalog/full-connectors";
+import type { FullPackCatalogEntry } from "../src/catalog/full-pack";
+import type { Vec3 } from "../src/core/types";
 
-const root = process.argv[2] ?? "public/libraries/catalogue-2026-09-29";
-const archive = process.argv[3];
-const read = (name: string) => {
-  const n = name.toLowerCase().replaceAll("\\", "/");
-  for (const dir of ["parts", "p", "parts/s", "p/48"]) {
-    const file = join(root, dir, n);
-    if (existsSync(file)) return readFileSync(file, "utf8");
-  }
-  return undefined;
-};
-const TITLE = /\bdoor\b/i;
-const NOT_A_LEAF =
-  /frame|glass for|sticker|tile|plate|brick|window|wall|counterweight|sound|rail|outline|doorbell|block|hinge plate|^~moved to/i;
+if (!registerFullLibraryFromDisk())
+  throw new Error("The complete LDraw pack is not built (public/libraries)");
+const { manifest } = registeredFullLibrary()!;
+const catalog = JSON.parse(
+  readFileSync(fullLibraryDir() + manifest.catalog.path, "utf8"),
+) as FullPackCatalogEntry[];
+
 const hinges: Record<string, DoorHinge> = {},
   excluded: Record<string, Omit<DoorExclusion, "part">> = {},
   moved: Record<string, string> = {};
-for (const file of readdirSync(join(root, "parts")).sort()) {
-  if (!file.toLowerCase().endsWith(".dat")) continue;
-  const text = readFileSync(join(root, "parts", file), "utf8");
-  const title = text.split(/\r?\n/, 1)[0].replace(/^0\s*/, "").trim();
+const candidates = catalog.filter(([name, title, category]) => {
   const alias = /^~Moved to\s+(\S+)/i.exec(title);
   if (alias)
-    moved[file.toLowerCase().replace(/\.dat$/, "")] = alias[1]
+    moved[name.replace(/\.dat$/, "")] = alias[1]
       .toLowerCase()
       .replace(/\.dat$/, "");
-  if (!TITLE.test(title) || NOT_A_LEAF.test(title)) continue;
-  const part = file.toLowerCase().replace(/\.dat$/, "");
-  const result = deriveDoorHinge(part, title, doorGeometry(read, file));
+  return doorCandidate(title, category);
+});
+const sources = fullLibrarySources(candidates.map(([name]) => name));
+const read = (name: string) =>
+  sources[name.toLowerCase().replaceAll("\\", "/")];
+for (const [name, title] of candidates.sort(([a], [b]) => (a < b ? -1 : 1))) {
+  const part = name.replace(/\.dat$/, "");
+  const pack = fullConnectorEntry(name);
+  const connector =
+    pack?.verified && pack.hinge
+      ? {
+          axis: pack.hinge.axis as Vec3,
+          pivot: pack.hinge.pivot as Vec3,
+          pins: pack.hinge.pins as [Vec3, Vec3],
+        }
+      : undefined;
+  const result = deriveDoorHinge(
+    part,
+    title,
+    doorGeometry(read, name),
+    connector,
+  );
   if ("reason" in result)
     excluded[part] = { title: result.title, reason: result.reason };
   else hinges[part] = result;
@@ -47,15 +67,16 @@ for (const file of readdirSync(join(root, "parts")).sort()) {
 const out = {
   schemaVersion: 1,
   description:
-    "Hinge axes of official LDraw door leaves, derived from part geometry by src/play/door-derive.ts. Coordinates are part-local LDU, negative Y up. LDraw has no stop data: Play chooses the free swing direction from the surrounding build.",
+    "Hinge axes of official LDraw hinged leaves (doors, window panes and shutters, gates, trapdoors), derived from part geometry and the derived connector pack by src/play/door-derive.ts. Coordinates are part-local LDU, negative Y up. LDraw has no stop data: Play chooses the free swing direction from the surrounding build.",
   source: {
     library: "LDraw.org official library",
-    ...(archive ? { completeZipSha256: archive } : {}),
+    releaseId: manifest.releaseId,
+    completeZipSha256: manifest.source.sha256,
     licence: "Derived facts (axes and extents); no geometry is copied.",
   },
   hinges,
   excluded,
-  /** Official "~Moved to" names that resolve to a hinged door. */
+  /** Official "~Moved to" names that resolve to a hinged leaf. */
   aliases: Object.fromEntries(
     Object.entries(moved)
       .filter(([, target]) => hinges[target])
@@ -64,5 +85,5 @@ const out = {
 };
 writeFileSync("src/play/door-parts.json", JSON.stringify(out, null, 2) + "\n");
 console.log(
-  `${Object.keys(hinges).length} hinged doors, ${Object.keys(excluded).length} excluded`,
+  `${Object.keys(hinges).length} hinged leaves, ${Object.keys(excluded).length} excluded, ${Object.keys(out.aliases).length} aliases`,
 );

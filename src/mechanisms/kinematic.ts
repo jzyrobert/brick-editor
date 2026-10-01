@@ -13,6 +13,7 @@ import {
   identity,
   inverse,
   mv,
+  nearlyPhysical,
   physical,
   rotationY,
 } from "../core/math";
@@ -62,6 +63,13 @@ const rigid = (t: Transform) =>
   t.basis.length === 9 &&
   t.basis.every(finite) &&
   physical(t);
+const member = (t: Transform) =>
+  t &&
+  vector(t.position) &&
+  Array.isArray(t.basis) &&
+  t.basis.length === 9 &&
+  t.basis.every(finite) &&
+  nearlyPhysical(t);
 function fields(value: object, allowed: string[]) {
   ensure(
     value &&
@@ -144,8 +152,10 @@ export function validateRig(
       );
       members.add(id);
       const rest = group.restTransforms[id];
+      // Members may carry LDraw's rounded rotations (official models write
+      // 0.707 or 0.661/0.75); group frames stay exact rotations.
       ensure(
-        rigid(rest) && physical(o.transform),
+        member(rest) && nearlyPhysical(o.transform),
         "INVALID_TRANSFORM",
         "Scaled, mirrored or sheared members need explicit supported physical proxies before rigging.",
       );

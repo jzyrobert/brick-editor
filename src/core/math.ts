@@ -81,10 +81,17 @@ export function inverse(t: Transform): Transform {
   return { basis: b, position: mv(b, t.position.map((x) => -x) as Vec3) };
 }
 export const conversion = (v: Vec3): Vec3 => [v[0], -v[1], -v[2]];
-export function physical(t: Transform) {
+/**
+ * LDraw files store rotation matrices as rounded decimals: official models
+ * (OMR) commonly write three or four places (0.707, 0.661/0.75), which are
+ * orthonormal only to about 1e-3. Mechanism members accept that rounding.
+ */
+export const LDRAW_ROTATION_TOLERANCE = 5e-3;
+/** A proper rotation (no scale, mirror or shear) within `tolerance`. */
+export function physical(t: Transform, tolerance = 1e-6) {
   const m = t.basis;
   return (
-    Math.abs(determinant(m) - 1) < 1e-6 &&
+    Math.abs(determinant(m) - 1) < tolerance &&
     [0, 1, 2].every((i) =>
       [0, 1, 2].every(
         (j) =>
@@ -93,10 +100,31 @@ export function physical(t: Transform) {
               m[3 + i] * m[3 + j] +
               m[6 + i] * m[6 + j] -
               (i === j ? 1 : 0),
-          ) < 1e-6,
+          ) < tolerance,
       ),
     )
   );
+}
+/** A rotation within LDraw's decimal rounding of a proper rotation. */
+export const nearlyPhysical = (t: Transform) =>
+  physical(t, LDRAW_ROTATION_TOLERANCE);
+/**
+ * The nearest proper rotation to a nearly orthonormal basis (Newton polar
+ * iteration B ← (B + B⁻ᵀ)/2), for frames built from rounded LDraw matrices.
+ */
+export function orthonormalized(t: Transform): Transform {
+  let b = [...t.basis] as Basis;
+  for (let k = 0; k < 8; k++) {
+    const inv = inverse({ basis: b, position: [0, 0, 0] }).basis;
+    // B⁻ᵀ: transpose of the inverse.
+    const next = b.map(
+      (v, i) => (v + inv[(i % 3) * 3 + Math.floor(i / 3)]) / 2,
+    ) as Basis;
+    const done = next.every((v, i) => Math.abs(v - b[i]) < 1e-15);
+    b = next;
+    if (done) break;
+  }
+  return { position: [...t.position] as Vec3, basis: b };
 }
 export const rotationY = (deg: number): Basis => {
   const a = (deg * Math.PI) / 180;

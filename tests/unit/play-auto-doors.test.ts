@@ -16,6 +16,7 @@ import { PlaySession } from "../../src/play/session";
 import { posedLDraw } from "../../src/mechanisms/posed-export";
 import { validate } from "../../src/core/validate";
 import { officialSources, readPack } from "../helpers/official-geometry";
+import { hingeData } from "../../src/catalog/connectors";
 
 const table = doorTable as unknown as {
   hinges: Record<string, ReturnType<typeof doorHinge>>;
@@ -116,26 +117,44 @@ describe("official LDraw door table", () => {
         [0, 136, 0],
       ]);
     }
-    // Window panes are hinged leaves too (pack only), leaf from their bounds.
+    // Window panes are hinged leaves too: the pack's pins, the table's leaf.
     const pane = doorHinge("60608.dat")!;
-    expect(pane).toMatchObject({ rule: "connector-pins", pivot: [0, 30, 0] });
-    expect(Math.hypot(...pane.leaf)).toBeCloseTo(1, 6);
-    expect(pane.leaf[1]).toBeCloseTo(0, 6);
-    expect(pane.height).toBe(60);
+    expect(pane).toMatchObject({
+      rule: "connector-pins",
+      pivot: [0, 30, 0],
+      leaf: [0, 0, -1],
+      pins: [
+        [0, 0, 0],
+        [0, 60, 0],
+      ],
+    });
+    expect(table.hinges["60608"]!.pins).toEqual(pane.pins);
   });
 
   it("re-derives every pinned-pack door from the shipped geometry", () => {
     const inPack = Object.keys(table.hinges).filter((part) =>
       readPack(part + ".dat"),
     );
-    expect(inPack.sort()).toEqual(["4346", "60616a", "60616b", "60623"]);
+    expect(inPack.sort()).toEqual([
+      "4346",
+      "60607",
+      "60608",
+      "60616a",
+      "60616b",
+      "60623",
+    ]);
     for (const part of inPack) {
       const title = readPack(part + ".dat")!
         .split(/\r?\n/, 1)[0]
         .slice(2)
         .trim();
       expect(
-        deriveDoorHinge(part, title, doorGeometry(readPack, part + ".dat")),
+        deriveDoorHinge(
+          part,
+          title,
+          doorGeometry(readPack, part + ".dat"),
+          hingeData(part + ".dat")?.hinge,
+        ),
       ).toEqual(table.hinges[part]);
     }
   });
@@ -244,7 +263,7 @@ describe("automatic doors in Play", () => {
     ]);
     expect(reasons).toContainEqual([
       "60616a",
-      expect.stringMatching(/mirrored/),
+      expect.stringMatching(/Mirrored/),
     ]);
     const door = play.snapshot().autoDoors!.doors[0];
     expect(door.swing).toBe("both");

@@ -1,11 +1,19 @@
 import doorTable from "./door-parts.json";
 import installedBounds from "../catalog/bounds.json";
-import { add, inverse, mv, physical } from "../core/math";
+import {
+  add,
+  determinant,
+  inverse,
+  mv,
+  nearlyPhysical,
+  orthonormalized,
+} from "../core/math";
 import { projectBounds, transformBounds, type Bounds } from "../core/spatial";
 import type { Occurrence, Project, Vec3 } from "../core/types";
 import type { MotionRig, RigidGroup } from "../mechanisms/types";
 import type { DoorHinge } from "./door-derive";
 import { hingeData } from "../catalog/connectors";
+import { fullConnectorEntry } from "../catalog/full-connectors";
 
 /**
  * Derived, session-only door rigs (spec 19.4 authored door hinges, applied
@@ -71,6 +79,23 @@ export function doorHinge(ref: string): DoorHinge | undefined {
     pins: [pack.pins[0], pack.pins[1]],
   };
 }
+/**
+ * The official part an occurrence is a hinged leaf of: the part itself, or
+ * for an LDraw OMR model's embedded copy ("21318 - 60623.dat", a custom part
+ * in the project), the official part it copies once that is in the table.
+ */
+export function doorPart(project: Project, o: Occurrence) {
+  if (o.node.kind !== "part") return undefined;
+  if (o.namespace === "official")
+    return doorHinge(o.node.ref) ? o.node.ref : undefined;
+  if (
+    o.namespace !== "project" ||
+    project.models[o.node.ref]?.classification !== "custom"
+  )
+    return undefined;
+  const copy = /^\S+ - (.+)$/.exec(partKey(o.node.ref))?.[1];
+  return copy && doorHinge(copy) ? copy : undefined;
+}
 export function doorExclusion(ref: string) {
   return table.excluded[partKey(ref)];
 }
@@ -96,6 +121,12 @@ export type DerivedDoors = {
   doors: AutoDoor[];
   skipped: AutoDoorSkip[];
 };
+/** Hinge sockets of a holder: the verified catalogue pack, else the complete
+ * library's derived connector pack when its shard is loaded. */
+function socketsOf(holder: Occurrence) {
+  const name = partKey(holder.node.ref) + ".dat";
+  return hingeData(name)?.sockets ?? fullConnectorEntry(name)?.sockets ?? [];
+}
 const distanceToBox = (p: Vec3, b: Bounds) =>
   Math.hypot(
     ...[0, 1, 2].map((k) => Math.max(b.min[k] - p[k], 0, p[k] - b.max[k])),
@@ -127,9 +158,12 @@ export function deriveDoorRigs(
       (!options.included || options.included.has(o.id)) &&
       o.node.kind === "part",
   );
-  const doors = present.filter(
-    (o) => o.namespace === "official" && doorHinge(o.node.ref),
-  );
+  const leafPart = new Map<string, string>();
+  for (const o of present) {
+    const part = doorPart(project, o);
+    if (part) leafPart.set(o.id, part);
+  }
+  const doors = present.filter((o) => leafPart.has(o.id));
   if (!doors.length) return { rigs: {}, doors: [], skipped };
   let sources: ReturnType<typeof projectBounds> | undefined;
   const boxes = new Map<string, Bounds | null>();
@@ -193,6 +227,14 @@ export function deriveDoorRigs(
           for (const o of grid.get(`${x},${y},${z}`) ?? []) found.add(o);
     return found;
   };
+  // Group frames are exact rotations; members keep their authored (possibly
+  // rounded) transforms as their rest pose.
+  const frames = new Map<string, Occurrence["transform"]>();
+  const frameOf = (o: Occurrence) => {
+    let f = frames.get(o.id);
+    if (!f) frames.set(o.id, (f = orthonormalized(o.transform)));
+    return f;
+  };
   const byAnchor = new Map<
     string,
     Array<{
@@ -204,8 +246,8 @@ export function deriveDoorRigs(
     }>
   >();
   for (const door of [...doors].sort((a, b) => (a.id < b.id ? -1 : 1))) {
-    const hinge = doorHinge(door.node.ref)!,
-      part = partKey(door.node.ref);
+    const hinge = doorHinge(leafPart.get(door.id)!)!,
+      part = partKey(leafPart.get(door.id)!);
     if (options.reserved.has(door.id)) {
       skipped.push({
         occurrenceId: door.id,
@@ -214,20 +256,23 @@ export function deriveDoorRigs(
       });
       continue;
     }
-    if (!physical(door.transform)) {
+    // Official models round their matrices (0.707, 0.661/0.75): accept a
+    // rotation within that rounding; a mirror or scale cannot hinge.
+    if (!nearlyPhysical(door.transform)) {
       skipped.push({
         occurrenceId: door.id,
         part,
-        reason: "Scaled, mirrored or sheared doors cannot hinge",
+        reason:
+          determinant(door.transform.basis) < 0
+            ? "Mirrored doors cannot hinge"
+            : "Scaled or sheared doors cannot hinge",
       });
       continue;
     }
-    const pivot = add(
-      door.transform.position,
-      mv(door.transform.basis, hinge.pivot),
-    );
-    const axis = unit(mv(door.transform.basis, hinge.axis)),
-      leaf = unit(mv(door.transform.basis, hinge.leaf));
+    const frame = frameOf(door);
+    const pivot = add(frame.position, mv(frame.basis, hinge.pivot));
+    const axis = unit(mv(frame.basis, hinge.axis)),
+      leaf = unit(mv(frame.basis, hinge.leaf));
     // The holder is the nearest other part whose box reaches the hinge line.
     // A frame whose verified hinge sockets hold this door's pins wins.
     const pins = hinge.pins?.map((p) =>
@@ -235,17 +280,16 @@ export function deriveDoorRigs(
     );
     const seated = (holder: Occurrence) =>
       !!pins &&
-      (hingeData(partKey(holder.node.ref) + ".dat")?.sockets ?? []).some(
-        (socket) =>
-          [socket.top, socket.bottom].every((s) => {
-            const w = add(
-              holder.transform.position,
-              mv(holder.transform.basis, s),
-            );
-            return pins.some(
-              (p) => Math.hypot(...p.map((v, k) => v - w[k])) <= 1.5,
-            );
-          }),
+      socketsOf(holder).some((socket) =>
+        [socket.top, socket.bottom].every((s) => {
+          const w = add(
+            holder.transform.position,
+            mv(holder.transform.basis, s),
+          );
+          return pins.some(
+            (p) => Math.hypot(...p.map((v, k) => v - w[k])) <= 1.5,
+          );
+        }),
       );
     // A seated holder's box contains its sockets, each within 1.5 LDU of a
     // pin, so no holder farther than this from the pivot can win.
@@ -258,7 +302,7 @@ export function deriveDoorRigs(
     let best: { id: string; d: number } | undefined;
     for (const holder of nearby(pivot, reach)) {
       const b = box(holder);
-      if (!b || !physical(holder.transform)) continue;
+      if (!b || !nearlyPhysical(holder.transform)) continue;
       const d = seated(holder) ? -1 : distanceToBox(pivot, b);
       if (d > DOOR_ANCHOR_REACH) continue;
       if (!best || d < best.d || (d === best.d && holder.id < best.id))
@@ -282,7 +326,7 @@ export function deriveDoorRigs(
   const group = (id: string, o: Occurrence): RigidGroup => ({
     id,
     occurrenceIds: [o.id],
-    frame: structuredClone(o.transform),
+    frame: structuredClone(frameOf(o)),
     restTransforms: { [o.id]: structuredClone(o.transform) },
   });
   let index = 0,
@@ -297,7 +341,7 @@ export function deriveDoorRigs(
       for (const e of entries)
         skipped.push({
           occurrenceId: e.door.id,
-          part: partKey(e.door.node.ref),
+          part: partKey(leafPart.get(e.door.id)!),
           reason: "Play's moving-part budget is full",
         });
       continue;
@@ -308,7 +352,7 @@ export function deriveDoorRigs(
       index++;
     const rigId = `${AUTO_DOOR_PREFIX}${index++}`;
     groups += entries.length + 1;
-    const inv = inverse(anchor.transform);
+    const inv = inverse(frameOf(anchor));
     const rig: MotionRig = {
       schemaVersion: 1,
       id: rigId,
@@ -319,7 +363,7 @@ export function deriveDoorRigs(
         ...entries.map((e, i) => group(`leaf-${i + 1}`, e.door)),
       ],
       joints: entries.map((e, i) => {
-        const doorInv = inverse(e.door.transform);
+        const doorInv = inverse(frameOf(e.door));
         return {
           id: entries.length > 1 ? `door-${i + 1}` : "door",
           kind: "revolute" as const,
@@ -342,7 +386,7 @@ export function deriveDoorRigs(
         rigId,
         jointId: rig.joints[i].id,
         occurrenceId: e.door.id,
-        part: partKey(e.door.node.ref),
+        part: partKey(leafPart.get(e.door.id)!),
         anchorOccurrenceId: anchorId,
         pivot: e.pivot,
         axis: e.axis,

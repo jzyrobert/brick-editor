@@ -1,0 +1,38 @@
+0 FILE main.ldr
+0 Door study
+0 Name: main.ldr
+0 Author: Brick Editor contributors
+0 !LICENSE Licensed under CC0 1.0
+0 // Doors as official (OMR) models author them; see docs/PLAY-PHYSICS.md.
+0 // The house is placed square and turned 30 degrees with rounded decimals.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 house.ldr
+1 16 0 0 -600 0.866 0 0.5 0 1 0 -0.5 0 0.866 house.ldr
+0 // A mirrored door beside a brick column cannot hinge.
+1 15 -600 -24 5 1 0 0 0 1 0 0 0 1 3005.dat
+1 4 -590 -144 5 -1 0 0 0 1 0 0 0 1 60616a.dat
+0 // An embedded copy of an official door hangs in its own frame.
+1 15 -300 -144 0 1 0 0 0 1 0 0 0 1 60596.dat
+1 4 -332 -144 5 1 0 0 0 1 0 0 0 1 9999 - 60623.dat
+0 NOFILE
+0 FILE house.ldr
+0 House front
+0 Name: house.ldr
+0 Author: Brick Editor contributors
+0 // Frame and door as in the door room, the door authored ajar (48.6 degrees).
+1 15 0 -144 0 1 0 0 0 1 0 0 0 1 60596.dat
+1 4 -32 -144 5 0.661 0 -0.75 0 1 0 0.75 0 0.661 60623.dat
+0 // A classic window with two panes, and a shutter on its holder.
+1 15 200 -72 0 1 0 0 0 1 0 0 0 1 3853.dat
+1 15 165 -68 -5 0 0 -1 0 1 0 1 0 0 3854.dat
+1 15 234 -68 -5 0 0 1 0 1 0 -1 0 0 3854.dat
+1 14 330 -48 30 1 0 0 0 1 0 0 0 1 3581.dat
+1 4 330 -48 17 0 0 -1 0 1 0 1 0 0 3582.dat
+0 NOFILE
+0 FILE 9999 - 60623.dat
+0 Door  1 x  4 x  6 with 4 Panes and Stud Handle
+0 Name: 9999 - 60623.dat
+0 Author: Brick Editor contributors
+0 !LDRAW_ORG Unofficial_Part
+0 !LICENSE Licensed under CC0 1.0
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 60623.dat
+0 NOFILE

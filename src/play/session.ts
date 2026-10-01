@@ -505,24 +505,18 @@ export class PlaySession {
           const mechanism = this.mechanisms.get(door.rigId);
           const leafGroup = `leaf-${door.jointId === "door" ? 1 : door.jointId.slice(5)}`;
           const mesh = groups.get(door.rigId)?.[leafGroup];
-          const swing =
+          const { swing, limits } =
             mechanism && mesh
               ? this.chooseDoorSwing(
                   door,
                   mesh,
                   mechanism.proxyCollider(leafGroup),
                 )
-              : "blocked";
-          mechanism?.restrictJointLimits(
-            door.jointId,
-            swing === "both"
-              ? [-90, 90]
-              : swing === "positive"
-                ? [0, 90]
-                : swing === "negative"
-                  ? [-90, 0]
-                  : [0, 0],
-          );
+              : {
+                  swing: "blocked" as const,
+                  limits: [0, 0] as [number, number],
+                };
+          mechanism?.restrictJointLimits(door.jointId, limits);
           return { ...structuredClone(door), swing };
         }),
         skipped: structuredClone(autoDoors.skipped),
@@ -542,9 +536,9 @@ export class PlaySession {
     door: AutoDoor,
     mesh: CollisionSnapshot,
     own: RAPIER.Collider | undefined,
-  ): PlayAutoDoorSwing {
+  ): { swing: PlayAutoDoorSwing; limits: [number, number] } {
     const v = mesh.vertices;
-    if (!v.length) return "blocked";
+    if (!v.length) return { swing: "blocked", limits: [0, 0] };
     const min = [Infinity, Infinity, Infinity],
       max = [-Infinity, -Infinity, -Infinity];
     for (let i = 0; i < v.length; i++) {
@@ -582,18 +576,31 @@ export class PlaySession {
         own,
       );
     };
-    if (blocked(0)) return "both";
-    const free = (sign: number) =>
-      [15, 35, 60, 90].every((angle) => !blocked(sign * angle));
-    const positive = free(1),
-      negative = free(-1);
-    return positive && negative
-      ? "both"
-      : positive
-        ? "positive"
-        : negative
-          ? "negative"
-          : "blocked";
+    if (blocked(0)) return { swing: "both", limits: [-90, 90] };
+    // How far the leaf turns each way before it meets the build, in 5°
+    // steps. A door authored ajar (common in official models) can close
+    // until it meets its frame as well as open; under 15° is a stop.
+    const reach = (sign: number) => {
+      let free = 0;
+      for (let angle = 5; angle <= 90; angle += 5) {
+        if (blocked(sign * angle)) break;
+        free = angle;
+      }
+      return free >= 15 ? free : 0;
+    };
+    const positive = reach(1),
+      negative = reach(-1);
+    return {
+      swing:
+        positive && negative
+          ? "both"
+          : positive
+            ? "positive"
+            : negative
+              ? "negative"
+              : "blocked",
+      limits: [negative ? -negative : 0, positive],
+    };
   }
   static async create(
     snapshot: CollisionSnapshot,

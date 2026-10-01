@@ -1,12 +1,83 @@
 {
   "schemaVersion": 1,
-  "description": "Hinge axes of official LDraw door leaves, derived from part geometry by src/play/door-derive.ts. Coordinates are part-local LDU, negative Y up. LDraw has no stop data: Play chooses the free swing direction from the surrounding build.",
+  "description": "Hinge axes of official LDraw hinged leaves (doors, window panes and shutters, gates, trapdoors), derived from part geometry and the derived connector pack by src/play/door-derive.ts. Coordinates are part-local LDU, negative Y up. LDraw has no stop data: Play chooses the free swing direction from the surrounding build.",
   "source": {
     "library": "LDraw.org official library",
+    "releaseId": "ldraw-full-2026-09-28",
     "completeZipSha256": "d2a695868ed2b3957c45b022a6451908edab22cc043179dd61d18dd382b35e11",
     "licence": "Derived facts (axes and extents); no geometry is copied."
   },
   "hinges": {
+    "671": {
+      "part": "671",
+      "title": "Door  1 x  6 x 10",
+      "rule": "connector-pins",
+      "pins": [
+        [-46.5, -219, 0],
+        [-46.5, -6, 0]
+      ],
+      "pivot": [-46.5, -112.5, 0],
+      "axis": [0, -1, 0],
+      "leaf": [1, 0, 0],
+      "width": 93.5,
+      "height": 213,
+      "maxOpenDegrees": 90
+    },
+    "791": {
+      "part": "791",
+      "title": "Window  1 x  3 x  5 Shutter",
+      "rule": "origin-edge",
+      "pivot": [0, 54, 0],
+      "axis": [0, -1, 0],
+      "leaf": [1, 0, 0],
+      "width": 52,
+      "height": 110,
+      "maxOpenDegrees": 90
+    },
+    "801": {
+      "part": "801",
+      "title": "~Door  1 x  3 x  3 Left with Window (Obsolete)",
+      "rule": "origin-edge",
+      "pivot": [0, 34, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 76,
+      "maxOpenDegrees": 90
+    },
+    "802": {
+      "part": "802",
+      "title": "~Door  1 x  3 x  3 Right with Window (Obsolete)",
+      "rule": "origin-edge",
+      "pivot": [0, 34, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 76,
+      "maxOpenDegrees": 90
+    },
+    "825": {
+      "part": "825",
+      "title": "~Door  1 x  3 x  4 Left with Window (Obsolete)",
+      "rule": "origin-edge",
+      "pivot": [0, 46, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 100,
+      "maxOpenDegrees": 90
+    },
+    "826": {
+      "part": "826",
+      "title": "~Door  1 x  3 x  4 Right with Window (Obsolete)",
+      "rule": "origin-edge",
+      "pivot": [0, 46, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 100,
+      "maxOpenDegrees": 90
+    },
     "843": {
       "part": "843",
       "title": "Homemaker Stove Door with Glass (Complete)",
@@ -27,6 +98,17 @@
       "leaf": [1, 0, 0],
       "width": 52,
       "height": 52,
+      "maxOpenDegrees": 90
+    },
+    "2049": {
+      "part": "2049",
+      "title": "Fabuland Window Shutter",
+      "rule": "origin-edge",
+      "pivot": [0, -6.5, 0],
+      "axis": [0, -1, 0],
+      "leaf": [1, 0, 0],
+      "width": 43.5,
+      "height": 97,
       "maxOpenDegrees": 90
     },
     "2205": {
@@ -62,6 +144,17 @@
       "height": 244,
       "maxOpenDegrees": 90
     },
+    "2294": {
+      "part": "2294",
+      "title": "Duplo Stables Gate  1 x  4 x  6",
+      "rule": "origin-edge",
+      "pivot": [0, 0, 0],
+      "axis": [0, -1, 0],
+      "leaf": [-1, 0, 0],
+      "width": 133.5,
+      "height": 244,
+      "maxOpenDegrees": 90
+    },
     "2400": {
       "part": "2400",
       "title": "Door  1 x  5 x 10 with 1/4 Circle Top",
@@ -72,6 +165,21 @@
       "width": 89.5,
       "height": 223,
       "maxOpenDegrees": 90
+    },
+    "2529": {
+      "part": "2529",
+      "title": "Window  1 x  2 x  3 Pane Latticed",
+      "rule": "origin-edge",
+      "pivot": [0, 30, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 34,
+      "height": 62,
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 60, 0]
+      ]
     },
     "2554": {
       "part": "2554",
@@ -104,6 +212,21 @@
       "leaf": [1, 0, 0],
       "width": 48,
       "height": 109.5,
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 4.5, 0],
+        [0, 111.5, 0]
+      ]
+    },
+    "3186": {
+      "part": "3186",
+      "title": "Gate  1 x  4 x  2",
+      "rule": "origin-edge",
+      "pivot": [0, 18, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 70,
+      "height": 44,
       "maxOpenDegrees": 90
     },
     "3188": {
@@ -172,6 +295,39 @@
       "height": 100,
       "maxOpenDegrees": 90
     },
+    "3347": {
+      "part": "3347",
+      "title": "=Window  1 x  2 x  2.667 Shutter with Rounded Top",
+      "rule": "hinge-pins",
+      "pivot": [0, -1, 0],
+      "axis": [1, 0, 0],
+      "leaf": [0, 1, 0],
+      "width": 33.75,
+      "height": 33.5,
+      "maxOpenDegrees": 90
+    },
+    "3358": {
+      "part": "3358",
+      "title": "Gate  1 x  3 x  2",
+      "rule": "origin-edge",
+      "pivot": [0, 18, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 44,
+      "maxOpenDegrees": 90
+    },
+    "3582": {
+      "part": "3582",
+      "title": "Window  1 x  2 x  2 Shutter",
+      "rule": "origin-edge",
+      "pivot": [0, 24, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 30,
+      "height": 48,
+      "maxOpenDegrees": 90
+    },
     "3644": {
       "part": "3644",
       "title": "Door  1 x  4 x  6 Grooved",
@@ -205,6 +361,32 @@
       "height": 28,
       "maxOpenDegrees": 90
     },
+    "3854": {
+      "part": "3854",
+      "title": "Window  1 x  2 x  3 Pane",
+      "rule": "origin-edge",
+      "pivot": [0, 30, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 34,
+      "height": 62,
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 60, 0]
+      ]
+    },
+    "3856": {
+      "part": "3856",
+      "title": "Window  1 x  2 x  3 Shutter",
+      "rule": "origin-edge",
+      "pivot": [0, 34, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 40,
+      "height": 68,
+      "maxOpenDegrees": 90
+    },
     "3995": {
       "part": "3995",
       "title": "Door  1 x  6 x  2 Right",
@@ -236,7 +418,11 @@
       "leaf": [-1, 0, 0],
       "width": 99,
       "height": 152,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, -75, 0],
+        [0, 75, 0]
+      ]
     },
     "4131": {
       "part": "4131",
@@ -247,7 +433,26 @@
       "leaf": [1, 0, 0],
       "width": 59.5,
       "height": 106.5,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 104, 0]
+      ]
+    },
+    "4133": {
+      "part": "4133",
+      "title": "Window  2 x  4 x  3 Pane",
+      "rule": "origin-edge",
+      "pivot": [0, 27, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 61.04,
+      "height": 60.148,
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, -1, 0],
+        [0, 55, 0]
+      ]
     },
     "4181": {
       "part": "4181",
@@ -268,6 +473,17 @@
       "axis": [0, -1, 0],
       "leaf": [0, 0, 1],
       "width": 70,
+      "height": 124,
+      "maxOpenDegrees": 90
+    },
+    "4247": {
+      "part": "4247",
+      "title": "~Duplo Door  1 x  4 x  3 with Large Window (Obsolete)",
+      "rule": "origin-edge",
+      "pivot": [0, 68, 0],
+      "axis": [0, -1, 0],
+      "leaf": [-1, 0, 0],
+      "width": 137,
       "height": 124,
       "maxOpenDegrees": 90
     },
@@ -346,7 +562,11 @@
       "leaf": [0, 0, -1],
       "width": 100,
       "height": 154,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, -76, 0],
+        [0, 76, 0]
+      ]
     },
     "5032": {
       "part": "5032",
@@ -403,6 +623,21 @@
       "height": 128,
       "maxOpenDegrees": 90
     },
+    "6237": {
+      "part": "6237",
+      "title": "Window  1 x  3 x  4 Pane Freestyle",
+      "rule": "origin-edge",
+      "pivot": [0, 40, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 45,
+      "height": 82,
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 80, 0]
+      ]
+    },
     "6546": {
       "part": "6546",
       "title": "Door  1 x  2 x  3 Pane",
@@ -412,7 +647,11 @@
       "leaf": [1, 0, 0],
       "width": 34,
       "height": 62,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 60, 0]
+      ]
     },
     "7930": {
       "part": "7930",
@@ -423,6 +662,17 @@
       "leaf": [1, 0, 0],
       "width": 50,
       "height": 84,
+      "maxOpenDegrees": 90
+    },
+    "15582": {
+      "part": "15582",
+      "title": "Duplo Door / Window Pane  1 x  4 x  3 with One Pane and Rounded Sides",
+      "rule": "origin-edge",
+      "pivot": [0, 0, 0],
+      "axis": [0, -1, 0],
+      "leaf": [-1, 0, 0],
+      "width": 133.5,
+      "height": 120,
       "maxOpenDegrees": 90
     },
     "18816": {
@@ -458,6 +708,28 @@
       "height": 120,
       "maxOpenDegrees": 90
     },
+    "30042": {
+      "part": "30042",
+      "title": "Plate  4 x  5 Trap Door",
+      "rule": "flap-edge",
+      "pivot": [0, 0, 0],
+      "axis": [0, 0, 1],
+      "leaf": [1, 0, 0],
+      "width": 109,
+      "height": 80,
+      "maxOpenDegrees": 90
+    },
+    "30046": {
+      "part": "30046",
+      "title": "Window  1 x  2 x  2.667 Pane Lattice Diamond with Rounded Top",
+      "rule": "hinge-pins",
+      "pivot": [0, -1, 0],
+      "axis": [1, 0, 0],
+      "leaf": [0, 1, 0],
+      "width": 33.75,
+      "height": 33.5,
+      "maxOpenDegrees": 90
+    },
     "30059": {
       "part": "30059",
       "title": "=Container Box  2 x  2 x  2 Door with Slot",
@@ -467,6 +739,28 @@
       "leaf": [0, -0.989, 0.148],
       "width": 44.403,
       "height": 40,
+      "maxOpenDegrees": 90
+    },
+    "30073": {
+      "part": "30073",
+      "title": "Door  1 x  6 x  8 Left with Window",
+      "rule": "origin-edge",
+      "pivot": [0, 94, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 110,
+      "height": 196,
+      "maxOpenDegrees": 90
+    },
+    "30074": {
+      "part": "30074",
+      "title": "Door  1 x  6 x  8 Right with Window",
+      "rule": "origin-edge",
+      "pivot": [0, 94, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 110,
+      "height": 196,
       "maxOpenDegrees": 90
     },
     "30125": {
@@ -524,6 +818,28 @@
       "height": 270,
       "maxOpenDegrees": 90
     },
+    "40241": {
+      "part": "40241",
+      "title": "Door  1 x  4 x  6 with Window",
+      "rule": "origin-edge",
+      "pivot": [0, 0.115, 0],
+      "axis": [0, -1, 0],
+      "leaf": [1, 0, 0],
+      "width": 93.66,
+      "height": 135.43,
+      "maxOpenDegrees": 90
+    },
+    "42448": {
+      "part": "42448",
+      "title": "Gate  1 x  4 x  9 Arched with Bars",
+      "rule": "origin-edge",
+      "pivot": [0, -13, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 70,
+      "height": 180,
+      "maxOpenDegrees": 90
+    },
     "42819": {
       "part": "42819",
       "title": "Train Door  1 x  4 x  5 Right with Thick Bottom Support",
@@ -579,6 +895,36 @@
       "height": 100,
       "maxOpenDegrees": 90
     },
+    "60607": {
+      "part": "60607",
+      "title": "Window  1 x  2 x  3 Pane Latticed with Reinforced Joints",
+      "rule": "origin-edge",
+      "pivot": [0, 30, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 31.5,
+      "height": 62,
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 60, 0]
+      ]
+    },
+    "60608": {
+      "part": "60608",
+      "title": "Window  1 x  2 x  3 Pane with Thick Corner Tabs",
+      "rule": "origin-edge",
+      "pivot": [0, 30, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 32,
+      "height": 62,
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 60, 0]
+      ]
+    },
     "60614": {
       "part": "60614",
       "title": "Door  1 x  2 x  3 with Holes in Handle",
@@ -588,7 +934,11 @@
       "leaf": [1, 0, 0],
       "width": 32,
       "height": 62,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 60, 0]
+      ]
     },
     "60621": {
       "part": "60621",
@@ -599,7 +949,11 @@
       "leaf": [1, 0, 0],
       "width": 68,
       "height": 134.5,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 4, 0],
+        [0, 136, 0]
+      ]
     },
     "60623": {
       "part": "60623",
@@ -610,7 +964,11 @@
       "leaf": [1, 0, 0],
       "width": 67,
       "height": 134,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 4, 0],
+        [0, 136, 0]
+      ]
     },
     "60657": {
       "part": "60657",
@@ -634,6 +992,17 @@
       "height": 76,
       "maxOpenDegrees": 90
     },
+    "64390": {
+      "part": "64390",
+      "title": "Door  1 x  4 x  6 with Window and Reinforced Edge",
+      "rule": "origin-edge",
+      "pivot": [0, 10.75, 0],
+      "axis": [0, -1, 0],
+      "leaf": [1, 0, 0],
+      "width": 93.75,
+      "height": 136,
+      "maxOpenDegrees": 90
+    },
     "65111": {
       "part": "65111",
       "title": "Duplo Door  1 x  4 x  4 with Flat Top with Two Long Panes",
@@ -643,6 +1012,17 @@
       "leaf": [-1, 0, 0],
       "width": 133.5,
       "height": 182,
+      "maxOpenDegrees": 90
+    },
+    "69897": {
+      "part": "69897",
+      "title": "Duplo Door / Window  1 x  4 x  3 with Flat Top with  4 Panes Cross Bars",
+      "rule": "origin-edge",
+      "pivot": [0, 0, 0],
+      "axis": [0, -1, 0],
+      "leaf": [-1, 0, 0],
+      "width": 133.5,
+      "height": 120,
       "maxOpenDegrees": 90
     },
     "73312": {
@@ -698,7 +1078,11 @@
       "leaf": [1, 0, 0],
       "width": 67,
       "height": 133.5,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 4, 0],
+        [0, 136, 0]
+      ]
     },
     "80394": {
       "part": "80394",
@@ -720,7 +1104,11 @@
       "leaf": [1, 0, 0],
       "width": 52,
       "height": 133.5,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 4.5, 0],
+        [0, 135.5, 0]
+      ]
     },
     "87321": {
       "part": "87321",
@@ -766,6 +1154,17 @@
       "height": 182,
       "maxOpenDegrees": 90
     },
+    "92099": {
+      "part": "92099",
+      "title": "Plate  4 x  6 Trap Door with Bars",
+      "rule": "hinge-pins",
+      "pivot": [-50, 2, 0],
+      "axis": [0, 0, 1],
+      "leaf": [1, 0, 0],
+      "width": 110,
+      "height": 80,
+      "maxOpenDegrees": 90
+    },
     "92262": {
       "part": "92262",
       "title": "Door  1 x  3 x  2 Left with Hollow Hinge",
@@ -808,6 +1207,17 @@
       "leaf": [-1, 0, 0],
       "width": 90,
       "height": 70,
+      "maxOpenDegrees": 90
+    },
+    "94161": {
+      "part": "94161",
+      "title": "Window  1 x  2 x  2.667 Shutter with Rounded Top",
+      "rule": "hinge-pins",
+      "pivot": [0, -1, 0],
+      "axis": [1, 0, 0],
+      "leaf": [0, 1, 0],
+      "width": 33.75,
+      "height": 33.5,
       "maxOpenDegrees": 90
     },
     "98459": {
@@ -1371,6 +1781,50 @@
       "height": 124,
       "maxOpenDegrees": 90
     },
+    "4247a": {
+      "part": "4247a",
+      "title": "Duplo Door  1 x  4 x  3 with Arched Top with Large Window",
+      "rule": "origin-edge",
+      "pivot": [0, -4, 0],
+      "axis": [0, -1, 0],
+      "leaf": [-1, 0, 0],
+      "width": 133.5,
+      "height": 124,
+      "maxOpenDegrees": 90
+    },
+    "4247ap01": {
+      "part": "4247ap01",
+      "title": "Duplo Door  1 x  4 x  3 with Arched Top with Large Window with Blue \"POLICE\" Pattern",
+      "rule": "origin-edge",
+      "pivot": [0, -4, 0],
+      "axis": [0, -1, 0],
+      "leaf": [-1, 0, 0],
+      "width": 133.5,
+      "height": 124,
+      "maxOpenDegrees": 90
+    },
+    "4247ap02": {
+      "part": "4247ap02",
+      "title": "Duplo Door  1 x  4 x  3 with Arched Top with Large Window with Red \"CAMPING\" Pattern",
+      "rule": "origin-edge",
+      "pivot": [0, -4, 0],
+      "axis": [0, -1, 0],
+      "leaf": [-1, 0, 0],
+      "width": 133.5,
+      "height": 124,
+      "maxOpenDegrees": 90
+    },
+    "4247ap03": {
+      "part": "4247ap03",
+      "title": "Duplo Door  1 x  4 x  3 with Arched Top with Large Window with Blue \"FIRE CHIEF\" Pattern",
+      "rule": "origin-edge",
+      "pivot": [0, -4, 0],
+      "axis": [0, -1, 0],
+      "leaf": [-1, 0, 0],
+      "width": 133.5,
+      "height": 124,
+      "maxOpenDegrees": 90
+    },
     "4248p01": {
       "part": "4248p01",
       "title": "Duplo Door  1 x  4 x  3 with Arched Top with Porthole with Yellow \"BOAT YARD\" Pattern",
@@ -1589,7 +2043,11 @@
       "leaf": [1, 0, 0],
       "width": 67,
       "height": 133.5,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 4, 0],
+        [0, 136, 0]
+      ]
     },
     "60616b": {
       "part": "60616b",
@@ -1600,7 +2058,11 @@
       "leaf": [1, 0, 0],
       "width": 67,
       "height": 133.5,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 4, 0],
+        [0, 136, 0]
+      ]
     },
     "60797c01": {
       "part": "60797c01",
@@ -1644,6 +2106,28 @@
       "leaf": [1, 0, 0],
       "width": 68,
       "height": 134.5,
+      "maxOpenDegrees": 90
+    },
+    "60800a": {
+      "part": "60800a",
+      "title": "Window Shutter  1 x  2.667 x  3 with Handle",
+      "rule": "origin-edge",
+      "pivot": [0, 36, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 50,
+      "height": 72,
+      "maxOpenDegrees": 90
+    },
+    "60800b": {
+      "part": "60800b",
+      "title": "Window Shutter  1 x  2.667 x  3 without Handle",
+      "rule": "origin-edge",
+      "pivot": [0, 36, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, -1],
+      "width": 50,
+      "height": 72,
       "maxOpenDegrees": 90
     },
     "73194c01": {
@@ -1798,7 +2282,11 @@
       "leaf": [1, 0, 0],
       "width": 52,
       "height": 133.5,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 4.5, 0],
+        [0, 135.5, 0]
+      ]
     },
     "825a": {
       "part": "825a",
@@ -1869,6 +2357,28 @@
     "825ap06": {
       "part": "825ap06",
       "title": "Door  1 x  3 x  4 Left with Vertical Handle with White Lower Section Pattern",
+      "rule": "origin-edge",
+      "pivot": [0, 46, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 100,
+      "maxOpenDegrees": 90
+    },
+    "825p01": {
+      "part": "825p01",
+      "title": "~Door  1 x  3 x  4 Left with Window & Lower Red Cross Pattern (Obsolete)",
+      "rule": "origin-edge",
+      "pivot": [0, 46, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 100,
+      "maxOpenDegrees": 90
+    },
+    "825p02": {
+      "part": "825p02",
+      "title": "~Door  1 x  3 x  4 Left with Window & Upper Red Cross Pattern (Obsolete)",
       "rule": "origin-edge",
       "pivot": [0, 46, 0],
       "axis": [0, -1, 0],
@@ -1954,6 +2464,28 @@
       "height": 100,
       "maxOpenDegrees": 90
     },
+    "826p01": {
+      "part": "826p01",
+      "title": "~Door  1 x  3 x  4 Right with Window & Lower Red Cross Pattern (Obsolete)",
+      "rule": "origin-edge",
+      "pivot": [0, 46, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 100,
+      "maxOpenDegrees": 90
+    },
+    "826p02": {
+      "part": "826p02",
+      "title": "~Door  1 x  3 x  4 Right with Window & Upper Red Cross Pattern (Obsolete)",
+      "rule": "origin-edge",
+      "pivot": [0, 46, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 100,
+      "maxOpenDegrees": 90
+    },
     "92262ph1": {
       "part": "92262ph1",
       "title": "Door  1 x  3 x  2 Left with Hollow Hinge with Horizontal White Line Pattern",
@@ -2029,7 +2561,11 @@
       "leaf": [1, 0, 0],
       "width": 102,
       "height": 94,
-      "maxOpenDegrees": 90
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 92, 0]
+      ]
     },
     "u9371p01": {
       "part": "u9371p01",
@@ -2040,14 +2576,36 @@
       "leaf": [1, 0, 0],
       "width": 102,
       "height": 94,
+      "maxOpenDegrees": 90,
+      "pins": [
+        [0, 0, 0],
+        [0, 92, 0]
+      ]
+    },
+    "u9501c01": {
+      "part": "u9501c01",
+      "title": "Door  1 x  3 x  3 Left with Window and Horizontal Handle",
+      "rule": "origin-edge",
+      "pivot": [0, 34, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 76,
+      "maxOpenDegrees": 90
+    },
+    "u9503c01": {
+      "part": "u9503c01",
+      "title": "Door  1 x  3 x  3 Right with Window and Horizontal Handle",
+      "rule": "origin-edge",
+      "pivot": [0, 34, 0],
+      "axis": [0, -1, 0],
+      "leaf": [0, 0, 1],
+      "width": 50,
+      "height": 76,
       "maxOpenDegrees": 90
     }
   },
   "excluded": {
-    "671": {
-      "title": "Door  1 x  6 x 10",
-      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
-    },
     "722": {
       "title": "Garage  4 x  8 x  3 Door",
       "reason": "Slides or lifts rather than swinging on a hinge"
@@ -2068,6 +2626,10 @@
       "title": "Door  1 x  4 x  4 Lift",
       "reason": "Slides or lifts rather than swinging on a hinge"
     },
+    "30045": {
+      "title": "Window  1 x  2 x  2.667 Pane Twisted Bar with Rounded Top",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
+    },
     "30061": {
       "title": "=Roller Door Normal",
       "reason": "Slides or lifts rather than swinging on a hinge"
@@ -2079,6 +2641,10 @@
     "30344": {
       "title": "=Door  2 x  8 x  6 Revolving",
       "reason": "Slides or lifts rather than swinging on a hinge"
+    },
+    "38320": {
+      "title": "Window  1 x  2 x  2 Pane Lattice Diamond",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
     },
     "40066": {
       "title": "Door  1 x  6 x  7 with Arch and Rounded Pillars",
@@ -2103,6 +2669,10 @@
     "89513": {
       "title": "Door  1 x  8 x 12 Castle Gate Portcullis",
       "reason": "Slides or lifts rather than swinging on a hinge"
+    },
+    "95229": {
+      "title": "Bar  1 x  8 x  4 Gate with Curved Top",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
     },
     "30102p01": {
       "title": "Door  2 x  8 x  6 Revolving with Ninja Pattern",
@@ -2154,10 +2724,6 @@
     },
     "33cc01": {
       "title": "Door  1 x  2 x  3 Right with Open Stud without Hole (Complete)",
-      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
-    },
-    "3960pb3": {
-      "title": "Dish  4 x  4 Inverted with Black and Metallic Silver Vault Door Pattern",
       "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
     },
     "4218a": {
@@ -2228,6 +2794,30 @@
       "title": "Mursten Door  1 x  2 x  4 with Glass",
       "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
     },
+    "u8016": {
+      "title": "Mursten Window Pane  1 x  2 x  2",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
+    },
+    "u8016c01": {
+      "title": "Mursten Window Pane  1 x  2 x  2 with Glass",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
+    },
+    "u8017": {
+      "title": "Mursten Window Pane  1 x  2 x  3",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
+    },
+    "u8017c01": {
+      "title": "Mursten Window Pane  1 x  2 x  3 with Glass",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
+    },
+    "u8018": {
+      "title": "Mursten Window Pane  1 x  4 x  2",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
+    },
+    "u8018c01": {
+      "title": "Mursten Window Pane  1 x  4 x  2 with Glass",
+      "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
+    },
     "u8040": {
       "title": "Mursten Door  1 x  2 x  4 with Handle (Front) and 8 Panes (Back)",
       "reason": "No hinge convention found: the origin is not on a leaf edge and no collinear hinge pins were found"
@@ -2239,17 +2829,24 @@
   },
   "aliases": {
     "12": "7930",
+    "25": "3582",
+    "65": "3358",
     "102": "3644",
     "140": "3821",
     "141": "3822",
+    "144": "3854",
+    "145": "3856",
+    "146": "2529",
     "158": "3189",
     "159": "3188",
     "236": "73312",
     "246": "73435",
     "247": "73436",
+    "370": "3186",
     "445": "3193a",
     "446": "3192a",
     "600": "6234",
+    "601": "6237",
     "691": "3996",
     "692": "3995",
     "3192": "3190",
