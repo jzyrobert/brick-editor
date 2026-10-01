@@ -5,8 +5,10 @@ import {
   lookUsesPipeline,
   parseFlakeMaterials,
   resolveLook,
+  softEdgeColor,
 } from "../../src/render/look";
 import { jitterOffset } from "../../src/render/look-pipeline";
+import { lookPreferenceControls } from "../../src/persistence/look-preference";
 
 describe("render looks", () => {
   it("keeps standard as the unchanged default and makes realistic looks distinct", () => {
@@ -24,7 +26,7 @@ describe("render looks", () => {
     });
     expect(lookUsesPipeline(resolveLook("standard"))).toBe(false);
     expect(resolveLook("realistic")).toMatchObject({
-      environment: "room",
+      environment: "studio",
       materials: "plastic",
       ambientOcclusion: "gtao",
       edges: "hidden",
@@ -40,7 +42,7 @@ describe("render looks", () => {
     const phone = resolveLook("realistic", {}, "mobile");
     expect(phone).toMatchObject({
       resourceProfile: "mobile",
-      environment: "room",
+      environment: "studio",
       materials: "plastic",
       ambientOcclusion: "off",
       vignette: 0,
@@ -66,12 +68,50 @@ describe("render looks", () => {
       { samples: 1.5 },
       { vignette: 0.9 },
       { exposureScale: 0 },
-      { environment: "studio" },
+      { environment: "hdri" },
+      { edges: "outline" },
       { unknown: 1 },
     ])
       expect(() => resolveLook("realistic", controls as never)).toThrow(
         /bounds/,
       );
+  });
+  it("offers soft edges and the room environment as explicit controls", () => {
+    expect(resolveLook("standard", { edges: "soft" }).edges).toBe("soft");
+    // Soft edges draw outlines, so they need no off-screen pipeline.
+    expect(lookUsesPipeline(resolveLook("standard", { edges: "soft" }))).toBe(
+      false,
+    );
+    expect(resolveLook("realistic", { environment: "room" }).environment).toBe(
+      "room",
+    );
+    expect(resolveLook("photo").environment).toBe("studio");
+  });
+  it("adds the viewer's soft outlines to Standard only", () => {
+    expect(lookPreferenceControls("standard", true)).toEqual({ edges: "soft" });
+    expect(lookPreferenceControls("standard", false)).toEqual({});
+    // The realistic looks hide outlines; the preference leaves them alone.
+    expect(lookPreferenceControls("realistic", true)).toEqual({});
+    expect(lookPreferenceControls("photo", true)).toEqual({});
+  });
+  it("tints soft edges towards the body colour, a darker shade", () => {
+    const dark = { r: 0.2, g: 0.2, b: 0.2 };
+    const red = softEdgeColor(dark, { r: 0.79, g: 0.1, b: 0.035 });
+    // Reddish, and darker than the body.
+    expect(red.r).toBeGreaterThan(red.g * 2);
+    expect(red.r).toBeLessThan(0.79);
+    expect(red.r).toBeGreaterThan(dark.r);
+    // White parts keep a visible mid-grey outline.
+    const white = softEdgeColor(dark, { r: 1, g: 1, b: 1 });
+    expect(white.r).toBeGreaterThan(0.3);
+    expect(white.r).toBeLessThan(0.6);
+    // Black parts (LDConfig edge a lighter grey) get a subtle outline.
+    const black = softEdgeColor(
+      { r: 0.35, g: 0.35, b: 0.35 },
+      { r: 0.106, g: 0.165, b: 0.2 },
+    );
+    expect(black.r).toBeLessThan(0.35);
+    expect(black.r).toBeGreaterThan(0.106);
   });
   it("classifies LDrawLoader finishes", () => {
     const m = (

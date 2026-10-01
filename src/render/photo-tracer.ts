@@ -11,6 +11,7 @@ import {
   tupleTextureSize,
 } from "./photo-sampling";
 import { classifyFinish } from "./look";
+import { STUDIO_HEIGHT, STUDIO_WIDTH, tracedStudio } from "./studio-lighting";
 import {
   GUIDE_FRONT_ONLY,
   GUIDE_OPAQUE,
@@ -32,119 +33,6 @@ import {
  * docs/RENDERING.md. The raster pipeline draws every moving frame, and remains
  * the fallback where path tracing is unavailable (see choosePhotoRenderer).
  */
-
-type Panel = {
-  /** Direction from the subject towards the light, camera frame (+Z = camera). */
-  direction: [number, number, number];
-  halfWidth: number;
-  halfHeight: number;
-  softness: number;
-  radiance: [number, number, number];
-};
-/** Studio lighting in the camera frame: a large key softbox above camera left, a
- * dimmer fill to the right, two strip lights behind for rim highlights, and an
- * overhead soft light. The environment is rotated with the camera's azimuth. */
-export const STUDIO_PANELS: readonly Panel[] = [
-  {
-    direction: [-0.62, 0.7, 0.36],
-    halfWidth: 0.26,
-    halfHeight: 0.2,
-    softness: 0.05,
-    radiance: [16, 15.3, 14.3],
-  },
-  {
-    direction: [0.85, 0.3, 0.42],
-    halfWidth: 0.5,
-    halfHeight: 0.36,
-    softness: 0.2,
-    radiance: [0.9, 0.95, 1.05],
-  },
-  {
-    direction: [0.72, 0.42, -0.55],
-    halfWidth: 0.08,
-    halfHeight: 0.5,
-    softness: 0.04,
-    radiance: [5, 5, 5],
-  },
-  {
-    direction: [-0.78, 0.36, -0.52],
-    halfWidth: 0.08,
-    halfHeight: 0.5,
-    softness: 0.04,
-    radiance: [3.6, 3.6, 3.8],
-  },
-  {
-    direction: [0, 1, 0],
-    halfWidth: 0.6,
-    halfHeight: 0.6,
-    softness: 0.3,
-    radiance: [0.7, 0.7, 0.7],
-  },
-];
-
-/** Equirectangular studio radiance (linear RGBA float, row 0 = straight down),
- * in the pathtracer's convention: u = atan(z, x) / 2π + 0.5, v = 1 − acos(y) / π. */
-export function studioEnvironmentData(
-  width = 512,
-  height = 256,
-  panels: readonly Panel[] = STUDIO_PANELS,
-) {
-  const data = new Float32Array(width * height * 4);
-  const frames = panels.map((panel) => {
-    const c = new THREE.Vector3(...panel.direction).normalize();
-    const up =
-      Math.abs(c.y) > 0.99
-        ? new THREE.Vector3(0, 0, 1)
-        : new THREE.Vector3(0, 1, 0);
-    const right = new THREE.Vector3().crossVectors(up, c).normalize();
-    const upward = new THREE.Vector3().crossVectors(c, right).normalize();
-    return { panel, c, right, upward };
-  });
-  const d = new THREE.Vector3();
-  const edge = (value: number, half: number, soft: number) => {
-    const t = (half - Math.abs(value)) / Math.max(1e-6, soft) + 0.5;
-    const s = Math.max(0, Math.min(1, t));
-    return s * s * (3 - 2 * s);
-  };
-  for (let row = 0; row < height; row++) {
-    const v = (row + 0.5) / height;
-    const phi = (1 - v) * Math.PI;
-    for (let column = 0; column < width; column++) {
-      const u = (column + 0.5) / width;
-      const theta = (u - 0.5) * 2 * Math.PI;
-      d.set(
-        Math.sin(phi) * Math.cos(theta),
-        Math.cos(phi),
-        Math.sin(phi) * Math.sin(theta),
-      );
-      // Neutral studio walls: brighter towards the ceiling, dark below.
-      const y = d.y;
-      const wall = y >= 0 ? 0.07 + 0.1 * y : 0.03 + 0.04 * (1 + y);
-      let r = wall,
-        g = wall,
-        b = wall * 1.02;
-      for (const { panel, c, right, upward } of frames) {
-        const facing = d.dot(c);
-        if (facing <= 0.05) continue;
-        const x = d.dot(right) / facing,
-          z = d.dot(upward) / facing;
-        const weight =
-          edge(x, panel.halfWidth, panel.softness) *
-          edge(z, panel.halfHeight, panel.softness);
-        if (weight <= 0) continue;
-        r += panel.radiance[0] * weight;
-        g += panel.radiance[1] * weight;
-        b += panel.radiance[2] * weight;
-      }
-      const i = (row * width + column) * 4;
-      data[i] = r;
-      data[i + 1] = g;
-      data[i + 2] = b;
-      data[i + 3] = 1;
-    }
-  }
-  return data;
-}
 
 function equirectTexture(data: Float32Array, width: number, height: number) {
   const texture = new THREE.DataTexture(
@@ -458,8 +346,6 @@ export type PhotoView = {
   camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
   focusDistance: number;
   depthOfField: number;
-  /** Camera azimuth around the model (radians); the studio lights follow it. */
-  azimuth: number;
   width: number;
   height: number;
 };
@@ -572,7 +458,13 @@ export class PhotoTracer {
     this.material.fragmentShader = decorrelatePixels(
       this.material.fragmentShader,
     );
-    this.environment = equirectTexture(studioEnvironmentData(), 512, 256);
+    // The studio shared with the Realistic look (studio-lighting.ts), fixed
+    // in the world like the raster key light.
+    this.environment = equirectTexture(
+      tracedStudio(),
+      STUDIO_WIDTH,
+      STUDIO_HEIGHT,
+    );
     this.material.envMapInfo.updateFrom(this.environment);
     this.material.environmentIntensity = 1;
     this.denoiser = new PhotoDenoiser(renderer);
@@ -817,7 +709,6 @@ export class PhotoTracer {
     physical.apertureBlades = 6;
     physical.apertureRotation = 0.3;
     physical.anamorphicRatio = 1;
-    this.material.environmentRotation.makeRotationY(view.azimuth).invert();
     if (this.denoise) {
       // Blur radius in pixels of a point at infinity: aperture radius over
       // the size of a pixel on the focus plane.

@@ -17,14 +17,18 @@ export const LOOK_NAMES: readonly LookName[] = [
   "photo",
 ];
 export type LookControls = {
-  /** Image-based lighting generated from three's RoomEnvironment (no external asset). */
-  environment: "none" | "room";
+  /** Image-based lighting, generated (no external asset): "studio" the procedural
+   * studio shared with the path tracer (studio-lighting.ts); "room" three's
+   * RoomEnvironment (the Realistic look before the shared studio). */
+  environment: "none" | "room" | "studio";
   /** "ldraw" keeps LDrawLoader's finish materials; "plastic" tunes them for IBL. */
   materials: "ldraw" | "plastic";
   /** Screen-space ground-truth ambient occlusion. */
   ambientOcclusion: "off" | "gtao";
-  /** "quality" follows the quality profile; "hidden" drops the black LDraw outlines. */
-  edges: "quality" | "hidden";
+  /** "quality" follows the quality profile; "hidden" drops the black LDraw
+   * outlines; "soft" draws them as the profile does, tinted towards each part's
+   * body colour (a darker shade) instead of near black. */
+  edges: "quality" | "hidden" | "soft";
   /** "quality" follows the quality profile; "soft" forces fitted soft shadows. */
   shadows: "quality" | "soft";
   /** "shadow" adds a transparent ground plane that only receives shadows and AO. */
@@ -77,7 +81,7 @@ const defaults: Record<LookName, LookControls> = {
     grade: "none",
   },
   realistic: {
-    environment: "room",
+    environment: "studio",
     materials: "plastic",
     ambientOcclusion: "gtao",
     edges: "hidden",
@@ -94,7 +98,7 @@ const defaults: Record<LookName, LookControls> = {
     grade: "none",
   },
   photo: {
-    environment: "room",
+    environment: "studio",
     materials: "plastic",
     ambientOcclusion: "gtao",
     edges: "hidden",
@@ -140,10 +144,10 @@ export function resolveLook(
   };
   if (
     Object.keys(overrides).some((key) => !Object.hasOwn(defaults[name], key)) ||
-    !["none", "room"].includes(result.environment) ||
+    !["none", "room", "studio"].includes(result.environment) ||
     !["ldraw", "plastic"].includes(result.materials) ||
     !["off", "gtao"].includes(result.ambientOcclusion) ||
-    !["quality", "hidden"].includes(result.edges) ||
+    !["quality", "hidden", "soft"].includes(result.edges) ||
     !["quality", "soft"].includes(result.shadows) ||
     !["grid", "shadow"].includes(result.ground) ||
     !Number.isInteger(result.samples) ||
@@ -191,14 +195,33 @@ export function lookUsesPipeline(look: LookControls, accumulate = true) {
   );
 }
 
-/** Light levels when image-based lighting is on; the room environment supplies most
- * of the fill that the standard look's bright hemisphere light fakes. */
+/** Light levels when image-based lighting is on; the environment supplies most
+ * of the fill that the standard look's bright hemisphere light fakes. With the
+ * studio the key light's intensity and direction come from the studio's key
+ * softbox (rasterStudioLight()); a faint hemisphere light remains for
+ * materials image-based light does not reach (the backdrops' Lambert grounds
+ * also get the studio's sky, rasterStudioSkyLight()). */
 export const LOOK_LIGHTING = {
-  environment: 0.45,
-  hemisphere: 0.25,
-  key: 2,
-  fill: 0.2,
+  room: { environment: 0.45, hemisphere: 0.25, key: 2, fill: 0.2 },
+  studio: { environment: 1, hemisphere: 0.12, fill: 0 },
 };
+
+/** Soft edges: the share of the LDraw edge colour kept, the rest the body
+ * colour. Light bodies keep more of their dark edge so outlines still read;
+ * dark bodies (whose LDConfig edge is a lighter grey) keep less. */
+export function softEdgeColor(
+  edge: { r: number; g: number; b: number },
+  body: { r: number; g: number; b: number },
+) {
+  // sRGB-encoded channels (0..1): mix perceptually, like the LDConfig values.
+  const luminance = 0.2126 * body.r + 0.7152 * body.g + 0.0722 * body.b;
+  const keep = 0.35 + 0.2 * luminance;
+  return {
+    r: edge.r * keep + body.r * (1 - keep) * 0.72,
+    g: edge.g * keep + body.g * (1 - keep) * 0.72,
+    b: edge.b * keep + body.b * (1 - keep) * 0.72,
+  };
+}
 
 export type Finish =
   | "plastic"

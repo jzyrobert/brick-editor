@@ -38,3 +38,26 @@ export function saveLookPreference(value: LookName) {
     return false;
   }
 }
+const SOFT_EDGES_KEY = "brick-editor-soft-edges";
+/** Whether the Standard look draws soft outlines (tinted towards each part's
+ * colour) instead of the near-black LDraw edges (default off). */
+export function loadSoftEdgesPreference(): boolean {
+  try {
+    return localStorage.getItem(SOFT_EDGES_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+export function saveSoftEdgesPreference(soft: boolean) {
+  try {
+    if (soft) localStorage.setItem(SOFT_EDGES_KEY, "1");
+    else localStorage.removeItem(SOFT_EDGES_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
+/** Controls the viewer's preferences add to a look (soft outlines in Standard). */
+export function lookPreferenceControls(name: LookName, softEdges: boolean) {
+  return name === "standard" && softEdges ? { edges: "soft" as const } : {};
+}

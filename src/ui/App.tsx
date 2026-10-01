@@ -170,8 +170,11 @@ import { zipSync, strToU8 } from "fflate";
 import {
   loadGridPreference,
   loadLookPreference,
+  loadSoftEdgesPreference,
+  lookPreferenceControls,
   saveGridPreference,
   saveLookPreference,
+  saveSoftEdgesPreference,
 } from "../persistence/look-preference";
 import {
   BACKDROP_NAMES,
@@ -515,6 +518,7 @@ function Workspace() {
     [anatomy, setAnatomy] = useState<AnatomyStatus | null>(null),
     [renderLook, setRenderLook] = useState<LookName>(loadLookPreference),
     [gridOn, setGridOn] = useState(loadGridPreference),
+    [softEdges, setSoftEdges] = useState(loadSoftEdgesPreference),
     [sectionRange, setSectionRange] = useState<{
       min: number;
       max: number;
@@ -1067,7 +1071,11 @@ function Workspace() {
       };
       // Phones degrade the realistic looks; apply the viewer's saved look.
       renderer.current.setLookResourceProfile(editor.resourceProfile);
-      renderer.current.setLook(loadLookPreference());
+      const look = loadLookPreference();
+      renderer.current.setLook(
+        look,
+        lookPreferenceControls(look, loadSoftEdgesPreference()),
+      );
       renderer.current.setGridVisible(loadGridPreference());
     } catch (e) {
       setStatus(e instanceof Error ? e.message : String(e));
@@ -2347,7 +2355,7 @@ function Workspace() {
   }, [viewsOpen]);
   const chooseLook = (name: LookName) => {
     try {
-      renderer.current?.setLook(name);
+      renderer.current?.setLook(name, lookPreferenceControls(name, softEdges));
       setRenderLook(name);
       saveLookPreference(name);
       setStatus(
@@ -2367,6 +2375,23 @@ function Workspace() {
     try {
       command("scene.set", { backdrop: name });
       setStatus(`${BACKDROPS[name].label} backdrop. ${BACKDROPS[name].hint}`);
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : String(e));
+    }
+  };
+  const toggleSoftEdges = (on: boolean) => {
+    try {
+      renderer.current?.setLook(
+        "standard",
+        lookPreferenceControls("standard", on),
+      );
+      setSoftEdges(on);
+      saveSoftEdgesPreference(on);
+      setStatus(
+        on
+          ? "Soft outlines: each part's edges are a darker shade of its colour."
+          : "Outlines drawn dark, as in LDraw.",
+      );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : String(e));
     }
@@ -4021,13 +4046,25 @@ function Workspace() {
                     </button>
                   ))}
                 </div>
-                <p className="view-hint">
-                  {renderLook === "standard"
-                    ? "Flat colours with outlines. Fastest."
-                    : renderLook === "realistic"
-                      ? "Shiny plastic and soft shadows."
-                      : "Sharpens itself while the view is still."}
-                </p>
+                <div className="look-hint">
+                  <p className="view-hint">
+                    {renderLook === "standard"
+                      ? "Flat colours with outlines. Fastest."
+                      : renderLook === "realistic"
+                        ? "Shiny plastic and soft shadows."
+                        : "Sharpens itself while the view is still."}
+                  </p>
+                  {renderLook === "standard" && (
+                    <label className="backdrop-grid">
+                      <input
+                        type="checkbox"
+                        checked={softEdges}
+                        onChange={(e) => toggleSoftEdges(e.target.checked)}
+                      />
+                      Soft outlines
+                    </label>
+                  )}
+                </div>
                 <div className="backdrop-control">
                   <div className="backdrop-head">
                     <span id="backdrop-title">Backdrop</span>

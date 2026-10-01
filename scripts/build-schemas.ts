@@ -771,10 +771,10 @@ const render = obj(
     backdrop: { enum: [...BACKDROP_NAMES] },
     lookControls: obj(
       {
-        environment: { enum: ["none", "room"] },
+        environment: { enum: ["none", "room", "studio"] },
         materials: { enum: ["ldraw", "plastic"] },
         ambientOcclusion: { enum: ["off", "gtao"] },
-        edges: { enum: ["quality", "hidden"] },
+        edges: { enum: ["quality", "hidden", "soft"] },
         shadows: { enum: ["quality", "soft"] },
         ground: { enum: ["grid", "shadow"] },
         samples: { type: "integer", minimum: 1, maximum: 64 },

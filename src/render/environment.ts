@@ -131,6 +131,7 @@ const groundVertex = /* glsl */ `
 varying vec2 vEnvXZ;
 `;
 const groundFragment = /* glsl */ `
+uniform vec3 uSkyLight;
 varying vec2 vEnvXZ;
 uniform sampler2D uGroundTex;
 uniform vec2 uTileScale;
@@ -305,6 +306,22 @@ export class SceneEnvironment {
   get hasGround() {
     return !!this.ground && this.drawn;
   }
+  /** Linear albedo of the drawn ground (the colour the path tracer traces
+   * it in), or null without a ground. */
+  get groundAlbedo(): THREE.Color | null {
+    if (!this.hasGround) return null;
+    const traced = (this.ground!.material as THREE.Material).userData
+      .photoMaterial as THREE.MeshPhysicalMaterial | undefined;
+    return traced ? traced.color : null;
+  }
+  /** Unshadowed irradiance (linear RGB) the ground receives on top of the
+   * scene's lights: the studio's sky in the realistic looks, which image-based
+   * light does not bring to the ground's Lambert material. Zero otherwise. */
+  private readonly skyLight = new THREE.Color(0, 0, 0);
+  setSkyLight(irradiance: readonly [number, number, number] | null) {
+    if (irradiance) this.skyLight.setRGB(...irradiance);
+    else this.skyLight.setRGB(0, 0, 0);
+  }
   /** Fallback background colour for this backdrop. */
   get background() {
     return BACKDROPS[this.current].background;
@@ -403,6 +420,7 @@ export class SceneEnvironment {
       uEye: { value: new THREE.Vector3() },
       uFadeNear: { value: 3000 },
       uFadeFar: { value: 10000 },
+      uSkyLight: { value: this.skyLight },
     };
     const defines: Record<string, string> = {};
     if (g.variation || g.outer) {
@@ -445,7 +463,11 @@ export class SceneEnvironment {
         groundFragment +
         shader.fragmentShader
           .replace("#include <map_fragment>", groundMapFragment)
-          .replace("#include <opaque_fragment>", groundFadeFragment);
+          .replace("#include <opaque_fragment>", groundFadeFragment)
+          .replace(
+            "#include <lights_fragment_end>",
+            "irradiance += uSkyLight;\n#include <lights_fragment_end>",
+          );
     };
     groundMaterial.customProgramCacheKey = () =>
       "backdrop-ground:" + Object.keys(defines).sort().join(",");

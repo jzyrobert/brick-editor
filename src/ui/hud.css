@@ -1547,6 +1547,18 @@ a .icon {
   grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
   gap: 4px;
 }
+/* The look's one-line hint, with Standard's "Soft outlines" switch beside it. */
+.look-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 10px;
+}
+.look-hint .backdrop-grid {
+  font-size: var(--text-label);
+  white-space: nowrap;
+}
 .section-axes button {
   padding: 0 4px;
 }

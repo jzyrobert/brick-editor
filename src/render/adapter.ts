@@ -71,6 +71,7 @@ import {
   parseFlakeMaterials,
   FINISH_PARAMETERS,
   LOOK_LIGHTING,
+  softEdgeColor,
   type FlakeSpec,
   type LookControls,
   type LookName,
@@ -104,6 +105,12 @@ import {
   partTitle,
 } from "../play/collision-proxy";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import {
+  STUDIO_FLOOR_ALBEDO,
+  rasterStudioLight,
+  rasterStudioSkyLight,
+  rasterStudioTexture,
+} from "./studio-lighting";
 import { SceneEnvironment } from "./environment";
 import {
   BACKDROPS,
@@ -528,7 +535,9 @@ export class SceneAdapter {
   private look = resolveLook("standard");
   private lookResourceProfile: ResourceProfileName = "desktop";
   private pipeline?: LookPipeline;
-  private environmentMap?: THREE.Texture;
+  /** Prefiltered image-based light per environment, generated once and kept
+   * (a few MB) until a context loss or dispose. */
+  private environmentMaps = new Map<string, THREE.Texture>();
   private flakeSpecs?: Map<string, FlakeSpec>;
   /** Transparent plane that only shows shadows (and AO) under the model. */
   private shadowGround: THREE.Mesh<THREE.PlaneGeometry, THREE.ShadowMaterial>;
@@ -706,10 +715,10 @@ export class SceneAdapter {
     // geometry and materials upload again on the next draw.
     this.renderer.setRenderTarget(null);
     // Render-target contents (the prefiltered environment) do not survive a loss.
-    this.environmentMap?.dispose();
-    this.environmentMap = undefined;
-    if (this.look.environment === "room")
-      this.scene.environment = this.ensureEnvironment();
+    for (const map of this.environmentMaps.values()) map.dispose();
+    this.environmentMaps.clear();
+    if (this.look.environment !== "none")
+      this.scene.environment = this.ensureEnvironment(this.look.environment);
     this.resize();
     this.report("Graphics restored.");
     this.invalidate();
@@ -2474,8 +2483,12 @@ export class SceneAdapter {
       "Wait for capture before changing the render look",
     );
     this.applyLook(resolveLook(name, controls, this.lookResourceProfile));
+    this.lookOverrides = { ...controls };
     return this.currentLook();
   }
+  /** Controls the viewer chose on top of the look's defaults (soft edges), kept
+   * when the resource profile re-resolves the look. */
+  private lookOverrides: Partial<LookControls> = {};
   /** Phones degrade look defaults (see resolveLook); re-resolves the current look. */
   setLookResourceProfile(profile: ResourceProfileName) {
     if (profile === this.lookResourceProfile) return;
@@ -2489,25 +2502,39 @@ export class SceneAdapter {
     // stricter profile refuses it (nothing drawn) and a looser one draws it.
     if (this.requested) this.update(this.requested).catch(() => {});
     if (this.captureActive) return;
-    this.applyLook(resolveLook(this.look.name, {}, profile));
+    this.applyLook(resolveLook(this.look.name, this.lookOverrides, profile));
   }
   private applyLook(look: RenderLook, refreshTreatments = true) {
     if (JSON.stringify(look) === JSON.stringify(this.look)) return;
     this.look = structuredClone(look);
-    const ibl = look.environment === "room";
-    this.scene.environment = ibl ? this.ensureEnvironment() : null;
-    // Image-based light replaces most of the flat hemisphere fill.
-    this.scene.environmentIntensity = LOOK_LIGHTING.environment;
-    this.hemisphereLight.intensity = ibl ? LOOK_LIGHTING.hemisphere : 3;
-    this.keyLight.intensity = ibl ? LOOK_LIGHTING.key : 3;
-    this.fillLight.intensity = ibl ? LOOK_LIGHTING.fill : 1.5;
+    const ibl = look.environment !== "none";
+    this.scene.environment =
+      look.environment === "none"
+        ? null
+        : this.ensureEnvironment(look.environment);
+    // Image-based light replaces most of the flat hemisphere fill. The studio's
+    // key softbox is mostly drawn by the key light, which casts the shadows.
+    const studio =
+      look.environment === "studio" ? rasterStudioLight() : undefined;
+    const lighting = studio ? LOOK_LIGHTING.studio : LOOK_LIGHTING.room;
+    this.scene.environmentIntensity = lighting.environment;
+    this.hemisphereLight.intensity = ibl ? lighting.hemisphere : 3;
+    this.keyLight.intensity = studio
+      ? studio.keyIntensity
+      : ibl
+        ? LOOK_LIGHTING.room.key
+        : 3;
+    // A backdrop's Lambert ground gets the studio's sky as unshadowed light.
+    this.environment.setSkyLight(studio ? rasterStudioSkyLight() : null);
+    if (studio) this.keyLight.color.copy(studio.keyColor);
+    else this.keyLight.color.set(0xffffff);
+    this.fillLight.intensity = ibl ? lighting.fill : 1.5;
     this.applyGroundTreatment();
     this.tuneMaterials();
     // Ghost/dimming clones copy material parameters when they are applied.
     if (refreshTreatments) this.applyLayerGhost();
     this.fitLookToModel();
     this.applyQuality(this.qualityProfile, true);
-    if (!ibl) this.environmentMap = disposeTexture(this.environmentMap);
     if (!lookUsesPipeline(look)) {
       this.pipeline?.dispose();
       this.pipeline = undefined;
@@ -2537,6 +2564,9 @@ export class SceneAdapter {
   private applyBackdrop(name: BackdropName) {
     if (!this.environment.set(name)) return;
     this.scene.background = new THREE.Color(BACKDROPS[name].background);
+    // The studio's floor bounce takes the colour of the backdrop's ground.
+    if (this.look.environment === "studio")
+      this.scene.environment = this.ensureEnvironment("studio");
     this.applyGroundTreatment();
     this.invalidate();
   }
@@ -2555,15 +2585,41 @@ export class SceneAdapter {
       this.invalidate();
     }
   }
-  private ensureEnvironment() {
-    if (!this.environmentMap) {
+  private ensureEnvironment(kind: "room" | "studio") {
+    // The studio's floor bounce is tinted by the backdrop's ground (the
+    // colour Photo traces it in), so one map per backdrop.
+    const ground = kind === "studio" ? this.environment.groundAlbedo : null;
+    const key =
+      kind === "studio" ? "studio:" + (ground?.getHexString() ?? "") : kind;
+    let map = this.environmentMaps.get(key);
+    if (!map) {
       const generator = new THREE.PMREMGenerator(this.renderer);
-      const room = new RoomEnvironment();
-      this.environmentMap = generator.fromScene(room, 0.04).texture;
-      room.dispose();
+      if (kind === "studio") {
+        // The studio shared with Photo's path tracer (studio-lighting.ts).
+        const equirect = rasterStudioTexture(
+          ground ? [ground.r, ground.g, ground.b] : STUDIO_FLOOR_ALBEDO,
+        );
+        map = generator.fromEquirectangular(equirect).texture;
+        equirect.dispose();
+        // Keep the room map and at most two studio maps (a few MB each).
+        const studios = [...this.environmentMaps.keys()].filter((k) =>
+          k.startsWith("studio:"),
+        );
+        for (const old of studios.slice(0, Math.max(0, studios.length - 1))) {
+          if (this.scene.environment === this.environmentMaps.get(old))
+            continue;
+          this.environmentMaps.get(old)!.dispose();
+          this.environmentMaps.delete(old);
+        }
+      } else {
+        const room = new RoomEnvironment();
+        map = generator.fromScene(room, 0.04).texture;
+        room.dispose();
+      }
       generator.dispose();
+      this.environmentMaps.set(key, map);
     }
-    return this.environmentMap;
+    return map;
   }
   /** Tune (or restore) LDrawLoader finish materials in place. In-place tuning keeps
    * batching keys, prototype sharing and ghost/dimming treatments unchanged. */
@@ -2616,6 +2672,59 @@ export class SceneAdapter {
           if (flake && !flaked) applyFlakes(standard, flake);
         }
       });
+    // Nothing to restore until soft edges were first drawn.
+    if (this.look.edges === "soft" || this.edgesSoftened)
+      this.edgesSoftened = this.tuneEdges(this.look.edges === "soft");
+  }
+  private edgesSoftened = false;
+  /** Soft edges: tint every edge and conditional-line material (shared per
+   * colour, like the face materials) towards its colour's body colour, in
+   * place; restore the LDConfig edge colour otherwise. No material, program
+   * or draw call is added. */
+  private tuneEdges(soft: boolean) {
+    let softened = false;
+    const body = new Map<string, THREE.Color>();
+    const lines = new Set<THREE.Material & { color: THREE.Color }>();
+    for (const group of this.allPrototypes)
+      group.traverse((object) => {
+        const drawable = object as THREE.Mesh | THREE.LineSegments;
+        if (!drawable.material) return;
+        const isLines = (drawable as THREE.LineSegments).isLineSegments;
+        for (const material of Array.isArray(drawable.material)
+          ? drawable.material
+          : [drawable.material]) {
+          const code = material.userData.code;
+          if (typeof code !== "string") continue;
+          const coloured = material as THREE.Material & { color?: THREE.Color };
+          if (!coloured.color) continue;
+          if (isLines)
+            lines.add(coloured as typeof coloured & { color: THREE.Color });
+          else if (
+            (material as THREE.MeshStandardMaterial).isMeshStandardMaterial
+          )
+            if (!body.has(code)) body.set(code, coloured.color);
+        }
+      });
+    const edge = new THREE.Color(),
+      fill = new THREE.Color();
+    for (const material of lines) {
+      const base = (material.userData.lookEdgeBase ??=
+        material.color.toArray()) as [number, number, number];
+      const colour = soft ? body.get(material.userData.code) : undefined;
+      if (!colour) {
+        material.color.fromArray(base);
+        continue;
+      }
+      softened = true;
+      edge.fromArray(base);
+      const e = edge.getRGB({ r: 0, g: 0, b: 0 }, THREE.SRGBColorSpace);
+      const b = fill
+        .copy(colour)
+        .getRGB({ r: 0, g: 0, b: 0 }, THREE.SRGBColorSpace);
+      const tinted = softEdgeColor(e, b);
+      material.color.setRGB(tinted.r, tinted.g, tinted.b, THREE.SRGBColorSpace);
+    }
+    return softened;
   }
   /** Fit the key light's shadow camera and the shadow ground to the model. The
    * standard look keeps its original fixed ±1500 LDU shadow frustum. */
@@ -2638,7 +2747,12 @@ export class SceneAdapter {
         box.set(new THREE.Vector3(-80, 0, -80), new THREE.Vector3(80, 48, 80));
       const sphere = box.getBoundingSphere(new THREE.Sphere());
       const radius = Math.max(sphere.radius, 40);
-      const direction = new THREE.Vector3(250, 600, 300).normalize();
+      // With the studio the key light comes from the studio's key softbox, so
+      // raster shadows fall where Photo's traced ones do.
+      const direction =
+        this.look.environment === "studio"
+          ? rasterStudioLight().keyDirection.clone()
+          : new THREE.Vector3(250, 600, 300).normalize();
       sun.target.position.copy(sphere.center);
       sun.position.copy(sphere.center).addScaledVector(direction, radius * 3);
       camera.left = camera.bottom = -radius * 1.1;
@@ -3087,16 +3201,12 @@ export class SceneAdapter {
     height: number,
     bounds: THREE.Box3,
   ) {
-    const camera = this.camera;
-    const target = this.controls.target;
-    const position = camera.getWorldPosition(new THREE.Vector3());
     return {
-      camera,
+      camera: this.camera,
       width,
       height,
       focusDistance: this.photoFocusDistance(bounds),
       depthOfField: look.depthOfField,
-      azimuth: Math.atan2(position.x - target.x, position.z - target.z),
     };
   }
   private photoViewSignature(
@@ -3110,7 +3220,6 @@ export class SceneAdapter {
       view.height,
       round(view.focusDistance),
       view.depthOfField,
-      round(view.azimuth),
       view.camera.matrixWorld.elements.map(round),
       view.camera.projectionMatrix.elements.map(round),
       this.photoBackground()?.getHexString() ?? null,
@@ -5560,7 +5669,8 @@ export class SceneAdapter {
     this.releasePhoto(true);
     this.pipeline?.dispose();
     this.pipeline = undefined;
-    this.environmentMap = disposeTexture(this.environmentMap);
+    for (const map of this.environmentMaps.values()) map.dispose();
+    this.environmentMaps.clear();
     this.shadowGround.geometry.dispose();
     this.shadowGround.material.dispose();
     this.environment.dispose();

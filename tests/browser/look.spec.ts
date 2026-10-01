@@ -76,7 +76,7 @@ test("render looks switch from the views popover, persist, and captures request 
   expect(realistic).toMatchObject({
     name: "realistic",
     resourceProfile: "desktop",
-    environment: "room",
+    environment: "studio",
     ambientOcclusion: "gtao",
     edges: "hidden",
   });
@@ -417,4 +417,141 @@ test("Play re-renders the cached shadow map only when the scene changes, not whe
   await page.evaluate(() => window.brickEditor!.play.setInput({}));
   expect((await stats()).shadowPasses).toBe(before.shadowPasses);
   await page.evaluate(() => window.brickEditor!.play.exit());
+});
+
+test("Standard's soft outlines: a Look menu switch that tints edges without adding draws, remembered per viewer", async ({
+  page,
+}) => {
+  test.setTimeout(180000);
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  const revision = await load(page);
+  const stats = () =>
+    page.evaluate(
+      async () => (await window.brickEditor!.render.budget()).lastFrame,
+    );
+  const plain = await stats();
+  await page.getByRole("button", { name: "Camera views" }).click();
+  await page.getByRole("button", { name: "Look", exact: true }).click();
+  const soft = page.getByRole("checkbox", { name: "Soft outlines" });
+  await expect(soft).not.toBeChecked();
+  await soft.check();
+  await expect
+    .poll(async () => (await stats()).frames, { timeout: 30000 })
+    .toBeGreaterThan(plain.frames);
+  const tinted = await stats();
+  expect(
+    (await page.evaluate(() => window.brickEditor!.render.look.get())).edges,
+  ).toBe("soft");
+  // Edge materials are tinted in place: the same draws and lines.
+  expect(tinted.calls).toBe(plain.calls);
+  expect(tinted.lines).toBe(plain.lines);
+
+  // Captures request soft edges explicitly; the default stays byte-identical.
+  const hashes = await page.evaluate(async (revision) => {
+    const a = window.brickEditor!;
+    const hash = async (edges?: "soft") => {
+      const r = await a.render.image({
+        revision,
+        width: 160,
+        height: 120,
+        format: "png",
+        visibility: { mode: "all" },
+        background: { type: "solid", color: "#e9edef" },
+        quality: "balanced",
+        look: "standard",
+        ...(edges ? { lookControls: { edges } } : {}),
+      });
+      return Array.from(
+        new Uint8Array(
+          await crypto.subtle.digest("SHA-256", await r.blob.arrayBuffer()),
+        ),
+      ).join(",");
+    };
+    const plain = await hash();
+    return { plain, soft: await hash("soft"), again: await hash() };
+  }, revision);
+  expect(hashes.soft).not.toBe(hashes.plain);
+  expect(hashes.again).toBe(hashes.plain);
+
+  // Only Standard offers the switch; the choice survives a reload.
+  const looks = page.getByRole("group", { name: "Render look" });
+  await looks.getByRole("button", { name: "Realistic" }).click();
+  await expect(soft).toHaveCount(0);
+  await looks.getByRole("button", { name: "Standard" }).click();
+  await expect(soft).toBeChecked();
+  expect(
+    await page.evaluate(() => localStorage.getItem("brick-editor-soft-edges")),
+  ).toBe("1");
+  await load(page);
+  expect(
+    (await page.evaluate(() => window.brickEditor!.render.look.get())).edges,
+  ).toBe("soft");
+  await page.getByRole("button", { name: "Camera views" }).click();
+  await page.getByRole("button", { name: "Look", exact: true }).click();
+  await soft.uncheck();
+  expect(
+    (await page.evaluate(() => window.brickEditor!.render.look.get())).edges,
+  ).toBe("quality");
+  expect(errors).toEqual([]);
+});
+
+test("Realistic and Photo share one studio: the raster key light is the traced key softbox", async ({
+  page,
+}) => {
+  test.setTimeout(180000);
+  const revision = await load(page);
+  const result = await page.evaluate(async (revision) => {
+    const a = window.brickEditor!;
+    const key = async (look: "realistic" | "photo") => {
+      const r = await a.render.image({
+        revision,
+        width: 96,
+        height: 72,
+        format: "png",
+        visibility: { mode: "all" },
+        background: { type: "solid", color: "#ffffff" },
+        quality: "balanced",
+        look,
+        // Photo's raster frames: the frame drawn while the view moves.
+        ...(look === "photo"
+          ? { lookControls: { renderer: "raster" as const, samples: 1 } }
+          : {}),
+      });
+      const manifest = r.manifest as unknown as {
+        lighting: {
+          lights: {
+            name: string;
+            position: number[];
+            target: number[];
+            intensity: number;
+          }[];
+        };
+      };
+      const light = manifest.lighting.lights.find((l) => l.name === "key")!;
+      const d = light.position.map((v, i) => v - light.target[i]);
+      const length = Math.hypot(...d);
+      return {
+        direction: d.map((v) => v / length),
+        intensity: light.intensity,
+      };
+    };
+    return {
+      realistic: await key("realistic"),
+      photo: await key("photo"),
+      look: await a.render.look.set("realistic"),
+    };
+  }, revision);
+  expect(result.look).toMatchObject({ environment: "studio" });
+  // LDraw space (−Y up): the key is high and above the left of the camera
+  // fit() frames a model with (it looks from +X −Y −Z).
+  const [x, y, z] = result.realistic.direction;
+  expect(y).toBeLessThan(-0.6);
+  expect(z).toBeLessThan(-0.5);
+  expect(x).toBeLessThan(0);
+  for (let i = 0; i < 3; i++)
+    expect(result.photo.direction[i]).toBeCloseTo(
+      result.realistic.direction[i],
+    );
+  expect(result.realistic.intensity).toBeGreaterThan(1);
 });

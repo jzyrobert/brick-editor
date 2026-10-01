@@ -20,8 +20,22 @@ import {
   mergeTraceGeometry,
   pathMaterial,
   studioBackdropGeometry,
-  studioEnvironmentData,
 } from "../../src/render/photo-tracer";
+import {
+  STUDIO_AZIMUTH,
+  STUDIO_KEY_SHARE,
+  STUDIO_PANELS,
+  panelIrradiance,
+  STUDIO_HEIGHT,
+  STUDIO_WIDTH,
+  rasterStudioData,
+  rasterStudioLight,
+  rasterStudioSkyLight,
+  studioEnvironmentData,
+  studioPanelsInWorld,
+  tracedStudio,
+  upwardIrradiance,
+} from "../../src/render/studio-lighting";
 import { registerTreatment } from "../../src/render/batching";
 import { RENDER_BUDGETS } from "../../src/render/render-budget";
 
@@ -219,21 +233,112 @@ describe("photo look: path-traced stills", () => {
   it("lights the studio from above camera left, deterministically", () => {
     const width = 128,
       height = 64;
-    const a = studioEnvironmentData(width, height);
-    expect(studioEnvironmentData(width, height)).toEqual(a);
-    const at = (x: number, y: number, z: number) => {
+    const a = studioEnvironmentData(width, height, STUDIO_PANELS);
+    expect(studioEnvironmentData(width, height, STUDIO_PANELS)).toEqual(a);
+    const at = (x: number, y: number, z: number, data = a) => {
       const d = new THREE.Vector3(x, y, z).normalize();
       const u = Math.atan2(d.z, d.x) / (2 * Math.PI) + 0.5;
       const v = 1 - Math.acos(d.y) / Math.PI;
       const column = Math.min(width - 1, Math.floor(u * width));
       const row = Math.min(height - 1, Math.floor(v * height));
-      return a[(row * width + column) * 4];
+      return data[(row * width + column) * 4];
     };
     // Key softbox (camera frame: +Z towards the camera, −X to its left).
     expect(at(-0.62, 0.7, 0.36)).toBeGreaterThan(10);
     expect(at(-0.62, 0.7, 0.36)).toBeGreaterThan(5 * at(0.62, 0.7, 0.36));
     // Below the horizon is dark.
     expect(at(0, -1, 0)).toBeLessThan(0.1);
+    // In the world the studio is turned to the framing camera's azimuth: the
+    // key is above that camera's left.
+    const world = studioEnvironmentData(width, height);
+    const key = new THREE.Vector3(-0.62, 0.7, 0.36).applyAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      STUDIO_AZIMUTH,
+    );
+    expect(at(key.x, key.y, key.z, world)).toBeGreaterThan(10);
+    expect(at(-0.62, 0.7, 0.36, world)).toBeLessThan(10);
+    const toCamera = new THREE.Vector3(0.8, 0, 0.9).normalize();
+    const right = new THREE.Vector3(0, 1, 0).cross(toCamera);
+    expect(key.dot(right)).toBeLessThan(-0.3);
+    expect(key.dot(toCamera)).toBeGreaterThan(0);
+  });
+
+  it("shares one studio between the path tracer and the raster Realistic look", () => {
+    // Generated once per page.
+    expect(tracedStudio()).toBe(tracedStudio());
+    expect(rasterStudioLight()).toBe(rasterStudioLight());
+    const studio = rasterStudioLight();
+    const data = rasterStudioData();
+    const [key] = studioPanelsInWorld();
+    // The raster key light points along the traced key softbox and carries
+    // its share of the softbox's irradiance.
+    expect(
+      studio.keyDirection.angleTo(new THREE.Vector3(...key.direction)),
+    ).toBeLessThan(1e-6);
+    const irradiance = panelIrradiance(key);
+    expect(studio.keyIntensity).toBeCloseTo(
+      STUDIO_KEY_SHARE * Math.max(...irradiance),
+    );
+    expect(studio.keyIntensity).toBeGreaterThan(1);
+    // The raster environment keeps a dimmer key reflection and gains a lit
+    // floor below the horizon (the tracer traces its own floor).
+    const index = (d: THREE.Vector3) => {
+      const u = Math.atan2(d.z, d.x) / (2 * Math.PI) + 0.5;
+      const v = 1 - Math.acos(d.y) / Math.PI;
+      return (
+        (Math.min(STUDIO_HEIGHT - 1, Math.floor(v * STUDIO_HEIGHT)) *
+          STUDIO_WIDTH +
+          Math.min(STUDIO_WIDTH - 1, Math.floor(u * STUDIO_WIDTH))) *
+        4
+      );
+    };
+    const k = index(new THREE.Vector3(...key.direction).normalize());
+    expect(data[k]).toBeCloseTo(
+      tracedStudio()[k] - (tracedStudio()[k] - 0.14) * STUDIO_KEY_SHARE,
+      0,
+    );
+    const down = index(new THREE.Vector3(0, -1, 0));
+    expect(data[down]).toBeGreaterThan(5 * tracedStudio()[down]);
+    // A backdrop's ground tints the floor bounce (a meadow bounces green).
+    const grass = rasterStudioData([0.1, 0.35, 0.05]);
+    expect(grass[down + 1]).toBeGreaterThan(2 * grass[down]);
+    expect(grass[k]).toBeCloseTo(data[k]);
+    // A backdrop's Lambert ground gets the studio's sky (not the key light's
+    // share, which the key light casts with a shadow): about half of what the
+    // traced studio gives an upward surface, so a shadow on it stays grey.
+    const sky = rasterStudioSkyLight();
+    expect(rasterStudioSkyLight()).toBe(sky);
+    const tracedSky = upwardIrradiance(
+      tracedStudio(),
+      STUDIO_WIDTH,
+      STUDIO_HEIGHT,
+    );
+    expect(sky[0]).toBeGreaterThan(0.4 * tracedSky[0]);
+    expect(sky[0]).toBeLessThan(0.7 * tracedSky[0]);
+  });
+
+  it("integrates a panel's irradiance over its solid angle", () => {
+    // A small panel: radiance × area (solid angle ≈ area at distance 1).
+    const small = panelIrradiance({
+      direction: [0, 1, 0],
+      halfWidth: 0.05,
+      halfHeight: 0.05,
+      softness: 1e-4,
+      radiance: [10, 10, 10],
+    });
+    expect(small[0]).toBeCloseTo(10 * 0.01, 2);
+    // A panel filling the view approaches π × radiance.
+    const huge = panelIrradiance(
+      {
+        direction: [0, 1, 0],
+        halfWidth: 50,
+        halfHeight: 50,
+        softness: 1e-4,
+        radiance: [1, 1, 1],
+      },
+      4000,
+    );
+    expect(huge[0]).toBeGreaterThan(Math.PI * 0.95);
   });
 
   it("builds a seamless inward-facing studio cove around the model", () => {
