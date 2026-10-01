@@ -103,15 +103,24 @@ test("a 6,000-part, 200-variant official-parts model renders completely and is w
   const scene = await page.evaluate(() => {
     const s = window.__brickScene as unknown as {
       handles: { values(): Iterable<{ object: unknown }>; size: number };
-      root: { children: unknown[] };
+      root: { children: { name: string; children: unknown[] }[] };
     };
+    // The step viewer's assembly group (just its empty tray when no steps
+    // are shown) lives under the root too.
+    const assembly = s.root.children.find(
+      (c) => c.name === "instruction assembly",
+    );
     return {
       handles: s.handles.size,
       trees: [...s.handles.values()].filter((h) => h.object).length,
-      rootChildren: s.root.children.length,
+      rootChildren: s.root.children.length - (assembly ? 1 : 0),
     };
   });
-  expect(scene).toEqual({ handles: 6000, trees: 0, rootChildren: 1 });
+  expect(scene).toEqual({
+    handles: 6000,
+    trees: 0,
+    rootChildren: 1,
+  });
   // Adaptive culling cells: a whole-model view draws one draw per bucket; a
   // camera at eye level inside the village draws the large buckets per
   // spatial cell, so the cells behind and beside it are culled; fitting the
