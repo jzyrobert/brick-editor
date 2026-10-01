@@ -217,48 +217,55 @@ it("CLI renders review views of a compiled script", async () => {
   }
 }, 240000);
 
-it("CLI writes only the report for a build over --max-parts", async () => {
+it("CLI writes only the report for a build outside --target-parts", async () => {
   const dir = await mkdtemp(join(tmpdir(), "brick-budget-"));
   try {
     const out = join(dir, "house.mpd");
-    const build = (budget: number) =>
+    const build = (target: number, ...more: string[]) =>
       main([
         "build",
         "--script",
         "fixtures/build-scripts/house.json",
         "--output",
         out,
-        "--max-parts",
-        String(budget),
+        "--target-parts",
+        String(target),
+        ...more,
         "--no-check",
       ]);
+    const report = async () =>
+      JSON.parse(await readFile(out + ".report.json", "utf8"));
     captured();
-    await build(100_000);
-    const parts = JSON.parse(await readFile(out + ".report.json", "utf8")).stats
-      .parts;
-    const log = captured();
-    process.exitCode = 0;
-    await build(parts - 10);
-    expect(process.exitCode).toBe(2);
-    process.exitCode = 0;
-    const r = JSON.parse(await readFile(out + ".report.json", "utf8"));
-    expect(r.ok).toBe(false);
-    expect(r.output).toBeUndefined();
-    expect(r.problems[0].message).toMatch(
-      new RegExp(`^${parts} parts: 10 over the budget of ${parts - 10} `),
+    await build(250); // 225–275: the House is inside
+    const parts = (await report()).stats.parts;
+    expect((await report()).output).toBe(out);
+    for (const [target, problem] of [
+      [parts - 10, `10 over the maximum of ${parts - 10}`],
+      [parts + 10, `10 under the minimum of ${parts + 10}`],
+    ] as const) {
+      await build(250); // a model to be removed
+      const log = captured();
+      process.exitCode = 0;
+      await build(target, "--leeway", "0");
+      expect(process.exitCode).toBe(2);
+      process.exitCode = 0;
+      const r = await report();
+      expect(r.ok).toBe(false);
+      expect(r.output).toBeUndefined();
+      expect(r.problems[0].message).toMatch(
+        new RegExp(`^${parts} parts: ${problem} \\(target ${target} ± 0%`),
+      );
+      // The earlier model is gone, not left to be mistaken for this one.
+      await expect(stat(out)).rejects.toThrow();
+      expect(log.join("\n")).toContain("not written: " + out);
+    }
+    const house = ["build", "--script", "fixtures/build-scripts/house.json"];
+    await expect(main([...house, "--target-parts", "0"])).rejects.toThrow(
+      /--target-parts must be a positive integer/,
     );
-    // The model from the first build is gone, not left to be mistaken for this one.
-    await expect(stat(out)).rejects.toThrow();
-    expect(log.join("\n")).toContain("not written: " + out);
-    await expect(
-      main([
-        "build",
-        "--script",
-        "fixtures/build-scripts/house.json",
-        "--max-parts",
-        "0",
-      ]),
-    ).rejects.toThrow(/--max-parts must be a positive integer/);
+    await expect(main([...house, "--leeway", "5"])).rejects.toThrow(
+      /needs --target-parts/,
+    );
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -1,6 +1,6 @@
 # Build agent system prompt
 
-Paste everything below the line as the system prompt of an LLM that should design brick builds. Replace `{{MAX_PARTS}}` with the part budget and `{{BRIEF}}` with the request (or send it as the user message). `npm run workspace` does this for you and sets up a clean directory for a coding agent ([docs/AGENT-BUILDING.md](../docs/AGENT-BUILDING.md#agent-workspaces)), which is also the full reference.
+Paste everything below the line as the system prompt of an LLM that should design brick builds. Replace `{{TARGET_PARTS}}` with the part target, `{{MIN_PARTS}}`–`{{MAX_PARTS}}` with the accepted range (10% either side by default) and `{{BRIEF}}` with the request (or send it as the user message). `npm run workspace` does this for you and sets up a clean directory for a coding agent ([docs/AGENT-BUILDING.md](../docs/AGENT-BUILDING.md#agent-workspaces)), which is also the full reference.
 
 ---
 
@@ -24,8 +24,9 @@ Return ONLY one JSON object (no markdown, no commentary). If the interface suppo
 
 ## Size budget
 
-- Hard maximum: {{MAX_PARTS}} parts (every part counts, including each copy of a component).
-- The compiler refuses builds over the limit and says by how much.
+- Target: {{TARGET_PARTS}} parts (every part counts, including each copy of a component).
+- Accepted range: {{MIN_PARTS}}–{{MAX_PARTS}} parts.
+- Outside it the compiler refuses the build and says by how much: above {{MAX_PARTS}} remove parts, below {{MIN_PARTS}} add more.
 
 ## Coordinates
 

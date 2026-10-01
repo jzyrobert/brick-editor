@@ -372,7 +372,8 @@ export function createAPI(
         script: unknown;
         check?: boolean;
         includeLDraw?: boolean;
-        maxParts?: number;
+        targetParts?: number;
+        leeway?: number;
       }) => {
         assertRequestBudget(input);
         const r = await (
@@ -380,7 +381,8 @@ export function createAPI(
         ).compileInBrowser(input.script, {
           profile: editor.resourceProfile,
           check: input.check,
-          maxParts: input.maxParts,
+          targetParts: input.targetParts,
+          leeway: input.leeway,
         });
         return {
           report: r.report,
@@ -394,7 +396,8 @@ export function createAPI(
         dryRun?: boolean;
         expectedRevision?: number;
         check?: boolean;
-        maxParts?: number;
+        targetParts?: number;
+        leeway?: number;
       }) => {
         assertRequestBudget(input);
         const baseRevision = editor.revision;
@@ -408,10 +411,11 @@ export function createAPI(
         const r = await service.compileInBrowser(input.script, {
           profile: editor.resourceProfile,
           check: input.check,
-          maxParts: input.maxParts,
+          targetParts: input.targetParts,
+          leeway: input.leeway,
         });
-        // An over-budget build is reported, not applied.
-        if (input.dryRun || !r.project || service.overBudget(r.report))
+        // A build outside its part range is reported, not applied.
+        if (input.dryRun || !r.project || service.outsideBudget(r.report))
           return {
             applied: false,
             revision: editor.revision,

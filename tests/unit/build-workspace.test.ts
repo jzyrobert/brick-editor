@@ -9,16 +9,19 @@ import {
   workspacePrompt,
   wrapperScript,
 } from "../../scripts/new-build-workspace";
+import { partRange } from "../../src/build-script/budget";
 
 describe("build agent workspaces", () => {
-  it("fills the brief and part budget into the prompt", () => {
+  it("fills the brief and part range into the prompt", () => {
     const text = workspacePrompt(
       "A lighthouse ($& and $1 stay as written)",
-      4000,
+      partRange(4000),
     );
     expect(text).not.toMatch(/\{\{|Return ONLY/);
-    expect(text).toContain("Hard maximum: 4,000 parts");
-    expect(text).toContain("to the 4,000-part budget");
+    expect(text).toContain("Target: 4,000 parts");
+    expect(text).toContain("Accepted range: 3,600–4,400 parts.");
+    expect(text).toContain("above 4,400 remove parts, below 3,600 add more");
+    expect(text).toContain("to the accepted range of 3,600–4,400 parts");
     expect(text).toContain("Write the script to `build.json`");
     expect(text).not.toMatch(/(?<!\.\/)brick-cli /);
     expect(text.trimEnd()).toMatch(
@@ -31,10 +34,14 @@ describe("build agent workspaces", () => {
     expect(text.startsWith("You are a master brick architect.")).toBe(true);
   });
 
-  it("holds builds to the budget in the CLI wrapper", () => {
-    const sh = wrapperScript(1500, "/repo/it's here", "/usr/bin/node");
+  it("holds builds to the part range in the CLI wrapper", () => {
+    const sh = wrapperScript(
+      partRange(1500, 5),
+      "/repo/it's here",
+      "/usr/bin/node",
+    );
     expect(sh).toContain(`REPO='/repo/it'\\''s here'`);
-    expect(sh).toContain(`set -- "$@" --max-parts 1500`);
+    expect(sh).toContain(`set -- "$@" --target-parts 1500 --leeway 5`);
   });
 
   it("names folders from the brief", () => {
@@ -46,7 +53,12 @@ describe("build agent workspaces", () => {
 
   it("creates a clean workspace outside the repository only", async () => {
     const root = mkdtempSync(join(tmpdir(), "brick-ws-"));
-    const dir = await createWorkspace(join(root, "w"), "A barn", 800, "barn");
+    const dir = await createWorkspace(
+      join(root, "w"),
+      "A barn",
+      partRange(800),
+      "barn",
+    );
     expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toBe("@AGENTS.md\n");
     expect(readFileSync(join(dir, "AGENTS.md"), "utf8")).toContain(
       "Build request: A barn",
@@ -55,12 +67,24 @@ describe("build agent workspaces", () => {
     expect(statSync(join(dir, "views")).isDirectory()).toBe(true);
     expect(
       JSON.parse(readFileSync(join(dir, "workspace.json"), "utf8")),
-    ).toMatchObject({ name: "barn", maxParts: 800, brief: "A barn" });
-    await expect(createWorkspace(dir, "A barn", 800, "barn")).rejects.toThrow(
-      /not empty/,
-    );
+    ).toMatchObject({
+      name: "barn",
+      targetParts: 800,
+      leeway: 10,
+      minParts: 720,
+      maxParts: 880,
+      brief: "A barn",
+    });
     await expect(
-      createWorkspace(join(REPO, ".local", "ws"), "A barn", 800, "barn"),
+      createWorkspace(dir, "A barn", partRange(800), "barn"),
+    ).rejects.toThrow(/not empty/);
+    await expect(
+      createWorkspace(
+        join(REPO, ".local", "ws"),
+        "A barn",
+        partRange(800),
+        "barn",
+      ),
     ).rejects.toThrow(/inside the repository/);
   });
 });

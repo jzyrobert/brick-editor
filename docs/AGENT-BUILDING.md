@@ -228,7 +228,12 @@ Lessons from building the Market town, Cathedral and Harbour samples:
 
 Builds are bounded by the resource profile (docs/RESOURCE-LIMITS.md): desktop 200,000 parts, mobile 150,000 (`--resource-profile mobile`).
 
-A **part budget** is lower: `--max-parts N` (CLI), `maxParts` (`buildScript.compile/apply`) or `limits.maxParts` in the script; the lowest wins. Every part counts, including each copy of a component. A build over its budget still compiles, so the report can say by how much: its first problem is an `over-budget` error, e.g. `4,098 parts: 3,798 over the budget of 300 (largest sections: Houses 1,950, Terraces 1,394, …; costliest ops: sections[2].ops[0].ops[1] 225, …)`, whose `ops` are the top-level ops (a component instance, a repeated part) that made the most parts. The CLI then writes only the report (no model, no views, and an older `--output` file is removed) and exits 2; `apply` does not apply it. Being under budget is never reported. Massing is limited to 4 million cells and 200,000 ops after repeats. Coordinates stay within ±4096 studs. Everything is deterministic: the same script always compiles to the same file.
+A **part target** sets the size: `--target-parts N` with `--leeway P` (CLI), or `targetParts`/`leeway` (`buildScript.compile/apply`). The build must land within `leeway` percent of the target either way (default 10: a 4,000-part target accepts 3,600–4,400). Every part counts, including each copy of a component. A build outside the range still compiles, so the report can say by how much; its first problem is an error:
+
+- `over-budget`, e.g. `4,098 parts: 798 over the maximum of 3,300 (target 3,000 ± 10%: 2,700–3,300) (largest sections: Houses 1,950, Terraces 1,394, …; costliest ops: sections[2].ops[0].ops[1] 225, …)`, whose `ops` are the top-level ops (a component instance, a repeated part) that made the most parts;
+- `under-budget`, e.g. `2,950 parts: 650 under the minimum of 3,600 (target 4,000 ± 10%: 3,600–4,400): add more`.
+
+The CLI then writes only the report (no model, no views, and an older `--output` file is removed) and exits 2; `apply` does not apply it. A script's own `limits.maxParts` is a hard cap on top (`over-budget` above it too). Massing is limited to 4 million cells and 200,000 ops after repeats. Coordinates stay within ±4096 studs. Everything is deterministic: the same script always compiles to the same file.
 
 ## Worked examples
 
@@ -264,22 +269,22 @@ What carries over to bricks, and what does not: voxels can overlap and float, br
 
 ## Agent workspaces
 
-To give a coding agent (Claude Code, or any agent that reads `AGENTS.md`) a clean directory with the prompt, the brief and a part budget:
+To give a coding agent (Claude Code, Codex, or any agent that reads `AGENTS.md`) a clean directory with the prompt, the brief and a part target:
 
 ```sh
-npm run workspace -- --max-parts 4000 --brief "A red-and-white lighthouse on a rocky island with a keeper's cottage"
-# one workspace per budget, to compare an agent at several sizes; the brief from a file
-npm run workspace -- --max-parts 1000,4000,12000 --brief-file lighthouse.txt --name lighthouse
+npm run workspace -- --target-parts 4000 --brief "A red-and-white lighthouse on a rocky island with a keeper's cottage"
+# one workspace per target, to compare an agent at several sizes; a 5% band; the brief from a file
+npm run workspace -- --target-parts 1000,4000,12000 --leeway 5 --brief-file lighthouse.txt --name lighthouse
 cd ~/brick-builds/lighthouse-4000 && claude
 ```
 
-Each workspace (`<root>/<name>-<parts>`, root `~/brick-builds` unless `--root`; `--dir` for an exact folder) must be new or empty and outside this repository, so the agent never reads the repository's own coding instructions. It holds:
+Each workspace (`<root>/<name>-<target>`, plus `-leeway<P>` when the leeway is not 10; root `~/brick-builds` unless `--root`; `--dir` for an exact folder) must be new or empty and outside this repository, so the agent never reads the repository's own coding instructions. It holds:
 
-- `AGENTS.md`: [prompts/build-agent.md](../prompts/build-agent.md) with `{{BRIEF}}` and `{{MAX_PARTS}}` filled in, plus the Workspace section from [prompts/build-workspace.md](../prompts/build-workspace.md) (write `build.json`, use `./brick-cli`, look at the views). `CLAUDE.md` imports it.
-- `brick-cli`: runs this checkout's CLI with the Node that made the workspace, adding `--max-parts` to every `build` (a second `--max-parts` is refused, and the script's `limits.maxParts` can only lower it).
-- `views/` for renders, and `workspace.json` (name, budget, brief, time, repository and commit) to tell runs apart.
+- `AGENTS.md`: [prompts/build-agent.md](../prompts/build-agent.md) with `{{BRIEF}}`, `{{TARGET_PARTS}}` and the range `{{MIN_PARTS}}`–`{{MAX_PARTS}}` filled in, plus the Workspace section from [prompts/build-workspace.md](../prompts/build-workspace.md) (write `build.json`, use `./brick-cli`, look at the views). `CLAUDE.md` imports it.
+- `brick-cli`: runs this checkout's CLI with the Node that made the workspace, adding `--target-parts` and `--leeway` to every `build` (a second one of either is refused as a duplicate flag).
+- `views/` for renders, and `workspace.json` (name, target, leeway, range, brief, time, repository and commit) to tell runs apart.
 
-The prompt states the budget as a hard maximum and nothing more; how much of it to use is the agent's call. The wrapper runs whatever this checkout holds when the agent compiles, so keep the checkout on one commit while agents run.
+The prompt states the target and the accepted range, and that builds outside it are refused. The wrapper runs whatever this checkout holds when the agent compiles, so keep the checkout on one commit while agents run.
 
 ## Headless use
 

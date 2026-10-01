@@ -1777,9 +1777,14 @@
             "includeLDraw": {
               "type": "boolean"
             },
-            "maxParts": {
+            "targetParts": {
               "type": "integer",
               "minimum": 1
+            },
+            "leeway": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
             }
           },
           "required": [
@@ -1821,9 +1826,14 @@
             "check": {
               "type": "boolean"
             },
-            "maxParts": {
+            "targetParts": {
               "type": "integer",
               "minimum": 1
+            },
+            "leeway": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
             }
           },
           "required": [

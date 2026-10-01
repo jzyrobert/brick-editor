@@ -74,6 +74,7 @@ import {
 import { roleParts, searchParts } from "./part-search";
 import { LAYER_COMMENT, assignSectionLayers } from "./layers";
 import { placeTrackPiece, type TrackCursor } from "../play/track";
+import { partRange } from "./budget";
 
 export type Problem = {
   severity: "error" | "warning" | "info";
@@ -127,6 +128,7 @@ export type CompileReport = {
   } | null;
   problems: Problem[];
 };
+export { partRange, outsideBudget } from "./budget";
 export type CompileOptions = {
   profile?: ResourceProfileName;
   /** Run the build checks (default true). */
@@ -134,10 +136,13 @@ export type CompileOptions = {
   /** Occupancy boxes for parts whose derived data is not loaded (the CLI
    * derives them from the complete library on disk). */
   occupancyFor?: (refs: string[]) => Record<string, Bounds[]>;
-  /** Part budget (with the script's `limits.maxParts`, the lower wins). A
-   * build over it still compiles, with an `over-budget` error saying by how
-   * much; see overBudget(). */
-  maxParts?: number;
+  /** Part target: a build outside `targetParts` ± `leeway` percent still
+   * compiles, with an `over-budget` or `under-budget` error saying by how
+   * much; see outsideBudget(). The script's `limits.maxParts` is a hard cap on
+   * top. */
+  targetParts?: number;
+  /** Percent either side of `targetParts` (default 10). */
+  leeway?: number;
   /** Clock for timings (tests pass a fixed one). */
   now?: () => number;
 };
@@ -2366,6 +2371,10 @@ export function compileBuildScript(
   const started = now();
   assertBuildScript(input);
   const script = input;
+  const range =
+    options.targetParts === undefined
+      ? undefined
+      : partRange(options.targetParts, options.leeway);
   const slug = slugify(script.title);
   const limit = resourceLimits(options.profile).occurrences;
   const c = new Compiler(script, slug, limit);
@@ -2635,11 +2644,21 @@ export function compileBuildScript(
       kind: c.opKinds[c.opPaths.indexOf(op)] ?? "",
       parts: n,
     }));
+  const fmt = (n: number) => n.toLocaleString("en-US");
+  const band = range
+    ? ` (target ${fmt(range.target)} ± ${range.leeway}%: ${fmt(range.min)}–${fmt(range.max)})`
+    : "";
   const budget = Math.min(
-    options.maxParts ?? Infinity,
+    range?.max ?? Infinity,
     script.limits?.maxParts ?? Infinity,
   );
-  if (parts > budget) {
+  if (range && parts < range.min)
+    c.problems.unshift({
+      severity: "error",
+      code: "under-budget",
+      message: `${fmt(parts)} parts: ${fmt(range.min - parts)} under the minimum of ${fmt(range.min)}${band}: add more`,
+    });
+  else if (parts > budget) {
     // Every instance counts here, against the op in its section that made
     // it (a component instance, a repeat), unlike heaviestOps.
     const bySource = new Map<string, number>();
@@ -2658,8 +2677,8 @@ export function compileBuildScript(
       severity: "error",
       code: "over-budget",
       message:
-        `${parts.toLocaleString("en-US")} parts: ${(parts - budget).toLocaleString("en-US")} over the budget of ${budget.toLocaleString("en-US")}` +
-        ` (largest sections: ${largest.join(", ")}; costliest ops: ${costliest.map(([op, n]) => `${op} ${n.toLocaleString("en-US")}`).join(", ")})`,
+        `${fmt(parts)} parts: ${fmt(parts - budget)} over the maximum of ${fmt(budget)}${budget === range?.max ? band : ""}` +
+        ` (largest sections: ${largest.join(", ")}; costliest ops: ${costliest.map(([op, n]) => `${op} ${fmt(n)}`).join(", ")})`,
       ops: costliest.map(([op]) => op),
     });
   }
@@ -2702,12 +2721,6 @@ export function compileBuildScript(
     problems,
   };
   return { report, ldraw, project };
-}
-
-/** Whether a build went over its part budget (then it should not be written
- * or applied). */
-export function overBudget(report: CompileReport) {
-  return report.problems.some((p) => p.code === "over-budget");
 }
 
 function assignLayers(project: Project, script: BuildScript, models: Model[]) {

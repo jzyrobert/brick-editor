@@ -62,7 +62,11 @@ test("build scripts validate, compile, apply and search parts through the API", 
     });
     const unchanged = (await a.query()).revision === before;
     const dry = await a.buildScript.apply({ script, dryRun: true });
-    const over = await a.buildScript.apply({ script, maxParts: 3 });
+    const over = await a.buildScript.apply({ script, targetParts: 3 });
+    const under = await a.buildScript.apply({
+      script,
+      targetParts: 100_000,
+    });
     const overUnchanged = (await a.query()).revision === before;
     const applied = await a.buildScript.apply({
       script,
@@ -90,6 +94,7 @@ test("build scripts validate, compile, apply and search parts through the API", 
       dry: dry.applied,
       over: [over.applied, over.report.ok, over.report.problems[0]?.code],
       overUnchanged,
+      under: [under.applied, under.report.problems[0]?.code],
       applied: applied.applied,
       ok: applied.report.ok,
       problems: applied.report.problems.filter((p) => p.severity !== "info"),
@@ -108,6 +113,7 @@ test("build scripts validate, compile, apply and search parts through the API", 
   expect(result.dry).toBe(false);
   expect(result.over).toEqual([false, false, "over-budget"]);
   expect(result.overUnchanged).toBe(true);
+  expect(result.under).toEqual([false, "under-budget"]);
   expect(result.applied).toBe(true);
   expect(result.ok).toBe(true);
   expect(result.problems).toEqual([]);

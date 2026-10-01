@@ -8,7 +8,11 @@ import {
   plates,
   validateBuildScript,
 } from "../../src/build-script/spec";
-import { compileBuildScript, overBudget } from "../../src/build-script/compile";
+import {
+  compileBuildScript,
+  outsideBudget,
+  partRange,
+} from "../../src/build-script/compile";
 import { Grid, packGrid } from "../../src/build-script/pack";
 import { catalog } from "../../src/catalog/catalog";
 import { madeIn } from "../../src/catalog/color-availability";
@@ -509,7 +513,7 @@ describe("build script ops", () => {
     expect(new Set(names)).toEqual(new Set(["Walls", "Top"]));
   });
 
-  it("reports by how much a build is over its part budget", () => {
+  it("holds a build to its part target, 10% either side by default", () => {
     const row = (extra: Record<string, unknown> = {}) =>
       script(
         [
@@ -522,27 +526,68 @@ describe("build script ops", () => {
         ],
         extra,
       );
-    const capped = compileBuildScript(row({ limits: { maxParts: 10 } }));
-    expect(capped.report.ok).toBe(false);
-    expect(overBudget(capped.report)).toBe(true);
-    expect(capped.report.problems[0]).toMatchObject({
+    const first = (
+      options: Parameters<typeof compileBuildScript>[1],
+      extra = {},
+    ) => compileBuildScript(row(extra), options).report;
+    // Over the range: the excess and the ops that made the most parts.
+    const over = first({ targetParts: 40 });
+    expect(over.ok).toBe(false);
+    expect(outsideBudget(over)).toBe(true);
+    expect(over.problems[0]).toMatchObject({
       severity: "error",
       code: "over-budget",
       ops: ["sections[0].ops[0].ops[0]"],
     });
-    expect(capped.report.problems[0].message).toMatch(
-      /^50 parts: 40 over the budget of 10 \(largest sections: Main 50/,
+    expect(over.problems[0].message).toMatch(
+      /^50 parts: 6 over the maximum of 44 \(target 40 ± 10%: 36–44\) \(largest sections: Main 50/,
     );
-    // The lower of the option and the script's own limit wins.
-    const lower = compileBuildScript(row({ limits: { maxParts: 100 } }), {
-      maxParts: 20,
+    // Under the range: an error too.
+    const under = first({ targetParts: 60 });
+    expect(under.ok).toBe(false);
+    expect(outsideBudget(under)).toBe(true);
+    expect(under.problems[0]).toMatchObject({
+      severity: "error",
+      code: "under-budget",
+      message:
+        "50 parts: 4 under the minimum of 54 (target 60 ± 10%: 54–66): add more",
     });
-    expect(lower.report.problems[0].message).toMatch(
-      /30 over the budget of 20/,
+    // Inside it (both ends count), with any leeway.
+    for (const options of [
+      { targetParts: 46 },
+      { targetParts: 55 },
+      { targetParts: 50, leeway: 0 },
+      { targetParts: 60, leeway: 20 },
+    ]) {
+      const r = first(options);
+      expect(outsideBudget(r), JSON.stringify(options)).toBe(false);
+      expect(r.ok).toBe(true);
+    }
+    expect(first({ targetParts: 53, leeway: 5 }).problems[0].code).toBe(
+      "under-budget",
     );
-    const within = compileBuildScript(row(), { maxParts: 50 });
-    expect(overBudget(within.report)).toBe(false);
-    expect(within.report.ok).toBe(true);
+    // The script's own limit stays a hard cap.
+    expect(first({}, { limits: { maxParts: 10 } }).problems[0].message).toMatch(
+      /^50 parts: 40 over the maximum of 10 \(largest sections/,
+    );
+    expect(
+      first({ targetParts: 50 }, { limits: { maxParts: 45 } }).problems[0]
+        .message,
+    ).toMatch(/^50 parts: 5 over the maximum of 45 \(largest sections/);
+    expect(() => first({ targetParts: 0 })).toThrow(/positive integer/);
+    expect(() => first({ targetParts: 50, leeway: 101 })).toThrow(/0–100/);
+  });
+
+  it("rounds part ranges to whole parts inside the leeway", () => {
+    expect(partRange(4000)).toEqual({
+      target: 4000,
+      leeway: 10,
+      min: 3600,
+      max: 4400,
+    });
+    expect(partRange(3000)).toMatchObject({ min: 2700, max: 3300 });
+    expect(partRange(1234, 2.5)).toMatchObject({ min: 1204, max: 1264 });
+    expect(partRange(7)).toMatchObject({ min: 7, max: 7 });
   });
 
   it("counts every component instance against the budget", () => {
@@ -573,11 +618,14 @@ describe("build script ops", () => {
         },
       );
     const one = compileBuildScript(huts(1)).report.stats.parts;
-    const four = compileBuildScript(huts(4), { maxParts: one * 2 }).report;
+    const four = compileBuildScript(huts(4), {
+      targetParts: one * 2,
+      leeway: 0,
+    }).report;
     expect(four.stats.parts).toBe(1 + 4 * (one - 1));
     const over = four.problems.find((p) => p.code === "over-budget")!;
     expect(over.message).toContain(
-      `${four.stats.parts - one * 2} over the budget of ${one * 2}`,
+      `${four.stats.parts - one * 2} over the maximum of ${one * 2}`,
     );
     // Named by the instance op, which made every copy.
     expect(over.ops).toContain("sections[0].ops[1]");
