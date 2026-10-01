@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 /** Records in an IndexedDB object store (0 when the database is empty). */
 const count = (page: Page, database: string, store: string) =>
@@ -57,8 +57,8 @@ test("Clear saved builds deletes every saved project and autosave, keeps the par
     await count(page, "brick-editor-projects", "projects"),
   ).toBeGreaterThanOrEqual(2);
 
-  // The last item of the Project menu.
-  await openMode(page, "Project");
+  // Project › My builds, after the saved list.
+  await openMenuTab(page, "Project", "My builds");
   await page.getByRole("button", { name: "Clear saved builds…" }).click();
   const dialog = page.getByRole("alertdialog", { name: "Clear saved builds?" });
   await expect(dialog).toContainText("2 saved projects");
@@ -90,7 +90,7 @@ test("Clear saved builds deletes every saved project and autosave, keeps the par
   await page.evaluate(() => window.brickEditor!.ready());
   await expect(page.getByLabel("Project title")).toHaveValue("Untitled build");
   await expect(page.getByText("Recovered local project")).toHaveCount(0);
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "My builds");
   await expect(page.getByText("No saved projects found yet.")).toBeVisible();
   expect(await count(page, "brick-editor-geometry", "meta")).toBe(geometry);
   const stats = await page.evaluate(async () => {

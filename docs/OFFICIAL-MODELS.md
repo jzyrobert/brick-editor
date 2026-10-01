@@ -1,6 +1,6 @@
 # Official set models (LDraw OMR)
 
-Project → **Official LEGO sets** searches the 1,470 sets of the [LDraw Official Model Repository](https://library.ldraw.org/omr) (OMR) by set number, name, theme or year, and opens a set's main model as a new project. The OMR models are fan-made LDraw models of real LEGO sets, reviewed by LDraw.org. This is a model source only: there is no buildable-coverage or collection feature.
+Project → New → **Official LEGO sets** searches the 1,470 sets of the [LDraw Official Model Repository](https://library.ldraw.org/omr) (OMR) by set number, name, theme or year, and opens a set's main model as a new project. The OMR models are fan-made LDraw models of real LEGO sets, reviewed by LDraw.org. This is a model source only: there is no buildable-coverage or collection feature.
 
 ## Where the files come from
 

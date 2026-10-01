@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 for (const width of [360, 1080, 1440]) {
   test(`submodel creation and explicit shared preview preserve selection at ${width}px`, async ({
     browser,
@@ -31,14 +32,12 @@ for (const width of [360, 1080, 1440]) {
       )
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
-      await page.getByText("Selection tools", { exact: true }).click();
+      await openTool(page, "Selection tools");
       await page
         .getByRole("button", { name: "Select editable parts", exact: true })
         .click();
       const before = await page.evaluate(() => window.brickEditor!.query());
-      await page
-        .getByText("Submodels and shared editing", { exact: true })
-        .click();
+      await openTool(page, "Submodels and shared editing");
       await page
         .getByLabel("Submodel name", { exact: true })
         .fill("Mobile assembly");

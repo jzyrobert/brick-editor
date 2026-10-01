@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 for (const viewport of [
   { width: 360, height: 800 },
   { width: 1080, height: 1800 },
@@ -67,6 +67,8 @@ for (const viewport of [
         );
       const normal = await shot(),
         opaqueCapture = await capture(false);
+      // The dimming switch sits with publishing; the preview keeps showing.
+      await openMenuTab(page, "Instructions", "Publish");
       const checkbox = page.getByRole("checkbox", {
         name: "Dim previous parts in preview and publication",
         exact: true,

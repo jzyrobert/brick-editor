@@ -32,7 +32,7 @@ The **Playground park** sample (see [templates](TEMPLATES.md)) shows dynamic phy
 
 ### Physics settings (rig authoring)
 
-**Inspector → More tools → Physics settings** loads an existing rig and edits which groups are anchored, group masses, friction, and for vehicles the suspension (spring length and travel in LDU, stiffness, damping) and engine force, and **Start Play with dynamic physics** (`startDynamic`). Review runs a dry run; saving is one undoable `rigs.upsert`. `buildRigDynamicsDraft` changes only `rig.dynamics` (`null` removes it). Mechanical rig editing preserves these settings, and they round-trip through native projects. Standard LDraw export ignores them.
+**Inspector → Tools → Physics settings** loads an existing rig and edits which groups are anchored, group masses, friction, and for vehicles the suspension (spring length and travel in LDU, stiffness, damping) and engine force, and **Start Play with dynamic physics** (`startDynamic`). Review runs a dry run; saving is one undoable `rigs.upsert`. `buildRigDynamicsDraft` changes only `rig.dynamics` (`null` removes it). Mechanical rig editing preserves these settings, and they round-trip through native projects. Standard LDraw export ignores them.
 
 ## Automatic doors (official LDraw doors)
 

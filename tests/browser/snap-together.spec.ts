@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 
 // "Snap together" building (docs/CONNECTORS.md, Connected building): on by
 // default, Place accepts only parts that connect to studs, hinges or the
@@ -219,7 +220,7 @@ async function selectAllAndOpenMove(page: Page) {
       .locator(".right-tabs")
       .getByRole("button", { name: "Inspector", exact: true })
       .click();
-  await page.getByText("Selection tools", { exact: true }).click();
+  await openTool(page, "Selection tools");
   await page
     .getByRole("button", { name: "Select editable parts", exact: true })
     .click();

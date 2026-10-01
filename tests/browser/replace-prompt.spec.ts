@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode, showAllTemplates } from "./helpers/mode";
 
 /** A 40-brick build that has been changed since it was opened. */
 async function changedBuild(page: Page, title: string) {
@@ -44,7 +44,8 @@ test.describe("replacing a changed build asks to save or discard it", () => {
 
   test("Save keeps the old build in the saved list", async ({ page }) => {
     await changedBuild(page, "Keep this wall");
-    await openMode(page, "Project");
+    await openMenuTab(page, "Project", "New");
+    await showAllTemplates(page);
     await page.getByRole("button", { name: "House with garden" }).click();
     const dialog = page.getByRole("dialog", {
       name: "Save your current build first?",
@@ -66,7 +67,7 @@ test.describe("replacing a changed build asks to save or discard it", () => {
       "House with garden",
       { timeout: LOAD },
     );
-    await openMode(page, "Project");
+    await openMenuTab(page, "Project", "My builds");
     await page.getByRole("button", { name: "Refresh saved projects" }).click();
     await expect(savedRow(page, "Keep this wall")).toBeVisible();
     // Reopening it: the house is untouched, so no prompt; the wall is intact.
@@ -82,7 +83,8 @@ test.describe("replacing a changed build asks to save or discard it", () => {
 
   test("Discard replaces the build without saving it", async ({ page }) => {
     await changedBuild(page, "Throw this away");
-    await openMode(page, "Project");
+    await openMenuTab(page, "Project", "New");
+    await showAllTemplates(page);
     await page.getByRole("button", { name: "Small castle" }).click();
     const dialog = page.getByRole("dialog", {
       name: "Save your current build first?",
@@ -93,7 +95,7 @@ test.describe("replacing a changed build asks to save or discard it", () => {
       timeout: LOAD,
     });
     await expect(page.locator(".save-state")).toHaveText(/^Saved revision/);
-    await openMode(page, "Project");
+    await openMenuTab(page, "Project", "My builds");
     await page.getByRole("button", { name: "Refresh saved projects" }).click();
     await expect(savedRow(page, "Small castle")).toBeVisible();
     await expect(savedRow(page, "Throw this away")).toHaveCount(0);
@@ -101,7 +103,8 @@ test.describe("replacing a changed build asks to save or discard it", () => {
 
   test("Cancel and Escape keep the current build", async ({ page }) => {
     await changedBuild(page, "Still here");
-    await openMode(page, "Project");
+    await openMenuTab(page, "Project", "New");
+    await showAllTemplates(page);
     const card = page.getByRole("button", { name: "Roadster car" });
     await card.click();
     const dialog = page.getByRole("dialog", {
@@ -133,7 +136,8 @@ test.describe("replacing a changed build asks to save or discard it", () => {
   test("works on a phone", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await changedBuild(page, "Phone build");
-    await openMode(page, "Project");
+    await openMenuTab(page, "Project", "New");
+    await showAllTemplates(page);
     const card = page.getByRole("button", { name: "House with garden" });
     await card.scrollIntoViewIfNeeded();
     await card.click();

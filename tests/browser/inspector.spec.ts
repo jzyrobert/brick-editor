@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 
 const source = `0 FILE root.ldr
 1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat
@@ -20,7 +21,7 @@ test("inspector shows mixed batch values and sets one axis for every selected pa
     source,
   );
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
-  await page.getByText("Selection tools").click();
+  await openTool(page, "Selection tools");
   await page.getByRole("button", { name: "Select editable parts" }).click();
   await expect(page.locator(".canvas-bottom")).toContainText("3 selected");
   const props = page.locator(".inspector-properties");
@@ -69,6 +70,7 @@ test("inspector shows mixed batch values and sets one axis for every selected pa
   await expect(x).toHaveAttribute("placeholder", "Mixed");
 
   // A matching-part selection shares the part, colour and height.
+  await openTool(page, "Selection tools");
   await page.getByRole("button", { name: "Clear selection" }).click();
   await page.evaluate(() =>
     window.brickEditor!.project.import({

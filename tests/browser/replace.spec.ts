@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 
 const source = `0 FILE root.ldr
 1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat
@@ -25,9 +26,9 @@ test("replace keeps colour, layer and bottom face; states scope and size changes
       .then((r) => new TextDecoder().decode(r.bytes)),
   );
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
-  await page.getByText("Selection tools").click();
+  await openTool(page, "Selection tools");
   await page.getByRole("button", { name: "Select editable parts" }).click();
-  await page.getByText("Replace part…").click();
+  await openTool(page, "Replace part");
   const panel = page.locator(".replace-panel");
   await panel.getByLabel("Replace with").selectOption("3020.dat");
   await expect(panel.getByRole("status")).toContainText(

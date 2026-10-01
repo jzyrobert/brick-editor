@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 // Official !TEXMAP parts (fixtures/ldraw/textured-parts.ldr): a planar tile
 // with an empty fallback, a printed brick, a minifig head textured through
@@ -213,7 +213,7 @@ test("textures render offline once loaded, and are downscaled on the phone profi
   await page.goto("./?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
   // Install the offline app snapshot (the texture pack is not precached).
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "Settings");
   await page
     .getByRole("button", { name: "Download / check for updates", exact: true })
     .click();

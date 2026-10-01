@@ -7,7 +7,7 @@ import {
 } from "../persistence/clear-saved";
 
 /**
- * The last item of the Project menu: deletes every saved project, autosave
+ * The last item of Project › My builds: deletes every saved project, autosave
  * and checkpoint in this browser after a confirmation that says how many
  * and that it cannot be undone. Caches of parts and sets are kept.
  */

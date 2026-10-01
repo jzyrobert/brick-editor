@@ -187,7 +187,8 @@ test("desktop mouse look: click captures the pointer, raw movement turns the vie
   await open(page);
   // Mouse settings live with the Play controls.
   await page
-    .getByText("Play keyboard and mouse controls", { exact: true })
+    .locator(".mode-card")
+    .getByRole("tab", { name: "Keyboard", exact: true })
     .click();
   await expect(page.getByLabel("Mouse sensitivity")).toHaveValue("1");
   await page.getByRole("button", { name: "Enter Play", exact: true }).click();

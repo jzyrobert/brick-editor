@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode, openTool } from "./helpers/mode";
 import {
   closeRemoteControls,
   dismissRotatePrompt,
@@ -185,7 +185,7 @@ for (const viewport of [
     await hotbar
       .getByRole("button", { name: "Inspector", exact: true })
       .click();
-    await page.getByText("Selection tools", { exact: true }).click();
+    await openTool(page, "Selection tools");
     await button("Select editable parts").click();
     await check("inspector with a selection and a message");
     await page
@@ -197,6 +197,9 @@ for (const viewport of [
       .locator(".mobile-panel.mobile-open")
       .getByRole("button", { name: "Collapse panel" })
       .click();
+    // The selection shows in the Inspector; Box select is back in Tools.
+    await openTool(page, "Selection tools");
+    await check("Tools tab");
     // Box select mode: the sheet steps aside for its chip of switches.
     await page.getByRole("button", { name: "Box or lasso select" }).click();
     await expect(page.getByRole("group", { name: "Box select" })).toBeVisible();
@@ -206,9 +209,17 @@ for (const viewport of [
       .getByRole("button", { name: "Done" })
       .click();
 
+    // Every tab of every section menu.
     for (const mode of ["Instructions", "Photo", "Project", "Play"] as const) {
       await openMode(page, mode);
-      await check(`${mode} card`);
+      await check(`${mode} menu`);
+      const tabs = page.locator(".mode-card").getByRole("tab");
+      for (const tab of await tabs.all()) {
+        if (!(await tab.isVisible())) continue;
+        const name = (await tab.textContent())!;
+        await openMenuTab(page, mode, name);
+        await check(`${mode} › ${name}`);
+      }
     }
     expect(errors).toEqual([]);
     await context.close();

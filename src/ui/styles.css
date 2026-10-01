@@ -468,25 +468,42 @@ small {
 .empty-inspector p {
   font-size: var(--text-label);
 }
+/* The selection is one compact row: its picture beside its name. */
 .selection-summary {
-  text-align: center;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--r-card);
-  padding: 15px;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 12px;
+  padding: 8px 12px 8px 8px;
+  text-align: left;
 }
-.selection-summary svg {
-  width: 130px;
-  height: 85px;
+.selection-summary > :first-child {
   display: block;
-  margin: auto;
+  grid-row: 1 / span 2;
+  width: 56px;
+  height: 44px;
+  margin: 0;
+}
+.selection-summary .part-thumb {
+  width: 56px;
 }
 .selection-summary strong,
 .selection-summary small {
-  display: block;
-  font-size: var(--text-label);
-  margin-top: 8px;
+  margin: 0;
 }
+.selection-summary strong {
+  align-self: end;
+  font-size: var(--text-body);
+}
+.selection-summary small {
+  align-self: start;
+  color: var(--secondary);
+}
+
 .inspector-properties {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -689,12 +706,6 @@ small {
   max-width: calc(100% - 50px);
   border-radius: var(--r-dock);
   padding: 25px;
-}
-.mode-card h2 {
-  font-size: var(--text-headline-lg);
-  letter-spacing: -0.7px;
-  font-weight: 550;
-  line-height: 1.25;
 }
 .mode-card p {
   font-size: var(--text-label);

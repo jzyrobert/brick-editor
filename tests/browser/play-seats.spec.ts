@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { unzipSync, strFromU8 } from "fflate";
-import { openMode } from "./helpers/mode";
+import { openMode, openTool } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
 import { exitPlay, fromPauseMenu } from "./helpers/play";
 
@@ -227,7 +227,7 @@ test("seat metadata review preserves mechanics, refuses stale commit, and saves 
     .getByRole("button", { name: "Inspector", exact: true })
     .click();
   const form = page.locator(".seat-authoring");
-  await form.getByText("Driver seat coordinates", { exact: true }).click();
+  await openTool(page, "Driver seat coordinates");
   await form
     .getByRole("combobox", { name: "Seat vehicle" })
     .selectOption("vehicle");
@@ -297,7 +297,7 @@ test("seat metadata review preserves mechanics, refuses stale commit, and saves 
     before.motionRigs.vehicle,
   );
   const rigForm = page.locator(".rig-authoring");
-  await rigForm.getByText("Create or edit a rig", { exact: true }).click();
+  await openTool(page, "Create or edit a rig");
   await rigForm
     .getByRole("combobox", { name: "Existing rig", exact: true })
     .selectOption("vehicle");

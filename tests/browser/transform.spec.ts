@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 async function setup(page: Page) {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
@@ -30,7 +31,7 @@ async function setup(page: Page) {
       .locator(".right-tabs")
       .getByRole("button", { name: "Inspector", exact: true })
       .click();
-  await page.getByText("Selection tools", { exact: true }).click();
+  await openTool(page, "Selection tools");
   await page
     .getByRole("button", { name: "Select editable parts", exact: true })
     .click();

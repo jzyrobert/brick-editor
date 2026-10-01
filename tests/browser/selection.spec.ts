@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 import { architecturalStressModel } from "../helpers/architectural-stress";
 
 // Red plate above blue plate (seen from above, red hides blue); green aside.
@@ -158,7 +159,7 @@ test("desktop drags draw boxes and lassos with live counts, modifiers and Escape
     .locator(".right-tabs")
     .getByRole("button", { name: "Inspector", exact: true })
     .click();
-  await page.getByText("Selection tools", { exact: true }).click();
+  await openTool(page, "Selection tools");
   await page
     .getByRole("group", { name: "Selection depth" })
     .getByRole("button", { name: "Through" })
@@ -370,7 +371,7 @@ test("Visible picks only the house's front wall; Through reaches the back wall",
     .locator(".right-tabs")
     .getByRole("button", { name: "Inspector", exact: true })
     .click();
-  await page.getByText("Selection tools", { exact: true }).click();
+  await openTool(page, "Selection tools");
   await page
     .getByRole("group", { name: "Selection depth" })
     .getByRole("button", { name: "Through" })
@@ -421,7 +422,7 @@ for (const viewport of [
       await mobile
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
-      await page.getByText("Selection tools", { exact: true }).click();
+      await openTool(page, "Selection tools");
       await page
         .getByRole("button", { name: "Box or lasso select", exact: true })
         .click();

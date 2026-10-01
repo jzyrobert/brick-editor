@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 // Official parts outside the curated 214 (doors incl. a "~Moved to" redirect,
 // a dome, a round-top cylinder, fences, an arch, shutter parts) plus 3001.
@@ -41,7 +41,7 @@ test("imported models render official parts beyond the curated pack, and again o
   // Nothing of the complete pack is requested until a model needs it.
   expect(chunks).toEqual([]);
   // Install the offline app snapshot first (the pack itself is not precached).
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "Settings");
   await page
     .getByRole("button", { name: "Download / check for updates", exact: true })
     .click();

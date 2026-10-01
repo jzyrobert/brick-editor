@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode, showAllTemplates } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
 
 /** A few-hundred-part build takes several seconds to compile and draw with
@@ -104,7 +104,8 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto("./?automation=1");
     await page.waitForFunction(() => !!window.brickEditor);
-    await openMode(page, "Project");
+    await openMenuTab(page, "Project", "New");
+    await showAllTemplates(page);
     const grid = page.locator(".template-grid");
     await expect(grid.locator(".template-card")).toHaveText(CARDS);
     for (const old of [
@@ -156,7 +157,8 @@ for (const viewport of [
             ["Off-road jeep", "Off-road jeep", "jeep"],
           ];
     for (const [name, title, file] of next) {
-      await openMode(page, "Project");
+      await openMenuTab(page, "Project", "New");
+      await showAllTemplates(page);
       // The previous sample is untouched, so it is replaced without asking.
       await page.getByRole("button", { name }).click();
       await expect(page.getByRole("dialog")).toHaveCount(0);

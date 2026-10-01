@@ -222,8 +222,8 @@ A night-navy and chalk pairing with two state colours, grass and sun, laid over 
 ### Hierarchy
 
 - **Display** (550, 43px, 1.15, -1.8px): the empty-canvas welcome headline only.
-- **Headline** (550, 22px on touch sheets, 1.25): mode-card and dialog titles on touch; export stat figures.
-- **Headline Large** (550, 25px, 1.25, -0.7px): desktop mode-card and dialog titles.
+- **Headline** (550, 22px on touch sheets, 1.25): dialog titles on touch; export stat figures.
+- **Headline Large** (550, 25px, 1.25, -0.7px): desktop dialog titles.
 - **Title** (700, 17px): touch sheet heads (Parts, Layers, Inspector); 13px 700 for section headings inside sheets (Starter collection).
 - **HUD Label** (600–650, 13px, tabular): mode tabs, tool dock, slab buttons, project name. The brand's second word and emphasis go to 750.
 - **Body** (400, 13px, tabular): sheet content and help text.
@@ -308,11 +308,13 @@ Solid, key-like and bold.
 
 A navy dock of labelled keys grouped by 2px dividers: Select/Place/Paint/Navigate, Undo/Redo, then Fit view, Camera views and More tools (a small navy menu holding Measure and Rectangular fill; the More key lights when Measure is in hand). The held tool is Lit Grass with dark ink. On touch it becomes a right-edge column of 46px icon keys whose names stay accessible, with hairlines between groups. Navigate is the resting tool: it is held when the editor opens and whenever another build is opened, and Escape from Place, Paint or Measure returns to it; Select stays one tap (or V) away.
 
-**Box select chip:** Inspector → Selection tools → Box or lasso select puts the sheet away and shows one navy chip in the measure readout's slot: Box/Lasso and a grass Done key on the first row, Visible/Through and New/Add/Remove segmented switches on the second (they wrap to a third row on the narrowest phones). While a region is drawn a small navy pill at its corner counts the parts it would take ("12 parts", "+ 12 parts", a red "− 12 parts" for removal), and those parts are outlined in the selection orange (red when removing).
+**Box select chip:** Inspector → Tools → Selection tools → Box or lasso select puts the sheet away and shows one navy chip in the measure readout's slot: Box/Lasso and a grass Done key on the first row, Visible/Through and New/Add/Remove segmented switches on the second (they wrap to a third row on the narrowest phones). While a region is drawn a small navy pill at its corner counts the parts it would take ("12 parts", "+ 12 parts", a red "− 12 parts" for removal), and those parts are outlined in the selection orange (red when removing).
 
 **Camera views popover:** one navy popover with four segmented tabs (Angle, Cut, Floors, Look) so only one small set of choices shows at a time; a grass dot on a tab means something there is switched on (a section cut, exploded floors, a focused floor).
 
-**Progressive disclosure in sheets and cards:** the few things done most sit on top (Inspector: colour, size, quick actions, position; Layers: the list, rename, solo, ghost). Everything advanced is a one-line drawer with a drawn chevron, 48px tall, separated by 1px Sheet Line rules, all drawn the same way. Mode cards and dialogs use the same drawer for secondary options (Photo: exact camera, camera collection; Export: More options).
+**Progressive disclosure in sheets:** the few things done most sit on top (Inspector: the selection as one compact row (a 56px picture beside its name), colour, size, quick actions, position; Layers: the list, rename, solo, ghost). Everything advanced is a one-line drawer with a drawn chevron, 48px tall, separated by 1px Sheet Line rules, all drawn the same way. Dialogs use the same drawer for secondary options (Export: More options).
+
+**Section menus (signature):** the Project, Photo, Instructions and Play cards have no headline or blurb. Each is its pinned actions (Open file and Download backup; Download PNG; Build it step by step and Parts list; Enter Play) over a row of task tabs drawn like the Layers/Inspector switch (a Tab Well track, the open tab in Ink Navy, 40px, 44px on touch), and a tab shows all its sections open under 13px bold headings with Sheet Line rules between them, never a second level of drawers. Project: New · My builds · Export · Settings (New shows four templates, then Show all 13 templates, and the official set search). Photo: Picture · Saved views · Quality. Instructions: Step plans · Publish. Play: Mechanisms · Layers & ground · Keyboard (Keyboard only with a keyboard and mouse). A menu remembers its tab for the session. The list of what each menu holds is `src/ui/menus.ts`. On a phone held upright the menu is a bottom sheet of steady height (56% of the screen) so the tabs never move under a thumb; on a phone on its side or a tablet it is a full-height panel at the left (at most 420px); on desktop it is a 360px card under the top row. The Inspector's advanced tools (selection tools, replace, workplane, submodels, rigs, seat, physics) are a third tab, **Tools**, beside Layers and Inspector (on touch, beside Inspector in its sheet): drawers under Select, Model and Mechanisms headings, one open at a time. A selection made there returns to the Inspector.
 
 ### Hotbar (signature)
 

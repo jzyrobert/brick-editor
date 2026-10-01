@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { PDFDocument } from "pdf-lib";
 import { unzipSync, strFromU8 } from "fflate";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 test("instruction UI publishes real cumulative PNGs and a printable PDF", async ({
   page,
@@ -26,7 +26,7 @@ test("instruction UI publishes real cumulative PNGs and a printable PDF", async 
     });
     await a.ready({ strict: true });
   });
-  await openMode(page, "Instructions");
+  await openMenuTab(page, "Instructions", "Publish");
   const publication = page.getByRole("region", {
     name: "Publish instructions",
   });
@@ -110,6 +110,7 @@ test("instruction cancellation leaves authored revision and camera unchanged", a
     return camera;
   });
   const before = await page.evaluate(() => window.brickEditor!.query());
+  await openMenuTab(page, "Instructions", "Publish");
   const publication = page.getByRole("region", {
     name: "Publish instructions",
   });

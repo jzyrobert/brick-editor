@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 /** CSS custom properties of a thumbnail (sheet, tint mask, tint). */
 const thumbVars = (thumb: Locator) =>
@@ -142,7 +142,7 @@ test("complete-library thumbnails seen once show offline", async ({
   await page.goto("./?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
   // Install the offline app snapshot (the thumbnail pack is not precached).
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "Settings");
   await page
     .getByRole("button", { name: "Download / check for updates", exact: true })
     .click();

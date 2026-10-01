@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 import { unzipSync, strFromU8 } from "fflate";
 import type { Project } from "../../src/core/types";
 for (const width of [360, 1080]) {
@@ -35,7 +36,7 @@ for (const width of [360, 1080]) {
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
       const ui = page.locator(".rig-authoring");
-      await ui.getByText("Create or edit a rig", { exact: true }).click();
+      await openTool(page, "Create or edit a rig");
       await ui
         .getByText("Choose parts for assignment", { exact: true })
         .click();

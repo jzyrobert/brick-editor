@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 test("model health reports overlaps with their certainty and selects the parts", async ({
   page,
@@ -15,7 +15,7 @@ test("model health reports overlaps with their certainty and selects the parts",
         .then(() => window.brickEditor!.ready()),
     "0 FILE c.ldr\n1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat\n1 1 20 -8 0 1 0 0 0 1 0 0 0 1 3003.dat\n1 14 400 -200 0 1 0 0 0 1 0 0 0 1 3005.dat",
   );
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "My builds");
   const panel = page.getByRole("region", { name: "Model health" });
   await panel.getByRole("button", { name: "Check model" }).click();
   const overlap = panel

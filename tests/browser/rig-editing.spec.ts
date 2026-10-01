@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 import { unzipSync, strFromU8 } from "fflate";
 import type { MotionRig } from "../../src/mechanisms/types";
 import type { Project } from "../../src/core/types";
@@ -96,7 +97,7 @@ for (const width of [360, 1080, 1440]) {
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
       const ui = page.locator(".rig-authoring");
-      await ui.getByText("Create or edit a rig", { exact: true }).click();
+      await openTool(page, "Create or edit a rig");
       const command = (type: string, payload: Record<string, unknown> = {}) =>
         page.evaluate(
           async ({ type, payload }) => {

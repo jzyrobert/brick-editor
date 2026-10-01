@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 async function enter(page: Page) {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor?.play);
@@ -274,7 +274,7 @@ test("PL02/04 a frozen Play view captures and bookmarks without pointer lock, an
   await page
     .getByRole("button", { name: "Save this view to Photo", exact: true })
     .click();
-  await openMode(page, "Photo");
+  await openMenuTab(page, "Photo", "Saved views");
   await page
     .getByRole("button", { name: "Exploration view", exact: true })
     .click();

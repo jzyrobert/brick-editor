@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 
 // A 2 × 4 brick off the world grid (x 5, z 3) and a loose 1 × 1 elsewhere: only
 // connector snapping, not grid stacking, can seat a new brick on its studs.
@@ -95,7 +96,7 @@ test("placing a brick on an off-grid brick snaps to its studs, turns, connects a
     .locator(".right-tabs")
     .getByRole("button", { name: "Inspector", exact: true })
     .click();
-  await page.getByText("Selection tools", { exact: true }).click();
+  await openTool(page, "Selection tools");
   await page.getByRole("button", { name: "Select connected" }).click();
   await expect(page.locator(".canvas-bottom")).toContainText("2 selected");
   await expect(status).toContainText("Selected 2 connected parts");
@@ -125,8 +126,7 @@ test("a stud workplane sits on the tapped stud and follows its part", async ({
     .locator(".right-tabs")
     .getByRole("button", { name: "Inspector", exact: true })
     .click();
-  const drawer = page.locator("details.workplane-drawer");
-  await drawer.getByText("Workplane and grid", { exact: true }).click();
+  await openTool(page, "Workplane and grid");
   const panel = page.getByRole("region", { name: "Workplane settings" });
   await panel.getByRole("button", { name: "Pick a stud", exact: true }).click();
   const c = await centre(page);
@@ -138,8 +138,7 @@ test("a stud workplane sits on the tapped stud and follows its part", async ({
     .locator(".right-tabs")
     .getByRole("button", { name: "Inspector", exact: true })
     .click();
-  if (!(await drawer.evaluate((d) => (d as HTMLDetailsElement).open)))
-    await drawer.getByText("Workplane and grid", { exact: true }).click();
+  await openTool(page, "Workplane and grid");
   await panel.getByText("Numerical plane", { exact: true }).click();
   // The brick's top (stud base) is at y −24; the origin is a stud-cell corner.
   await expect(panel.getByLabel("Plane origin Y", { exact: true })).toHaveValue(

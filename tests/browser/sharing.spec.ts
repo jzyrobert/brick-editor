@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 test("shared links preview safely, dismiss without replacement and keep the saved build when opening", async ({
   page,
@@ -11,7 +11,7 @@ test("shared links preview safely, dismiss without replacement and keep the save
       r = await a.project.import({ format: "template", template: "room" });
     await a.ready({ minRevision: r.revision });
   });
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "Export");
   await page
     .getByRole("button", { name: "Create share link", exact: true })
     .click();
@@ -72,7 +72,7 @@ test("shared links preview safely, dismiss without replacement and keep the save
     .toBe(74);
   expect(new URL(page.url()).hash).toBe("");
   expect(downloads).toBe(0);
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "My builds");
   await page.getByRole("button", { name: "Refresh saved projects" }).click();
   await expect(
     page.locator(".saved-project").filter({ hasText: "Brick wall" }),
@@ -90,7 +90,7 @@ test("a damaged share checksum is rejected without changing the recovered projec
     });
   });
   await expect(page.locator(".save-state")).toContainText("Saved revision");
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "Export");
   await page
     .getByRole("button", { name: "Create share link", exact: true })
     .click();

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync, strFromU8 } from "fflate";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 for (const size of [
   { width: 1440, height: 1000, touch: false },
   { width: 1080, height: 1800, touch: true },
@@ -103,6 +103,7 @@ for (const size of [
       await editor
         .getByRole("button", { name: "Redo edit", exact: true })
         .click();
+      await openMenuTab(page, "Instructions", "Publish");
       const publisher = page.getByRole("region", {
         name: "Publish instructions",
       });

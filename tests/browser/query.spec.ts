@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 test("installed primitive geometry resolves without creating a purchasing identity", async ({
   page,
 }) => {
@@ -103,7 +104,7 @@ test("current selection queries follow the editor selection tools", async ({
     .locator(".right-tabs")
     .getByRole("button", { name: "Inspector", exact: true })
     .click();
-  await page.getByText("Selection tools", { exact: true }).click();
+  await openTool(page, "Selection tools");
   await page
     .getByRole("button", { name: "Select editable parts", exact: true })
     .click();

@@ -116,6 +116,7 @@ import { SharePanel } from "./SharePanel";
 import { AutosaveQueue } from "../persistence/autosave";
 import { BrowserPlay } from "../play/browser";
 import { PlayPanel } from "./PlayPanel";
+import { ModeMenu } from "./ModeMenu";
 import {
   useEffect,
   useLayoutEffect,
@@ -189,6 +190,7 @@ import "./styles.css";
 import "./hud.css";
 import "./parts-picker.css";
 import "./guide.css";
+import "./menus.css";
 const editor = new Editor();
 // A stored preference was acknowledged when chosen; otherwise the device decides.
 try {
@@ -549,6 +551,9 @@ function Workspace() {
     [bookmarkFloor, setBookmarkFloor] = useState(true),
     [viewTab, setViewTab] = useState<ViewTab>("Angle"),
     [moreOpen, setMoreOpen] = useState(false),
+    // The Inspector's advanced tools sit in a Tools tab beside it.
+    [inspectorTools, setInspectorTools] = useState(false),
+    [allTemplates, setAllTemplates] = useState(false),
     [placeExact, setPlaceExact] = useState(false),
     [detailsOpen, setDetailsOpen] = useState(false),
     [focusFloorId, setFocusFloorId] = useState<string | null>(null),
@@ -3165,6 +3170,8 @@ function Workspace() {
             ),
         );
         receiveSelection(matches.map((o) => o.id));
+        // Show what was selected: back from Tools to the Inspector.
+        if (matches.length) setInspectorTools(false);
       }}
       onConnected={() => {
         if (interact.current.tool !== "Select") pickTool("Select");
@@ -3185,6 +3192,7 @@ function Workspace() {
           s.crossLayer,
         );
         setSelectionSafe(chosen);
+        if (chosen.length) setInspectorTools(false);
         const skipped = occurrenceIds.length - chosen.length;
         setStatus(
           `Selected ${chosen.length} connected part${chosen.length === 1 ? "" : "s"}.` +
@@ -3508,6 +3516,471 @@ function Workspace() {
       )}
     </>
   );
+  // Photo menu sections (src/ui/menus.ts).
+  const photoSizeFields = (
+    <>
+      <div className="numeric-row">
+        <NumberInput
+          label="Width"
+          value={photoSize[0]}
+          onChange={(n) => setPhotoSize([n, photoSize[1]])}
+        />
+        <NumberInput
+          label="Height"
+          value={photoSize[1]}
+          onChange={(n) => setPhotoSize([photoSize[0], n])}
+        />
+      </div>
+      <label className="check">
+        <input
+          type="checkbox"
+          checked={transparent}
+          onChange={(e) => setTransparent(e.target.checked)}
+        />
+        Transparent background
+      </label>
+    </>
+  );
+  const photoDownload = (
+    <button
+      className="primary wide"
+      disabled={busy}
+      onClick={() => void capture()}
+    >
+      Download PNG + manifest <Icon name="arrowDown" size={16} />
+    </button>
+  );
+  const photoViews = (
+    <>
+      <form
+        className="bookmark-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void run(() => {
+            command("camera.bookmark", {
+              name:
+                bookmarkName.trim() ||
+                "View " + (Object.keys(project.cameraBookmarks).length + 1),
+              camera: renderer.current?.currentCamera() || camera,
+              // "Hide the roof in this camera": keep the floor focus with it.
+              ...(focusFloorId
+                ? {
+                    floorFocus: bookmarkFloor
+                      ? { floorId: focusFloorId, ghostBelow }
+                      : null,
+                  }
+                : {}),
+            });
+            setBookmarkName("");
+          });
+        }}
+      >
+        <label>
+          Bookmark name
+          <input
+            value={bookmarkName}
+            placeholder="e.g. exterior/front"
+            maxLength={120}
+            onChange={(e) => setBookmarkName(e.target.value)}
+          />
+        </label>
+        {focusFloorId && (
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={bookmarkFloor}
+              onChange={(e) => setBookmarkFloor(e.target.checked)}
+            />
+            Save floor focus (
+            {architectureOf(project).floors.find((f) => f.id === focusFloorId)
+              ?.name ?? "floor"}
+            ) with this bookmark
+          </label>
+        )}
+        <button className="wide">Save this view</button>
+      </form>
+      {Object.entries(project.cameraBookmarks).map(([name, spec]) => {
+        const view = architectureOf(project).views[name];
+        return (
+          <button
+            key={name}
+            onClick={() =>
+              void run(() => {
+                renderer.current?.setCamera(spec);
+                setCamera(spec);
+                // A bookmark with a saved floor view restores it.
+                if (view) {
+                  setFocusFloorId(view.floorId);
+                  setGhostBelow(view.ghostBelow);
+                }
+              })
+            }
+          >
+            {name}
+            {view &&
+              " · " +
+                (architectureOf(project).floors.find(
+                  (f) => f.id === view.floorId,
+                )?.name ?? "")}
+          </button>
+        );
+      })}
+    </>
+  );
+  const photoExact = (
+    <>
+      <div className="numeric-row">
+        {["X", "Y", "Z"].map((axis, i) => (
+          <NumberInput
+            key={axis}
+            label={"Camera " + axis}
+            value={camera.position[i]}
+            onChange={(n) =>
+              setCamera((c) => ({
+                ...c,
+                position: c.position.map((x, j) => (i === j ? n : x)) as Vec3,
+              }))
+            }
+          />
+        ))}
+      </div>
+      <div className="numeric-row">
+        {["X", "Y", "Z"].map((axis, i) => (
+          <NumberInput
+            key={axis}
+            label={"Target " + axis}
+            value={camera.target[i]}
+            onChange={(n) =>
+              setCamera((c) => ({
+                ...c,
+                target: c.target.map((x, j) => (i === j ? n : x)) as Vec3,
+              }))
+            }
+          />
+        ))}
+      </div>
+      <div className="button-row">
+        <button
+          onClick={() => void run(() => renderer.current?.setCamera(camera))}
+        >
+          Apply exact camera
+        </button>
+        <button
+          onClick={() => setCamera(renderer.current?.currentCamera() || camera)}
+        >
+          Read current view
+        </button>
+      </div>
+    </>
+  );
+  const photoCollection = (
+    <CameraCollections
+      api={api.current!}
+      bookmarks={Object.keys(project.cameraBookmarks)}
+      size={photoSize}
+      transparent={transparent}
+      download={download}
+      onStatus={setStatus}
+    />
+  );
+  const photoQuality = <QualityPanel renderer={renderer.current} />;
+  const bookmarkCount = Object.keys(project.cameraBookmarks).length;
+  // Instructions menu sections.
+  const generateSteps = (
+    <button
+      className="wide"
+      onClick={() =>
+        void run(() => {
+          const result = command("instructions.layers", {
+            name: "Layer sequence",
+            maxPerStep: 10,
+          });
+          setActivePlanId(result.addedPlanIds[0]);
+          setStep(0);
+        })
+      }
+    >
+      Generate layer steps
+    </button>
+  );
+  const instructionEditor = (
+    <InstructionEditor
+      canUndo={editor.canUndo}
+      canRedo={editor.canRedo}
+      project={project}
+      planId={currentPlanId}
+      onPlanChange={setActivePlanId}
+      step={step}
+      onStepChange={setStep}
+      selection={selection}
+      dispatch={(type, payload) => command(type, payload)}
+      currentCamera={() => renderer.current?.currentCamera()}
+      applyCamera={(camera) => {
+        void run(() => renderer.current?.setCamera(camera));
+      }}
+    />
+  );
+  const stepNavigator = plan && (
+    <>
+      <h3>{plan.name}</h3>
+      <p>
+        Step {plan.steps.length ? step + 1 : 0} of {plan.steps.length} ·{" "}
+        {plan.steps[step]?.length || 0} new parts
+      </p>
+      <input
+        aria-label="Instruction step"
+        disabled={!plan.steps.length}
+        type="range"
+        min="0"
+        max={Math.max(0, plan.steps.length - 1)}
+        value={step}
+        onChange={(e) => setStep(Number(e.target.value))}
+      />
+    </>
+  );
+  const planJson = plan && (
+    <button
+      className="wide"
+      onClick={() =>
+        download(
+          "instructions.json",
+          strToU8(JSON.stringify(plan, null, 2)),
+          "application/json",
+        )
+      }
+    >
+      Download plan JSON
+    </button>
+  );
+  const instructionsPublish = (
+    <InstructionsPublish
+      dimPrevious={dimPrevious}
+      onDimPreviousChange={setDimPrevious}
+      project={project}
+      planId={currentPlanId}
+      renderer={renderer.current}
+    />
+  );
+  const enterMode = (m: typeof mode) => {
+    setModesOpen(false);
+    if (m === mode) return;
+    setMode(m);
+    if (m !== "Build") setPanel("Canvas");
+    if (m === "Photo") setCamera(renderer.current?.currentCamera() || camera);
+  };
+  // Build tools (the Inspector's advanced drawers).
+  const toolsTab = inspectorTools;
+  const modelTools = (
+    <ModelTools
+      editor={editor}
+      selection={selection}
+      activeLayerId={crossLayer ? undefined : activeLayer}
+      onSelect={setSelectionSafe}
+    />
+  );
+  const rigAuthoring = (
+    <RigAuthoring
+      editor={editor}
+      project={project}
+      occurrences={available ? all : undefined}
+      selection={selection}
+      activeLayerId={crossLayer ? undefined : activeLayer}
+      onSelect={setSelectionSafe}
+    />
+  );
+  const seatAuthoring = (
+    <SeatAuthoring
+      editor={editor}
+      project={project}
+      activeLayerId={crossLayer ? undefined : activeLayer}
+    />
+  );
+  const rigPhysics = (
+    <RigPhysicsAuthoring
+      editor={editor}
+      project={project}
+      activeLayerId={crossLayer ? undefined : activeLayer}
+    />
+  );
+  const workplanePanel = (
+    <WorkplanePanel
+      value={workplane}
+      onChange={updateWorkplane}
+      pickingFace={pickingFace === "face"}
+      pickingStud={pickingFace === "stud"}
+      onPickStud={() => {
+        setPickingFace("stud");
+        setTool("Select");
+        setPanel("Canvas");
+        setStatus("Tap a stud to put the workplane on it.");
+      }}
+      onCancelPick={() => setPickingFace(false)}
+      onPickFace={() => {
+        setPickingFace("face");
+        setTool("Select");
+        setPanel("Canvas");
+        setStatus("Tap a visible model face to align the workplane.");
+      }}
+    />
+  );
+  // Project menu sections.
+  const projectLibraryUpdate = api.current && (
+    <LibraryUpdatePanel
+      api={api.current}
+      project={project}
+      onStatus={setStatus}
+    />
+  );
+  const projectLdraw = (
+    <button className="wide" onClick={() => void exportFile("ldraw")}>
+      Export LDraw MPD <Icon name="arrowDown" size={16} />
+    </button>
+  );
+  // Four samples, then the rest on request: the New tab stays short.
+  const projectTemplates = (
+    <>
+      <div className="template-grid">
+        {(allTemplates ? TEMPLATE_CARDS : TEMPLATE_CARDS.slice(0, 4)).map(
+          (card) => {
+            const preview = templatePreview(card.name);
+            return (
+              <button
+                key={card.name}
+                className="template-card"
+                onClick={() => chooseTemplate(card.name)}
+              >
+                {preview ? (
+                  <img
+                    src={import.meta.env.BASE_URL + preview}
+                    alt=""
+                    width={160}
+                    height={120}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="template-blank" aria-hidden="true" />
+                )}
+                <span>{card.title}</span>
+              </button>
+            );
+          },
+        )}
+      </div>
+      <button
+        className="text-button template-more"
+        aria-expanded={allTemplates}
+        onClick={() => setAllTemplates((v) => !v)}
+      >
+        {allTemplates
+          ? "Show fewer templates"
+          : `Show all ${TEMPLATE_CARDS.length} templates`}
+      </button>
+    </>
+  );
+  const projectOfficial = (
+    <OfficialSets open={openOfficialSet} credit={omrCreditInfo} busy={busy} />
+  );
+  const projectProfiles = (
+    <ExportProfiles project={project} selection={selection} />
+  );
+  const projectShare = (
+    <SharePanel
+      project={project}
+      open={(shared) =>
+        replaceOrKeep("the shared model", async () => {
+          editor.replace(shared);
+          await renderer.current?.ready();
+          renderer.current?.fit();
+          setPanel("Canvas");
+          setMode("Build");
+        })
+      }
+    />
+  );
+  const projectSaved = (
+    <ProjectLibrary
+      currentId={project.id}
+      open={(saved) =>
+        replaceOrKeep(`“${saved.title}”`, async () => {
+          await autosave.current?.flush();
+          saveRevisions.current.set(saved.id, saved.revision);
+          nextOpenStored.current = true;
+          editor.replace(saved);
+          setSaveConflict(false);
+          setMode("Build");
+          setPanel("Canvas");
+          await renderer.current?.ready();
+          renderer.current?.fit();
+        })
+      }
+    />
+  );
+  const projectCheckpoints = (
+    <CheckpointsPanel
+      api={api.current!}
+      projectId={project.id}
+      revision={project.revision}
+      download={download}
+      backupCurrent={() => exportFile("native")}
+      showChanges={(ids) => {
+        setMode("Build");
+        setPanel("Canvas");
+        setSelectionSafe(ids);
+        setStatus(
+          `${ids.length} changed part${ids.length === 1 ? "" : "s"} selected.`,
+        );
+      }}
+      onStatus={setStatus}
+    />
+  );
+  const projectHealth = (
+    <HealthPanel
+      api={api.current!}
+      revision={project.revision}
+      select={(ids) => {
+        setMode("Build");
+        setPanel("Canvas");
+        setSelectionSafe(ids);
+        setStatus(
+          `${ids.length} part${ids.length === 1 ? "" : "s"} selected from the health check.`,
+        );
+      }}
+    />
+  );
+  const projectLimits = (
+    <ResourceProfilePanel editor={editor} onStatus={setStatus} />
+  );
+  const projectShortcuts = (
+    <ShortcutSettings
+      value={shortcuts}
+      onChange={(value) => {
+        setShortcuts(value);
+        setStatus(
+          saveShortcuts(value)
+            ? "Keyboard shortcuts saved on this device."
+            : "Keyboard shortcuts applied for this session; browser preferences could not be saved.",
+        );
+      }}
+    />
+  );
+  const projectAbout = (
+    <>
+      <p>
+        Six pinned LDraw parts, local files, clipboard and arrays, layers,
+        inventory, image and instruction publishing, Play exploration and
+        kinematic mechanisms. Official textured parts show their printed images.
+        Connector snapping, dynamic suspension and advanced assembly planning
+        remain unavailable.
+      </p>
+      <a
+        href={import.meta.env.BASE_URL + "notices/LDRAW.txt"}
+        target="_blank"
+        rel="noreferrer"
+      >
+        LDraw attribution and licences <Icon name="external" size={14} />
+      </a>
+    </>
+  );
   return (
     <div
       ref={appRoot}
@@ -3538,11 +4011,7 @@ function Workspace() {
                     setModesOpen((open) => !open);
                     return;
                   }
-                  setModesOpen(false);
-                  setMode(m);
-                  if (m !== "Build") setPanel("Canvas");
-                  if (m === "Photo")
-                    setCamera(renderer.current?.currentCamera() || camera);
+                  enterMode(m);
                 }}
               >
                 <Icon name={m.toLowerCase() as IconName} />
@@ -4395,274 +4864,57 @@ function Workspace() {
             </div>
           )}
           {mode === "Photo" && (
-            <div className="mode-card">
-              <h2>A different perspective.</h2>
-              <p>
-                Frame your build, then save the picture. Only the build is in
-                it.
-              </p>
-              <div className="numeric-row">
-                <NumberInput
-                  label="Width"
-                  value={photoSize[0]}
-                  onChange={(n) => setPhotoSize([n, photoSize[1]])}
-                />
-                <NumberInput
-                  label="Height"
-                  value={photoSize[1]}
-                  onChange={(n) => setPhotoSize([photoSize[0], n])}
-                />
-              </div>
-              <label className="check">
-                <input
-                  type="checkbox"
-                  checked={transparent}
-                  onChange={(e) => setTransparent(e.target.checked)}
-                />
-                Transparent background
-              </label>
-              <button
-                className="primary wide"
-                disabled={busy}
-                onClick={() => void capture()}
-              >
-                Download PNG + manifest <Icon name="arrowDown" size={16} />
-              </button>
-              <h3>Saved views</h3>
-              <form
-                className="bookmark-form"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void run(() => {
-                    command("camera.bookmark", {
-                      name:
-                        bookmarkName.trim() ||
-                        "View " +
-                          (Object.keys(project.cameraBookmarks).length + 1),
-                      camera: renderer.current?.currentCamera() || camera,
-                      // "Hide the roof in this camera": keep the floor focus with it.
-                      ...(focusFloorId
-                        ? {
-                            floorFocus: bookmarkFloor
-                              ? { floorId: focusFloorId, ghostBelow }
-                              : null,
-                          }
-                        : {}),
-                    });
-                    setBookmarkName("");
-                  });
-                }}
-              >
-                <label>
-                  Bookmark name
-                  <input
-                    value={bookmarkName}
-                    placeholder="e.g. exterior/front"
-                    maxLength={120}
-                    onChange={(e) => setBookmarkName(e.target.value)}
-                  />
-                </label>
-                {focusFloorId && (
-                  <label className="check-row">
-                    <input
-                      type="checkbox"
-                      checked={bookmarkFloor}
-                      onChange={(e) => setBookmarkFloor(e.target.checked)}
-                    />
-                    Save floor focus (
-                    {architectureOf(project).floors.find(
-                      (f) => f.id === focusFloorId,
-                    )?.name ?? "floor"}
-                    ) with this bookmark
-                  </label>
-                )}
-                <button className="wide">Save this view</button>
-              </form>
-              {Object.entries(project.cameraBookmarks).map(([name, spec]) => {
-                const view = architectureOf(project).views[name];
-                return (
-                  <button
-                    key={name}
-                    onClick={() =>
-                      void run(() => {
-                        renderer.current?.setCamera(spec);
-                        setCamera(spec);
-                        // A bookmark with a saved floor view restores it.
-                        if (view) {
-                          setFocusFloorId(view.floorId);
-                          setGhostBelow(view.ghostBelow);
-                        }
-                      })
-                    }
-                  >
-                    {name}
-                    {view &&
-                      " · " +
-                        (architectureOf(project).floors.find(
-                          (f) => f.id === view.floorId,
-                        )?.name ?? "")}
-                  </button>
-                );
-              })}
-              <details className="card-drawer">
-                <summary>Exact camera position</summary>
-                <div className="numeric-row">
-                  {["X", "Y", "Z"].map((axis, i) => (
-                    <NumberInput
-                      key={axis}
-                      label={"Camera " + axis}
-                      value={camera.position[i]}
-                      onChange={(n) =>
-                        setCamera((c) => ({
-                          ...c,
-                          position: c.position.map((x, j) =>
-                            i === j ? n : x,
-                          ) as Vec3,
-                        }))
-                      }
-                    />
-                  ))}
-                </div>
-                <div className="numeric-row">
-                  {["X", "Y", "Z"].map((axis, i) => (
-                    <NumberInput
-                      key={axis}
-                      label={"Target " + axis}
-                      value={camera.target[i]}
-                      onChange={(n) =>
-                        setCamera((c) => ({
-                          ...c,
-                          target: c.target.map((x, j) =>
-                            i === j ? n : x,
-                          ) as Vec3,
-                        }))
-                      }
-                    />
-                  ))}
-                </div>
-                <div className="button-row">
-                  <button
-                    onClick={() =>
-                      void run(() => renderer.current?.setCamera(camera))
-                    }
-                  >
-                    Apply exact camera
-                  </button>
-                  <button
-                    onClick={() =>
-                      setCamera(renderer.current?.currentCamera() || camera)
-                    }
-                  >
-                    Read current view
-                  </button>
-                </div>
-              </details>
-              <details className="card-drawer">
-                <summary>Camera collection</summary>
-                <CameraCollections
-                  api={api.current!}
-                  bookmarks={Object.keys(project.cameraBookmarks)}
-                  size={photoSize}
-                  transparent={transparent}
-                  download={download}
-                  onStatus={setStatus}
-                />
-              </details>
-              <QualityPanel renderer={renderer.current} />
-            </div>
+            <ModeMenu
+              menu="Photo"
+              label="Photo"
+              sections={{
+                download: photoDownload,
+                size: photoSizeFields,
+                views: photoViews,
+                exact: photoExact,
+                collection: bookmarkCount > 0 && photoCollection,
+                quality: photoQuality,
+              }}
+            />
           )}
           {mode === "Instructions" && (
-            <div className="mode-card">
-              <h2>One step at a time.</h2>
-              <button
-                className="primary wide guide-open-button"
-                disabled={!available || !all.length}
-                onClick={() => setGuideOpen(true)}
-              >
-                <Icon name="instructions" /> Build it step by step
-              </button>
-              <button
-                className="wide"
-                disabled={!available}
-                onClick={() => setPartsListOpen(true)}
-              >
-                <Icon name="parts" /> Parts list
-              </button>
-              <p>
-                Steps come from the model file when it has them, otherwise they
-                are made bottom up. Below, create an organisational sequence
-                from your layers. This is not a physically validated assembly
-                plan.
-              </p>
-              <button
-                className="wide"
-                onClick={() =>
-                  void run(() => {
-                    const result = command("instructions.layers", {
-                      name: "Layer sequence",
-                      maxPerStep: 10,
-                    });
-                    setActivePlanId(result.addedPlanIds[0]);
-                    setStep(0);
-                  })
-                }
-              >
-                Generate layer steps
-              </button>
-              <InstructionEditor
-                canUndo={editor.canUndo}
-                canRedo={editor.canRedo}
-                project={project}
-                planId={currentPlanId}
-                onPlanChange={setActivePlanId}
-                step={step}
-                onStepChange={setStep}
-                selection={selection}
-                dispatch={(type, payload) => command(type, payload)}
-                currentCamera={() => renderer.current?.currentCamera()}
-                applyCamera={(camera) => {
-                  void run(() => renderer.current?.setCamera(camera));
-                }}
-              />
-              {plan && (
-                <>
-                  <h3>{plan.name}</h3>
-                  <p>
-                    Step {plan.steps.length ? step + 1 : 0} of{" "}
-                    {plan.steps.length} · {plan.steps[step]?.length || 0} new
-                    parts
-                  </p>
-                  <input
-                    aria-label="Instruction step"
-                    disabled={!plan.steps.length}
-                    type="range"
-                    min="0"
-                    max={Math.max(0, plan.steps.length - 1)}
-                    value={step}
-                    onChange={(e) => setStep(Number(e.target.value))}
-                  />
-                  <button
-                    className="wide"
-                    onClick={() =>
-                      download(
-                        "instructions.json",
-                        strToU8(JSON.stringify(plan, null, 2)),
-                        "application/json",
-                      )
-                    }
-                  >
-                    Download plan JSON
-                  </button>
-                  <InstructionsPublish
-                    dimPrevious={dimPrevious}
-                    onDimPreviousChange={setDimPrevious}
-                    project={project}
-                    planId={currentPlanId}
-                    renderer={renderer.current}
-                  />
-                </>
-              )}
-            </div>
+            <ModeMenu
+              menu="Instructions"
+              label="Instructions"
+              sections={{
+                follow: (
+                  <div className="menu-actions">
+                    <button
+                      className="primary guide-open-button"
+                      disabled={!available || !all.length}
+                      onClick={() => setGuideOpen(true)}
+                    >
+                      <Icon name="instructions" /> Build it step by step
+                    </button>
+                    <button
+                      disabled={!available}
+                      onClick={() => setPartsListOpen(true)}
+                    >
+                      <Icon name="parts" /> Parts list
+                    </button>
+                  </div>
+                ),
+                step: stepNavigator,
+                plan: (
+                  <>
+                    <p className="muted">
+                      Step by step follows the model file, or builds bottom up.
+                      Layer steps make a plan from your layers; it is not a
+                      checked assembly plan.
+                    </p>
+                    {generateSteps}
+                    {instructionEditor}
+                    {planJson}
+                  </>
+                ),
+                publish: plan && instructionsPublish,
+              }}
+            />
           )}
           {mode === "Play" && play.current && (
             <PlayPanel
@@ -4690,159 +4942,46 @@ function Workspace() {
             </PlayPanel>
           )}
           {mode === "Project" && (
-            <div className="mode-card">
-              {api.current && (
-                <LibraryUpdatePanel
-                  api={api.current}
-                  project={project}
-                  onStatus={setStatus}
-                />
-              )}
-              <h2>Keep the things you make.</h2>
-              <p>
-                Download a native backup to preserve your project. Browser
-                storage can be cleared.
-              </p>
-              <div className="button-row">
-                <button onClick={() => fileInput.current?.click()}>
-                  Open file <Icon name="arrowUp" size={16} />
-                </button>
-                <button onClick={() => void exportFile("native")}>
-                  Native backup <Icon name="arrowDown" size={16} />
-                </button>
-              </div>
-              <button className="wide" onClick={() => void exportFile("ldraw")}>
-                Export LDraw MPD <Icon name="arrowDown" size={16} />
-              </button>
-              <p className="muted">
-                Open file reads LDraw (.ldr, .mpd), native backups and build
-                scripts (.json).
-              </p>
-              <h3>Start from a template</h3>
-              <p className="muted">
-                If your current build has changes, you can save or discard it
-                first.
-              </p>
-              <div className="template-grid">
-                {TEMPLATE_CARDS.map((card) => {
-                  const preview = templatePreview(card.name);
-                  return (
-                    <button
-                      key={card.name}
-                      className="template-card"
-                      onClick={() => chooseTemplate(card.name)}
-                    >
-                      {preview ? (
-                        <img
-                          src={import.meta.env.BASE_URL + preview}
-                          alt=""
-                          width={160}
-                          height={120}
-                          loading="lazy"
-                        />
-                      ) : (
-                        <span className="template-blank" aria-hidden="true" />
-                      )}
-                      <span>{card.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              <OfficialSets
-                open={openOfficialSet}
-                credit={omrCreditInfo}
-                busy={busy}
-              />
-              <ExportProfiles project={project} selection={selection} />
-              <SharePanel
-                project={project}
-                open={(shared) =>
-                  replaceOrKeep("the shared model", async () => {
-                    editor.replace(shared);
-                    await renderer.current?.ready();
-                    renderer.current?.fit();
-                    setPanel("Canvas");
-                    setMode("Build");
-                  })
-                }
-              />
-              <ProjectLibrary
-                currentId={project.id}
-                open={(saved) =>
-                  replaceOrKeep(`“${saved.title}”`, async () => {
-                    await autosave.current?.flush();
-                    saveRevisions.current.set(saved.id, saved.revision);
-                    nextOpenStored.current = true;
-                    editor.replace(saved);
-                    setSaveConflict(false);
-                    setMode("Build");
-                    setPanel("Canvas");
-                    await renderer.current?.ready();
-                    renderer.current?.fit();
-                  })
-                }
-              />
-              <CheckpointsPanel
-                api={api.current!}
-                projectId={project.id}
-                revision={project.revision}
-                download={download}
-                backupCurrent={() => exportFile("native")}
-                showChanges={(ids) => {
-                  setMode("Build");
-                  setPanel("Canvas");
-                  setSelectionSafe(ids);
-                  setStatus(
-                    `${ids.length} changed part${ids.length === 1 ? "" : "s"} selected.`,
-                  );
-                }}
-                onStatus={setStatus}
-              />
-              <HealthPanel
-                api={api.current!}
-                revision={project.revision}
-                select={(ids) => {
-                  setMode("Build");
-                  setPanel("Canvas");
-                  setSelectionSafe(ids);
-                  setStatus(
-                    `${ids.length} part${ids.length === 1 ? "" : "s"} selected from the health check.`,
-                  );
-                }}
-              />
-              <OfflinePanel />
-              <ResourceProfilePanel editor={editor} onStatus={setStatus} />
-              <ShortcutSettings
-                value={shortcuts}
-                onChange={(value) => {
-                  setShortcuts(value);
-                  setStatus(
-                    saveShortcuts(value)
-                      ? "Keyboard shortcuts saved on this device."
-                      : "Keyboard shortcuts applied for this session; browser preferences could not be saved.",
-                  );
-                }}
-              />
-              <details>
-                <summary>Supported features and source notices</summary>
-                <p>
-                  Six pinned LDraw parts, local files, clipboard and arrays,
-                  layers, inventory, image and instruction publishing, Play
-                  exploration and kinematic mechanisms. Official textured parts
-                  show their printed images. Connector snapping, dynamic
-                  suspension and advanced assembly planning remain unavailable.
-                </p>
-                <a
-                  href={import.meta.env.BASE_URL + "notices/LDRAW.txt"}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  LDraw attribution and licences{" "}
-                  <Icon name="external" size={14} />
-                </a>
-              </details>
-              <ClearSavedBuilds onClear={clearSavedBuildsAndReset} />
-            </div>
+            <ModeMenu
+              menu="Project"
+              label="Project"
+              sections={{
+                "library-update": projectLibraryUpdate,
+                files: (
+                  <>
+                    <div className="menu-actions">
+                      <button onClick={() => fileInput.current?.click()}>
+                        <Icon name="arrowUp" size={16} /> Open file
+                      </button>
+                      <button onClick={() => void exportFile("native")}>
+                        <Icon name="arrowDown" size={16} /> Download backup
+                      </button>
+                    </div>
+                    <p className="muted menu-note">
+                      Opens .ldr, .mpd, backups and build scripts. Browser
+                      storage can be cleared, so keep a backup.
+                    </p>
+                  </>
+                ),
+                templates: projectTemplates,
+                official: projectOfficial,
+                saved: projectSaved,
+                checkpoints: projectCheckpoints,
+                health: projectHealth,
+                clear: <ClearSavedBuilds onClear={clearSavedBuildsAndReset} />,
+                export: (
+                  <>
+                    {projectLdraw}
+                    {projectProfiles}
+                  </>
+                ),
+                share: projectShare,
+                offline: <OfflinePanel />,
+                limits: projectLimits,
+                shortcuts: projectShortcuts,
+                about: projectAbout,
+              }}
+            />
           )}
           {mode === "Build" && tool === "Measure" && (
             <div className="measure-chip hud-el hud-slab" role="status">
@@ -4921,6 +5060,7 @@ function Workspace() {
             "right-sidebar mobile-panel " +
             (["Layers", "Inspector"].includes(panel) ? "mobile-open" : "")
           }
+          data-panel={panel}
         >
           <div className="mobile-sheet-head">
             <button
@@ -4933,20 +5073,34 @@ function Workspace() {
           </div>
           <div className="right-tabs">
             <button
-              className={panel !== "Inspector" ? "active" : ""}
+              className={
+                "tab-layers " + (panel !== "Inspector" ? "active" : "")
+              }
               onClick={() => setPanel("Layers")}
             >
               Layers
             </button>
             <button
-              className={panel === "Inspector" ? "active" : ""}
-              onClick={() => setPanel("Inspector")}
+              className={panel === "Inspector" && !toolsTab ? "active" : ""}
+              onClick={() => {
+                setPanel("Inspector");
+                setInspectorTools(false);
+              }}
             >
               Inspector
             </button>
+            <button
+              className={toolsTab ? "active" : ""}
+              onClick={() => {
+                setPanel("Inspector");
+                setInspectorTools(true);
+              }}
+            >
+              Tools
+            </button>
           </div>
           {panel === "Inspector" ? (
-            inspectorPanel
+            !toolsTab && inspectorPanel
           ) : (
             <>
               {layersPanel}
@@ -4962,7 +5116,7 @@ function Workspace() {
               />
             </>
           )}
-          <div hidden={panel !== "Inspector" || !selection.length}>
+          <div hidden={panel !== "Inspector" || toolsTab || !selection.length}>
             <TransformPanel
               editor={editor}
               renderer={() => renderer.current}
@@ -4985,7 +5139,7 @@ function Workspace() {
               guard={snapTogether ? moveRefusal : undefined}
             />
           </div>
-          {panel === "Inspector" && (
+          {panel === "Inspector" && !toolsTab && (
             <ClipboardTools
               editor={editor}
               selection={selection}
@@ -4995,60 +5149,27 @@ function Workspace() {
               onSelect={setSelectionSafe}
             />
           )}
-          {/* Advanced tools: one row each, opened on demand. */}
-          <div className="tool-drawers" hidden={panel !== "Inspector"}>
-            <h3>More tools</h3>
-            {panel === "Inspector" && replaceTool}
-            {selectionTools}
-            {panel === "Inspector" && (
-              <ModelTools
-                editor={editor}
-                selection={selection}
-                activeLayerId={crossLayer ? undefined : activeLayer}
-                onSelect={setSelectionSafe}
-              />
-            )}
-            <RigAuthoring
-              editor={editor}
-              project={project}
-              occurrences={available ? all : undefined}
-              selection={selection}
-              activeLayerId={crossLayer ? undefined : activeLayer}
-              onSelect={setSelectionSafe}
-            />
-            <SeatAuthoring
-              editor={editor}
-              project={project}
-              activeLayerId={crossLayer ? undefined : activeLayer}
-            />
-            <RigPhysicsAuthoring
-              editor={editor}
-              project={project}
-              activeLayerId={crossLayer ? undefined : activeLayer}
-            />
-            <details className="workplane-drawer drawer">
-              <summary>Workplane and grid</summary>
-              <WorkplanePanel
-                value={workplane}
-                onChange={updateWorkplane}
-                pickingFace={pickingFace === "face"}
-                pickingStud={pickingFace === "stud"}
-                onPickStud={() => {
-                  setPickingFace("stud");
-                  setTool("Select");
-                  setPanel("Canvas");
-                  setStatus("Tap a stud to put the workplane on it.");
-                }}
-                onCancelPick={() => setPickingFace(false)}
-                onPickFace={() => {
-                  setPickingFace("face");
-                  setTool("Select");
-                  setPanel("Canvas");
-                  setStatus("Tap a visible model face to align the workplane.");
-                }}
-              />
-            </details>
-          </div>
+          {/* Advanced tools: a tab of their own, one drawer each. */}
+          <ModeMenu
+            menu="Tools"
+            label="Tools"
+            className="menu-tools"
+            hidden={panel !== "Inspector" || !toolsTab}
+            sections={{
+              selection: selectionTools,
+              replace: panel === "Inspector" && replaceTool,
+              workplane: workplanePanel,
+              submodels: panel === "Inspector" && modelTools,
+              rig: rigAuthoring,
+              seat: seatAuthoring,
+              physics: rigPhysics,
+            }}
+            hints={{
+              workplane: workplane.free
+                ? "Free placement"
+                : `Grid ${workplane.grid}`,
+            }}
+          />
         </aside>
       </main>
       <footer

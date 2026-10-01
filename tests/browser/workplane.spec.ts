@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openTool } from "./helpers/mode";
 for (const size of [
   { width: 1440, height: 1000, touch: false },
   { width: 1080, height: 1800, touch: true },
@@ -50,10 +51,8 @@ for (const size of [
             .locator(".right-tabs")
             .getByRole("button", { name: "Inspector", exact: true })
             .click();
-        // Workplane settings live in a drawer under More tools.
-        const drawer = page.locator("details.workplane-drawer");
-        if (!(await drawer.evaluate((d) => (d as HTMLDetailsElement).open)))
-          await drawer.getByText("Workplane and grid", { exact: true }).click();
+        // Workplane settings live in a drawer in the Tools tab.
+        await openTool(page, "Workplane and grid");
       };
       const tap = async (x: number, y: number) => {
         if (size.touch) await page.touchscreen.tap(x, y);

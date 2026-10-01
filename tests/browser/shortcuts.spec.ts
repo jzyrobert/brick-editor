@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode, openTool } from "./helpers/mode";
 test("keyboard clipboard shares UI state, protects text input and supports persistent remapping", async ({
   page,
 }) => {
@@ -16,7 +16,7 @@ test("keyboard clipboard shares UI state, protects text input and supports persi
     .locator(".right-tabs")
     .getByRole("button", { name: "Inspector", exact: true })
     .click();
-  await page.getByText("Selection tools", { exact: true }).click();
+  await openTool(page, "Selection tools");
   await page
     .getByRole("button", { name: "Select editable parts", exact: true })
     .click();
@@ -33,6 +33,7 @@ test("keyboard clipboard shares UI state, protects text input and supports persi
   await expect(page.locator(".canvas-bottom")).toContainText("80 parts");
   await page.keyboard.press("Control+z");
   await expect(page.locator(".canvas-bottom")).toContainText("40 parts");
+  await openTool(page, "Selection tools");
   await page
     .getByRole("button", { name: "Select editable parts", exact: true })
     .click();
@@ -59,8 +60,7 @@ test("keyboard clipboard shares UI state, protects text input and supports persi
   await title.press("v");
   await expect(title).toHaveValue("v");
   await expect(page.locator(".canvas-bottom")).toContainText("40 parts");
-  await openMode(page, "Project");
-  await page.getByText("Keyboard shortcuts", { exact: true }).click();
+  await openMenuTab(page, "Project", "Settings");
   await page.getByLabel("Paint tool shortcut").fill("P");
   await page
     .getByRole("button", { name: "Apply shortcuts", exact: true })

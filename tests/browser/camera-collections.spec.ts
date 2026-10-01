@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync, strFromU8 } from "fflate";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 test("camera collections render named bookmarks from one revision with a shared manifest", async ({
   page,
@@ -69,8 +69,7 @@ test("camera collections render named bookmarks from one revision with a shared 
   expect(result.missing).toMatch(/No camera bookmarks start with “roof\/”/);
 
   // Photo mode: pick the collection and download a ZIP of PNGs plus manifest.
-  await openMode(page, "Photo");
-  await page.locator("summary", { hasText: "Camera collection" }).click();
+  await openMenuTab(page, "Photo", "Saved views");
   await page
     .getByRole("combobox", { name: "Collection", exact: true })
     .selectOption("interior/");

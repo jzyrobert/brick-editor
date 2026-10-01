@@ -15,6 +15,7 @@ import {
   type PlayKeys,
 } from "../play/keys";
 import { PlayKeySettings } from "./PlayKeySettings";
+import { ModeMenu } from "./ModeMenu";
 import {
   loadPlayLook,
   mouseLookRate,
@@ -491,157 +492,174 @@ export function PlayPanel({
       input();
     },
   });
-  if (!state.active)
-    return (
-      <div className="mode-card play-intro">
-        <h2>Step inside.</h2>
-        <p>
-          Walk through your model or fly through walls. Switch to third person
-          to see your brick figure.
-        </p>
-        <p className="muted">
-          Your build stays unchanged. Choose which layers and ground to explore
-          below.
-        </p>
-        {playHint && <p className="play-intro-hint">{playHint}</p>}
-        {Object.keys(rigs).length > 0 && (
-          <label>
-            Explore with mechanism
-            <select
-              aria-label="Explore with mechanism"
-              value={
-                mechanismMode === "all"
-                  ? allOption
-                  : mechanismMode === "single" && rigs[rigId]
-                    ? rigId
-                    : ""
-              }
-              onChange={(e) => {
-                setMechanismMode(
-                  e.target.value === allOption
-                    ? "all"
-                    : e.target.value
-                      ? "single"
-                      : "static",
-                );
-                if (e.target.value && e.target.value !== allOption)
-                  setRigId(e.target.value);
-              }}
-            >
-              <option value={allOption}>
-                All mechanisms ({Object.keys(rigs).length})
-              </option>
-              <option value="">Static build</option>
-              {Object.values(rigs).map((rig) => (
-                <option key={rig.id} value={rig.id}>
-                  {rig.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        {Object.keys(rigs).length > 0 && (
-          <p className="muted">
-            Move near a joint or vehicle, then press{" "}
-            {bindings.interact || "the on-screen action"} or tap its action. All
-            mechanisms lets you interact with the whole build in one session.
-            Static build keeps every part still.
-          </p>
-        )}
-        {Object.keys(rigs).length > 0 && mechanismMode !== "static" && (
-          <details className="play-world-settings play-physics-settings">
-            <summary>
-              Mechanism physics ·{" "}
-              {physics === "dynamic" ? "Dynamic" : "Kinematic"}
-            </summary>
-            <label>
-              <input
-                type="radio"
-                name="play-physics"
-                checked={physics === "kinematic"}
-                onChange={() => setPhysics("kinematic")}
-              />
-              Kinematic · parts follow their joints exactly
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="play-physics"
-                checked={physics === "dynamic"}
-                onChange={() => setPhysics("dynamic")}
-              />
-              Dynamic · gravity, motors, suspension and pushing
-            </label>
-            <p>
-              Dynamic physics simulates each rigid group as one body. Loose
-              parts fall and can be pushed; cars ride on sprung wheels.
-              Simulated masses and forces are not real brick strength.
-            </p>
-          </details>
-        )}
-        <PlayWorldSettings
-          layers={layers}
-          excluded={excludedLayerIds}
-          ground={ground}
-          onExcluded={setExcludedLayerIds}
-          onGround={setGround}
-        />
-        <button
-          className="primary wide"
-          disabled={state.loading}
-          onClick={() => {
-            wantLock.current = true;
-            setLooked(false);
-            if (isPlayPhone()) {
-              enterPlayScreen();
-              setRotateAsk(isPortrait() && !portraitWasChosen());
+  const startHint = playHint && <p className="play-intro-hint">{playHint}</p>;
+  const mechanismChoice = (
+    <>
+      {Object.keys(rigs).length > 0 && (
+        <label>
+          Explore with mechanism
+          <select
+            aria-label="Explore with mechanism"
+            value={
+              mechanismMode === "all"
+                ? allOption
+                : mechanismMode === "single" && rigs[rigId]
+                  ? rigId
+                  : ""
             }
-            attempt(() =>
-              play
-                .enter({
-                  realtime: true,
-                  ground,
-                  worldProfile: {
-                    excludedLayerIds: excludedLayerIds.filter(
-                      (id) => !!layers[id],
-                    ),
-                  },
-                  ...(mechanismMode === "all" && Object.keys(rigs).length
+            onChange={(e) => {
+              setMechanismMode(
+                e.target.value === allOption
+                  ? "all"
+                  : e.target.value
+                    ? "single"
+                    : "static",
+              );
+              if (e.target.value && e.target.value !== allOption)
+                setRigId(e.target.value);
+            }}
+          >
+            <option value={allOption}>
+              All mechanisms ({Object.keys(rigs).length})
+            </option>
+            <option value="">Static build</option>
+            {Object.values(rigs).map((rig) => (
+              <option key={rig.id} value={rig.id}>
+                {rig.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {Object.keys(rigs).length > 0 && (
+        <p className="muted">
+          Move near a joint or vehicle, then press{" "}
+          {bindings.interact || "the on-screen action"} or tap its action. All
+          mechanisms lets you interact with the whole build in one session.
+          Static build keeps every part still.
+        </p>
+      )}
+      {Object.keys(rigs).length > 0 && mechanismMode !== "static" && (
+        <details className="play-world-settings play-physics-settings">
+          <summary>
+            Mechanism physics ·{" "}
+            {physics === "dynamic" ? "Dynamic" : "Kinematic"}
+          </summary>
+          <label>
+            <input
+              type="radio"
+              name="play-physics"
+              checked={physics === "kinematic"}
+              onChange={() => setPhysics("kinematic")}
+            />
+            Kinematic · parts follow their joints exactly
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="play-physics"
+              checked={physics === "dynamic"}
+              onChange={() => setPhysics("dynamic")}
+            />
+            Dynamic · gravity, motors, suspension and pushing
+          </label>
+          <p>
+            Dynamic physics simulates each rigid group as one body. Loose parts
+            fall and can be pushed; cars ride on sprung wheels. Simulated masses
+            and forces are not real brick strength.
+          </p>
+        </details>
+      )}
+    </>
+  );
+  const worldSettings = (
+    <PlayWorldSettings
+      layers={layers}
+      excluded={excludedLayerIds}
+      ground={ground}
+      onExcluded={setExcludedLayerIds}
+      onGround={setGround}
+    />
+  );
+  const enterPlay = (
+    <>
+      <button
+        className="primary wide"
+        disabled={state.loading}
+        onClick={() => {
+          wantLock.current = true;
+          setLooked(false);
+          if (isPlayPhone()) {
+            enterPlayScreen();
+            setRotateAsk(isPortrait() && !portraitWasChosen());
+          }
+          attempt(() =>
+            play
+              .enter({
+                realtime: true,
+                ground,
+                worldProfile: {
+                  excludedLayerIds: excludedLayerIds.filter(
+                    (id) => !!layers[id],
+                  ),
+                },
+                ...(mechanismMode === "all" && Object.keys(rigs).length
+                  ? {
+                      rigIds: Object.keys(rigs),
+                      ...(physics === "dynamic"
+                        ? { dynamicRigIds: Object.keys(rigs).slice(0, 14) }
+                        : {}),
+                    }
+                  : mechanismMode === "single" && rigs[rigId]
                     ? {
-                        rigIds: Object.keys(rigs),
+                        rigId,
                         ...(physics === "dynamic"
-                          ? { dynamicRigIds: Object.keys(rigs).slice(0, 14) }
+                          ? { dynamicRigIds: [rigId] }
                           : {}),
                       }
-                    : mechanismMode === "single" && rigs[rigId]
-                      ? {
-                          rigId,
-                          ...(physics === "dynamic"
-                            ? { dynamicRigIds: [rigId] }
-                            : {}),
-                        }
-                      : {}),
-                  // Static build keeps every part still, doors included.
-                  ...(mechanismMode === "static" && Object.keys(rigs).length
-                    ? { autoDoors: false }
                     : {}),
-                })
-                .then(explainFly),
-            );
-          }}
-        >
-          {state.loading ? "Preparing your world…" : "Enter Play"}
-        </button>
-        {state.loading && <button onClick={() => play.exit()}>Cancel</button>}
-        <p role="status">{message || state.error}</p>
-        <PlayKeySettings
-          value={bindings}
-          onChange={changeBindings}
-          look={look}
-          onLookChange={changeLook}
-        />
-        {children}
-      </div>
+                // Static build keeps every part still, doors included.
+                ...(mechanismMode === "static" && Object.keys(rigs).length
+                  ? { autoDoors: false }
+                  : {}),
+              })
+              .then(explainFly),
+          );
+        }}
+      >
+        {state.loading ? "Preparing your world…" : "Enter Play"}
+      </button>
+      {state.loading && <button onClick={() => play.exit()}>Cancel</button>}
+      <p role="status">{message || state.error}</p>
+    </>
+  );
+  const keySettings = (
+    <PlayKeySettings
+      value={bindings}
+      onChange={changeBindings}
+      look={look}
+      onLookChange={changeLook}
+    />
+  );
+  if (!state.active)
+    return (
+      <ModeMenu
+        menu="Play"
+        label="Play"
+        className="mode-card play-intro"
+        sections={{
+          hint: startHint,
+          enter: enterPlay,
+          mechanisms: (
+            <>
+              {mechanismChoice}
+              {children}
+            </>
+          ),
+          world: worldSettings,
+          keys: keySettings,
+        }}
+      />
     );
   const report = state.report!;
   const occupied = report.occupancy;

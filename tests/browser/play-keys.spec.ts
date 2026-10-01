@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 test("Play keys validate, persist, drive movement and preserve Escape on focused inputs", async ({
   page,
 }) => {
@@ -12,10 +12,7 @@ test("Play keys validate, persist, drive movement and preserve Escape on focused
     });
     await window.brickEditor!.ready();
   });
-  await openMode(page, "Play");
-  await page
-    .getByText("Play keyboard and mouse controls", { exact: true })
-    .click();
+  await openMenuTab(page, "Play", "Keyboard");
   const forward = page.getByLabel("Move forward Play key", { exact: true });
   await forward.fill("S");
   await page
@@ -70,10 +67,7 @@ test("Play keys validate, persist, drive movement and preserve Escape on focused
   ).toBeVisible();
   await page.reload();
   await page.waitForFunction(() => !!window.brickEditor);
-  await openMode(page, "Play");
-  await page
-    .getByText("Play keyboard and mouse controls", { exact: true })
-    .click();
+  await openMenuTab(page, "Play", "Keyboard");
   await expect(
     page.getByLabel("Move forward Play key", { exact: true }),
   ).toHaveValue("ArrowUp");

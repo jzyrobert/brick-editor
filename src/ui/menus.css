@@ -1,0 +1,274 @@
+/*
+ * Section menus (src/ui/menus.ts, ModeMenu.tsx): the Project, Photo,
+ * Instructions and Play cards are their pinned actions over a row of task
+ * tabs; the Inspector's advanced tools are a Tools tab of drawers.
+ */
+
+/* The menu is the sheet: no headline or blurb; content starts at the top. */
+.mode-card.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 16px 16px 18px;
+}
+.mode-card.menu > * {
+  flex-shrink: 0;
+}
+/* A section's own heading repeats the tab or drawer name. */
+.menu :is(.menu-body, .menu-section) > section > :is(h2, h3):first-child,
+.menu :is(.menu-body, .menu-section) > .workplane > h3:first-child,
+.menu .menu-section > .menu-section-title + section > :is(h2, h3):first-child {
+  display: none;
+}
+.menu :is(.menu-body, .menu-section) > :first-child,
+.menu .menu-section > .menu-section-title + * {
+  margin-top: 0;
+}
+/* A section that brings its own drawer is shown open, its summary hidden. */
+.menu .menu-unwrap > details > summary,
+.menu .menu-unwrap > section > details:first-child > summary {
+  display: none;
+}
+.menu .menu-unwrap > details,
+.menu .menu-unwrap > section > details:first-child {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.menu-hint {
+  margin-left: auto;
+  padding-left: 12px;
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.menu-block + .menu-block {
+  margin-top: 10px;
+}
+.menu .menu-download > button,
+.menu .menu-enter > button.primary {
+  margin: 0;
+}
+/* Two keys side by side: Open file / Download backup; Build it / Parts list. */
+.menu-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.menu-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 10px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.menu-note {
+  margin: 8px 0 0;
+  font-size: var(--text-label);
+  line-height: 1.45;
+}
+.menu .play-intro-hint {
+  margin: 0;
+}
+.menu .mechanism-panel {
+  margin-top: 16px;
+}
+@media (pointer: coarse) {
+  .menu .menu-fine {
+    display: none;
+  }
+}
+.menu .template-grid {
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+}
+.menu .template-card {
+  min-height: 0;
+  padding: 5px 5px 8px;
+  font-weight: 600;
+}
+.menu .template-card > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu .template-more {
+  display: block;
+  min-height: 44px;
+  margin: 2px 0 0;
+  padding: 0;
+  font-size: var(--text-body);
+  font-weight: 650;
+  color: var(--accent);
+}
+
+/* Tabs: a recessed well with the open tab in ink, like Layers / Inspector. */
+.menu-tabs {
+  display: flex;
+  gap: 2px;
+  margin: 12px 0 0;
+  padding: 3px;
+  border-radius: 12px;
+  background: var(--tab-well);
+}
+.menu-block + .menu-tabs {
+  margin-top: 14px;
+}
+.menu-tabs:first-child {
+  margin-top: 0;
+}
+.menu-tabs button {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-size: var(--text-body);
+  font-weight: 650;
+  color: var(--secondary);
+  white-space: nowrap;
+}
+.menu-tabs button[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--chalk);
+}
+@media (pointer: coarse) {
+  .menu-tabs button {
+    min-height: 44px;
+  }
+}
+.menu-panel {
+  padding-top: 14px;
+}
+.menu-section + .menu-section {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.menu-section-title {
+  margin: 0 0 8px;
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Phone held upright: a sheet of steady height, so the tabs stay put. */
+@media (max-width: 650px) {
+  .app .mode-card.menu {
+    height: min(56dvh, calc(100dvh - 90px - var(--safe-top)));
+    padding: 22px calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom))
+      calc(16px + var(--safe-left));
+  }
+}
+/* Tablets and phones on their side: a full-height panel at the left instead
+ * of a short card, so a menu is more than three lines tall. */
+@media (min-width: 651px) and (max-width: 1100px) {
+  .app .mode-card.menu {
+    top: calc(var(--hud-top-h) + 2px);
+    bottom: max(12px, var(--safe-bottom));
+    height: auto;
+    max-height: none;
+    width: min(420px, calc(58% - var(--safe-left)));
+    padding: 16px;
+    border-radius: 18px;
+  }
+  .app .mode-card.menu::before {
+    display: none;
+  }
+  /* The toast keeps to the canvas beside the panel. */
+  .app:has(.mode-card.menu) .status-bar {
+    left: auto;
+    max-width: calc(
+      100% - var(--edge-left) - min(420px, calc(58% - var(--safe-left))) -
+        var(--edge-right) - 8px
+    );
+  }
+}
+@media (min-width: 1101px) {
+  .app .mode-card.menu {
+    width: 360px;
+    max-height: calc(100% - 180px);
+    padding: 18px;
+  }
+}
+
+/* Tools tab: drawers under group headings, one open at a time. On phones
+ * and tablets the sheet shows Inspector and Tools (Layers is on the hotbar). */
+.menu-tools[hidden] {
+  display: none;
+}
+@media (max-width: 1100px) {
+  .right-sidebar.mobile-open[data-panel="Inspector"] .right-tabs {
+    display: flex;
+  }
+  .right-sidebar .right-tabs .tab-layers {
+    display: none;
+  }
+}
+.menu-drawers {
+  border-bottom: 1px solid var(--line);
+}
+.menu-group {
+  margin: 18px 0 2px;
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--ink);
+}
+.menu-drawers > .menu-group:first-child {
+  margin-top: 0;
+}
+/* Every drawer in the list is drawn the same way, whoever made it. */
+.menu .menu-drawers > details,
+.menu .menu-drawers > .menu-own > details,
+.menu .menu-drawers > .menu-own > section > details:first-child {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  font-size: var(--text-label);
+  color: var(--secondary);
+  line-height: 1.6;
+}
+.menu .menu-drawers > details > summary,
+.menu .menu-drawers > .menu-own > details > summary,
+.menu .menu-drawers > .menu-own > section > details:first-child > summary {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-body);
+  font-weight: 650;
+  color: var(--ink);
+  cursor: pointer;
+}
+.menu .menu-drawers > details[open],
+.menu .menu-drawers > .menu-own > details[open],
+.menu .menu-drawers > .menu-own > section > details[open]:first-child {
+  padding-bottom: 16px;
+}
+.menu .menu-drawers > .menu-own > section {
+  margin: 0;
+}
+.menu-drawer .menu-body {
+  color: var(--ink);
+}
+.menu-drawer summary > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

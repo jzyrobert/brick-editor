@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { openMode } from "./helpers/mode";
+import { openMenuTab, openMode } from "./helpers/mode";
 
 const source = `0 FILE root.ldr
 1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat
@@ -25,7 +25,7 @@ test("named checkpoints compare, highlight changes, download and restore", async
       .brickEditor!.project.export({ format: "ldraw" })
       .then((r) => new TextDecoder().decode(r.bytes)),
   );
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "My builds");
   const panel = page.getByRole("region", { name: "Checkpoints" });
   await expect(panel).toContainText("No checkpoints yet.");
   await panel.getByLabel("Checkpoint name").fill("Three bricks");
@@ -84,7 +84,7 @@ test("named checkpoints compare, highlight changes, download and restore", async
   await expect(page.locator(".canvas-bottom")).toContainText("3 selected");
 
   // Restore without backup returns the source to the checkpoint.
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "My builds");
   await panel.getByRole("button", { name: "Restore…" }).click();
   await panel.getByRole("button", { name: "Restore without backup" }).click();
   await expect(page.locator(".status-bar")).toContainText(
@@ -99,7 +99,7 @@ test("named checkpoints compare, highlight changes, download and restore", async
   // A checkpoint survives reload and deletion is explicit.
   await page.reload();
   await page.waitForFunction(() => !!window.brickEditor);
-  await openMode(page, "Project");
+  await openMenuTab(page, "Project", "My builds");
   await expect(panel.getByRole("listitem")).toContainText("Three bricks");
   await panel.getByRole("button", { name: "Delete Three bricks" }).click();
   await expect(panel).toContainText("No checkpoints yet.");
