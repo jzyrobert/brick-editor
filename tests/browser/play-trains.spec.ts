@@ -240,7 +240,9 @@ test("drive train on a desktop: in the cab, W/S work the lever, off beside the t
   await page.keyboard.up("w");
   a = await aboard(page);
   expect(a.speed).toBeGreaterThan(200);
-  expect(Math.abs(a.side)).toBeLessThan(2);
+  // Where W left the train depends on real key timing; on a curve the cab
+  // sits a couple of LDU off the loco's chord heading, still well inside it.
+  expect(Math.abs(a.side)).toBeLessThan(6);
   expect(a.up).toBeGreaterThan(60);
   // Released: it holds its speed; the slider shows it.
   await page.evaluate(() => window.brickEditor!.play.stepTicks(60));
