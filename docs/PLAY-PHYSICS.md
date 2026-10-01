@@ -56,7 +56,7 @@ For catalogue leaves the verified connector pack is authoritative ([connectors](
 
 ### Doors in official models
 
-Doors in official LDraw OMR sets (Project → Official LEGO sets) were often not recognised. The Tree House 21318-1 was the reported case; eight other sets were studied as well. The files were fetched once each (3 s apart) and kept out of the repository. The causes, in order of impact:
+Doors in official LDraw OMR sets (Project › New › Official LEGO sets) were often not recognised. The Tree House 21318-1 was the reported case; eight other sets were studied as well. The files were fetched once each (3 s apart) and kept out of the repository. The causes, in order of impact:
 
 1. **Rounded rotation matrices.** OMR files write rotations with three or four decimals (`0.707`, `0.866 0.5`, `0.661 … 0.75`), which are orthonormal only to about 1e-3. Play required 1e-6, so a door rejected as "Scaled, mirrored or sheared" was one placed at any angle other than a multiple of 90°. So was every door inside a submodel placed at such an angle, and every door authored ajar. Doors and mechanism members now accept rotations within LDraw's rounding (`nearlyPhysical`, 5e-3; `LDRAW_ROTATION_TOLERANCE` in `src/core/math.ts`), and rig group frames use the nearest exact rotation (`orthonormalized`). Rest poses keep the authored matrices. True mirrors are still refused, now with their own reason.
 2. **Title filter.** The table took parts whose title contains "door" and dropped any with "window" in it, which lost doors such as 40241 "Door 1 x 4 x 6 with Window". Window panes, shutters, gates and trapdoors were never candidates. Candidates now come from the catalogue category and title (above), and every candidate is derived or listed with a reason.

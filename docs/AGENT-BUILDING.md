@@ -32,7 +32,7 @@ const { results } = await api.parts.search({
 });
 ```
 
-In the app: **Project → Open file** (at the top of the Project menu) accepts a build script (`.json`).
+In the app: **Open file** (pinned at the top of the Project menu) accepts a build script (`.json`).
 
 ## Coordinates
 

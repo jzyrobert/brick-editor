@@ -80,5 +80,4 @@ From [AGENT-BUILDING](docs/AGENT-BUILDING.md) and the [design-language study](do
 
 ## UI and docs
 
-- [ ] After the tabbed menu redesign lands, update menu paths in the docs (many still say "Project → …" or "Camera views → Look") and refresh screenshots.
 - [ ] Migrate legacy panel-content styles (slate tones, 11 px help text) to the [DESIGN.md](DESIGN.md) scale.
