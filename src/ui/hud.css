@@ -390,7 +390,8 @@ summary:focus-visible {
   height: 100%;
   border-radius: 2px;
   background: var(--chalk);
-  transition: width 0.2s ease-out;
+  transform-origin: left center;
+  transition: transform 0.2s ease-out;
 }
 .placement-card,
 .welcome,

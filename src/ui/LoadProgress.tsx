@@ -42,7 +42,10 @@ export function LoadProgressIndicator() {
       aria-valuenow={percent}
     >
       <span className="load-progress-track">
-        <span className="load-progress-bar" style={{ width: percent + "%" }} />
+        <span
+          className="load-progress-bar"
+          style={{ transform: `scaleX(${percent / 100})` }}
+        />
       </span>
       {percent}%
     </span>
