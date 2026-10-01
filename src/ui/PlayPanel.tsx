@@ -29,6 +29,7 @@ const hasFinePointer = () =>
 import { PlayMechanismControls } from "./PlayMechanismControls";
 import { PlayTrainControls } from "./PlayTrainControls";
 import { promptVisible } from "../play/interaction";
+import { pinchZoomFactor, wheelZoomFactor } from "../play/zoom-input";
 import { Icon, type IconName } from "./icons";
 import {
   choosePortrait,
@@ -138,7 +139,23 @@ export function PlayPanel({
     jump = useRef(false),
     down = useRef(false);
   const stickPointer = useRef<number | null>(null),
-    lookPointer = useRef<{ id: number; x: number; y: number } | null>(null);
+    lookPointer = useRef<{ id: number; x: number; y: number } | null>(null),
+    // A second finger on the view turns a look drag into a pinch zoom.
+    pinch = useRef<{ id: number; x: number; y: number; spread: number } | null>(
+      null,
+    );
+  /** A finger lifts: a pinch ends without resuming a look drag (no jump). */
+  const endPointer = (id: number) => {
+    if (
+      pinch.current &&
+      (pinch.current.id === id || lookPointer.current?.id === id)
+    ) {
+      pinch.current = null;
+      lookPointer.current = null;
+      return;
+    }
+    if (lookPointer.current?.id === id) lookPointer.current = null;
+  };
   const attempt = (fn: () => unknown) => {
     try {
       const result = fn();
@@ -293,6 +310,18 @@ export function PlayPanel({
       if (document.pointerLockElement)
         play.look(e.movementX, e.movementY, mouseLook());
     };
+    // Wheel and trackpad pinch (ctrl+wheel) zoom the third-person camera.
+    // Over the view or with the mouse captured, the page never scrolls or
+    // zooms instead.
+    const wheel = (e: WheelEvent) => {
+      const s = play.getState();
+      if (!s.active || s.paused) return;
+      const overView =
+        e.target instanceof Element && !!e.target.closest(".play-look");
+      if (!document.pointerLockElement && !overView) return;
+      e.preventDefault();
+      play.zoom(wheelZoomFactor(e));
+    };
     const media =
       typeof matchMedia === "function"
         ? matchMedia(finePointerQuery)
@@ -314,6 +343,7 @@ export function PlayPanel({
     document.addEventListener("pointerlockerror", lockError);
     media?.addEventListener?.("change", pointerKind);
     document.addEventListener("mousemove", mouse);
+    document.addEventListener("wheel", wheel, { passive: false });
     document.addEventListener("focusin", focus);
     return () => {
       clear();
@@ -325,6 +355,7 @@ export function PlayPanel({
       document.removeEventListener("pointerlockerror", lockError);
       media?.removeEventListener?.("change", pointerKind);
       document.removeEventListener("mousemove", mouse);
+      document.removeEventListener("wheel", wheel);
       document.removeEventListener("focusin", focus);
     };
   }, [play]);
@@ -716,6 +747,22 @@ export function PlayPanel({
             : "Drag to look around"
         }
         onPointerDown={(e) => {
+          const first = lookPointer.current;
+          if (
+            !state.paused &&
+            first &&
+            !pinch.current &&
+            e.pointerType === "touch"
+          ) {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            pinch.current = {
+              id: e.pointerId,
+              x: e.clientX,
+              y: e.clientY,
+              spread: Math.hypot(e.clientX - first.x, e.clientY - first.y),
+            };
+            return;
+          }
           if (state.paused || lookPointer.current) return;
           setLooked(true);
           // Desktop: a click captures the mouse; dragging still works if the
@@ -725,7 +772,17 @@ export function PlayPanel({
           lookPointer.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
         }}
         onPointerMove={(e) => {
-          const p = lookPointer.current;
+          const p = lookPointer.current,
+            two = pinch.current;
+          if (p && two && (p.id === e.pointerId || two.id === e.pointerId)) {
+            const moved = p.id === e.pointerId ? p : two;
+            moved.x = e.clientX;
+            moved.y = e.clientY;
+            const spread = Math.hypot(p.x - two.x, p.y - two.y);
+            play.zoom(pinchZoomFactor(two.spread, spread));
+            two.spread = spread;
+            return;
+          }
           if (!p || p.id !== e.pointerId) return;
           if (document.pointerLockElement) return; // Raw mouse deltas drive look.
           play.look(
@@ -736,18 +793,13 @@ export function PlayPanel({
           p.x = e.clientX;
           p.y = e.clientY;
         }}
-        onPointerUp={(e) => {
-          if (lookPointer.current?.id === e.pointerId)
-            lookPointer.current = null;
-        }}
+        onPointerUp={(e) => endPointer(e.pointerId)}
         onPointerCancel={() => {
           lookPointer.current = null;
+          pinch.current = null;
           play.clearInput();
         }}
-        onLostPointerCapture={(e) => {
-          if (lookPointer.current?.id === e.pointerId)
-            lookPointer.current = null;
-        }}
+        onLostPointerCapture={(e) => endPointer(e.pointerId)}
       />
       {firstPerson && <span className="play-crosshair" aria-hidden="true" />}
       <div className="play-top">

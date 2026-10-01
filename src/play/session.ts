@@ -62,6 +62,7 @@ import {
 } from "../core/types";
 import {
   CHARACTER_PROFILE as P,
+  PLAY_ZOOM_LIMITS,
   type CollisionSnapshot,
   type PlayCameraMode,
   type PlayInput,
@@ -1854,10 +1855,55 @@ export class PlaySession {
   private updateArm(immediate = false) {
     const { target, look } = this.followRig();
     const desired = this.desiredArm(target, look);
+    // Geometry between the figure and the camera pulls it in at once; a
+    // zoom (a new follow distance) and clearing geometry ease it both ways.
+    const blocked = desired < this.cameraSettings.followDistance;
     this.arm =
-      desired < this.arm || immediate
+      immediate || (blocked && desired < this.arm)
         ? desired
         : this.arm + (desired - this.arm) * (1 - Math.exp(-8 * DT));
+  }
+  /** Consecutive zoom-in beyond the closest distance (log units). */
+  private zoomPastNear = 0;
+  /**
+   * Scroll-wheel / pinch zoom: scales the third-person follow distance by
+   * `factor` (below 1 zooms in) between PLAY_ZOOM_LIMITS; the camera eases to
+   * it. Zooming in past the closest distance switches to first person, and
+   * zooming out from first person returns to third person at that distance.
+   */
+  zoomCamera(factor: number) {
+    this.alive();
+    ensure(
+      finite(factor) && factor > 0 && factor <= 100,
+      "INVALID_INPUT",
+      "Zoom factor must be a positive number.",
+    );
+    const { min, max } = PLAY_ZOOM_LIMITS;
+    if (this.cameraMode === "first-person") {
+      this.zoomPastNear = 0;
+      if (factor <= 1) return this.snapshot();
+      this.cameraMode = "third-person";
+      this.cameraSettings = { ...this.cameraSettings, followDistance: min };
+      this.arm = 0;
+      return this.snapshot();
+    }
+    const current = this.cameraSettings.followDistance;
+    if (factor < 1 && current <= min) {
+      this.zoomPastNear -= Math.log(factor);
+      // About one more wheel notch at the closest distance.
+      if (this.zoomPastNear >= Math.log(1.2)) {
+        this.zoomPastNear = 0;
+        this.cameraMode = "first-person";
+        this.updateArm(true);
+      }
+      return this.snapshot();
+    }
+    this.zoomPastNear = 0;
+    this.cameraSettings = {
+      ...this.cameraSettings,
+      followDistance: Math.max(min, Math.min(max, current * factor)),
+    };
+    return this.snapshot();
   }
   camera(interpolate = false): CameraSpec {
     this.alive();
@@ -1896,7 +1942,13 @@ export class PlaySession {
           : [feet[0], feet[1] - this.cameraSettings.eyeHeight, feet[2]];
     let pos: Vec3 = [...target];
     if (this.cameraMode === "third-person") {
-      const arm = Math.min(this.arm, this.desiredArm(target, look));
+      // Unobstructed, the arm eases to the follow distance (smooth zoom);
+      // geometry in the way always wins.
+      const desired = this.desiredArm(target, look);
+      const arm =
+        desired < this.cameraSettings.followDistance
+          ? Math.min(this.arm, desired)
+          : this.arm;
       pos = target.map((v, k) => v - look[k] * arm) as Vec3;
     }
     return {

@@ -81,7 +81,8 @@ export function PlayKeySettings({
           <legend>Mouse look</legend>
           <p>
             On a computer, click the view to look with the mouse. Press Escape
-            to release the pointer.
+            to release the pointer. Scroll or pinch to zoom the third-person
+            camera; zoom all the way in for first person.
           </p>
           <label>
             Mouse sensitivity · {look.sensitivity.toFixed(1)}×

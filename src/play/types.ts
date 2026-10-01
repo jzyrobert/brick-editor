@@ -37,6 +37,12 @@ export const PLAY_CAMERA_LIMITS = Object.freeze({
   minPitch: { min: -1.48, max: 0 },
   maxPitch: { min: 0, max: 1.48 },
 });
+/**
+ * Scroll-wheel / pinch zoom range of the third-person follow distance (LDU).
+ * The closest keeps the camera outside the figure; zooming in past it
+ * switches to first person.
+ */
+export const PLAY_ZOOM_LIMITS = Object.freeze({ min: 40, max: 400 });
 export type PlaySpawnRequest = { position: Vec3; yaw?: number; pitch?: number };
 export type PlaySpawn = { position: Vec3; yaw: number; pitch: number };
 export type PlayRequest = {

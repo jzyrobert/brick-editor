@@ -41,6 +41,31 @@ import {
   unresolvedCuratedRefs,
 } from "../catalog/full-library-loader";
 import { fullLibraryGeneration } from "../catalog/full-library";
+import { PLAY_CAMERA_LIMITS } from "./types";
+
+const ZOOM_KEY = "brick-editor-play-zoom-v1";
+/** The follow distance last chosen by zoom in this tab, if valid. */
+function storedZoom() {
+  try {
+    const value = Number(sessionStorage.getItem(ZOOM_KEY));
+    const { min, max } = PLAY_CAMERA_LIMITS.followDistance;
+    return sessionStorage.getItem(ZOOM_KEY) !== null &&
+      Number.isFinite(value) &&
+      value >= min &&
+      value <= max
+      ? value
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+function storeZoom(distance: number) {
+  try {
+    sessionStorage.setItem(ZOOM_KEY, String(distance));
+  } catch {
+    // Storage may be unavailable (private mode); zoom still works.
+  }
+}
 
 /** Wall time a realtime frame may spend on catch-up physics ticks. */
 export const PLAY_FRAME_TICK_BUDGET_MS = 10;
@@ -128,6 +153,17 @@ export class BrowserPlay {
   }
   async enter(request: PlayRequest = {}) {
     this.assertMutable();
+    // The wheel/pinch zoom distance carries over to later entries in this
+    // browser tab (sessionStorage), unless the request sets its own.
+    const zoom = storedZoom();
+    if (
+      zoom !== undefined &&
+      request.cameraSettings?.followDistance === undefined
+    )
+      request = {
+        ...request,
+        cameraSettings: { ...request.cameraSettings, followDistance: zoom },
+      };
     this.beforeEnter();
     this.exit();
     const epoch = ++this.epoch;
@@ -710,10 +746,25 @@ export class BrowserPlay {
   }
   configureCamera(settings: Partial<PlayCameraSettings>) {
     this.assertMutable();
-    this.current().configureCamera(settings);
+    const report = this.current().configureCamera(settings);
+    if (settings.followDistance !== undefined)
+      storeZoom(report.cameraSettings.followDistance);
     this.draw();
     this.emit();
     return this.current().snapshot();
+  }
+  /**
+   * Scroll-wheel or pinch zoom of the third-person camera: `factor` below 1
+   * zooms in. Past the closest distance it switches to first person, and
+   * zooming out of first person returns to third person (session.ts).
+   */
+  zoom(factor: number) {
+    if (!this.session || this.state.paused || this.captureSession) return;
+    const report = this.session.zoomCamera(factor);
+    storeZoom(report.cameraSettings.followDistance);
+    this.draw();
+    this.emit();
+    return report;
   }
   chooseSpawn(input: PlaySpawnRequest) {
     this.assertMutable();

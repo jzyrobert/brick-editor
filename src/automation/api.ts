@@ -253,6 +253,15 @@ export function createAPI(
       },
       configureCamera: async (settings: Partial<PlayCameraSettings>) =>
         player().configureCamera(settings),
+      /** Scroll/pinch zoom of the third-person camera (below 1 zooms in). */
+      zoomCamera: async (factor: number) => {
+        ensure(
+          typeof factor === "number" && Number.isFinite(factor) && factor > 0,
+          "INVALID_INPUT",
+          "Zoom factor must be a positive number",
+        );
+        return player().zoom(factor) ?? player().snapshot();
+      },
       chooseSpawn: async (input: PlaySpawnRequest) =>
         player().chooseSpawn(input),
       useSpawn: async () => player().useSpawn(),
