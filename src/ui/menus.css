@@ -188,6 +188,7 @@
   /* The toast keeps to the canvas beside the panel. */
   .app:has(.mode-card.menu) .status-bar {
     left: auto;
+    right: var(--edge-right);
     max-width: calc(
       100% - var(--edge-left) - min(420px, calc(58% - var(--safe-left))) -
         var(--edge-right) - 8px
