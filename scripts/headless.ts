@@ -1,3 +1,5 @@
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Page } from "@playwright/test";
 import type { Project } from "../src/core/types";
@@ -15,6 +17,11 @@ export async function withHeadlessPage<T>(
   const server = await createServer({
     root: fileURLToPath(new URL("../", import.meta.url)),
     base: "/",
+    // Nothing is written into the checkout (no bundled config next to
+    // vite.config.ts, no dependency cache in node_modules), so rendering
+    // works from a read-only checkout or a sandboxed agent's workspace.
+    configLoader: "runner",
+    cacheDir: join(tmpdir(), "brick-editor-headless-vite"),
     server: { host: "127.0.0.1", port: 0, hmr: false, watch: null },
     logLevel: "error",
   });
