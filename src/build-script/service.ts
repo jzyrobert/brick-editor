@@ -14,6 +14,7 @@ import { curatedHas } from "../catalog/full-library";
 import { occurrences } from "../core/document";
 import type { ResourceProfileName } from "../core/resource-profile";
 import { compileBuildScript, type CompileResult } from "./compile";
+export { overBudget } from "./compile";
 export { validateBuildScript } from "./spec";
 import {
   registerSearchThumbnails,
@@ -72,7 +73,7 @@ export async function searchPartsInBrowser(request: PartSearchRequest) {
 /** Compiles in the browser with every referenced part's data loaded. */
 export async function compileInBrowser(
   script: unknown,
-  options: { profile: ResourceProfileName; check?: boolean },
+  options: { profile: ResourceProfileName; check?: boolean; maxParts?: number },
 ): Promise<CompileResult> {
   const text = JSON.stringify(script ?? null);
   // Colours always matter (piece choice); the complete library only when

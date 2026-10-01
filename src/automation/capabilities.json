@@ -465,7 +465,9 @@
     "schema": "schemas/buildScript.v1.json",
     "guide": "docs/AGENT-BUILDING.md",
     "api": ["buildScript.validate", "buildScript.compile", "buildScript.apply"],
-    "cli": "brick-cli build --script build.json --output build.mpd [--render view.png --views iso,front]",
+    "cli": "brick-cli build --script build.json --output build.mpd [--render view.png --views iso,front] [--max-parts N]",
+    "partBudget": "--max-parts / maxParts / limits.maxParts (lowest wins; every component copy counts); over it: an over-budget error with the excess, no model written or applied",
+    "workspaces": "npm run workspace -- --max-parts N[,N…] --brief \"…\": clean agent directory with the templated prompt and a budget-enforcing ./brick-cli",
     "ops": [
       "box",
       "wall",

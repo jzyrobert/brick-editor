@@ -12,6 +12,7 @@
     "test:browser": "npm run build && tsx scripts/test-browser.ts",
     "test:browser:quick": "npm run build && tsx scripts/test-browser.ts --quick",
     "cli": "tsx scripts/brick-cli.ts",
+    "workspace": "tsx scripts/new-build-workspace.ts",
     "library:validate": "tsx scripts/validate-library.ts",
     "format": "prettier --write src scripts tests schemas docs/*.md README.md *.ts *.json index.html",
     "format:check": "prettier --check src scripts tests schemas docs/*.md README.md *.ts *.json index.html",

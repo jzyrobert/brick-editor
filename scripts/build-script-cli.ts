@@ -1,11 +1,12 @@
 // `brick-cli build` and `brick-cli parts search`: the agent-facing build
 // script compiler and part search, headless (docs/AGENT-BUILDING.md).
 import { existsSync, readFileSync } from "node:fs";
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   compileBuildScript,
+  overBudget,
   type CompileReport,
 } from "../src/build-script/compile";
 import { buildScriptJsonSchema, opReference } from "../src/build-script/spec";
@@ -117,7 +118,9 @@ function parse(args: string[], allowed: string[], switches: string[]): Args {
 const HELP_BUILD = `brick-cli build --script build.json [--output build.mpd|build.brickproj] [--report report.json]
     [--render view.png [--views iso,front,back,left,right,top,iso-back] [--width 1280 --height 960]
      [--look standard|realistic|photo] [--backdrop ${BACKDROP_NAMES.join("|")}]]
-    [--no-check] [--resource-profile desktop|mobile]
+    [--no-check] [--resource-profile desktop|mobile] [--max-parts N]
+  --max-parts N  part budget: a bigger build writes only the report (an over-budget
+                 error says by how much) and removes an older --output file
 brick-cli build --reference   op reference (units, fields, one example each)
 brick-cli build --schema      JSON Schema of build scripts`;
 
@@ -158,6 +161,7 @@ export async function buildCommand(argv: string[]) {
       "look",
       "backdrop",
       "resource-profile",
+      "max-parts",
     ],
     ["reference", "schema", "no-check", "json", "help"],
   );
@@ -197,17 +201,29 @@ export async function buildCommand(argv: string[]) {
       `${scriptPath} is not valid JSON: ${(e as Error).message}`,
     );
   }
+  const maxParts =
+    a.flag("max-parts") === undefined ? undefined : Number(a.flag("max-parts"));
+  ensure(
+    maxParts === undefined || (Number.isInteger(maxParts) && maxParts > 0),
+    "INVALID_INPUT",
+    "--max-parts must be a positive integer",
+  );
   registerAgentData();
   const started = performance.now();
   const result = compileBuildScript(script, {
     profile,
     check: !a.has("no-check"),
+    maxParts,
     occupancyFor: (refs) =>
       fullLibraryOccupancy(refs.filter((r) => !curatedHas(r))),
   });
   const { report, project } = result;
   const output = a.flag("output");
-  if (output) {
+  // Over budget: no model and no views, and no older model left behind to be
+  // mistaken for this one.
+  const refused = overBudget(report);
+  if (output && refused) await rm(output, { force: true });
+  else if (output) {
     await mkdir(dirname(resolve(output)), { recursive: true });
     await writeFile(
       output,
@@ -220,7 +236,7 @@ export async function buildCommand(argv: string[]) {
     a.flag("report") ?? (output ? output + ".report.json" : undefined);
   const render = a.flag("render");
   const images: string[] = [];
-  if (render && project && occurrences(project).length) {
+  if (render && !refused && project && occurrences(project).length) {
     const views = (a.flag("views") ?? "iso").split(",").map((v) => v.trim());
     for (const v of views)
       ensure(
@@ -297,7 +313,7 @@ export async function buildCommand(argv: string[]) {
   }
   const full = {
     ...report,
-    ...(output ? { output } : {}),
+    ...(output && !refused ? { output } : {}),
     ...(images.length ? { images } : {}),
     totalMs: Math.round(performance.now() - started),
   };
@@ -306,7 +322,7 @@ export async function buildCommand(argv: string[]) {
   if (a.has("json")) console.log(JSON.stringify(full, null, 2));
   else {
     console.log(summary(report));
-    if (output) console.log("wrote " + output);
+    if (output) console.log((refused ? "not written: " : "wrote ") + output);
     for (const i of images) console.log("wrote " + i);
     if (reportPath) console.log("report " + reportPath);
   }

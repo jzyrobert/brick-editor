@@ -134,6 +134,10 @@ export type CompileOptions = {
   /** Occupancy boxes for parts whose derived data is not loaded (the CLI
    * derives them from the complete library on disk). */
   occupancyFor?: (refs: string[]) => Record<string, Bounds[]>;
+  /** Part budget (with the script's `limits.maxParts`, the lower wins). A
+   * build over it still compiles, with an `over-budget` error saying by how
+   * much; see overBudget(). */
+  maxParts?: number;
   /** Clock for timings (tests pass a fixed one). */
   now?: () => number;
 };
@@ -320,7 +324,10 @@ class Compiler {
     limit: number,
   ) {
     this.seed = script.defaults?.seed ?? 1;
-    this.maxParts = Math.min(limit, script.limits?.maxParts ?? Infinity);
+    // The resource profile's ceiling, counted as parts are made (component
+    // parts once, not per instance). The part budget is checked on the
+    // finished build instead, where every instance counts.
+    this.maxParts = limit;
     for (const [k, v] of Object.entries(script.palette ?? {})) {
       const list =
         typeof v === "object" ? (v as { mix: Colour[] }).mix : [v as Colour];
@@ -2620,6 +2627,42 @@ export function compileBuildScript(
       parts: node ? all.filter((o) => o.path[0] === node.id).length : 0,
     };
   });
+  const heaviestOps = [...byOp.entries()]
+    .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
+    .slice(0, 12)
+    .map(([op, n]) => ({
+      op,
+      kind: c.opKinds[c.opPaths.indexOf(op)] ?? "",
+      parts: n,
+    }));
+  const budget = Math.min(
+    options.maxParts ?? Infinity,
+    script.limits?.maxParts ?? Infinity,
+  );
+  if (parts > budget) {
+    // Every instance counts here, against the op in its section that made
+    // it (a component instance, a repeat), unlike heaviestOps.
+    const bySource = new Map<string, number>();
+    for (const o of all) {
+      const op = opOf(o.id)?.split(" > ")[0];
+      if (op) bySource.set(op, (bySource.get(op) ?? 0) + 1);
+    }
+    const costliest = [...bySource.entries()]
+      .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
+      .slice(0, 5);
+    const largest = [...sectionCounts]
+      .sort((a, b) => b.parts - a.parts)
+      .slice(0, 3)
+      .map((s) => `${s.name} ${s.parts.toLocaleString("en-US")}`);
+    c.problems.unshift({
+      severity: "error",
+      code: "over-budget",
+      message:
+        `${parts.toLocaleString("en-US")} parts: ${(parts - budget).toLocaleString("en-US")} over the budget of ${budget.toLocaleString("en-US")}` +
+        ` (largest sections: ${largest.join(", ")}; costliest ops: ${costliest.map(([op, n]) => `${op} ${n.toLocaleString("en-US")}`).join(", ")})`,
+      ops: costliest.map(([op]) => op),
+    });
+  }
   const problems = c.problems;
   const report: CompileReport = {
     ok: !problems.some((p) => p.severity === "error"),
@@ -2653,19 +2696,18 @@ export function compileBuildScript(
         colourName: colourName(l.colour),
         count: l.count,
       })),
-    heaviestOps: [...byOp.entries()]
-      .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
-      .slice(0, 12)
-      .map(([op, n]) => ({
-        op,
-        kind: c.opKinds[c.opPaths.indexOf(op)] ?? "",
-        parts: n,
-      })),
+    heaviestOps,
     resolved: c.resolved,
     check,
     problems,
   };
   return { report, ldraw, project };
+}
+
+/** Whether a build went over its part budget (then it should not be written
+ * or applied). */
+export function overBudget(report: CompileReport) {
+  return report.problems.some((p) => p.code === "over-budget");
 }
 
 function assignLayers(project: Project, script: BuildScript, models: Model[]) {

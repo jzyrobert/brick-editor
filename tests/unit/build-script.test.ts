@@ -8,7 +8,7 @@ import {
   plates,
   validateBuildScript,
 } from "../../src/build-script/spec";
-import { compileBuildScript } from "../../src/build-script/compile";
+import { compileBuildScript, overBudget } from "../../src/build-script/compile";
 import { Grid, packGrid } from "../../src/build-script/pack";
 import { catalog } from "../../src/catalog/catalog";
 import { madeIn } from "../../src/catalog/color-availability";
@@ -507,23 +507,80 @@ describe("build script ops", () => {
       (o) => r.project!.layers[o.layerId].name,
     );
     expect(new Set(names)).toEqual(new Set(["Walls", "Top"]));
-    expect(() =>
-      compileBuildScript(
-        script(
-          [
-            {
-              op: "repeat",
-              count: 50,
-              step: [1, 0, 0],
-              ops: [{ op: "place", part: "3005", at: [0, 0, 0], colour: 4 }],
-            },
-          ],
+  });
+
+  it("reports by how much a build is over its part budget", () => {
+    const row = (extra: Record<string, unknown> = {}) =>
+      script(
+        [
           {
-            limits: { maxParts: 10 },
+            op: "repeat",
+            count: 50,
+            step: [1, 0, 0],
+            ops: [{ op: "place", part: "3005", at: [0, 0, 0], colour: 4 }],
           },
-        ),
-      ),
-    ).toThrow(/exceeds 10 parts/);
+        ],
+        extra,
+      );
+    const capped = compileBuildScript(row({ limits: { maxParts: 10 } }));
+    expect(capped.report.ok).toBe(false);
+    expect(overBudget(capped.report)).toBe(true);
+    expect(capped.report.problems[0]).toMatchObject({
+      severity: "error",
+      code: "over-budget",
+      ops: ["sections[0].ops[0].ops[0]"],
+    });
+    expect(capped.report.problems[0].message).toMatch(
+      /^50 parts: 40 over the budget of 10 \(largest sections: Main 50/,
+    );
+    // The lower of the option and the script's own limit wins.
+    const lower = compileBuildScript(row({ limits: { maxParts: 100 } }), {
+      maxParts: 20,
+    });
+    expect(lower.report.problems[0].message).toMatch(
+      /30 over the budget of 20/,
+    );
+    const within = compileBuildScript(row(), { maxParts: 50 });
+    expect(overBudget(within.report)).toBe(false);
+    expect(within.report.ok).toBe(true);
+  });
+
+  it("counts every component instance against the budget", () => {
+    const huts = (count: number) =>
+      script(
+        [
+          { op: "baseplate", at: [0, 0], size: [32, 32], colour: "green" },
+          ...Array.from({ length: count }, (_, i) => ({
+            op: "instance",
+            component: "hut",
+            at: [1 + 6 * i, 0, 1],
+          })),
+        ],
+        {
+          components: {
+            hut: {
+              ops: [
+                {
+                  op: "box",
+                  at: [0, 0, 0],
+                  size: [4, 6, 2],
+                  colour: "white",
+                  interior: "solid",
+                },
+              ],
+            },
+          },
+        },
+      );
+    const one = compileBuildScript(huts(1)).report.stats.parts;
+    const four = compileBuildScript(huts(4), { maxParts: one * 2 }).report;
+    expect(four.stats.parts).toBe(1 + 4 * (one - 1));
+    const over = four.problems.find((p) => p.code === "over-budget")!;
+    expect(over.message).toContain(
+      `${four.stats.parts - one * 2} over the budget of ${one * 2}`,
+    );
+    // Named by the instance op, which made every copy.
+    expect(over.ops).toContain("sections[0].ops[1]");
   });
 });
 

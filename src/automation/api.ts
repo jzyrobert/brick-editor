@@ -372,6 +372,7 @@ export function createAPI(
         script: unknown;
         check?: boolean;
         includeLDraw?: boolean;
+        maxParts?: number;
       }) => {
         assertRequestBudget(input);
         const r = await (
@@ -379,6 +380,7 @@ export function createAPI(
         ).compileInBrowser(input.script, {
           profile: editor.resourceProfile,
           check: input.check,
+          maxParts: input.maxParts,
         });
         return {
           report: r.report,
@@ -392,6 +394,7 @@ export function createAPI(
         dryRun?: boolean;
         expectedRevision?: number;
         check?: boolean;
+        maxParts?: number;
       }) => {
         assertRequestBudget(input);
         const baseRevision = editor.revision;
@@ -401,13 +404,14 @@ export function createAPI(
           "REVISION_CONFLICT",
           "Document revision changed",
         );
-        const r = await (
-          await buildScripts()
-        ).compileInBrowser(input.script, {
+        const service = await buildScripts();
+        const r = await service.compileInBrowser(input.script, {
           profile: editor.resourceProfile,
           check: input.check,
+          maxParts: input.maxParts,
         });
-        if (input.dryRun || !r.project)
+        // An over-budget build is reported, not applied.
+        if (input.dryRun || !r.project || service.overBudget(r.report))
           return {
             applied: false,
             revision: editor.revision,
