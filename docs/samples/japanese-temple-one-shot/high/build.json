@@ -1,0 +1,2248 @@
+{
+ "buildScript": 1,
+ "title": "Temple of the Threefold Light",
+ "palette": {
+  "wall": "white",
+  "timber": "dark brown",
+  "roof": "dark bluish grey",
+  "accent": "dark red",
+  "gold": "pearl gold",
+  "stone": {
+   "mix": [
+    "light bluish grey",
+    "light bluish grey",
+    "light bluish grey",
+    "dark bluish grey"
+   ]
+  }
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "components": {
+  "hallPillar": {
+   "size": [
+    1,
+    1
+   ],
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "height": 21,
+     "diameter": 1,
+     "colour": "timber"
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      0,
+      21,
+      0
+     ],
+     "colour": "accent"
+    },
+    {
+     "op": "place",
+     "part": "3665a",
+     "at": [
+      0,
+      24,
+      -1
+     ],
+     "colour": "timber"
+    }
+   ]
+  },
+  "lowerPagodaPillar": {
+   "size": [
+    1,
+    1
+   ],
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "height": 12,
+     "diameter": 1,
+     "colour": "accent"
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      0,
+      12,
+      0
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "place",
+     "part": "3665a",
+     "at": [
+      0,
+      15,
+      -1
+     ],
+     "colour": "timber"
+    }
+   ]
+  },
+  "middlePagodaPillar": {
+   "size": [
+    1,
+    1
+   ],
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "height": 9,
+     "diameter": 1,
+     "colour": "accent"
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      0,
+      9,
+      0
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "place",
+     "part": "3665a",
+     "at": [
+      0,
+      12,
+      -1
+     ],
+     "colour": "timber"
+    }
+   ]
+  },
+  "upperPagodaPillar": {
+   "size": [
+    1,
+    1
+   ],
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "height": 6,
+     "diameter": 1,
+     "colour": "accent"
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      0,
+      6,
+      0
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "place",
+     "part": "3665a",
+     "at": [
+      0,
+      9,
+      -1
+     ],
+     "colour": "timber"
+    }
+   ]
+  },
+  "stoneLantern": {
+   "size": [
+    4,
+    4
+   ],
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      1,
+      0,
+      1
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "stone",
+     "texture": "masonry"
+    },
+    {
+     "op": "column",
+     "at": [
+      1,
+      3,
+      1
+     ],
+     "height": 9,
+     "diameter": 1,
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "floor",
+     "at": [
+      1,
+      12,
+      1
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "box",
+     "at": [
+      1,
+      13,
+      1
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "trans yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      0,
+      16,
+      0
+     ],
+     "size": [
+      4,
+      4
+     ],
+     "overhang": 0,
+     "colour": "dark bluish grey"
+    }
+   ]
+  },
+  "balustradePost": {
+   "size": [
+    1,
+    1
+   ],
+   "ops": [
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "colour": "accent"
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      0,
+      3,
+      0
+     ],
+     "colour": "timber"
+    }
+   ]
+  },
+  "pagodaEave": {
+   "size": [
+    16,
+    16
+   ],
+   "ops": [
+    {
+     "op": "repeat",
+     "count": 16,
+     "step": [
+      1,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        0,
+        0,
+        0
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        0,
+        0,
+        15
+       ],
+       "colour": "roof"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 14,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        0,
+        0,
+        1
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        15,
+        0,
+        1
+       ],
+       "colour": "roof"
+      }
+     ]
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      0,
+      1,
+      0
+     ],
+     "colour": "gold",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      15,
+      1,
+      0
+     ],
+     "colour": "gold",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      0,
+      1,
+      15
+     ],
+     "colour": "gold"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      15,
+      1,
+      15
+     ],
+     "colour": "gold"
+    }
+   ]
+  }
+ },
+ "sections": [
+  {
+   "name": "Temple grounds and lotus pond",
+   "ops": [
+    {
+     "op": "baseplate",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      64,
+      48
+     ],
+     "colour": "dark tan"
+    },
+    {
+     "op": "floor",
+     "at": [
+      38,
+      0,
+      0
+     ],
+     "size": [
+      8,
+      23
+     ],
+     "colour": "stone",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      17,
+      0,
+      17
+     ],
+     "size": [
+      21,
+      4
+     ],
+     "colour": "light bluish grey",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      0,
+      3
+     ],
+     "size": [
+      14,
+      12
+     ],
+     "colour": "dark bluish grey",
+     "top": "tile",
+     "holes": [
+      {
+       "at": [
+        1,
+        1
+       ],
+       "size": [
+        12,
+        10
+       ]
+      }
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      0,
+      4
+     ],
+     "size": [
+      12,
+      10
+     ],
+     "colour": "trans light blue",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4032",
+     "at": [
+      6,
+      1,
+      7
+     ],
+     "colour": "dark green"
+    },
+    {
+     "op": "place",
+     "part": "24866",
+     "at": [
+      6,
+      2,
+      7
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "4032",
+     "at": [
+      12,
+      1,
+      10
+     ],
+     "colour": "dark green"
+    },
+    {
+     "op": "place",
+     "part": "24866",
+     "at": [
+      12,
+      2,
+      10
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "instance",
+     "component": "stoneLantern",
+     "at": [
+      32,
+      0,
+      17
+     ]
+    },
+    {
+     "op": "instance",
+     "component": "stoneLantern",
+     "at": [
+      48,
+      0,
+      17
+     ]
+    },
+    {
+     "op": "instance",
+     "component": "stoneLantern",
+     "at": [
+      18,
+      0,
+      6
+     ]
+    },
+    {
+     "op": "instance",
+     "component": "stoneLantern",
+     "at": [
+      2,
+      0,
+      18
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 7,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "repeat",
+       "count": 12,
+       "step": [
+        1,
+        0,
+        0
+       ],
+       "ops": [
+        {
+         "op": "place",
+         "part": "3070b",
+         "at": [
+          24,
+          0,
+          0
+         ],
+         "colour": "light bluish grey"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 7,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "repeat",
+       "count": 8,
+       "step": [
+        1,
+        0,
+        0
+       ],
+       "ops": [
+        {
+         "op": "place",
+         "part": "3070b",
+         "at": [
+          46,
+          0,
+          0
+         ],
+         "colour": "light bluish grey"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 10,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "repeat",
+       "count": 8,
+       "step": [
+        1,
+        0,
+        0
+       ],
+       "ops": [
+        {
+         "op": "place",
+         "part": "3070b",
+         "at": [
+          24,
+          0,
+          7
+         ],
+         "colour": "dark bluish grey"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 4,
+     "step": [
+      1,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        24,
+        0,
+        21
+       ],
+       "colour": "light bluish grey"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Roofed sanmon entrance",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      32,
+      0,
+      8
+     ],
+     "size": [
+      18,
+      6
+     ],
+     "colour": "stone",
+     "top": "tile"
+    },
+    {
+     "op": "repeat",
+     "count": 2,
+     "step": [
+      13,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "column",
+       "at": [
+        34,
+        1,
+        9
+       ],
+       "height": 18,
+       "diameter": 2,
+       "colour": "accent"
+      },
+      {
+       "op": "column",
+       "at": [
+        34,
+        1,
+        12
+       ],
+       "height": 18,
+       "diameter": 2,
+       "colour": "accent"
+      },
+      {
+       "op": "place",
+       "part": "3665a",
+       "at": [
+        34,
+        19,
+        8
+       ],
+       "colour": "timber"
+      },
+      {
+       "op": "place",
+       "part": "3665a",
+       "at": [
+        34,
+        19,
+        14
+       ],
+       "colour": "timber",
+       "turn": 180
+      }
+     ]
+    },
+    {
+     "op": "wall",
+     "from": [
+      34,
+      9
+     ],
+     "to": [
+      49,
+      9
+     ],
+     "y": 19,
+     "height": 3,
+     "thickness": 2,
+     "colour": "timber"
+    },
+    {
+     "op": "wall",
+     "from": [
+      34,
+      12
+     ],
+     "to": [
+      49,
+      12
+     ],
+     "y": 19,
+     "height": 3,
+     "thickness": 2,
+     "colour": "timber"
+    },
+    {
+     "op": "floor",
+     "at": [
+      32,
+      22,
+      7
+     ],
+     "size": [
+      18,
+      8
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      33,
+      23,
+      8
+     ],
+     "size": [
+      16,
+      6
+     ],
+     "ridge": "x",
+     "overhang": 0,
+     "colour": "roof"
+    },
+    {
+     "op": "repeat",
+     "count": 18,
+     "step": [
+      1,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        32,
+        23,
+        7
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        32,
+        23,
+        14
+       ],
+       "colour": "roof"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Main worship hall and stone terrace",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      25,
+      0,
+      23
+     ],
+     "size": [
+      34,
+      6,
+      22
+     ],
+     "colour": "stone",
+     "texture": "masonry",
+     "supports": 8
+    },
+    {
+     "op": "floor",
+     "at": [
+      25,
+      6,
+      23
+     ],
+     "size": [
+      34,
+      22
+     ],
+     "colour": "dark tan"
+    },
+    {
+     "op": "stairs",
+     "at": [
+      39,
+      0,
+      17
+     ],
+     "width": 6,
+     "steps": 3,
+     "dir": "+z",
+     "rise": 2,
+     "run": 2,
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "room",
+     "at": [
+      28,
+      7,
+      27
+     ],
+     "size": [
+      28,
+      27,
+      15
+     ],
+     "colour": "wall",
+     "quoins": "timber",
+     "openings": [
+      {
+       "side": "front",
+       "at": 12,
+       "width": 4,
+       "height": 18,
+       "door": "dark red",
+       "opens": "in"
+      },
+      {
+       "side": "front",
+       "at": 3,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "front",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "front",
+       "at": 18,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "front",
+       "at": 22,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "left",
+       "at": 3,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "left",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "left",
+       "at": 11,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "right",
+       "at": 3,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "right",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "right",
+       "at": 11,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "back",
+       "at": 4,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "back",
+       "at": 10,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "back",
+       "at": 16,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "back",
+       "at": 22,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      }
+     ]
+    },
+    {
+     "op": "wall",
+     "from": [
+      28,
+      27
+     ],
+     "to": [
+      56,
+      27
+     ],
+     "y": 28,
+     "height": 3,
+     "colour": "timber"
+    },
+    {
+     "op": "wall",
+     "from": [
+      28,
+      41
+     ],
+     "to": [
+      56,
+      41
+     ],
+     "y": 28,
+     "height": 3,
+     "colour": "timber"
+    },
+    {
+     "op": "wall",
+     "from": [
+      28,
+      27
+     ],
+     "to": [
+      28,
+      42
+     ],
+     "y": 28,
+     "height": 3,
+     "colour": "timber"
+    },
+    {
+     "op": "wall",
+     "from": [
+      55,
+      27
+     ],
+     "to": [
+      55,
+      42
+     ],
+     "y": 28,
+     "height": 3,
+     "colour": "timber"
+    },
+    {
+     "op": "repeat",
+     "count": 3,
+     "step": [
+      6,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "hallPillar",
+       "at": [
+        26,
+        7,
+        24
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "hallPillar",
+       "at": [
+        45,
+        7,
+        24
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 3,
+     "step": [
+      0,
+      0,
+      6
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "hallPillar",
+       "at": [
+        26,
+        7,
+        30
+       ],
+       "turn": 270
+      },
+      {
+       "op": "instance",
+       "component": "hallPillar",
+       "at": [
+        57,
+        7,
+        30
+       ],
+       "turn": 90
+      }
+     ]
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       25,
+       42
+      ],
+      [
+       25,
+       23
+      ],
+      [
+       37,
+       23
+      ]
+     ],
+     "y": 7,
+     "colour": "timber",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       47,
+       23
+      ],
+      [
+       58,
+       23
+      ],
+      [
+       58,
+       42
+      ]
+     ],
+     "y": 7,
+     "colour": "timber",
+     "style": "lattice-low"
+    },
+    {
+     "op": "floor",
+     "at": [
+      25,
+      34,
+      23
+     ],
+     "size": [
+      34,
+      22
+     ],
+     "colour": "timber",
+     "holes": [
+      {
+       "at": [
+        4,
+        5
+       ],
+       "size": [
+        26,
+        13
+       ]
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      26,
+      35,
+      24
+     ],
+     "size": [
+      32,
+      20
+     ],
+     "ridge": "x",
+     "overhang": 0,
+     "colour": "roof"
+    },
+    {
+     "op": "repeat",
+     "count": 34,
+     "step": [
+      1,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        25,
+        35,
+        23
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        25,
+        35,
+        44
+       ],
+       "colour": "roof"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 20,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        25,
+        35,
+        24
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        58,
+        35,
+        24
+       ],
+       "colour": "roof"
+      }
+     ]
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      25,
+      36,
+      23
+     ],
+     "colour": "gold",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      58,
+      36,
+      23
+     ],
+     "colour": "gold",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      25,
+      36,
+      44
+     ],
+     "colour": "gold"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      58,
+      36,
+      44
+     ],
+     "colour": "gold"
+    }
+   ]
+  },
+  {
+   "name": "Three-storey pagoda foundation and lower tier",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      5,
+      0,
+      25
+     ],
+     "size": [
+      18,
+      6,
+      18
+     ],
+     "colour": "stone",
+     "texture": "masonry",
+     "supports": 6
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      6,
+      25
+     ],
+     "size": [
+      18,
+      18
+     ],
+     "colour": "dark tan"
+    },
+    {
+     "op": "stairs",
+     "at": [
+      11,
+      0,
+      19
+     ],
+     "width": 6,
+     "steps": 3,
+     "dir": "+z",
+     "rise": 2,
+     "run": 2,
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "column",
+     "at": [
+      13,
+      7,
+      33
+     ],
+     "height": 18,
+     "diameter": 2,
+     "colour": "timber"
+    },
+    {
+     "op": "room",
+     "at": [
+      9,
+      7,
+      29
+     ],
+     "size": [
+      10,
+      18,
+      10
+     ],
+     "colour": "wall",
+     "quoins": "timber",
+     "openings": [
+      {
+       "side": "front",
+       "at": 3,
+       "width": 4,
+       "height": 18,
+       "door": "dark red",
+       "opens": "in"
+      },
+      {
+       "side": "front",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "front",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "left",
+       "at": 2,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "left",
+       "at": 6,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "right",
+       "at": 2,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "right",
+       "at": 6,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "back",
+       "at": 2,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "back",
+       "at": 6,
+       "width": 2,
+       "y": 6,
+       "height": 9,
+       "frame": "dark brown"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 2,
+     "step": [
+      11,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "lowerPagodaPillar",
+       "at": [
+        8,
+        7,
+        28
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "lowerPagodaPillar",
+       "at": [
+        8,
+        7,
+        39
+       ],
+       "turn": 180
+      }
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      6,
+      25,
+      26
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "colour": "timber",
+     "holes": [
+      {
+       "at": [
+        7,
+        7
+       ],
+       "size": [
+        2,
+        2
+       ]
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      7,
+      26,
+      27
+     ],
+     "size": [
+      14,
+      14
+     ],
+     "ridge": "x",
+     "overhang": 0,
+     "colour": "roof",
+     "holes": [
+      {
+       "at": [
+        3,
+        3
+       ],
+       "size": [
+        8,
+        8
+       ]
+      }
+     ]
+    },
+    {
+     "op": "instance",
+     "component": "pagodaEave",
+     "at": [
+      6,
+      26,
+      26
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Pagoda middle tier and balcony",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      8,
+      49,
+      28
+     ],
+     "size": [
+      12,
+      12
+     ],
+     "colour": "timber",
+     "holes": [
+      {
+       "at": [
+        5,
+        5
+       ],
+       "size": [
+        2,
+        2
+       ]
+      }
+     ]
+    },
+    {
+     "op": "room",
+     "at": [
+      10,
+      50,
+      30
+     ],
+     "size": [
+      8,
+      15,
+      8
+     ],
+     "colour": "wall",
+     "quoins": "timber",
+     "openings": [
+      {
+       "side": "front",
+       "at": 3,
+       "width": 2,
+       "y": 3,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "back",
+       "at": 3,
+       "width": 2,
+       "y": 3,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "left",
+       "at": 3,
+       "width": 2,
+       "y": 3,
+       "height": 9,
+       "frame": "dark brown"
+      },
+      {
+       "side": "right",
+       "at": 3,
+       "width": 2,
+       "y": 3,
+       "height": 9,
+       "frame": "dark brown"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 12,
+     "step": [
+      1,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "balustradePost",
+       "at": [
+        8,
+        50,
+        28
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "balustradePost",
+       "at": [
+        8,
+        50,
+        39
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 10,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "balustradePost",
+       "at": [
+        8,
+        50,
+        29
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "balustradePost",
+       "at": [
+        19,
+        50,
+        29
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 2,
+     "step": [
+      9,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "middlePagodaPillar",
+       "at": [
+        9,
+        50,
+        29
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "middlePagodaPillar",
+       "at": [
+        9,
+        50,
+        38
+       ],
+       "turn": 180
+      }
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      7,
+      65,
+      27
+     ],
+     "size": [
+      14,
+      14
+     ],
+     "colour": "timber",
+     "holes": [
+      {
+       "at": [
+        6,
+        6
+       ],
+       "size": [
+        2,
+        2
+       ]
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      8,
+      66,
+      28
+     ],
+     "size": [
+      12,
+      12
+     ],
+     "ridge": "x",
+     "overhang": 0,
+     "colour": "roof",
+     "holes": [
+      {
+       "at": [
+        2,
+        2
+       ],
+       "size": [
+        8,
+        8
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 14,
+     "step": [
+      1,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        7,
+        66,
+        27
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        7,
+        66,
+        40
+       ],
+       "colour": "roof"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 12,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        7,
+        66,
+        28
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        20,
+        66,
+        28
+       ],
+       "colour": "roof"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 2,
+     "step": [
+      13,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "54200",
+       "at": [
+        7,
+        67,
+        27
+       ],
+       "colour": "gold",
+       "turn": 180
+      },
+      {
+       "op": "place",
+       "part": "54200",
+       "at": [
+        7,
+        67,
+        40
+       ],
+       "colour": "gold"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Pagoda upper tier and golden sorin",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      10,
+      87,
+      30
+     ],
+     "size": [
+      8,
+      8
+     ],
+     "colour": "timber",
+     "holes": [
+      {
+       "at": [
+        3,
+        3
+       ],
+       "size": [
+        2,
+        2
+       ]
+      }
+     ]
+    },
+    {
+     "op": "room",
+     "at": [
+      11,
+      88,
+      31
+     ],
+     "size": [
+      6,
+      12,
+      6
+     ],
+     "colour": "wall",
+     "quoins": "timber",
+     "openings": [
+      {
+       "side": "front",
+       "at": 2,
+       "width": 2,
+       "y": 3,
+       "height": 6,
+       "frame": "dark brown"
+      },
+      {
+       "side": "back",
+       "at": 2,
+       "width": 2,
+       "y": 3,
+       "height": 6,
+       "frame": "dark brown"
+      },
+      {
+       "side": "left",
+       "at": 2,
+       "width": 2,
+       "y": 3,
+       "height": 6,
+       "frame": "dark brown"
+      },
+      {
+       "side": "right",
+       "at": 2,
+       "width": 2,
+       "y": 3,
+       "height": 6,
+       "frame": "dark brown"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 6,
+     "step": [
+      1,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "balustradePost",
+       "at": [
+        11,
+        88,
+        30
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "balustradePost",
+       "at": [
+        11,
+        88,
+        37
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 6,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "balustradePost",
+       "at": [
+        10,
+        88,
+        31
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "balustradePost",
+       "at": [
+        17,
+        88,
+        31
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 2,
+     "step": [
+      7,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "upperPagodaPillar",
+       "at": [
+        10,
+        88,
+        30
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "upperPagodaPillar",
+       "at": [
+        10,
+        88,
+        37
+       ],
+       "turn": 180
+      }
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      100,
+      28
+     ],
+     "size": [
+      12,
+      12
+     ],
+     "colour": "timber",
+     "holes": [
+      {
+       "at": [
+        5,
+        5
+       ],
+       "size": [
+        2,
+        2
+       ]
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      9,
+      101,
+      29
+     ],
+     "size": [
+      10,
+      10
+     ],
+     "ridge": "x",
+     "overhang": 0,
+     "colour": "roof",
+     "holes": [
+      {
+       "at": [
+        1,
+        1
+       ],
+       "size": [
+        8,
+        8
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 12,
+     "step": [
+      1,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        8,
+        101,
+        28
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        8,
+        101,
+        39
+       ],
+       "colour": "roof"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 10,
+     "step": [
+      0,
+      0,
+      1
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        8,
+        101,
+        29
+       ],
+       "colour": "roof"
+      },
+      {
+       "op": "place",
+       "part": "3070b",
+       "at": [
+        19,
+        101,
+        29
+       ],
+       "colour": "roof"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 2,
+     "step": [
+      11,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "54200",
+       "at": [
+        8,
+        102,
+        28
+       ],
+       "colour": "gold",
+       "turn": 180
+      },
+      {
+       "op": "place",
+       "part": "54200",
+       "at": [
+        8,
+        102,
+        39
+       ],
+       "colour": "gold"
+      }
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      11,
+      118,
+      31
+     ],
+     "size": [
+      6,
+      6
+     ],
+     "colour": "roof"
+    },
+    {
+     "op": "repeat",
+     "count": 4,
+     "step": [
+      0,
+      4,
+      0
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3941",
+       "at": [
+        13,
+        119,
+        33
+       ],
+       "colour": "gold"
+      },
+      {
+       "op": "place",
+       "part": "4032",
+       "at": [
+        13,
+        122,
+        33
+       ],
+       "colour": "gold"
+      }
+     ]
+    },
+    {
+     "op": "place",
+     "part": "3942c",
+     "at": [
+      13,
+      135,
+      33
+     ],
+     "colour": "gold"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,976 @@
+{
+ "buildScript": 1,
+ "title": "Temple of the Quiet Mountain",
+ "palette": {
+  "wall": "tan",
+  "timber": "reddish brown",
+  "roof": "dark bluish grey",
+  "trim": "black",
+  "accent": "pearl gold",
+  "stone": {
+   "mix": [
+    "light bluish grey",
+    "light bluish grey",
+    "light bluish grey",
+    "dark bluish grey"
+   ]
+  }
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "components": {
+  "stoneLantern": {
+   "size": [
+    4,
+    4
+   ],
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      4,
+      4
+     ],
+     "colour": "stone",
+     "layers": 2
+    },
+    {
+     "op": "column",
+     "at": [
+      1,
+      2,
+      1
+     ],
+     "height": 6,
+     "diameter": 2,
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      8,
+      0
+     ],
+     "size": [
+      4,
+      4
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      1,
+      9,
+      1
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "repeat",
+     "count": 2,
+     "step": [
+      3,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "repeat",
+       "count": 2,
+       "step": [
+        0,
+        0,
+        3
+       ],
+       "ops": [
+        {
+         "op": "column",
+         "at": [
+          0,
+          9,
+          0
+         ],
+         "height": 3,
+         "colour": "dark bluish grey"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      0,
+      12,
+      0
+     ],
+     "size": [
+      4,
+      4
+     ],
+     "colour": "roof",
+     "overhang": 0
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      1,
+      18,
+      1
+     ],
+     "colour": "light bluish grey"
+    }
+   ]
+  },
+  "verandaPost": {
+   "size": [
+    2,
+    2
+   ],
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "box",
+     "at": [
+      0,
+      1,
+      0
+     ],
+     "size": [
+      2,
+      24,
+      2
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      25,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "black",
+     "layers": 2
+    }
+   ]
+  },
+  "offeringTable": {
+   "size": [
+    6,
+    2
+   ],
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      1,
+      6,
+      2
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      0,
+      0
+     ],
+     "size": [
+      1,
+      6,
+      2
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      6,
+      0
+     ],
+     "size": [
+      6,
+      2
+     ],
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      1,
+      7,
+      0
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      4,
+      7,
+      0
+     ],
+     "colour": "pearl gold"
+    }
+   ]
+  }
+ },
+ "sections": [
+  {
+   "name": "Walled temple garden",
+   "ops": [
+    {
+     "op": "baseplate",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      48,
+      48
+     ],
+     "colour": "dark tan"
+    },
+    {
+     "op": "floor",
+     "at": [
+      19,
+      0,
+      0
+     ],
+     "size": [
+      10,
+      15
+     ],
+     "colour": "stone",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      0,
+      11
+     ],
+     "size": [
+      38,
+      4
+     ],
+     "colour": "stone",
+     "top": "tile"
+    },
+    {
+     "op": "wall",
+     "from": [
+      2,
+      3
+     ],
+     "to": [
+      15,
+      3
+     ],
+     "height": 9,
+     "colour": "tan",
+     "texture": "masonry"
+    },
+    {
+     "op": "wall",
+     "from": [
+      33,
+      3
+     ],
+     "to": [
+      46,
+      3
+     ],
+     "height": 9,
+     "colour": "tan",
+     "texture": "masonry"
+    },
+    {
+     "op": "wall",
+     "from": [
+      2,
+      3
+     ],
+     "to": [
+      2,
+      46
+     ],
+     "height": 9,
+     "colour": "tan",
+     "texture": "masonry"
+    },
+    {
+     "op": "wall",
+     "from": [
+      46,
+      3
+     ],
+     "to": [
+      46,
+      46
+     ],
+     "height": 9,
+     "colour": "tan",
+     "texture": "masonry"
+    },
+    {
+     "op": "wall",
+     "from": [
+      2,
+      46
+     ],
+     "to": [
+      46,
+      46
+     ],
+     "height": 9,
+     "colour": "tan",
+     "texture": "masonry"
+    },
+    {
+     "op": "floor",
+     "at": [
+      1,
+      9,
+      3
+     ],
+     "size": [
+      3,
+      43
+     ],
+     "colour": "roof",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      45,
+      9,
+      3
+     ],
+     "size": [
+      3,
+      43
+     ],
+     "colour": "roof",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      9,
+      45
+     ],
+     "size": [
+      41,
+      3
+     ],
+     "colour": "roof",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      9,
+      2
+     ],
+     "size": [
+      13,
+      3
+     ],
+     "colour": "roof",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      33,
+      9,
+      2
+     ],
+     "size": [
+      13,
+      3
+     ],
+     "colour": "roof",
+     "top": "tile"
+    },
+    {
+     "op": "instance",
+     "component": "stoneLantern",
+     "at": [
+      11,
+      0,
+      10
+     ]
+    },
+    {
+     "op": "instance",
+     "component": "stoneLantern",
+     "at": [
+      33,
+      0,
+      10
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      0,
+      29
+     ],
+     "size": [
+      3,
+      10
+     ],
+     "colour": "dark tan",
+     "top": "tile"
+    },
+    {
+     "op": "repeat",
+     "count": 5,
+     "step": [
+      0,
+      0,
+      2
+     ],
+     "ops": [
+      {
+       "op": "place",
+       "part": "3069b",
+       "at": [
+        6,
+        1,
+        29
+       ],
+       "colour": "light bluish grey"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Sanmon entrance gate",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      15,
+      0,
+      2
+     ],
+     "size": [
+      18,
+      8
+     ],
+     "colour": "stone"
+    },
+    {
+     "op": "repeat",
+     "count": 2,
+     "step": [
+      14,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "repeat",
+       "count": 2,
+       "step": [
+        0,
+        0,
+        4
+       ],
+       "ops": [
+        {
+         "op": "floor",
+         "at": [
+          16,
+          1,
+          3
+         ],
+         "size": [
+          2,
+          2
+         ],
+         "colour": "light bluish grey",
+         "layers": 2
+        },
+        {
+         "op": "box",
+         "at": [
+          16,
+          3,
+          3
+         ],
+         "size": [
+          2,
+          21,
+          2
+         ],
+         "colour": "timber"
+        },
+        {
+         "op": "floor",
+         "at": [
+          16,
+          24,
+          3
+         ],
+         "size": [
+          2,
+          2
+         ],
+         "colour": "black",
+         "layers": 2
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      26,
+      3
+     ],
+     "size": [
+      16,
+      3,
+      2
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      26,
+      7
+     ],
+     "size": [
+      16,
+      3,
+      2
+     ],
+     "colour": "timber"
+    },
+    {
+     "op": "floor",
+     "at": [
+      15,
+      29,
+      2
+     ],
+     "size": [
+      18,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      15,
+      30,
+      2
+     ],
+     "size": [
+      18,
+      8
+     ],
+     "colour": "roof",
+     "ridge": "x",
+     "overhang": 1
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      23,
+      2
+     ],
+     "size": [
+      4,
+      6,
+      1
+     ],
+     "colour": "black"
+    }
+   ]
+  },
+  {
+   "name": "Raised stone platform and veranda",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      9,
+      0,
+      18
+     ],
+     "size": [
+      30,
+      6,
+      24
+     ],
+     "colour": "stone",
+     "texture": "masonry",
+     "supports": 8
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      6,
+      17
+     ],
+     "size": [
+      32,
+      26
+     ],
+     "colour": "timber",
+     "layers": 2
+    },
+    {
+     "op": "stairs",
+     "at": [
+      20,
+      0,
+      14
+     ],
+     "width": 8,
+     "steps": 4,
+     "dir": "+z",
+     "rise": 2,
+     "run": 1,
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "repeat",
+     "count": 6,
+     "step": [
+      6,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "verandaPost",
+       "at": [
+        8,
+        8,
+        17
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "verandaPost",
+       "at": [
+        8,
+        8,
+        41
+       ]
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 3,
+     "step": [
+      0,
+      0,
+      6
+     ],
+     "ops": [
+      {
+       "op": "instance",
+       "component": "verandaPost",
+       "at": [
+        8,
+        8,
+        23
+       ]
+      },
+      {
+       "op": "instance",
+       "component": "verandaPost",
+       "at": [
+        38,
+        8,
+        23
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Main worship hall",
+   "ops": [
+    {
+     "op": "room",
+     "at": [
+      11,
+      8,
+      21
+     ],
+     "size": [
+      26,
+      27,
+      18
+     ],
+     "colour": "wall",
+     "floor": "dark tan",
+     "quoins": "timber",
+     "texture": "grille",
+     "openings": [
+      {
+       "side": "front",
+       "at": 11,
+       "width": 4,
+       "height": 18,
+       "fill": "none"
+      },
+      {
+       "side": "front",
+       "at": 3,
+       "width": 4,
+       "y": 6,
+       "height": 9
+      },
+      {
+       "side": "front",
+       "at": 19,
+       "width": 4,
+       "y": 6,
+       "height": 9
+      },
+      {
+       "side": "left",
+       "at": 4,
+       "width": 4,
+       "y": 6,
+       "height": 9
+      },
+      {
+       "side": "left",
+       "at": 11,
+       "width": 4,
+       "y": 6,
+       "height": 9
+      },
+      {
+       "side": "right",
+       "at": 4,
+       "width": 4,
+       "y": 6,
+       "height": 9
+      },
+      {
+       "side": "right",
+       "at": 11,
+       "width": 4,
+       "y": 6,
+       "height": 9
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 7,
+     "step": [
+      4,
+      0,
+      0
+     ],
+     "ops": [
+      {
+       "op": "box",
+       "at": [
+        11,
+        8,
+        20
+       ],
+       "size": [
+        1,
+        27,
+        1
+       ],
+       "colour": "timber"
+      },
+      {
+       "op": "box",
+       "at": [
+        11,
+        8,
+        39
+       ],
+       "size": [
+        1,
+        27,
+        1
+       ],
+       "colour": "timber"
+      }
+     ]
+    },
+    {
+     "op": "repeat",
+     "count": 5,
+     "step": [
+      0,
+      0,
+      4
+     ],
+     "ops": [
+      {
+       "op": "box",
+       "at": [
+        10,
+        8,
+        21
+       ],
+       "size": [
+        1,
+        27,
+        1
+       ],
+       "colour": "timber"
+      },
+      {
+       "op": "box",
+       "at": [
+        37,
+        8,
+        21
+       ],
+       "size": [
+        1,
+        27,
+        1
+       ],
+       "colour": "timber"
+      }
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      35,
+      17
+     ],
+     "size": [
+      32,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "instance",
+     "component": "offeringTable",
+     "at": [
+      21,
+      9,
+      32
+     ]
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      9,
+      36
+     ],
+     "size": [
+      6,
+      3,
+      2
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "column",
+     "at": [
+      23,
+      12,
+      36
+     ],
+     "height": 9,
+     "diameter": 2,
+     "colour": "accent",
+     "cap": "cone"
+    }
+   ]
+  },
+  {
+   "name": "Broad tiled temple roof",
+   "ops": [
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      8,
+      36,
+      17
+     ],
+     "size": [
+      32,
+      26
+     ],
+     "colour": "roof",
+     "ridge": "x",
+     "overhang": 1
+    }
+   ]
+  }
+ ]
+}

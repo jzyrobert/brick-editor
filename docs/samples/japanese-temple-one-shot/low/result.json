@@ -1,0 +1,47 @@
+{
+  "effort": "low",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 1954,
+  "seconds": 252,
+  "tokens": {
+    "input": 31583,
+    "cached": 2816,
+    "output": 8159,
+    "reasoning": 823
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 147,
+      "usage": {
+        "input": 12824,
+        "cached": 2816,
+        "output": 4776,
+        "reasoning": 516
+      },
+      "toolEvents": [],
+      "outcome": "errors",
+      "parts": 2176,
+      "reason": "- over-budget: 2,176 parts: 76 over the maximum of 2,100 (target 2,000 ± 5%: 1,900–2,100) (largest sections: Main worship hall 659, Raised stone platform and veranda 536, Walled temple garden 402; costliest ops: sections[3].ops[0] 369, sections[4].ops[2] 276, sections[2].ops[3].ops[0] 120, sections[2].ops[3].ops[1] 120, sections[2].ops[0] 95) [sections[3].ops[0], sections[4].ops[2], sections[2].ops[3].ops[0], sections[2].ops[3].ops[1], sections[2].ops[0]]\n- overlap: 3471.dat and 6255.dat overlap [sections[0].ops[17], sections[0].ops[20].ops[0]]\n- overlap: 3471.dat and 92438.dat overlap [sections[0].ops[17], sections[2].ops[0]]\n- overlap: 3471.dat and 6255.dat overlap [sections[0].ops[18], sections[0].ops[21].ops[0]]\n- overlap: 3470.dat and 3004.dat overlap [sections[0].ops[19], sections[2].ops[3].ops[0] > components.verandaPost.ops[1]]\n- overlap: 3470.dat and 3003.dat overlap [sections[0].ops[19], sections[2].ops[3].ops[0] > components.verandaPost.ops[1]]\n- overlap: 3470.dat and 3005.dat overlap [sections[0].ops[19], sections[2].ops[6]]\n- overlap: 6255.dat and 98283.dat overlap [sections[0].ops[20].ops[0], sections[0].ops[5]]\n- overlap: 3070b.dat and 3665a.dat overlap [sections[1].ops[7].ops[0], sections[1].ops[8].ops[0]]\n- overlap: 3022.dat and 3633.dat overlap [sections[2].ops[3].ops[0] > components.verandaPost.ops[0], sections[2].ops[5]]\n- overlap: 3004.dat and 3633.dat overlap [sections[2].ops[3].ops[0] > components.verandaPost.ops[1], sections[2].ops[5]]\n- overlap: 3022.dat and 3660b.dat overlap [sections[2].ops[3].ops[0] > components.verandaPost.ops[2], sections[4].ops[0].ops[0]]\n- overlap: 3022.dat and 3660b.dat overlap [sections[2].ops[3].ops[0] > components.verandaPost.ops[2], sections[4].ops[1].ops[0]]\n- overlap: 3022.dat and 3005.dat overlap [sections[2].ops[3].ops[1] > components.verandaPost.ops[0], sections[2].ops[7]]\n- overlap: 3004.dat and 3005.dat overlap [sections[2].ops[3].ops[1] > components.verandaPost.ops[1], sections[2].ops[7]]\n- overlap: 3022.dat and 3660b.dat overlap [sections[2].ops[3].ops[1] > components.verandaPost.ops[2], sections[4].ops[0].ops[1]]\n- overlap: 3022.dat and 3660b.dat overlap [sections[2].ops[3].ops[1] > components.verandaPost.ops[2], sections[4].ops[1].ops[0]]\n- overlap: 3022.dat and 3633.dat overlap [sections[2].ops[3].ops[1] > components.verandaPost.ops[0], sections[2].ops[7]]\n- overlap: 3004.dat and 3633.dat overlap [sections[2].ops[3].ops[1] > components.verandaPost.ops[1], sections[2].ops[7]]\n- overlap: 3022.dat and 3633.dat overlap [sections[2].ops[3].ops[0] > components.verandaPost.ops[0], sections[2].ops[6]]\n- … 6 more errors"
+    },
+    {
+      "attempt": 2,
+      "seconds": 105,
+      "usage": {
+        "input": 18759,
+        "cached": 0,
+        "output": 3383,
+        "reasoning": 307
+      },
+      "toolEvents": [],
+      "outcome": "accepted",
+      "parts": 1954
+    }
+  ]
+}

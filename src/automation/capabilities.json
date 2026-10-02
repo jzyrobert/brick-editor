@@ -467,6 +467,7 @@
     "api": ["buildScript.validate", "buildScript.compile", "buildScript.apply"],
     "cli": "brick-cli build --script build.json --output build.mpd [--render view.png --views iso,front] [--target-parts N [--leeway 10]]",
     "partBudget": "--target-parts N --leeway P / targetParts, leeway (default 10%; every component copy counts; limits.maxParts is a hard cap on top); outside it: an over-budget or under-budget error with the difference, no model written or applied",
+    "oneShot": "npm run oneshot -- --target-parts N [--leeway P] --brief \"…\" --model M [--efforts …]: MineBench-style runs through codex exec with no tools; invalid or out-of-range replies get a repair prompt with the errors",
     "workspaces": "npm run workspace -- --target-parts N[,N…] [--leeway P] --brief \"…\": clean agent directory with the templated prompt and a range-enforcing ./brick-cli",
     "ops": [
       "box",

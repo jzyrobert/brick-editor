@@ -1,0 +1,47 @@
+{
+  "effort": "xhigh",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 1955,
+  "seconds": 1626,
+  "tokens": {
+    "input": 65909,
+    "cached": 13312,
+    "output": 19833,
+    "reasoning": 3017
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1280,
+      "usage": {
+        "input": 44178,
+        "cached": 13312,
+        "output": 8445,
+        "reasoning": 0
+      },
+      "toolEvents": [],
+      "outcome": "errors",
+      "parts": 1999,
+      "reason": "- overlap: 3633.dat and 3633.dat overlap [sections[1].ops[4], sections[1].ops[6]]\n- overlap: 3005.dat and 3633.dat overlap [sections[1].ops[5], sections[1].ops[6]]\n- overlap: 3710.dat and 3005.dat overlap [sections[2].ops[1].ops[0] > components.shoji.ops[1].ops[0], sections[2].ops[4].ops[0] > components.timberStrip.ops[0]]\n- overlap: 3710.dat and 3005.dat overlap [sections[2].ops[1].ops[1] > components.shoji.ops[1].ops[0], sections[2].ops[4].ops[0] > components.timberStrip.ops[0]]\n- overlap: 3665a.dat and 3665a.dat overlap [sections[2].ops[7].ops[0] > components.timberPier.ops[2].ops[0], sections[2].ops[7].ops[0] > components.timberPier.ops[2].ops[2]]\n- overlap: 3665a.dat and 3665a.dat overlap [sections[2].ops[7].ops[1] > components.timberPier.ops[2].ops[0], sections[2].ops[7].ops[1] > components.timberPier.ops[2].ops[2]]\n- overlap: 3665a.dat and 3665a.dat overlap [sections[6].ops[0].ops[1] > components.timberPier.ops[3].ops[0], sections[6].ops[0].ops[1] > components.timberPier.ops[3].ops[2]]\n- overlap: 3665a.dat and 3665a.dat overlap [sections[6].ops[0].ops[2] > components.timberPier.ops[3].ops[0], sections[6].ops[0].ops[2] > components.timberPier.ops[3].ops[2]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 346,
+      "usage": {
+        "input": 21731,
+        "cached": 0,
+        "output": 11388,
+        "reasoning": 3017
+      },
+      "toolEvents": [],
+      "outcome": "accepted",
+      "parts": 1955
+    }
+  ]
+}

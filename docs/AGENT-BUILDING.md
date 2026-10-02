@@ -286,6 +286,25 @@ Each workspace (`<root>/<name>-<target>`, plus `-leeway<P>` when the leeway is n
 
 The prompt states the target and the accepted range, and that builds outside it are refused. The wrapper runs whatever this checkout holds when the agent compiles, so keep the checkout on one commit while agents run.
 
+## One-shot runs
+
+To test how far a model gets by reasoning alone, the MineBench way, `npm run oneshot` sends the prompt once and takes the build script from the reply:
+
+```sh
+npm run oneshot -- --target-parts 2000 --leeway 5 --brief "a japanese buddhist temple" \
+  --model gpt-6.1-sol --efforts low,medium,high,xhigh,max --attempts 5
+```
+
+- The prompt is [prompts/build-agent.md](../prompts/build-agent.md) without its tools section, with the brief and part range filled in; the reply must be the JSON alone.
+- Each effort runs in parallel through `codex exec` with every tool turned off (shell, browser, sub-agents, web search…), a read-only sandbox and an empty working folder, ignoring the user's Codex config. Ops, components and `{"find": …}` part phrases still do the heavy lifting: the compiler expands them; the model just cannot compile, search or look before it answers.
+- The runner takes the first JSON object from the reply and compiles it with the target and leeway. A reply with no JSON, an invalid script or any error (overlaps, `over-budget`, `under-budget`) goes back as MineBench's repair prompt, the original prompt followed by `Your previous output was invalid. Reason: <errors> … Fix it by returning ONLY a corrected JSON object. Previous output: <reply>`, up to `--attempts` times. Warnings are not sent back.
+- Accepted builds are rendered afterwards (`--views`, default `iso,front,iso-back`) for review only.
+- Output (`~/brick-builds/oneshot-<name>-<target>` unless `--out`): per effort, the prompt, every reply, its JSON, report and Codex event log, `build.json`, `views/` and `result.json` (attempts with outcome, reason, parts, seconds and tokens, and any tool events, which should be none); `summary.md` and `summary.json` for the whole run.
+
+Sample: [a Japanese Buddhist temple at five reasoning efforts](samples/japanese-temple-one-shot/README.md) (renders, attempts, tokens).
+
+This measures something different from an [agent workspace](#agent-workspaces), where the agent compiles and looks at renders as often as it likes; keep the two kinds of result apart.
+
 ## Headless use
 
 - CLI: [docs/CLI.md](CLI.md#build-scripts-and-part-search) — `build`, `parts search`, plus `health`, `connectors`, `render`, `play` on the output file.

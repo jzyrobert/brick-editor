@@ -1,0 +1,47 @@
+{
+  "effort": "max",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 1985,
+  "seconds": 3334,
+  "tokens": {
+    "input": 80458,
+    "cached": 24192,
+    "output": 73150,
+    "reasoning": 50166
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 2439,
+      "usage": {
+        "input": 31683,
+        "cached": 0,
+        "output": 45810,
+        "reasoning": 34967
+      },
+      "toolEvents": [],
+      "outcome": "errors",
+      "parts": 1889,
+      "reason": "- under-budget: 1,889 parts: 11 under the minimum of 1,900 (target 2,000 ± 5%: 1,900–2,100): add more\n- overlap: 4070.dat and 3633.dat overlap [sections[1].ops[17].ops[0] > components.hall_pillar.ops[0], sections[1].ops[24]]\n- overlap: 4070.dat and 3633.dat overlap [sections[1].ops[17].ops[1] > components.hall_pillar.ops[0], sections[1].ops[24]]\n- overlap: 4070.dat and 4865b.dat overlap [sections[1].ops[17].ops[1] > components.hall_pillar.ops[0], sections[1].ops[24]]\n- overlap: 3633.dat and 3633.dat overlap [sections[1].ops[22], sections[1].ops[24]]\n- overlap: 3633.dat and 3633.dat overlap [sections[1].ops[23], sections[1].ops[24]]\n- overlap: 3005.dat and 3633.dat overlap [sections[2].ops[5].ops[0] > components.pagoda_pillar_12.ops[0], sections[2].ops[34]]\n- overlap: 3005.dat and 3633.dat overlap [sections[2].ops[5].ops[1] > components.pagoda_pillar_12.ops[0], sections[2].ops[34]]\n- overlap: 3022.dat and 3022.dat overlap [sections[2].ops[22].ops[1] > components.kumimono.ops[2], sections[2].ops[23].ops[0] > components.kumimono.ops[2]]\n- overlap: 3022.dat and 3022.dat overlap [sections[2].ops[22].ops[0] > components.kumimono.ops[2], sections[2].ops[23].ops[1] > components.kumimono.ops[2]]\n- overlap: 3941.dat and 3045.dat overlap [sections[2].ops[26], sections[2].ops[27]]\n- overlap: 3941.dat and 3043.dat overlap [sections[2].ops[26], sections[2].ops[27]]\n- overlap: 3633.dat and 3633.dat overlap [sections[2].ops[32], sections[2].ops[34]]\n- overlap: 3633.dat and 3633.dat overlap [sections[2].ops[33], sections[2].ops[34]]\n- overlap: 3028.dat and 6255.dat overlap [sections[2].ops[0], sections[4].ops[11]]\n- overlap: 3028.dat and 6255.dat overlap [sections[2].ops[0], sections[4].ops[12]]\n- overlap: 3941.dat and 6255.dat overlap [sections[4].ops[1] > components.stone_lantern.ops[2], sections[4].ops[10]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 895,
+      "usage": {
+        "input": 48775,
+        "cached": 24192,
+        "output": 27340,
+        "reasoning": 15199
+      },
+      "toolEvents": [],
+      "outcome": "accepted",
+      "parts": 1985
+    }
+  ]
+}
