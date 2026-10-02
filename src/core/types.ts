@@ -78,11 +78,72 @@ export type InventoryPartDecision = {
   acceptedColors?: string[];
   acknowledged: true;
 };
-export type InstructionStepMetadata = { notes?: string; camera?: CameraSpec };
+export type InstructionStepMetadata = {
+  notes?: string;
+  camera?: CameraSpec;
+  contextCamera?: CameraSpec;
+  alternateCamera?: CameraSpec;
+  alternateBeforePlacement?: boolean;
+  /** Illustration only: prior receiving members, with surrounding scene omitted. */
+  alternateDetailIds?: string[];
+  incomingCamera?: CameraSpec;
+  /** Illustration only: available completed joint members, surroundings omitted. */
+  completedDetail?: { occurrenceIds: string[]; camera: CameraSpec };
+  targets?: {
+    position: Vec3;
+    label: string;
+    occurrenceId?: string;
+    caption?: string;
+  }[];
+  axisReference?: {
+    from: Vec3;
+    to: Vec3;
+    sourceRef: string;
+    feasibility: "unknown";
+  };
+  insertionChecks?: {
+    occurrenceIds: string[];
+    status: "clear" | "blocked" | "unknown";
+    scope: "cad-surface-translation";
+    from?: Vec3;
+    to?: Vec3;
+    blockerIds?: string[];
+    reason?: string;
+  }[];
+  assembly?: { type: "build" | "join"; moduleId: string };
+};
 export type InstructionPlan = {
   name: string;
+  /** Opt-in pictorial presentation for authored plans without generated provenance. */
+  presentation?: "pictorial";
   steps: string[][];
   stepMetadata?: InstructionStepMetadata[];
+  modules?: Record<
+    string,
+    {
+      name: string;
+      occurrenceIds: string[];
+      feasibility: "unknown";
+      purpose?: "wheel" | "joint" | "source";
+      parentModuleId?: string;
+      placement?: "attachment" | "scene";
+      hostIds?: string[];
+      receiver?: { position: Vec3; axis: Vec3 };
+    }
+  >;
+  /** Generation-time provenance; later manual edits do not recompute it. */
+  generation?: import("../instructions/generate").GenerationReport;
+  /** Agent-refinement provenance, separate from an automatic generation report.
+   * Counts record the accepted refinement; further manual edits invalidate it. */
+  refinement?: {
+    mode: "agent";
+    baselineAlgorithm: string;
+    baselinePlanHash: string;
+    baselineSourceHash: string;
+    insertionFingerprint?: string;
+    retainedInsertionChecks: number;
+    unknownInsertionChecks: number;
+  };
 };
 export type Project = {
   schemaVersion: 1;

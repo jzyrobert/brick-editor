@@ -138,6 +138,9 @@
   font-size: var(--text-label);
   color: var(--secondary);
 }
+.guide-placement-note {
+  overflow-wrap: anywhere;
+}
 .guide-toggle {
   display: flex;
   align-items: center;
@@ -168,6 +171,19 @@
 }
 .guide-empty p {
   margin: 8px;
+}
+.guide-explicit {
+  max-height: 45vh;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+.guide-explicit .guide-need {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+.guide-explicit .guide-need > * {
+  flex-shrink: 0;
 }
 .guide-need {
   display: grid;
@@ -298,6 +314,7 @@
 /* Short screens held sideways: the panel is a column on the right. */
 @media (orientation: landscape) and (max-height: 540px) {
   .guide-panel {
+    max-height: none;
     left: auto;
     right: var(--guide-right);
     top: calc(var(--guide-top) + 58px);

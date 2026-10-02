@@ -1,3 +1,6 @@
+import { insertionCheckReader, insertionSummary } from "./motion";
+import { instructionDisplayState } from "./programme";
+import { instructionLots, type InstructionLot } from "./lots";
 import { partSpec } from "../catalog/extended";
 import type {
   InstructionPlan,
@@ -33,9 +36,17 @@ import type {
  * sequence (`sequences[s].ids.slice(0, step.end)`), so a 150,000-part model
  * costs one ID list per sequence, not one per step.
  */
-export type GuideLot = { ref: string; colorCode: string; count: number };
+export type GuideLot = {
+  ref: string;
+  colorCode: string;
+  count: number;
+  name?: string;
+  thumbnailRef?: string;
+  kind?: InstructionLot["kind"];
+};
 export type GuideAssembly = { modelId: string; name: string; count: number };
 export type GuideStep = {
+  planStep?: number;
   /** Sequence (main model or a callout) the step belongs to. */
   sequence: number;
   /** Length of the sequence's ID prefix shown once this step is done. */
@@ -61,6 +72,7 @@ export type GuideSequence = {
 };
 export type GuideSource = "model-steps" | "generated" | "plan";
 export type Guide = {
+  explicitPlan?: InstructionPlan;
   source: GuideSource;
   label: string;
   steps: GuideStep[];
@@ -181,7 +193,7 @@ export function deriveGuide(
   all: readonly Occurrence[],
   options: GuideOptions & { plan?: InstructionPlan } = {},
 ): Guide {
-  if (options.plan) return planGuide(options.plan, all);
+  if (options.plan) return planGuide(project, options.plan, all);
   const maxPerStep = Math.max(1, Math.min(50, options.maxPerStep ?? 8));
   const minPerStep = Math.max(1, Math.min(maxPerStep, options.minPerStep ?? 3));
   const models = project.models;
@@ -447,7 +459,43 @@ function generatedSteps(
 }
 
 /** An authored instruction plan as one flat sequence. */
-function planGuide(plan: InstructionPlan, all: readonly Occurrence[]): Guide {
+function planGuide(
+  project: Project,
+  plan: InstructionPlan,
+  all: readonly Occurrence[],
+): Guide {
+  const readChecks = insertionCheckReader(project, plan);
+  plan = {
+    ...plan,
+    stepMetadata: plan.stepMetadata?.map((meta) => {
+      const insertionChecks = readChecks(meta);
+      return {
+        ...meta,
+        ...(insertionChecks ? { insertionChecks } : {}),
+        notes: [meta.notes, insertionSummary(insertionChecks)]
+          .filter(Boolean)
+          .join(" "),
+      };
+    }),
+  };
+  const explicit =
+    plan.presentation === "pictorial" ||
+    !!plan.modules ||
+    [
+      "connected-bottom-up-v4",
+      "connected-bottom-up-v5",
+      "connected-bottom-up-v6",
+      "connected-bottom-up-v7",
+      "connected-bottom-up-v8",
+      "connected-bottom-up-v9",
+      "connected-bottom-up-v10",
+      "connected-bottom-up-v11",
+      "connected-bottom-up-v12",
+      "connected-bottom-up-v13",
+      "connected-bottom-up-v14",
+      "connected-bottom-up-v15",
+      "connected-bottom-up-v16",
+    ].includes(plan.generation?.algorithm ?? "");
   const byId = new Map(all.map((o) => [o.id, o]));
   const seq: GuideSequence = {
     kind: "model",
@@ -459,9 +507,11 @@ function planGuide(plan: InstructionPlan, all: readonly Occurrence[]): Guide {
   };
   const steps: GuideStep[] = [];
   const seen = new Set<string>();
-  for (const ids of plan.steps) {
+  for (let index = 0; index < plan.steps.length; index++) {
+    const ids = plan.steps[index],
+      action = plan.stepMetadata?.[index]?.assembly;
     const added = ids.filter((id) => byId.has(id) && !seen.has(id));
-    if (!added.length) continue;
+    if (!added.length && action?.type !== "join") continue;
     for (const id of added) {
       seen.add(id);
       seq.ids.push(id);
@@ -471,13 +521,34 @@ function planGuide(plan: InstructionPlan, all: readonly Occurrence[]): Guide {
       end: seq.ids.length,
       added,
       units: added.map((id) => [id]),
-      lots: lotsOf(added.map((id) => byId.get(id)!)),
-      assemblies: [],
+      lots: explicit
+        ? instructionLots(project, added, {
+            named: true,
+            physical: true,
+            allowPartial: true,
+          }).map((lot) => ({ ...lot, count: lot.quantity }))
+        : lotsOf(added.map((id) => byId.get(id)!)),
+      assemblies:
+        action?.type === "join"
+          ? [
+              {
+                modelId: action.moduleId,
+                name:
+                  plan.modules![action.moduleId].name +
+                  (plan.modules![action.moduleId].placement === "scene"
+                    ? " — scene placement; no mating connection inferred"
+                    : " — candidate; fit unknown"),
+                count: 1,
+              },
+            ]
+          : [],
+      ...(explicit ? { planStep: index } : {}),
     });
   }
   return {
     source: "plan",
     label: plan.name,
+    ...(explicit ? { explicitPlan: plan } : {}),
     steps,
     sequences: [seq],
     occurrences: seen.size,
@@ -488,6 +559,9 @@ function planGuide(plan: InstructionPlan, all: readonly Occurrence[]): Guide {
 export function stepView(guide: Guide, index: number): string[] {
   const step = guide.steps[index];
   if (!step) return [];
+  if (guide.explicitPlan)
+    return instructionDisplayState(guide.explicitPlan, step.planStep!)
+      .displayIds;
   return guide.sequences[step.sequence].ids.slice(0, step.end);
 }
 
@@ -495,6 +569,7 @@ export function stepView(guide: Guide, index: number): string[] {
 export function laterParts(guide: Guide, index: number): string[] {
   const step = guide.steps[index];
   if (!step) return [];
+  if (guide.explicitPlan) return [];
   return guide.sequences[step.sequence].ids.slice(step.end);
 }
 

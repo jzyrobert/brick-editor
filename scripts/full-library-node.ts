@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import {
   fullLibraryLock,
   registerFullLibrary,
+  registerFullCatalog,
   registeredFullLibrary,
 } from "../src/catalog/full-library";
 import {
@@ -165,4 +166,19 @@ export function fullLibrarySources(
   };
   for (const name of names) visit(name);
   return out;
+}
+
+/** Instruction labels need the separately pinned searchable part catalogue. */
+export function registerFullCatalogFromDisk(dir = fullLibraryDir()) {
+  const manifest = registeredFullLibrary()?.manifest;
+  if (!manifest) return false;
+  const raw = readFileSync(dir + manifest.catalog.path);
+  ensure(
+    raw.length === manifest.catalog.bytes &&
+      hash(raw) === manifest.catalog.sha256,
+    "INVALID_INPUT",
+    "Full catalogue hash mismatch",
+  );
+  registerFullCatalog(JSON.parse(raw.toString()));
+  return true;
 }

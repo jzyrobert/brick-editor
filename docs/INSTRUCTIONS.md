@@ -5,7 +5,17 @@ Two views of a loaded model that change nothing in it:
 - **Build it step by step**: a follow-along viewer that shows one step at a time. Each step's new parts hop into place from a parts tray beside the model.
 - **Parts list**: every part × colour in the model with its count, searchable and exportable.
 
-The Instructions mode editor (organisational plans you author, publishing PNG/HTML/PDF) is separate and unchanged. Its plans can be followed in the viewer.
+The Instructions mode editor creates editable plans and publishes PNG/HTML/PDF. Its plans can be followed in the viewer, including [heuristic drafts](INSTRUCTION-GENERATION.md).
+
+Maintainers can also [refine a fresh deterministic draft with an agent](HYBRID-INSTRUCTIONS.md),
+retaining source and assembly prerequisites with a baseline comparison audit.
+
+Pictorial PDF publication measures actual picture, caption, action and parts
+blocks. Complete part names and marker qualifiers wrap at the existing readable
+font sizes; ordinary actions stay with their receiving diagrams when they fit.
+Long content receives an explicit continuation. This changes page layout without
+changing the saved programme or certifying physical assembly; see the
+[measured publication evidence](reports/instruction-generation/print-layout.md).
 
 ## Opening them
 
@@ -25,7 +35,7 @@ The viewer covers the whole screen: the editor HUD steps aside and comes back wh
 1. **The model's own steps.** If any model file splits its content with `0 STEP` / `0 ROTSTEP` lines, those steps are followed as written, in the main model and in every submodel. Official LDraw OMR sets, LPub, LeoCAD and Studio exports carry them. A file whose only STEP is a trailing one splits nothing, so it gets generated steps.
 2. **Generated steps** for everything else: the built-in samples and custom builds. In each model, parts are ordered bottom up by the height they rest at (their lowest point, in whole plates). A layer is split into runs of at most 8 parts, taken in serpentine rows four studs deep so each run is a compact patch. A run smaller than 3 parts merges with its neighbour when the pair still fits 8. The unit tests check that every sample's steps average at least 3 parts and never exceed 12.
 3. **Sub-assemblies.** A submodel placed more than once, or placed away from its parent's origin, is a real sub-assembly (a wheel set, a wing, a minifig). Its steps come first as a **callout**: it is built on its own from its first copy ("Sub-assembly 2/3", "Build 2 × wing"). The parent step then places every copy at once, shown in the parts strip as "×2 wing". A submodel placed once at the origin (a floor, a roof, a layer-like split, as in the house sample) is built in place: its steps are spliced into its parent's steps, in file order.
-4. **Authored plans.** Plans saved in the project (Instructions mode) appear under **⋯ → Steps** and are followed as one flat sequence. The "Imported steps" plan made at import is not offered, because item 1 covers it and also follows submodels.
+4. **Saved plans.** Plans saved in the project (Instructions mode) appear under **⋯ → Steps**. Opening the viewer from an active saved plan selects that plan. Ordinary authored plans follow a flat sequence. Heuristic drafts replay their actual workbench and main-assembly states, including completed-candidate joins that introduce no new parts. The "Imported steps" plan made at import is not offered, because item 1 covers it and also follows submodels.
 
 A one-part submodel counts as a part. Loose drawing primitives are placed with their step but are not listed as parts.
 
@@ -39,6 +49,24 @@ A one-part submodel counts as a part. Loose drawing primitives are placed with t
 - **Accessibility:** the step count is a live region, the scrubber reports "Step 3 of 12" or "Sub-assembly wing, step 2 of 3", and every part card has a label such as "2 × Brick 2 × 4, Red". All controls are at least 44 px tall.
 
 ## Fly-in and tray
+
+Heuristic drafts use their saved placement cameras and explicit visible parts instead of the generic fly-in and 3D tray. Their pictorial parts strip preserves whole generated drawing ownership and labels unverified physical identity. A completed-candidate join says **No new parts** and identifies the candidate whose fit remains unknown. The instruction editor and publications offer context, alternate and incoming-candidate views when available. The viewer's **Placement views** also offers a completed-candidate view when supplied, followed by a return to placement; receiving details remain separate. Neither the saved camera nor the generic fly-in establishes a physical insertion path or a safe model flip.
+
+Eligible vehicle drafts build on a separate workbench. Each wheel is prepared,
+fitted and placed into that vehicle before the completed candidate is placed in
+the scene. Its scene placement adds no inventory and infers no mating connection.
+The tyre-fitting detail shows the preceding bare rim. These organisational views
+retain unknown detached support, handling and physical fit; see the
+[eligibility and review evidence](reports/instruction-generation/scene-workbenches.md).
+
+Source-reviewed Crane joints can also build on a held child workbench: arm,
+pin, its brick, opposite pin, its brick, then mount the completed candidate.
+The mounting view retains its actual CAD crossing and unverified handling.
+For a concealed hinge, **Show joint detail — access unverified** shows the two
+completed source members with surrounding parts omitted. The real assembly
+context and bare receiver remain available; this picture does not demonstrate
+physical access or a safe snap. See the
+[mechanism evidence](reports/instruction-generation/mechanism-procedures.md).
 
 `src/render/assembly.ts` (`AssemblyView`), driven by `SceneAdapter.showGuideStep()`:
 

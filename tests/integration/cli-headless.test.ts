@@ -2,6 +2,7 @@ import { it, expect } from "vitest";
 import { mkdtemp, readFile, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { unzipSync, strFromU8 } from "fflate";
 import { PDFDocument } from "pdf-lib";
 import { main } from "../../scripts/brick-cli";
 
@@ -115,6 +116,30 @@ it("headless CLI captures fixed ticks and publishes a real instruction PDF local
       4,
     );
     expect(JSON.parse(await readFile(pdfReport, "utf8")).coverage).toEqual({
+      intended: 2,
+      introduced: 2,
+      complete: true,
+    });
+    const htmlZip = join(dir, "steps.zip");
+    await main([
+      "instructions",
+      "--input",
+      input,
+      "--format",
+      "html-zip",
+      "--output",
+      htmlZip,
+      "--width",
+      "128",
+      "--height",
+      "96",
+    ]);
+    const files = unzipSync(await readFile(htmlZip));
+    expect(strFromU8(files["index.html"])).toContain("Step 2 of 2");
+    expect(new TextDecoder().decode(files["step-001.png"].slice(1, 4))).toBe(
+      "PNG",
+    );
+    expect(JSON.parse(strFromU8(files["instructions.json"])).coverage).toEqual({
       intended: 2,
       introduced: 2,
       complete: true,

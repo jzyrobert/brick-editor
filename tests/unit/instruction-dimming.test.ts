@@ -52,3 +52,31 @@ it("dims previous geometry including lines without changing shared prototypes an
   dim.restore();
   expect(dispose).toHaveBeenCalledOnce();
 });
+
+it("pale instruction context stays opaque and restores shared colours and maps", () => {
+  const material = new THREE.MeshBasicMaterial({
+    color: "red",
+    opacity: 0.4,
+    transparent: true,
+    map: new THREE.Texture(),
+  });
+  const prototype = new THREE.Group();
+  prototype.add(new THREE.Mesh(new THREE.BoxGeometry(), material));
+  const handles = new OccurrenceHandles(new THREE.Group());
+  const group = handles.materialize(handles.place("old", prototype));
+  const mesh = group.children[0] as THREE.Mesh<
+    THREE.BufferGeometry,
+    THREE.MeshBasicMaterial
+  >;
+  const pale = new LayerGhost(1, true);
+  pale.apply(handles, new Set(["old"]));
+  expect(mesh.material.transparent).toBe(false);
+  expect(mesh.material.opacity).toBe(1);
+  expect(mesh.material.depthWrite).toBe(true);
+  expect(mesh.material.color.getHexString()).toBe("d1d5d9");
+  expect(mesh.material.map).toBeNull();
+  expect(material.color.getHexString()).toBe("ff0000");
+  expect(material.map).not.toBeNull();
+  pale.restore();
+  expect(mesh.material).toBe(material);
+});

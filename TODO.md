@@ -27,7 +27,12 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Resources and reliability
 
-- [ ] Output pagination, cancellable instruction derivation and a user-facing derive-again control; make share links, pagination and derivation follow the device's resource profile.
+- [ ] Output pagination and device-aware instruction derivation; make share links, pagination and derivation follow the device's resource profile.
+- [ ] Include source model author/licence credits inside exported instruction booklets; current agent workspaces retain `source.json` and native source notices for adjacent attribution.
+- [x] Provide an agent MPD workbench and concise prompt with source aliases, nested replay audits and actual selected diagram review ([three-round pilot](docs/reports/instruction-generation/agent-workflow.md)).
+- [x] Pin a fresh deterministic draft for constrained agent refinement, retain hard source/workbench prerequisites and compare four paired cases with a critic ([hybrid trial](docs/reports/instruction-generation/hybrid-workflow.md)); local gains leave overall3/3/3/2 scores unchanged.
+- [x] Run heuristic draft generation in a cancellable worker, reject stale results and retain undo/redo and prior plans ([v9 evidence](docs/reports/instruction-generation/wheel-operations.md)).
+- [ ] Nested vehicle/figure/bird workbench programmes, explicit scene placement and receiving-interface/handling tasks; bounded publication chapters for London/Hut. The continuing critic's whole-corpus acceptance remains open.
 - [ ] Budget the JS heap (≈ 1.1–1.5 KB per part; today bounded only by the occurrence limit).
 - [ ] Bound remaining compiler work across valid project graphs (occurrence guards alone do not prove it).
 - [ ] M0 conformance: whole-library BFC coverage, broader conditional-line image comparisons, custom material scope, source assets and compiler budgets.
@@ -65,7 +70,20 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Instructions
 
+- [x] Measure pictorial PDF blocks and preserve complete action/part/marker text at accepted picture/font sizes; selected official books shrink329→249pages, with full content/pixel audits ([evidence](docs/reports/instruction-generation/print-layout.md)). Chapter publication and assembly guidance remain open.
+
 - [ ] Advanced editing of authored plans: callouts, arrows, exploded offsets and assembly drafts in published instructions.
+
+- [x] Complete two additional deterministic instruction/critic rounds: estimated preclosure ordering, typed receivers, narrow axle/bush operations and legible axis details. Nine supported samples are editable 3/5 drafts; complex mechanisms still need operation editing ([rounds 5–6](docs/reports/instruction-generation/refinement-rounds.md)).
+- [x] Complete four deterministic instruction refinement/review rounds for hobbyists: pictorial/context diagrams, prior-state batching, flexible drawing ownership, conservative workbench/join actions and destination views. See [refinement evidence](docs/reports/instruction-generation/refinement-rounds.md).
+- [x] Bounded continuous straight CAD insertion checks with local stud contact allowances, blocker precedence, actual workbench/join replay, explicit unknowns and stale-check invalidation (physical feasibility remains unverified).
+- [ ] Instruction follow-ups: physical builder testing, broader insertion/rotation and contact-fit checks beyond the bounded straight CAD checker, verified detached stability/handling and flexible identity metadata, richer Technic/jaw/axle operations and physical flips; broader bounded search needs executable validated actions first.
+- [x] Repair concealed completed-wheel views and live notes that depended on exported R/P labels; source-reviewed outward cameras, named receivers, actual bare views and all 30 resolved-join re-review ([evidence](docs/reports/instruction-generation/wheel-presentation.md)).
+- [x] Narrow source-owned figure procedures with conditional supplied assemblies, receiver-before ordering, eligible separate benches and labelled prior-member wrist details ([evidence](docs/reports/instruction-generation/figure-procedures.md)); fit/access remain unknown.
+- [x] Separate bounded static source workbenches, finite panel/seam decoration ordering, completed-candidate viewer control and deferred scene placement ([v14 evidence](docs/reports/instruction-generation/static-workbenches.md)); physical support and fit remain unknown.
+- [x] Stage collared Crane pins on a held five-part joint workbench and show an isolated completed hinge detail alongside real context/bare receiver; preserve actual mounting crossings and source poses ([v15 evidence](docs/reports/instruction-generation/mechanism-procedures.md)).
+- [x] Add bounded source hierarchy/STEP scheduling for the Shark head and jaw, finite paired clip/handle details, exact custom-part closure and measured four-view PDF rows ([v16 evidence](docs/reports/instruction-generation/source-guided-articulation.md)); whole Shark improves1→2/5 in desk review.
+- [ ] Further automatic instruction transfers: executable Crane mounting/handling, remaining Shark body/tail finite receivers and constructive jaw foundations, wheel/rail readiness, additional articulated hinges and vehicle accessory clips, compact supplied-figure alternatives and bounded publication chapters. Deduplicate mechanism uncertainty notes and sparse marker-legend continuations. V15 preserves final-source control-stick CAD intersections; whole Crane2/5, Shark2/5 and Train3/5 leave broader critic acceptance open ([latest review](docs/reports/instruction-generation/source-guided-articulation-critic.md)).
 
 ## Build scripts
 

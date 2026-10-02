@@ -106,7 +106,18 @@ test("instruction previews cannot replace an active API Play camera and resume a
     await page.evaluate(() => window.brickEditor!.play.snapshot()),
   ).toEqual(before);
   await page.evaluate(() => window.brickEditor!.play.exit());
+  // Instructions fit their saved view around the editor panels. Resume its
+  // viewing direction, rather than demanding its unfitted raw position.
+  const direction = (c: typeof saved) => {
+    const delta = c.position.map((v, i) => v - c.target[i]);
+    const length = Math.hypot(...delta);
+    return delta.map((v) => Number((v / length).toFixed(6)));
+  };
   await expect
-    .poll(async () => (await capture()).position)
-    .toEqual(saved.position);
+    .poll(async () => direction((await capture()) as typeof saved))
+    .toEqual(direction(saved));
+  const resumed = await capture();
+  expect(resumed).not.toEqual(playCamera);
+  expect(resumed.projection).toEqual(saved.projection);
+  expect(resumed.fovDeg).toEqual(saved.fovDeg);
 });

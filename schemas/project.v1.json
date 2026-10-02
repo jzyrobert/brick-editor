@@ -486,6 +486,11 @@
             "type": "string",
             "maxLength": 4096
           },
+          "presentation": {
+            "enum": [
+              "pictorial"
+            ]
+          },
           "steps": {
             "type": "array",
             "items": {
@@ -574,12 +579,798 @@
                     "far"
                   ],
                   "additionalProperties": false
+                },
+                "contextCamera": {
+                  "type": "object",
+                  "properties": {
+                    "space": {
+                      "const": "ldraw"
+                    },
+                    "projection": {
+                      "enum": [
+                        "perspective",
+                        "orthographic"
+                      ]
+                    },
+                    "position": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "target": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "up": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "fovDeg": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "exclusiveMaximum": 180
+                    },
+                    "near": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "far": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "span": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  },
+                  "required": [
+                    "space",
+                    "projection",
+                    "position",
+                    "target",
+                    "up",
+                    "fovDeg",
+                    "near",
+                    "far"
+                  ],
+                  "additionalProperties": false
+                },
+                "alternateCamera": {
+                  "type": "object",
+                  "properties": {
+                    "space": {
+                      "const": "ldraw"
+                    },
+                    "projection": {
+                      "enum": [
+                        "perspective",
+                        "orthographic"
+                      ]
+                    },
+                    "position": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "target": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "up": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "fovDeg": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "exclusiveMaximum": 180
+                    },
+                    "near": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "far": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "span": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  },
+                  "required": [
+                    "space",
+                    "projection",
+                    "position",
+                    "target",
+                    "up",
+                    "fovDeg",
+                    "near",
+                    "far"
+                  ],
+                  "additionalProperties": false
+                },
+                "alternateBeforePlacement": {
+                  "type": "boolean"
+                },
+                "alternateDetailIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "maxItems": 64,
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "incomingCamera": {
+                  "type": "object",
+                  "properties": {
+                    "space": {
+                      "const": "ldraw"
+                    },
+                    "projection": {
+                      "enum": [
+                        "perspective",
+                        "orthographic"
+                      ]
+                    },
+                    "position": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "target": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "up": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "fovDeg": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "exclusiveMaximum": 180
+                    },
+                    "near": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "far": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "span": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  },
+                  "required": [
+                    "space",
+                    "projection",
+                    "position",
+                    "target",
+                    "up",
+                    "fovDeg",
+                    "near",
+                    "far"
+                  ],
+                  "additionalProperties": false
+                },
+                "completedDetail": {
+                  "type": "object",
+                  "properties": {
+                    "occurrenceIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "minItems": 1,
+                      "maxItems": 64,
+                      "uniqueItems": true
+                    },
+                    "camera": {
+                      "type": "object",
+                      "properties": {
+                        "space": {
+                          "const": "ldraw"
+                        },
+                        "projection": {
+                          "enum": [
+                            "perspective",
+                            "orthographic"
+                          ]
+                        },
+                        "position": {
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          },
+                          "maxItems": 3,
+                          "minItems": 3
+                        },
+                        "target": {
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          },
+                          "maxItems": 3,
+                          "minItems": 3
+                        },
+                        "up": {
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          },
+                          "maxItems": 3,
+                          "minItems": 3
+                        },
+                        "fovDeg": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "exclusiveMaximum": 180
+                        },
+                        "near": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "far": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "span": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        }
+                      },
+                      "required": [
+                        "space",
+                        "projection",
+                        "position",
+                        "target",
+                        "up",
+                        "fovDeg",
+                        "near",
+                        "far"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "occurrenceIds",
+                    "camera"
+                  ],
+                  "additionalProperties": false
+                },
+                "targets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "position": {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 4096
+                      },
+                      "occurrenceId": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 393409,
+                        "format": "occurrence-id"
+                      },
+                      "caption": {
+                        "type": "string",
+                        "maxLength": 4096
+                      }
+                    },
+                    "required": [
+                      "position",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 20
+                },
+                "insertionChecks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "occurrenceIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 5,
+                          "maxLength": 393409,
+                          "format": "occurrence-id"
+                        },
+                        "maxItems": 5000,
+                        "minItems": 1
+                      },
+                      "status": {
+                        "enum": [
+                          "clear",
+                          "blocked",
+                          "unknown"
+                        ]
+                      },
+                      "scope": {
+                        "const": "cad-surface-translation"
+                      },
+                      "from": {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "to": {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "blockerIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 5,
+                          "maxLength": 393409,
+                          "format": "occurrence-id"
+                        },
+                        "maxItems": 16
+                      },
+                      "reason": {
+                        "type": "string",
+                        "maxLength": 4096
+                      }
+                    },
+                    "required": [
+                      "occurrenceIds",
+                      "status",
+                      "scope"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 20
+                },
+                "axisReference": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "to": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "sourceRef": {
+                      "type": "string",
+                      "maxLength": 4096
+                    },
+                    "feasibility": {
+                      "const": "unknown"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to",
+                    "sourceRef",
+                    "feasibility"
+                  ],
+                  "additionalProperties": false
+                },
+                "assembly": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "build",
+                        "join"
+                      ]
+                    },
+                    "moduleId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1024
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "moduleId"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "required": [],
               "additionalProperties": false
             },
             "maxItems": 200000
+          },
+          "modules": {
+            "type": "object",
+            "maxProperties": 10000,
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "occurrenceIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "maxItems": 5000
+                },
+                "feasibility": {
+                  "const": "unknown"
+                },
+                "purpose": {
+                  "enum": [
+                    "wheel",
+                    "joint",
+                    "source"
+                  ]
+                },
+                "parentModuleId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "placement": {
+                  "enum": [
+                    "attachment",
+                    "scene"
+                  ]
+                },
+                "hostIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "maxItems": 16
+                },
+                "receiver": {
+                  "type": "object",
+                  "properties": {
+                    "position": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "axis": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    }
+                  },
+                  "required": [
+                    "position",
+                    "axis"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "name",
+                "occurrenceIds",
+                "feasibility"
+              ],
+              "additionalProperties": false
+            },
+            "propertyNames": {
+              "not": {
+                "enum": [
+                  "__proto__",
+                  "constructor",
+                  "prototype"
+                ]
+              }
+            }
+          },
+          "generation": {
+            "type": "object",
+            "properties": {
+              "algorithm": {
+                "enum": [
+                  "connected-bottom-up-v1",
+                  "connected-bottom-up-v2",
+                  "connected-bottom-up-v3",
+                  "connected-bottom-up-v4",
+                  "connected-bottom-up-v5",
+                  "connected-bottom-up-v6",
+                  "connected-bottom-up-v7",
+                  "connected-bottom-up-v8",
+                  "connected-bottom-up-v9",
+                  "connected-bottom-up-v10",
+                  "connected-bottom-up-v11",
+                  "connected-bottom-up-v12",
+                  "connected-bottom-up-v13",
+                  "connected-bottom-up-v14",
+                  "connected-bottom-up-v15",
+                  "connected-bottom-up-v16"
+                ]
+              },
+              "sourceRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sourceGuidance": {
+                "const": "hierarchy-and-step-prior"
+              },
+              "sourceCandidates": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "maxPerStep": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "connectorCovered": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "boundsUnknown": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "inferredSupportPairs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "unanchored": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "lowVisibilitySteps": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "insertionFingerprint": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "insertionPrecedences": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "insertionConflicts": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "insertionClear": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "insertionBlocked": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "insertionUnknown": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "insertionTriangleTests": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "insertionBudgetReached": {
+                "type": "boolean"
+              },
+              "axialOperations": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "axialMatchedBushes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "axialUnmatched": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "axialConflicts": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "displayOperations": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "displayConflicts": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "displaySceneCandidates": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "figureOperations": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "figureConflicts": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "figureCandidates": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "enclosureConstraints": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "accessConflicts": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "maxItems": 200000
+              }
+            },
+            "required": [
+              "algorithm",
+              "sourceRevision",
+              "maxPerStep",
+              "total",
+              "connectorCovered",
+              "boundsUnknown",
+              "inferredSupportPairs",
+              "unanchored",
+              "lowVisibilitySteps",
+              "warnings"
+            ],
+            "additionalProperties": false
+          },
+          "refinement": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "const": "agent"
+              },
+              "baselineAlgorithm": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "baselinePlanHash": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "baselineSourceHash": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "insertionFingerprint": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "retainedInsertionChecks": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "unknownInsertionChecks": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "mode",
+              "baselineAlgorithm",
+              "baselinePlanHash",
+              "baselineSourceHash",
+              "retainedInsertionChecks",
+              "unknownInsertionChecks"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
