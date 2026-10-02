@@ -41,6 +41,7 @@ import {
   AppError,
   type Basis,
   type Project,
+  type Transform,
   type Vec3 as V3,
 } from "../core/types";
 import {
@@ -81,6 +82,7 @@ import { roleParts, searchParts } from "./part-search";
 import { LAYER_COMMENT, assignSectionLayers } from "./layers";
 import { placeTrackPiece, type TrackCursor } from "../play/track";
 import { partRange } from "./budget";
+import { partPlates } from "./part-list";
 
 export type Problem = {
   severity: "error" | "warning" | "info";
@@ -671,11 +673,7 @@ class Compiler {
   }
   /** Height of a part body in plates (for reserving its cells). */
   partPlates(ref: string) {
-    const spec = partSpec(ref);
-    if (!spec) return 1;
-    const b = localBounds(ref);
-    const top = spec.studded ? b.min[1] + 4 : b.min[1];
-    return Math.max(1, Math.round((underside(ref) - top) / 8));
+    return partPlates(ref);
   }
   /**
    * Places a part whose footprint corner is local cell (x, z) and whose
@@ -2369,6 +2367,46 @@ export function slugify(s: string) {
   );
 }
 
+/** "3045 Slope 45° 2 × 2 Double Convex at [12, 21, 4] and … overlap where
+ * their boxes meet: x 13–14, y 21–24, z 5–6" (studs, y in plates). */
+function overlapMessage(
+  refA: string,
+  ta: Transform,
+  refB: string,
+  tb: Transform,
+) {
+  const half = (n: number) => Math.round(n * 2) / 2;
+  const name = (ref: string) =>
+    `${ref.replace(/\.dat$/, "")} ${partSpec(ref)?.name ?? ""}`.trim();
+  const box = (ref: string, t: Transform) => {
+    const b = partSpec(ref)?.bounds;
+    return b ? transformBounds(b as Bounds, t) : undefined;
+  };
+  const corner = (b?: Bounds) =>
+    b
+      ? ` at [${half(b.min[0] / 20)}, ${half(-b.max[1] / 8)}, ${half(b.min[2] / 20)}]`
+      : "";
+  const a = box(refA, ta),
+    b = box(refB, tb);
+  let where = "";
+  if (a && b) {
+    const lo = [0, 1, 2].map((i) => Math.max(a.min[i], b.min[i]));
+    const hi = [0, 1, 2].map((i) => Math.min(a.max[i], b.max[i]));
+    where = ` where their boxes meet: x ${half(lo[0] / 20)}–${half(hi[0] / 20)}, y ${half(-hi[1] / 8)}–${half(-lo[1] / 8)}, z ${half(lo[2] / 20)}–${half(hi[2] / 20)}`;
+  }
+  return `${name(refA)}${corner(a)} and ${name(refB)}${corner(b)} overlap${where}`;
+}
+
+/** The value at a validator path such as "$.sections[1].ops[9].open[1]". */
+function valueAt(root: unknown, path: string): unknown {
+  let v: unknown = root;
+  for (const m of path.replace(/^\$/, "").matchAll(/\.([^.[\]]+)|\[(\d+)\]/g)) {
+    if (v === null || typeof v !== "object") return undefined;
+    v = (v as Record<string, unknown>)[m[1] ?? Number(m[2])];
+  }
+  return v;
+}
+
 /** Throws AppError INVALID_INPUT with every issue when the script is invalid. */
 export function assertBuildScript(
   script: unknown,
@@ -2380,7 +2418,11 @@ export function assertBuildScript(
       "Invalid build script: " +
         issues
           .slice(0, 5)
-          .map((i) => `${i.path} ${i.message}`)
+          .map((i) => {
+            const v = valueAt(script, i.path);
+            const shown = v === undefined ? "" : JSON.stringify(v);
+            return `${i.path} ${i.message}${shown && shown.length <= 80 ? ` (got ${shown})` : ""}`;
+          })
           .join("; ") +
         (issues.length > 5 ? ` (+${issues.length - 5} more)` : ""),
       { issues },
@@ -2541,22 +2583,36 @@ export function compileBuildScript(
     if (missing.size && options.occupancyFor)
       Object.assign(extra, options.occupancyFor([...missing]));
     const r = checkBuild(project, { occupancy: extra, occurrences: all });
-    for (const [a, b] of r.overlaps.slice(0, 50)) {
-      const oa = byId.get(a)!,
-        ob = byId.get(b)!;
+    // One error per kind of collision (the same two ops and parts; a repeat
+    // makes many alike), saying where it happens in script coordinates.
+    const groups = new Map<string, { a: string; b: string; count: number }>();
+    for (const [a, b] of r.overlaps) {
+      const side = (id: string) => `${opOf(id)}|${byId.get(id)!.node.ref}`;
+      const key = [side(a), side(b)].sort().join(" ~ ");
+      const g = groups.get(key);
+      if (g) g.count++;
+      else groups.set(key, { a, b, count: 1 });
+    }
+    for (const g of [...groups.values()].slice(0, 50)) {
+      const oa = byId.get(g.a)!,
+        ob = byId.get(g.b)!;
       c.problem({
         severity: "error",
         code: "overlap",
-        message: `${oa.node.ref} and ${ob.node.ref} overlap`,
-        ops: [...new Set([opOf(a), opOf(b)].filter(Boolean) as string[])],
+        message:
+          overlapMessage(oa.node.ref, oa.transform, ob.node.ref, ob.transform) +
+          (g.count > 1 ? ` (${g.count} pairs like this)` : ""),
+        ops: [...new Set([opOf(g.a), opOf(g.b)].filter(Boolean) as string[])],
       });
     }
-    if (r.overlaps.length > 50)
+    if (groups.size > 50) {
+      const rest = [...groups.values()].slice(50);
       c.problem({
         severity: "error",
         code: "overlap",
-        message: `${r.overlaps.length - 50} more overlaps`,
+        message: `${rest.reduce((n, g) => n + g.count, 0)} more overlaps of ${rest.length} other kinds`,
       });
+    }
     if (r.offGrid.length)
       c.problem({
         severity: "warning",
@@ -2697,11 +2753,16 @@ export function compileBuildScript(
     range?.max ?? Infinity,
     script.limits?.maxParts ?? Infinity,
   );
+  const sizes = () =>
+    [...sectionCounts]
+      .sort((a, b) => b.parts - a.parts)
+      .map((s) => `${s.name} ${fmt(s.parts)}`)
+      .join(", ");
   if (range && parts < range.min)
     c.problems.unshift({
       severity: "error",
       code: "under-budget",
-      message: `${fmt(parts)} parts: ${fmt(range.min - parts)} under the minimum of ${fmt(range.min)}${band}: add more`,
+      message: `${fmt(parts)} parts: ${fmt(range.min - parts)} under the minimum of ${fmt(range.min)}${band}: add more (sections: ${sizes()})`,
     });
   else if (parts > budget) {
     // Every instance counts here, against the op in its section that made

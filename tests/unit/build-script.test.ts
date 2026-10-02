@@ -555,7 +555,7 @@ describe("build script ops", () => {
       severity: "error",
       code: "under-budget",
       message:
-        "50 parts: 4 under the minimum of 54 (target 60 ± 10%: 54–66): add more",
+        "50 parts: 4 under the minimum of 54 (target 60 ± 10%: 54–66): add more (sections: Main 50)",
     });
     // Inside it (both ends count), with any leeway.
     for (const options of [
@@ -581,6 +581,48 @@ describe("build script ops", () => {
     ).toMatch(/^50 parts: 5 over the maximum of 45 \(largest sections/);
     expect(() => first({ targetParts: 0 })).toThrow(/positive integer/);
     expect(() => first({ targetParts: 50, leeway: 101 })).toThrow(/0–100/);
+  });
+
+  it("groups alike overlaps and says where they are", () => {
+    const { report } = compileBuildScript(
+      script([
+        {
+          op: "repeat",
+          count: 3,
+          step: [2, 0, 0],
+          ops: [{ op: "place", part: "3001", at: [0, 0, 0], colour: "red" }],
+        },
+        {
+          op: "repeat",
+          count: 3,
+          step: [2, 0, 0],
+          ops: [{ op: "place", part: "3001", at: [1, 0, 0], colour: "blue" }],
+        },
+      ]),
+    );
+    const overlaps = report.problems.filter((p) => p.code === "overlap");
+    expect(report.check!.overlaps).toBeGreaterThan(overlaps.length);
+    expect(overlaps[0].message).toMatch(
+      /^3001 Brick 2 × 4 at \[\d+, 0, 0\] and 3001 Brick 2 × 4 at \[\d+, 0, 0\] overlap where their boxes meet: x [\d.]+–[\d.]+, y 0–[\d.]+, z 0–2 \(\d+ pairs like this\)$/,
+    );
+  });
+
+  it("names the rejected value in schema errors", () => {
+    expect(() =>
+      compileBuildScript(
+        script([
+          {
+            op: "box",
+            at: [0.5, 0, 0],
+            size: [2, 3, 2],
+            colour: "red",
+            open: ["bottom"],
+          },
+        ]),
+      ),
+    ).toThrow(
+      /\(got \[0\.5,0,0\]\).*\(got "bottom"\)|\(got "bottom"\).*\(got \[0\.5,0,0\]\)/,
+    );
   });
 
   it("builds an old part number with the part it moved to", () => {

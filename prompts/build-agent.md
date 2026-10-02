@@ -35,6 +35,17 @@ Return ONLY one JSON object (no markdown, no commentary). If the interface suppo
 - `at` = minimum corner [x, y, z]; `size` = [w, h, d] (studs, plates, studs) or [w, d].
 - Keep the build inside its baseplates. Typical sites: 32 × 32 (small), 48 × 48, 96 × 64 studs (a village).
 
+## Geometry rules
+
+- **Whole numbers only.** Every coordinate and size is an integer: x and z in studs, y in plates (or `"4b"`). No half studs, even to centre something; centre a 1-wide part on a 2-wide one by choosing the side.
+- **One frame.** Every `at` is in the coordinates of its section (or, inside a component, the component's own frame), including `holes`: a hole's `at` is in the same coordinates as the floor or roof's `at`, not relative to it.
+- **Parts.** At `turn: 0` a part covers the footprint listed for it (x × z studs) and its listed height in plates above `at.y`; `turn: 90`/`270` swap x and z, and `at` stays the minimum corner of the turned footprint. Names do not tell you the axis ("Curved Slope 4 × 1" is 1 × 4 along x × z): use the listed footprint. The next part on top sits at `at.y` + its height. Leaves, branches and other irregular parts can reach past their footprint: keep a stud clear around them.
+- **Ends are included.** `wall` from [0, 0] to [9, 0] is 10 studs long; fence paths likewise.
+- **`box.open`** takes any of `"top"`, `"front"`, `"back"`, `"left"`, `"right"` (front is −Z).
+- **Massing and parts.** Massing (`box`, `wall`, `room`, `floor`, `cylinder`, `dome`, `stairs`, `line`) fills cells and merges where volumes meet. Every part (`window`, `door`, `roof`, `place`, `column`, `fence`, `baseplate`, the parts in components) takes its cells out of massing, whatever the op order. Two parts in the same space are an `overlap` error: a roof's slopes and a post through it, a tree and a wall.
+- **Roofs.** `at.y` is the top of the walls. Gable and hip slopes rise one brick (3 plates) per course and step one stud in from each eave, so with depth `d` across the ridge and overhang `o` (default 1) there are `n = (d + 2o) / 2 − 1` courses, the ridge sits at `at.y + 3n` and the roof's top is about `at.y + 3n + 3`. A hip also steps in from its ends. The roof reaches `o` studs past `size` along the eaves and `ends` (default `o`) past the ends. A `hole` leaves out every slope, ridge and hip-corner piece it touches: anything rising through a roof (a pagoda's core, a chimney, posts of the storey above) needs a hole covering its whole footprint, and nothing else may stand where the remaining slopes are.
+- **Components.** A component's `size` is only the plot an `instance` places (its `at` is that plot's minimum corner after the turn); everything the component builds still takes space, including parts outside `size`.
+
 ## Ops (one object per op, `"op"` names it)
 
 Massing (packed into bricks automatically):

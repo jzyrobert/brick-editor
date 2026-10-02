@@ -45,7 +45,7 @@ const OUTPUT_LINE =
 
 const SEARCH_SECTION = `## Searching for parts
 
-You cannot compile, render or run commands. Before you answer you may search the parts library (the curated parts and the complete official library): reply with ONLY a JSON object such as \`{"parts_search": [{"query": "stone lantern"}, {"query": "slope", "size": "1x2", "colour": "dark red", "available_in_colour": true}]}\` (up to 5 searches per reply; fields: query, size as WxD studs or WxDxH plates, category, colour, available_in_colour, limit). The results come back with each part's size and colours, and you can search again, up to 10 times, before you answer. Your answer is the build script JSON alone.`;
+You cannot compile, render or run commands. Before you answer you may search the parts library (the curated parts and the complete official library): reply with ONLY a JSON object such as \`{"parts_search": [{"query": "stone lantern"}, {"query": "slope", "size": "1x2", "colour": "dark red", "available_in_colour": true}]}\` (up to 5 searches per reply; fields: query, size as WxD studs or WxDxH plates, category, colour, available_in_colour, limit). The results come back with each part's footprint (x × z at turn 0), height and colours, and you can search again: up to 10 search replies, each with up to 5 searches, before you answer. Your answer is the build script JSON alone.`;
 
 /** The build-agent prompt for one reply: brief, part range and (unless
  * turned off) the part list filled in; the search tool described when on.
@@ -332,7 +332,7 @@ async function askCodex(
       join(dir, `attempt-${n}.searches.jsonl`),
       searches.map((x) => JSON.stringify(x)).join("\n") + "\n",
     );
-    message = `Search results:\n\n${answers.join("\n\n")}\n\nSearch again (${SEARCH_ROUNDS - round - 1} rounds left) or answer with ONLY the build script JSON.`;
+    message = `Search results:\n\n${answers.join("\n\n")}\n\nSearch again (${SEARCH_ROUNDS - round - 1} search replies left) or answer with ONLY the build script JSON.`;
   }
   return {
     code,

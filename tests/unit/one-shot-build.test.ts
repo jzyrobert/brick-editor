@@ -32,7 +32,19 @@ describe("one-shot build runs", () => {
     const listed = oneShotPrompt("a barn", range, { search: true });
     expect(listed).toContain("## Searching for parts");
     expect(listed).toContain('{"parts_search": [{"query": "stone lantern"}');
-    expect(listed).toMatch(/\n- 3005 Brick 1 × 1 — all common colours/);
+    expect(listed).toMatch(
+      /\n- 3005 Brick 1 × 1 — 1×1 studs \(x×z\), 3 plates — all common colours/,
+    );
+    expect(listed).toContain(
+      "- 61678 Curved Slope 4 × 1 — 1×4 studs (x×z), 3 plates —",
+    );
+    expect(listed).toContain(
+      "- 6141 Round Plate 1 × 1 — 1×1 studs (x×z), 1 plate —",
+    );
+    expect(listed).toContain("## Geometry rules");
+    expect(listed).toContain(
+      "up to 10 search replies, each with up to 5 searches",
+    );
     expect(listed).toContain("never guess a number");
     expect(listed.indexOf("## Searching for parts")).toBeLessThan(
       listed.indexOf("## Output"),
@@ -65,7 +77,7 @@ describe("one-shot build runs", () => {
     });
     expect(out.ids).toContain("3040b");
     expect(out.text).toMatch(
-      /^3040b \| Slope 45° 2 × 1 \| 1×2 studs, 3 plates \| curated \| .* \| in dark red: verified$/m,
+      /^3040b \| Slope 45° 2 × 1 \| 1×2 studs \(x×z\), 3 plates \| curated \| .* \| in dark red: verified$/m,
     );
     expect(searchForAgent({ size: "banana" }).text).toMatch(
       /^Search failed|No parts match/,

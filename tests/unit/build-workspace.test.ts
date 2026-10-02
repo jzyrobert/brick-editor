@@ -19,7 +19,9 @@ describe("build agent workspaces", () => {
     );
     expect(text).not.toMatch(/\{\{|Return ONLY/);
     expect(text).toContain("Target: 4,000 parts");
-    expect(text).toMatch(/\n- 3005 Brick 1 × 1 — all common colours/);
+    expect(text).toMatch(
+      /\n- 3005 Brick 1 × 1 — 1×1 studs \(x×z\), 3 plates — /,
+    );
     expect(text).toContain("Accepted range: 3,600–4,400 parts.");
     expect(text).toContain("above 4,400 remove parts, below 3,600 add more");
     expect(text).toContain("to the accepted range of 3,600–4,400 parts");
