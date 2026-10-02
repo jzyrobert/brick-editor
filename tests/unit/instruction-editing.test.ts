@@ -178,3 +178,26 @@ it("keeps metadata aligned through clipboard filtering/remapping, structural mod
   );
   expect(await decodeNative(await encodeNative(e.project))).toEqual(e.project);
 });
+
+it("clears the derived context locator when the user changes a step camera", () => {
+  const p = template("wall"),
+    id = occurrences(p)[0].id;
+  p.instructionPlans.detail = {
+    name: "Detail",
+    steps: [[id]],
+    stepMetadata: [{ camera, contextCamera: camera }],
+  };
+  const e = new Editor(p);
+  command(e, "instructions.step.update", {
+    planId: "detail",
+    index: 0,
+    camera: { ...camera, position: [400, -300, 200] },
+  });
+  expect(
+    e.project.instructionPlans.detail.stepMetadata![0].contextCamera,
+  ).toBeUndefined();
+  command(e, "history.undo");
+  expect(
+    e.project.instructionPlans.detail.stepMetadata![0].contextCamera,
+  ).toEqual(camera);
+});

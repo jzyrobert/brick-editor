@@ -6,6 +6,10 @@ Inventory, validation, native/LDraw conversion, command application, and instruc
 
 Every official LDraw part resolves offline: the CLI registers the committed complete library pack (`public/libraries/ldraw-full-*`, verified against its lock) before any operation, and the local render server serves the same files. For example, `npm run cli -- health --input fixtures/ldraw/full-library.ldr` reports no missing definitions for its non-catalogue doors, dome and fences.
 
+For agent refinement of a pinned deterministic instruction draft, use the
+separate local [hybrid maintainer CLI](HYBRID-INSTRUCTIONS.md):
+`npm run instructions:hybrid -- prepare|refine|review ...`.
+
 ## Still renders and render looks
 
 ```sh
@@ -19,6 +23,7 @@ npm run cli -- render-collection --input build.brickproj --collection exterior/ 
 
 ```sh
 npm run cli -- instructions --input build.brickproj --format pdf --output instructions.pdf
+npm run cli -- instructions --input build.mpd --method heuristic --format pdf --output draft.pdf
 npm run cli -- instructions --input build.mpd --format png-zip --max-per-step 10 --width 960 --height 720 --output step-images.zip
 npm run cli -- instructions --input build.brickproj --format html-zip --camera fixtures/renders/interior.camera.json --output instructions-html.zip
 ```
@@ -27,7 +32,7 @@ Formats are `json` (default), `pdf`, `png-zip`, and `html-zip`. Existing importe
 
 Publishing fits the full model automatically unless an exact camera JSON file is supplied with `--camera`. This is the fallback camera for cumulative images; native plans can store a different camera for each step. Saved step notes are included in JSON, HTML and PDF. `--width`/`--height` default to 960×720. Publications include a coverage report; PDF includes a cover, step parts lists, complete inventory and attached instruction JSON. HTML ZIP contains a locally browsable `index.html` and step PNGs.
 
-A complete plan must introduce every occurrence exactly once. Publishing rejects empty steps, missing/duplicate occurrences, stale revisions, and unsupported strict-render features. Limits: 200 steps, 5,000 occurrences, 4 megapixels per page, 64 megapixels total, bounded occurrence metadata, and 100 MiB output. These are organisational sequences; connections, structural support and assembly feasibility are not validated. Callouts and automatic assembly planning remain unavailable.
+A complete plan must introduce every occurrence exactly once. Publishing rejects empty steps, missing/duplicate occurrences, stale revisions, and unsupported strict-render features. Limits: 200 steps, 5,000 occurrences, 4 megapixels per page, 64 megapixels total, bounded occurrence metadata, and 100 MiB output. These are organisational sequences; connections, structural support and assembly feasibility are not validated. An editable heuristic draft is available with `--method heuristic` (default 6 additions, range 1–20); see [heuristic instructions](INSTRUCTION-GENERATION.md). Detached callouts and physically validated assembly planning remain unavailable.
 
 ## Fixed-tick Play capture
 

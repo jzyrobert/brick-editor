@@ -1,6 +1,33 @@
 # Implementation status
 
+Generated instruction trial plans, pictures, booklets and logs are kept locally.
+Only written findings, maintained tools and automated tests are versioned; see
+the [artifact policy](reports/instruction-generation/README.md#local-artifacts).
+
 This report distinguishes working implementation from the full specification. The delivered scope is a usable core editor with selected later editing/reliability features. **It is not a supported full P0 release, with basic M4 exploration now implemented independently. Selected M4 publishing, the M5 kinematic-mechanism scope and a first M6 dynamic-physics slice are also implemented. The full roadmap remains incomplete.**
+
+## Reviewed conditional figure procedures
+
+Automatic v11 preserves supplied lower-body/torso assemblies, orders source-owned
+arms before hands and head before headgear, and adds eligible complete-figure
+candidate benches. Known crossing constraints keep the Hut figure in the scene;
+its labelled receiver detail exposes only prior figure members and explicitly
+leaves access unverified. Source poses and raw inventory are preserved, with no
+checked fitting route. The 17-case comparison changes four official programmes;
+thirteen stay exact. See [evidence](reports/instruction-generation/figure-procedures.md)
+and [independent review](reports/instruction-generation/figure-procedures-critic.md).
+Broader automatic acceptance remains open.
+
+## Reviewed wheel placement views
+
+A v10 presentation follow-up uses source-reviewed outward receiver axes for
+completed-wheel main views and names the actual host in placement notes. The bare
+pin/axle view remains available without a claimed installation path. The 17-case
+comparison preserves all source occurrences, programme/ownership and CAD outcomes;
+only 30 resolved wheel-join camera/context/notes and visibility reporting change.
+See [evidence](reports/instruction-generation/wheel-presentation.md) and the
+[independent review](reports/instruction-generation/wheel-presentation-critic.md).
+This does not close broader automatic-generator acceptance.
 
 ## Delivered
 
@@ -486,3 +513,204 @@ Each has its own document; this list only records that it shipped.
 - **Parts knowledge for agents.** The build prompt lists the 224 curated parts with the common colours each comes in (`{{PARTS}}`, `brick-cli parts list`); a placed part in a colour it is not made in is a compile error naming colours it does come in; old numbers (`4032`, `4073`) are built as the part the library moved them to. One-shot runs can search parts (`--search`, a `{"parts_search": …}` reply answered in the same session), retry provider capacity errors, and record every search, `find`, unlisted number and colour error ([second temple sample](samples/japanese-temple-one-shot-search/README.md)).
 - **One-shot runs and a sandbox-safe renderer.** `npm run oneshot` sends the build prompt to `codex exec` with every tool off and repairs invalid or out-of-range replies MineBench-style ([one-shot runs](AGENT-BUILDING.md#one-shot-runs)); headless renders no longer write into the checkout (Vite's runner config loader and a temp cache), so they work from a sandboxed workspace.
 - **Parallel browser suite.** Playwright projects `main`, `heavy` (`@heavy`) and `perf` (`@perf`); CI builds once and runs 8 + 2 + 1 shards ([verification](VERIFICATION.md#running-the-browser-suite)).
+
+## Deterministic instruction refinement (1 October 2026)
+
+The heuristic generator now includes shared pictorial trays, local/context diagrams, opaque pale earlier geometry, prior-state batch prerequisites, region/access preferences, whole generated drawing ownership, and conservative candidate workbench build/join replay. Candidates require verified internal contact connectivity; contraction cycles revert to cumulative construction, and external source support/host tasks precede each accepted candidate build. Joined inventory introduces no parts twice. Source poses and records remain unchanged. Destination marks and lower/alternate views explain endpoints without claiming insertion motions or physical flips.
+
+Four sequential independent critic cycles, metrics and actual sample/OMR diagrams are recorded in [the refinement report](reports/instruction-generation/refinement-rounds.md). The broad box-based candidate pilot in round 4 was rejected and repaired before final review. Publication still states assembly validation false. Detached stability, handling, closure/access, flexible identity/length and complex-model assembly remain uncertain; limits and edit behavior are documented in [INSTRUCTION-GENERATION](INSTRUCTION-GENERATION.md).
+
+After rebasing onto the new follow-along viewer, all 17 plans and source hashes remained identical. Its explicit-plan mode retains workbench visibility, zero-new-part joins and drawing ownership, uses saved view directions fitted around phone panels, and shows action captions alongside support/placement notes. Generic model-step fly-in remains available. The final corpus contains 204 fresh selected views across sixteen model sheets, plus real v5 PDF/HTML examples and four independent review reports. [Verification](VERIFICATION.md#four-round-heuristic-instruction-refinement-1-october-2026) records the software checks and their limits.
+
+## Two further instruction refinements (1 October 2026)
+
+Rounds 5–6 add bounded estimated preclosure precedence, verified vertical/frame receiving prerequisites and six source-reviewed axial family hints. Cafe stair caps and Hut cabinet clip now precede their cover; House/Lighthouse leaves appear visibly after their frames. Cafe rises 2→3/5. Technic axle/bush singleton sequencing repairs bushes appearing before their axle and adds bounded detail, locator context and separated E/F/1/R marks, without claiming a fitted insertion path.
+
+The final independent critic reviewed 256 selected round-5 states and 35 fresh Technic states in round 6, retaining 236 unchanged states honestly. All seventeen supported plans preserve source hashes and unique introductions; sixteen plans remain identical between rounds 5 and 6 after generation metadata is removed. Six workbench candidates remain. All nine supported samples score 3/5; complex Technic/London/Shark remain 1/5. Galaxy's colour refusal, three oversized generation refusals and London/Hut publication limits remain explicit. [Six-round findings](reports/instruction-generation/refinement-rounds.md) and [verification](VERIFICATION.md) retain evidence and limits.
+
+## Bounded straight CAD approach checks (1 October 2026)
+
+The instruction generator is now v8 with full pinned polygon sweeps, ordinary underside and narrow axle/bush candidate directions, acyclic blocker precedences and final workbench/rigid-join replay. Clear/crossing/unknown results retain explicit CAD-only scope, saved paths and source/programme/policy fingerprints. Missing/unsupported geometry, exhausted budgets and out-of-domain coordinates remain unknown. Exported green arrows are shortened clear-path indicators; blocker marks locate CAD crossings, including required receivers that should remain in place. A visible phone badge precedes scrolling notes. Physical fit, holding, flex, stability and general assembly motion remain unverified; publications retain `assemblyValidated: false`.
+
+The [collision investigation](reports/instruction-generation/collision-checks.md) and [independent critic](reports/instruction-generation/collision-critic.md) record 17 exact-source/unique-introduction plans, three oversized refusals and 270 reviewed states across 16 renderable models. Scores remain unchanged from round6; diagnostics improve evidence rather than certifying buildability.
+
+## Separate wheels and cancellable instruction drafts (1 October 2026)
+
+V9 adds31 isolated rim/tyre candidates across seven models, each with two singleton builds and a zero-new-part placement. Five reviewed families and typed4600/2441/3749 receiving features are bound to current library locks and twelve pinned source tests. Receiving-before-placement details omit the incoming wheel. Tyre deformation, fastening and physical fit remain unknown; Jeep's spare has an unresolved mounting task. Generation now runs in a cancellable UI worker with a revision/fingerprint-checked undoable install command; CLI/API generation remains synchronous.
+
+The [continuing review](reports/instruction-generation/continuation-critic.md) independently confirms repaired receiving views and fixture publications. Final phone/editor/desktop cameras fit the selected view into the unobstructed canvas, with bounded scrolling notes; HTML supporting details widen on phones. PDF operation captions wrap intact, and the three-operation axial example drops from seven pages to five with its complete outcome beside each diagram. All17 plans retain exact source hashes/unique introductions;363 selected states include206 fresh wheel captures and157 verified unchanged rasters with new captions. Whole-model scores remain unchanged. Nested assemblies, scene placement, receiving holes, flexible identity, physical flips and London/Hut chapters remain open; see [v9 evidence](reports/instruction-generation/wheel-operations.md).
+
+## Agent instruction authoring from MPD (1 October 2026)
+
+The offline workbench resolves source aliases, supports compact interface queries,
+validates complete nested build/place programmes and captures bounded actual
+review windows. Authored pictorial plans open first and publish trays/receiving
+views without generated clearance claims. Live editor/viewer receiving controls
+exclude both new loose parts and incoming modules, and restore placement visibility.
+Source poses/records, library locks and inventory remain unchanged. Complete
+action paragraphs precede PDF trays/legends when they fit; oversized notes get an
+explicit continuation pointer. Live notes use one non-collapsing scroll area.
+Compact CLI binary transfer avoids numeric-array heap growth on full booklets.
+
+Two builders and an independent critic completed three cumulative rounds on exact
+Roadster/House template MPDs and OMR6450/31088. The [pilot report](reports/instruction-generation/agent-workflow.md)
+records scored scope, actual exports and limitations; the [prompt](../prompts/instruction-agent.md)
+and [tool reference](AGENT-INSTRUCTIONS.md) are reusable. The pilot's automatic
+baseline was v9; agent-authored nested plans do not establish automatic nested planning,
+physical fit, stability, figure supply state or broad corpus usability.
+
+## Automatic nested vehicle drafts (1 October 2026)
+
+V10 transfers isolated source vehicle workbenches from the manual experiment:
+Roadster and four official vehicles build their reviewed wheels on child benches,
+join them into the actual receiving parent, then place the completed candidate in
+the scene without new inventory or an inferred mating connection. Eligibility
+rejects crossing known dependencies and unavailable receivers; source
+hierarchy/incomplete coverage do not prove detached stability or independence.
+All31 tyre-fitting operations now show their actual preceding bare rims.
+
+All17 supported source plans and original leaf-step arrays are preserved;
+100 instruction unit tests and production generation/native browser checks pass.
+The critic inspected264 view instances across phase-separated parent, tyre and
+windmill packets plus selected real PDF/HTML and phone views. Scores remain
+unchanged and broader acceptance remains open. Actual Roadster/truck publications
+retain `assemblyValidated:false`; all four CLI exports succeed. See the
+[scope/evidence](reports/instruction-generation/scene-workbenches.md) and
+[independent review](reports/instruction-generation/scene-workbenches-critic.md).
+
+## Source steering, shutters and signs (2 October 2026)
+
+Automatic v12 adds narrow source-reviewed actual steering-base and shutter-frame
+receiver procedures, plus two-part source sign benches and scene placements.
+Steering precedes cab closures; each shutter precedes a matching cap. Labelled
+prior-member details and source-front printed views retain UNKNOWN physical fit,
+handling and support. Incomplete association scans and cyclic/crossing dependency
+proposals are refused; raw source geometry, records and inventory remain intact.
+
+All17 supported plans preserve7,017 unique source occurrences; fifteen other
+programme/presentation objects remain exact against actual v11 natives. The
+critic reviews85 actual final states/160 rasters/eleven sheets,50 native phone
+captures and selected actual PDF/HTML views. Four full fresh CLI exports succeed.
+The bounded increment is accepted; automatic Truck rises2/5→3/5, Crane remains2/5
+and broader corpus acceptance remains open. Source artefacts, checks and remaining
+mechanism/prop/support/print work are in the [report](reports/instruction-generation/display-procedures.md)
+and [critic review](reports/instruction-generation/display-procedures-critic.md).
+
+## Source control and hand-grip procedures (2 October 2026)
+
+Automatic v13 adds narrow reviewed control-base/stick ordering and actual hand
+receivers for cup/radio handles. Pinned source landmarks, unique ownership and
+finite handle matching preserve source poses, including the recorded two-LDU
+control pivot and approximately fourteen-degree hand/handle discrepancies. Actual
+bare-base/hand details improve receiver identification; fit and retention remain
+UNKNOWN. All candidates are discarded when either display matcher exhausts its
+scan budget, since a later competing object may invalidate uniqueness.
+
+The seventeen-source audit preserves7,017 unique introductions; fourteen other
+programme/presentation objects remain exact against committed v12. Final review
+covers94 actual states/188 rasters/twelve sheets and42 fresh native phone views.
+Six full PDF/HTML exports complete successfully; a rejected first Pizzeria PDF
+attempt is recorded separately. Truck remains3/5, Crane2/5 and Pizzeria2/5;
+broader automatic acceptance remains open. Source evidence, rejected camera
+pilot, real camera sweep and bounded publication checks are in the [report](reports/instruction-generation/interface-procedures.md)
+and [independent review](reports/instruction-generation/interface-procedures-critic.md).
+
+## Measured pictorial PDF layout (2 October 2026)
+
+Pictorial PDFs now measure actual header/image/caption/action/lot regions, use
+parts columns beside eligible supporting views and retain page-sized marker
+qualifiers together. Full lot labels wrap without truncation; oversized labels
+continue explicitly. Actual glyph advances repair a small inherited margin
+underestimate. Accepted picture/font sizes, source poses and complete v13
+programmes remain unchanged.
+
+Truck/Crane/Pizzeria 329→249 pages preserve 238 operations and 787 exact RGB/alpha
+image draws. Roadster 33 operations/35 pages and House 132/135 preserve 165 operations
+and 569 captures; House retains all 132 complete operations on their main pages. Its interrupted
+CLI capture is recovered and fully validated, not counted as a successful fresh
+command. Production PDF composition, complete content/geometry audits,
+147 instruction units and relevant browser checks pass. The
+[report](reports/instruction-generation/print-layout.md) and
+[critic](reports/instruction-generation/print-layout-critic.md) distinguish selected
+visual review from full metadata/pixel checks. Model scores and broader assembly
+acceptance remain unchanged; chapter and physical-guidance work stay open.
+
+## Static source workbenches and seam decorations (2 October 2026)
+
+V14 separates the Mobile Crane container and Train coach into bounded source
+workbenches. Exact finite panel faces order each seam-spanning sticker after both
+receiving panels, with a bare prior-face detail and a marker on the actual
+containing panel. Loose initial pieces receive support/relative-spacing notes.
+Completed static candidates wait until remaining main construction is finished;
+the coach stays aside throughout track building. The live viewer exposes the
+complete incoming candidate within its existing Placement views disclosure.
+
+All17 supported sources preserve7,017 unique introductions and every edge in133
+previous source sections;15 complete programmes/presentations remain identical.
+Crane changes85→88 operations and Train178→179. All162 instruction unit tests,
+five relevant production browser checks, the618-module post-rebase build and pinned library
+validation pass. The [report](reports/instruction-generation/static-workbenches.md)
+and [critic](reports/instruction-generation/static-workbenches-critic.md) distinguish
+bounded organisational acceptance from whole-model usability: Crane remains2/5,
+Train3/5. Detached stability, adhesive attachment, rail fit and mechanism
+receiving/handling guidance remain open; no physical build was tested.
+
+## Staged Crane joint and completed hinge detail (2 October 2026)
+
+V15 builds the outer Crane arm, two collared pins and their two Technic bricks on
+a held child workbench, followed by a zero-new-part vehicle mount. The pins precede
+their bricks instead of implying collar travel through two positioned bore bodies.
+Finite source profiles preserve all original prerequisites, including the estimated
+cab-tip support, and reject incomplete matches or workbench contraction cycles.
+The hinge has real assembly context, a bare prior holder and a labelled two-member
+completed detail. Viewer/editor restore and next-step masks remain exact.
+
+All17 sources preserve7,017 unique introductions;16 complete programmes remain
+identical to v14. Crane88→93 operations, still170 source leaves. All171 instruction
+tests/23files, six focused production browser checks, pinned library validation
+and the619-module build pass. Ninety actual native phone screenshots cover all
+six required viewports. Full CLI HTML and production PDF composition retain all93
+operations,170inventory and307 captured image draws over99 PDF pages; PDF pictures
+are byte-identical accepted HTML captures, with explicit composition provenance.
+
+The [report](reports/instruction-generation/mechanism-procedures.md) and
+[critic](reports/instruction-generation/mechanism-procedures-critic.md) preserve
+the bounded scope. Whole Crane remains2/5. The actual joint mount still records
+a CAD crossing; separate zero-translation triage finds final-source transverse
+intersections with both control sticks, whereas the inner arm has only an observed
+swept-route obstruction. None establishes manufactured fit or physical impossibility.
+Safe mounting/handling, Shark source workbenches, rail engagement and shorter
+mechanism/legend presentation remain feasible work. Broader acceptance stays open.
+
+## Source-guided articulation and hybrid refinement (2 October 2026)
+
+V16 uses explicitly reported authored hierarchy/STEP priors for eligible source
+parents and attachments. A bounded event scheduler preserves leaf prerequisites
+and actual destination availability. Shark's 66 direct head leaves and15-member
+jaw build separately, join at113 and place the completed81-member head at114.
+Finite paired clip/handle pictures retain bare, incoming, completed and context
+views. Project-first custom geometry closure survives worker transfer without
+changing source identities, strict collision eligibility or raw poses.
+
+All17 sources preserve7,017 unique introductions;16 other complete programmes
+remain identical to v15 except generation reports. The independent complete Shark
+review improves1→2/5; constructive loose support and other articulated regions
+remain open. Four supporting PDF views now wrap into measured rows instead of
+clipping the fourth off-page. All139 operations,424 image draws and complete notes
+survive full publication and six-size native checks. The
+[source-guided report](reports/instruction-generation/source-guided-articulation.md)
+and [critic](reports/instruction-generation/source-guided-articulation-critic.md)
+retain failed pilots and bounded acceptance.
+
+The local [hybrid workflow](HYBRID-INSTRUCTIONS.md) pins a fresh deterministic
+draft, accepts constrained alias proposals and emits exact deltas/native provenance.
+It protects source/replay prerequisites and reviewed receiver/conditional assembly
+procedures; changed views/contexts invalidate inherited CAD records. Two builders
+and an independent critic compare Roadster, House, Truck6450 and Shark31088:
+3/3/3/2→3/3/3/2 overall, with concrete foundation, frame, slot, wrist and jaw-view
+improvements. These are one paired hybrid trial and necessary repairs, separate
+from the earlier three-round manual experiment. Complete source/publication audits
+and actual selected phone views do not certify physical assembly. The
+[trial](reports/instruction-generation/hybrid-workflow.md) and
+[independent review](reports/instruction-generation/hybrid-workflow-critic.md)
+record scope, refusals, unchanged scores and remaining feasible work.

@@ -125,6 +125,7 @@ import {
   type BackdropName,
 } from "../core/scene";
 import * as THREE from "three";
+import { registerCuratedGeometrySources } from "../catalog/geometry-sources";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { LDrawLoader } from "./vendor/LDrawLoader.js";
 import { LDrawConditionalLineMaterial } from "three/addons/materials/LDrawConditionalLineMaterial.js";
@@ -502,7 +503,7 @@ export class SceneAdapter {
   private hiddenView = new HiddenGeometryView();
   private hiddenCull = loadOption("hiddenCull") !== "0";
   private layerGhost = new LayerGhost();
-  private instructionDimming = new LayerGhost(0.3);
+  private instructionDimming = new LayerGhost(1, true);
   /** Anatomy exploded view (anatomy-view.ts): moves handle translations only. */
   private anatomyView = new AnatomyView({
     handles: this.handles,
@@ -872,6 +873,13 @@ export class SceneAdapter {
           const name = s.path.replace(/^(parts|p)\//, "");
           return [name, "0 FILE " + name + "\n" + s.text];
         }),
+    );
+    registerCuratedGeometrySources(
+      new Map(
+        sources
+          .filter((s) => s.path !== "LDConfig.ldr")
+          .map((s) => [s.path.replace(/^(parts|p)\//, ""), s.text]),
+      ),
     );
     this.colourLines = undefined;
     this.colorText = sources

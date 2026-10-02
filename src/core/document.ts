@@ -1,3 +1,4 @@
+import { validateInstructionProgramme } from "../instructions/programme";
 import { validateArchitecture } from "./architecture";
 import { validateScene } from "./scene";
 import { validateInstructionCamera } from "../instructions/edit";
@@ -395,8 +396,39 @@ export function validateSourceDocument(p: Project): void {
         );
         introduced.add(id);
       }
-    for (const metadata of plan.stepMetadata ?? [])
+    validateInstructionProgramme(plan);
+    for (const module of Object.values(plan.modules ?? {}))
+      ensure(
+        module.occurrenceIds.every(isLeaf) &&
+          (module.hostIds ?? []).every(isLeaf),
+        "INVALID_INPUT",
+        "Workbench candidate references a missing occurrence.",
+      );
+    for (const metadata of plan.stepMetadata ?? []) {
+      ensure(
+        (metadata.targets ?? []).every(
+          (target) => !target.occurrenceId || isLeaf(target.occurrenceId),
+        ),
+        "INVALID_INPUT",
+        "A destination references a missing source occurrence.",
+      );
+      ensure(
+        (metadata.insertionChecks ?? []).every(
+          (check) =>
+            check.occurrenceIds.every(isLeaf) &&
+            (check.blockerIds ?? []).every(isLeaf),
+        ),
+        "INVALID_INPUT",
+        "An approach check references a missing occurrence.",
+      );
       if (metadata.camera) validateInstructionCamera(metadata.camera);
+      if (metadata.incomingCamera)
+        validateInstructionCamera(metadata.incomingCamera);
+      if (metadata.alternateCamera)
+        validateInstructionCamera(metadata.alternateCamera);
+      if (metadata.contextCamera)
+        validateInstructionCamera(metadata.contextCamera);
+    }
   }
 }
 /** Compatibility entry point for callers requiring a materializable scene. */

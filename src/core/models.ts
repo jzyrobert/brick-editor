@@ -1,3 +1,4 @@
+import { flattenInstructionProgramme } from "../instructions/programme";
 import { encodePath, occurrences } from "./document";
 import { identity, add } from "./math";
 import {
@@ -76,8 +77,10 @@ function remapMetadata(p: Project, mapping: Record<string, string>) {
   );
   for (const name of Object.keys(p.groups))
     p.groups[name] = p.groups[name].map(remap);
-  for (const plan of Object.values(p.instructionPlans))
+  for (const plan of Object.values(p.instructionPlans)) {
+    flattenInstructionProgramme(plan);
     plan.steps = plan.steps.map((step) => step.map(remap));
+  }
   for (const diagnostic of p.diagnostics)
     diagnostic.occurrenceIds = diagnostic.occurrenceIds.map(remap);
   for (const rig of Object.values(p.motionRigs)) {

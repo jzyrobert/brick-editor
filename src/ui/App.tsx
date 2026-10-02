@@ -1,3 +1,15 @@
+import {
+  effectiveInsertionChecks,
+  insertionChecksCurrent,
+  insertionSummary,
+} from "../instructions/motion";
+import {
+  instructionDisplayState,
+  instructionAlternateIds,
+} from "../instructions/programme";
+import { fitInstructionView } from "../instructions/view-camera";
+import { startInstructionGeneration } from "../instructions/worker-client";
+import { InstructionTray } from "./InstructionTray";
 import { LimitedSource } from "./LimitedSource";
 import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
@@ -454,6 +466,11 @@ export default function App() {
   );
 }
 function Workspace() {
+  const [generatingInstructions, setGeneratingInstructions] = useState(false);
+  const instructionGenerationToken = useRef(0);
+  const instructionGenerationJob = useRef<
+    ReturnType<typeof startInstructionGeneration> | undefined
+  >(undefined);
   const [project, setProject] = useState(() => editor.project),
     [transientView, setTransientView] = useState(false),
     [saveConflict, setSaveConflict] = useState(false),
@@ -1187,6 +1204,8 @@ function Workspace() {
       mechanisms.current?.dispose();
       renderer.current?.dispose();
       worker.current?.terminate();
+      instructionGenerationToken.current++;
+      instructionGenerationJob.current?.cancel();
       autosave.current?.dispose();
       document.removeEventListener("visibilitychange", flushSave);
       window.removeEventListener("storage", notifySavedChange);
@@ -1215,8 +1234,10 @@ function Workspace() {
   useEffect(() => {
     if (mode === "Instructions" && !ownsTransientView() && !guideOpen)
       renderer.current?.showStep(
-        plan ? plan.steps.slice(0, step + 1).flat() : null,
-        dimPrevious && plan ? plan.steps[step] : undefined,
+        plan ? instructionDisplayState(plan, step).displayIds : null,
+        dimPrevious && plan
+          ? instructionDisplayState(plan, step).highlightIds
+          : undefined,
       );
   }, [mode, step, plan, transientView, dimPrevious, guideOpen]);
   // The step viewer is a view of the Build, Instructions or Project modes.
@@ -1227,13 +1248,14 @@ function Workspace() {
     if (!guideOpen) return;
     // The viewer shows its own steps: the editor's step view and the
     // anatomy exploded view step aside (the guide places parts in place).
-    renderer.current?.showStep(null);
+    // The child viewer owns either its guide mask or the explicit programme
+    // mask. Clearing it here would erase its first workbench step on opening.
     if (renderer.current?.anatomy.on)
       renderer.current.setAnatomy({ on: false, animate: false });
     renderer.current?.select([]);
   }, [guideOpen]);
   useEffect(() => {
-    if (mode !== "Instructions") renderer.current?.showStep(null);
+    if (mode !== "Instructions" && !guideOpen) renderer.current?.showStep(null);
     // Document replacement cancels the old session synchronously through
     // sourceChanged. A delayed plan render must not cancel a new API session.
     if (mode !== "Play") {
@@ -1241,27 +1263,68 @@ function Workspace() {
       mechanisms.current?.exit();
     }
     if (mode !== "Build") setPanel("Canvas");
-  }, [mode]);
+  }, [mode, guideOpen]);
   useEffect(() => {
     setStep((index) =>
       Math.max(0, Math.min(index, (plan?.steps.length ?? 1) - 1)),
     );
   }, [plan]);
+  const instructionCamera = useRef<CameraSpec | undefined>(undefined);
+  const frameInstructionCamera = () => {
+    const r = renderer.current,
+      camera = instructionCamera.current;
+    if (!r || !camera) return;
+    const canvas = r.renderer.domElement.getBoundingClientRect(),
+      app = r.renderer.domElement.closest(".app"),
+      insets = { top: 0, right: 0, bottom: 0, left: 0 };
+    for (const element of app?.querySelectorAll(".mode-card, .hud-top") ?? []) {
+      const box = element.getBoundingClientRect();
+      if (!box.width || !box.height) continue;
+      if (box.height < 100)
+        insets.top = Math.max(insets.top, box.bottom - canvas.top + 8);
+      else if (box.left > canvas.left + canvas.width / 2)
+        insets.right = Math.max(insets.right, canvas.right - box.left + 8);
+      else if (box.right < canvas.left + canvas.width / 2)
+        insets.left = Math.max(insets.left, box.right - canvas.left + 8);
+      else insets.bottom = Math.max(insets.bottom, canvas.bottom - box.top + 8);
+    }
+    r.setCamera(fitInstructionView(camera, canvas, insets));
+  };
+  const showInstructionCamera = (camera: CameraSpec) => {
+    instructionCamera.current = camera;
+    frameInstructionCamera();
+  };
   useEffect(() => {
     const camera = plan?.stepMetadata?.[step]?.camera,
       r = renderer.current;
-    if (mode !== "Instructions" || !camera || !r || ownsTransientView()) return;
+    if (
+      mode !== "Instructions" ||
+      guideOpen ||
+      !camera ||
+      !r ||
+      ownsTransientView()
+    )
+      return;
     let cancelled = false;
+    instructionCamera.current = camera;
+    const frame = () => {
+      if (!cancelled && !ownsTransientView()) frameInstructionCamera();
+    };
+    const observer = new ResizeObserver(frame);
+    observer.observe(r.renderer.domElement);
+    for (const element of r.renderer.domElement
+      .closest(".app")
+      ?.querySelectorAll(".mode-card, .hud-top") ?? [])
+      observer.observe(element);
     void r
       .ready()
-      .then(() => {
-        if (!cancelled && !ownsTransientView()) r.setCamera(camera);
-      })
+      .then(frame)
       .catch((e) => setStatus(e.message));
     return () => {
       cancelled = true;
+      observer.disconnect();
     };
-  }, [mode, currentPlanId, step, plan?.stepMetadata, transientView]);
+  }, [mode, currentPlanId, step, plan?.stepMetadata, transientView, guideOpen]);
 
   useEffect(() => {
     renderer.current?.setWorkplaneGuide(workplane);
@@ -3703,6 +3766,15 @@ function Workspace() {
       Generate layer steps
     </button>
   );
+  const restoreInstructionPlacement = (camera?: CameraSpec) => {
+    if (!plan) return;
+    const state = instructionDisplayState(plan, step);
+    renderer.current?.showStep(
+      state.displayIds,
+      dimPrevious ? state.highlightIds : undefined,
+    );
+    if (camera) showInstructionCamera(camera);
+  };
   const instructionEditor = (
     <InstructionEditor
       canUndo={editor.canUndo}
@@ -3720,12 +3792,122 @@ function Workspace() {
       }}
     />
   );
+  const heuristicSteps = (
+    <>
+      <button
+        className="wide"
+        disabled={generatingInstructions}
+        onClick={() =>
+          void run(async () => {
+            const token = ++instructionGenerationToken.current;
+            const source = editor.project;
+            setGeneratingInstructions(true);
+            setStatus("Preparing instruction draft…");
+            try {
+              await renderer.current?.ready(source.revision, false);
+              if (token !== instructionGenerationToken.current) return;
+              ensure(
+                editor.projectId === source.id &&
+                  editor.revision === source.revision,
+                "REVISION_CONFLICT",
+                "Model changed while preparing instructions; generate again.",
+              );
+              const job = startInstructionGeneration(source, { maxPerStep: 6 });
+              instructionGenerationJob.current = job;
+              setStatus(
+                "Planning instructions… You can cancel or keep using the editor.",
+              );
+              const generated = await job.result;
+              if (token !== instructionGenerationToken.current) return;
+              ensure(
+                editor.projectId === source.id &&
+                  editor.revision === source.revision,
+                "REVISION_CONFLICT",
+                "Model changed while generating instructions; generate again.",
+              );
+              const result = command("instructions.installGenerated", {
+                plan: generated,
+              });
+              setDimPrevious(true);
+              setActivePlanId(result.addedPlanIds[0]);
+              setStep(0);
+              setStatus("Instruction draft ready for review.");
+            } catch (e) {
+              if (token !== instructionGenerationToken.current) return;
+              throw e;
+            } finally {
+              if (token === instructionGenerationToken.current) {
+                instructionGenerationJob.current = undefined;
+                setGeneratingInstructions(false);
+              }
+            }
+          })
+        }
+      >
+        {generatingInstructions
+          ? "Generating instructions…"
+          : "Generate heuristic steps"}
+      </button>
+      {generatingInstructions && (
+        <button
+          className="wide"
+          onClick={() => {
+            instructionGenerationToken.current++;
+            instructionGenerationJob.current?.cancel();
+            instructionGenerationJob.current = undefined;
+            setGeneratingInstructions(false);
+            setStatus("Instruction generation cancelled.");
+          }}
+        >
+          Cancel instruction generation
+        </button>
+      )}
+      {plan?.generation && (
+        <details>
+          <summary>Generated plan review</summary>
+          <p>
+            These findings describe the model when this plan was generated.
+            Review again after edits.
+          </p>
+          <ul>
+            {plan.generation.insertionFingerprint &&
+              !insertionChecksCurrent(project, plan) && (
+                <li>
+                  Geometry or step order changed. Saved totals describe the
+                  original draft; regenerate the approach checks.
+                </li>
+              )}
+            {plan.generation.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </>
+  );
   const stepNavigator = plan && (
     <>
       <h3>{plan.name}</h3>
       <p>
-        Step {plan.steps.length ? step + 1 : 0} of {plan.steps.length} ·{" "}
-        {plan.steps[step]?.length || 0} new parts
+        Step {plan.steps.length ? step + 1 : 0} of {plan.steps.length}
+        {plan.presentation !== "pictorial" &&
+          ![
+            "connected-bottom-up-v4",
+            "connected-bottom-up-v5",
+            "connected-bottom-up-v6",
+            "connected-bottom-up-v7",
+            "connected-bottom-up-v8",
+            "connected-bottom-up-v9",
+            "connected-bottom-up-v10",
+            "connected-bottom-up-v11",
+            "connected-bottom-up-v12",
+            "connected-bottom-up-v13",
+            "connected-bottom-up-v14",
+            "connected-bottom-up-v15",
+            "connected-bottom-up-v16",
+          ].includes(plan.generation?.algorithm ?? "") && (
+            <> · {plan.steps[step]?.length ?? 0} new parts</>
+          )}
       </p>
       <input
         aria-label="Instruction step"
@@ -3736,6 +3918,132 @@ function Workspace() {
         value={step}
         onChange={(e) => setStep(Number(e.target.value))}
       />
+      {plan.stepMetadata?.[step]?.insertionChecks && (
+        <p className="instruction-approach" role="status">
+          {insertionSummary(
+            effectiveInsertionChecks(project, plan, plan.stepMetadata[step]),
+          )}
+        </p>
+      )}
+      {plan.stepMetadata?.[step]?.assembly && (
+        <p>{instructionDisplayState(plan, step).operationLabel}</p>
+      )}
+      <InstructionTray
+        project={project}
+        ids={plan.steps[step] ?? []}
+        physical={
+          plan.presentation === "pictorial" ||
+          [
+            "connected-bottom-up-v4",
+            "connected-bottom-up-v5",
+            "connected-bottom-up-v6",
+            "connected-bottom-up-v7",
+            "connected-bottom-up-v8",
+            "connected-bottom-up-v9",
+            "connected-bottom-up-v10",
+            "connected-bottom-up-v11",
+            "connected-bottom-up-v12",
+            "connected-bottom-up-v13",
+            "connected-bottom-up-v14",
+            "connected-bottom-up-v15",
+            "connected-bottom-up-v16",
+          ].includes(plan.generation?.algorithm ?? "")
+        }
+      />
+      {plan.stepMetadata?.[step]?.assembly?.type === "join" && (
+        <div className="button-row">
+          <button
+            onClick={() => {
+              const state = instructionDisplayState(plan, step);
+              renderer.current?.showStep(state.incomingIds ?? []);
+              showInstructionCamera(
+                plan.stepMetadata![step].incomingCamera ??
+                  plan.stepMetadata![step].camera!,
+              );
+            }}
+          >
+            Show completed candidate
+          </button>
+          <button
+            onClick={() => {
+              const state = instructionDisplayState(plan, step);
+              renderer.current?.showStep(
+                state.displayIds,
+                dimPrevious ? state.highlightIds : undefined,
+              );
+              showInstructionCamera(plan.stepMetadata![step].camera!);
+            }}
+          >
+            Show join destination
+          </button>
+        </div>
+      )}
+      {plan.stepMetadata?.[step]?.completedDetail && (
+        <button
+          className="wide"
+          onClick={() => {
+            const detail = plan.stepMetadata![step].completedDetail!;
+            renderer.current?.showStep(
+              detail.occurrenceIds,
+              dimPrevious
+                ? instructionDisplayState(plan, step).highlightIds
+                : undefined,
+            );
+            showInstructionCamera(detail.camera);
+          }}
+        >
+          Show joint detail — access unverified
+        </button>
+      )}
+      {plan.stepMetadata?.[step]?.alternateCamera && (
+        <button
+          className="wide"
+          onClick={() => {
+            if (plan.stepMetadata![step].alternateBeforePlacement) {
+              renderer.current?.showStep(instructionAlternateIds(plan, step));
+            }
+            showInstructionCamera(plan.stepMetadata![step].alternateCamera!);
+          }}
+        >
+          {plan.stepMetadata![step].alternateDetailIds
+            ? "Show receiver detail — access unverified"
+            : plan.stepMetadata![step].alternateBeforePlacement
+              ? "Show receiver before placement"
+              : "Show another view"}
+        </button>
+      )}
+      {plan.stepMetadata?.[step]?.alternateBeforePlacement &&
+        plan.stepMetadata[step].assembly?.type !== "join" &&
+        !plan.stepMetadata[step].contextCamera && (
+          <button
+            className="wide"
+            onClick={() =>
+              restoreInstructionPlacement(plan.stepMetadata![step].camera)
+            }
+          >
+            Show placement
+          </button>
+        )}
+      {plan.stepMetadata?.[step]?.contextCamera && (
+        <div className="button-row">
+          <button
+            onClick={() =>
+              restoreInstructionPlacement(
+                plan.stepMetadata![step].contextCamera,
+              )
+            }
+          >
+            Show whole assembly
+          </button>
+          <button
+            onClick={() =>
+              restoreInstructionPlacement(plan.stepMetadata![step].camera)
+            }
+          >
+            Show placement close-up
+          </button>
+        </div>
+      )}
     </>
   );
   const planJson = plan && (
@@ -4198,6 +4506,7 @@ function Workspace() {
               all={all}
               renderer={renderer.current ?? null}
               onClose={() => setGuideOpen(false)}
+              initialPlanId={currentPlanId}
               onPartsList={() => setPartsListOpen(true)}
             />
           )}
@@ -4903,10 +5212,11 @@ function Workspace() {
                 plan: (
                   <>
                     <p className="muted">
-                      Step by step follows the model file, or builds bottom up.
-                      Layer steps make a plan from your layers; it is not a
-                      checked assembly plan.
+                      Generate a heuristic draft, then review its fit and access
+                      notes. Layer plans follow your layers. Assembly
+                      feasibility remains unverified.
                     </p>
+                    {heuristicSteps}
                     {generateSteps}
                     {instructionEditor}
                     {planJson}

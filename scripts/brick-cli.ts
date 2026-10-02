@@ -27,8 +27,12 @@ import { Editor } from "../src/core/commands";
 import { occurrences } from "../src/core/document";
 import { AppError, ensure, uid, type Scope } from "../src/core/types";
 import { withHeadlessPage } from "./headless";
+import { registerInstructionGeometryFromDisk } from "./instruction-geometry-node";
 import { buildCommand, partsCommand } from "./build-script-cli";
-import { registerFullLibraryFromDisk } from "./full-library-node";
+import {
+  registerFullLibraryFromDisk,
+  registerFullCatalogFromDisk,
+} from "./full-library-node";
 import type { CameraSpec } from "../src/core/types";
 import type { PlayCameraMode, PlayLocomotion } from "../src/play/types";
 import type { PublishFormat } from "../src/instructions/publish";
@@ -39,6 +43,7 @@ export async function main(argv: string[]) {
   // Official parts outside the curated pack resolve from the built complete
   // pack on disk (verified against its lock); no network is used.
   registerFullLibraryFromDisk();
+  if (operation === "instructions") registerFullCatalogFromDisk();
   if (operation === "build") return buildCommand(args);
   if (operation === "parts") return partsCommand(args);
   const flag = (key: string) => {
@@ -54,7 +59,7 @@ export async function main(argv: string[]) {
       (output ? output + ".report.json" : "inventory-report.json");
   if (!operation || operation === "help") {
     console.log(
-      'brick-cli build|parts|validate|health|connectors|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --accept-derived-mappings --allow-partial\nQuery: --request query.json [--output query-result.json]\nConnectors: connectors --input file [--connected JSON-array-of-occurrence-IDs] [--output connectors.json] (verified stud connection groups, uncovered parts, connected assembly)\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --look standard|realistic|photo [--samples N] --backdrop blank|grass|street|beach|night|studio --output image.png\nBuild: build --script build.json --output build.mpd [--render view.png --views iso,front] (brick-cli build --help)\nParts: parts search "cheese slope" [--size 1x2] [--colour red --available] [--json]\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json',
+      'brick-cli build|parts|validate|health|connectors|floors|compare|query|apply|export|export-profile|inventory|instructions|render|play --input file [--output file] [--report file] [--resource-profile desktop|mobile]\nInventory: --format bricklink-wanted-xml --scope all|visible|selection --selection JSON --layer ID --per-layer --condition any|new|used --multiplier N --accept-unknown-colors --accept-derived-mappings --allow-partial\nQuery: --request query.json [--output query-result.json]\nConnectors: connectors --input file [--connected JSON-array-of-occurrence-IDs] [--output connectors.json] (verified stud connection groups, uncovered parts, connected assembly)\nFloors: floors --input file [--output floors.json] (stored floors, parts per floor, room labels, camera floor views and detected floors)\nCompare: --against after.ldr|after.brickproj [--output report.json]\nApply: --commands commands.json\nExport: --format native|ldraw\nInstructions: --method heuristic|layers --format json|pdf|png-zip|html-zip --plan-id ID --max-per-step N --camera camera.json --width 960 --height 720\nRender collection: render-collection --collection exterior/ --width 1280 --height 960 --output views.zip\nRender: --camera camera.json --width 1600 --height 1200 --look standard|realistic|photo [--samples N] --backdrop blank|grass|street|beach|night|studio --output image.png\nBuild: build --script build.json --output build.mpd [--render view.png --views iso,front] (brick-cli build --help)\nParts: parts search "cheese slope" [--size 1x2] [--colour red --available] [--json]\nPlay: --ticks 120 --move-forward 1 --locomotion walk|fly-noclip --camera-mode first-person|third-person --position JSON --yaw 0 --pitch 0 --width 1280 --height 720 --output play.png --report play.json',
     );
     return;
   }
@@ -90,6 +95,8 @@ export async function main(argv: string[]) {
       "allow-partial",
     ],
     instructions: [
+      "method",
+      "dim-previous",
       "format",
       "plan-id",
       "max-per-step",
@@ -144,6 +151,7 @@ export async function main(argv: string[]) {
     "Unknown CLI operation " + operation,
   );
   const switches = new Set([
+      "dim-previous",
       "per-layer",
       "accept-unknown-colors",
       "accept-derived-mappings",
@@ -477,18 +485,40 @@ export async function main(argv: string[]) {
       "Unsupported instruction format",
     );
     ensure(
-      !(flag("plan-id") && flag("max-per-step")),
+      !(flag("plan-id") && (flag("max-per-step") || flag("method"))),
       "INVALID_INPUT",
-      "Choose an existing plan or generate layer steps, not both.",
+      "Choose an existing plan or generate steps, not both.",
+    );
+    const method = flag("method") ?? "layers";
+    if (method === "heuristic") registerInstructionGeometryFromDisk(p);
+    ensure(
+      ["heuristic", "layers"].includes(method),
+      "INVALID_INPUT",
+      "Unknown instruction method",
     );
     const editor = new Editor(p, { profile: resourceProfile });
-    if (flag("max-per-step") || !Object.keys(p.instructionPlans).length)
+    if (
+      flag("method") ||
+      flag("max-per-step") ||
+      !Object.keys(p.instructionPlans).length
+    )
       editor.dispatch({
         schemaVersion: 1,
         commandId: uid(),
         expectedRevision: p.revision,
-        type: "instructions.layers",
-        payload: { maxPerStep: numberFlag("max-per-step", 10, 1, 1000, true) },
+        type:
+          method === "heuristic"
+            ? "instructions.generate"
+            : "instructions.layers",
+        payload: {
+          maxPerStep: numberFlag(
+            "max-per-step",
+            method === "heuristic" ? 6 : 10,
+            1,
+            method === "heuristic" ? 20 : 1000,
+            true,
+          ),
+        },
       });
     const project = editor.project,
       planId = flag("plan-id") ?? Object.keys(project.instructionPlans).at(-1)!;
@@ -518,7 +548,7 @@ export async function main(argv: string[]) {
       : undefined;
     const result = await withHeadlessPage(project, (page) =>
       page.evaluate(
-        async ({ planId, format, width, height, camera }) => {
+        async ({ planId, format, width, height, camera, dimPrevious }) => {
           const a = window.brickEditor!;
           if (camera) await a.camera.set(camera);
           else await a.camera.fit();
@@ -527,13 +557,35 @@ export async function main(argv: string[]) {
             format,
             width,
             height,
+            dimPrevious,
           });
-          return { ...artifact, bytes: Array.from(artifact.bytes) };
+          // Transfer one bounded binary string rather than millions of numeric
+          // protocol entries; a full allowed HTML booklet can otherwise exhaust
+          // Node's heap even though its ZIP respects publication byte budgets.
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onerror = () =>
+              reject(reader.error ?? new Error("Publication transfer failed"));
+            reader.onload = () => {
+              const url = reader.result as string;
+              resolve(url.slice(url.indexOf(",") + 1));
+            };
+            reader.readAsDataURL(new Blob([new Uint8Array(artifact.bytes)]));
+          });
+          return { report: artifact.report, base64 };
         },
-        { planId, format: format as PublishFormat, width, height, camera },
+        {
+          planId,
+          format: format as PublishFormat,
+          width,
+          height,
+          camera,
+          dimPrevious:
+            args.includes("--dim-previous") || method === "heuristic",
+        },
       ),
     );
-    await writeFile(output, new Uint8Array(result.bytes));
+    await writeFile(output, Buffer.from(result.base64, "base64"));
     await writeFile(reportPath, JSON.stringify(result.report, null, 2));
     return;
   }

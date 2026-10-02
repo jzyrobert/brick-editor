@@ -1,6 +1,15 @@
 # Verification — 27 September 2026
 
-The final production build, clean install and test suites pass. These results establish the implemented subset, not completion of the entire specification.
+The original production build, clean install and test suites passed. These results establish the implemented subset, not completion of the entire specification.
+
+Later feature checks are dated below; this opening table records the original release checks.
+
+Instruction evaluation outputs are local artifacts, not committed test results.
+Written reviews retain their historical scopes; see the
+[artifact policy](reports/instruction-generation/README.md#local-artifacts).
+Automated instruction regressions use six small unmodified OMR source fixtures
+and existing sample generators. CI never fetches models or relies on archived
+plans, booklets, screenshots or one-off review scripts.
 
 | Check                      | Result                                                                                                                             |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -412,3 +421,341 @@ Minebench study, design and full measurements: [PERFORMANCE-MINEBENCH.md](PERFOR
 - **Search protocol.** A forced smoke run asked for two searches in one reply, got the results in the same Codex session (`codex exec resume`) and then answered; no tool events. A native Codex tool was tried first: custom (MCP) tools only appear with Codex's code mode, which also exposes a JavaScript runner, and `codex exec` refused the call for want of approval.
 - **Temple rerun** ([sample](samples/japanese-temple-one-shot-search/README.md)): low, medium, high and max accepted (1,918–2,009 parts, 3–5 attempts); xhigh not accepted after 5 attempts (2 overlaps left). Only one colour error in 20 replies; the final scripts name only listed parts. The first xhigh and max runs died on "Selected model is at capacity"; with retries the reruns each waited out one such error.
 - **Tests:** `tests/unit/build-script.test.ts` (colour errors with suggestions, moved parts by number and by `find`), `tests/unit/one-shot-build.test.ts` (part list and search section in the prompt, search requests, agent search results, part knowledge), `tests/unit/build-workspace.test.ts` (part list in workspace prompts).
+
+## Four-round heuristic instruction refinement (1 October 2026)
+
+The feature was rebased onto `main` at `3ac466d`, including its new instruction viewer and renderer. Four sequential implementation/evaluation/independent-critic cycles are recorded in [the refinement report](reports/instruction-generation/refinement-rounds.md); v1 baseline evidence remains separately labelled.
+
+- Production build passes with regenerated schemas/validators, TypeScript and Vite. The existing large-chunk warning remains.
+- Final full unit/integration suite: **877 tests pass in 143 files**, with two workers and unchanged timeout settings. This includes headless CLI checks; the earlier integrated full run also passed all 876 then-present tests.
+- All 47 relevant unit checks pass after the final camera/replay/publication changes. Coverage includes prior-state prerequisites, whole drawing ownership, candidate contraction cycles, actual programme visibility, zero-part joins, source removal/edit flattening and numerical camera projection against three.js.
+- Nineteen relevant browser checks pass across production generation, editing, dimming, actual PNG/HTML/PDF publication, cancellation, follow-along viewer and parts list: the final generation/viewer/publication rerun passes all 14 checks; five editing/dimming checks passed on the earlier integrated build. A provisional join test used the wrong close label, then incorrectly treated capture `visibility: current` as a viewport mask; both test mistakes were corrected. The final test checks actual handle visibility and passes. No timeout settings were loosened.
+- Layout checks cover 1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411. Join buttons, workbench builds and zero-part joins were present; no horizontal page overflow and measured action buttons at least 44 px high. Saved camera framing was repaired after actual phone cropping was found. Representative screenshots and measurements (local artifact).
+- Pinned-library validation passes: 650 files, 224 curated parts, dependency closure, licences, thumbnails and locks/hashes. Formatting and `git diff --check` pass. The additional user report retains SHA-256 `4f9bb6bddd99d93ecd779b1d18440e078805e3973ff96e68a734211c7a39f8a2`.
+- All 12 samples and eight varied OMR sets were evaluated. Seventeen plans preserve source hashes/poses and introduce each source occurrence exactly once; three oversized samples retain their explicit generation refusal. All 17 final plans remained identical after rebase. Final review includes 204 fresh selected actual views across nine samples and seven renderable official sets, covering all eight accepted workbench candidates. No prior main image was reused. The first renderer process ended with signal 15 after Hut; Galaxy's strict colour refusal and Shark's final 17 views were rerun separately, and all sixteen sheets completed.
+- Real v5 CLI publications were opened and inspected: car PDF (24 steps/32 pages), original workbench demonstration PDF (five steps/seven pages, join introduces zero parts), and Police Truck HTML ZIP (34 steps/86 inventory units). The critic independently viewed selected PDF pages and opened HTML steps 2/20, with all 120 image elements loading. Exports and attribution (local artifact).
+
+Software environment: Node 22.14.0, Linux ARM64, Chromium/SwiftShader. These checks establish software replay, source preservation and sampled diagram usability. They do not establish a physical build, safe insertion, detached stability, handling or hobbyist success. The [final critic](reports/instruction-generation/round-4-critic.md) retains cafe/Hut access failures and major reconstruction requirements for Technic, London and Shark. London/Hut still exceed 200 publication steps; Galaxy still refuses strict rendering for unresolved body colours.
+
+## Two additional instruction rounds (1 October 2026)
+
+The separately reviewed v6/v7 refinements and source-preserved results are recorded in [rounds 5–6](reports/instruction-generation/refinement-rounds.md). The round-5 critic inspected 256 selected actual states across sixteen galleries. Round 6 adds 35 fresh Technic states, covering all eighteen axial operations and neighboring states, and retains 236 unchanged reviewed states. Sixteen of seventeen plans compare identically after generation metadata is removed. All seventeen preserve the source hashes and unique introduced occurrence sets. The same three oversized inputs are refused; Galaxy's strict unresolved-colour rendering refusal remains.
+
+The complete local unit/integration run passed 894 of 895 tests across 145 files; the single headless complete-library CLI startup timed out at its unchanged 60-second budget under concurrent rendering. Its isolated rerun passes all three tests in that file. This is full test coverage plus a successful isolated rerun, not a claim of a completely clean first run. The first oversized-output attempt terminated before finishing and supplies no completed test result. Production build/schema generation/type checking pass, with the existing chunk-size warning.
+
+The first production generation/viewer browser run passed eleven checks and caught a real editor regression: its physical inventory tray predicate only recognized v4/v5, so the v6/v7 flexible drawing tray was empty. The predicate now includes v6/v7. The 65 relevant unit tests pass across eleven files. Six final layout sizes pass with actual generated axial notes selected, no horizontal overflow and measured viewer actions at least 44 px high. The first private layout check mistakenly selected imported source STEP instructions; it was corrected to select the generated plan and repeated. Screenshots and measurements (local artifact). Final production rebuild and all **19 relevant browser checks pass** across generation, editing, dimming, viewer, actual PNG/HTML/PDF publication and cancellation. The repaired whole flexible-part tray passes. Pinned-library validation, formatting and diff checks pass.
+
+Actual three-part CLI HTML and PDF examples retain complete coverage, three singleton steps, unknown axis feasibility and assembly validation false. The critic opened the HTML steps and all seven PDF pages. Captions initially split a normal word across a page boundary; word-aware wrapping repairs that, while long captions still create two sparse continuation pages. Concurrent dev-server dependency optimization initially broke PDF lazy loading; the serial warmed retry succeeds. No timeout or output limit was relaxed. Export evidence (local artifact).
+
+These software and sampled diagram checks do not establish fitted insertion, detached support, mechanism usability or a successful physical hobbyist build. Cafe improves 2→3/5; all nine supported samples are editable 3/5 drafts, while Technic/London/Shark remain 1/5. The additional supplied research report remains verbatim.
+
+## Straight CAD approach checker (1 October 2026)
+
+V8 passed an integrated local run of 904 unit/integration/CLI tests, followed by 46 focused tests including a tenth collision test for the final numerical-domain repair. All19 relevant production-browser checks passed; the5 generation/publication cases were repeated after wording changes. Build/schema/typecheck, pinned library validation and formatting pass. Independent review covers270 actual selected states across16 renderable models and retains unchanged usability scores. Final six-size viewer/editor captures show visible CAD badges, no horizontal overflow and44px navigation targets; short landscape trays remain scrollable. Real two-part clear and three-part axial crossing PDF/HTML exports preserve coverage and honest CAD scope. See [evidence and limitations](reports/instruction-generation/collision-checks.md). Final-commit CI is linked from the PR.
+
+## Wheel operation and worker continuation (1 October 2026)
+
+V9 passes51 targeted tests across nine files, covering locked source families, unique rim/tyre/host matching, exact replay/inventory, worker handoff and stale-result rejection, collision/axial retention, structural editing and camera projection. Production build, regenerated schema/typecheck, formatting and pinned-library validation pass. The final production wheel browser regression checks the actual source pin against the actual presentation camera at360×600 and686×411, outside opaque editor/viewer panels. The worker responsiveness test counts frames only while the actual worker is active and verifies cancellation installs no draft.
+
+All17 regenerated plans preserve source hashes and exact unique leaf introductions. Final corpus evidence covers363 selected states:206 freshly rendered wheel-model states and157 verified unchanged v8 rasters with v9 captions across nine unaffected renderable models. The critic independently inspects all31 wheel triples, fourteen final receiving details and78 retained representative states with fresh text. Whole-model scores remain unchanged; this is sampled desk review, not physical builder testing.
+
+Actual final PDF/HTML fixtures are clear-stud(two operations/four PDF pages), axle/bush(three/five) and wheel(four/six). The axial example has no sparse note-continuation pages; required receivers and physical-undetermined CAD crossing outcomes remain on the principal step pages. Wheel labels are complete, and all nine fixture HTML steps load their pictures;360px supporting details are242px including the border. Final six-size editor/viewer captures leave bare pins and wheel placements visible, without horizontal overflow or action targets below44px. Earlier panel-obscured captures, superseded/terminated full test attempts and a concurrent export startup timeout are explicitly excluded from final verification. The final production browser suite passes21 checks across generation, editing, dimming, viewer, publication and cancellation. The real6450 PDF contains49 operations,86 occurrences and62 pages; its former one-word uncertainty continuation pages are removed by keeping full CAD summaries above the diagrams. Ten lower-notes continuation pages remain, including a short source-section reminder. After the final pagination/HTML-order repair, production rebuild, all eight fixture/real-model exports and nine generation/publication/cancellation browser checks pass. Full checks on the pushed commit are recorded in the PR; prior-head CI is not claimed for this code. [Reports and bounded evidence](reports/instruction-generation/wheel-operations.md).
+
+## Three-round MPD authoring pilot (1 October 2026)
+
+The earlier complete domain/integration run passed 933 tests across 150 files.
+After publication/CLI repairs, the complete run passed 933 of 934 tests; the real
+headless CLI test exceeded its unchanged 90-second budget during concurrent
+software-WebGL publication. Its quiet isolated rerun passes both tests in 59.25
+seconds. Subsequent camera and PDF dimension repairs pass all 15 workbench and
+12 publication tests. Final production build, schema generation and type checking
+pass; pinned-library validation and formatting pass. Full branch CI is reported
+separately against its exact head.
+
+Ten relevant production browser checks pass across generation, publication,
+manual native opening, nested replay and Play camera isolation. Focused receiving
+mask, editor restoration and readable-note checks subsequently pass 3, 2 and 3
+tests respectively. Desktop 1440px and phone 360px checks retain actual receiving
+states and restore current placement visibility. The final native phone packet
+contains 48 captures with 16 fully visible action paragraphs; final HTML testing
+covers 16 measured operation/viewport states with no broken images or overflow.
+
+Final review packets contain 193 states, 403 captures and 24 sheets. Roadster is
+fully reviewed; Truck 55, House 33 and Shark 59 are selected risk windows. Source
+invariants pass with 58/86/281/230 unique introductions, unchanged models/assets/
+library/root and no stale generated or insertion claims. Note-only corrections
+retain explicit before/after equivalence, and gallery manifests keep their
+original hashes. All eight full CLI exports succeed. The final PDF text repair
+reuses verified HTML pictures through the production publisher; four compositions
+retain exact full ZIP metadata and 1,338 image resources, independently extracted
+from the PDF. Original browser exports and rejected cache pilots remain distinct.
+
+All four final scores are 3/5. Complete text audits cover 439 action paragraphs
+on their main pages across 491 PDF pages, with explicit multiplication/degree/
+fraction normalization. This supplements selected visual review; no physical
+device or physical builder trial is claimed. Passing source/replay/CAD gates is
+not physical assembly validation. See the [experiment](reports/instruction-generation/agent-workflow.md)
+and [independent critic](reports/instruction-generation/agent-workflow-critic.md).
+
+## Automatic nested vehicle transfer (1 October 2026)
+
+V10 passes100 instruction unit tests across16 files, including six new automatic
+nested/source-isolation/foreign-receiver/dependency-fallback tests. Production
+schema generation, type checking and build pass. Nine relevant generated/authored
+browser checks pass; three focused final checks additionally verify v10 worker
+output and actual bare-rim visibility in the viewer and publication.
+
+All17 supported sources preserve7017 unique occurrences and original leaf-step
+arrays. Five parents add only zero-new-part scene joins; ten programmes/presentation
+remain equal to freshly regenerated v9 and two differ only in tyre receiving-view
+flags. Source records, references, colours, poses, assets and pack locks are
+unchanged, and CAD fingerprints are current. Three oversized samples and Galaxy's
+strict render refusal remain explicit.
+
+Independent review covers205 initial parent states/377 rasters,31 repaired tyre
+states/62 rasters and28 windmill states/49 rasters. The tyre supplement changes
+only31 before-state flags; original gallery hashes remain frozen. Each individual
+capture completed its gates, while two outer batches returned143 after completion
+and are not credited as outer exit0. Eight selected actual PDF pages,20 native
+phone views and eight independently captured exported HTML windows supplement
+this desk review. Four full real CLI exports return0;33/50 operations retain58/86
+source inventory units,41/64 PDF pages and exact PDF/ZIP metadata. No physical
+builder trial, fit/stability certification or whole-corpus acceptance is claimed.
+The [report](reports/instruction-generation/scene-workbenches.md) and
+[critic](reports/instruction-generation/scene-workbenches-critic.md) retain scope,
+source notices, original/final evidence and remaining feasible directions.
+
+## Wheel placement presentation follow-up
+
+The v10 follow-up passes the production build, 113 instruction unit tests across 17
+files and the focused production browser receiving-view/publication check. The
+rotated camera regression covers left/right wheels with receiver axes in world
+X/Y/Z, retaining UNKNOWN checks and exact source output. Independent 17-plan
+comparison, actual all-resolved-wheel galleries and bounded native/publication
+phone evidence are recorded in [the report](reports/instruction-generation/wheel-presentation.md).
+These checks do not establish physical assembly or whole-corpus acceptance.
+
+## Conditional source figure procedures
+
+Automatic v11 preserves supplied lower-body/torso assemblies and adds narrow
+source-reviewed shoulder/wrist/neck ordering and receiving illustrations. The
+fresh 17-case comparison preserves all 7,017 source leaves; four official-set
+programmes change and thirteen programme/presentation objects remain exact.
+Atomic-cycle rejection, every kind/direction of known boundary crossing, actual
+Hut scene fallback, rotated cameras, source-byte binding, before-state detail
+masks and native persistence are covered by the 122 passing instruction unit tests
+in 18 files. Production schemas/type-check/build pass.
+
+Nine existing relevant production browser checks pass. The new actual-Hut
+editor/viewer test additionally verifies the true prior-member detail mask at
+360×600 and 686×411, full-scene restoration and honest UNKNOWN route status. Its
+first pilot used an incorrect restore-button label; corrected final runs pass.
+All 55 final selected figure states have 120 real rasters on eight sheets, binding
+the exact native/source plan. Forty actual native phone captures and full Truck /
+Pizzeria PDF+HTML checks are recorded in the [evidence report](reports/instruction-generation/figure-procedures.md)
+and [independent critic](reports/instruction-generation/figure-procedures-critic.md).
+Final marker-corrected publications reuse byte-identical unaffected diagrams and
+fresh changed-operation diagrams at original dimensions, with exact metadata and
+image hash checks; reused images are not fresh GPU measurements. No physical build
+or real-device trial is claimed. Broader automatic acceptance remains open.
+
+## Source steering, shutter and sign procedures (2 October 2026)
+
+V12 passes129 instruction unit tests across19 files, including seven new source
+hash/namespace/pose/ambiguity, actual receiver, rounding, atomic-cycle/boundary
+and incomplete-budget-scan regressions. Production schemas/type-check/build
+pass. The complete seventeen-plan audit preserves7,017 source introductions,
+exact raw source exports and prior-member receiving replay; fifteen unaffected
+programme/presentation objects remain exact against actual v11 natives.
+Fresh latest-generation equality checks both final affected native plans.
+
+Eight relevant production browser checks pass in the initial ten-check run.
+Two generation/preview/undo assertions still expected v11; they were updated to
+v12 and both focused reruns pass with exit zero at desktop and phone widths.
+The initial outer run returned 143 and is not credited as an exit-zero batch.
+Formatting, pinned-library validation and the archived file/semantic-plan hash
+audit pass.
+
+Two real final gallery commands returnzero: Truck55states/102rasters and Crane
+30selected states/58rasters. This is85states/160rasters/eleven sheets, not a
+complete Crane or seventeen-model visual rereview. Fifty fresh native-phone
+views and eighteen independently captured HTML operation sections check actual
+prior receivers, printed fronts, reachable scroll notes and overflow. Four full
+fresh production CLI publications succeed: Truck55operations/86inventory/76PDF
+pages, Crane82/170/112. Both PDF attachments exactly equal the corresponding ZIP
+metadata; selected actual PDF pages retain complete core procedure notes.
+All exports retain assemblyValidated:false; no physical fit or build trial is
+claimed. [Evidence](reports/instruction-generation/display-procedures.md) and
+[independent critic](reports/instruction-generation/display-procedures-critic.md)
+record bounded acceptance, Truck3/5, Crane2/5 and remaining feasible work.
+
+## Source control and hand-grip procedures (2 October 2026)
+
+V13 passes136 instruction unit tests across20 files after final camera and budget
+repairs, plus production schemas/type-check/build. Seven new tests bind all nine
+source hashes, rotated control/grip landmarks, namespace/pose and unique ownership
+gates, finite handle versus body-origin/infinite-axis matching, later competing
+objects after scan exhaustion, actual model source/native preservation and honest
+UNKNOWN outcomes. Seventeen persisted plans preserve7,017 introductions, exact
+raw exports and source records; fourteen unaffected programmes remain exact to
+committed v12. Fresh generation reproduces all three final affected natives.
+The independent critic separately decodes all seventeen native/source pairs.
+
+Ten relevant production browser checks pass in the initial v13 implementation.
+Forty-two final native phone captures cover all eight new interface operations at
+360×600 and686×411 after the camera/budget repairs, including actual prior masks,
+main-scene restoration and reachable non-collapsing scroll notes. The first
+Pizzeria bare-hand camera pilot is rejected; four actual camera variants are
+rendered and the selected source-axis view exposes the C-shaped receiver.
+Final gallery commands cover94 states/188 rasters/twelve sheets: all57 Truck,
+twenty selected Crane and seventeen selected Pizzeria states. Retained Truck/Crane
+captures bind exact final plans; the repaired Pizzeria packet is fresh.
+
+Six full production CLI exports returnzero: Truck57operations/86inventory/77PDF
+pages, Crane85/170/115 and Pizzeria96/166/137. PDF attachments equal ZIP metadata;
+final native cameras, receiver masks, targets, checks and core notes survive.
+The initial Pizzeria PDF process returns143 without an output and is recorded as
+rejected; its retry succeeds after confirmed termination. The critic independently checks eight critical PDF pages, two actual Pizzeria
+legend continuation pages and sixteen actual HTML phone states. All image sets
+load with no horizontal overflow; sparse legend pages remain an editorial
+limitation. This is bounded desk review, not a full corpus visual rereview or
+physical builder trial. [Evidence](reports/instruction-generation/interface-procedures.md)
+and [critic](reports/instruction-generation/interface-procedures-critic.md) retain
+scope, exact hashes and remaining work. Broader automatic acceptance remains open.
+
+## Measured pictorial PDF layout (2 October 2026)
+
+147 instruction tests across 21 files and production schemas/type-check/build pass.
+New regressions cover complete accessory prose, atomic marker qualifiers,
+arbitrary long file-local titles, actual printed glyph widths, retained picture
+scale after header rewrap and absent/one/two/three-view regions. The original
+publication/cancellation browser checks pass. The new actual pictorial PDF join
+check initially assumes four images, but its origin-only fixture has only main
+and incoming diagrams; the corrected focused rerun passes exit 0. The failed
+expectation is preserved in the execution evidence, not hidden as a product fix.
+
+All five actual production PDF compositions terminate successfully with exact source/native/
+prepared metadata and original PNG bindings. Three official PDFs 329→249 pages retain
+238 ordered full-text/font checks and 787 decoded image/alpha/drawn-size checks.
+Independent selected visual scope is 42 final official main pages. Roadster and
+House preserve 165 complete operations and 569 decoded source-capture RGB/alpha draws.
+Roadster 35 pages has no continuations; House 135 pages retains all 132 complete operations on their main pages. Strict page bounds
+and text/image separation pass. House's complete original ZIP was recovered after
+exit 143; its retry also 143 with no output. Neither is credited as a successful
+fresh CLI command. Full native/source/programme/camera/picture gates and successful
+PDF composition validate the recovered artifact separately.
+
+All 17 accepted native byte hashes remain exact, binding 7,017 source introductions;
+this is publisher-only work and generation stays v13. No physical trial, new
+primary-manual comparison or whole-corpus visual rereview is claimed. Rejected
+pilot metrics, corrected audit-harness assumptions, exact execution/file hashes
+and bounded actual pages are in the [report](reports/instruction-generation/print-layout.md)
+and archive (local artifact). Broader
+assembly-guidance acceptance remains open.
+
+## Static source workbenches and panel decoration verification (2 October 2026)
+
+V14 keeps all17 source models/assets/library/root/raw exports and7,017 expanded
+reference/colour/pose identities exact. Every leaf is introduced once;15 complete
+programme/presentation objects match accepted v13 after generation reports are
+removed. Independent persisted-native replay checks both actual prior panel
+receivers and isolated bench/main-scene membership. All133 recorded source-section
+edge sets retain their earlier adjacent/support/host/access prerequisites; only
+four finite source decoration access edges are added. Planning connectivity
+includes estimates and does not establish physical attachment.
+
+All162 instruction units/22files pass, including finite seam/plane/orientation,
+ambiguity/work-exhaustion and boundary/prerequisite/deferral cases. The final
+618-module post-rebase production build and pinned library validation pass. Five focused
+browser checks pass: actual Crane static bench/two-panel receiver/completed
+candidate masks, existing figure and wheel receiving-view regressions, and
+generation/preview/undo at1440px and360px. Final native phone evidence covers100
+actual screenshots with exact final plan bindings and independent PNG viewport
+dimensions. Note-box height is recorded separately; metadata correction did not
+alter the screenshots. Whole-model ratings and physical-build limitations remain
+unchanged. See the [report](reports/instruction-generation/static-workbenches.md)
+and bounded archive (local artifact).
+
+## Staged Crane mechanism verification (2 October 2026)
+
+V15 preserves all17 exact source/reference/colour/pose rows and7,017 unique
+introductions. Every old source-section support/host/access/adjacent edge is retained;
+all final support/access introduction orders and current CAD fingerprints pass.
+Sixteen full programmes equal v14 after generation metadata is removed. Crane's
+held five-member child introduces each member once and mounts with zero new parts;
+all six original receiving supports are actually prior on the parent bench.
+
+Nine source/mechanism regressions cover actual twelve-source hashes, material
+hinge endpoints, unique complete signed finite associations, transform ambiguity
+and budgets, outside contraction cycles, actual pin-lip crossings, native/replay
+ownership, completed/bare compositor masks and the auxiliary64MP preflight boundary.
+All171 instruction units across23files pass. The619-module production build and
+pinned library validation pass. Six relevant production browser checks pass,
+including actual worker generation, editor and phone completed→bare→restore→next
+states, unchanged static/figure/wheel view controls and desktop/phone preview/undo.
+
+The critic inspected all93 original gallery states/181rasters. Per-operation
+prepared capture recipes bind92 of those states to the final native; the final
+57–59 supplement has3states/8freshrasters, superseding old58. Six native viewports
+yield90screenshots,22restored-main equality checks and28next-state assertions,
+all bound to the final source/native/plan. This records direct interaction checks
+and independently reviewed samples, rather than independent driving of every UI
+state. Long captions and trays require scrolling.
+
+Full actual HTML CLI export exits0; the production PDF composes byte-identical
+validated HTML pictures, with exact prepared/report metadata gates. Independent
+extraction checks all93 action/CAD paragraphs,170inventory,99pages and307RGB/alpha
+draws, including the actual completed hinge inset and trays. PDF attached JSON
+equals the full HTML packet. Twenty-eight actual exported HTML phone states pass
+loaded-picture and overflow checks; sixteen actual PDF pages are rendered for
+review. All core actions stay complete on main pages;58/65 still have sparse
+legend continuation pages. The unchanged-source terminal-pose diagnostic uses
+1,792 bounded triangle tests without contact allowances:54/56 transverse outer-arm
+intersection pairs with the two controls, none with the inner arm. It is separate
+from runtime CAD metadata and does not certify solids or physical fit.
+
+See the [report](reports/instruction-generation/mechanism-procedures.md),
+[critic](reports/instruction-generation/mechanism-procedures-critic.md) and
+archive (local artifact) for exact
+source/picture bindings, rejected camera pilots, execution provenance and limits.
+Whole Crane2/5 and broader corpus acceptance remain unchanged; no physical build.
+
+## Source-guided articulation and hybrid refinement (2 October 2026)
+
+Final source/frame/geometry/scheduler, worker, replay and hybrid regression checks
+pass:243 instruction tests across30files, production schemas/typecheck and
+623-module build, pinned library validation and seven focused production browser
+checks. The browser run covers source jaw details, retained static/Crane/figure/
+wheel procedures and generation/preview/undo at1440/360px. Final complete source
+audits retain7,017 exact introductions across17models and all prior graph sets;
+16programme objects remain exact excluding generation metadata. Independent
+nonempty prerequisite probes cover actual availability and contraction refusal.
+
+The complete v16 Shark139-state review covers233rasters/17sheets; the third
+capture command returns143 after complete verified artifacts, not credited as
+command success. Final native tests have106records/72screenshots at six required
+sizes. Full HTML CLI returnszero; exact-raster production PDF composition checks
+all139 notes, complete embedded metadata and424image rectangles inside145pages.
+The initial clipped fourth support picture is rejected and preserved separately.
+
+The four-case hybrid trial preserves655source occurrences, actual source aliases,
+raw poses and every retained hard prerequisite. Roadster full33/40paired states,
+Truck32paired windows, House17baseline/final32stable-action selected windows and
+Shark complete139baseline/final38selected actions are independently reviewed.
+Caption/frame repairs have fresh pictures and explicit stable-key equivalence for
+unaffected earlier packets. A deliberately future receiver refuses without output.
+All four final full HTML CLI exports returnzero; production PDF composition reuses
+exact accepted HTML rasters and preserves all374operations/refinement provenance
+over388pages with1,181 image draws. Every image rectangle and complete action
+notes are audited. Actual final native phone cases explicitly open the agent plan
+by default, check main/prior/detail/incoming/restored/next masks and reachable
+notes at360×600/686×411. Initial House139export child reportszero but outerwrapper
+returns143; it is a recovered, superseded pilot, not a successful final command.
+The first Truck wrapper likewise returns143 after complete child output; a direct
+CLI retry returnszero with every ZIP entry byte-identical, separately recorded.
+
+The [source-guided report](reports/instruction-generation/source-guided-articulation.md)
+and [hybrid trial](reports/instruction-generation/hybrid-workflow.md) link
+independent audits, execution records, notices and actual selected publication
+views. Whole hybrid scores remain3/3/3/2. These are bounded desk checks with no
+physical build or whole-corpus acceptance claim.

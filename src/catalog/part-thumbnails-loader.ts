@@ -5,6 +5,7 @@
  * in a Cache Storage cache named after the pack, so thumbnails seen once also
  * show offline. Sheets are fetched only when a card asks for them.
  */
+import { catalog } from "./catalog";
 import { sha256 } from "../core/hash";
 import {
   PART_THUMBNAILS_FORMAT,
@@ -193,4 +194,88 @@ export function partThumbnail(id: string, visible: boolean): PartThumbnail {
     printed: at.printed,
     ...style,
   };
+}
+
+/** Export one packaged curated thumbnail or verified atlas cell for an instruction tray. Prints retain their
+ * fixed colours. A missing rendering stays explicit; never substitute a part. */
+export async function partThumbnailPng(
+  id: string,
+  hex: string,
+  transparent = false,
+): Promise<Uint8Array | undefined> {
+  if (
+    typeof document === "undefined" ||
+    typeof createImageBitmap === "undefined"
+  )
+    return;
+  try {
+    const curated = catalog[id];
+    let x = 0,
+      y = 0,
+      cell = 80;
+    let urls: string[];
+    if (curated?.thumbnail) {
+      const url = new URL(
+        import.meta.env.BASE_URL + curated.thumbnail,
+        location.href,
+      ).href;
+      urls = [url, url];
+    } else {
+      await loadPartThumbnailIndex();
+      const at = state!.where.get(id);
+      if (!at) return;
+      await loadSheet(at.sheet);
+      const loaded = sheets.get(at.sheet);
+      if (!loaded) return;
+      cell = state!.index.cell;
+      x = (at.cell % state!.index.columns) * cell;
+      y = Math.floor(at.cell / state!.index.columns) * cell;
+      urls = [
+        loaded.image,
+        at.printed && loaded.mask ? loaded.mask : loaded.image,
+      ];
+    }
+    const bitmaps = await Promise.all(
+      urls.map(async (url) => {
+        // Blob URLs are permitted for images by CSP, but not for fetch.
+        const image = new Image();
+        await new Promise<void>((resolve, reject) => {
+          image.onload = () => resolve();
+          image.onerror = () => reject(new Error("Thumbnail unavailable"));
+          image.src = url;
+        });
+        return createImageBitmap(image);
+      }),
+    );
+    if (curated?.thumbnail) cell = bitmaps[0].width;
+    try {
+      const canvas = document.createElement("canvas"),
+        tint = document.createElement("canvas");
+      canvas.width = canvas.height = tint.width = tint.height = cell;
+      const c = canvas.getContext("2d")!,
+        t = tint.getContext("2d")!;
+      c.drawImage(bitmaps[0], x, y, cell, cell, 0, 0, cell, cell);
+      t.drawImage(bitmaps[1], x, y, cell, cell, 0, 0, cell, cell);
+      t.globalCompositeOperation = "source-in";
+      t.fillStyle = hex;
+      t.fillRect(0, 0, cell, cell);
+      c.globalCompositeOperation = "multiply";
+      c.drawImage(tint, 0, 0);
+      c.globalCompositeOperation = "destination-in";
+      c.drawImage(bitmaps[0], x, y, cell, cell, 0, 0, cell, cell);
+      if (transparent) {
+        c.globalCompositeOperation = "destination-in";
+        c.fillStyle = "rgba(0,0,0,0.55)";
+        c.fillRect(0, 0, cell, cell);
+      }
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/png"),
+      );
+      return blob ? new Uint8Array(await blob.arrayBuffer()) : undefined;
+    } finally {
+      bitmaps.forEach((b) => b.close());
+    }
+  } catch {
+    return;
+  }
 }

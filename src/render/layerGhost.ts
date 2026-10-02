@@ -13,7 +13,10 @@ import type {
  * treated twice draws a clone of the first treatment's clone.
  */
 export class LayerGhost implements Treatment {
-  constructor(private readonly opacity = 0.18) {}
+  constructor(
+    private readonly opacity = 0.18,
+    private readonly pale = false,
+  ) {}
   private treated: OccurrenceHandle[] = [];
   private clones = new Map<THREE.Material, THREE.Material>();
   /** Whether any occurrence is currently treated. */
@@ -28,9 +31,23 @@ export class LayerGhost implements Treatment {
     let copy = this.clones.get(material);
     if (!copy) {
       copy = material.clone();
-      copy.transparent = true;
-      copy.opacity = material.opacity * this.opacity;
-      copy.depthWrite = false;
+      copy.transparent = !this.pale;
+      copy.opacity = this.pale ? 1 : material.opacity * this.opacity;
+      copy.depthWrite = this.pale;
+      if (this.pale) {
+        const styled = copy as THREE.Material & {
+          color?: THREE.Color;
+          map?: THREE.Texture | null;
+          uniforms?: Record<string, { value: unknown }>;
+        };
+        const edge =
+          material.type.includes("Line") || material.type === "ShaderMaterial";
+        const color = new THREE.Color(edge ? "#727b84" : "#d1d5d9");
+        styled.color?.copy(color);
+        if (styled.uniforms?.diffuse?.value instanceof THREE.Color)
+          styled.uniforms.diffuse.value.copy(color);
+        if ("map" in styled) styled.map = null;
+      }
       // Batches keep the base material's buckets and only refill them.
       registerTreatment(copy, material);
       this.clones.set(material, copy);

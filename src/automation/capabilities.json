@@ -1,7 +1,7 @@
 {
   "apiVersion": "1.0",
   "release": "development",
-  "milestone": "Core editor with selected M2–M5 features; remaining acceptance gates documented",
+  "milestone": "Core editor with selected M2\u2013M5 features; remaining acceptance gates documented",
   "features": {
     "ldraw": {
       "parsed": [
@@ -99,7 +99,7 @@
         "unmapped",
         "custom"
       ],
-      "resolutionList": "inventory.preview returns resolution rows (part × colour: tier, mapping, candidates, colour existence, status, blocking codes); decisions via the inventory.override command with { part, decision } (choose a candidate, accept or replace a mapping, mark checked, accept colours, exclude), undoable and saved in native projects",
+      "resolutionList": "inventory.preview returns resolution rows (part \u00d7 colour: tier, mapping, candidates, colour existence, status, blocking codes); decisions via the inventory.override command with { part, decision } (choose a candidate, accept or replace a mapping, mark checked, accept colours, exclude), undoable and saved in native projects",
       "libraryUpdate": "library.updateStatus() previews which parts change when a project pinned to an older complete library is re-pinned; library.update({ expectedRevision, checkpoint? }) applies the undoable library.update command and records metadata.previousLocks"
     },
     "render": {
@@ -133,7 +133,62 @@
       "stepNotes": true,
       "stepCameras": true,
       "dimPreviousParts": true,
-      "importedStepBudgetPolicy": "Preserve source STEP/ROTSTEP records and defer derived instruction plans when expansion exceeds policy"
+      "importedStepBudgetPolicy": "Preserve source STEP/ROTSTEP records and defer derived instruction plans when expansion exceeds policy",
+      "heuristicPlans": true,
+      "heuristicAlgorithm": "connected-bottom-up-v16",
+      "cancellableUiGeneration": true,
+      "generationExecution": "UI dedicated worker; synchronous automation generate command",
+      "wheelWorkbenchCandidates": "five pinned rim/tyre families; unique source-origin pairing and typed receiving feature; fit, deformation and fastening unknown",
+      "sceneWorkbenchCandidates": "compact isolated wheel-bearing source sections; nested wheel receivers assembled on their actual parent bench; source hierarchy does not establish physical independence, detached support or safe handling",
+      "tyreReceivingViews": "actual preceding bare-rim state; flexible fitting and fastening remain unverified",
+      "wheelPlacementViews": "completed-wheel main views face the reviewed outward receiver axis; actual bare pin/axle views and named-host notes work without live diagram letters; camera direction does not prescribe an installation path",
+      "receivingBeforePlacementView": true,
+      "insertionChecks": {
+        "scope": "cad-surface-translation",
+        "outcomes": ["clear", "blocked", "unknown"],
+        "fixedOrientation": true,
+        "continuous": true,
+        "physicalAssemblyValidated": false,
+        "collisionTriangleTests": 1000000,
+        "sourceCharacterBudget": 20000000,
+        "broadPhaseQueries": 2000000
+      },
+      "heuristicLimits": {
+        "sourceOccurrences": 5000,
+        "planningUnitsPerBatch": 20,
+        "operations": 2000
+      },
+      "pictorialPartTrays": true,
+      "pictorialPdfLayout": "measured blocks, complete wrapped lot labels and atomic page-sized legends; source picture/font sizes preserved; explicit long-content continuations",
+      "localPlacementAndContextViews": true,
+      "priorPartAppearance": "opaque pale surfaces with depth",
+      "generatedDrawingOwnership": "explicit LDCad/LSynth metadata; physical identity unverified",
+      "candidateWorkbenchProgramme": "verified internal contact connectivity; external source prerequisites ordered; fit and handling unknown",
+      "candidateOperations": ["build", "join"],
+      "zeroNewPartJoins": true,
+      "destinationMarkers": "approximate source body locations and explicit path endpoints in published diagrams",
+      "physicalFlipInstructions": false,
+      "insertionPathValidation": false,
+      "authoredPictorialPlans": true,
+      "authoredWorkbenchProgramme": "nested child/parent workbenches and root scene placements; inventory/replay validated, physical fit/handling unknown",
+      "authoredWorkbenchLimits": {
+        "nestingDepth": 16,
+        "totalMemberships": 200000
+      },
+      "agentWorkbench": "npm run instructions:workbench -- prepare|inspect|apply|review; local pinned sources, whole-plan audits and selected real diagrams",
+      "figureDisplayProcedures": "pinned narrow source families; complete ownership and unique shoulder/wrist/neck associations; atomic precedence; conditional intact supplied torso/lower body; all fitting unknown",
+      "figureWorkbenchCandidates": "complete bounded source figures with no known crossing relationships; zero-new-part scene placement; physical independence and stance unverified",
+      "sourceDisplayProcedures": "pinned sign, shutter and complete steering families; unique actual receiver landmarks; singleton actions, atomic ordering and isolated sign scene benches; physical fit, snapping and support remain unknown",
+      "displayProcedureWorkBudget": 200000,
+      "sourceInterfaceProcedures": "pinned control levers and cup/radio finite handles; unique same-parent source associations, disclosed source offsets, prior-member receiver views and conditional supplied assemblies; all fitting unknown",
+      "interfaceProcedureWorkBudget": 200000,
+      "receiverDetailViews": "optional prior receiving-member illustration; surrounding scene explicitly omitted and access unverified; never changes CAD obstacles or programme ownership",
+      "mechanismWorkbenchCandidates": "finite pinned 3315/3597 hinge landmarks and five-part 2350ap01/3673/3700 held joint; preserve original prerequisites and reject outside contraction cycles; snap fit, mounting and support remain unverified",
+      "completedJointDetail": "at most 64 unique available members including a current addition; editor/viewer and 240x180 publication/review illustration omit surrounding parts with explicit fit/access uncertainty; no detached module or physical turn inferred",
+      "sourceGuidedCandidates": "pinned finite 48336 handle / paired 60470b clip association; complete source section and contiguous receiving run; authored hierarchy/STEP ordering prior, raw poses and strict graph unchanged",
+      "sourceGuidanceOption": "instructions.generate({useSourceSteps:false}) disables authored source ordering; default enabled; fit/stability/handling remain unverified",
+      "customPartDisplayBounds": "bounded project-first complete source closure; missing, ambiguous, unsupported or truncated geometry stays unknown; bounds do not infer connectors",
+      "agentRefinement": "offline maintainer CLI; pinned deterministic baseline, source aliases, retained hard prerequisites and reviewed procedures, explicit agent provenance and context-bound retained checks"
     },
     "play": {
       "available": true,
@@ -212,7 +267,7 @@
       },
       "seatedVehicles": {
         "profile": "brick-figure-open-seat-v1",
-        "authoring": "Explicit chassis-local pelvis/access/approach and 1–4 ordered standing exits; metadata review and undoable save",
+        "authoring": "Explicit chassis-local pelvis/access/approach and 1\u20134 ordered standing exits; metadata review and undoable save",
         "body": "Independent compound boxes enclosing original rigid straight-leg seated visual; no mesh-derived physics",
         "entry": "Reach, access ray, supported approach, wheel-envelope clearance and swept raised transfer; refuse before mutation",
         "driving": "Conservative vehicle and rider sweeps; retain accepted poses when blocked",
@@ -347,7 +402,7 @@
         "Place tool",
         "Move and rotate handles",
         "exact move and rotation",
-        "Inspector Rotate 90° and 1 plate up/down"
+        "Inspector Rotate 90\u00b0 and 1 plate up/down"
       ],
       "notEnforced": [
         "dispatch commands and transactions",

@@ -1,3 +1,4 @@
+import { flattenInstructionProgramme } from "./programme";
 import {
   ensure,
   uid,
@@ -22,7 +23,9 @@ export function instructionCoverage(project: Project, plan: InstructionPlan) {
     total: ids.length,
     introduced: ids.filter((id) => seen.has(id)).length,
     missing: ids.filter((id) => !seen.has(id)),
-    emptySteps: plan.steps.filter((s) => !s.length).length,
+    emptySteps: plan.steps.filter(
+      (s, i) => !s.length && plan.stepMetadata?.[i]?.assembly?.type !== "join",
+    ).length,
   };
 }
 export function validateInstructionCamera(c: CameraSpec) {
@@ -50,7 +53,7 @@ export function validateInstructionCamera(c: CameraSpec) {
     "Orthographic step camera needs a span.",
   );
 }
-export function editInstructions(
+function editInstructionsInner(
   p: Project,
   type: string,
   v: Record<string, any>,
@@ -120,6 +123,17 @@ export function editInstructions(
   const i = index(v.index);
   if (type === "instructions.step.update") {
     if (v.notes !== undefined) meta[i].notes = v.notes;
+    if (v.camera !== undefined) {
+      delete meta[i].contextCamera;
+      delete meta[i].alternateCamera;
+      delete meta[i].alternateBeforePlacement;
+      delete meta[i].alternateDetailIds;
+      delete meta[i].incomingCamera;
+      delete meta[i].completedDetail;
+      delete meta[i].targets;
+      delete meta[i].axisReference;
+      delete meta[i].insertionChecks;
+    }
     if (v.camera === null) delete meta[i].camera;
     else if (v.camera) {
       validateInstructionCamera(v.camera);
@@ -185,4 +199,26 @@ export function editInstructions(
   if (notes) meta[i].notes = notes;
   plan.steps.splice(i + 1, 1);
   meta.splice(i + 1, 1);
+}
+
+export function editInstructions(
+  p: Project,
+  type: string,
+  v: Record<string, any>,
+) {
+  editInstructionsInner(p, type, v);
+  if (
+    type.startsWith("instructions.step.") &&
+    (type !== "instructions.step.update" || Object.hasOwn(v, "camera"))
+  ) {
+    const plan = p.instructionPlans[v.planId];
+    if (plan) delete plan.refinement;
+  }
+  if (
+    type.startsWith("instructions.step.") &&
+    type !== "instructions.step.update"
+  ) {
+    const plan = p.instructionPlans[v.planId];
+    if (plan) flattenInstructionProgramme(plan);
+  }
 }

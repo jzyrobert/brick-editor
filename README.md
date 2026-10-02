@@ -72,3 +72,11 @@ The app ships pinned, hash-verified packs built from the official LDraw library:
 | [DESIGN.md](DESIGN.md), [PRODUCT.md](PRODUCT.md)                                                                                                             | UI design system and product brief                                                                                                                                   |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)                                                                                                                     | Cloudflare Pages hosting and CI                                                                                                                                      |
 | [docs/UX-AUDIT.md](docs/UX-AUDIT.md), [docs/CONFORMANCE-AUDIT.md](docs/CONFORMANCE-AUDIT.md), [docs/PLAY-ACCEPTANCE-AUDIT.md](docs/PLAY-ACCEPTANCE-AUDIT.md) | Dated review records                                                                                                                                                 |
+
+Editable heuristic instruction drafts, research and evaluation: [INSTRUCTION-GENERATION](docs/INSTRUCTION-GENERATION.md).
+
+MPD instruction authoring for agents: [workbench tools](docs/AGENT-INSTRUCTIONS.md)
+and [agent prompt](prompts/instruction-agent.md).
+
+Refine a fresh deterministic draft with an agent: [hybrid tools](docs/HYBRID-INSTRUCTIONS.md)
+and [hybrid prompt](prompts/instruction-hybrid-agent.md).

@@ -1,3 +1,9 @@
+import { insertionBadge } from "../instructions/motion";
+import {
+  instructionDisplayState,
+  instructionAlternateIds,
+} from "../instructions/programme";
+import { fitInstructionView } from "../instructions/view-camera";
 import {
   useCallback,
   useEffect,
@@ -7,7 +13,7 @@ import {
   useState,
 } from "react";
 import { partSpec } from "../catalog/extended";
-import type { Occurrence, Project } from "../core/types";
+import type { CameraSpec, Occurrence, Project } from "../core/types";
 import {
   deriveGuide,
   laterParts,
@@ -48,12 +54,14 @@ export function InstructionViewer({
   renderer,
   onClose,
   onPartsList,
+  initialPlanId,
 }: {
   project: Project;
   all: readonly Occurrence[];
   renderer: SceneAdapter | null;
   onClose: () => void;
   onPartsList: () => void;
+  initialPlanId?: string;
 }) {
   const sources = useMemo<Source[]>(() => {
     const list: Source[] = [{ key: "model", label: "" }];
@@ -62,7 +70,11 @@ export function InstructionViewer({
         list.push({ key: "plan:" + id, label: plan.name });
     return list;
   }, [project.instructionPlans]);
-  const [sourceKey, setSourceKey] = useState("model");
+  const [sourceKey, setSourceKey] = useState(
+    initialPlanId && initialPlanId !== "imported"
+      ? "plan:" + initialPlanId
+      : "model",
+  );
   const source = sources.find((s) => s.key === sourceKey) ?? sources[0];
   const guide: Guide = useMemo(() => {
     const plan = source.key.startsWith("plan:")
@@ -75,7 +87,7 @@ export function InstructionViewer({
   const [index, setIndexState] = useState(() => {
     try {
       const saved = Number(
-        localStorage.getItem(positionKey(project.id, "model")),
+        localStorage.getItem(positionKey(project.id, source.key)),
       );
       return Number.isInteger(saved) && saved > 0 ? saved : 0;
     } catch {
@@ -113,12 +125,57 @@ export function InstructionViewer({
   const top = useRef<HTMLDivElement>(null);
   const current: GuideStep | undefined = guide.steps[step];
   const sequence = current ? guide.sequences[current.sequence] : undefined;
+  const explicitCamera = useRef<CameraSpec | undefined>(undefined);
+  const frameExplicitCamera = () => {
+    const r = renderer,
+      camera = explicitCamera.current;
+    if (!r || !camera) return;
+    const canvas = r.renderer.domElement.getBoundingClientRect(),
+      box = panel.current?.getBoundingClientRect(),
+      bar = top.current?.getBoundingClientRect(),
+      insets = { top: 0, right: 0, bottom: 0, left: 0 };
+    if (box) {
+      if (
+        box.width < canvas.width * 0.5 &&
+        box.left > canvas.left + canvas.width * 0.5
+      )
+        insets.right = Math.max(0, canvas.right - box.left);
+      else insets.bottom = Math.max(0, canvas.bottom - box.top);
+    }
+    if (bar) insets.top = Math.max(0, bar.bottom - canvas.top);
+    r.setCamera(fitInstructionView(camera, canvas, insets));
+  };
 
   // Drive the renderer: this step's view, tray, fly-in and framing.
   const scrubTimer = useRef(0);
   useEffect(() => {
     const r = renderer;
     if (!r || !current) return;
+    if (guide.explicitPlan) {
+      const state = instructionDisplayState(
+        guide.explicitPlan,
+        current.planStep!,
+      );
+      r.showGuideStep(null);
+      r.showStep(state.displayIds, state.highlightIds);
+      explicitCamera.current =
+        guide.explicitPlan.stepMetadata?.[current.planStep!]?.camera;
+      let cancelled = false;
+      const frame = () => {
+        if (!cancelled) frameExplicitCamera();
+      };
+      const observer = new ResizeObserver(frame);
+      observer.observe(r.renderer.domElement);
+      if (panel.current) observer.observe(panel.current);
+      void r
+        .ready()
+        .then(frame)
+        .catch(() => undefined);
+      return () => {
+        cancelled = true;
+        observer.disconnect();
+      };
+    }
     const apply = () => {
       const insets = { top: 0, right: 0, bottom: 0, left: 0 };
       const canvas = r.renderer.domElement.getBoundingClientRect();
@@ -163,7 +220,13 @@ export function InstructionViewer({
     return () => window.clearTimeout(scrubTimer.current);
   }, [renderer, guide, step, current, options, all]);
   // Leaving the viewer restores the editor's view.
-  useEffect(() => () => void renderer?.showGuideStep(null), [renderer]);
+  useEffect(
+    () => () => {
+      renderer?.showGuideStep(null);
+      if (guide.explicitPlan) renderer?.showStep(null);
+    },
+    [renderer, guide.explicitPlan],
+  );
 
   const next = useCallback(() => {
     if (step >= total - 1) {
@@ -360,32 +423,169 @@ export function InstructionViewer({
             {sources.length === 1 && (
               <p className="guide-note">{sourceLabel(guide)}</p>
             )}
-            <Toggle
-              label="Show later parts faintly"
-              on={options.later}
-              set={(later) => setOptions((o) => ({ ...o, later }))}
-            />
+            {!guide.explicitPlan && (
+              <Toggle
+                label="Show later parts faintly"
+                on={options.later}
+                set={(later) => setOptions((o) => ({ ...o, later }))}
+              />
+            )}
             <Toggle
               label="Parts tray beside the model"
               on={options.tray}
               set={(tray) => setOptions((o) => ({ ...o, tray }))}
             />
-            <Toggle
-              label="Animate new parts"
-              on={options.animate}
-              set={(animate) => setOptions((o) => ({ ...o, animate }))}
-            />
+            {!guide.explicitPlan && (
+              <Toggle
+                label="Animate new parts"
+                on={options.animate}
+                set={(animate) => setOptions((o) => ({ ...o, animate }))}
+              />
+            )}
           </div>
         )}
       </div>
-      <div className="guide-panel" ref={panel}>
+      <div
+        className={
+          "guide-panel" + (guide.explicitPlan ? " guide-explicit" : "")
+        }
+        ref={panel}
+      >
         <div className="guide-need">
+          {guide.explicitPlan && (
+            <>
+              <p className="guide-note">
+                {
+                  instructionDisplayState(
+                    guide.explicitPlan,
+                    current!.planStep!,
+                  ).operationLabel
+                }
+              </p>
+              {(guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                ?.alternateBeforePlacement ||
+                guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                  ?.incomingCamera ||
+                guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                  ?.completedDetail) && (
+                <details>
+                  <summary>Placement views</summary>
+                  {guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                    ?.completedDetail && (
+                    <button
+                      className="wide"
+                      onClick={() => {
+                        const detail =
+                          guide.explicitPlan!.stepMetadata![current!.planStep!]
+                            .completedDetail!;
+                        renderer?.showStep(
+                          detail.occurrenceIds,
+                          instructionDisplayState(
+                            guide.explicitPlan!,
+                            current!.planStep!,
+                          ).highlightIds,
+                        );
+                        explicitCamera.current = detail.camera;
+                        frameExplicitCamera();
+                      }}
+                    >
+                      Show joint detail — access unverified
+                    </button>
+                  )}
+                  {guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                    ?.incomingCamera && (
+                    <button
+                      className="wide"
+                      onClick={() => {
+                        const meta =
+                            guide.explicitPlan!.stepMetadata![
+                              current!.planStep!
+                            ],
+                          state = instructionDisplayState(
+                            guide.explicitPlan!,
+                            current!.planStep!,
+                          );
+                        renderer?.showStep(state.incomingIds ?? []);
+                        explicitCamera.current = meta.incomingCamera;
+                        frameExplicitCamera();
+                      }}
+                    >
+                      Show completed candidate
+                    </button>
+                  )}
+                  {guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                    ?.alternateBeforePlacement && (
+                    <button
+                      className="wide"
+                      onClick={() => {
+                        const meta =
+                            guide.explicitPlan!.stepMetadata![
+                              current!.planStep!
+                            ],
+                          receiving = instructionAlternateIds(
+                            guide.explicitPlan!,
+                            current!.planStep!,
+                          );
+                        renderer?.showStep(receiving);
+                        explicitCamera.current = meta.alternateCamera;
+                        frameExplicitCamera();
+                      }}
+                    >
+                      {guide.explicitPlan.stepMetadata![current!.planStep!]
+                        .alternateDetailIds
+                        ? "Show receiver detail — access unverified"
+                        : "Show receiver before placement"}
+                    </button>
+                  )}
+                  <button
+                    className="wide"
+                    onClick={() => {
+                      const meta =
+                          guide.explicitPlan!.stepMetadata![current!.planStep!],
+                        state = instructionDisplayState(
+                          guide.explicitPlan!,
+                          current!.planStep!,
+                        );
+                      renderer?.showStep(state.displayIds, state.highlightIds);
+                      explicitCamera.current = meta.camera;
+                      frameExplicitCamera();
+                    }}
+                  >
+                    {guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                      ?.assembly?.type === "join" &&
+                    guide.explicitPlan.modules?.[
+                      guide.explicitPlan.stepMetadata[current!.planStep!]
+                        .assembly!.moduleId
+                    ]?.purpose === "wheel"
+                      ? "Show wheel placement"
+                      : "Show placement"}
+                  </button>
+                </details>
+              )}
+              {guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                ?.insertionChecks && (
+                <p className="guide-note guide-approach-note" role="status">
+                  {insertionBadge(
+                    guide.explicitPlan.stepMetadata[current!.planStep!]
+                      .insertionChecks,
+                  )}
+                </p>
+              )}
+              {guide.explicitPlan.stepMetadata?.[current!.planStep!]?.notes && (
+                <p className="guide-note guide-placement-note">
+                  {guide.explicitPlan.stepMetadata[current!.planStep!].notes}
+                </p>
+              )}
+            </>
+          )}
           <span className="guide-need-title">
             {sequence!.kind === "callout"
               ? `Build ${sequence!.instances > 1 ? sequence!.instances + " × " : ""}${sequence!.name}`
               : current!.assemblies.length && !partsInStep
                 ? "Add the sub-assembly"
-                : `Add ${partsInStep} part${partsInStep === 1 ? "" : "s"}`}
+                : current!.lots.some((lot) => lot.kind)
+                  ? `Add ${partsInStep} parts / unverified representations`
+                  : `Add ${partsInStep} part${partsInStep === 1 ? "" : "s"}`}
           </span>
           <ul className="guide-lots" aria-label="Parts for this step">
             {current!.assemblies.map((a) => (
@@ -403,8 +603,11 @@ export function InstructionViewer({
               </li>
             ))}
             {current!.lots.map((lot) => {
-              const spec = partSpec(lot.ref);
-              const name = spec?.name ?? lot.ref.replace(/\.dat$/i, "");
+              const spec = !lot.kind
+                ? partSpec(lot.thumbnailRef ?? lot.ref)
+                : undefined;
+              const name =
+                lot.name ?? spec?.name ?? lot.ref.replace(/\.dat$/i, "");
               return (
                 <li
                   key={lot.ref + lot.colorCode}

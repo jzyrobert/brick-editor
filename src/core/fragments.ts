@@ -1,3 +1,4 @@
+import { flattenInstructionProgramme } from "../instructions/programme";
 import { assertRequestBudget } from "./request-budget";
 import { encodePath, occurrences, validateDocument } from "./document";
 import { identity } from "./math";
@@ -177,6 +178,7 @@ export function copyFragment(
       .filter(([, ids]) => ids.length),
   );
   for (const plan of Object.values(p.instructionPlans)) {
+    flattenInstructionProgramme(plan);
     const retained = plan.steps
       .map((step, index) => ({
         ids: step.filter((id) => selected.has(id)),
@@ -392,12 +394,15 @@ export function pasteFragment(
     }
     for (const [name, ids] of Object.entries(source.groups))
       target.groups[`${name} copy ${wrapper.slice(0, 8)}`] = ids.map(map);
-    for (const plan of Object.values(source.instructionPlans))
+    for (const sourcePlan of Object.values(source.instructionPlans)) {
+      const plan = structuredClone(sourcePlan);
+      flattenInstructionProgramme(plan);
       target.instructionPlans[uid()] = {
         ...structuredClone(plan),
         name: `${plan.name} (pasted)`,
         steps: plan.steps.map((step) => step.map(map)),
       };
+    }
     target.diagnostics.push(
       ...source.diagnostics.map((d) => ({
         ...structuredClone(d),

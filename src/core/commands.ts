@@ -1,3 +1,4 @@
+import { flattenInstructionProgramme } from "../instructions/programme";
 import {
   assessMaterialization,
   requireMaterialization,
@@ -10,6 +11,8 @@ import {
   type ResourceProfileName,
 } from "./resource-profile";
 import { assertRequestBudget } from "./request-budget";
+import { generateInstructions } from "../instructions/generate";
+import { insertionFingerprint } from "../instructions/collision";
 import { editInstructions } from "../instructions/edit";
 import { partKey, setPartDecision } from "../inventory/decisions";
 import { updateFullLibraryLock } from "../catalog/library-update";
@@ -468,8 +471,10 @@ function mutate(
             const i = g.indexOf(o.id);
             if (i >= 0) g.splice(i, 1);
           }
-          for (const plan of Object.values(p.instructionPlans))
+          for (const plan of Object.values(p.instructionPlans)) {
+            flattenInstructionProgramme(plan);
             plan.steps = plan.steps.map((s) => s.filter((id) => id !== o.id));
+          }
         }
         if (c.type === "parts.recolor") n.colorCode = v.colorCode;
         if (c.type === "parts.replace") {
@@ -723,6 +728,31 @@ function mutate(
     case "instructions.step.merge":
     case "instructions.step.update":
       editInstructions(p, c.type, v);
+      break;
+    case "instructions.installGenerated":
+      fields(v, ["plan"]);
+      ensure(
+        v.plan.generation?.sourceRevision === p.revision,
+        "REVISION_CONFLICT",
+        "Model changed while generating instructions; generate again.",
+      );
+      ensure(
+        v.plan.generation?.insertionFingerprint ===
+          insertionFingerprint(p, v.plan),
+        "INVALID_INPUT",
+        "Generated instructions do not match this model and programme.",
+      );
+      ensure(
+        v.plan.steps.length <= 2000 &&
+          v.plan.steps.flat().length === occurrences(p).length,
+        "INVALID_INPUT",
+        "Generated instructions must cover the complete model within the step budget.",
+      );
+      p.instructionPlans[uid()] = structuredClone(v.plan);
+      break;
+    case "instructions.generate":
+      fields(v, ["name", "maxPerStep", "useSourceSteps"]);
+      p.instructionPlans[uid()] = generateInstructions(p, v).plan;
       break;
     case "instructions.layers":
       fields(v, ["name", "maxPerStep"]);
