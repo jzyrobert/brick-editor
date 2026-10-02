@@ -116,7 +116,7 @@ Each **section** becomes an LDraw submodel and a layer (`layer` groups several s
 
 **Openings** in `wall`/`room`: `{side, at, width, y, height, fill}` — `at` counts studs from the wall's start (min x for front/back, min z for left/right), `y`/`height` in plates from the wall base. `fill: "auto"` (default) puts in a window when the opening is exactly 2×6, 2×9 or 4×9 (width × plates), a door when it is 4×18, and leaves anything else open. In a `room` with a `floor`, a door that opens inwards stands on the floor (`y` 1) so its leaf swings over the floor plate: leave the wall 19 plates or taller above it. The door leaf is the smooth door (60616a) unless that is not made in the colour (red, dark blue, dark green, …): then it is the door with panes (60623).
 
-**Colours**: a palette key, a colour name (`"light bluish grey"`, `"dark tan"`, `"trans-clear"`, `"medium azure"` — BrickLink/LDraw names work) or an LDraw code. `{"mix": [...]}` picks per piece, deterministically — good for stone and rock. The compiler only uses brick/plate sizes that exist in the colour and warns (`colour-unavailable`) when a placed part is not known in it.
+**Colours**: a palette key, a colour name (`"light bluish grey"`, `"dark tan"`, `"trans-clear"`, `"medium azure"` — BrickLink/LDraw names work) or an LDraw code. `{"mix": [...]}` picks per piece, deterministically — good for stone and rock. The compiler only uses brick/plate sizes that exist in the colour; a placed part in a colour it is not made in is an error (`colour-unavailable`, naming colours it does come in). An old part number the library has moved (`4032` → `4032a`) is built with the new one, with a `part-moved` note.
 
 **Parts**: `"3001"`, `"3001.dat"`, `"@alias"` (from `parts`), `{"find": "1x2 tile"}` or just a phrase (`"window 1x2x3 with glass"`). Searches resolve deterministically at compile time and are listed in the report under `resolved`. Part search also answers `"pointed arch"`, `"spire"`, `"sail"`, `"clock"`, `"train base"`, `"bogie"`, `"train front"` and `"track"`, and "corner" matches "convex" (`"slope 75 corner"` finds the spire corner 3685). Check which way a library part faces before relying on `turn`: the Arch 1 × 3 × 3 Pointed (13965) runs along Z at `turn: 0`, the arches 1 × 4/1 × 6 (6182, 3307, 6183) along X.
 
@@ -178,7 +178,7 @@ Measured on 30 official set models ([DESIGN-LANGUAGE.md](DESIGN-LANGUAGE.md)); t
 
 ## Part cheat sheet
 
-Curated parts (snap and count for connectivity). `npm run cli -- parts search "<words>"` finds anything else in the complete LDraw library.
+Curated parts (snap and count for connectivity). `npm run cli -- parts list` prints all 224 with the common colours each comes in (the prompt's `{{PARTS}}`); `npm run cli -- parts search "<words>"` finds anything else in the complete LDraw library.
 
 | role             | parts                                                                                                                                                                                                                                                                            |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -200,7 +200,7 @@ Curated parts (snap and count for connectivity). `npm run cli -- parts search "<
 3. **Openings**: doors, windows, arches (openings in walls, or `window`/`door`/`place` which carve).
 4. **Roofs**: `roof` gable/hip/flat, domes, chimneys (roof `holes`).
 5. **Details**: railings (`fence`), lamps, trees, props (`place`, `scatter`, `smooth`); repeat and mirror them.
-6. **Validate** and read the report: fix every `error` (overlaps), then `floating` warnings (parts with nothing under them), then `colour-unavailable` warnings.
+6. **Validate** and read the report: fix every `error` (overlaps, colours a part is not made in), then `floating` warnings (parts with nothing under them).
 7. **Render** `--views iso,front,iso-back,top` and look: does it read as the subject from every side? Iterate.
 
 Report (`--report file.json`, `buildScript.compile()`):
@@ -292,16 +292,17 @@ To test how far a model gets by reasoning alone, the MineBench way, `npm run one
 
 ```sh
 npm run oneshot -- --target-parts 2000 --leeway 5 --brief "a japanese buddhist temple" \
-  --model gpt-6.1-sol --efforts low,medium,high,xhigh,max --attempts 5
+  --model gpt-6.1-sol --efforts low,medium,high,xhigh,max --attempts 5 [--parts-list on|off] [--search on|off]
 ```
 
-- The prompt is [prompts/build-agent.md](../prompts/build-agent.md) without its tools section, with the brief and part range filled in; the reply must be the JSON alone.
+- The prompt is [prompts/build-agent.md](../prompts/build-agent.md) without its tools section, with the brief, part range and (`--parts-list on`, the default) the 224 curated parts and their common colours filled in; the final reply must be the JSON alone.
+- **Searching** (`--search on`, the default): before answering, the model may reply with only `{"parts_search": [{"query": …, "size": …, "colour": …}, …]}` (up to 5 searches a reply, 10 rounds an attempt). The runner answers with the results (number, name, size, curated or library, common colours, existence in the colour asked about) in the same Codex session (`codex exec resume`) and waits again; nobody intervenes until the build arrives. This is a reply protocol rather than a Codex tool because Codex only offers custom (MCP) tools through its code mode, which also hands the model a JavaScript runner.
 - Each effort runs in parallel through `codex exec` with every tool turned off (shell, browser, sub-agents, web search…), a read-only sandbox and an empty working folder, ignoring the user's Codex config. Ops, components and `{"find": …}` part phrases still do the heavy lifting: the compiler expands them; the model just cannot compile, search or look before it answers.
 - The runner takes the first JSON object from the reply and compiles it with the target and leeway. A reply with no JSON, an invalid script or any error (overlaps, `over-budget`, `under-budget`) goes back as MineBench's repair prompt, the original prompt followed by `Your previous output was invalid. Reason: <errors> … Fix it by returning ONLY a corrected JSON object. Previous output: <reply>`, up to `--attempts` times. Warnings are not sent back.
 - Accepted builds are rendered afterwards (`--views`, default `iso,front,iso-back`) for review only.
-- Output (`~/brick-builds/oneshot-<name>-<target>` unless `--out`): per effort, the prompt, every reply, its JSON, report and Codex event log, `build.json`, `views/` and `result.json` (attempts with outcome, reason, parts, seconds and tokens, and any tool events, which should be none); `summary.md` and `summary.json` for the whole run.
+- Output (`~/brick-builds/oneshot-<name>-<target>` unless `--out`): per effort, the prompt, every reply, its JSON, report, searches and Codex event logs, `build.json`, `views/` and `result.json`; `summary.md` and `summary.json` for the whole run. Each attempt records its outcome, the errors sent back, parts, seconds, tokens, every search with the parts it returned, and its **part knowledge**: the part numbers named (and which are not in the prompt's list), every `{"find": …}` with what it resolved to, old numbers replaced, colour errors and any unknown number. Tool events (there should be none) are listed too.
 
-Sample: [a Japanese Buddhist temple at five reasoning efforts](samples/japanese-temple-one-shot/README.md) (renders, attempts, tokens).
+Samples: [a Japanese Buddhist temple at five reasoning efforts](samples/japanese-temple-one-shot/README.md) (no part list or search), and [the same with the part list and search](samples/japanese-temple-one-shot-search/README.md), with a comparison.
 
 This measures something different from an [agent workspace](#agent-workspaces), where the agent compiles and looks at renders as often as it likes; keep the two kinds of result apart.
 

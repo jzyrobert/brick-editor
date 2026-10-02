@@ -1,0 +1,485 @@
+{
+  "effort": "xhigh",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": false,
+  "attemptsUsed": 5,
+  "seconds": 5596,
+  "tokens": {
+    "input": 300092,
+    "cached": 80256,
+    "output": 141575,
+    "reasoning": 87199
+  },
+  "searches": 10,
+  "knowledge": {
+    "named": [
+      "14716",
+      "14769",
+      "2412b",
+      "2431",
+      "2435",
+      "2453b",
+      "24866",
+      "3003",
+      "3005",
+      "30145",
+      "30176",
+      "3022",
+      "3023b",
+      "3024",
+      "3039",
+      "3062b",
+      "3069b",
+      "3070b",
+      "32607",
+      "3660b",
+      "3941",
+      "3942c",
+      "4032b",
+      "4589",
+      "4740",
+      "54200",
+      "6141",
+      "63864",
+      "87087",
+      "87580"
+    ],
+    "notInList": [],
+    "finds": [
+      {
+        "find": "Minifig Statuette",
+        "ref": "90398",
+        "name": "Minifig Statuette"
+      }
+    ],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 3310,
+      "usage": {
+        "input": 167658,
+        "cached": 46848,
+        "output": 82668,
+        "reasoning": 71523
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bell",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "90398",
+            "18836pq0",
+            "75902p07",
+            "90370p04"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "window lattice pane",
+            "size": "1x2x3",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "4865b",
+            "4865a",
+            "23969",
+            "93095"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x1",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "11477",
+            "24201",
+            "6091",
+            "29119",
+            "29120"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bar",
+            "size": "1x1",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "30374",
+            "87994",
+            "11090",
+            "23443",
+            "87747"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "60607",
+            "limit": 1
+          },
+          "results": [
+            "60607"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "60593",
+            "limit": 1
+          },
+          "results": [
+            "60593"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "2435",
+            "limit": 1
+          },
+          "results": [
+            "2435"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "3960",
+            "limit": 1
+          },
+          "results": [
+            "3960"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "87580",
+            "limit": 1
+          },
+          "results": [
+            "87580"
+          ],
+          "round": 2
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [
+        {
+          "round": 2,
+          "error": "Selected model is at capacity. Please try a different model."
+        }
+      ],
+      "outcome": "invalid",
+      "knowledge": {
+        "named": [
+          "11477",
+          "14716",
+          "14769",
+          "2412b",
+          "2431",
+          "2435",
+          "2453b",
+          "24866",
+          "3003",
+          "3005",
+          "30145",
+          "30176",
+          "3022",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "32607",
+          "3660b",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "4740",
+          "60593",
+          "60607",
+          "6141",
+          "63864",
+          "87087",
+          "87580",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "reason": "INVALID_INPUT: Invalid build script: $.components.sorin.ops[4].at [x, y, z]: integer studs, y in plates or \"<n>b\"; $.sections[2].ops[25].at [x, y, z]: integer studs, y in plates or \"<n>b\"; $.sections[4].ops[1].ops[3].at [x, y, z]: integer studs, y in plates or \"<n>b\""
+    },
+    {
+      "attempt": 2,
+      "seconds": 380,
+      "usage": {
+        "input": 33138,
+        "cached": 0,
+        "output": 10412,
+        "reasoning": 332
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "11477",
+          "14716",
+          "14769",
+          "2412b",
+          "2431",
+          "2435",
+          "2453b",
+          "24866",
+          "3003",
+          "3005",
+          "30145",
+          "30176",
+          "3022",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "32607",
+          "3660b",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "4740",
+          "60593",
+          "60607",
+          "6141",
+          "63864",
+          "87087",
+          "87580",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [
+          {
+            "find": "Minifig Statuette",
+            "ref": "90398",
+            "name": "Minifig Statuette"
+          }
+        ],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1592,
+      "reason": "- under-budget: 1,592 parts: 308 under the minimum of 1,900 (target 2,000 ± 5%: 1,900–2,100): add more\n- overlap: 2431.dat and 3031.dat overlap [sections[1].ops[5].ops[0].ops[0], sections[6].ops[10] > components.stoneLantern.ops[0]]\n- overlap: 60593.dat and 60607.dat overlap [sections[2].ops[6].ops[0] > components.shoji.ops[0], sections[2].ops[6].ops[0] > components.shoji.ops[1]]\n- overlap: 60607.dat and 60593.dat overlap [sections[2].ops[6].ops[0] > components.shoji.ops[1], sections[2].ops[7].ops[0] > components.shoji.ops[0]]\n- overlap: 60607.dat and 3005.dat overlap [sections[2].ops[6].ops[0] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60593.dat and 60607.dat overlap [sections[2].ops[6].ops[1] > components.shoji.ops[0], sections[2].ops[6].ops[1] > components.shoji.ops[1]]\n- overlap: 60607.dat and 3622.dat overlap [sections[2].ops[6].ops[1] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60607.dat and 3005.dat overlap [sections[2].ops[6].ops[1] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60593.dat and 60607.dat overlap [sections[2].ops[6].ops[2] > components.shoji.ops[0], sections[2].ops[6].ops[2] > components.shoji.ops[1]]\n- overlap: 60593.dat and 60607.dat overlap [sections[2].ops[6].ops[2] > components.shoji.ops[0], sections[2].ops[7].ops[0] > components.shoji.ops[1]]\n- overlap: 60607.dat and 3004.dat overlap [sections[2].ops[6].ops[2] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60607.dat and 3005.dat overlap [sections[2].ops[6].ops[2] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60593.dat and 60607.dat overlap [sections[2].ops[6].ops[3] > components.shoji.ops[0], sections[2].ops[6].ops[3] > components.shoji.ops[1]]\n- overlap: 60607.dat and 30145.dat overlap [sections[2].ops[6].ops[3] > components.shoji.ops[1], sections[2].ops[15].ops[1] > components.interiorPost.ops[0].ops[0]]\n- overlap: 60607.dat and 3004.dat overlap [sections[2].ops[6].ops[3] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60607.dat and 3005.dat overlap [sections[2].ops[6].ops[3] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60607.dat and 3004.dat overlap [sections[2].ops[6].ops[0] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60593.dat and 60607.dat overlap [sections[2].ops[6].ops[1] > components.shoji.ops[0], sections[2].ops[7].ops[1] > components.shoji.ops[1]]\n- overlap: 60607.dat and 3004.dat overlap [sections[2].ops[6].ops[1] > components.shoji.ops[1], sections[2].ops[4]]\n- overlap: 60607.dat and 30145.dat overlap [sections[2].ops[6].ops[2] > components.shoji.ops[1], sections[2].ops[15].ops[1] > components.interiorPost.ops[0].ops[0]]\n- … 9 more errors"
+    },
+    {
+      "attempt": 3,
+      "seconds": 907,
+      "usage": {
+        "input": 32815,
+        "cached": 0,
+        "output": 21240,
+        "reasoning": 10069
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "invalid",
+      "knowledge": {
+        "named": [
+          "14716",
+          "14769",
+          "2412b",
+          "2431",
+          "2435",
+          "2453b",
+          "24866",
+          "3003",
+          "3005",
+          "30145",
+          "30176",
+          "3022",
+          "3023b",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "32607",
+          "3660b",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "63864",
+          "87087",
+          "87580"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "reason": "INVALID_INPUT: Invalid build script: $.components.sorin.ops[4].at [x, y, z]: integer studs, y in plates or \"<n>b\""
+    },
+    {
+      "attempt": 4,
+      "seconds": 449,
+      "usage": {
+        "input": 32943,
+        "cached": 0,
+        "output": 12215,
+        "reasoning": 1225
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "14716",
+          "14769",
+          "2412b",
+          "2431",
+          "2435",
+          "2453b",
+          "24866",
+          "3003",
+          "3005",
+          "30145",
+          "30176",
+          "3022",
+          "3023b",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "32607",
+          "3660b",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "63864",
+          "87087",
+          "87580"
+        ],
+        "notInList": [],
+        "finds": [
+          {
+            "find": "Minifig Statuette",
+            "ref": "90398",
+            "name": "Minifig Statuette"
+          }
+        ],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2018,
+      "reason": "- overlap: 3045.dat and 2453b.dat overlap [sections[3].ops[10], sections[3].ops[18].ops[0].ops[0] > components.pagodaPost.ops[0]]\n- overlap: 3045.dat and 14716.dat overlap [sections[3].ops[20], sections[3].ops[26].ops[0].ops[0] > components.pagodaPost.ops[2]]\n- overlap: 30176.dat and 30176.dat overlap [sections[6].ops[4].ops[0]]"
+    },
+    {
+      "attempt": 5,
+      "seconds": 550,
+      "usage": {
+        "input": 33538,
+        "cached": 33408,
+        "output": 15040,
+        "reasoning": 4050
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "14716",
+          "14769",
+          "2412b",
+          "2431",
+          "2435",
+          "2453b",
+          "24866",
+          "3003",
+          "3005",
+          "30145",
+          "30176",
+          "3022",
+          "3023b",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "32607",
+          "3660b",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "63864",
+          "87087",
+          "87580"
+        ],
+        "notInList": [],
+        "finds": [
+          {
+            "find": "Minifig Statuette",
+            "ref": "90398",
+            "name": "Minifig Statuette"
+          }
+        ],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2018,
+      "reason": "- overlap: 3045.dat and 2453b.dat overlap [sections[3].ops[10], sections[3].ops[18].ops[0].ops[0] > components.pagodaPost.ops[0]]\n- overlap: 3045.dat and 14716.dat overlap [sections[3].ops[20], sections[3].ops[26].ops[0].ops[0] > components.pagodaPost.ops[2]]"
+    }
+  ]
+}

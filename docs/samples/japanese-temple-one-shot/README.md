@@ -11,6 +11,7 @@ npm run oneshot -- --target-parts 2000 --leeway 5 --brief "a japanese buddhist t
 - **One pass, no tools.** The model got the [prompt](prompt.md) (the build-agent prompt without its tools section) and had to answer with the build script alone, through `codex exec` (codex-cli 0.159.0) with every tool off, a read-only sandbox and an empty folder. It could not compile, search parts or see a render.
 - **Repairs.** A reply that did not compile cleanly in range went back with its errors and the reply itself ("return ONLY a corrected JSON object"), up to 5 attempts. Only errors count: overlaps, `over-budget`, `under-budget`, invalid scripts. Warnings (floating parts, unavailable colours, part clashes) were accepted, as MineBench accepts its warnings.
 - **Renders** were made afterwards, for this page only.
+- **Rules at the time.** These runs predate the part list in the prompt, parts search and two compiler changes made afterwards: a part in a colour it is not made in became an error (every build here has 1–4 such parts: pearl-gold Round Brick 2 × 2, dark-brown lattice fences, dark-green Pine Tree Large…), and old numbers such as 4032 and 4073 are now built as 4032a and 6141. Recompiled today, these scripts fail on colour. The [rerun with the part list and search](../japanese-temple-one-shot-search/README.md) uses the new rules.
 
 ## Results
 

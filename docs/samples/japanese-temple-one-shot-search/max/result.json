@@ -1,0 +1,297 @@
+{
+  "effort": "max",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 3,
+  "parts": 2001,
+  "seconds": 6705,
+  "tokens": {
+    "input": 185479,
+    "cached": 26880,
+    "output": 102182,
+    "reasoning": 62548
+  },
+  "searches": 5,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2412b",
+      "2431",
+      "2435",
+      "24866",
+      "3003",
+      "30176",
+      "3022",
+      "3023b",
+      "3024",
+      "3039",
+      "3062b",
+      "3069b",
+      "3660b",
+      "3941",
+      "4032b",
+      "4589",
+      "4740",
+      "54200",
+      "6141",
+      "87079",
+      "98138"
+    ],
+    "notInList": [],
+    "finds": [
+      {
+        "find": "minifigure statuette",
+        "ref": "90398",
+        "name": "Minifig Statuette"
+      }
+    ],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 3610,
+      "usage": {
+        "input": 116206,
+        "cached": 26880,
+        "output": 29464,
+        "reasoning": 16646
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bell",
+            "limit": 6
+          },
+          "results": [
+            "6017",
+            "30151a",
+            "u608",
+            "u609",
+            "30151b",
+            "101117"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "90398",
+            "18836pq0",
+            "75902p07",
+            "90370p04"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "round plate with hole",
+            "size": "2x2",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "4032b",
+            "3022",
+            "33909",
+            "2420"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x1",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "11477",
+            "24201",
+            "6091"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "lattice window pane",
+            "size": "1x2x3",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "4865b",
+            "4865a",
+            "23969"
+          ],
+          "round": 1
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [
+        {
+          "round": 1,
+          "error": "Selected model is at capacity. Please try a different model."
+        }
+      ],
+      "outcome": "invalid",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2412b",
+          "2431",
+          "2435",
+          "24866",
+          "3003",
+          "30176",
+          "3023b",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "32607",
+          "3471",
+          "3665a",
+          "3676",
+          "3941",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "87079",
+          "87087",
+          "87580",
+          "90398",
+          "98138"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "reason": "INVALID_INPUT: Invalid build script: $.components.stoneLantern.ops[11].at [x, y, z]: integer studs, y in plates or \"<n>b\"; $.components.nineRingSorin.ops[0].ops[2].at [x, y, z]: integer studs, y in plates or \"<n>b\"; $.components.nineRingSorin.ops[1].at [x, y, z]: integer studs, y in plates or \"<n>b\""
+    },
+    {
+      "attempt": 2,
+      "seconds": 543,
+      "usage": {
+        "input": 34388,
+        "cached": 0,
+        "output": 14932,
+        "reasoning": 2392
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2412b",
+          "2431",
+          "2435",
+          "24866",
+          "3003",
+          "30176",
+          "3022",
+          "3023b",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "32607",
+          "3471",
+          "3665a",
+          "3676",
+          "3941",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "87079",
+          "87087",
+          "90398",
+          "98138"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2138,
+      "reason": "- over-budget: 2,138 parts: 38 over the maximum of 2,100 (target 2,000 ± 5%: 1,900–2,100) (largest sections: Main worship hall and bracketed timber frame 639, Broad irimoya roof and entrance gable 368, Pagoda roofs and golden sorin 301; costliest ops: sections[2].ops[0] 203, sections[3].ops[3] 156, sections[6].ops[0].ops[0].ops[1] 80, sections[4].ops[8] 72, sections[3].ops[4] 65) [sections[2].ops[0], sections[3].ops[3], sections[6].ops[0].ops[0].ops[1], sections[4].ops[8], sections[3].ops[4]]\n- overlap: 98283.dat and 2435.dat overlap [sections[1].ops[0], sections[7].ops[20]]\n- overlap: 3005.dat and 2435.dat overlap [sections[1].ops[0], sections[7].ops[20]]\n- overlap: 3024.dat and 2435.dat overlap [sections[1].ops[8], sections[7].ops[20]]\n- overlap: 3069b.dat and 2435.dat overlap [sections[1].ops[3], sections[7].ops[20]]\n- overlap: 3020.dat and 3941.dat overlap [sections[2].ops[8] > components.shojiPanel.ops[0], sections[2].ops[10].ops[1] > components.timberPier.ops[1]]\n- overlap: 3020.dat and 3941.dat overlap [sections[2].ops[9] > components.shojiPanel.ops[0], sections[2].ops[10].ops[2] > components.timberPier.ops[1]]\n- overlap: 4865b.dat and 2435.dat overlap [sections[2].ops[16], sections[7].ops[20]]\n- overlap: 3005.dat and 2435.dat overlap [sections[2].ops[16], sections[7].ops[20]]\n- overlap: 3045.dat and 3039.dat overlap [sections[3].ops[3], sections[3].ops[4]]\n- overlap: 3045.dat and 3037.dat overlap [sections[3].ops[3], sections[3].ops[4]]\n- overlap: 3037.dat and 3037.dat overlap [sections[3].ops[3], sections[3].ops[4]]\n- overlap: 3039.dat and 3037.dat overlap [sections[3].ops[3], sections[3].ops[4]]\n- overlap: 59 more overlaps"
+    },
+    {
+      "attempt": 3,
+      "seconds": 2552,
+      "usage": {
+        "input": 34885,
+        "cached": 0,
+        "output": 57786,
+        "reasoning": 43510
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "2435",
+          "24866",
+          "3003",
+          "30176",
+          "3022",
+          "3023b",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "3660b",
+          "3941",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "87079",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [
+          {
+            "find": "minifigure statuette",
+            "ref": "90398",
+            "name": "Minifig Statuette"
+          }
+        ],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2001
+    }
+  ]
+}

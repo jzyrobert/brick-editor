@@ -1,0 +1,144 @@
+{
+  "effort": "medium",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 3,
+  "parts": 2009,
+  "seconds": 785,
+  "tokens": {
+    "input": 78627,
+    "cached": 0,
+    "output": 21393,
+    "reasoning": 3501
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "2412b",
+      "2435",
+      "3022",
+      "3070b",
+      "32607",
+      "3471",
+      "3941",
+      "3942c",
+      "4032b",
+      "4589"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 303,
+      "usage": {
+        "input": 22411,
+        "cached": 0,
+        "output": 8299,
+        "reasoning": 1552
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "11477",
+          "2412b",
+          "2435",
+          "30176",
+          "3022",
+          "3023b",
+          "3069b",
+          "3070b",
+          "32607",
+          "3471",
+          "3665a",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": [
+          "Round Brick 2 × 2 (3941) is not made in Pearl gold (2×); it comes in White, Black, Red, Blue, Yellow, Green, Dark green, Tan and more"
+        ]
+      },
+      "parts": 1887,
+      "reason": "- under-budget: 1,887 parts: 13 under the minimum of 1,900 (target 2,000 ± 5%: 1,900–2,100): add more\n- colour-unavailable: Round Brick 2 × 2 (3941) is not made in Pearl gold (2×); it comes in White, Black, Red, Blue, Yellow, Green, Dark green, Tan and more [sections[2].ops[14]]\n- overlap: 30176.dat and 30176.dat overlap [sections[0].ops[16].ops[0]]\n- overlap: 30176.dat and 98283.dat overlap [sections[0].ops[16].ops[0], sections[0].ops[4]]\n- overlap: 3062b.dat and 3665a.dat overlap [sections[2].ops[5].ops[0], sections[2].ops[5].ops[2] > components.bracket.ops[0]]\n- overlap: 3062b.dat and 3665a.dat overlap [sections[2].ops[5].ops[1], sections[2].ops[5].ops[3] > components.bracket.ops[0]]\n- overlap: 3633.dat and 3633.dat overlap [sections[2].ops[9], sections[2].ops[11]]\n- overlap: 3023b.dat and 3023b.dat overlap [sections[3].ops[1].ops[0]]\n- overlap: 3023b.dat and 3023b.dat overlap [sections[3].ops[1].ops[1]]\n- overlap: 3023b.dat and 3023b.dat overlap [sections[3].ops[1].ops[1], sections[3].ops[2].ops[0]]\n- overlap: 79 more overlaps"
+    },
+    {
+      "attempt": 2,
+      "seconds": 268,
+      "usage": {
+        "input": 28874,
+        "cached": 0,
+        "output": 7322,
+        "reasoning": 1748
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "3022",
+          "3070b",
+          "32607",
+          "3471",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2002,
+      "reason": "- overlap: 3043.dat and 3941.dat overlap [sections[4].ops[14], sections[4].ops[16]]"
+    },
+    {
+      "attempt": 3,
+      "seconds": 214,
+      "usage": {
+        "input": 27342,
+        "cached": 0,
+        "output": 5772,
+        "reasoning": 201
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "3022",
+          "3070b",
+          "32607",
+          "3471",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2009
+    }
+  ]
+}

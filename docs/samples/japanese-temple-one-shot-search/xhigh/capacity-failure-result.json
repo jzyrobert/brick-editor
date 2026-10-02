@@ -1,0 +1,233 @@
+{
+  "effort": "xhigh",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": false,
+  "attemptsUsed": 1,
+  "seconds": 2992,
+  "tokens": {
+    "input": 148690,
+    "cached": 75008,
+    "output": 47679,
+    "reasoning": 46972
+  },
+  "searches": 15,
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 2992,
+      "usage": {
+        "input": 148690,
+        "cached": 75008,
+        "output": 47679,
+        "reasoning": 46972
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bell",
+            "limit": 6
+          },
+          "results": [
+            "6017",
+            "30151a",
+            "u608",
+            "u609",
+            "30151b",
+            "101117"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "round plate 2 x 2 with axle hole",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "4032b",
+            "32607",
+            "33291"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "roof curved slope",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "90398",
+            "18836pq0",
+            "75902p07"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bar 4L",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "30374",
+            "11089"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "roof tile corner",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "3039",
+            "3040b",
+            "3037",
+            "3038",
+            "3043"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope inverted curved",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "window lattice pane 1 x 2 x 3",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "60607"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "dish 2 x 2 inverted",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [
+            "4740",
+            "17964"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "minifigure head plain",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "30367c",
+            "48492",
+            "30367b"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "60593",
+            "limit": 1
+          },
+          "results": [
+            "60593"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "60607",
+            "limit": 1
+          },
+          "results": [
+            "60607"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "90398",
+            "limit": 1
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "87580",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 1
+          },
+          "results": [
+            "87580"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "15068",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 1
+          },
+          "results": [
+            "15068"
+          ],
+          "round": 3
+        }
+      ],
+      "toolEvents": [],
+      "outcome": "agent-failed",
+      "reason": "codex exited 1: "
+    }
+  ]
+}

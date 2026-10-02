@@ -1,0 +1,206 @@
+{
+  "effort": "low",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 5,
+  "parts": 1974,
+  "seconds": 857,
+  "tokens": {
+    "input": 127593,
+    "cached": 5632,
+    "output": 23226,
+    "reasoning": 2028
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "2412b",
+      "2435",
+      "30176",
+      "3020",
+      "3070b",
+      "3710",
+      "3941",
+      "3942c",
+      "3943b",
+      "4032b"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 225,
+      "usage": {
+        "input": 22411,
+        "cached": 0,
+        "output": 6148,
+        "reasoning": 1034
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "11477",
+          "2417",
+          "2423",
+          "30176",
+          "3020",
+          "3069b",
+          "32607",
+          "3660b",
+          "3710",
+          "3941",
+          "3942c",
+          "3943b",
+          "4032b",
+          "87087"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1810,
+      "reason": "- under-budget: 1,810 parts: 90 under the minimum of 1,900 (target 2,000 ± 5%: 1,900–2,100): add more\n- overlap: 3069b.dat and 3069b.dat overlap [sections[0].ops[2].ops[0].ops[0]]\n- overlap: 3069b.dat and 3020.dat overlap [sections[0].ops[2].ops[0].ops[0], sections[0].ops[5] > components.stoneLantern.ops[0]]\n- overlap: 262 more overlaps"
+    },
+    {
+      "attempt": 2,
+      "seconds": 153,
+      "usage": {
+        "input": 27673,
+        "cached": 2816,
+        "output": 4136,
+        "reasoning": 241
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "invalid",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "30176",
+          "3020",
+          "3070b",
+          "3710",
+          "3941",
+          "3942c",
+          "3943b",
+          "4032b"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "reason": "INVALID_INPUT: Invalid build script: $.sections[1].ops[9].open[1] must be one of \"top\", \"front\", \"back\", \"left\", \"right\""
+    },
+    {
+      "attempt": 3,
+      "seconds": 145,
+      "usage": {
+        "input": 25672,
+        "cached": 0,
+        "output": 3905,
+        "reasoning": 17
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "30176",
+          "3020",
+          "3070b",
+          "3710",
+          "3941",
+          "3942c",
+          "3943b",
+          "4032b"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1735,
+      "reason": "- under-budget: 1,735 parts: 165 under the minimum of 1,900 (target 2,000 ± 5%: 1,900–2,100): add more\n- overlap: 2435.dat and 3020.dat overlap [sections[0].ops[10], sections[1].ops[6].ops[1] > components.shoji.ops[0].ops[0]]\n- overlap: 2435.dat and 3020.dat overlap [sections[0].ops[11], sections[1].ops[6].ops[1] > components.shoji.ops[0].ops[0]]"
+    },
+    {
+      "attempt": 4,
+      "seconds": 165,
+      "usage": {
+        "input": 25763,
+        "cached": 2816,
+        "output": 4449,
+        "reasoning": 298
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "30176",
+          "3020",
+          "3070b",
+          "3710",
+          "3941",
+          "3942c",
+          "3943b",
+          "4032b"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1988,
+      "reason": "- overlap: 3070b.dat and 3070b.dat overlap [sections[0].ops[2].ops[0].ops[0], sections[0].ops[17].ops[0].ops[0]]\n- overlap: 2435.dat and 3020.dat overlap [sections[0].ops[10], sections[1].ops[6].ops[1] > components.shoji.ops[0].ops[0]]\n- overlap: 2435.dat and 3020.dat overlap [sections[0].ops[11], sections[1].ops[6].ops[1] > components.shoji.ops[0].ops[0]]\n- overlap: 30176.dat and 3070b.dat overlap [sections[0].ops[12].ops[0], sections[0].ops[17].ops[0].ops[0]]"
+    },
+    {
+      "attempt": 5,
+      "seconds": 169,
+      "usage": {
+        "input": 26074,
+        "cached": 0,
+        "output": 4588,
+        "reasoning": 438
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "30176",
+          "3020",
+          "3070b",
+          "3710",
+          "3941",
+          "3942c",
+          "3943b",
+          "4032b"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1974
+    }
+  ]
+}

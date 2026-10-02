@@ -74,6 +74,35 @@ export const colourByCode = (code: string) => (tables(), byCode.get(code));
 export const colourName = (code: string) =>
   colourByCode(code)?.name ?? "LDraw colour " + code;
 
+/** The colours most builds use, in the order agents see them (the prompt's
+ * part list and colour error hints). */
+export const COMMON_COLOURS = [
+  "15",
+  "0",
+  "4",
+  "1",
+  "14",
+  "2",
+  "288",
+  "19",
+  "28",
+  "70",
+  "308",
+  "71",
+  "72",
+  "320",
+  "25",
+  "322",
+  "272",
+  "27",
+  "378",
+  "297",
+  "47",
+  "43",
+  "36",
+  "46",
+];
+
 /** LDraw colour code for a name or code; undefined when unknown. */
 export function resolveColourName(value: string | number): string | undefined {
   const names = tables();

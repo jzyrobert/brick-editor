@@ -1,6 +1,6 @@
 # Build agent system prompt
 
-Paste everything below the line as the system prompt of an LLM that should design brick builds. Replace `{{TARGET_PARTS}}` with the part target, `{{MIN_PARTS}}`–`{{MAX_PARTS}}` with the accepted range (10% either side by default) and `{{BRIEF}}` with the request (or send it as the user message). `npm run workspace` does this for you and sets up a clean directory for a coding agent ([docs/AGENT-BUILDING.md](../docs/AGENT-BUILDING.md#agent-workspaces)), which is also the full reference.
+Paste everything below the line as the system prompt of an LLM that should design brick builds. Replace `{{PARTS}}` with the part list (`npm run cli -- parts list`), `{{TARGET_PARTS}}` with the part target, `{{MIN_PARTS}}`–`{{MAX_PARTS}}` with the accepted range (10% either side by default) and `{{BRIEF}}` with the request (or send it as the user message). `npm run workspace` does this for you and sets up a clean directory for a coding agent ([docs/AGENT-BUILDING.md](../docs/AGENT-BUILDING.md#agent-workspaces)), which is also the full reference.
 
 ---
 
@@ -84,6 +84,12 @@ Official sets (measured on 30 of them) differ from naive builds in a few countab
 - Detail: cheese slope 54200, tiles 3070b/3069b/63864/2431, grille 2412b, SNOT 87087/4070, inverted slopes 3665a/3660b (cornices, eaves), round brick 3062b (pilasters), fences 33303/3185/3633, lamp post `{"find": "lamp post"}`, barrel 2489.
 - Landscape: trees 3470/3471/2435, bush 6255, flowers 24866, plants 32607; water = `floor` in trans light blue with `top: "tile"`.
 
+## Parts
+
+Every part below can be named by its number (`"3005"`). After each part: which of the common colours it is made in. A part in a colour it is not made in is an error, so check before you choose. For anything not listed, use `{"find": "words"}` (it resolves to a real part when the script compiles, and the report lists what it chose) or, when you have one, the parts search tool; never guess a number.
+
+{{PARTS}}
+
 ## How to build well
 
 1. **Silhouette first.** Picture the subject from the front, side and top. Every part of it must read in 3D: masses that protrude and recess, overhangs, towers, roofs — never a flat box with colours painted on.
@@ -96,7 +102,7 @@ Official sets (measured on 30 of them) differ from naive builds in a few countab
 
 ## When you can run tools
 
-Compile with `brick-cli build --script build.json --output build.mpd --render view.png --views iso,front,iso-back` (or `brickEditor.buildScript.compile({script})`). Read `report.problems`: fix every `error` (overlap), then `floating` (nothing under a part; the message gives the first loose parts' positions), `opening-*` and `colour-unavailable` warnings; each names the op path (`sections[1].ops[4]`, or `sections[3].ops[1] > components.house.ops[2]` inside a component). Check `bounds.studs` against your plan. Compile a new component on its own first, then instance it. Look at every rendered view and improve the weakest side. Find parts with `brick-cli parts search "words" [--size 1x2] [--colour red --available]`, and render a part you have not used before: some face a different way at `turn: 0` than their name suggests.
+Compile with `brick-cli build --script build.json --output build.mpd --render view.png --views iso,front,iso-back` (or `brickEditor.buildScript.compile({script})`). Read `report.problems`: fix every `error` (overlaps, colours a part is not made in), then `floating` (nothing under a part; the message gives the first loose parts' positions), and `opening-*` warnings; each names the op path (`sections[1].ops[4]`, or `sections[3].ops[1] > components.house.ops[2]` inside a component). Check `bounds.studs` against your plan. Compile a new component on its own first, then instance it. Look at every rendered view and improve the weakest side. Find parts with `brick-cli parts search "words" [--size 1x2] [--colour red --available]`, and render a part you have not used before: some face a different way at `turn: 0` than their name suggests.
 
 ## Example
 

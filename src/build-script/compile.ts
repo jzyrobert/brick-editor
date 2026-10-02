@@ -22,6 +22,7 @@ import {
   colorAvailabilityLoaded,
   colorExistence,
   madeIn,
+  partAvailability,
 } from "../catalog/color-availability";
 import { fullConnectorEntry } from "../catalog/full-connectors";
 import { decodeOccupancy } from "../catalog/connector-pack";
@@ -60,7 +61,12 @@ import {
   type Turn,
   type ValidationIssue,
 } from "./spec";
-import { colourName, colourSuggestions, resolveColourName } from "./palette";
+import {
+  COMMON_COLOURS,
+  colourName,
+  colourSuggestions,
+  resolveColourName,
+} from "./palette";
 import {
   Grid,
   TEXTURES,
@@ -302,6 +308,8 @@ type Unit = {
 class Compiler {
   problems: Problem[] = [];
   resolved: CompileReport["resolved"] = [];
+  /** Old part numbers replaced by the ones the library moved them to. */
+  moved = new Map<string, { to: string; ops: Set<string> }>();
   opPaths: string[] = [];
   opKinds: string[] = [];
   materials: Material[] = [];
@@ -441,7 +449,7 @@ class Compiler {
       const id = /\.dat$/i.test(ref)
         ? ref.toLowerCase()
         : ref.toLowerCase() + ".dat";
-      if (partSpec(id)) return id;
+      if (partSpec(id)) return this.current(id, path);
       // A plain phrase ("window 1x2x3") is a search.
       if (/\s/.test(ref)) return this.part({ find: ref }, path, colourHint);
       this.fail(
@@ -477,6 +485,7 @@ class Compiler {
     }
     if (!id || !partSpec(id))
       this.fail(path, `no part matches ${JSON.stringify(ref.find)}`);
+    id = this.current(id, path);
     if (!this.resolved.some((r) => r.op === path && r.find === ref.find))
       this.resolved.push({
         op: path,
@@ -485,6 +494,23 @@ class Compiler {
         name: partSpec(id)!.name,
       });
     return id;
+  }
+  /** The library keeps old numbers as "~Moved to 4032a" redirects: build
+   * with the part they point to. */
+  current(id: string, path: string) {
+    let to = id;
+    for (let hops = 0; hops < 5; hops++) {
+      const m = /^~Moved to (\S+)/i.exec(partSpec(to)?.name ?? "");
+      const next = m && m[1].toLowerCase().replace(/\.dat$/, "") + ".dat";
+      if (!next || !partSpec(next)) break;
+      to = next;
+    }
+    if (to !== id) {
+      let hit = this.moved.get(id);
+      if (!hit) this.moved.set(id, (hit = { to, ops: new Set() }));
+      hit.ops.add(path);
+    }
+    return to;
   }
   isSingle(c: Colour) {
     return typeof c !== "string" || this.colours(c, "").length <= 1;
@@ -2410,16 +2436,35 @@ export function compileBuildScript(
   );
   const compileMs = now() - started;
 
-  // Unavailable colours.
+  // Unavailable colours: an error, with colours the part does come in.
   for (const [k, hit] of c.unavailable) {
     const [ref, colour] = k.split("|");
+    const a = partAvailability(ref);
+    const known = a.status === "known" ? a.colors : new Set<string>();
+    const hints = [
+      ...COMMON_COLOURS.filter((code) => known.has(code)),
+      ...[...known].filter((code) => !COMMON_COLOURS.includes(code)),
+    ]
+      .slice(0, 8)
+      .map(colourName);
     c.problem({
-      severity: "warning",
+      severity: "error",
       code: "colour-unavailable",
-      message: `${partSpec(ref)?.name ?? ref} (${ref}) is not known to be made in ${colourName(colour)} (${hit.count}×)`,
+      message:
+        `${partSpec(ref)?.name ?? ref} (${ref.replace(/\.dat$/, "")}) is not made in ${colourName(colour)} (${hit.count}×)` +
+        (hints.length
+          ? `; it comes in ${hints.join(", ")}${known.size > hints.length ? " and more" : ""}`
+          : ""),
       ops: [...hit.ops].slice(0, 5).map((o) => c.opPaths[o]),
     });
   }
+  for (const [from, hit] of c.moved)
+    c.problem({
+      severity: "info",
+      code: "part-moved",
+      message: `${from.replace(/\.dat$/, "")} is an old number: built with ${hit.to.replace(/\.dat$/, "")} (${partSpec(hit.to)?.name ?? hit.to})`,
+      ops: [...hit.ops].slice(0, 5),
+    });
   if (!colorAvailabilityLoaded())
     c.problem({
       severity: "info",

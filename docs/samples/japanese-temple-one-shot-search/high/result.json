@@ -1,0 +1,514 @@
+{
+  "effort": "high",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 4,
+  "parts": 1918,
+  "seconds": 2799,
+  "tokens": {
+    "input": 499355,
+    "cached": 196352,
+    "output": 82100,
+    "reasoning": 49489
+  },
+  "searches": 22,
+  "knowledge": {
+    "named": [
+      "2412b",
+      "2435",
+      "3003",
+      "3005",
+      "3022",
+      "3031",
+      "3039",
+      "3040b",
+      "3043",
+      "3045",
+      "3062b",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3665a",
+      "3941",
+      "3942c",
+      "4032b",
+      "54200",
+      "60474",
+      "60477",
+      "6141",
+      "61678",
+      "87087"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1475,
+      "usage": {
+        "input": 250656,
+        "cached": 135680,
+        "output": 46202,
+        "reasoning": 37271
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bell",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "4x1",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "61678",
+            "93273",
+            "13547",
+            "11153"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bar",
+            "size": "1x1",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "30374",
+            "87994",
+            "11090",
+            "23443"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tile round 1x1 open hole",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "98138",
+            "25269",
+            "3070b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Slope 45",
+            "size": "1x2",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "3040b",
+            "3665a",
+            "3048b"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope 18",
+            "size": "1x4",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "60477"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope 45 Double",
+            "size": "2x2",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "3045",
+            "3043",
+            "3046"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "inverted slope",
+            "size": "1x2",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "3665a",
+            "2449",
+            "24201"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "plate round 2x2 with hole",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "11833"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "trophy statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "90398",
+            "89801",
+            "10172"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "dish inverted",
+            "size": "4x4",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [
+            "3960"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "window pane lattice",
+            "size": "1x2",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [
+            "60607",
+            "30046"
+          ],
+          "round": 3
+        }
+      ],
+      "toolEvents": [],
+      "outcome": "invalid",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "3003",
+          "3005",
+          "30176",
+          "3022",
+          "3031",
+          "3040b",
+          "3043",
+          "3045",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3470",
+          "3665a",
+          "3941",
+          "3942c",
+          "4032b",
+          "54200",
+          "60474",
+          "60477",
+          "60607",
+          "61678",
+          "87087",
+          "90398"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "reason": "INVALID_INPUT: Invalid build script: $.components.sanmonGate.ops[1].open[0] must be one of \"top\", \"front\", \"back\", \"left\", \"right\""
+    },
+    {
+      "attempt": 2,
+      "seconds": 287,
+      "usage": {
+        "input": 30302,
+        "cached": 0,
+        "output": 7753,
+        "reasoning": 91
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "3003",
+          "3005",
+          "30176",
+          "3022",
+          "3031",
+          "3040b",
+          "3043",
+          "3045",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3470",
+          "3665a",
+          "3941",
+          "3942c",
+          "4032b",
+          "54200",
+          "60474",
+          "60477",
+          "60607",
+          "61678",
+          "87087",
+          "90398"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1990,
+      "reason": "- overlap: 3068b.dat and 3031.dat overlap [sections[0].ops[1].ops[0].ops[0], sections[0].ops[22] > components.stoneLantern.ops[0]]\n- overlap: 3069b.dat and 2412b.dat overlap [sections[0].ops[3].ops[0].ops[0], sections[0].ops[3].ops[0].ops[1]]\n- overlap: 2412b.dat and 3069b.dat overlap [sections[0].ops[3].ops[0].ops[1], sections[0].ops[3].ops[0].ops[0]]\n- overlap: 146 more overlaps"
+    },
+    {
+      "attempt": 3,
+      "seconds": 564,
+      "usage": {
+        "input": 29551,
+        "cached": 0,
+        "output": 13721,
+        "reasoning": 5178
+      },
+      "searches": [],
+      "toolEvents": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "3003",
+          "3005",
+          "3022",
+          "3031",
+          "3039",
+          "3040b",
+          "3043",
+          "3045",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3665a",
+          "3941",
+          "3942c",
+          "4032b",
+          "54200",
+          "60474",
+          "60477",
+          "6141",
+          "61678",
+          "87087"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1920,
+      "reason": "- overlap: 2435.dat and 4865b.dat overlap [sections[0].ops[16], sections[1].ops[19]]\n- overlap: 2435.dat and 98283.dat overlap [sections[0].ops[16], sections[1].ops[0]]\n- overlap: 2435.dat and 2456.dat overlap [sections[0].ops[16], sections[1].ops[1]]\n- overlap: 61678.dat and 61678.dat overlap [sections[2].ops[4].ops[0]]\n- overlap: 60477.dat and 60477.dat overlap [sections[2].ops[4].ops[1]]\n- overlap: 3040b.dat and 3040b.dat overlap [sections[2].ops[4].ops[2]]\n- overlap: 3040b.dat and 3040b.dat overlap [sections[2].ops[4].ops[3]]\n- overlap: 60477.dat and 60477.dat overlap [sections[2].ops[4].ops[4]]\n- overlap: 61678.dat and 61678.dat overlap [sections[2].ops[4].ops[5]]\n- overlap: 218 more overlaps"
+    },
+    {
+      "attempt": 4,
+      "seconds": 473,
+      "usage": {
+        "input": 188846,
+        "cached": 60672,
+        "output": 14424,
+        "reasoning": 6949
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "61678",
+            "limit": 1
+          },
+          "results": [
+            "61678"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "60477",
+            "limit": 1
+          },
+          "results": [
+            "60477"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "3040b",
+            "limit": 1
+          },
+          "results": [
+            "3040b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "2435",
+            "limit": 1
+          },
+          "results": [
+            "2435"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "3069b",
+            "limit": 1
+          },
+          "results": [
+            "3069b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "3665a",
+            "limit": 1
+          },
+          "results": [
+            "3665a"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "3043",
+            "limit": 1
+          },
+          "results": [
+            "3043"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "3045",
+            "limit": 1
+          },
+          "results": [
+            "3045"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "2412b",
+            "limit": 1
+          },
+          "results": [
+            "2412b"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "60596",
+            "limit": 1
+          },
+          "results": [
+            "60596"
+          ],
+          "round": 2
+        }
+      ],
+      "toolEvents": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "3003",
+          "3005",
+          "3022",
+          "3031",
+          "3039",
+          "3040b",
+          "3043",
+          "3045",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3665a",
+          "3941",
+          "3942c",
+          "4032b",
+          "54200",
+          "60474",
+          "60477",
+          "6141",
+          "61678",
+          "87087"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1918
+    }
+  ]
+}

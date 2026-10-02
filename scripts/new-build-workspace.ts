@@ -10,6 +10,8 @@ import { homedir } from "node:os";
 import { join, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { partRange } from "../src/build-script/budget";
+import { promptPartList } from "../src/build-script/part-list";
+import { registerAgentData } from "./build-script-cli";
 
 type Range = ReturnType<typeof partRange>;
 
@@ -61,9 +63,11 @@ export function workspacePrompt(brief: string, range: Range) {
       )
       .replaceAll("`brick-cli ", "`./brick-cli ");
   const fmt = (n: number) => () => n.toLocaleString("en-US");
+  registerAgentData(); // colour availability, for the part list
   // Functions as replacements: a brief may contain "$&" and the like.
   return (
     text
+      .replace("{{PARTS}}", () => promptPartList())
       .replaceAll("{{TARGET_PARTS}}", fmt(range.target))
       .replaceAll("{{MIN_PARTS}}", fmt(range.min))
       .replaceAll("{{MAX_PARTS}}", fmt(range.max))

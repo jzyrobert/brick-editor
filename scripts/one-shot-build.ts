@@ -3,8 +3,10 @@
 // model once, and its reply must be the build script JSON alone. A reply that
 // is not valid JSON, or that does not compile cleanly within the part range,
 // goes back with its errors ("return ONLY a corrected JSON object") up to
-// --attempts times. The model has no tools and sees no renders; accepted
-// builds are rendered afterwards for review. docs/AGENT-BUILDING.md#one-shot-runs
+// --attempts times. The prompt lists the curated parts (--parts-list) and the
+// model may search parts (--search: it replies {"parts_search": …} and gets
+// the results in the same session) but cannot compile or see renders. Accepted builds are rendered afterwards
+// for review. docs/AGENT-BUILDING.md#one-shot-runs
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
@@ -12,13 +14,24 @@ import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { partRange } from "../src/build-script/budget";
+import {
+  promptPartList,
+  searchForAgent,
+  type SearchArgs,
+} from "../src/build-script/part-list";
+import { catalog } from "../src/catalog/catalog";
+import { registerAgentData } from "./build-script-cli";
+import { registerFullLibraryFromDisk } from "./full-library-node";
 import { REPO, slug } from "./new-build-workspace";
 
 type Range = ReturnType<typeof partRange>;
 
 const HELP = `npm run oneshot -- --target-parts N [--leeway 10] (--brief "…" | --brief-file f) --model M
     [--efforts low,medium,high,xhigh,max] [--attempts 5] [--out dir] [--views iso,front,iso-back]
-  Runs each reasoning effort in parallel through \`codex exec\` with its tools turned off.
+    [--parts-list on|off] [--search on|off]
+  Runs each reasoning effort in parallel through \`codex exec\` with its tools turned off;
+  --search on (default) lets it search parts by replying {"parts_search": …}. --parts-list on (default) puts the
+  224 curated parts and their common colours in the prompt.
   --out  default ~/brick-builds/oneshot-<name>-<target>; one folder per effort, plus summary.md`;
 
 /** Text below the first "---" line of a prompt file. */
@@ -30,8 +43,18 @@ function below(file: string) {
 const OUTPUT_LINE =
   "Return ONLY one JSON object (no markdown, no commentary). If the interface supports files, return it as `build.json`.";
 
-/** The build-agent prompt without tools: brief and part range filled in. */
-export function oneShotPrompt(brief: string, range: Range) {
+const SEARCH_SECTION = `## Searching for parts
+
+You cannot compile, render or run commands. Before you answer you may search the parts library (the curated parts and the complete official library): reply with ONLY a JSON object such as \`{"parts_search": [{"query": "stone lantern"}, {"query": "slope", "size": "1x2", "colour": "dark red", "available_in_colour": true}]}\` (up to 5 searches per reply; fields: query, size as WxD studs or WxDxH plates, category, colour, available_in_colour, limit). The results come back with each part's size and colours, and you can search again, up to 10 times, before you answer. Your answer is the build script JSON alone.`;
+
+/** The build-agent prompt for one reply: brief, part range and (unless
+ * turned off) the part list filled in; the search tool described when on.
+ * The part list needs colour availability registered. */
+export function oneShotPrompt(
+  brief: string,
+  range: Range,
+  { partsList = true, search = false } = {},
+) {
   let text = below("build-agent.md");
   const tools = text.indexOf("\n## When you can run tools");
   const next = text.indexOf("\n## ", tools + 1);
@@ -41,6 +64,16 @@ export function oneShotPrompt(brief: string, range: Range) {
     OUTPUT_LINE,
     "Return ONLY one JSON object (no markdown, no commentary).",
   );
+  registerAgentData(); // colour availability, for the part list
+  if (partsList) text = text.replace("{{PARTS}}", () => promptPartList());
+  else {
+    const at = text.indexOf("\n## Parts\n");
+    text = text.slice(0, at) + text.slice(text.indexOf("\n## ", at + 1));
+  }
+  if (search) {
+    const first = text.indexOf("\n## ");
+    text = `${text.slice(0, first)}\n\n${SEARCH_SECTION}\n${text.slice(first)}`;
+  }
   const fmt = (n: number) => () => n.toLocaleString("en-US");
   return (
     text
@@ -103,12 +136,33 @@ type Usage = {
   output: number;
   reasoning: number;
 };
+type Search = { args: SearchArgs; results: string[]; round: number };
+/** What a reply shows about the model's part knowledge. */
+type Knowledge = {
+  /** Part numbers written in the script. */
+  named: string[];
+  /** Of those, the ones not in the prompt's part list. */
+  notInList: string[];
+  /** `{"find": …}` phrases and what each resolved to. */
+  finds: { find: string; ref: string; name: string }[];
+  /** Old numbers the compiler replaced. */
+  moved: string[];
+  /** Placed parts in colours they are not made in. */
+  colourErrors: string[];
+  /** A part number the compiler did not know (the compile stops at the first). */
+  unknownPart?: string;
+};
 type Attempt = {
   attempt: number;
   seconds: number;
   usage: Usage;
-  /** Tool calls the model made anyway (there should be none). */
+  /** Every parts search it asked for, with the part numbers returned. */
+  searches: Search[];
+  /** Other tool calls the model made anyway (there should be none). */
   toolEvents: string[];
+  /** Provider errors waited out and retried (not the model's doing). */
+  providerRetries: { round: number; error: string }[];
+  knowledge?: Knowledge;
   outcome: "accepted" | "no-json" | "invalid" | "errors" | "agent-failed";
   reason?: string;
   parts?: number;
@@ -152,50 +206,20 @@ const NO_TOOLS = [
   "sleep_tool",
 ].flatMap((f) => ["--disable", f]);
 
-async function askCodex(
-  prompt: string,
-  model: string,
-  effort: string,
-  dir: string,
-  n: number,
-) {
-  const empty = join(dir, "empty");
-  await mkdir(empty, { recursive: true });
-  const reply = join(dir, `attempt-${n}.reply.md`);
-  const started = Date.now();
-  const r = await run(
-    "codex",
-    [
-      "exec",
-      "--ignore-user-config",
-      "--skip-git-repo-check",
-      "-s",
-      "read-only",
-      "-m",
-      model,
-      "-c",
-      `model_reasoning_effort="${effort}"`,
-      "-c",
-      'web_search="disabled"',
-      ...NO_TOOLS,
-      "-C",
-      empty,
-      "--json",
-      "-o",
-      reply,
-      prompt,
-    ],
-    empty,
-    3 * 60 * 60 * 1000,
-  );
-  await writeFile(join(dir, `attempt-${n}.codex.jsonl`), r.stdout);
-  await writeFile(join(dir, `attempt-${n}.codex.stderr`), r.stderr);
-  const usage: Usage = { input: 0, cached: 0, output: 0, reasoning: 0 };
-  const toolEvents: string[] = [];
-  for (const line of r.stdout.split("\n")) {
+const TSX = join(REPO, "node_modules/tsx/dist/cli.mjs");
+/** Provider errors worth waiting out. */
+const BUSY =
+  /[^\n"]*(at capacity|rate limit|overloaded|temporarily unavailable|stream disconnected)[^\n"]*/i;
+/** Search rounds allowed in one attempt before the model must answer. */
+const SEARCH_ROUNDS = 10;
+
+function events(stdout: string, usage: Usage, toolEvents: string[]) {
+  let thread: string | undefined;
+  for (const line of stdout.split("\n")) {
     if (!line.trim()) continue;
     try {
       const e = JSON.parse(line);
+      if (e.type === "thread.started") thread = e.thread_id;
       if (e.type === "turn.completed" && e.usage) {
         usage.input += e.usage.input_tokens ?? 0;
         usage.cached += e.usage.cached_input_tokens ?? 0;
@@ -213,20 +237,171 @@ async function askCodex(
       // not an event line
     }
   }
+  return thread;
+}
+
+/** The searches a reply asks for ({"parts_search": {...} | [...]}), if any. */
+export function searchRequest(text: string): SearchArgs[] | undefined {
+  const json = extractJson(text) as { parts_search?: unknown } | undefined;
+  const req = json?.parts_search;
+  if (!req || typeof req !== "object") return undefined;
+  return (Array.isArray(req) ? req : [req]).slice(0, 5) as SearchArgs[];
+}
+
+/** One attempt: the message, then (with --search) as many search rounds as
+ * the model asks for, each answered in the same Codex session, until it
+ * replies with something else. Every Codex tool stays off. */
+async function askCodex(
+  prompt: string,
+  model: string,
+  effort: string,
+  dir: string,
+  n: number,
+  search: boolean,
+) {
+  const empty = join(dir, "empty");
+  await mkdir(empty, { recursive: true });
+  const reply = join(dir, `attempt-${n}.reply.md`);
+  const common = [
+    "--ignore-user-config",
+    "--skip-git-repo-check",
+    "-m",
+    model,
+    "-c",
+    `model_reasoning_effort="${effort}"`,
+    "-c",
+    'web_search="disabled"',
+    "-c",
+    'sandbox_mode="read-only"',
+    ...NO_TOOLS,
+    "--json",
+    "-o",
+    reply,
+  ];
+  const usage: Usage = { input: 0, cached: 0, output: 0, reasoning: 0 };
+  const toolEvents: string[] = [];
+  const searches: Search[] = [];
+  const retries: { round: number; error: string }[] = [];
+  const started = Date.now();
+  let thread: string | undefined,
+    message = prompt,
+    text = "",
+    code = 0,
+    stderr = "";
+  for (let round = 0; ; round++) {
+    if (existsSync(reply)) await writeFile(reply, "");
+    let r: Awaited<ReturnType<typeof run>>;
+    // The provider being busy is not the model's failure: wait and send the
+    // same message again (1, 2, 4, 8, 16 minutes).
+    for (let tries = 0; ; tries++) {
+      r = await run(
+        "codex",
+        thread
+          ? ["exec", "resume", thread, ...common, message]
+          : ["exec", ...common, message],
+        empty,
+        3 * 60 * 60 * 1000,
+      );
+      const busy = r.code !== 0 && BUSY.exec(`${r.stdout}\n${r.stderr}`)?.[0];
+      if (!busy || tries >= 5) break;
+      retries.push({ round, error: busy });
+      thread = events(r.stdout, usage, toolEvents) ?? thread;
+      await new Promise((done) => setTimeout(done, 60_000 * 2 ** tries));
+    }
+    const suffix = round ? `.${round}` : "";
+    await writeFile(join(dir, `attempt-${n}${suffix}.codex.jsonl`), r.stdout);
+    await writeFile(join(dir, `attempt-${n}${suffix}.codex.stderr`), r.stderr);
+    thread = events(r.stdout, usage, toolEvents) ?? thread;
+    code = r.code;
+    stderr = r.stderr;
+    text = existsSync(reply) ? readFileSync(reply, "utf8") : "";
+    if (code !== 0 || !search) break;
+    const asked = searchRequest(text);
+    if (!asked || !thread) break;
+    if (round >= SEARCH_ROUNDS) {
+      message = "No more searches. Answer now with ONLY the build script JSON.";
+      if (round > SEARCH_ROUNDS) break;
+      continue;
+    }
+    const answers = asked.map((args) => {
+      const out = searchForAgent(args);
+      searches.push({ args, results: out.ids, round: round + 1 });
+      return `### ${JSON.stringify(args)}\n${out.text}`;
+    });
+    await writeFile(
+      join(dir, `attempt-${n}.searches.jsonl`),
+      searches.map((x) => JSON.stringify(x)).join("\n") + "\n",
+    );
+    message = `Search results:\n\n${answers.join("\n\n")}\n\nSearch again (${SEARCH_ROUNDS - round - 1} rounds left) or answer with ONLY the build script JSON.`;
+  }
   return {
-    code: r.code,
-    text: existsSync(reply) ? readFileSync(reply, "utf8") : "",
+    code,
+    searches,
+    retries,
+    text,
     seconds: Math.round((Date.now() - started) / 1000),
     usage,
     toolEvents,
-    stderr: r.stderr,
+    stderr,
   };
 }
 
-const CLI = [
-  join(REPO, "node_modules/tsx/dist/cli.mjs"),
-  join(REPO, "scripts/brick-cli.ts"),
-];
+const CLI = [TSX, join(REPO, "scripts/brick-cli.ts")];
+
+const LISTED = new Set(
+  Object.keys(catalog).map((id) => id.replace(/\.dat$/, "")),
+);
+
+/** Part numbers written in a script: `part` fields, `parts` lists and aliases
+ * (phrases and @aliases are not numbers). */
+function namedParts(script: unknown) {
+  const out = new Set<string>();
+  const add = (v: unknown) => {
+    if (typeof v === "string" && !v.startsWith("@") && !/\s/.test(v))
+      out.add(v.toLowerCase().replace(/\.dat$/, ""));
+  };
+  const walk = (v: unknown, key?: string) => {
+    if (Array.isArray(v)) {
+      if (key === "parts") v.forEach(add);
+      v.forEach((x) => walk(x));
+    } else if (v && typeof v === "object")
+      for (const [k, x] of Object.entries(v)) {
+        if (k === "part") add(x);
+        if (k === "parts" && x && typeof x === "object" && !Array.isArray(x))
+          Object.values(x).forEach(add);
+        walk(x, k);
+      }
+  };
+  walk(script);
+  return [...out].sort();
+}
+
+/** Part knowledge in one reply: numbers named, finds, fixes and errors. */
+export function knowledge(
+  script: unknown,
+  report?: { resolved?: Knowledge["finds"]; problems?: Problem[] },
+  reason?: string,
+): Knowledge {
+  const named = namedParts(script);
+  const problems = report?.problems ?? [];
+  const unknown = reason?.match(/unknown part "([^"]+)"/);
+  return {
+    named,
+    notInList: named.filter((p) => !LISTED.has(p)),
+    finds: (report?.resolved ?? []).map(({ find, ref, name }) => ({
+      find,
+      ref: ref.replace(/\.dat$/, ""),
+      name,
+    })),
+    moved: problems
+      .filter((p) => p.code === "part-moved")
+      .map((p) => p.message),
+    colourErrors: problems
+      .filter((p) => p.code === "colour-unavailable")
+      .map((p) => p.message),
+    ...(unknown ? { unknownPart: unknown[1] } : {}),
+  };
+}
 
 async function compile(
   dir: string,
@@ -289,6 +464,7 @@ async function runEffort(
     attempts: number;
     out: string;
     views: string;
+    search: boolean;
   },
 ) {
   const dir = join(o.out, effort);
@@ -298,12 +474,14 @@ async function runEffort(
   let message = o.prompt,
     accepted = false;
   for (let n = 1; n <= o.attempts && !accepted; n++) {
-    const ask = await askCodex(message, o.model, effort, dir, n);
+    const ask = await askCodex(message, o.model, effort, dir, n, o.search);
     const a: Attempt = {
       attempt: n,
       seconds: ask.seconds,
       usage: ask.usage,
+      searches: ask.searches,
       toolEvents: ask.toolEvents,
+      providerRetries: ask.retries,
       outcome: "agent-failed",
     };
     attempts.push(a);
@@ -322,6 +500,7 @@ async function runEffort(
         JSON.stringify(json, null, 1) + "\n",
       );
       const c = await compile(dir, n, o.range);
+      a.knowledge = knowledge(json, c.report, c.reason);
       if (!c.report) {
         a.outcome = "invalid";
         reason = c.reason!;
@@ -383,6 +562,8 @@ async function runEffort(
       output: total("output"),
       reasoning: total("reasoning"),
     },
+    searches: attempts.reduce((s, a) => s + a.searches.length, 0),
+    knowledge: final?.knowledge,
     attempts,
   };
   await writeFile(
@@ -415,6 +596,8 @@ async function main(argv: string[]) {
         "out",
         "views",
         "name",
+        "parts-list",
+        "search",
       ].includes(key)
     )
       throw new Error(`Unknown flag ${argv[i]}\n${HELP}`);
@@ -444,21 +627,38 @@ async function main(argv: string[]) {
     ).replace(/^~(?=$|\/)/, homedir()),
   );
   await mkdir(out, { recursive: true });
-  const prompt = oneShotPrompt(brief, range);
+  const onOff = (key: string) => {
+    const v = flags.get(key) ?? "on";
+    if (v !== "on" && v !== "off") throw new Error(`--${key} takes on or off`);
+    return v === "on";
+  };
+  const partsList = onOff("parts-list"),
+    search = onOff("search");
+  registerFullLibraryFromDisk();
+  registerAgentData();
+  const prompt = oneShotPrompt(brief, range, { partsList, search });
   const views = flags.get("views") ?? "iso,front,iso-back";
   const results = await Promise.all(
     efforts.map((e) =>
-      runEffort(e, { prompt, model, range, attempts, out, views }),
+      runEffort(e, { prompt, model, range, attempts, out, views, search }),
     ),
   );
   const rows = results.map(
     (r) =>
-      `| ${r.effort} | ${r.accepted ? "yes" : "no"} | ${r.parts?.toLocaleString("en-US") ?? "–"} | ${r.attemptsUsed} | ${r.seconds} | ${r.tokens.output.toLocaleString("en-US")} (${r.tokens.reasoning.toLocaleString("en-US")} reasoning) | ${r.attempts.map((a) => a.outcome).join(", ")} |`,
+      `| ${r.effort} | ${r.accepted ? "yes" : "no"} | ${r.parts?.toLocaleString("en-US") ?? "–"} | ${r.attemptsUsed} | ${r.seconds} | ${r.tokens.output.toLocaleString("en-US")} (${r.tokens.reasoning.toLocaleString("en-US")} reasoning) | ${r.searches} | ${r.knowledge?.finds.length ?? "–"} | ${r.knowledge ? `${r.knowledge.named.length} (${r.knowledge.notInList.length})` : "–"} | ${r.attempts.reduce((s, a) => s + (a.knowledge?.colourErrors.length ?? 0), 0)} | ${r.attempts.map((a) => a.outcome).join(", ")} |`,
   );
   await writeFile(
     join(out, "summary.json"),
     JSON.stringify(
-      { brief: brief.trim(), model, range, attempts, results },
+      {
+        brief: brief.trim(),
+        model,
+        range,
+        attempts,
+        partsList,
+        search,
+        results,
+      },
       null,
       2,
     ) + "\n",
@@ -466,7 +666,7 @@ async function main(argv: string[]) {
   await writeFile(
     join(out, "summary.md"),
     `# ${brief.trim()} — ${model}, ${range.min}–${range.max} parts (target ${range.target} ± ${range.leeway}%)\n\n` +
-      "| effort | accepted | parts | attempts | seconds | output tokens | outcomes |\n| --- | --- | --- | --- | --- | --- | --- |\n" +
+      "| effort | accepted | parts | attempts | seconds | output tokens | searches | finds | numbers named (not listed) | colour errors | outcomes |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n" +
       rows.join("\n") +
       "\n",
   );

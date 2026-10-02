@@ -10,6 +10,7 @@ import {
   type CompileReport,
 } from "../src/build-script/compile";
 import { buildScriptJsonSchema, opReference } from "../src/build-script/spec";
+import { promptPartList } from "../src/build-script/part-list";
 import {
   parseSize,
   registerSearchThumbnails,
@@ -345,7 +346,8 @@ export async function buildCommand(argv: string[]) {
 }
 
 const HELP_PARTS = `brick-cli parts search "<query>" [--category Slopes] [--size 1x4 | 1x4x3 (plates) | 1x4x1b (bricks)]
-    [--colour red] [--available] [--connectable] [--curated] [--limit 20] [--json]`;
+    [--colour red] [--available] [--connectable] [--curated] [--limit 20] [--json]
+brick-cli parts list   the curated parts with their common colours (the prompt's {{PARTS}})`;
 export async function partsCommand(argv: string[]) {
   const [sub, ...rest] = argv;
   const a = parse(
@@ -353,6 +355,12 @@ export async function partsCommand(argv: string[]) {
     ["category", "size", "colour", "color", "limit"],
     ["available", "connectable", "curated", "json", "help"],
   );
+  if (sub === "list" && !a.has("help")) {
+    // The prompt's part list ({{PARTS}} in prompts/build-agent.md).
+    registerAgentData();
+    console.log(promptPartList());
+    return;
+  }
   if (sub !== "search" || a.has("help")) {
     console.log(HELP_PARTS);
     return;

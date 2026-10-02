@@ -197,7 +197,7 @@ describe("build script ops", () => {
           colour: "white",
           openings: [
             { at: 1, width: 4, height: 18, fill: "door", door: "red" },
-            { at: 7, width: 2, y: 3, height: 9, frame: "blue" },
+            { at: 7, width: 2, y: 3, height: 9, frame: "white" },
             { at: 10, width: 2, y: 6, height: 6, fill: "none" },
           ],
         },
@@ -348,15 +348,20 @@ describe("build script ops", () => {
     }
   });
 
-  it("warns about colours a placed part is not made in", () => {
+  it("refuses colours a placed part is not made in, naming ones it is", () => {
     const { report } = parts(
       script([{ op: "place", part: "60593", at: [0, 0, 0], colour: "blue" }]),
     );
-    expect(report.problems).toContainEqual(
-      expect.objectContaining({
-        code: "colour-unavailable",
-        ops: ["sections[0].ops[0]"],
-      }),
+    expect(report.ok).toBe(false);
+    const problem = report.problems.find(
+      (p) => p.code === "colour-unavailable",
+    )!;
+    expect(problem).toMatchObject({
+      severity: "error",
+      ops: ["sections[0].ops[0]"],
+    });
+    expect(problem.message).toMatch(
+      /\(60593\) is not made in Blue \(1×\); it comes in White/,
     );
     expect(() =>
       compileBuildScript(
@@ -576,6 +581,27 @@ describe("build script ops", () => {
     ).toMatch(/^50 parts: 5 over the maximum of 45 \(largest sections/);
     expect(() => first({ targetParts: 0 })).toThrow(/positive integer/);
     expect(() => first({ targetParts: 50, leeway: 101 })).toThrow(/0–100/);
+  });
+
+  it("builds an old part number with the part it moved to", () => {
+    const { report, project } = compileBuildScript(
+      script([
+        { op: "baseplate", at: [0, 0], size: [16, 16], colour: "green" },
+        { op: "place", part: "4073", at: [1, 0, 1], colour: "red" },
+        { op: "place", part: { find: "4073" }, at: [3, 0, 1], colour: "red" },
+      ]),
+    );
+    expect(
+      occurrences(project!).filter((o) => o.node.ref === "6141.dat"),
+    ).toHaveLength(2);
+    expect(report.problems).toContainEqual(
+      expect.objectContaining({
+        severity: "info",
+        code: "part-moved",
+        message: "4073 is an old number: built with 6141 (Round Plate 1 × 1)",
+      }),
+    );
+    expect(report.ok).toBe(true);
   });
 
   it("rounds part ranges to whole parts inside the leeway", () => {
