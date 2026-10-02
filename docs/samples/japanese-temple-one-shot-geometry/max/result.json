@@ -1,0 +1,154 @@
+{
+  "effort": "max",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 2061,
+  "seconds": 2217,
+  "tokens": {
+    "input": 80002,
+    "cached": 25472,
+    "output": 46254,
+    "reasoning": 23623
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "14769",
+      "2435",
+      "30176",
+      "3062b",
+      "32607",
+      "3471",
+      "3660b",
+      "3665a",
+      "3941",
+      "3943b",
+      "3960",
+      "4032b",
+      "4070",
+      "4589",
+      "54200",
+      "60474",
+      "6141",
+      "63864",
+      "87081",
+      "98138"
+    ],
+    "notInList": [],
+    "finds": [
+      {
+        "find": "minifigure statuette",
+        "ref": "90398",
+        "name": "Minifig Statuette"
+      }
+    ],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1792,
+      "usage": {
+        "input": 42237,
+        "cached": 25472,
+        "output": 32234,
+        "reasoning": 20200
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "14769",
+          "2435",
+          "30176",
+          "3062b",
+          "32607",
+          "3471",
+          "3660b",
+          "3665a",
+          "3941",
+          "3943b",
+          "3960",
+          "4032b",
+          "4070",
+          "4589",
+          "54200",
+          "60474",
+          "6141",
+          "63864",
+          "87081",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [
+          {
+            "find": "minifigure statuette",
+            "ref": "90398",
+            "name": "Minifig Statuette"
+          }
+        ],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2061,
+      "reason": "- overlap: 98138 Round Tile 1 × 1 at [45, 1, 24] and 30176 Plant 1 × 1 Bamboo at [45, 0, 22.5] overlap where their boxes meet: x 45–46, y 1–2, z 24–25 [sections[0].ops[4].ops[0].ops[0].ops[1], sections[0].ops[17].ops[0].ops[0]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 425,
+      "usage": {
+        "input": 37765,
+        "cached": 0,
+        "output": 14020,
+        "reasoning": 3423
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "14769",
+          "2435",
+          "30176",
+          "3062b",
+          "32607",
+          "3471",
+          "3660b",
+          "3665a",
+          "3941",
+          "3943b",
+          "3960",
+          "4032b",
+          "4070",
+          "4589",
+          "54200",
+          "60474",
+          "6141",
+          "63864",
+          "87081",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [
+          {
+            "find": "minifigure statuette",
+            "ref": "90398",
+            "name": "Minifig Statuette"
+          }
+        ],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2061
+    }
+  ]
+}

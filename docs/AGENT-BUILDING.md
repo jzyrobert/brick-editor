@@ -178,7 +178,7 @@ Measured on 30 official set models ([DESIGN-LANGUAGE.md](DESIGN-LANGUAGE.md)); t
 
 ## Part cheat sheet
 
-Curated parts (snap and count for connectivity). `npm run cli -- parts list` prints all 224 with the common colours each comes in (the prompt's `{{PARTS}}`); `npm run cli -- parts search "<words>"` finds anything else in the complete LDraw library.
+Curated parts (snap and count for connectivity). `npm run cli -- parts list` prints all 224 with each part's footprint at `turn: 0` (studs along x × z), height in plates and the common colours it comes in (the prompt's `{{PARTS}}`; the prompt's Geometry rules say how footprints turn); `npm run cli -- parts search "<words>"` finds anything else in the complete LDraw library.
 
 | role             | parts                                                                                                                                                                                                                                                                            |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -211,7 +211,7 @@ Report (`--report file.json`, `buildScript.compile()`):
 - `resolved`: what each `find` became. `check`: overlaps, off-grid, connected groups, health.
 - `problems`: `{severity, code, message, ops}`; `ops` are paths such as `sections[2].ops[0].ops[3]` or `components.house.ops[1]`; a part inside a component names both, `sections[3].ops[1] > components.house.ops[4]`. `floating` also says where the first loose groups are: `e.g. 3710 at [48, 21, -1]` (studs, plate level).
 
-Common fixes: `overlap` — two ops fill the same space (parts overlapping parts; massing never overlaps). `floating` — nothing under a part: check its `y` against the top of what should hold it (a flat roof at `y` is 1 plate; its parapet adds more). `opening-height` — the opening is taller than its wall. `opening-size` — no window fits; use 2×6, 2×9, 4×9 or 4×18. Gable/hip roofs need an even depth across the ridge (including overhang).
+Common fixes: `overlap` — two parts fill the same space (massing never overlaps: parts take their cells out of it). Overlaps are grouped by their two source ops and parts, each saying where: `3045 Slope 45° 2 × 2 Double Convex at [9, 37, 31] and 2453b Brick 1 × 1 × 5 at [10, 38, 31] overlap where their boxes meet: x 10–11, y 38–40.5, z 31–32 (4 pairs like this)` (studs, y in plates). Schema errors show the rejected value, e.g. `open[1] must be one of … (got "bottom")`. `floating` — nothing under a part: check its `y` against the top of what should hold it (a flat roof at `y` is 1 plate; its parapet adds more). `opening-height` — the opening is taller than its wall. `opening-size` — no window fits; use 2×6, 2×9, 4×9 or 4×18. Gable/hip roofs need an even depth across the ridge (including overhang).
 
 What the checks count as connected: baseplates laid side by side are one ground (the groups standing on them count as one); a train on its wheels and a parked car on its wheel holders stand apart by design. Stud-high bumps sitting in the part above (a window frame's end studs, its glass's pivots) are not overlaps.
 
@@ -302,7 +302,7 @@ npm run oneshot -- --target-parts 2000 --leeway 5 --brief "a japanese buddhist t
 - Accepted builds are rendered afterwards (`--views`, default `iso,front,iso-back`) for review only.
 - Output (`~/brick-builds/oneshot-<name>-<target>` unless `--out`): per effort, the prompt, every reply, its JSON, report, searches and Codex event logs, `build.json`, `views/` and `result.json`; `summary.md` and `summary.json` for the whole run. Each attempt records its outcome, the errors sent back, parts, seconds, tokens, every search with the parts it returned, and its **part knowledge**: the part numbers named (and which are not in the prompt's list), every `{"find": …}` with what it resolved to, old numbers replaced, colour errors and any unknown number. Tool events (there should be none) are listed too.
 
-Samples: [a Japanese Buddhist temple at five reasoning efforts](samples/japanese-temple-one-shot/README.md) (no part list or search), and [the same with the part list and search](samples/japanese-temple-one-shot-search/README.md), with a comparison.
+Samples: [a Japanese Buddhist temple at five reasoning efforts](samples/japanese-temple-one-shot/README.md) (no part list or search), [the same with the part list and search](samples/japanese-temple-one-shot-search/README.md) (with the models' feedback), and [again with geometry rules, footprints and located errors](samples/japanese-temple-one-shot-geometry/README.md), comparing all three.
 
 This measures something different from an [agent workspace](#agent-workspaces), where the agent compiles and looks at renders as often as it likes; keep the two kinds of result apart.
 

@@ -759,3 +759,9 @@ and [hybrid trial](reports/instruction-generation/hybrid-workflow.md) link
 independent audits, execution records, notices and actual selected publication
 views. Whole hybrid scores remain3/3/3/2. These are bounded desk checks with no
 physical build or whole-corpus acceptance claim.
+
+## Geometry rules, footprints and located errors (2 October 2026)
+
+- **Messages on real failures.** Recompiling the second temple run's failed replies: xhigh's last reply now reads `3045 Slope 45° 2 × 2 Double Convex at [9, 37, 31] and 2453b Brick 1 × 1 × 5 at [10, 38, 31] overlap where their boxes meet: x 10–11, y 38–40.5, z 31–32 (4 pairs like this)`; low's first reply's 312 overlaps fall into a few kinds led by 132 alike tile pairs; schema errors end `(got "bottom")` and `(got [0.5,31,0.5])`. 61678 "Curved Slope 4 × 1" lists as 1×4 studs (x×z), 3 plates.
+- **Temple run 3** ([sample](samples/japanese-temple-one-shot-geometry/README.md)): all five efforts accepted on their second reply (1,965–2,098 parts), no schema errors, 5–37 minutes and 9k–46k output tokens, against run 2's 13–112 minutes and 21k–142k with xhigh not accepted. No searches; one colour error (medium's first reply). Remaining gap: irregular parts such as bamboo (30176) list their 1 × 1 attachment footprint while their leaves reach three to four studs.
+- **Tests:** `tests/unit/build-script.test.ts` (grouped overlaps with positions, rejected values in schema errors, section totals on under-budget), `tests/unit/one-shot-build.test.ts` (footprints and heights in the list and search results, geometry rules and search allowance in the prompt), `tests/unit/build-workspace.test.ts`.

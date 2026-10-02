@@ -59,6 +59,17 @@ Searches, finds and colour errors are summed over attempts; part numbers are tho
 - **It costs more.** Output tokens rose at every effort (low 8k → 23k, max 73k → 102k), and every reply carries the ~7,600-token list.
 - **The builds look richer to us**: slate and dark-red palettes at most efforts, stone lanterns with cone caps, raked gravel gardens, ringed spires. Judge from the renders below and [the first run's](../japanese-temple-one-shot/README.md).
 
+### What the models said
+
+Afterwards each effort's final Codex session was resumed (same model, effort and tools off) and asked seven questions about the prompt, the part list, search, the errors, its own failures and what it would change ([the script](interview.sh); answers: [low](low/feedback.md), [medium](medium/feedback.md), [high](high/feedback.md), [xhigh](xhigh/feedback.md), [max](max/feedback.md)). Their summaries of attempts other than their last came from us, with each attempt's errors cut to 400 characters. They agreed on:
+
+1. **Missing geometry rules:** integer coordinates, the `open` faces, `holes` coordinates and what a hole removes, roof heights, how a turn changes a footprint, inclusive endpoints, what a component's `size` means.
+2. **The part list lacked placement data:** footprint and height, orientation, reach of irregular parts.
+3. **Overlap errors named ops but not places:** they wanted positions, intersection bounds and grouping of alike collisions; schema errors without the rejected value.
+4. Part counts are hard to predict; all five would rather have search as a tool call; three asked for a validation tool.
+
+The [third run](../japanese-temple-one-shot-geometry/README.md) acts on 1–3.
+
 Files per effort: `build.json` (the accepted script; xhigh has `final-attempt.json`, its last, unaccepted reply), `result.json` (every attempt: outcome, errors sent back, parts, seconds, tokens, each search and what it returned, and part knowledge) and three views.
 
 ## low

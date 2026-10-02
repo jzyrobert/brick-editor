@@ -1,0 +1,133 @@
+{
+  "effort": "xhigh",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 1997,
+  "seconds": 1511,
+  "tokens": {
+    "input": 59151,
+    "cached": 0,
+    "output": 42103,
+    "reasoning": 28269
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2435",
+      "3003",
+      "30176",
+      "3022",
+      "3023b",
+      "3039",
+      "3040b",
+      "3062b",
+      "3069b",
+      "3471",
+      "3665a",
+      "3941",
+      "3960",
+      "4032b",
+      "4070",
+      "4589",
+      "54200",
+      "98138"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1253,
+      "usage": {
+        "input": 26300,
+        "cached": 0,
+        "output": 33657,
+        "reasoning": 26715
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2435",
+          "3003",
+          "30176",
+          "3022",
+          "3023b",
+          "3039",
+          "3040b",
+          "3062b",
+          "3069b",
+          "3471",
+          "3665a",
+          "3941",
+          "3960",
+          "4032b",
+          "4070",
+          "4589",
+          "54200",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2570,
+      "reason": "- over-budget: 2,570 parts: 470 over the maximum of 2,100 (target 2,000 ± 5%: 1,900–2,100) (largest sections: Five-storey pagoda 1,509, Raised worship hall and veranda 978, Courtyard and contemplation garden 83; costliest ops: sections[1].ops[3].ops[0] 620, sections[1].ops[4].ops[0] 526, sections[1].ops[5] 321, sections[2].ops[4] 240, sections[2].ops[29] 96) [sections[1].ops[3].ops[0], sections[1].ops[4].ops[0], sections[1].ops[5], sections[2].ops[4], sections[2].ops[29]]\n- overlap: 30176 Plant 1 × 1 Bamboo at [57, 0, 7.5] and 30176 Plant 1 × 1 Bamboo at [59, 0, 7.5] overlap where their boxes meet: x 59–60, y 0–3.5, z 7.5–11.5 (2 pairs like this) [sections[0].ops[17].ops[0]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 258,
+      "usage": {
+        "input": 32851,
+        "cached": 0,
+        "output": 8446,
+        "reasoning": 1554
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2435",
+          "3003",
+          "30176",
+          "3022",
+          "3023b",
+          "3039",
+          "3040b",
+          "3062b",
+          "3069b",
+          "3471",
+          "3665a",
+          "3941",
+          "3960",
+          "4032b",
+          "4070",
+          "4589",
+          "54200",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1997
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "effort": "high",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "leeway": 5,
+  "minParts": 1900,
+  "maxParts": 2100,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 1965,
+  "seconds": 1112,
+  "tokens": {
+    "input": 62176,
+    "cached": 0,
+    "output": 33642,
+    "reasoning": 16975
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "2412b",
+      "3003",
+      "3004",
+      "3005",
+      "3023b",
+      "3039",
+      "3062b",
+      "3665a",
+      "3942c",
+      "3960",
+      "4032b",
+      "4589",
+      "54200"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 830,
+      "usage": {
+        "input": 26298,
+        "cached": 0,
+        "output": 24373,
+        "reasoning": 14905
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "3003",
+          "3004",
+          "3005",
+          "30176",
+          "3023b",
+          "3039",
+          "3062b",
+          "3069b",
+          "3665a",
+          "3942c",
+          "3960",
+          "4032b",
+          "4589",
+          "54200",
+          "87087"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2419,
+      "reason": "- over-budget: 2,419 parts: 319 over the maximum of 2,100 (target 2,000 ± 5%: 1,900–2,100) (largest sections: Main worship hall 953, Pagoda stone platform and first tier 506, Temple grounds and raked garden 378; costliest ops: sections[1].ops[3] 202, sections[1].ops[27] 159, sections[3].ops[4] 128, sections[4].ops[1] 96, sections[0].ops[3] 80) [sections[1].ops[3], sections[1].ops[27], sections[3].ops[4], sections[4].ops[1], sections[0].ops[3]]\n- overlap: 30176 Plant 1 × 1 Bamboo at [14, 1, 21.5] and 3001 Brick 2 × 4 at [14, 3, 25] overlap where their boxes meet: x 14–17, y 3–4.5, z 25–25.5 [sections[0].ops[8].ops[0] > components.bamboo.ops[0].ops[0], sections[3].ops[3]]\n- overlap: 30176 Plant 1 × 1 Bamboo at [14, 1, 21.5] and 3710 Plate 1 × 4 at [14, 3, 24] overlap where their boxes meet: x 14–17, y 3–4.5, z 24–25 [sections[0].ops[8].ops[0] > components.bamboo.ops[0].ops[0], sections[3].ops[3]]\n- overlap: 60593 Window 1 × 2 × 3 Frame at [15, 74, 32] and 3004 Brick 1 × 2 at [16, 82, 31] overlap where their boxes meet: x 16–17, y 82–83.5, z 32–33 [sections[5].ops[1], sections[5].ops[4].ops[0] > components.eaveBracket.ops[0]]\n- overlap: 60602 Glass for Window 1 × 2 × 3 at [15, 75, 32] and 3004 Brick 1 × 2 at [16, 82, 31] overlap where their boxes meet: x 16–17, y 82–83, z 32–32.5 [sections[5].ops[1], sections[5].ops[4].ops[0] > components.eaveBracket.ops[0]]\n- overlap: 60593 Window 1 × 2 × 3 Frame at [15, 74, 37] and 3004 Brick 1 × 2 at [16, 82, 37] overlap where their boxes meet: x 16–17, y 82–83.5, z 37–38 [sections[5].ops[1], sections[5].ops[4].ops[1] > components.eaveBracket.ops[0]]\n- overlap: 60602 Glass for Window 1 × 2 × 3 at [15, 75, 37.5] and 3004 Brick 1 × 2 at [16, 82, 37] overlap where their boxes meet: x 16–17, y 82–83, z 37.5–38 [sections[5].ops[1], sections[5].ops[4].ops[1] > components.eaveBracket.ops[0]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 282,
+      "usage": {
+        "input": 35878,
+        "cached": 0,
+        "output": 9269,
+        "reasoning": 2070
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "3003",
+          "3004",
+          "3005",
+          "3023b",
+          "3039",
+          "3062b",
+          "3665a",
+          "3942c",
+          "3960",
+          "4032b",
+          "4589",
+          "54200"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1965
+    }
+  ]
+}
