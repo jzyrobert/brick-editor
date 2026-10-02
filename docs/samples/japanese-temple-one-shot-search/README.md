@@ -14,7 +14,7 @@ What changed since the first run:
 - **Stricter compiler.** A part in a colour it is not made in is now an error (sent back like any other), and old numbers such as 4032 are built as the part they moved to.
 - **Provider retries.** The first xhigh and max runs were lost to the provider's "Selected model is at capacity" after 15 searches and 50–65 minutes; the runner now waits and retries such errors, and both were run again ([their results](xhigh/capacity-failure-result.json), [max](max/capacity-failure-result.json)).
 
-Everything else is as before: GPT-6.1-Sol through `codex exec` with every Codex tool off, 1,900–2,100 parts (2,000 ± 5%), repairs with the errors and the previous reply, warnings not sent back, renders made afterwards for this page only.
+Everything else is as before: GPT-6.1-Sol through `codex exec` with every Codex tool off, 1,900–2,100 parts (2,000 ± 5%), repairs with the errors and the previous reply, warnings not sent back, renders made afterwards for this page only, with the Realistic look (`--look realistic`).
 
 ## Results
 
