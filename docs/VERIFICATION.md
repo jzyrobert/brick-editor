@@ -789,3 +789,10 @@ physical build or whole-corpus acceptance claim.
     - `tests/integration/build-cli.test.ts`: far-off targets written with a `size:` line, `maxParts` refused with no model left behind, `--leeway` rejected.
   - Browser: `tests/browser/build-script.spec.ts` passed, including `limits.maxParts` refusing `apply` and `targetParts` reported by `compile`.
   - Templates: `tests/unit/template-*.test.ts` unchanged by the fence fix.
+
+## One-shot runs through Claude Code (3 October 2026)
+
+- **No tools.** `claude -p --tools "" --safe-mode --strict-mcp-config` answered "No tools are available to me in this session" when asked; no temple reply used a tool. At xhigh and max the first build reply hit the 128,000-token output cap while thinking and Claude Code continued it with its own message (`num_turns` 2, logged as `turns:2`); the session transcripts show the continuation.
+- **Smoke run.** A 60-part shed at low effort went through two attempts end to end (overlap, then over budget), with tokens, thinking tokens, cost and the session logged.
+- **Temple run with Opus 5.5** ([sample](samples/japanese-temple-one-shot-claude/README.md)): the run-3 prompt, byte for byte; all five efforts accepted (1,914–2,015 parts) after 5, 4, 2, 2 and 2 attempts, no schema errors, 4–51 minutes, 27k–334k output tokens, about $27 in all. Low and medium missed the part range; every overlap involved an irregular part (6255 plants, 2435 pines) reaching past its listed footprint. xhigh and max made 10 searches each; one colour error (low's first reply). Interviews with each final session are on the page.
+- **Tests:** `npx tsc -b`, `npm run format:check`, `tests/unit/one-shot-build.test.ts`.

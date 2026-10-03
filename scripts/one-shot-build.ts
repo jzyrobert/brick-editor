@@ -28,8 +28,9 @@ import { REPO, slug } from "./new-build-workspace";
 
 const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file f) --model M
     [--efforts low,medium,high,xhigh,max] [--attempts 5] [--out dir] [--views iso,front,iso-back]
-    [--parts-list on|off] [--search on|off]
-  Runs each reasoning effort in parallel through \`codex exec\` with its tools turned off;
+    [--parts-list on|off] [--search on|off] [--runner codex|claude]
+  Runs each reasoning effort in parallel through \`codex exec\` (or, with --runner claude,
+  \`claude -p\` with --effort) with its tools turned off;
   --search on (default) lets it search parts by replying {"parts_search": …}. --parts-list on (default) puts the
   224 curated parts and their common colours in the prompt.
   --out  default ~/brick-builds/oneshot-<name>-<target>; one folder per effort, plus summary.md`;
@@ -154,6 +155,8 @@ type Usage = {
   cached: number;
   output: number;
   reasoning: number;
+  /** What the provider says the calls cost (Claude Code reports it). */
+  costUsd: number;
 };
 type Search = { args: SearchArgs; results: string[]; round: number };
 /** What a reply shows about the model's part knowledge. */
@@ -187,17 +190,26 @@ type Attempt = {
   parts?: number;
 };
 
-function run(cmd: string, args: string[], cwd: string, timeoutMs: number) {
+function run(
+  cmd: string,
+  args: string[],
+  cwd: string,
+  timeoutMs: number,
+  input?: string,
+  env?: NodeJS.ProcessEnv,
+) {
   return new Promise<{ code: number; stdout: string; stderr: string }>(
     (done) => {
       const child = spawn(cmd, args, {
         cwd,
-        stdio: ["ignore", "pipe", "pipe"],
+        env: env && { ...process.env, ...env },
+        stdio: [input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
       });
+      if (input !== undefined) child.stdin!.end(input);
       let stdout = "",
         stderr = "";
-      child.stdout.on("data", (d) => (stdout += d));
-      child.stderr.on("data", (d) => (stderr += d));
+      child.stdout!.on("data", (d) => (stdout += d));
+      child.stderr!.on("data", (d) => (stderr += d));
       const timer = setTimeout(() => child.kill("SIGTERM"), timeoutMs);
       child.on("close", (code) => {
         clearTimeout(timer);
@@ -228,7 +240,7 @@ const NO_TOOLS = [
 const TSX = join(REPO, "node_modules/tsx/dist/cli.mjs");
 /** Provider errors worth waiting out. */
 const BUSY =
-  /[^\n"]*(at capacity|rate limit|overloaded|temporarily unavailable|stream disconnected)[^\n"]*/i;
+  /[^\n"]*(at capacity|rate.limit|overloaded|temporarily unavailable|stream disconnected)[^\n"]*/i;
 /** Search rounds allowed in one attempt before the model must answer. */
 const SEARCH_ROUNDS = 10;
 
@@ -267,20 +279,29 @@ export function searchRequest(text: string): SearchArgs[] | undefined {
   return (Array.isArray(req) ? req : [req]).slice(0, 5) as SearchArgs[];
 }
 
-/** One attempt: the message, then (with --search) as many search rounds as
- * the model asks for, each answered in the same Codex session, until it
- * replies with something else. Every Codex tool stays off. */
-async function askCodex(
-  prompt: string,
+type Reply = Awaited<ReturnType<typeof run>> & { text: string };
+
+/** Sends one message to the model, resuming `thread` when given, and adds
+ * the tokens it used to `usage`. */
+type Runner = {
+  name: string;
+  send(
+    message: string,
+    thread: string | undefined,
+    usage: Usage,
+    toolEvents: string[],
+  ): Promise<Reply & { thread?: string }>;
+  /** The log file for one round's raw output. */
+  log: string;
+};
+
+/** `codex exec` with every Codex tool off; the reply is its last message. */
+function codexRunner(
   model: string,
   effort: string,
-  dir: string,
-  n: number,
-  search: boolean,
+  cwd: string,
+  reply: string,
 ) {
-  const empty = join(dir, "empty");
-  await mkdir(empty, { recursive: true });
-  const reply = join(dir, `attempt-${n}.reply.md`);
   const common = [
     "--ignore-user-config",
     "--skip-git-repo-check",
@@ -297,7 +318,124 @@ async function askCodex(
     "-o",
     reply,
   ];
-  const usage: Usage = { input: 0, cached: 0, output: 0, reasoning: 0 };
+  return {
+    name: "codex",
+    log: "codex.jsonl",
+    async send(message, thread, usage, toolEvents) {
+      if (existsSync(reply)) await writeFile(reply, "");
+      const r = await run(
+        "codex",
+        thread
+          ? ["exec", "resume", thread, ...common, message]
+          : ["exec", ...common, message],
+        cwd,
+        3 * 60 * 60 * 1000,
+      );
+      return {
+        ...r,
+        thread: events(r.stdout, usage, toolEvents) ?? thread,
+        text: existsSync(reply) ? readFileSync(reply, "utf8") : "",
+      };
+    },
+  } satisfies Runner;
+}
+
+/** `claude -p` (Claude Code) with every tool off and no user customisation
+ * (CLAUDE.md, memory, skills, plugins, hooks, MCP): Claude Code's own system
+ * prompt and the message alone. The message goes in on stdin (a repair
+ * message can pass the 128 kB argument limit). */
+function claudeRunner(model: string, effort: string, cwd: string) {
+  const common = [
+    "-p",
+    "--model",
+    model,
+    "--effort",
+    effort,
+    "--tools",
+    "",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--disable-slash-commands",
+    "--output-format",
+    "json",
+  ];
+  return {
+    name: "claude",
+    log: "claude.json",
+    async send(message, thread, usage, toolEvents) {
+      const r = await run(
+        "claude",
+        thread ? ["--resume", thread, ...common] : common,
+        cwd,
+        3 * 60 * 60 * 1000,
+        message,
+        // Claude Code caps a reply below the model's limit by default.
+        { CLAUDE_CODE_MAX_OUTPUT_TOKENS: "128000" },
+      );
+      let e: {
+        session_id?: string;
+        result?: string;
+        is_error?: boolean;
+        num_turns?: number;
+        total_cost_usd?: number;
+        usage?: {
+          input_tokens?: number;
+          cache_creation_input_tokens?: number;
+          cache_read_input_tokens?: number;
+          output_tokens?: number;
+          output_tokens_details?: { thinking_tokens?: number };
+        };
+      } = {};
+      try {
+        e = JSON.parse(r.stdout);
+      } catch {
+        // not a result: the exit code and stderr say why
+      }
+      const u = e.usage ?? {};
+      usage.cached += u.cache_read_input_tokens ?? 0;
+      usage.input +=
+        (u.input_tokens ?? 0) +
+        (u.cache_creation_input_tokens ?? 0) +
+        (u.cache_read_input_tokens ?? 0);
+      usage.output += u.output_tokens ?? 0;
+      usage.reasoning += u.output_tokens_details?.thinking_tokens ?? 0;
+      usage.costUsd += e.total_cost_usd ?? 0;
+      if ((e.num_turns ?? 1) > 1) toolEvents.push(`turns:${e.num_turns}`);
+      return {
+        ...r,
+        code: e.is_error ? r.code || 1 : r.code,
+        thread: e.session_id ?? thread,
+        text: e.is_error ? "" : (e.result ?? ""),
+      };
+    },
+  } satisfies Runner;
+}
+
+/** One attempt: the message, then (with --search) as many search rounds as
+ * the model asks for, each answered in the same session, until it replies
+ * with something else. Every tool stays off. */
+async function askAgent(
+  prompt: string,
+  runner: "codex" | "claude",
+  model: string,
+  effort: string,
+  dir: string,
+  n: number,
+  search: boolean,
+) {
+  const empty = join(dir, "empty");
+  await mkdir(empty, { recursive: true });
+  const agent =
+    runner === "claude"
+      ? claudeRunner(model, effort, empty)
+      : codexRunner(model, effort, empty, join(dir, `attempt-${n}.reply.md`));
+  const usage: Usage = {
+    input: 0,
+    cached: 0,
+    output: 0,
+    reasoning: 0,
+    costUsd: 0,
+  };
   const toolEvents: string[] = [];
   const searches: Search[] = [];
   const retries: { round: number; error: string }[] = [];
@@ -308,32 +446,29 @@ async function askCodex(
     code = 0,
     stderr = "";
   for (let round = 0; ; round++) {
-    if (existsSync(reply)) await writeFile(reply, "");
-    let r: Awaited<ReturnType<typeof run>>;
+    let r: Awaited<ReturnType<Runner["send"]>>;
     // The provider being busy is not the model's failure: wait and send the
     // same message again (1, 2, 4, 8, 16 minutes).
     for (let tries = 0; ; tries++) {
-      r = await run(
-        "codex",
-        thread
-          ? ["exec", "resume", thread, ...common, message]
-          : ["exec", ...common, message],
-        empty,
-        3 * 60 * 60 * 1000,
-      );
+      r = await agent.send(message, thread, usage, toolEvents);
       const busy = r.code !== 0 && BUSY.exec(`${r.stdout}\n${r.stderr}`)?.[0];
       if (!busy || tries >= 5) break;
       retries.push({ round, error: busy });
-      thread = events(r.stdout, usage, toolEvents) ?? thread;
+      thread = r.thread;
       await new Promise((done) => setTimeout(done, 60_000 * 2 ** tries));
     }
     const suffix = round ? `.${round}` : "";
-    await writeFile(join(dir, `attempt-${n}${suffix}.codex.jsonl`), r.stdout);
-    await writeFile(join(dir, `attempt-${n}${suffix}.codex.stderr`), r.stderr);
-    thread = events(r.stdout, usage, toolEvents) ?? thread;
+    await writeFile(join(dir, `attempt-${n}${suffix}.${agent.log}`), r.stdout);
+    await writeFile(
+      join(dir, `attempt-${n}${suffix}.${agent.name}.stderr`),
+      r.stderr,
+    );
+    if (agent.name === "claude")
+      await writeFile(join(dir, `attempt-${n}.reply.md`), r.text);
+    thread = r.thread;
     code = r.code;
     stderr = r.stderr;
-    text = existsSync(reply) ? readFileSync(reply, "utf8") : "";
+    text = r.text;
     if (code !== 0 || !search) break;
     const asked = searchRequest(text);
     if (!asked || !thread) break;
@@ -482,6 +617,7 @@ async function runEffort(
     out: string;
     views: string;
     search: boolean;
+    runner: "codex" | "claude";
   },
 ) {
   const dir = join(o.out, effort);
@@ -491,7 +627,15 @@ async function runEffort(
   let message = o.prompt,
     accepted = false;
   for (let n = 1; n <= o.attempts && !accepted; n++) {
-    const ask = await askCodex(message, o.model, effort, dir, n, o.search);
+    const ask = await askAgent(
+      message,
+      o.runner,
+      o.model,
+      effort,
+      dir,
+      n,
+      o.search,
+    );
     const a: Attempt = {
       attempt: n,
       seconds: ask.seconds,
@@ -503,7 +647,7 @@ async function runEffort(
     };
     attempts.push(a);
     if (ask.code !== 0 || !ask.text.trim()) {
-      a.reason = `codex exited ${ask.code}: ${ask.stderr.trim().slice(-500)}`;
+      a.reason = `${o.runner} exited ${ask.code}: ${ask.stderr.trim().slice(-500)}`;
       break; // the agent itself failed: not something a repair prompt fixes
     }
     const json = extractJson(ask.text);
@@ -556,6 +700,7 @@ async function runEffort(
     attempts.reduce((s, a) => s + a.usage[k], 0);
   const result = {
     effort,
+    runner: o.runner,
     model: o.model,
     targetParts: o.target,
     accepted,
@@ -572,6 +717,7 @@ async function runEffort(
       cached: total("cached"),
       output: total("output"),
       reasoning: total("reasoning"),
+      ...(o.runner === "claude" ? { costUsd: total("costUsd") } : {}),
     },
     searches: attempts.reduce((s, a) => s + a.searches.length, 0),
     knowledge: final?.knowledge,
@@ -608,6 +754,7 @@ async function main(argv: string[]) {
         "name",
         "parts-list",
         "search",
+        "runner",
       ].includes(key)
     )
       throw new Error(`Unknown flag ${argv[i]}\n${HELP}`);
@@ -641,13 +788,25 @@ async function main(argv: string[]) {
   };
   const partsList = onOff("parts-list"),
     search = onOff("search");
+  const runner = flags.get("runner") ?? "codex";
+  if (runner !== "codex" && runner !== "claude")
+    throw new Error("--runner takes codex or claude");
   registerFullLibraryFromDisk();
   registerAgentData();
   const prompt = oneShotPrompt(brief, target, { partsList, search });
   const views = flags.get("views") ?? "iso,front,iso-back";
   const results = await Promise.all(
     efforts.map((e) =>
-      runEffort(e, { prompt, model, target, attempts, out, views, search }),
+      runEffort(e, {
+        prompt,
+        model,
+        target,
+        attempts,
+        out,
+        views,
+        search,
+        runner,
+      }),
     ),
   );
   // "+6.9%": how far a count is from the target.
@@ -665,6 +824,7 @@ async function main(argv: string[]) {
     JSON.stringify(
       {
         brief: brief.trim(),
+        runner,
         model,
         targetParts: target,
         attempts,
