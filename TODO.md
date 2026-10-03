@@ -65,9 +65,11 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Play
 
-- [x] Introduce 15 source-bound mechanical profiles, typed contacts and read-only `mechanisms.propose()` drafts for retained shafts, pin arms and ordinary finger hinges with rigid accessories ([scope](docs/PLAY-MECHANICAL-FEATURES.md)). Gear meshes remain relation candidates.
+- [x] Introduce 15 source-bound mechanical profiles, typed contacts and read-only `mechanisms.propose()` drafts for retained shafts, pin arms and ordinary finger hinges with rigid accessories ([scope](docs/PLAY-MECHANICAL-FEATURES.md)). Reviewed spur meshes now become ideal coupled shaft relations.
 - [ ] Extend mechanical profiles and proposals: rack guides, further joint/retainer families and aliases, placement integration, direct session-only Play entry and proposal authoring UI. Stud verification does not establish these features ([motion investigation](docs/PLAY-MOTION-ROADMAP.md)).
-- [ ] Transmission relations and closed mechanism graphs: spur/rack drive first, then four-bar/slider-crank constraints; current validation rejects cycles in both kinematic and Dynamic Play.
+- [x] Ideal external spur transmission: motor-driven 8:24 shafts, unwrapped/reversed control, output inertia/stall/back-drive feedback and carrier reaction; preserve source/inventory and render rigid accessories ([scope](docs/PLAY-MECHANICAL-FEATURES.md#spur-transmission-behavior)).
+- [ ] Rack and further transmissions; closed mechanism graphs (four-bar/slider-crank): mount joints still require a forest in both kinematic and Dynamic Play.
+- [ ] Contextual Play motor/part controls using impeccable: live speed/reversal, touch sticks/levers and keyboard equivalents; only usable controls shown. Automatically fit/orbit the whole active mechanism in third person and restore the explorer view on leaving controls ([user direction](docs/PLAY-MOTION-ROADMAP.md#g-contextual-play-controls-and-mechanism-overview)).
 - [ ] General joint collision policy: kinematic joints currently check the actor but can cross static/foreign geometry; all groups of one dynamic rig exclude each other, and moving convex proxies fill Technic holes. Add bounded sweeps, allowed mating contacts and appropriate compound proxies.
 - [ ] Springs, ropes, cylindrical freedom, ball orientation/limits and joint friction/detents. Verify the pinned spherical motor runtime wrapper: in the Node probe, `JointData.spherical` returns a Generic joint without the declared spherical motor methods.
 - [x] Repair accumulated-turn dynamic revolute position targets; preserve effort limits, detect settling and retry after obstructions ([verification](docs/VERIFICATION.md#accumulated-turn-position-control-3-october-2026)).

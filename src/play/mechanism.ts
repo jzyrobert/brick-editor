@@ -593,7 +593,8 @@ export class PlayMechanism {
   setJointPosition(id: string, value: number) {
     const before = this.session.snapshot(),
       target = this.session.setJointPosition(id, value);
-    this.targets.delete(id);
+    for (const other of this.session.coupledJointIds(id))
+      this.targets.delete(other);
     this.pauseMotor(id);
     this.accept(before, target);
     return this.snapshot();
@@ -611,6 +612,11 @@ export class PlayMechanism {
       "INVALID_INPUT",
       `Joint speed must be ${limits.min}–${limits.max} ${kind === "revolute" ? "degrees/s" : "LDU/s"}`,
     );
+    ensure(
+      speed <= this.session.jointSpeedLimit(id),
+      "INVALID_INPUT",
+      "Requested speed would exceed the supported speed of a coupled shaft.",
+    );
     const before = this.session.snapshot();
     // Reuse authoritative scalar/limit validation, then restore without touching proxies.
     try {
@@ -619,6 +625,8 @@ export class PlayMechanism {
       this.session.setPose(before.pose);
     }
     this.pauseMotor(id);
+    for (const other of this.session.coupledJointIds(id))
+      this.targets.delete(other);
     this.targets.set(id, {
       target,
       speed,
@@ -631,11 +639,13 @@ export class PlayMechanism {
     return this.snapshot();
   }
   private pauseMotor(id: string) {
-    const motor = this.motors.get(id);
-    if (motor) {
-      motor.enabled = false;
-      motor.status = "stopped";
-      motor.blockedReason = undefined;
+    for (const other of this.session.coupledJointIds(id)) {
+      const motor = this.motors.get(other);
+      if (motor) {
+        motor.enabled = false;
+        motor.status = "stopped";
+        motor.blockedReason = undefined;
+      }
     }
   }
   /** Enable or stop one authored motor. Manual joint commands stop it too. */
@@ -654,7 +664,9 @@ export class PlayMechanism {
     motor.enabled = enabled;
     motor.status = enabled ? "running" : "stopped";
     motor.blockedReason = undefined;
-    if (enabled) this.targets.delete(id);
+    if (enabled)
+      for (const other of this.session.coupledJointIds(id))
+        this.targets.delete(other);
     return this.snapshot();
   }
   private stepMotors() {
@@ -666,11 +678,15 @@ export class PlayMechanism {
         kind = joint.kind as "revolute" | "prismatic",
         state = this.session.snapshot(),
         current = state.pose.jointPositions[id],
-        [low, high] = joint.limits ?? [-Infinity, Infinity];
+        [low, high] = this.session.jointLimits(id);
       let next: number;
       if (spec.mode === "position") {
         const goal = Math.min(high, Math.max(low, spec.target)),
-          rate = KINEMATIC_MOTOR_RATE[kind] / 60,
+          rate =
+            Math.min(
+              KINEMATIC_MOTOR_RATE[kind],
+              this.session.jointSpeedLimit(id),
+            ) / 60,
           distance = goal - current;
         if (distance === 0) {
           motor.status = "holding";
@@ -700,12 +716,8 @@ export class PlayMechanism {
         next === Math.min(high, Math.max(low, spec.target))
           ? "holding"
           : "running";
-      // An unlimited axle keeps turning; fold whole turns so the scalar stays
-      // bounded. The rotation is identical, so no sweep is needed.
-      if (kind === "revolute" && !joint.limits && Math.abs(next) >= 3600) {
-        const folded = next - 360 * Math.trunc(next / 360);
-        this.apply(this.session.setJointPosition(id, folded));
-      }
+      // Retain accumulated turns: folding an input would change the phase of
+      // a reduced output and would restart a multi-turn position target.
     }
   }
   setVehicleInput(input: { throttle: number; steering: number }) {

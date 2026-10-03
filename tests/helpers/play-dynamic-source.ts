@@ -11,14 +11,40 @@ import type { DynamicRigSource } from "../../src/play/dynamics";
 export async function meshOf(
   project: Project,
   ids: string[],
+  officialSources: Record<string, string> = {},
 ): Promise<CollisionSnapshot> {
   const vertices: number[] = [],
     indices: number[] = [];
   if (ids.length) {
-    const source = scopedLDraw(project, ids, true);
+    const source =
+      scopedLDraw(project, ids, true).replace(
+        "\n",
+        "\n0 !COLOUR TestGrey CODE 7 VALUE #888888 EDGE #333333\n",
+      ) +
+      Object.entries(officialSources)
+        .map(([ref, text]) => `\n0 FILE ${ref}\n${text}\n0 NOFILE\n`)
+        .join("");
     const loader = new LDrawLoader().setConditionalLineMaterial(
       LDrawConditionalLineMaterial,
     );
+    if (Object.keys(officialSources).length) {
+      loader.setFileMap(
+        Object.fromEntries(
+          Object.keys(officialSources).map((ref) => [ref, ref]),
+        ),
+      );
+      (
+        loader as unknown as {
+          partsCache: {
+            parseCache: { fetchData: (ref: string) => Promise<string> };
+          };
+        }
+      ).partsCache.parseCache.fetchData = async (ref) => {
+        const text = officialSources[ref.replaceAll("\\", "/").toLowerCase()];
+        if (!text) throw new Error(`Missing pinned test geometry: ${ref}`);
+        return text;
+      };
+    }
     const group = await new Promise<Group>((ok, fail) =>
       (
         loader.parse as unknown as (
@@ -52,7 +78,11 @@ export async function meshOf(
   };
 }
 /** Static world plus every requested rig with group and member geometry. */
-export async function playSources(project: Project, rigIds: string[]) {
+export async function playSources(
+  project: Project,
+  rigIds: string[],
+  officialSources: Record<string, string> = {},
+) {
   const members = new Set(
     rigIds.flatMap((id) =>
       project.motionRigs[id].groups.flatMap((g) => g.occurrenceIds),
@@ -63,6 +93,7 @@ export async function playSources(project: Project, rigIds: string[]) {
     occurrences(project)
       .filter((o) => !members.has(o.id))
       .map((o) => o.id),
+    officialSources,
   );
   const sources: DynamicRigSource[] = [];
   for (const rigId of rigIds) {
@@ -70,9 +101,9 @@ export async function playSources(project: Project, rigIds: string[]) {
     const groups: DynamicRigSource["groups"] = {},
       memberMeshes: DynamicRigSource["members"] = {};
     for (const g of rig.groups) {
-      groups[g.id] = await meshOf(project, g.occurrenceIds);
+      groups[g.id] = await meshOf(project, g.occurrenceIds, officialSources);
       for (const id of g.occurrenceIds)
-        memberMeshes[id] = await meshOf(project, [id]);
+        memberMeshes[id] = await meshOf(project, [id], officialSources);
     }
     sources.push({ project, rigId, groups, members: memberMeshes });
   }

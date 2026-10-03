@@ -818,3 +818,34 @@ candidate is not a powered transmission yet. Gear/rack coupling, direct
 session-only Play entry, authoring UI, world/internal contact policy, closed
 linkages and other actuators remain open. Verification is recorded
 [here](VERIFICATION.md#reviewed-mechanical-proposals-3-october-2026).
+
+## Ideal spur transmissions and loaded pin arm (3 October 2026)
+
+Reviewed spur contacts now become persisted `rig.transmissions` relations. The
+original 13-part acceptance arrangement drives an 8:24 gear pair and retained
+output shaft from one input motor. Kinematic commands derive linked coordinates
+atomically; Dynamic Play applies bounded angular constraint impulses to the
+shafts and carrier, so output inertia, obstructions and backdriving affect the
+input. Both paths preserve accumulated turns, coupled limits and authored source
+placements. Native save/restore, posed export and undo retain the relation.
+
+The separate plain pin keeps two bearings. Position control now uses force-based
+velocity damping and bounded integral compensation near a held target. Articulated
+native joint islands receive eight additional solver iterations to handle a small
+bearing carrying a heavy arm. The rendered arm reaches 45° under gravity with its
+pin held at 0°; a separately authored 1 N·m arm remains blocked. Authored effort
+and speed bounds still apply, and no controller assigns body poses or velocities.
+
+This is an ideal external spur constraint, with at most 100 relations per rig,
+one authored motor per connected component and a 3,600°/s limit on every coupled
+shaft. It does not simulate tooth contact, backlash, slip, worm/bevel/differential
+behavior or racks. General world/internal contacts, compound proxies, closed
+articulations, additional joints, moving platforms and dynamic seats remain open.
+See [verification](VERIFICATION.md#ideal-spur-transmissions-and-loaded-pin-arm-3-october-2026).
+
+The requested Play interface work remains active. Incumbent remote controls were
+captured at 1440×1000, 360×600 and 1080×1800: they retain the explorer's view, and
+the sheet occupies much of a small phone viewport. The next interface slice uses
+the impeccable workflow for contextual drive controls and the user's approved
+whole-mechanism fit/orbit view. These captures establish a baseline, not a new UI
+or an interface acceptance result.

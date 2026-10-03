@@ -82,8 +82,20 @@ export type MotionRig = {
   mode: "kinematic";
   groups: RigidGroup[];
   joints: JointSpec[];
+  /** Ideal external spur mesh. Positions are unwrapped degrees from rest. */
+  transmissions?: SpurTransmission[];
   vehicle?: VehicleSpec;
   dynamics?: RigDynamics;
+};
+export type SpurTransmission = {
+  id: string;
+  kind: "spur";
+  jointA: string;
+  jointB: string;
+  teethA: number;
+  teethB: number;
+  /** Sign of the two shaft axes in their shared carrier frame. */
+  axisSign: 1 | -1;
 };
 export type KinematicPose = {
   jointPositions: Record<string, number>;

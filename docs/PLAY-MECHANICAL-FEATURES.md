@@ -62,10 +62,51 @@ Several articulations of the same arm remain unresolved rather than discarding
 a closing constraint. Authored rig ownership always wins.
 
 The core acceptance arrangement produces a fixed frame, two retained shaft
-groups, a separate pin and arm, four joints and an 8:24 relation candidate with
-ratio −1/3 for matching axis signs. The pair is **not yet coupled**: the next
-transmission layer must drive the output from the input and carry reaction load
-in Dynamic. The current preview moves each independent joint explicitly.
+groups, a separate pin and arm, four joints and an ideal 8:24 transmission with
+ratio −1/3 for matching axis signs. The draft's `transmissions` are persisted
+through an explicit save, while `relations` retain the source occurrences used
+to review each engagement. One motor drives the pair; a second motor is not
+inferred on its output.
+
+## Spur transmission behavior
+
+Optional `MotionRig.transmissions` entries use
+`{id,kind:"spur",jointA,jointB,teethA,teethB,axisSign}`. Both shafts must be
+parallel revolute joints on the same carrier. `axisSign` is +1 for matching
+declared axes and −1 for opposed axes. From the authored zero rest pose,
+`qB = -axisSign * teethA / teethB * qA`, in unwrapped degrees. Source tooth phase
+is part of that rest geometry; it is not overwritten.
+
+Kinematic preview and Play derive all connected coordinates together. Either
+shaft can drive, and limits on any output restrict all connected inputs. Invalid
+poses and targets fail atomically. Manual control replaces the component's
+previous driver and stops its authored motor. Consistent ratio loops are allowed;
+contradictory loops and multiple authored motors in one component are refused.
+This does not allow closed _joint_ linkages yet.
+
+Dynamic Play keeps one native effort-limited motor and solves the gear relation
+with angular impulses using both shafts' and their carrier's effective inertia.
+The carrier receives reaction torque, output inertia slows the input, an
+obstructed output stalls it and an external output impulse can back-drive an
+unpowered input. There are no body-pose or velocity assignments. Eight sequential
+passes per fixed tick correct measured phase drift on following ticks, so this
+is an approximate ideal constraint rather than exact tooth collision. The
+verified single pair stays within 1° of its ratio during the tested free drive.
+
+At most 100 relations are accepted per rig. Commands and authored velocity
+motors must keep every coupled shaft at or below 3,600°/s (60° per fixed tick);
+position-controller rates and phase correction are bounded too. Ratios in a
+connected chain are limited to 10⁻⁶–10⁶. Existing body/member/triangle budgets
+also apply. Rack, bevel, worm, differential, backlash, slip and measured clutch
+strength remain unsupported.
+
+The original [Technic acceptance source](../fixtures/ldraw/technic-motion.mpd)
+references 13 official parts without copying their geometry. Its generator is
+[technic-fixture.ts](../src/mechanisms/technic-fixture.ts); all moving parts start
+above Play's default ground. Tests load geometry from the pinned local source
+closure without network access.
+Regenerate it with `npx tsx scripts/build-technic-fixture.ts`, or check it with
+the same command followed by `--check`.
 
 ## Bounds and verification
 
@@ -79,5 +120,5 @@ dependency is added.
 
 See [verification](VERIFICATION.md#reviewed-mechanical-proposals-3-october-2026)
 for the exact test and rendered scope. A broader automatic Technic authoring UI,
-gear/rack simulation, collision policy, closed linkages and other actuators remain
+rack simulation, collision policy, closed linkages and other actuators remain
 in the [motion roadmap](PLAY-MOTION-ROADMAP.md).

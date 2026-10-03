@@ -477,6 +477,18 @@ const motionRig = obj(
       minItems: 1,
     },
     joints: arr(joint, 100),
+    transmissions: arr(
+      obj({
+        id,
+        kind: { const: "spur" },
+        jointA: id,
+        jointB: id,
+        teethA: { type: "integer", minimum: 4, maximum: 256 },
+        teethB: { type: "integer", minimum: 4, maximum: 256 },
+        axisSign: { enum: [-1, 1] },
+      }),
+      100,
+    ),
     vehicle: obj(
       {
         chassisGroup: id,

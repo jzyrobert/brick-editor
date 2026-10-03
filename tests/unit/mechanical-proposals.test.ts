@@ -91,7 +91,7 @@ describe("session mechanical proposals", () => {
     expect(JSON.stringify(p)).toBe(before);
   });
 
-  it("previews independent shafts and the pin arm without editing inventory or rest poses", () => {
+  it("previews coupled shafts and the pin arm without editing inventory or rest poses", () => {
     const p = driveScene(),
       before = exportLDraw(p),
       all = occurrences(p),
@@ -114,7 +114,9 @@ describe("session mechanical proposals", () => {
     preview.setJointPosition(j.id, 90);
     const moved = preview.snapshot();
     expect(moved.transforms[all[3].id].basis[0]).toBeCloseTo(0, 8);
-    expect(moved.transforms[all[7].id]).toEqual(rest.transforms[all[7].id]); // relation remains a candidate in this slice.
+    const outputJoint = proposal.relations[0].jointB;
+    expect(moved.pose.jointPositions[outputJoint]).toBe(-30);
+    expect(moved.transforms[all[7].id]).not.toEqual(rest.transforms[all[7].id]);
     const arm = proposal.rig!.groups.find((g) =>
       g.occurrenceIds.includes(all[12].id),
     )!;

@@ -5,6 +5,12 @@ import { axisRotation, KinematicSession } from "../mechanisms/kinematic";
 import type { JointSpec, MotionRig, RigDynamics } from "../mechanisms/types";
 import type { PlayMechanismSource } from "./mechanism";
 import { anchoredGroup } from "../mechanisms/dynamics-settings";
+import {
+  transmissionMap,
+  transmissionSpeedLimit,
+  TRANSMISSION_MAX_SPEED,
+  type TransmissionMap,
+} from "../mechanisms/transmissions";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import {
   CHARACTER_PROFILE as P,
@@ -204,6 +210,8 @@ type JointControl = {
   axis: { x: number; y: number; z: number };
   /** Unwrapped scalar (degrees or LDU). */
   value: number;
+  /** Holding-load compensation, in degrees/s; session-only and bounded. */
+  positionIntegral: number;
   target?: Omit<PlayJointTargetReport, "current"> & {
     setpoint: number;
     stalledTicks: number;
@@ -255,6 +263,7 @@ export class DynamicRig {
   private settings: RigDynamics;
   private bodies = new Map<string, Body>();
   private joints = new Map<string, JointControl>();
+  private transmissions: TransmissionMap;
   private vehicle?: {
     controller: RAPIER.DynamicRayCastVehicleController;
     chassis: Body;
@@ -279,6 +288,7 @@ export class DynamicRig {
   ) {
     this.rigId = source.rigId;
     this.rig = structuredClone(source.project.motionRigs[source.rigId]);
+    this.transmissions = transmissionMap(this.rig);
     this.settings = structuredClone(this.rig.dynamics ?? {});
     this.meshes = source.groups;
     const friction = this.settings.friction ?? DYNAMIC_DEFAULTS.friction,
@@ -286,6 +296,13 @@ export class DynamicRig {
       colliderGroups = groups(own, 0xffff & ~own);
     const wheels = new Set(
       this.rig.vehicle?.wheels.map((w) => w.groupId) ?? [],
+    );
+    // A small intermediate bearing carrying a heavy arm needs more iterations
+    // than an independently mounted shaft. The native solver propagates this
+    // fixed allowance to the connected island, rather than multiplying it by
+    // the number of bodies. Simple rooted rigs retain the default cost.
+    const articulated = this.rig.joints.some(
+      (j) => !anchoredGroup(this.rig, j.bodyA),
     );
     for (const group of this.rig.groups) {
       if (wheels.has(group.id)) continue;
@@ -303,6 +320,7 @@ export class DynamicRig {
           .setAngularDamping(0.1)
           .setCcdEnabled(!anchored),
       );
+      if (!anchored && articulated) body.setAdditionalSolverIterations(8);
       const entry: Body = {
         groupId: group.id,
         body,
@@ -431,6 +449,7 @@ export class DynamicRig {
       joint,
       axis,
       value: 0,
+      positionIntegral: 0,
       configured: "",
       ...(spec.motor && (spec.kind === "revolute" || spec.kind === "prismatic")
         ? { motor: { enabled: true, status: "running", configured: "" } }
@@ -567,17 +586,26 @@ export class DynamicRig {
       "INVALID_INPUT",
       `Joint speed must be ${limits.min}–${limits.max} ${kind === "revolute" ? "degrees/s" : "LDU/s"}`,
     );
+    const [low, high] = this.jointLimits(id);
     ensure(
-      Number.isFinite(target) &&
-        (!control.spec.limits ||
-          (target >= control.spec.limits[0] &&
-            target <= control.spec.limits[1])),
+      !this.transmissions.has(id) ||
+        speed <= transmissionSpeedLimit(this.transmissions, id),
+      "INVALID_INPUT",
+      "Requested speed would exceed the supported speed of a coupled shaft.",
+    );
+    ensure(
+      Number.isFinite(target) && target >= low && target <= high,
       "INVALID_INPUT",
       "Joint position is outside authored limits.",
     );
-    if (control.motor) {
-      control.motor.enabled = false;
-      control.motor.status = "stopped";
+    for (const other of this.transmissions.get(id)?.keys() ?? [id]) {
+      const member = this.joints.get(other)!;
+      member.target = undefined;
+      member.positionIntegral = 0;
+      if (member.motor) {
+        member.motor.enabled = false;
+        member.motor.status = "stopped";
+      }
     }
     control.target = {
       target,
@@ -605,14 +633,30 @@ export class DynamicRig {
       "Motor enabled must be boolean",
     );
     control.motor.enabled = enabled;
+    control.positionIntegral = 0;
     control.motor.status = enabled ? "running" : "stopped";
-    if (enabled) control.target = undefined;
+    if (enabled)
+      for (const other of this.transmissions.get(id)?.keys() ?? [id])
+        this.joints.get(other)!.target = undefined;
     this.wake();
     this.cache = undefined;
   }
   private wake() {
     for (const entry of this.bodies.values())
       if (!entry.anchored) entry.body.wakeUp();
+  }
+  private jointLimits(id: string): [number, number] {
+    let low = -1e9,
+      high = 1e9;
+    for (const [other, ratio] of this.transmissions.get(id) ??
+      new Map([[id, 1]])) {
+      const values = (this.joints.get(other)!.spec.limits ?? [-1e9, 1e9]).map(
+        (v) => v / ratio,
+      );
+      low = Math.max(low, Math.min(...values));
+      high = Math.min(high, Math.max(...values));
+    }
+    return [low, high];
   }
   private configure(control: JointControl, key: string, apply: () => void) {
     if (control.configured === key) return;
@@ -631,16 +675,53 @@ export class DynamicRig {
   ) {
     const joint = control.joint as RAPIER.UnitImpulseJoint;
     if (control.spec.kind === "revolute") {
+      if (this.transmissions.has(control.spec.id))
+        speed = Math.min(
+          speed,
+          transmissionSpeedLimit(this.transmissions, control.spec.id),
+        );
+      const error = setpoint - control.value;
+      const carrier = this.bodies.get(control.spec.bodyA)!.body;
+      const body = this.bodies.get(control.spec.bodyB)!.body;
+      const axis = rotate(carrier.rotation(), control.axis);
+      const a = carrier.angvel(),
+        b = body.angvel();
+      const actualSpeed = Math.abs(
+        (((b.x - a.x) * axis.x + (b.y - a.y) * axis.y + (b.z - a.z) * axis.z) *
+          180) /
+          Math.PI,
+      );
+      const holding =
+        !control.target || control.target.setpoint === control.target.target;
+      const unwinding = control.positionIntegral * error < 0;
+      if (
+        holding &&
+        (unwinding || (Math.abs(error) <= 10 && actualSpeed <= speed * 0.1))
+      ) {
+        const raw = error * 6 + control.positionIntegral;
+        // Avoid winding up at the speed cap, but allow it to unwind/reverse.
+        if (Math.abs(raw) < speed || Math.sign(error) !== Math.sign(raw))
+          control.positionIntegral = Math.max(
+            -speed,
+            Math.min(speed, control.positionIntegral + error * 9 * DT),
+          );
+      }
       const velocity = Math.max(
         -speed,
-        Math.min(speed, (setpoint - control.value) * 6),
+        Math.min(speed, error * 6 + control.positionIntegral),
       );
-      this.configure(control, `p:${velocity}:${effort}`, () => {
+      // Force-based damping is independent of the intermediate pin's inertia.
+      // A stiff velocity loop lets the bounded motor oppose a static load;
+      // maxEffort still caps its physical torque, including at a slow target.
+      const damping = Math.max(10000, effort / ((speed * Math.PI) / 180));
+      this.configure(control, `p:${velocity}:${effort}:${damping}`, () => {
+        joint.configureMotorModel(RAPIER.MotorModel.ForceBased);
         joint.setMotorMaxForce(effort);
-        joint.configureMotorVelocity((velocity * Math.PI) / 180, 45);
+        joint.configureMotorVelocity((velocity * Math.PI) / 180, damping);
       });
     } else
       this.configure(control, `p:${setpoint}:${effort}`, () => {
+        joint.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
         joint.setMotorMaxForce(effort);
         joint.configureMotorPosition(setpoint * S, 200, 45);
       });
@@ -677,7 +758,7 @@ export class DynamicRig {
       if (motor?.enabled && spec.motor) {
         const m = spec.motor;
         if (m.mode === "position") {
-          const [low, high] = spec.limits ?? [-Infinity, Infinity];
+          const [low, high] = this.jointLimits(id);
           this.configurePosition(
             control,
             Math.min(high, Math.max(low, m.target)),
@@ -685,14 +766,20 @@ export class DynamicRig {
           );
         } else
           this.configure(control, `m:${m.target}:${m.maxEffort.value}`, () => {
+            joint.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
             joint.setMotorMaxForce(m.maxEffort.value);
             joint.configureMotorVelocity(m.target * scale, 10);
           });
         continue;
       }
       this.configure(control, "idle", () => {
+        joint.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
         joint.setMotorMaxForce(
-          DYNAMIC_DEFAULTS.idleEffort[spec.kind as "revolute" | "prismatic"],
+          this.transmissions.has(id)
+            ? 0
+            : DYNAMIC_DEFAULTS.idleEffort[
+                spec.kind as "revolute" | "prismatic"
+              ],
         );
         joint.configureMotorVelocity(0, 1);
       });
@@ -800,23 +887,87 @@ export class DynamicRig {
       if (motor?.enabled && spec.motor) {
         const m = spec.motor;
         if (m.mode === "position") {
-          const [low, high] = spec.limits ?? [-Infinity, Infinity];
+          const [low, high] = this.jointLimits(id);
           motor.status =
             Math.abs(control.value - Math.min(high, Math.max(low, m.target))) <=
               tolerance && settled
               ? "holding"
               : "running";
         } else if (
-          spec.limits &&
-          ((m.target > 0 && control.value >= spec.limits[1] - tolerance) ||
-            (m.target < 0 && control.value <= spec.limits[0] + tolerance))
+          (m.target > 0 &&
+            control.value >= this.jointLimits(id)[1] - tolerance) ||
+          (m.target < 0 && control.value <= this.jointLimits(id)[0] + tolerance)
         )
           motor.status = "at-limit";
         else motor.status = m.target === 0 ? "holding" : "running";
       }
     }
+    this.solveTransmissions();
     this.syncMirrors();
     this.cache = undefined;
+  }
+  /** Sequential impulse constraint, separate from motor control. The Jacobian
+   * enforces qB - ratio*qA = 0 and returns equal/opposite angular impulses to
+   * both shafts and their carrier. Effective inertia transmits output loads
+   * back to the effort-limited native motor. No body pose or velocity is set.
+   * Baumgarte feedback corrects measured phase drift on following fixed ticks. */
+  private solveTransmissions() {
+    for (let pass = 0; pass < 8; pass++)
+      for (const t of this.rig.transmissions ?? []) {
+        const ca = this.joints.get(t.jointA)!,
+          cb = this.joints.get(t.jointB)!;
+        const a = this.bodies.get(ca.spec.bodyB)!.body;
+        const b = this.bodies.get(cb.spec.bodyB)!.body;
+        const carrier = this.bodies.get(ca.spec.bodyA)!.body;
+        const axisA = rotate(carrier.rotation(), ca.axis);
+        const axisB = rotate(carrier.rotation(), cb.axis);
+        const ratio = (-t.axisSign * t.teethA) / t.teethB;
+        const ja = {
+          x: -ratio * axisA.x,
+          y: -ratio * axisA.y,
+          z: -ratio * axisA.z,
+        };
+        const jb = axisB;
+        const jc = { x: -ja.x - jb.x, y: -ja.y - jb.y, z: -ja.z - jb.z };
+        const dot = (v: RAPIER.Vector, w: RAPIER.Vector) =>
+          v.x * w.x + v.y * w.y + v.z * w.z;
+        const inverseInertia = (body: RAPIER.RigidBody, v: RAPIER.Vector) => {
+          const m = body.effectiveWorldInvInertia();
+          return dot(v, {
+            x: m.m11 * v.x + m.m12 * v.y + m.m13 * v.z,
+            y: m.m21 * v.x + m.m22 * v.y + m.m23 * v.z,
+            z: m.m31 * v.x + m.m32 * v.y + m.m33 * v.z,
+          });
+        };
+        const inverseMass =
+          inverseInertia(a, ja) +
+          inverseInertia(b, jb) +
+          inverseInertia(carrier, jc);
+        if (inverseMass <= 1e-12) continue;
+        const phaseError = ((cb.value - ratio * ca.value) * Math.PI) / 180;
+        const speedError =
+          dot(a.angvel(), ja) + dot(b.angvel(), jb) + dot(carrier.angvel(), jc);
+        const maxCorrection = (TRANSMISSION_MAX_SPEED * Math.PI) / 180;
+        const correction = Math.max(
+          -maxCorrection,
+          Math.min(maxCorrection, (0.8 * phaseError) / DT),
+        );
+        const impulse = -(speedError + correction) / inverseMass;
+        if (Math.abs(impulse) < 1e-10) continue;
+        for (const [body, jacobian] of [
+          [a, ja],
+          [b, jb],
+          [carrier, jc],
+        ] as const)
+          body.applyTorqueImpulse(
+            {
+              x: jacobian.x * impulse,
+              y: jacobian.y * impulse,
+              z: jacobian.z * impulse,
+            },
+            true,
+          );
+      }
   }
   private frames(): Record<string, Transform> {
     const frames: Record<string, Transform> = {};

@@ -227,7 +227,7 @@
         ],
         "proposals": "Explicit fixed anchors; retained shafts and captured keyed accessories; separate pin/arm articulations; complementary finger hinges with rigid stud accessories",
         "isolation": "Read-only draft; explicit rigs.upsert saves; no automatic Play entry or project mutation",
-        "transmissions": "8:24 spur relation candidates only; gear/rack transmission simulation remains pending",
+        "transmissions": "Reviewed external spur meshes become ideal coupled shaft relations in the draft; rack transmission remains pending",
         "limits": {
           "occurrences": 2048,
           "features": 8192,
@@ -253,7 +253,7 @@
         },
         "reproducibility": "Identical reports for identical inputs in the pinned engine/browser; not promised across platforms",
         "notSimulated": [
-          "gear and rack transmissions",
+          "rack, worm, bevel and differential transmissions",
           "closed-loop linkages",
           "spring and rope joints",
           "internal collisions between groups of one rig",
@@ -262,7 +262,17 @@
           "breaking",
           "riding moving platforms",
           "seated driving of dynamic vehicles"
-        ]
+        ],
+        "transmissions": {
+          "spur": "Ideal external spur relations between parallel revolute shafts on a shared carrier; unwrapped degree positions",
+          "loadReaction": "Sequential angular impulses use shaft/carrier effective inertia and feed output resistance back to the single effort-limited motor",
+          "limits": {
+            "relationsPerRig": 100,
+            "solverPassesPerTick": 8,
+            "coupledShaftDegreesPerSecond": 3600
+          },
+          "scope": "No tooth contact, backlash, slip or certified clutch strength; rack, worm, bevel and differential relations remain pending"
+        }
       },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
       "profile": "ldraw-minifig-v1",

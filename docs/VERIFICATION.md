@@ -985,3 +985,58 @@ contact semantics, analysis bounds and unfinished transmission/Play integration.
   motor-driven 3:1 behavior, transmitted load, collision clearance, physical
   LEGO fit, automatic full-model rigging or phone performance. Those remain
   separate requirements of the active motion roadmap.
+
+## Ideal spur transmissions and loaded pin arm (3 October 2026)
+
+Same isolated worktree and pinned engine/library as the preceding checkpoints.
+The original CC0 acceptance source is reproducible with
+`npx tsx scripts/build-technic-fixture.ts --check`; it contains 13 direct official
+part references and copies no library geometry. Moving rows start above Play's
+default ground. An earlier ground-intersecting arrangement was corrected before
+acceptance; its stalled motor was not evidence of a transmission regression.
+
+- Focused regression: **12 files, 84 tests pass**, 13.41 s. A subsequent complete
+  `play-transmissions` run passes **10 tests**, 9.49 s, adding an underpowered-arm
+  check to its previous nine cases. Together these establish **85 distinct
+  passing tests**. Scope: transmission validation, consistent/inconsistent ratio
+  loops, 100-relation and speed bounds, reflected limits, kinematic multi-turn
+  motion, native persistence/undo, proposals/API and existing rig/joint controls.
+- Actual pinned LDraw geometry is compiled into dynamic proxies. The physical
+  checks cover continuous >720° drive, either-shaft multi-turn targets, output
+  mass reaction, a locked output stalling the input and recovery, output impulse
+  backdriving, deterministic replay, oblique/opposed axes and a free carrier.
+  Each coupling pass conserves total angular momentum within 1e-5 on the tested
+  free bodies; total axial momentum also survives the full trajectory. The
+  inertia matrix returned by this Rapier package aliases shared scratch storage:
+  the test reads other body properties first and consumes the matrix immediately.
+  Production constraint calculations consume their matrices immediately as well.
+- The separate pin/arm check holds both bearing coordinates against gravity at
+  0° and 45°, requires settled completion and checks continued holding. A
+  1 N·m authored arm reports blocked rather than gaining unbounded effort.
+  Controller regression covers prior multi-turn, obstruction and loaded targets.
+- Production build passes (generated schema/validator, TypeScript and Vite,
+  34.80 s). The optional relation is backwards compatible. No dependency,
+  library pack, remote runtime asset or CSP change was added.
+- Production browser: **both new rendered transmission cases pass**, using the
+  kinematic pass in the initial pair and the corrected Dynamic case alone
+  (16.6 s). Both command input 765°/output −255°, then output 270°/input −810°,
+  require completion, and move the two-bearing arm to 45°. They compare rendered
+  PNGs, accessory placements, posed inventory and exact source export before/
+  after Play. The first loaded-arm run asserted completion after only 180 ticks;
+  the corrected check allows 600 ticks for physical settling without changing its
+  angle or completion requirements.
+- Incumbent UI baseline only: **3 browser captures pass**, 39.8 s, at desktop
+  1440×1000 and touch 360×600/1080×1800. Screenshots remain under `.local/`.
+  They do not validate a redesigned interface or physical-phone performance.
+- Existing physics performance regression: **2 checks pass**, 1.3 min, with
+  dynamic mean tick cost **0.820 ms** on desktop and **1.820 ms** on the emulated
+  phone profile with 4× CPU throttling (limits 4 ms / 10 ms). This is the existing
+  physics playground, not a Technic scene or physical-phone benchmark. Software
+  WebGL frame means vary by scene; the door-room means are 159.58 ms / 110.00 ms,
+  so these tick measurements are not a claim of smooth rendering.
+
+This establishes ideal spur behavior on these fixtures, not physical LEGO torque,
+tooth clearance, energy conservation under position correction, general contact
+safety or arbitrary assembly convergence. Rack coupling, other actuators and the
+approved contextual-control/whole-mechanism camera slice remain active roadmap
+work.

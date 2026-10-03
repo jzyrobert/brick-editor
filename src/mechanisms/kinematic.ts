@@ -18,6 +18,12 @@ import {
   rotationY,
 } from "../core/math";
 import type { KinematicPose, MechanismSnapshot, MotionRig } from "./types";
+import {
+  transmissionMap,
+  transmissionSpeedLimit,
+  validateTransmissionPose,
+  type TransmissionMap,
+} from "./transmissions";
 const DT = 1 / 60;
 const vector = (v: unknown): v is Vec3 =>
   Array.isArray(v) &&
@@ -93,6 +99,7 @@ export function validateRig(
     "mode",
     "groups",
     "joints",
+    "transmissions",
     "vehicle",
     "dynamics",
   ]);
@@ -270,6 +277,7 @@ export function validateRig(
       current = parent.get(current);
     }
   }
+  transmissionMap(rig);
   if (rig.vehicle) {
     const v = rig.vehicle;
     fields(v, [
@@ -450,6 +458,7 @@ function validateRigDynamics(rig: MotionRig, groupIds: Set<string>) {
 }
 export class KinematicSession {
   private rig: MotionRig;
+  private transmissions: TransmissionMap;
   private pose: KinematicPose;
   private tick = 0;
   private throttle = 0;
@@ -468,6 +477,7 @@ export class KinematicSession {
     );
     validateRig(project, rig, true, lookup);
     this.rig = structuredClone(rig);
+    this.transmissions = transmissionMap(this.rig);
     // Only the revision is needed; cloning the whole project per rig was
     // quadratic in large Play worlds with many (derived) rigs.
     this.revision = project.revision;
@@ -495,13 +505,44 @@ export class KinematicSession {
       "INVALID_INPUT",
       "Joint requires a finite scalar position.",
     );
-    ensure(
-      !j.limits || (value >= j.limits[0] && value <= j.limits[1]),
-      "INVALID_INPUT",
-      "Joint position is outside authored limits.",
+    const changes = [...(this.transmissions.get(id) ?? new Map([[id, 1]]))].map(
+      ([other, ratio]) => [other, value * ratio] as const,
     );
-    this.pose.jointPositions[id] = value;
+    for (const [other, position] of changes) {
+      const joint = this.rig.joints.find((j) => j.id === other)!;
+      ensure(
+        finite(position) &&
+          (!joint.limits ||
+            (position >= joint.limits[0] && position <= joint.limits[1])),
+        "INVALID_INPUT",
+        "Coupled joint position is outside authored limits.",
+      );
+    }
+    for (const [other, position] of changes)
+      this.pose.jointPositions[other] = position;
     return this.snapshot();
+  }
+  /** Limits reflected through every connected shaft, in this shaft's degrees. */
+  jointLimits(id: string): [number, number] {
+    let low = -1e9,
+      high = 1e9;
+    for (const [other, ratio] of this.transmissions.get(id) ??
+      new Map([[id, 1]])) {
+      const joint = this.rig.joints.find((j) => j.id === other);
+      ensure(joint, "INVALID_INPUT", "Unknown joint.");
+      const values = (joint.limits ?? [-1e9, 1e9]).map((v) => v / ratio);
+      low = Math.max(low, Math.min(...values));
+      high = Math.min(high, Math.max(...values));
+    }
+    return [low, high];
+  }
+  coupledJointIds(id: string) {
+    return [...(this.transmissions.get(id)?.keys() ?? [id])];
+  }
+  jointSpeedLimit(id: string) {
+    return this.transmissions.has(id)
+      ? transmissionSpeedLimit(this.transmissions, id)
+      : Infinity;
   }
   clearInput() {
     this.throttle = 0;
@@ -558,8 +599,20 @@ export class KinematicSession {
         "INVALID_INPUT",
         "Pose must specify every scalar joint.",
       );
-      for (const [id, value] of Object.entries(pose.jointPositions))
-        this.setJointPosition(id, value);
+      for (const [id, value] of Object.entries(pose.jointPositions)) {
+        const joint = this.rig.joints.find((j) => j.id === id);
+        ensure(
+          joint &&
+            (joint.kind === "revolute" || joint.kind === "prismatic") &&
+            finite(value) &&
+            (!joint.limits ||
+              (value >= joint.limits[0] && value <= joint.limits[1])),
+          "INVALID_INPUT",
+          "Pose has an invalid scalar joint position.",
+        );
+      }
+      validateTransmissionPose(this.transmissions, pose.jointPositions);
+      this.pose.jointPositions = { ...pose.jointPositions };
       if (this.rig.vehicle) {
         const v = pose.vehicle;
         ensure(

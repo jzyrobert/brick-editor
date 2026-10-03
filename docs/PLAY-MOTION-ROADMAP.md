@@ -13,9 +13,13 @@ rotated axes and loaded progress are covered by focused tests. See
 **Implemented foundation:** 15 source-bound mechanical profiles and typed
 contacts now support read-only `mechanisms.propose()` drafts for retained shafts,
 separate pin/arm articulations and complementary finger hinges with accessories.
-The 8:24 pair is a validated relation candidate; its output is not yet driven.
-See [mechanical scope](PLAY-MECHANICAL-FEATURES.md). Transmission simulation,
-direct session-only Play entry, contact policy and the other phases remain open.
+**Implemented spur drive:** the reviewed 8:24 mesh now couples retained shafts
+with one motor in preview, kinematic Play and Dynamic. Dynamic impulses reflect
+output inertia and obstruction back to the input and return reaction to the
+carrier. Unwrapped positioning, reversed/back-driven control, source isolation
+and rendered accessories are covered by focused tests. See
+[mechanical scope](PLAY-MECHANICAL-FEATURES.md). Rack transmission, direct
+session-only Play entry, contact policy and the other phases remain open.
 
 The strongest next step is a small mechanical feature pack and a transmission
 layer on top of the existing rigid-group system. Brick Editor already has the
@@ -362,7 +366,36 @@ library hashes, cap discovery and solver work, keep the engine lazy and offline,
 and report refused/ambiguous mechanisms. Any worker simulation proposal should
 include transform-transfer and render-interpolation measurements first.
 
+### G. Contextual Play controls and mechanism overview
+
+Additional user direction, 3 October 2026: use the impeccable design skill as
+functionality grows, preserving the established navy HUD/chalk sheet system.
+Link Technic motors and useful articulated parts to simple in-game controls.
+Offer touch sticks/levers and equivalent keyboard/pointer input; avoid adding
+permanent panels or controls that currently cannot do anything. Only show a
+mechanism's drive controls while it is active, and show coupled passive outputs
+as feedback rather than duplicate competing motor controls. Release, pointer
+cancel, focus loss, pause and exit must stop held input reliably.
+
+The user chose **automatically fitting and orbiting the whole active mechanism
+in third person** while its controls are active. This overview must frame the
+whole connected system, retain live motion, allow orbit/zoom and return to the
+explorer's view on leaving controls. Larger assemblies should be understandable
+without steering the explorer around to see every shaft. Walking/vehicle/train
+controls should appear only in the modes where their input can be used.
+
+Live session motor speed/reversal input is a prerequisite (phase D), with authored
+defaults and effort caps preserved. Direct proposal entry/review/save should
+connect the reviewed contact graph to this control flow. Keep labels plain,
+targets at least 44 CSS px, the canvas dominant and safe areas clear. Verify the
+mechanism/no-mechanism/paused/blocked/vehicle/train cases and keyboard, pointer
+and touch release behavior. Inspect desktop 1440×1000 and the required portrait
+and landscape phone/tablet sizes in a bounded, batched impeccable review.
+
 ## Verification scope
+
+This section records the **initial investigation**, before the implementation
+checkpoints above. Current implementation evidence is in [VERIFICATION](VERIFICATION.md).
 
 - Nine focused existing Vitest files passed: **102 tests** covering mechanisms,
   joint authoring, dynamic bodies/motors/vehicles, moving colliders, doors,

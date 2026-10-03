@@ -40,7 +40,7 @@ export type SpurRelationProposal = {
 export type MechanicalProposal = {
   sourceRevision: number;
   rig?: MotionRig;
-  /** Reviewed mesh candidates; not yet persisted or simulated transmissions. */
+  /** Reviewed relations also installed as ideal transmissions on the draft. */
   relations: SpurRelationProposal[];
   graph: MechanicalGraph;
   unresolved: Array<{ occurrenceIds: string[]; reason: string }>;
@@ -113,7 +113,7 @@ export function proposeMechanicalRig(
     warnings: [
       "Review the fixed frame and moving groups before using this session draft. Unknown contacts remain unknown.",
       "Collars are ideal axial grips; friction pins remain articulations. Physical snap fit and clutch strength are not certified.",
-      "Spur relations are candidates until the transmission controller is enabled; this draft alone does not couple gears.",
+      "Spur meshes use ideal ratio constraints; they do not simulate individual tooth contacts or real clutch strength.",
     ],
   };
   const owned = new Set(
@@ -499,6 +499,16 @@ export function proposeMechanicalRig(
       "INVALID_INPUT",
       "A requested motor has no supported shaft, pin or hinge-leaf joint in this proposal.",
     );
+  if (result.relations.length)
+    rig.transmissions = result.relations.map((r, i) => ({
+      id: `spur-${i + 1}`,
+      kind: "spur",
+      jointA: r.jointA,
+      jointB: r.jointB,
+      teethA: r.teethA,
+      teethB: r.teethB,
+      axisSign: r.ratio < 0 ? 1 : -1,
+    }));
   if (rig.joints.length) {
     validateRig(project, rig, true, lookup);
     result.rig = rig;

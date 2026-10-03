@@ -11,12 +11,19 @@ The spec proposes Rapier as the optional physics engine (spec 3.1). Play already
 The [reviewed mechanical proposal API](PLAY-MECHANICAL-FEATURES.md) can supply a
 draft rig from a small official-parts assembly with explicit fixed anchors.
 Analysis preserves the project; a reviewed draft is saved with `rigs.upsert`
-before using the existing controls. Gear/rack coupling and direct session-only
-proposal entry are subsequent roadmap work.
+before using the existing controls. Reviewed spur meshes now produce coupled
+shaft relations in both kinematic and Dynamic Play. Rack coupling and direct
+session-only proposal entry are subsequent roadmap work.
 
-Authored `motor` metadata on revolute and prismatic joints now runs in Play. Kinematic rigs have no forces, so a motor moves at a declared rate. Position motors travel to their target at 90 degrees/s or 40 LDU/s. Velocity motors run at their target speed; an unlimited revolute joint is a continuously rotating axle, with its angle folded by whole turns. Each step uses the same swept actor-clearance check as other joint motion. A motor stops before touching the explorer, reports `blocked` and retries on later ticks. It reports `at-limit` at a limit and `holding` at its position target.
+Authored `motor` metadata on revolute and prismatic joints now runs in Play. Kinematic rigs have no forces, so a motor moves at a declared rate. Position motors travel to their target at 90 degrees/s or 40 LDU/s, reduced when necessary to respect a coupled shaft's speed bound. Velocity motors run at their target speed; continuously rotating axles retain accumulated turns so reduced outputs keep their phase. Each step uses the same swept actor-clearance check as other joint motion. A motor stops before touching the explorer, reports `blocked` and retries on later ticks. It reports `at-limit` at a limit and `holding` at its position target.
 
-Motors start running when Play starts. `play.setMotor({rigId,jointId,enabled})` or the drawer's **Stop motor / Start motor** button toggles one. A manual joint command (slider, `setMechanismJoint`, joint target or the nearby action) stops that joint's motor. Reports carry `motors[jointId]` with mode, target, units, status and whether they are simulated at a kinematic rate or as a dynamic motor.
+Motors start running when Play starts. `play.setMotor({rigId,jointId,enabled})` or the drawer's **Stop motor / Start motor** button toggles one. A manual joint command (slider, `setMechanismJoint`, joint target or the nearby action) stops the connected component's authored motor and replaces its earlier travel target. Reports carry `motors[jointId]` with mode, target, units, status and whether they are simulated at a kinematic rate or as a dynamic motor.
+
+External spur meshes use optional `rig.transmissions`, separate from the joints
+that mount the shafts. Kinematic motion derives every linked coordinate and
+checks their limits together. Dynamic motion uses angular impulses on both
+shafts and their shared carrier; output inertia and obstructions feed back to
+the native effort-limited motor. See [transmission scope and bounds](PLAY-MECHANICAL-FEATURES.md#spur-transmission-behavior).
 
 ## Dynamic physics (opt-in)
 
@@ -42,6 +49,16 @@ crossing the target at speed does not complete it. Meaningful progress resets
 the stall timer; blocked targets continue trying with bounded effort. A held
 target disturbed by another body returns to `moving` until it settles again.
 No body pose or velocity is assigned to reach the target.
+
+The revolute loop uses force-based velocity damping rather than damping scaled
+by a small intermediate pin's inertia. Near a held target, bounded integral
+compensation removes static load error; it does not accumulate during fast
+travel or beyond the speed cap. Joint islands with a movable parent receive
+eight additional native solver iterations. This lets the reviewed two-bearing
+pin arm settle against gravity while retaining its physical effort cap. An
+underpowered arm still reports `blocked`. See Rapier's
+[motor model documentation](https://rapier.rs/docs/user_guides/javascript/joints/)
+and the [loaded-arm verification](VERIFICATION.md#ideal-spur-transmissions-and-loaded-pin-arm-3-october-2026).
 
 ### The playground park sample
 
