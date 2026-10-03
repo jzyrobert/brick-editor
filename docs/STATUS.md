@@ -958,3 +958,23 @@ spring targets, slow rate/reversal, insufficient effort, obstruction recovery,
 low-rate motors, oblique axes, exact replay and source isolation. A rendered
 spring-loaded 2 LDU/s target and reversal preserve posed placements/inventory.
 See [verification](VERIFICATION.md#loaded-linear-position-control-3-october-2026).
+
+## Free cylindrical bearings (3 October 2026)
+
+Authored cylindrical mount joints now retain two native freedoms: axial
+translation and spin around matching local axes. The other four axes are
+constrained. Optional `translationLimitsLdu` axial stops enclose zero within
+±10,000 LDU; omitting them leaves travel free. Dynamic reports expose read-only
+bearing translation and accumulated angle alongside actual group frames.
+
+Native tests apply simultaneous axial and off-axis impulses: spin crosses a full
+turn, both stops hold, and radial/tilt constraints stay aligned. Oblique axes
+replay exactly. Native persistence and posed export preserve source/rest data and
+inventory. A rendered tilted bearing spins under gravity while a spring presses
+it against its axial stop; native re-import reproduces its frames.
+
+Kinematic preview explicitly retains rest. Scalar targets/motors and the current
+simple authoring form refuse this two-freedom joint. Automatic unretained-axle
+recognition, bearing friction and separate spin/translation controls remain open.
+See [scope](PLAY-ACTUATORS.md#cylindrical-bearings) and
+[verification](VERIFICATION.md#free-cylindrical-bearings-3-october-2026).

@@ -44,17 +44,25 @@ joints can declare bounded angular resistance through a supported public wrapper
 adapter. Paused kinematic preview retains authored rest and explains the Dynamic
 requirement. See [field bounds and verified scope](PLAY-ACTUATORS.md).
 
+## Cylindrical bearings
+
+Cylindrical bearings have two native freedoms, axial travel and spin, with optional
+`translationLimitsLdu` stops. Their read-only `dynamics.bearings` coordinates do
+not appear as scalar controls; kinematic preview explicitly retains rest. See
+[scope](PLAY-ACTUATORS.md#cylindrical-bearings).
+
 ## Dynamic physics (opt-in)
 
 `play.enter({rigIds, dynamicRigIds})` simulates the named active rigs dynamically. In the UI, the choice is **Play → Mechanism physics → Dynamic**, a folded section shown only when the build has authored rigs.
 
 - **Bodies.** Each authored rigid group is one body. Individual bricks are never separate bodies (spec 19.4). Moving groups get one convex proxy per member occurrence. Its points are deduplicated on a quarter-LDU grid and reduced to at most 256 points using directional extremes, so the proxy can shrink but never grow. A flat member gets a thin box. Anchored groups keep their exact triangle surfaces, so a door frame keeps its opening.
 - **Anchoring and mass.** Root groups of non-vehicle rigs are anchored by default, such as a door frame or an axle post. Vehicle groups and explicitly unanchored groups move. Mass comes from proxy volume at 200 kg/m³, or from an authored `massKg` per group. Friction defaults to 0.7.
-- **Joints.** Fixed, revolute, prismatic and spherical joints become Rapier impulse joints with authored limits. Bodies of one rig do not collide with each other. Authored motors use `maxEffort` (N·m or N at the 0.02 m/LDU gameplay scale). An animated joint target, from the nearby action, the drawer slider or `setJointTarget`, moves a motor setpoint at the requested speed. The target completes within 1° or 0.5 LDU and reports `blocked` if it stalls for 1.5 s. `setMechanismJoint` (an immediate pose) is refused for dynamic rigs.
+
+- **Joints.** Fixed, revolute, prismatic, spherical and cylindrical joints become Rapier impulse joints with authored limits. Bodies of one rig do not collide with each other. Authored motors use `maxEffort` (N·m or N at the 0.02 m/LDU gameplay scale). An animated joint target, from the nearby action, the drawer slider or `setJointTarget`, moves a motor setpoint at the requested speed. The target completes within 1° or 0.5 LDU and reports `blocked` if it stalls for 1.5 s. `setMechanismJoint` (an immediate pose) is refused for dynamic rigs.
 - **Vehicles.** The chassis is a dynamic body driven by Rapier's ray-cast wheel controller. Each authored wheel becomes a sprung wheel at its declared centre, radius and axle. Engine force, a holding brake at zero throttle, and the authored `maxSteerDegrees`/`maxSpeed` apply. Steering uses the kinematic sign convention. Wheel groups are drawn from the suspension length, steering and rolling angle. Suspension, engine force and friction are optional rig settings. Driver seats keep the kinematic profile: a dynamic vehicle offers **Drive vehicle**, not seated entry.
 - **Explorer.** The walking capsule is a kinematic body in the dynamic world, so bodies cannot fall through the explorer. Dynamic bodies are mirrored into the walking world, where the explorer can stand on them, and walking into a loose body applies a bounded push. Bodies never push the explorer, and riding moving bodies is not simulated. Kinematic rigs appear in the dynamic world as kinematic bodies, so an animated door pushes a crate.
 - **Limits.** At most 14 dynamic rigs, 64 bodies and 512 dynamic member proxies, with the existing 32-rig, 128-group and 200,000-moving-triangle Play budgets. The dynamic world needs complete included collision geometry. A member without surfaces, an anchored vehicle chassis and settings for unknown groups each fail with an actionable message before any simulation starts.
-- **Reports.** Dynamic reports use `mode:"dynamic"` and `dynamics:{engine,gravity,bodies,wheels?,speed?}`. They also carry per-body mass, collider count, sleep state and velocities (LDU/s, degrees/s), and per-wheel contact and suspension length (LDU).
+- **Reports.** Dynamic reports use `mode:"dynamic"` and `dynamics:{engine,gravity,bodies,wheels?,speed?,bearings?}`. They also carry per-body mass, collider count, sleep state and velocities (LDU/s, degrees/s), and per-wheel contact and suspension length (LDU).
 
 Reproducibility follows spec 19.4: identical inputs and tick counts give identical reports in the pinned engine and browser (unit and CLI tests replay runs byte-for-byte). This is not a cross-platform numerical guarantee. The simulation settings describe the chosen simulation, not measured clutch power.
 

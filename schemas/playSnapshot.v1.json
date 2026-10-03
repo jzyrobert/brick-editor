@@ -1080,6 +1080,35 @@
                 }
               }
             },
+            "bearings": {
+              "type": "object",
+              "maxProperties": 10000,
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "translationLdu": {
+                    "type": "number"
+                  },
+                  "angleDegrees": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "translationLdu",
+                  "angleDegrees"
+                ],
+                "additionalProperties": false
+              },
+              "propertyNames": {
+                "not": {
+                  "enum": [
+                    "__proto__",
+                    "constructor",
+                    "prototype"
+                  ]
+                }
+              }
+            },
             "wheels": {
               "type": "object",
               "maxProperties": 10000,
@@ -1578,6 +1607,35 @@
                     "sleeping",
                     "linearVelocity",
                     "angularSpeed"
+                  ],
+                  "additionalProperties": false
+                },
+                "propertyNames": {
+                  "not": {
+                    "enum": [
+                      "__proto__",
+                      "constructor",
+                      "prototype"
+                    ]
+                  }
+                }
+              },
+              "bearings": {
+                "type": "object",
+                "maxProperties": 10000,
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "translationLdu": {
+                      "type": "number"
+                    },
+                    "angleDegrees": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "translationLdu",
+                    "angleDegrees"
                   ],
                   "additionalProperties": false
                 },

@@ -206,6 +206,8 @@ export type PlayDynamicsReport = {
       angularSpeed: number;
     }
   >;
+  /** Read-only free cylindrical coordinates; not scalar actuator controls. */
+  bearings?: Record<string, { translationLdu: number; angleDegrees: number }>;
   wheels?: Record<
     string,
     {

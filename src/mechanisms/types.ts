@@ -10,13 +10,15 @@ export type JointSpec = {
   id: string;
   bodyA: string;
   bodyB: string;
-  kind: "fixed" | "revolute" | "prismatic" | "spherical";
+  kind: "fixed" | "revolute" | "prismatic" | "spherical" | "cylindrical";
   anchorA: Vec3;
   anchorB: Vec3;
   axisA?: Vec3;
   axisB?: Vec3;
   /** Optional rotational resistance of a free spherical joint (Dynamic only). */
   angularResistance?: { maxTorqueNm: number; dampingNmSeconds: number };
+  /** Optional axial stops for a free cylindrical bearing, LDU from rest. */
+  translationLimitsLdu?: [number, number];
   /** Degrees for revolute, LDU for prismatic. */
   limits?: [number, number];
   motor?: {

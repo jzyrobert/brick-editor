@@ -243,7 +243,13 @@
         "optIn": "play.enter dynamicRigIds (UI: Play > Mechanism physics > Dynamic)",
         "engine": "@dimforge/rapier3d-compat@0.21.0 (bundled, Apache-2.0)",
         "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces",
-        "joints": ["fixed", "revolute", "prismatic", "spherical"],
+        "joints": [
+          "fixed",
+          "revolute",
+          "prismatic",
+          "spherical",
+          "cylindrical"
+        ],
         "motors": "Authored position/velocity motors limited by maxEffort; revolute position targets use accumulated turns with bounded velocity feedback and settled completion; prismatic position targets use bounded force-based velocity feedback with integral load compensation; active low-rate drives stay awake",
         "vehicles": "Rapier ray-cast wheels with sprung suspension, engine force, brake and authored maxSpeed/maxSteer",
         "pushing": "Walking pushes loose dynamic bodies with bounded impulses; bodies never move the explorer",
@@ -299,7 +305,12 @@
           },
           "kinematicPreview": "Authored rest retained with explicit Dynamic-only force warning"
         },
-        "sphericalResistance": "Optional angularResistance torque/damping using the public spherical wrapper over an existing native handle; per-axis caps preserve the vector torque bound; no powered orientation or swing/twist limits"
+        "sphericalResistance": "Optional angularResistance torque/damping using the public spherical wrapper over an existing native handle; per-axis caps preserve the vector torque bound; no powered orientation or swing/twist limits",
+        "cylindricalBearings": {
+          "motion": "Native free axial translation and spin; radial/tilt axes constrained; optional translationLimitsLdu stops",
+          "reports": "Read-only dynamics.bearings translationLdu and unwrapped angleDegrees; actual group frames and posed placements",
+          "limits": "No scalar motors/targets; kinematic preview retains rest with an explicit warning; current planar closure solver excludes cylindrical edges"
+        }
       },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
       "profile": "ldraw-minifig-v1",

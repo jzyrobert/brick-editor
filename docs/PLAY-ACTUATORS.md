@@ -1,4 +1,4 @@
-# Authored springs, ropes and ball resistance
+# Authored springs, ropes and movable bearings
 
 Dynamic Play accepts optional `rig.forceLinks`, independently of the mount tree.
 Each link declares unique `id`, two distinct bodies, and group-local `anchorA`
@@ -47,6 +47,30 @@ WASM entry points. A pinned-engine test verifies actual resisted rotation.
 Powered orientation targets, swing/twist limits, detents and a multi-axis pose
 editor remain open. Angular resistance is simulation damping/torque resistance,
 not a position lock or a measured part-specific friction profile.
+
+## Cylindrical bearings
+
+A mount joint with `kind:"cylindrical"` declares coincident local anchors and
+matching unit `axisA`/`axisB`. It allows translation along that axis and free
+rotation around it while constraining radial translation and tilt. Optional
+`translationLimitsLdu:[lower,upper]` stops enclose the authored zero and remain
+within ±10,000 LDU. Omitting them leaves axial travel free.
+
+The native generic joint locks the other four axes. The pinned engine's public
+prismatic wrapper applies axial stops to its linear axis. Dynamic reports expose
+read-only `dynamics.bearings[jointId].translationLdu` and accumulated
+`angleDegrees`. Turns unwrap adjacent fixed-tick orientations; spin above 180°
+per tick can alias the accumulated reading. Actual transformed bodies drive posed
+exports. A cylindrical
+bearing has two freedoms: scalar joint targets, motors and ordinary `limits` are
+refused. The current scalar editor cannot edit this definition without losing
+information, so use a complete rig through the API/native project.
+
+Kinematic preview retains both axial and rotational rest placements and warns
+that free bearing motion requires Dynamic. Cylindrical edges cannot participate
+in the current planar kinematic closure solver. This slice does not automatically
+recognize an unretained axle, provide spin/translation motor controls, model
+bearing friction, or animate a complete actuator's internal inventory components.
 
 ## Preview, persistence and limits
 

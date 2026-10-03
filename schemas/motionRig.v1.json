@@ -269,6 +269,82 @@
                 "minItems": 3
               },
               "kind": {
+                "const": "cylindrical"
+              },
+              "axisA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "axisB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "translationLimitsLdu": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": -10000,
+                  "maximum": 10000
+                },
+                "maxItems": 2,
+                "minItems": 2
+              }
+            },
+            "required": [
+              "id",
+              "bodyA",
+              "bodyB",
+              "anchorA",
+              "anchorB",
+              "kind",
+              "axisA",
+              "axisB"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "anchorB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "kind": {
                 "const": "revolute"
               },
               "axisA": {

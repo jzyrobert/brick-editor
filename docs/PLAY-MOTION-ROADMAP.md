@@ -47,7 +47,9 @@ are refused; arbitrary spatial loops and compound authoring remain open. See
 constraints now run in Dynamic, and free ball joints can declare bounded angular
 resistance through the pinned engine's public wrapper adapter. Rest preview stays
 explicitly kinematic; automatic shock/actuator articulation, ball orientation
-limits and other families remain open. See [scope](PLAY-ACTUATORS.md).
+limits and other families remain open. Authored cylindrical bearings now allow
+free axial/spin motion with optional axial stops and read-only Dynamic reporting;
+kinematic preview explicitly retains rest. See [scope](PLAY-ACTUATORS.md).
 
 ## What already works
 
@@ -342,8 +344,9 @@ the current editor supports only one joint/two groups or its basic vehicle layou
 
 ### D. Additional joint and actuator families
 
-Expose spring/rope data and cylindrical freedom, each with appropriate validation,
-reports and paused preview behavior. Springs need rest length, stiffness and
+The authored spring/rope, cylindrical freedom and ball resistance slices now
+provide validated native constraints, reports and explicit rest previews. Extend
+their authoring and automatic feature proposals. Springs need rest length, stiffness and
 damping; sliders also need travel limits. Rope needs slack/tension and attachment
 points; winches need changing length and a visual cable. Resolve the spherical
 runtime discrepancy before adding powered orientation control, then design proper

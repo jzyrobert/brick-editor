@@ -1228,3 +1228,31 @@ native effort limits and contact response.
 
 This repairs physical held-position behavior; it does not add a screw/valve model,
 automatically animate a complete official actuator or claim phone hardware speed.
+
+## Free cylindrical bearings (3 October 2026)
+
+Separate authored-bearing slice after `db8c96a`; original CC0 linkage surfaces
+supply the test bodies, with no remote geometry or new dependencies.
+
+- Six new pinned-engine tests pass. The focused regression is **7 files,
+  44 tests**, 11.94 s: simultaneous axial/spin movement, both native stops,
+  off-axis impulses with radial error below 0.05 LDU and axial alignment above
+  0.9999, free travel when stops are omitted, oblique axes, exact replay,
+  source/rest preservation, native round-trip and posed inventory/placements.
+- Cylindrical rest preview warns that movement requires Dynamic. Scalar target,
+  scalar motor, ordinary limits, mismatching axes, invalid axial ranges, null
+  stop data and lossy form editing are refused.
+- Rapier's public generic joint locks the other four axes; its public prismatic
+  wrapper applies axial stops to the existing native handle. No private raw WASM
+  entry points or pose/velocity assignments implement the bearing.
+- Production build, generated schemas/validators and TypeScript pass; Vite takes
+  40.49 s on the shared VM. Changed files pass formatting and whitespace checks.
+- The production browser acceptance passes: **1 test, 18.6 s**, private port 4403.
+  A tilted two-part bearing spins under gravity while a spring loads the 20 LDU
+  axial stop. Native restore produces identical group frames; source export stays
+  unchanged, and posed re-import retains both parts and their actual positions.
+
+This verifies authored two-freedom constraints. It does not claim automatic axle
+recognition, internal actuator component maps, bearing friction, two-axis motor
+controls or phone hardware performance. Turn readings unwrap consecutive fixed
+samples and may alias above 180° of spin per tick.

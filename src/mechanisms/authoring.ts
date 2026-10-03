@@ -39,7 +39,7 @@ export type JointRigRequest = IdentityDraft & {
   fixed: GroupDraft;
   moving: GroupDraft;
   jointId: string;
-  kind: JointSpec["kind"];
+  kind: Exclude<JointSpec["kind"], "cylindrical">;
   pivotWorld: Vec3;
   axisWorld?: Vec3;
   /** Degrees for revolute joints, LDU for prismatic joints. Absent means unbounded. */
@@ -566,6 +566,11 @@ export function rigAuthoringRequest(
   const joint = rig.joints[0],
     fixed = draftGroup(joint.bodyA),
     moving = draftGroup(joint.bodyB);
+  ensure(
+    joint.kind !== "cylindrical",
+    "INVALID_INPUT",
+    "This editor cannot load cylindrical freedom and axial stops without losing authored data; edit the full rig definition.",
+  );
   const request: JointRigRequest = {
     ...identity,
     fixed,

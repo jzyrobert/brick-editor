@@ -275,6 +275,10 @@ await api.play.exit();
 
 Optional `forceLinks` specify native springs or maximum-length ropes between
 local anchors; spherical joints can declare bounded `angularResistance`.
+`kind:"cylindrical"` joints allow free axial/spin motion with optional
+`translationLimitsLdu` stops. Read-only Dynamic bearing coordinates are
+`dynamics.bearings[jointId]:{translationLdu,angleDegrees}`; these joints do not
+accept scalar targets or motors.
 Kinematic preview retains rest placements and reports that forces require
 Dynamic Play. The simple authoring form refuses data it cannot preserve. See
 [actuator fields and limitations](PLAY-ACTUATORS.md).

@@ -198,6 +198,7 @@ export function validateRig(
       "limits",
       "motor",
       "angularResistance",
+      "translationLimitsLdu",
     ]);
     ensure(
       safeId(joint.id) && !jointIds.has(joint.id),
@@ -215,7 +216,9 @@ export function validateRig(
     );
     parent.set(joint.bodyB, joint.bodyA);
     ensure(
-      ["fixed", "revolute", "prismatic", "spherical"].includes(joint.kind) &&
+      ["fixed", "revolute", "prismatic", "spherical", "cylindrical"].includes(
+        joint.kind,
+      ) &&
         vector(joint.anchorA) &&
         vector(joint.anchorB),
       "INVALID_INPUT",
@@ -246,7 +249,16 @@ export function validateRig(
       "INVALID_INPUT",
       "Joint rest anchors must coincide in world space.",
     );
-    if (joint.kind === "revolute" || joint.kind === "prismatic") {
+    ensure(
+      joint.kind === "cylindrical" || joint.translationLimitsLdu === undefined,
+      "INVALID_INPUT",
+      "Axial translation stops belong only to cylindrical bearings.",
+    );
+    if (
+      joint.kind === "revolute" ||
+      joint.kind === "prismatic" ||
+      joint.kind === "cylindrical"
+    ) {
       ensure(
         vector(joint.axisA) &&
           vector(joint.axisB) &&
@@ -260,6 +272,25 @@ export function validateRig(
         "INVALID_INPUT",
         "Joint axes must agree at rest.",
       );
+      if (joint.kind === "cylindrical") {
+        ensure(
+          joint.motor === undefined && joint.limits === undefined,
+          "INVALID_INPUT",
+          "Cylindrical bearings have free axial/spin motion; scalar motors/limits are not supported. Use translationLimitsLdu for axial stops.",
+        );
+        if (joint.translationLimitsLdu !== undefined)
+          ensure(
+            Array.isArray(joint.translationLimitsLdu) &&
+              joint.translationLimitsLdu.length === 2 &&
+              joint.translationLimitsLdu.every(
+                (v) => finite(v) && Math.abs(v) <= 10000,
+              ) &&
+              joint.translationLimitsLdu[0] <= 0 &&
+              joint.translationLimitsLdu[1] >= 0,
+            "INVALID_INPUT",
+            "Cylindrical axial stops must enclose zero within ±10,000 LDU.",
+          );
+      }
       if (joint.limits)
         ensure(
           Array.isArray(joint.limits) &&
@@ -1024,6 +1055,11 @@ export class KinematicSession {
       groupFrames: structuredClone(frames),
       transforms,
       warnings: [
+        ...(this.rig.joints.some((j) => j.kind === "cylindrical")
+          ? [
+              "Cylindrical bearings retain their rest position and spin in kinematic preview; free axial/spin motion requires Dynamic Play.",
+            ]
+          : []),
         ...(this.rig.forceLinks?.length
           ? [
               "Springs and ropes retain their authored preview; physical forces and rope tension require Dynamic Play.",

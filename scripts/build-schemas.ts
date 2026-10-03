@@ -450,6 +450,19 @@ const joint = {
       },
       [...Object.keys(jointBase), "kind"],
     ),
+    obj(
+      {
+        ...jointBase,
+        kind: { const: "cylindrical" },
+        axisA: vec,
+        axisB: vec,
+        translationLimitsLdu: {
+          ...arr({ type: "number", minimum: -10000, maximum: 10000 }, 2),
+          minItems: 2,
+        },
+      },
+      [...Object.keys(jointBase), "kind", "axisA", "axisB"],
+    ),
     ...["revolute", "prismatic"].map((kind) =>
       obj(
         {
@@ -1347,6 +1360,7 @@ const playDynamicsReport = obj(
         angularSpeed: num,
       }),
     ),
+    bearings: dictionary(obj({ translationLdu: num, angleDegrees: num })),
     wheels: dictionary(
       obj({
         contact: { type: "boolean" },

@@ -464,7 +464,17 @@ export class DynamicRig {
           ? RAPIER.JointData.prismatic(anchorA, anchorB, axis)
           : spec.kind === "fixed"
             ? RAPIER.JointData.fixed(anchorA, identity, anchorB, identity)
-            : RAPIER.JointData.spherical(anchorA, anchorB);
+            : spec.kind === "cylindrical"
+              ? RAPIER.JointData.generic(
+                  anchorA,
+                  anchorB,
+                  axis,
+                  RAPIER.JointAxesMask.LinY |
+                    RAPIER.JointAxesMask.LinZ |
+                    RAPIER.JointAxesMask.AngY |
+                    RAPIER.JointAxesMask.AngZ,
+                )
+              : RAPIER.JointData.spherical(anchorA, anchorB);
     const joint = this.world.createImpulseJoint(data, a.body, b.body, true);
     joint.setContactsEnabled(false);
     if (spec.angularResistance) {
@@ -489,6 +499,18 @@ export class DynamicRig {
           spec.angularResistance.dampingNmSeconds,
         );
       }
+    }
+    if (spec.kind === "cylindrical" && spec.translationLimitsLdu) {
+      // Public unit-axis wrapper selects LinX in the generic bearing frame.
+      const linear = new RAPIER.PrismaticImpulseJoint(
+        this.world.impulseJoints.raw,
+        this.world.bodies,
+        joint.handle,
+      );
+      linear.setLimits(
+        spec.translationLimitsLdu[0] * S,
+        spec.translationLimitsLdu[1] * S,
+      );
     }
     const scale = spec.kind === "revolute" ? Math.PI / 180 : S;
     if (spec.limits && (spec.kind === "revolute" || spec.kind === "prismatic"))
@@ -950,13 +972,18 @@ export class DynamicRig {
     for (const id of [...this.joints.keys()].sort()) {
       const control = this.joints.get(id)!,
         spec = control.spec;
-      if (spec.kind !== "revolute" && spec.kind !== "prismatic") continue;
+      if (
+        spec.kind !== "revolute" &&
+        spec.kind !== "prismatic" &&
+        spec.kind !== "cylindrical"
+      )
+        continue;
       const a = this.bodies.get(spec.bodyA)!.body,
         b = this.bodies.get(spec.bodyB)!.body;
       const previousValue = control.value;
       const qa = a.rotation(),
         qb = b.rotation();
-      if (spec.kind === "revolute") {
+      if (spec.kind === "revolute" || spec.kind === "cylindrical") {
         const rel = quatMul(conj(qa), qb);
         const along =
           rel.x * control.axis.x +
@@ -988,6 +1015,7 @@ export class DynamicRig {
           (d.x * control.axis.x + d.y * control.axis.y + d.z * control.axis.z) /
           S;
       }
+      if (spec.kind === "cylindrical") continue;
       const tolerance = DYNAMIC_DEFAULTS.tolerance[spec.kind];
       const settled =
         Math.abs(control.value - previousValue) / DT <= tolerance * 2;
@@ -1289,8 +1317,23 @@ export class DynamicRig {
     const jointPositions: Record<string, number> = {};
     const jointTargets: Record<string, PlayJointTargetReport> = {};
     const motors: Record<string, PlayMotorReport> = {};
+    const bearings: NonNullable<PlayDynamicsReport["bearings"]> = {};
     for (const [id, control] of this.joints) {
       const spec = control.spec;
+      if (spec.kind === "cylindrical") {
+        const a = frames[spec.bodyA],
+          b = frames[spec.bodyB],
+          pa = add(a.position, mv(a.basis, spec.anchorA)),
+          pb = add(b.position, mv(b.basis, spec.anchorB)),
+          axis = mv(a.basis, spec.axisA!);
+        bearings[id] = {
+          translationLdu: pb.reduce(
+            (sum, v, k) => sum + (v - pa[k]) * axis[k],
+            0,
+          ),
+          angleDegrees: control.value,
+        };
+      }
       if (spec.kind !== "revolute" && spec.kind !== "prismatic") continue;
       jointPositions[id] = control.value;
       const revolute = spec.kind === "revolute";
@@ -1350,6 +1393,7 @@ export class DynamicRig {
       engine: DYNAMIC_DEFAULTS.engine,
       gravity: DYNAMIC_DEFAULTS.gravity,
       bodies,
+      ...(Object.keys(bearings).length ? { bearings } : {}),
     };
     let vehiclePose: PlayMechanismReport["pose"]["vehicle"];
     const v = this.vehicle;
@@ -1413,6 +1457,11 @@ export class DynamicRig {
         ...(this.rig.vehicle
           ? [
               "Dynamic vehicle: ray-cast wheels with sprung suspension. Driver seats use the kinematic profile.",
+            ]
+          : []),
+        ...(this.rig.joints.some((j) => j.kind === "cylindrical")
+          ? [
+              "Cylindrical bearings translate and spin freely, with optional axial stops; their coordinates are read-only and have no scalar motor controls.",
             ]
           : []),
         ...(this.rig.joints.some((j) => j.kind === "spherical")
