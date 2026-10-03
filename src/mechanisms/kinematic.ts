@@ -107,6 +107,7 @@ export function validateRig(
     "joints",
     "transmissions",
     "loopClosures",
+    "forceLinks",
     "vehicle",
     "dynamics",
   ]);
@@ -196,6 +197,7 @@ export function validateRig(
       "axisB",
       "limits",
       "motor",
+      "angularResistance",
     ]);
     ensure(
       safeId(joint.id) && !jointIds.has(joint.id),
@@ -219,6 +221,20 @@ export function validateRig(
       "INVALID_INPUT",
       "Invalid joint type or anchors.",
     );
+    if (joint.angularResistance !== undefined) {
+      fields(joint.angularResistance, ["maxTorqueNm", "dampingNmSeconds"]);
+      ensure(
+        joint.kind === "spherical" &&
+          finite(joint.angularResistance.maxTorqueNm) &&
+          joint.angularResistance.maxTorqueNm >= 0 &&
+          joint.angularResistance.maxTorqueNm <= 1000000 &&
+          finite(joint.angularResistance.dampingNmSeconds) &&
+          joint.angularResistance.dampingNmSeconds >= 0 &&
+          joint.angularResistance.dampingNmSeconds <= 100000,
+        "INVALID_INPUT",
+        "Angular resistance requires a spherical joint, bounded torque (0–1,000,000 N*m) and damping (0–100,000 N*m*s).",
+      );
+    }
     const a = rig.groups.find((g) => g.id === joint.bodyA)!,
       b = rig.groups.find((g) => g.id === joint.bodyB)!;
     ensure(
@@ -411,6 +427,69 @@ export function validateRig(
       "At most sixteen loop dependent coordinates are supported.",
     );
     validateClosurePose(rig, {});
+  }
+  if (rig.forceLinks !== undefined) {
+    ensure(
+      Array.isArray(rig.forceLinks) && rig.forceLinks.length <= 32,
+      "LIMIT_EXCEEDED",
+      "At most 32 force links are supported per rig.",
+    );
+    for (const link of rig.forceLinks) {
+      fields(link, [
+        "id",
+        "kind",
+        "bodyA",
+        "bodyB",
+        "anchorA",
+        "anchorB",
+        ...(link.kind === "spring"
+          ? [
+              "restLengthLdu",
+              "stiffnessNewtonsPerMetre",
+              "dampingNewtonsSecondsPerMetre",
+            ]
+          : ["maxLengthLdu"]),
+      ]);
+      ensure(
+        safeId(link.id) &&
+          !jointIds.has(link.id) &&
+          ids.has(link.bodyA) &&
+          ids.has(link.bodyB) &&
+          link.bodyA !== link.bodyB &&
+          vector(link.anchorA) &&
+          vector(link.anchorB),
+        "INVALID_INPUT",
+        "Force links require unique identities, distinct existing bodies and finite local anchors.",
+      );
+      jointIds.add(link.id);
+      const within = (n: unknown, low: number, high: number) =>
+        finite(n) && n >= low && n <= high;
+      if (link.kind === "spring")
+        ensure(
+          within(link.restLengthLdu, 0, 10000) &&
+            within(link.stiffnessNewtonsPerMetre, 0.001, 1000000) &&
+            within(link.dampingNewtonsSecondsPerMetre, 0, 100000),
+          "INVALID_INPUT",
+          "Spring requires bounded rest length, stiffness (N/m) and damping (N*s/m).",
+        );
+      else {
+        ensure(
+          link.kind === "rope" && within(link.maxLengthLdu, 0.01, 10000),
+          "INVALID_INPUT",
+          "Rope requires a bounded positive maximum length.",
+        );
+        const a = rig.groups.find((g) => g.id === link.bodyA)!,
+          b = rig.groups.find((g) => g.id === link.bodyB)!;
+        const pa = position(a.frame, link.anchorA),
+          pb = position(b.frame, link.anchorB);
+        ensure(
+          Math.hypot(...pa.map((v, k) => v - pb[k])) <=
+            link.maxLengthLdu + 0.001,
+          "INVALID_INPUT",
+          "Authored rope attachments exceed its maximum length.",
+        );
+      }
+    }
   }
   transmissionMap(rig);
   if (rig.vehicle) {
@@ -945,6 +1024,11 @@ export class KinematicSession {
       groupFrames: structuredClone(frames),
       transforms,
       warnings: [
+        ...(this.rig.forceLinks?.length
+          ? [
+              "Springs and ropes retain their authored preview; physical forces and rope tension require Dynamic Play.",
+            ]
+          : []),
         ...(this.rig.joints.some((j) => j.motor)
           ? [
               "Motor targets and effort are authored metadata; kinematic preview uses explicit positions, not dynamic motor physics.",

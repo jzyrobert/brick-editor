@@ -922,3 +922,21 @@ placements and plain posed inventory are verified. This is explicit planar
 support; automatic/spatial loops, compound authoring, general contact safety and
 physical-phone performance remain open. See [scope](PLAY-LINKAGES.md) and
 [verification](VERIFICATION.md#closed-planar-linkages-3-october-2026).
+
+## Springs, ropes and ball resistance (3 October 2026)
+
+Authored `forceLinks` now create native spring and slack-to-taut rope constraints
+between existing rigid-group attachment points. Springs declare simulation rest
+length, stiffness and damping; a guided spring retains prismatic travel stops.
+Spherical joints can declare bounded angular resistance using the pinned
+engine's exported public wrapper for the existing native handle. Combined axis
+effort stays within the authored cap. Powered ball orientation, swing/twist
+limits, winches, cable visuals and automatic complete shock/actuator articulation
+remain open.
+
+Kinematic preview retains authored rest and explains that forces require
+Dynamic. Native save/restore, rendered spring/rope load behavior, replay after
+native re-import, source isolation and posed placements/inventory are verified.
+Simple authoring forms refuse definitions they would discard; Physics settings
+still preserves the whole rig. See [scope](PLAY-ACTUATORS.md) and
+[verification](VERIFICATION.md#springs-ropes-and-ball-resistance-3-october-2026).

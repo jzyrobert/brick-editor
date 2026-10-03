@@ -43,6 +43,12 @@ retain limits and source data, and transmit obstruction. Cold singular toggles
 are refused; arbitrary spatial loops and compound authoring remain open. See
 [scope](PLAY-LINKAGES.md).
 
+**Implemented force-link slice:** authored springs and slack/tension rope
+constraints now run in Dynamic, and free ball joints can declare bounded angular
+resistance through the pinned engine's public wrapper adapter. Rest preview stays
+explicitly kinematic; automatic shock/actuator articulation, ball orientation
+limits and other families remain open. See [scope](PLAY-ACTUATORS.md).
+
 ## What already works
 
 | Capability                            | Current behavior                                                                                                     | Relevant implementation                                                                                                                      |

@@ -273,6 +273,12 @@ await api.play.exit();
 - `mechanisms.list()` returns authored rigs with their joints, motors and optional `dynamics` settings.
 - `dynamics.startDynamic: true` on any rig makes the Play card start with **Mechanism physics → Dynamic** chosen (the playground park sample sets it); automation still names `dynamicRigIds` explicitly.
 
+Optional `forceLinks` specify native springs or maximum-length ropes between
+local anchors; spherical joints can declare bounded `angularResistance`.
+Kinematic preview retains rest placements and reports that forces require
+Dynamic Play. The simple authoring form refuses data it cannot preserve. See
+[actuator fields and limitations](PLAY-ACTUATORS.md).
+
 Rig `dynamics` settings (optional, schema `motionRig`): `groups` keyed by group ID with `massKg` (0.001–100,000) and `anchored`; `friction` (0–4); `suspension` for vehicles, with `restLength` and `travel` in LDU (0.5–200), `stiffness` (1–500) and `damping` (0.05–50); and `engineForce` in simulation N. A dynamic vehicle chassis or wheel cannot be anchored.
 
 ## Trains

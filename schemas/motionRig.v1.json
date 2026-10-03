@@ -153,10 +153,75 @@
                 "minItems": 3
               },
               "kind": {
-                "enum": [
-                  "fixed",
-                  "spherical"
-                ]
+                "const": "fixed"
+              }
+            },
+            "required": [
+              "id",
+              "bodyA",
+              "bodyB",
+              "anchorA",
+              "anchorB",
+              "kind"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "anchorB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "kind": {
+                "const": "spherical"
+              },
+              "angularResistance": {
+                "type": "object",
+                "properties": {
+                  "maxTorqueNm": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "dampingNmSeconds": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100000
+                  }
+                },
+                "required": [
+                  "maxTorqueNm",
+                  "dampingNmSeconds"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [
@@ -476,6 +541,134 @@
         "additionalProperties": false
       },
       "maxItems": 8
+    },
+    "forceLinks": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "anchorB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "kind": {
+                "const": "spring"
+              },
+              "restLengthLdu": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "stiffnessNewtonsPerMetre": {
+                "type": "number",
+                "minimum": 0.001,
+                "maximum": 1000000
+              },
+              "dampingNewtonsSecondsPerMetre": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100000
+              }
+            },
+            "required": [
+              "id",
+              "bodyA",
+              "bodyB",
+              "anchorA",
+              "anchorB",
+              "kind",
+              "restLengthLdu",
+              "stiffnessNewtonsPerMetre",
+              "dampingNewtonsSecondsPerMetre"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "bodyB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorA": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "anchorB": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "kind": {
+                "const": "rope"
+              },
+              "maxLengthLdu": {
+                "type": "number",
+                "minimum": 0.01,
+                "maximum": 10000
+              }
+            },
+            "required": [
+              "id",
+              "bodyA",
+              "bodyB",
+              "anchorA",
+              "anchorB",
+              "kind",
+              "maxLengthLdu"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "maxItems": 32
     },
     "transmissions": {
       "type": "array",

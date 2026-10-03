@@ -1169,3 +1169,39 @@ Worktree `/home/ubuntu/brick-editor-joints`, branch `codex/joint-linkages`, from
 The existing forest validator still refuses cycles in mount joints. This is a
 bounded explicit planar extension, not a claim that every graph converges or
 that spatial/automatically discovered linkages and internal contacts are solved.
+
+## Springs, ropes and ball resistance (3 October 2026)
+
+Follow-up in `/home/ubuntu/brick-editor-joints` after `371cf78`, kept separate from
+the closed-linkage checkpoint.
+
+- **Seven new pinned-engine tests pass** in the final focused regression:
+  **6 files, 46 tests**, 9.26 s, including existing dynamic/multi-turn controllers,
+  closed linkages and authoring.
+- A 1 kg load on a 100 N/m spring settles within 0.1 LDU of the analytical
+  4.905 LDU extension at gameplay scale. This 2 mm bound includes the native
+  fixed-tick solver and sleep threshold. An impulse decays below 0.1 LDU with
+  declared damping while the undamped comparison retains more than 1 LDU motion.
+  A guided spring retains its 2 LDU travel stop within 0.1 LDU.
+- A rope begins at 20 LDU with a 30 LDU maximum, remains slack while falling,
+  catches the load within 0.1 LDU of its maximum and allows shortening after an
+  upward impulse. Source data stays unchanged.
+- A freely rotating spherical body retains more than 20°/s after its test
+  impulse; declared resistance reduces it below 1°/s. The native handle remains
+  Generic-wrapped; the public exported spherical constructor supplies the real
+  angular motor operations. Per-axis effort is capped at one third of the total.
+- Validation refuses negative forces, bad/excessive lengths, duplicate/excessive
+  links and invalid angular resistance. Native save/restore preserves metadata;
+  existing simple authoring forms refuse data they would lose.
+- Both new production browser cases pass: **2 tests, 18.3 s**, private port 4403.
+  Rendered spring/rope loads settle at their expected lengths. Native export and
+  re-import replay identical group frames; source export and two-part inventory
+  remain unchanged, and static posed re-import preserves the actual placements.
+- Schema generation, TypeScript, formatting and the production build pass
+  (Vite approximately 66 s on the shared VM). No dependency, remote asset,
+  library pack or CSP change.
+
+These are authored force constraints on original bodies, not automatic animated
+shock/actuator inventory parts. Kinematic preview remains a rest preview. No
+reported tension, arbitrary ball orientation control, routed rope, visual cable
+or physical-phone performance claim is made.

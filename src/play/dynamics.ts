@@ -422,6 +422,25 @@ export class DynamicRig {
       // coordinate/motor. Passive tree coordinates remain in the reports.
       this.joints.delete(closure.id);
     }
+    for (const link of this.rig.forceLinks ?? []) {
+      const a = this.bodies.get(link.bodyA)!,
+        b = this.bodies.get(link.bodyB)!;
+      const anchorA = toPhysics(mv(a.rest.basis, link.anchorA)),
+        anchorB = toPhysics(mv(b.rest.basis, link.anchorB));
+      const data =
+        link.kind === "spring"
+          ? RAPIER.JointData.spring(
+              link.restLengthLdu * S,
+              link.stiffnessNewtonsPerMetre,
+              link.dampingNewtonsSecondsPerMetre,
+              anchorA,
+              anchorB,
+            )
+          : RAPIER.JointData.rope(link.maxLengthLdu * S, anchorA, anchorB);
+      this.world
+        .createImpulseJoint(data, a.body, b.body, true)
+        .setContactsEnabled(false);
+    }
     if (this.rig.vehicle) this.createVehicle();
     this.syncMirrors();
   }
@@ -448,6 +467,29 @@ export class DynamicRig {
             : RAPIER.JointData.spherical(anchorA, anchorB);
     const joint = this.world.createImpulseJoint(data, a.body, b.body, true);
     joint.setContactsEnabled(false);
+    if (spec.angularResistance) {
+      // Rapier 0.21 wraps spherical data as Generic. Its exported spherical
+      // wrapper accepts an existing handle and uses the public angular-axis
+      // motor APIs, so no private raw WASM calls or unsafe casts are required.
+      const ball = new RAPIER.SphericalImpulseJoint(
+        this.world.impulseJoints.raw,
+        this.world.bodies,
+        joint.handle,
+      );
+      for (const axis of [
+        RAPIER.JointAxis.AngX,
+        RAPIER.JointAxis.AngY,
+        RAPIER.JointAxis.AngZ,
+      ]) {
+        ball.configureMotorModel(axis, RAPIER.MotorModel.ForceBased);
+        ball.setMotorMaxForce(axis, spec.angularResistance.maxTorqueNm / 3);
+        ball.configureMotorVelocity(
+          axis,
+          0,
+          spec.angularResistance.dampingNmSeconds,
+        );
+      }
+    }
     const scale = spec.kind === "revolute" ? Math.PI / 180 : S;
     if (spec.limits && (spec.kind === "revolute" || spec.kind === "prismatic"))
       (joint as RAPIER.UnitImpulseJoint).setLimits(
@@ -1359,7 +1401,9 @@ export class DynamicRig {
             ]
           : []),
         ...(this.rig.joints.some((j) => j.kind === "spherical")
-          ? ["Spherical joints swing freely; they have no motor."]
+          ? [
+              "Spherical joints retain free swing; optional angular resistance opposes rotation. Powered orientation and swing/twist limits are not exposed.",
+            ]
           : []),
         "Moving dynamic bodies can push the explorer's surroundings but never the explorer; walking pushes loose bodies.",
       ],

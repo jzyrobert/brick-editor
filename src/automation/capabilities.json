@@ -256,7 +256,6 @@
         "reproducibility": "Identical reports for identical inputs in the pinned engine/browser; not promised across platforms",
         "notSimulated": [
           "worm, bevel and differential transmissions",
-          "spring and rope joints",
           "internal collisions between groups of one rig",
           "spherical joint orientation controls",
           "clutch strength",
@@ -291,7 +290,16 @@
             "automatic linkage recognition",
             "compound linkage authoring UI"
           ]
-        }
+        },
+        "forceLinks": {
+          "spring": "Authored local attachments, restLengthLdu, stiffnessNewtonsPerMetre and dampingNewtonsSecondsPerMetre; native spring forces and guided travel stops verified",
+          "rope": "Authored slack-to-taut maximum-length constraint; no winch, routed pulley or visual cable",
+          "limits": {
+            "linksPerRig": 32
+          },
+          "kinematicPreview": "Authored rest retained with explicit Dynamic-only force warning"
+        },
+        "sphericalResistance": "Optional angularResistance torque/damping using the public spherical wrapper over an existing native handle; per-axis caps preserve the vector torque bound; no powered orientation or swing/twist limits"
       },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
       "profile": "ldraw-minifig-v1",

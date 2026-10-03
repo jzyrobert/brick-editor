@@ -63,6 +63,6 @@ copy with the same four fixture occurrences.
 This establishes these planar examples and bounded failure behavior. It does not
 establish arbitrary spatial loop solving, automatic linkage recognition,
 branch selection from a cold singular pose, general internal contact safety,
-a compound-rig authoring interface or physical-phone performance. Springs,
-ropes, ball orientation limits, cylindrical joints and other actuators are
-separate work. See [verification](VERIFICATION.md#closed-planar-linkages-3-october-2026).
+a compound-rig authoring interface or physical-phone performance. Authored [springs, ropes and ball resistance](PLAY-ACTUATORS.md) are
+a separate verified extension. Ball orientation limits, cylindrical joints and
+other actuators remain open. See [verification](VERIFICATION.md#closed-planar-linkages-3-october-2026).

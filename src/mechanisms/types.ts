@@ -15,6 +15,8 @@ export type JointSpec = {
   anchorB: Vec3;
   axisA?: Vec3;
   axisB?: Vec3;
+  /** Optional rotational resistance of a free spherical joint (Dynamic only). */
+  angularResistance?: { maxTorqueNm: number; dampingNmSeconds: number };
   /** Degrees for revolute, LDU for prismatic. */
   limits?: [number, number];
   motor?: {
@@ -86,6 +88,8 @@ export type MotionRig = {
   transmissions?: Transmission[];
   /** Explicit planar revolute closure edges; tree joints remain acyclic. */
   loopClosures?: PlanarLoopClosure[];
+  /** Physical springs/ropes between local attachment points, Dynamic only. */
+  forceLinks?: ForceLink[];
   vehicle?: VehicleSpec;
   dynamics?: RigDynamics;
 };
@@ -148,3 +152,19 @@ export type PlanarLoopClosure = {
   /** Passive tree coordinates solved for closure; never independently driven. */
   dependentJointIds: string[];
 };
+
+export type ForceLink = {
+  id: string;
+  bodyA: string;
+  bodyB: string;
+  anchorA: Vec3;
+  anchorB: Vec3;
+} & (
+  | {
+      kind: "spring";
+      restLengthLdu: number;
+      stiffnessNewtonsPerMetre: number;
+      dampingNewtonsSecondsPerMetre: number;
+    }
+  | { kind: "rope"; maxLengthLdu: number }
+);

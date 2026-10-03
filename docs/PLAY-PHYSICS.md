@@ -35,6 +35,15 @@ so a blocked output reacts back to the driver. The verified four-bar and
 slider-crank keep their source and posed inventories intact. See
 [limits, singular behavior and verification](PLAY-LINKAGES.md).
 
+## Spring/rope links and ball resistance
+
+Optional `forceLinks` connect authored local attachment points with native
+springs or maximum-length ropes. Springs use simulation N/m and N·s/m at the
+existing gameplay scale; ropes are slack until their maximum length. Spherical
+joints can declare bounded angular resistance through a supported public wrapper
+adapter. Paused kinematic preview retains authored rest and explains the Dynamic
+requirement. See [field bounds and verified scope](PLAY-ACTUATORS.md).
+
 ## Dynamic physics (opt-in)
 
 `play.enter({rigIds, dynamicRigIds})` simulates the named active rigs dynamically. In the UI, the choice is **Play → Mechanism physics → Dynamic**, a folded section shown only when the build has authored rigs.

@@ -1,0 +1,63 @@
+# Authored springs, ropes and ball resistance
+
+Dynamic Play accepts optional `rig.forceLinks`, independently of the mount tree.
+Each link declares unique `id`, two distinct bodies, and group-local `anchorA`
+and `anchorB`. Up to 32 links can connect a rig's existing rigid bodies. They do
+not create new inventory parts or automatically recognize shock absorbers,
+ropes, actuators or their attachment points.
+
+A spring uses `kind:"spring"`, `restLengthLdu` (0–10,000),
+`stiffnessNewtonsPerMetre` (0.001–1,000,000) and
+`dampingNewtonsSecondsPerMetre` (0–100,000). Native spring constraints oppose
+extension and compression and damp relative attachment motion. A prismatic
+mount joint can guide a spring to make a bounded shock or linear spring actuator.
+Its travel stops remain ordinary authored joint limits.
+
+A rope uses `kind:"rope"` and `maxLengthLdu` (0.01–10,000). Its authored attachment
+distance must not already exceed the length. The native rope constraint leaves
+shorter distances slack and limits further separation when taut. It supplies no
+compression force. Changing rope length, winches, routed pulleys and a deforming
+visual cable are not implemented.
+
+Lengths convert at the declared 0.02 metres/LDU gameplay scale. Spring stiffness
+and damping use simulation N/m and N·s/m. These values do not claim measured
+miniature LEGO hardware behavior. Root groups remain anchored by default;
+explicitly set `dynamics.groups[bodyId].anchored:false` for a free linked body.
+A force link alone does not declare a rigid attachment or intentional bearing
+contact.
+
+## Spherical angular resistance
+
+A spherical joint can declare
+`angularResistance:{maxTorqueNm,dampingNmSeconds}`. Bounds are 0–1,000,000 N·m
+and 0–100,000 N·m·s. Three native angular velocity motors oppose rotation with
+force-based damping. Each axis is capped at the total torque bound divided by
+three, so the sum of axis efforts cannot exceed the declared cap. Zero resistance
+keeps the existing freely rotating ball joint behavior.
+
+Rapier 0.21 returns a `GenericImpulseJoint` wrapper for spherical joint data.
+Its exported `SphericalImpulseJoint` constructor accepts the existing public
+joint handle, body set and joint set, and exposes the supported angular-axis
+motor operations. The adapter uses this public constructor; it does not cast a
+Generic object and call nonexistent methods, alter the engine, or use private
+WASM entry points. A pinned-engine test verifies actual resisted rotation.
+
+Powered orientation targets, swing/twist limits, detents and a multi-axis pose
+editor remain open. Angular resistance is simulation damping/torque resistance,
+not a position lock or a measured part-specific friction profile.
+
+## Preview, persistence and limits
+
+Paused/kinematic preview retains authored placements and warns that forces and
+rope tension require Dynamic Play. It does not simulate a spring or silently
+apply a rope length constraint. Dynamic reports expose actual body/group frames,
+velocities and existing posed export; no unmeasured tension value is invented.
+Native projects preserve these definitions. The simple joint authoring form
+refuses rigs it would flatten or discard; Physics settings can still edit the
+whole rig's existing dynamics data.
+
+Source/inventory preservation, loaded spring extension, impulse damping,
+rope slack/catch/shortening and ball resistance are verified in the pinned
+engine. The force-link acceptance uses original fixture bodies, not automatic
+articulation of complete official shock/actuator assemblies. See
+[verification](VERIFICATION.md#springs-ropes-and-ball-resistance-3-october-2026).

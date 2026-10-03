@@ -438,7 +438,18 @@ const mechanicalProposalRequest = obj(
 );
 const joint = {
   oneOf: [
-    obj({ ...jointBase, kind: { enum: ["fixed", "spherical"] } }),
+    obj({ ...jointBase, kind: { const: "fixed" } }),
+    obj(
+      {
+        ...jointBase,
+        kind: { const: "spherical" },
+        angularResistance: obj({
+          maxTorqueNm: { type: "number", minimum: 0, maximum: 1000000 },
+          dampingNmSeconds: { type: "number", minimum: 0, maximum: 100000 },
+        }),
+      },
+      [...Object.keys(jointBase), "kind"],
+    ),
     ...["revolute", "prismatic"].map((kind) =>
       obj(
         {
@@ -486,6 +497,33 @@ const motionRig = obj(
         dependentJointIds: { ...arr(id, 16), minItems: 2, uniqueItems: true },
       }),
       8,
+    ),
+    forceLinks: arr(
+      {
+        oneOf: [
+          obj({
+            ...jointBase,
+            kind: { const: "spring" },
+            restLengthLdu: { type: "number", minimum: 0, maximum: 10000 },
+            stiffnessNewtonsPerMetre: {
+              type: "number",
+              minimum: 0.001,
+              maximum: 1000000,
+            },
+            dampingNewtonsSecondsPerMetre: {
+              type: "number",
+              minimum: 0,
+              maximum: 100000,
+            },
+          }),
+          obj({
+            ...jointBase,
+            kind: { const: "rope" },
+            maxLengthLdu: { type: "number", minimum: 0.01, maximum: 10000 },
+          }),
+        ],
+      },
+      32,
     ),
     transmissions: arr(
       {
