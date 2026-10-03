@@ -873,3 +873,115 @@ CI runs 102–104 failed in browser shards main-2/3/4, so nothing deployed. The 
 - The complete-library search result now starts below the fold; its thumbnail loads when scrolled near (by design), so the test scrolls it into view.
 
 Locally all 9 failing tests pass, with hud-layout, menus, instruction-viewer, gallery, editor, fill-set, full-library, startup-recovery and the Play mechanism specs (45 tests). `load-performance.spec.ts:152` (skeleton frames) failed once in run 104 with only two frames sampled; it passes repeatedly here and is left to the next CI run.
+
+## Play motion investigation (3 October 2026)
+
+Worktree `/home/ubuntu/brick-editor-physics-motion`, branch
+`codex/physics-motion-investigation`, starting at `c004c82`. Node 22.14.0, pinned
+Rapier 0.21.0 and the committed `ldraw-full-2026-09-28` library. See the
+[findings and proposed scope](PLAY-MOTION-ROADMAP.md).
+
+```sh
+FORCE_COLOR=0 npx vitest run \
+  tests/unit/mechanisms.test.ts tests/unit/play-dynamics.test.ts \
+  tests/unit/rig-joint-authoring.test.ts tests/unit/play-moving.test.ts \
+  tests/unit/play-auto-doors.test.ts tests/unit/play-track.test.ts \
+  tests/unit/play-trains.test.ts tests/unit/rig-authoring.test.ts \
+  tests/unit/connectors.test.ts
+npx tsx scripts/audit-play-motion.ts
+npx tsc -b
+```
+
+- Existing tests: **9 files, 102 tests passed**, 16.14 s wall time in the focused
+  run. This confirms their existing contracts, not new mechanism behavior.
+- Audit: all assertions passed. Current dynamic frame overlap was measured at
+  180.077° after 240 fixed ticks without gravity; kinematic static-obstacle overlap
+  was accepted at 90°. The point [0, 10, 0] LDU in 3700's round through-hole lies
+  inside its moving convex proxy. The cycle and spherical controls were refused
+  as reported. Auto-door moving membership remained a single occurrence.
+- Pinned-engine creation probes succeeded for spring, rope, generic cylindrical
+  freedom and an additional closing impulse joint. Those objects were not stepped
+  as a combined mechanism; no stability or transmission correctness is implied.
+- Multi-turn target: a fresh zero-gravity unbounded hinge commanded to 720° at
+  180°/s reports 9,127.104° and `blocked` after 600 fixed ticks. One-off 180° and
+  360° checks ended at 180.077° and 360.078° respectively. This isolates a
+  multi-turn positioning concern; the existing velocity-motor tests still pass.
+- Spherical API discrepancy: creating `JointData.spherical` returns runtime
+  `JointType.Generic` (6) with no `configureMotorPosition` or `setMotorMaxForce`
+  method, despite the spherical class declarations/prototype containing them.
+  The audit checks method availability; an initial direct method call reproduced
+  `TypeError: ballJoint.setMotorMaxForce is not a function`.
+- TypeScript and changed-file Prettier checks passed. No runtime feature, schema
+  or generated library asset changed. The audit's three.js fixture loader emits
+  existing missing-color-material warnings; probes concern collider geometry.
+- No browser suite, phone/GPU benchmark, live OMR fetch or physical LEGO experiment
+  was run. The original workspace's uncommitted changes were not copied or edited.
+
+## Accumulated-turn position control (3 October 2026)
+
+Worktree and engine match the investigation above. The repaired
+`scripts/audit-play-motion.ts` now asserts a 720° target finishes within 1° and
+reports `complete` after 600 ticks; observed final angle is 720°. The other audit
+limitations remain reproduced, including own-frame overlap at 180°.
+
+- Focused unit regression: `play-multiturn`, `play-dynamics`, `mechanisms`,
+  `play-moving` and `play-auto-doors`: **5 files, 38 tests pass**, 6.61 s wall time;
+  multiple turns in both directions,
+  authored position motors, target reversal, repeatable replay, rotated axis,
+  high mass/low effort progress, locked-body recovery and external impulses.
+  Every fixed-tick helper check preserves the authored project byte-for-byte.
+- `npm run build` passes (schemas, TypeScript and production Vite bundle).
+  Changed-file Prettier and a final TypeScript check pass. No dependency,
+  generated library, persisted schema or runtime asset was added.
+- Production Playwright on a private server at port 4397: **5 checks pass**
+  across the initial four existing passes (1.0 min) and the corrected new target
+  check alone (15.4 s). The new check covers 720°, −720°, 765°, settled holding,
+  capture metadata, different rendered PNGs, posed export and unchanged authored
+  LDraw. Existing checks cover official auto doors and the Dynamic drawer/motor
+  toggle at 1440×1000 and 360×800. Its first run exposed a missing `await` on
+  `play.snapshot()` in the new capture test; corrected before the isolated pass.
+- This establishes the controller on these fixtures and the pinned software
+  WebGL browser. It does not establish arbitrary-load motor convergence, physical
+  LEGO torque, Technic transmissions or a phone performance measurement.
+
+## Reviewed mechanical proposals (3 October 2026)
+
+Same worktree and source packs as the preceding checkpoints. The
+[mechanical scope](PLAY-MECHANICAL-FEATURES.md) records the 15 profiles, ideal
+contact semantics, analysis bounds and unfinished transmission/Play integration.
+
+- Focused regression: **8 files, 79 tests pass**, 10.30 s wall time:
+  `mechanical-contacts`, `mechanical-proposals`, `mechanical-proposal-api`,
+  `play-multiturn`, `play-dynamics`, `rig-authoring`, `rig-joint-authoring` and
+  `connectors`.
+- New tests bind each profile to the exact pinned source hash and manifests;
+  independently check source hole/tooth/finger landmarks; distinguish axial
+  freedom, collars and friction pins; reject partial/remote/skew/phase-invalid
+  engagement; check both gear axis signs and invalid mesh separation/faces;
+  preserve rounded/nested source transforms; and fail closed on occurrence and
+  dense search budgets.
+- The original 13-part arrangement yields one joint per retained shaft despite
+  multiple bearings, a separate pin and arm, four total joints and a −1/3 mesh
+  candidate. Explicit preview moves a shaft/gear and pin arm; it deliberately
+  leaves the second shaft independent until transmission integration. All
+  authored placements, raw export and occurrence count remain unchanged.
+- API checks establish a read-only proposal without a renderer/undo entry,
+  explicit `rigs.upsert` saving with unchanged source/inventory, getter/unknown
+  field preflight, stale requests and an edit during lazy analysis. An initial
+  guard compared cloned `editor.project` objects; it now compares the immutable
+  editor snapshot and revision, and both ordinary and concurrent-edit tests pass.
+- `npm run build` passes with generated request/API schemas, standalone
+  validators, TypeScript and production Vite output. The mechanical analysis is
+  a separate lazy chunk (20.62 kB, 7.99 kB gzip in this build). No source pack,
+  runtime asset or dependency was changed.
+- Production browser: **3 checks pass**, 29.2 s, private server at port 4397.
+  `mechanical-proposals.spec.ts` imports the actual official finger halves and
+  plate, analyses without a document edit, explicitly saves, renders both moving
+  accessories at 45°, checks changed PNGs and posed export, and retains exact
+  authored LDraw/inventory. Existing `play-mechanisms.spec.ts` checks posed door
+  colliders and restoration at desktop, plus authored rig control at 1080×1800
+  touch size. The new proposal has API coverage; no proposal UI was introduced.
+- Mechanical analysis, contact matching and proposal tests do not establish
+  motor-driven 3:1 behavior, transmitted load, collision clearance, physical
+  LEGO fit, automatic full-model rigging or phone performance. Those remain
+  separate requirements of the active motion roadmap.

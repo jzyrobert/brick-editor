@@ -3,6 +3,9 @@ import { queryProject, type QueryRequest } from "./query";
 import type { FillRequest, fillPreview } from "../edit/fill";
 import type { ExportRequest as ProfileRequest } from "../ldraw/export-profiles";
 import type { MechanismBrowser } from "../mechanisms/browser";
+import type { MechanicalProposalRequest } from "../mechanisms/mechanical-proposals";
+import { occurrences } from "../core/document";
+import { fullConnectorEntry } from "../catalog/full-connectors";
 import type { QualityName, QualityControls } from "../render/quality";
 import type { LookName, LookControls } from "../render/look";
 import type { PublishFormat } from "../instructions/publish";
@@ -27,6 +30,7 @@ import {
   loadFullLibraryIndex,
   loadFullSources,
   unresolvedCuratedRefs,
+  loadFullConnectors,
 } from "../catalog/full-library-loader";
 import { curatedHas } from "../catalog/full-library";
 import { libraryUpdateStatus } from "../catalog/library-update";
@@ -179,6 +183,50 @@ export function createAPI(
         jobs.wait<ReturnType<typeof fillPreview>>(startFillPreview(request)),
     },
     mechanisms: {
+      /** Read-only, source-bound session rig proposal. It does not save or start Play. */
+      propose: async (input: MechanicalProposalRequest) => {
+        validateRequest("mechanicalProposalRequest", input);
+        editor.requireMaterialization();
+        const source = editor.snapshot;
+        ensure(
+          input.expectedRevision === source.revision,
+          "REVISION_CONFLICT",
+          "Project changed; rebuild the mechanical proposal.",
+        );
+        const selection = input.occurrenceIds
+          ? new Set(input.occurrenceIds)
+          : undefined;
+        const lookup = new Map(occurrences(source).map((o) => [o.id, o]));
+        const all = [...lookup.values()].filter((o) =>
+          selection ? selection.has(o.id) : o.visible || input.includeHidden,
+        );
+        ensure(
+          all.length <= 2048,
+          "LIMIT_EXCEEDED",
+          "Select at most 2,048 parts for mechanical analysis.",
+        );
+        const refs = new Set(
+          all
+            .filter(
+              (o) =>
+                o.namespace === "official" &&
+                !curatedHas(o.node.ref) &&
+                !fullConnectorEntry(o.node.ref),
+            )
+            .map((o) => o.node.ref),
+        );
+        const [{ proposeMechanicalRig }] = await Promise.all([
+          import("../mechanisms/mechanical-proposals"),
+          loadFullConnectors(refs),
+        ]);
+        ensure(
+          source === editor.snapshot &&
+            input.expectedRevision === editor.revision,
+          "REVISION_CONFLICT",
+          "Project changed while preparing the mechanical proposal.",
+        );
+        return proposeMechanicalRig(source, input, lookup);
+      },
       /** Authored rigs with their joints and optional dynamic settings. */
       list: async () =>
         Object.values(editor.project.motionRigs ?? {})

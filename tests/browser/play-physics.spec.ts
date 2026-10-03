@@ -23,6 +23,90 @@ async function load(page: Page, template: "door-room" | "physics") {
 const snapshot = (page: Page) =>
   page.evaluate(() => window.brickEditor!.play.snapshot());
 
+test("a rendered dynamic shaft reaches and holds accumulated turn targets", async ({
+  page,
+}) => {
+  test.setTimeout(120000);
+  await refusePointerLock(page);
+  await load(page, "physics");
+  const source = await page.evaluate(async () =>
+    new TextDecoder().decode(
+      (await window.brickEditor!.project.export({ format: "ldraw" })).bytes,
+    ),
+  );
+  await page.evaluate(() =>
+    window.brickEditor!.play.enter({
+      rigIds: ["spinner"],
+      dynamicRigIds: ["spinner"],
+      position: [160, -0.3, 200],
+      cameraMode: "first-person",
+      realtime: false,
+    }),
+  );
+  const images: number[][] = [];
+  for (const target of [720, -720, 765]) {
+    const result = await page.evaluate(async (target) => {
+      const play = window.brickEditor!.play;
+      await play.setJointTarget({
+        rigId: "spinner",
+        jointId: "axle",
+        target,
+        speed: 180,
+      });
+      await play.stepTicks(900);
+      return play.snapshot();
+    }, target);
+    expect(result.mechanisms!.spinner.pose.jointPositions.axle).toBeCloseTo(
+      target,
+      0,
+    );
+    expect(result.mechanisms!.spinner.jointTargets.axle.status).toBe(
+      "complete",
+    );
+    const capture = await page.evaluate(async () => {
+      const api = window.brickEditor!;
+      const play = await api.play.snapshot();
+      const image = await api.render.image({
+        revision: play.sourceRevision,
+        width: 256,
+        height: 256,
+        format: "png",
+        visibility: { mode: "all" },
+        background: { type: "solid", color: "#ffffff" },
+        quality: "fast",
+        strict: true,
+      });
+      return {
+        bytes: Array.from(new Uint8Array(await image.blob.arrayBuffer())),
+        manifest: image.manifest,
+      };
+    });
+    expect(
+      (capture.manifest as unknown as { play: typeof result }).play.mechanisms!
+        .spinner.pose.jointPositions.axle,
+    ).toBeCloseTo(target, 0);
+    images.push(capture.bytes);
+  }
+  expect(images[2]).not.toEqual(images[0]);
+  const held = await page.evaluate(async () => {
+    await window.brickEditor!.play.stepTicks(120);
+    return window.brickEditor!.play.snapshot();
+  });
+  expect(held.mechanisms!.spinner.pose.jointPositions.axle).toBeCloseTo(765, 0);
+  const posed = await page.evaluate(() =>
+    window.brickEditor!.play.exportPosedModel(),
+  );
+  expect(posed.text).not.toEqual(source);
+  await page.evaluate(() => window.brickEditor!.play.exit());
+  expect(
+    await page.evaluate(async () =>
+      new TextDecoder().decode(
+        (await window.brickEditor!.project.export({ format: "ldraw" })).bytes,
+      ),
+    ),
+  ).toEqual(source);
+});
+
 for (const viewport of [desktop, phone])
   test(`official LDraw door opens with ${viewport === phone ? "a tap" : "E"} at ${viewport.width}px`, async ({
     browser,

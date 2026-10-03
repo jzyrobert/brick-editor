@@ -65,6 +65,12 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Play
 
+- [x] Introduce 15 source-bound mechanical profiles, typed contacts and read-only `mechanisms.propose()` drafts for retained shafts, pin arms and ordinary finger hinges with rigid accessories ([scope](docs/PLAY-MECHANICAL-FEATURES.md)). Gear meshes remain relation candidates.
+- [ ] Extend mechanical profiles and proposals: rack guides, further joint/retainer families and aliases, placement integration, direct session-only Play entry and proposal authoring UI. Stud verification does not establish these features ([motion investigation](docs/PLAY-MOTION-ROADMAP.md)).
+- [ ] Transmission relations and closed mechanism graphs: spur/rack drive first, then four-bar/slider-crank constraints; current validation rejects cycles in both kinematic and Dynamic Play.
+- [ ] General joint collision policy: kinematic joints currently check the actor but can cross static/foreign geometry; all groups of one dynamic rig exclude each other, and moving convex proxies fill Technic holes. Add bounded sweeps, allowed mating contacts and appropriate compound proxies.
+- [ ] Springs, ropes, cylindrical freedom, ball orientation/limits and joint friction/detents. Verify the pinned spherical motor runtime wrapper: in the Node probe, `JointData.spherical` returns a Generic joint without the declared spherical motor methods.
+- [x] Repair accumulated-turn dynamic revolute position targets; preserve effort limits, detect settling and retry after obstructions ([verification](docs/VERIFICATION.md#accumulated-turn-position-control-3-october-2026)).
 - [ ] Riding dynamic or kinematic platforms and seated driving of dynamic vehicles; clutch strength and breaking assemblies.
 - [ ] Sliding, roller and lift doors (garage and roller doors in official sets are excluded today).
 - [ ] Compound-rig and arbitrary-frame authoring UI; auto-rig proposals beyond door leaves; advanced assembly planning.

@@ -769,6 +769,26 @@
           "const": "1.0"
         },
         "method": {
+          "const": "mechanisms.propose"
+        },
+        "input": {
+          "$ref": "mechanicalProposalRequest"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "mechanisms.setJointPosition"
         },
         "input": {

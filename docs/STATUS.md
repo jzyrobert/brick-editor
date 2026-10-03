@@ -754,3 +754,67 @@ two run-4 runs (GPT-6.1-Sol and Opus 5.5) on `gallery.bricks.robertj.in`.
   touch or narrow screens.
 - Without the index (offline, or a local server without `?galleryIndex=1`) the
   Gallery says it needs a connection and offers **Open your model**.
+
+## Play motion and Technic investigation (3 October 2026)
+
+The [motion roadmap](PLAY-MOTION-ROADMAP.md) audits the existing authored rig,
+connector, dynamic contact and renderer paths. A read-only
+[probe script](../scripts/audit-play-motion.ts) confirms missing Technic feature
+semantics, frozen kinematic ball joints, rejected motion cycles, convex proxies
+filling a Technic hole, kinematic joints overlapping a static obstacle, and a
+dynamic door turning into its own frame, and a 720° dynamic target overshooting
+to approximately 9,127° while reporting blocked. It also records that the pinned Node
+runtime returns a Generic joint without the declared spherical motor methods.
+
+The proposed sequence starts with reviewed mechanical features and a spur/rack
+transmission scene, then contact policy, closed linkages, additional joints and
+shared platform/seat support. TODO and capability exclusions now name these gaps.
+This is investigation evidence, not implemented Technic mechanics. Existing
+focused tests passed (9 files, 102 tests); verification scope is recorded in
+[VERIFICATION](VERIFICATION.md#play-motion-investigation-3-october-2026).
+
+## Accumulated-turn position control (3 October 2026)
+
+Dynamic revolute position targets now follow accumulated angles through every
+requested turn. A bounded velocity-feedback controller uses Rapier's native
+effort-limited motor rather than sending accumulating coordinates to its angular
+position motor. Authored position motors use the same path; sliders retain their
+native position motor. Completion requires settling as well as position
+tolerance, slow progress resets the stall timeout, and a disturbed held target
+returns to `moving` until it settles. Obstructions still report `blocked` and
+retry with bounded effort. No body pose or velocity is assigned by the controller.
+
+The original 720° audit now ends at 720° with `complete` after 600 ticks. Focused
+tests cover positive/negative multiple turns, reversal, replay, oblique axes,
+heavy loaded progress, external impulses, obstruction recovery and unchanged
+authored data. Production browser checks exercise rendered dynamic targets,
+capture metadata, a changed PNG at 765°, posed export, source preservation, and
+existing phone/desktop door and physics controls. See
+[verification](VERIFICATION.md#accumulated-turn-position-control-3-october-2026).
+Technic features, transmissions and the other roadmap phases remain open.
+
+## Reviewed mechanical proposals (3 October 2026)
+
+The [first mechanical feature pack](PLAY-MECHANICAL-FEATURES.md) reviews 15
+official part profiles against their exact hashes and both pinned source
+manifests. The typed contact graph distinguishes stud welds, free bearings,
+sliding keyed connections, gripping collars, seated pins, finger hinges and
+spur meshes. Matching checks finite engagement, collinearity, phase and stops;
+mirror/scale/custom copies and exhausted searches remain unsupported.
+
+`mechanisms.propose()` now returns a read-only source-revision-bound draft with
+explicit fixed frame anchors. Multiple coaxial bearings reduce to one retained
+shaft joint; keyed accessories must be individually captured. Pins retain their
+own body and both articulations, including friction pins. Finger hinges recruit
+their stud-attached accessories. Missing retainers, ambiguous shafts, existing
+authored ownership and closed articulations produce refusals or unresolved
+records. The existing `rigs.upsert` saves only when explicitly called. The API
+needs no renderer, lazy-loads the analysis and verifies pending connector loads
+against the editor snapshot/revision.
+
+The 13-occurrence core acceptance arrangement produces two shaft groups, a pin
+and arm, four revolute joints and an 8:24 spur candidate with ratio −1/3. The
+candidate is not a powered transmission yet. Gear/rack coupling, direct
+session-only Play entry, authoring UI, world/internal contact policy, closed
+linkages and other actuators remain open. Verification is recorded
+[here](VERIFICATION.md#reviewed-mechanical-proposals-3-october-2026).

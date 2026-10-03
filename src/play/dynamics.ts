@@ -207,6 +207,7 @@ type JointControl = {
   target?: Omit<PlayJointTargetReport, "current"> & {
     setpoint: number;
     stalledTicks: number;
+    bestError: number;
   };
   motor?: {
     enabled: boolean;
@@ -583,6 +584,7 @@ export class DynamicRig {
       speed,
       setpoint: control.value,
       stalledTicks: 0,
+      bestError: Math.abs(target - control.value),
       status: "moving",
       units: kind === "revolute" ? "degrees" : "LDU",
       speedUnits: kind === "revolute" ? "degrees/s" : "LDU/s",
@@ -617,6 +619,32 @@ export class DynamicRig {
     control.configured = key;
     apply();
   }
+  /** Rapier's rotational position coordinate cannot encode accumulated turns.
+   * Close the position loop in our unwrapped coordinate, driving a bounded
+   * native velocity motor. The motor still applies physical, effort-limited
+   * impulses; we never write body poses or velocities to reach a target. */
+  private configurePosition(
+    control: JointControl,
+    setpoint: number,
+    effort: number,
+    speed = JOINT_TARGET_SPEED_LIMITS.revolute.max,
+  ) {
+    const joint = control.joint as RAPIER.UnitImpulseJoint;
+    if (control.spec.kind === "revolute") {
+      const velocity = Math.max(
+        -speed,
+        Math.min(speed, (setpoint - control.value) * 6),
+      );
+      this.configure(control, `p:${velocity}:${effort}`, () => {
+        joint.setMotorMaxForce(effort);
+        joint.configureMotorVelocity((velocity * Math.PI) / 180, 45);
+      });
+    } else
+      this.configure(control, `p:${setpoint}:${effort}`, () => {
+        joint.setMotorMaxForce(effort);
+        joint.configureMotorPosition(setpoint * S, 200, 45);
+      });
+  }
   /** Motor/controller inputs for the next world step. */
   beforeStep() {
     for (const id of [...this.joints.keys()].sort()) {
@@ -635,40 +663,31 @@ export class DynamicRig {
             : target.setpoint + Math.sign(remaining) * step;
         const effort =
           spec.motor?.maxEffort.value ?? DYNAMIC_DEFAULTS.effort[spec.kind];
-        this.configure(control, `t:${target.setpoint}:${effort}`, () => {
-          joint.setMotorMaxForce(effort);
-          joint.configureMotorPosition(target.setpoint * scale, 200, 45);
-        });
+        this.configurePosition(control, target.setpoint, effort, target.speed);
         continue;
       }
       if (target) {
         // Completed targets hold their position with the same effort.
         const effort =
           spec.motor?.maxEffort.value ?? DYNAMIC_DEFAULTS.effort[spec.kind];
-        this.configure(control, `h:${target.target}:${effort}`, () => {
-          joint.setMotorMaxForce(effort);
-          joint.configureMotorPosition(target.target * scale, 200, 45);
-        });
+        this.configurePosition(control, target.target, effort, target.speed);
         continue;
       }
       const motor = control.motor;
       if (motor?.enabled && spec.motor) {
         const m = spec.motor;
-        this.configure(
-          control,
-          `m:${m.mode}:${m.target}:${m.maxEffort.value}`,
-          () => {
+        if (m.mode === "position") {
+          const [low, high] = spec.limits ?? [-Infinity, Infinity];
+          this.configurePosition(
+            control,
+            Math.min(high, Math.max(low, m.target)),
+            m.maxEffort.value,
+          );
+        } else
+          this.configure(control, `m:${m.target}:${m.maxEffort.value}`, () => {
             joint.setMotorMaxForce(m.maxEffort.value);
-            if (m.mode === "position") {
-              const [low, high] = spec.limits ?? [-Infinity, Infinity];
-              joint.configureMotorPosition(
-                Math.min(high, Math.max(low, m.target)) * scale,
-                200,
-                45,
-              );
-            } else joint.configureMotorVelocity(m.target * scale, 10);
-          },
-        );
+            joint.configureMotorVelocity(m.target * scale, 10);
+          });
         continue;
       }
       this.configure(control, "idle", () => {
@@ -712,6 +731,7 @@ export class DynamicRig {
       if (spec.kind !== "revolute" && spec.kind !== "prismatic") continue;
       const a = this.bodies.get(spec.bodyA)!.body,
         b = this.bodies.get(spec.bodyB)!.body;
+      const previousValue = control.value;
       const qa = a.rotation(),
         qb = b.rotation();
       if (spec.kind === "revolute") {
@@ -747,11 +767,26 @@ export class DynamicRig {
           S;
       }
       const tolerance = DYNAMIC_DEFAULTS.tolerance[spec.kind];
+      const settled =
+        Math.abs(control.value - previousValue) / DT <= tolerance * 2;
       const target = control.target;
-      if (target && target.status !== "complete") {
+      if (target) {
         const error = Math.abs(control.value - target.target);
+        if (target.status === "complete" && (error > tolerance || !settled)) {
+          target.status = "moving";
+          target.bestError = error;
+          target.stalledTicks = 0;
+        }
+        // A slow, loaded motor is moving, not stalled. Reset the timeout after
+        // meaningful progress, accumulating tiny steps at the minimum speed.
+        if (error < target.bestError - tolerance * 0.05) {
+          target.bestError = error;
+          target.stalledTicks = 0;
+          target.status = "moving";
+          target.blockedReason = undefined;
+        }
         if (target.setpoint === target.target) {
-          if (error <= tolerance) {
+          if (error <= tolerance && settled) {
             target.status = "complete";
             target.blockedReason = undefined;
           } else if (++target.stalledTicks >= 90) {
@@ -768,7 +803,7 @@ export class DynamicRig {
           const [low, high] = spec.limits ?? [-Infinity, Infinity];
           motor.status =
             Math.abs(control.value - Math.min(high, Math.max(low, m.target))) <=
-            tolerance
+              tolerance && settled
               ? "holding"
               : "running";
         } else if (
@@ -882,6 +917,7 @@ export class DynamicRig {
         const {
           setpoint: _setpoint,
           stalledTicks: _stalled,
+          bestError: _bestError,
           ...report
         } = control.target;
         jointTargets[id] = { ...report, current: control.value };

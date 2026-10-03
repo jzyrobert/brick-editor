@@ -88,6 +88,25 @@ The session-only ground is an infinite plane at Y=0 and can be disabled with `gr
 
 The `mechanisms` API is separate from the walking actor. Create a rig through `rigs.upsert`, or import the `mechanisms` test fixture (the `windmill`, `lighthouse`, `castle`, `jeep` and `car` samples carry authored rigs too). Rigid group frames, occurrence memberships, rest transforms, joint anchors/axes, limits and vehicle wheel radii are explicit data. Public hinge angles are degrees, prismatic offsets are LDU, and the simulation scale is 0.02 metres/LDU.
 
+`mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})`
+returns a read-only mechanical draft with `sourceRevision`, optional `rig`, typed
+`graph`, `relations`, `unresolved` and `warnings`. Choose explicit fixed frame
+anchors from queried occurrence IDs. Limit the selection to at most 2,048 parts;
+omitting it analyses visible parts. The 15 source-bound profiles cover round
+bearings, axles, plain/friction pins, collars, 8/24-tooth gears, a rack and a
+complementary finger hinge pair. Stud contacts recruit rigid accessories, while
+axial freedom, articulation and gear mesh remain distinct. Existing authored
+ownership wins. Mirrored/scaled/custom parts, ambiguous connections, missing
+retainers and unsupported closed linkages remain unresolved.
+
+Analysis loads missing same-origin connector shards and verifies the document
+revision after loading. It needs no renderer and creates no undo entry. A
+reviewed `rig` can be saved explicitly with `rigs.upsert` and then used by the
+existing mechanism preview or Play controls. A `motors` key must identify the
+shaft, pin or hinge leaf that owns its joint; efforts use `N*m`. `relations` are
+spur transmission candidates, not yet simulated couplings. Rack teeth are
+reviewed geometry only. See [mechanical proposal scope](PLAY-MECHANICAL-FEATURES.md).
+
 ```js
 await api.project.import({ format: "template", template: "mechanisms" });
 await api.mechanisms.enter("door");

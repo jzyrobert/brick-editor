@@ -8,6 +8,12 @@ The spec proposes Rapier as the optional physics engine (spec 3.1). Play already
 
 ## Joint motors (kinematic)
 
+The [reviewed mechanical proposal API](PLAY-MECHANICAL-FEATURES.md) can supply a
+draft rig from a small official-parts assembly with explicit fixed anchors.
+Analysis preserves the project; a reviewed draft is saved with `rigs.upsert`
+before using the existing controls. Gear/rack coupling and direct session-only
+proposal entry are subsequent roadmap work.
+
 Authored `motor` metadata on revolute and prismatic joints now runs in Play. Kinematic rigs have no forces, so a motor moves at a declared rate. Position motors travel to their target at 90 degrees/s or 40 LDU/s. Velocity motors run at their target speed; an unlimited revolute joint is a continuously rotating axle, with its angle folded by whole turns. Each step uses the same swept actor-clearance check as other joint motion. A motor stops before touching the explorer, reports `blocked` and retries on later ticks. It reports `at-limit` at a limit and `holding` at its position target.
 
 Motors start running when Play starts. `play.setMotor({rigId,jointId,enabled})` or the drawer's **Stop motor / Start motor** button toggles one. A manual joint command (slider, `setMechanismJoint`, joint target or the nearby action) stops that joint's motor. Reports carry `motors[jointId]` with mode, target, units, status and whether they are simulated at a kinematic rate or as a dynamic motor.
@@ -25,6 +31,17 @@ Motors start running when Play starts. `play.setMotor({rigId,jointId,enabled})` 
 - **Reports.** Dynamic reports use `mode:"dynamic"` and `dynamics:{engine,gravity,bodies,wheels?,speed?}`. They also carry per-body mass, collider count, sleep state and velocities (LDU/s, degrees/s), and per-wheel contact and suspension length (LDU).
 
 Reproducibility follows spec 19.4: identical inputs and tick counts give identical reports in the pinned engine and browser (unit and CLI tests replay runs byte-for-byte). This is not a cross-platform numerical guarantee. The simulation settings describe the chosen simulation, not measured clutch power.
+
+Revolute position targets use accumulated degrees: 720° requests two full turns,
+and −720° requests two turns in the opposite direction. The app closes the
+position loop against its unwrapped joint coordinate and requests a bounded
+Rapier velocity motor, retaining `maxEffort` and physical collision response.
+Authored position motors use the same controller. Completion requires both the
+position tolerance and settling (at most 2°/s, or 1 LDU/s for a slider), so
+crossing the target at speed does not complete it. Meaningful progress resets
+the stall timer; blocked targets continue trying with bounded effort. A held
+target disturbed by another body returns to `moving` until it settles again.
+No body pose or velocity is assigned to reach the target.
 
 ### The playground park sample
 
@@ -90,3 +107,7 @@ Measured by `tests/browser/play-physics-performance.spec.ts` on the Linux ARM64 
 ## Not implemented
 
 Riding dynamic or kinematic platforms, and seated driving of dynamic vehicles. Clutch strength and breaking assemblies. Sliding, roller and lift doors. Auto-rig proposals for other connector families (spec 19.5 future assistant). Compound-rig and arbitrary-frame authoring UI. Measured phone-hardware frame times.
+
+The [motion and Technic investigation](PLAY-MOTION-ROADMAP.md) records the current
+connector, contact, topology and control gaps, reproducible probes, and a proposed
+implementation sequence for transmissions and further movable-part families.

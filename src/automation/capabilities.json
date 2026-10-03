@@ -214,12 +214,35 @@
       "limbAnimation": "minecraft-style swing, idle sway, head follow, jump/fall/fly poses",
       "authoringIsolation": true,
       "poseApplication": true,
+      "mechanicalProposals": {
+        "api": "mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})",
+        "pack": "reviewed-mechanics-1; 15 source-bound official part profiles",
+        "contacts": [
+          "stud-weld",
+          "bearing",
+          "keyed-slide",
+          "pin-bearing",
+          "finger-hinge",
+          "spur-mesh"
+        ],
+        "proposals": "Explicit fixed anchors; retained shafts and captured keyed accessories; separate pin/arm articulations; complementary finger hinges with rigid stud accessories",
+        "isolation": "Read-only draft; explicit rigs.upsert saves; no automatic Play entry or project mutation",
+        "transmissions": "8:24 spur relation candidates only; gear/rack transmission simulation remains pending",
+        "limits": {
+          "occurrences": 2048,
+          "features": 8192,
+          "cells": 100000,
+          "pairChecks": 200000,
+          "contacts": 8192
+        },
+        "physicalFitCertified": false
+      },
       "dynamicMechanisms": {
         "optIn": "play.enter dynamicRigIds (UI: Play > Mechanism physics > Dynamic)",
         "engine": "@dimforge/rapier3d-compat@0.21.0 (bundled, Apache-2.0)",
         "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces",
         "joints": ["fixed", "revolute", "prismatic", "spherical"],
-        "motors": "Authored position/velocity motors limited by maxEffort; animated joint targets drive motor setpoints",
+        "motors": "Authored position/velocity motors limited by maxEffort; revolute position targets use accumulated turns with bounded velocity feedback and settled completion; prismatic position targets use native position motors",
         "vehicles": "Rapier ray-cast wheels with sprung suspension, engine force, brake and authored maxSpeed/maxSteer",
         "pushing": "Walking pushes loose dynamic bodies with bounded impulses; bodies never move the explorer",
         "limits": {
@@ -230,6 +253,11 @@
         },
         "reproducibility": "Identical reports for identical inputs in the pinned engine/browser; not promised across platforms",
         "notSimulated": [
+          "gear and rack transmissions",
+          "closed-loop linkages",
+          "spring and rope joints",
+          "internal collisions between groups of one rig",
+          "spherical joint orientation controls",
           "clutch strength",
           "breaking",
           "riding moving platforms",

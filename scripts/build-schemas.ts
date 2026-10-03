@@ -411,6 +411,31 @@ const motor = (unit: string) =>
     maxEffort: effort(unit),
   });
 const jointBase = { id, bodyA: id, bodyB: id, anchorA: vec, anchorB: vec };
+const mechanicalProposalRequest = obj(
+  {
+    id: {
+      type: "string",
+      minLength: 1,
+      maxLength: 128,
+      not: { enum: ["__proto__", "constructor", "prototype"] },
+    },
+    name: { type: "string", maxLength: 200 },
+    expectedRevision: integer,
+    frameOccurrenceIds: {
+      ...arr(occurrenceId, 2048),
+      minItems: 1,
+      uniqueItems: true,
+    },
+    occurrenceIds: {
+      ...arr(occurrenceId, 2048),
+      minItems: 1,
+      uniqueItems: true,
+    },
+    includeHidden: { type: "boolean" },
+    motors: { ...occurrenceDictionary(motor("N*m")), maxProperties: 100 },
+  },
+  ["id", "name", "expectedRevision", "frameOccurrenceIds"],
+);
 const joint = {
   oneOf: [
     obj({ ...jointBase, kind: { enum: ["fixed", "spherical"] } }),
@@ -1556,6 +1581,7 @@ const api = {
       ["planId", "format"],
     ),
     "mechanisms.enter": id,
+    "mechanisms.propose": { $ref: "mechanicalProposalRequest" },
     "mechanisms.setJointPosition": obj({ jointId: id, value: num }),
     "mechanisms.setVehicleInput": obj(
       {
@@ -1703,6 +1729,7 @@ const fillRequest = {
 const schemas = {
   fillRequest,
   motionRig,
+  mechanicalProposalRequest,
   mechanismPose,
   playRequest,
   playInput,
