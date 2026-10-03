@@ -2,7 +2,13 @@ import { PlaySeatEntry } from "./PlaySeatEntry";
 import { PlayWorldSettings } from "./PlayWorldSettings";
 import type { Layer } from "../core/types";
 import { PlaySettings } from "./PlaySettings";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { BrowserPlay } from "../play/browser";
 import "./play.css";
 import type { MotionRig } from "../mechanisms/types";
@@ -27,7 +33,10 @@ import {
 const finePointerQuery = "(hover: hover) and (pointer: fine)";
 const hasFinePointer = () =>
   typeof matchMedia === "function" && matchMedia(finePointerQuery).matches;
-import { PlayMechanismControls } from "./PlayMechanismControls";
+import {
+  PlayMechanismControls,
+  mechanismControlJoints,
+} from "./PlayMechanismControls";
 import { PlayTrainControls } from "./PlayTrainControls";
 import { promptVisible } from "../play/interaction";
 import { pinchZoomFactor, wheelZoomFactor } from "../play/zoom-input";
@@ -81,6 +90,15 @@ export function PlayPanel({
     setPhysics(startDynamic ? "dynamic" : "kinematic");
   }, [startDynamic]);
   const [remoteOpen, setRemoteOpen] = useState(false);
+  const independentRigIds = useMemo(
+    () =>
+      new Set(
+        Object.values(rigs)
+          .filter((rig) => mechanismControlJoints(rig).length)
+          .map((rig) => rig.id),
+      ),
+    [rigs],
+  );
   const [trainOpen, setTrainOpen] = useState(false);
   let allOption = "__all_mechanisms__";
   while (rigs[allOption]) allOption += "_";
@@ -691,9 +709,7 @@ export function PlayPanel({
   const activeRigs = Object.values(rigs).filter(
     (rig) =>
       !!mechanisms[rig.id] &&
-      (rig.joints.some(
-        (j) => j.kind === "revolute" || j.kind === "prismatic",
-      ) ||
+      (independentRigIds.has(rig.id) ||
         (rig.vehicle &&
           mechanisms[rig.id].vehicleCollision?.supported !== false)),
   );

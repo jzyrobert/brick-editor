@@ -5,6 +5,25 @@ import type { BrowserPlay } from "../play/browser";
 import type { MotionRig } from "../mechanisms/types";
 import { transmissionMap } from "../mechanisms/transmissions";
 
+export function mechanismControlJoints(
+  rig: MotionRig,
+  components = transmissionMap(rig),
+) {
+  const passive = new Set(
+    rig.loopClosures?.flatMap((c) => c.dependentJointIds),
+  );
+  return rig.joints.filter((j) => {
+    if (passive.has(j.id) || (j.kind !== "revolute" && j.kind !== "prismatic"))
+      return false;
+    const members = components.get(j.id);
+    if (!members) return true;
+    const driver =
+      rig.joints.find((other) => members.has(other.id) && other.motor) ??
+      rig.joints.find((other) => members.has(other.id));
+    return j.id === driver?.id;
+  });
+}
+
 export function PlayMechanismControls({
   play,
   rig,
@@ -35,15 +54,10 @@ export function PlayMechanismControls({
       setHasMore(el.scrollHeight - el.scrollTop - el.clientHeight > 2);
   };
   const components = useMemo(() => transmissionMap(rig), [rig]);
-  const controls = rig.joints.filter((j) => {
-    if (j.kind !== "revolute" && j.kind !== "prismatic") return false;
-    const members = components.get(j.id);
-    if (!members) return true;
-    const driver =
-      rig.joints.find((other) => members.has(other.id) && other.motor) ??
-      rig.joints.find((other) => members.has(other.id));
-    return j.id === driver?.id;
-  });
+  const controls = useMemo(
+    () => mechanismControlJoints(rig, components),
+    [rig, components],
+  );
   const [selected, setSelected] = useState(controls[0]?.id ?? "");
   const joint = controls.find((j) => j.id === selected) ?? controls[0];
   const motor = joint && report.motors?.[joint.id];
@@ -352,11 +366,15 @@ export function PlayMechanismControls({
                 {outputs.map(([id, ratio], i) => (
                   <p key={id}>
                     Output {i + 1}:{" "}
-                    {(report.pose.jointPositions[id] ?? 0).toFixed(1)} degrees
+                    {(report.pose.jointPositions[id] ?? 0).toFixed(1)}{" "}
+                    {rig.joints.find((j) => j.id === id)?.kind === "prismatic"
+                      ? "LDU"
+                      : "degrees"}
                     <span>
                       {" "}
-                      {Math.abs(ratio).toFixed(2)}× speed ·{" "}
-                      {ratio < 0 ? "opposite direction" : "same direction"}
+                      {rig.joints.find((j) => j.id === id)?.kind === joint.kind
+                        ? `${Math.abs(ratio).toFixed(2)}× speed · ${ratio < 0 ? "opposite direction" : "same direction"}`
+                        : `${Math.abs(ratio).toFixed(2)} ${joint.kind === "revolute" ? "LDU per degree" : "degrees per LDU"}`}
                     </span>
                   </p>
                 ))}
