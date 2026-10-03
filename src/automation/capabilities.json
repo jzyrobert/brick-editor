@@ -256,7 +256,6 @@
         "reproducibility": "Identical reports for identical inputs in the pinned engine/browser; not promised across platforms",
         "notSimulated": [
           "worm, bevel and differential transmissions",
-          "closed-loop linkages",
           "spring and rope joints",
           "internal collisions between groups of one rig",
           "spherical joint orientation controls",
@@ -276,6 +275,22 @@
           },
           "scope": "No tooth contact, backlash, slip, automatic disengagement or certified clutch strength; worm, bevel and differential relations remain pending",
           "rack": "Ideal signed radius relation between a revolute pinion and limited perpendicular prismatic rack on the same carrier; unwrapped degrees and LDU"
+        },
+        "closedLinkages": {
+          "representation": "Explicit planar revolute loopClosures separate from acyclic mount joints",
+          "kinematic": "Bounded passive-coordinate continuation; supplied poses must already close; ambiguous cold dead centers and unreachable positions refused atomically",
+          "dynamic": "Native closure joints transmit load and retain passive travel limits; four-bar and slider-crank replay verified",
+          "limits": {
+            "closuresPerRig": 8,
+            "dependentCoordinates": 16,
+            "iterationsPerSegment": 48,
+            "segmentsPerCommand": 1024
+          },
+          "notSupported": [
+            "arbitrary spatial loops",
+            "automatic linkage recognition",
+            "compound linkage authoring UI"
+          ]
         }
       },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",

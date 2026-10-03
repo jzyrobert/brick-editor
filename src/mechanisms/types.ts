@@ -84,6 +84,8 @@ export type MotionRig = {
   joints: JointSpec[];
   /** Ideal spur/rack meshes, separate from their carrier mounting joints. */
   transmissions?: Transmission[];
+  /** Explicit planar revolute closure edges; tree joints remain acyclic. */
+  loopClosures?: PlanarLoopClosure[];
   vehicle?: VehicleSpec;
   dynamics?: RigDynamics;
 };
@@ -132,4 +134,17 @@ export type MechanismSnapshot = {
   groupFrames: Record<string, Transform>;
   transforms: Record<string, Transform>;
   warnings: string[];
+};
+
+export type PlanarLoopClosure = {
+  id: string;
+  kind: "revolute";
+  bodyA: string;
+  bodyB: string;
+  anchorA: Vec3;
+  anchorB: Vec3;
+  axisA: Vec3;
+  axisB: Vec3;
+  /** Passive tree coordinates solved for closure; never independently driven. */
+  dependentJointIds: string[];
 };

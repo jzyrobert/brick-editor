@@ -88,6 +88,13 @@ The session-only ground is an infinite plane at Y=0 and can be disabled with `gr
 
 The `mechanisms` API is separate from the walking actor. Create a rig through `rigs.upsert`, or import the `mechanisms` test fixture (the `windmill`, `lighthouse`, `castle`, `jeep` and `car` samples carry authored rigs too). Rigid group frames, occurrence memberships, rest transforms, joint anchors/axes, limits and vehicle wheel radii are explicit data. Public hinge angles are degrees, prismatic offsets are LDU, and the simulation scale is 0.02 metres/LDU.
 
+Authored planar rigs can add `loopClosures` separately from the mount tree. Each
+revolute closure declares local anchors/axes and passive `dependentJointIds`;
+these coordinates cannot be commanded independently. Preview and kinematic Play
+solve them with bounded continuation; Dynamic creates real closing native joints.
+Unreachable poses and cold ambiguous toggles are refused. See
+[closed-linkage scope](PLAY-LINKAGES.md).
+
 `mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})`
 returns a read-only mechanical draft with `sourceRevision`, optional `rig`, typed
 `graph`, `relations`, `unresolved` and `warnings`. Choose explicit fixed frame

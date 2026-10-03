@@ -395,6 +395,88 @@
       },
       "maxItems": 100
     },
+    "loopClosures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "bodyA": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "bodyB": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "anchorA": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "anchorB": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "kind": {
+            "const": "revolute"
+          },
+          "axisA": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "axisB": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "dependentJointIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "maxItems": 16,
+            "minItems": 2,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "bodyA",
+          "bodyB",
+          "anchorA",
+          "anchorB",
+          "kind",
+          "axisA",
+          "axisB",
+          "dependentJointIds"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 8
+    },
     "transmissions": {
       "type": "array",
       "items": {

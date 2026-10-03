@@ -477,6 +477,16 @@ const motionRig = obj(
       minItems: 1,
     },
     joints: arr(joint, 100),
+    loopClosures: arr(
+      obj({
+        ...jointBase,
+        kind: { const: "revolute" },
+        axisA: vec,
+        axisB: vec,
+        dependentJointIds: { ...arr(id, 16), minItems: 2, uniqueItems: true },
+      }),
+      8,
+    ),
     transmissions: arr(
       {
         oneOf: [

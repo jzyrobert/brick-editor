@@ -416,6 +416,12 @@ export class DynamicRig {
       this.bodies.set(group.id, entry);
     }
     for (const spec of this.rig.joints) this.createJoint(spec);
+    for (const closure of this.rig.loopClosures ?? []) {
+      this.createJoint(closure);
+      // Closure hinges constrain bodies physically but expose no independent
+      // coordinate/motor. Passive tree coordinates remain in the reports.
+      this.joints.delete(closure.id);
+    }
     if (this.rig.vehicle) this.createVehicle();
     this.syncMirrors();
   }
@@ -580,6 +586,11 @@ export class DynamicRig {
     this.cache = undefined;
   }
   setJointTarget(id: string, target: number, speed: number) {
+    ensure(
+      !this.rig.loopClosures?.some((c) => c.dependentJointIds.includes(id)),
+      "INVALID_INPUT",
+      "Loop dependent joints are passive; control an independent joint.",
+    );
     const control = this.joints.get(id);
     const kind = control?.spec.kind;
     ensure(
@@ -628,6 +639,11 @@ export class DynamicRig {
     this.cache = undefined;
   }
   setMotor(id: string, enabled: boolean, input?: number) {
+    ensure(
+      !this.rig.loopClosures?.some((c) => c.dependentJointIds.includes(id)),
+      "INVALID_INPUT",
+      "Loop dependent joints are passive; control an independent joint.",
+    );
     const control = this.joints.get(id);
     ensure(
       control?.motor,
@@ -807,6 +823,8 @@ export class DynamicRig {
           );
         } else {
           const [low, high] = this.jointLimits(id);
+          const forceBased =
+            motor.input !== undefined || !!this.rig.loopClosures?.length;
           const velocity =
             (m.target > 0 && control.value >= high) ||
             (m.target < 0 && control.value <= low)
@@ -817,14 +835,14 @@ export class DynamicRig {
             `m:${velocity}:${m.maxEffort.value}:${motor.input !== undefined}`,
             () => {
               joint.configureMotorModel(
-                motor.input !== undefined
+                forceBased
                   ? RAPIER.MotorModel.ForceBased
                   : RAPIER.MotorModel.AccelerationBased,
               );
               joint.setMotorMaxForce(m.maxEffort.value);
               joint.configureMotorVelocity(
                 velocity * scale,
-                motor.input !== undefined ? 10000 : 10,
+                forceBased ? 10000 : 10,
               );
             },
           );
@@ -834,7 +852,8 @@ export class DynamicRig {
       this.configure(control, "idle", () => {
         joint.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
         joint.setMotorMaxForce(
-          this.transmissions.has(id)
+          this.transmissions.has(id) ||
+            this.rig.loopClosures?.some((c) => c.dependentJointIds.includes(id))
             ? 0
             : DYNAMIC_DEFAULTS.idleEffort[
                 spec.kind as "revolute" | "prismatic"

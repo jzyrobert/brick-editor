@@ -24,6 +24,12 @@ import {
   validateTransmissionPose,
   type TransmissionMap,
 } from "./transmissions";
+import {
+  closeLoopPose,
+  validateClosurePose,
+  LOOP_LIMITS,
+  loopSingular,
+} from "./loops";
 const DT = 1 / 60;
 const vector = (v: unknown): v is Vec3 =>
   Array.isArray(v) &&
@@ -100,6 +106,7 @@ export function validateRig(
     "groups",
     "joints",
     "transmissions",
+    "loopClosures",
     "vehicle",
     "dynamics",
   ]);
@@ -276,6 +283,134 @@ export function validateRig(
       visited.add(current);
       current = parent.get(current);
     }
+  }
+  if (rig.loopClosures !== undefined) {
+    ensure(
+      Array.isArray(rig.loopClosures) &&
+        rig.loopClosures.length <= LOOP_LIMITS.closures &&
+        !rig.vehicle,
+      "INVALID_INPUT",
+      "Planar loops allow at most eight closures and cannot be vehicle rigs.",
+    );
+    const dependent = new Set<string>();
+    const closurePairs = new Set<string>();
+    for (const c of rig.loopClosures) {
+      fields(c, [
+        "id",
+        "kind",
+        "bodyA",
+        "bodyB",
+        "anchorA",
+        "anchorB",
+        "axisA",
+        "axisB",
+        "dependentJointIds",
+      ]);
+      ensure(
+        safeId(c.id) &&
+          !jointIds.has(c.id) &&
+          c.kind === "revolute" &&
+          ids.has(c.bodyA) &&
+          ids.has(c.bodyB) &&
+          c.bodyA !== c.bodyB,
+        "INVALID_INPUT",
+        "Invalid or duplicate closure identity or bodies.",
+      );
+      jointIds.add(c.id);
+      const pair = [c.bodyA, c.bodyB].sort().join("\u0000");
+      ensure(
+        !closurePairs.has(pair),
+        "INVALID_INPUT",
+        "Repeated closure body pairs introduce redundant constraints.",
+      );
+      closurePairs.add(pair);
+      ensure(
+        vector(c.anchorA) &&
+          vector(c.anchorB) &&
+          vector(c.axisA) &&
+          vector(c.axisB) &&
+          Math.abs(Math.hypot(...c.axisA) - 1) < 1e-5 &&
+          Math.abs(Math.hypot(...c.axisB) - 1) < 1e-5,
+        "INVALID_INPUT",
+        "Closure requires finite anchors and unit axes.",
+      );
+      const path = new Set<string>();
+      let current: string | undefined = c.bodyA;
+      while (current) {
+        path.add(current);
+        current = parent.get(current);
+      }
+      current = c.bodyB;
+      const branch: string[] = [];
+      while (current && !path.has(current)) {
+        branch.push(current);
+        current = parent.get(current);
+      }
+      ensure(
+        current,
+        "INVALID_INPUT",
+        "Closure bodies must belong to the same joint tree.",
+      );
+      let other = c.bodyA;
+      while (other !== current) {
+        branch.push(other);
+        other = parent.get(other)!;
+      }
+      const pathJoints = rig.joints.filter((j) => branch.includes(j.bodyB));
+      const axis = mv(
+        rig.groups.find((g) => g.id === c.bodyA)!.frame.basis,
+        c.axisA,
+      );
+      ensure(
+        near(
+          axis,
+          mv(rig.groups.find((g) => g.id === c.bodyB)!.frame.basis, c.axisB),
+        ) &&
+          pathJoints.length >= 2 &&
+          pathJoints.every((j) => {
+            const a = rig.groups.find((g) => g.id === j.bodyA)!;
+            const ja = j.axisA && mv(a.frame.basis, j.axisA);
+            return (
+              j.kind === "fixed" ||
+              (j.kind === "revolute" &&
+                ja &&
+                Math.abs(ja.reduce((sum, v, k) => sum + v * axis[k], 0)) >
+                  1 - 1e-5) ||
+              (j.kind === "prismatic" &&
+                ja &&
+                Math.abs(ja.reduce((sum, v, k) => sum + v * axis[k], 0)) < 1e-5)
+            );
+          }),
+        "INVALID_INPUT",
+        "Closure requires a planar tree path with compatible hinge axes and in-plane sliders.",
+      );
+      ensure(
+        Array.isArray(c.dependentJointIds) &&
+          c.dependentJointIds.length >= 2 &&
+          c.dependentJointIds.length <= LOOP_LIMITS.dependentJoints &&
+          new Set(c.dependentJointIds).size === c.dependentJointIds.length,
+        "INVALID_INPUT",
+        "Closure requires distinct passive dependent coordinates.",
+      );
+      for (const id of c.dependentJointIds) {
+        const j = pathJoints.find((j) => j.id === id);
+        ensure(
+          j &&
+            (j.kind === "revolute" || j.kind === "prismatic") &&
+            !j.motor &&
+            !rig.transmissions?.some((t) => t.jointA === id || t.jointB === id),
+          "INVALID_INPUT",
+          "Closure dependent joints must lie on its path and cannot carry motors or transmissions.",
+        );
+        dependent.add(id);
+      }
+    }
+    ensure(
+      dependent.size <= LOOP_LIMITS.dependentJoints,
+      "LIMIT_EXCEEDED",
+      "At most sixteen loop dependent coordinates are supported.",
+    );
+    validateClosurePose(rig, {});
   }
   transmissionMap(rig);
   if (rig.vehicle) {
@@ -460,6 +595,7 @@ export class KinematicSession {
   private rig: MotionRig;
   private transmissions: TransmissionMap;
   private pose: KinematicPose;
+  private loopTangents = new Map<string, Record<string, number>>();
   private tick = 0;
   private throttle = 0;
   private steering = 0;
@@ -505,6 +641,11 @@ export class KinematicSession {
       "INVALID_INPUT",
       "Joint requires a finite scalar position.",
     );
+    ensure(
+      !this.rig.loopClosures?.some((c) => c.dependentJointIds.includes(id)),
+      "INVALID_INPUT",
+      "Loop dependent joints are passive; control an independent joint.",
+    );
     const changes = [...(this.transmissions.get(id) ?? new Map([[id, 1]]))].map(
       ([other, ratio]) => [other, value * ratio] as const,
     );
@@ -518,9 +659,58 @@ export class KinematicSession {
         "Coupled joint position is outside authored limits.",
       );
     }
-    for (const [other, position] of changes)
-      this.pose.jointPositions[other] = position;
+    const candidate = { ...this.pose.jointPositions };
+    for (const [other, position] of changes) candidate[other] = position;
+    if (!this.rig.loopClosures?.length) this.pose.jointPositions = candidate;
+    else {
+      const start = this.pose.jointPositions,
+        delta = value - start[id];
+      const steps = Math.max(1, Math.ceil(Math.abs(delta) / 2));
+      ensure(
+        steps <= 1024,
+        "LIMIT_EXCEEDED",
+        "Loop motion requires at most 1,024 continuation segments; use smaller commands.",
+      );
+      let current = { ...start },
+        tangent = this.loopTangents.get(id);
+      ensure(
+        delta === 0 || tangent || !loopSingular(this.rig, start),
+        "INVALID_INPUT",
+        "Mechanism loop is at an ambiguous dead center; use an established motion path or edit its rest pose away from the toggle.",
+      );
+      for (let step = 1; step <= steps; step++) {
+        const input = start[id] + (delta * step) / steps,
+          increment = input - current[id];
+        const seed = { ...current };
+        if (tangent)
+          for (const [dependent, slope] of Object.entries(tangent))
+            seed[dependent] += slope * increment;
+        for (const [other, ratio] of this.transmissions.get(id) ??
+          new Map([[id, 1]]))
+          seed[other] = input * ratio;
+        const solved = closeLoopPose(this.rig, seed);
+        if (increment !== 0)
+          tangent = Object.fromEntries(
+            this.rig.loopClosures
+              .flatMap((c) => c.dependentJointIds)
+              .map((dependent) => [
+                dependent,
+                (solved[dependent] - current[dependent]) / increment,
+              ]),
+          );
+        current = solved;
+      }
+      if (tangent) this.loopTangents.set(id, tangent);
+      this.pose.jointPositions = current;
+    }
     return this.snapshot();
+  }
+  /** Reclose passive coordinates for swept interpolation without changing inputs. */
+  closePose(pose: KinematicPose): KinematicPose {
+    return {
+      ...pose,
+      jointPositions: closeLoopPose(this.rig, pose.jointPositions),
+    };
   }
   /** Limits reflected through every connected shaft, in this shaft's degrees. */
   jointLimits(id: string): [number, number] {
@@ -612,6 +802,7 @@ export class KinematicSession {
         );
       }
       validateTransmissionPose(this.transmissions, pose.jointPositions);
+      validateClosurePose(this.rig, pose.jointPositions);
       this.pose.jointPositions = { ...pose.jointPositions };
       if (this.rig.vehicle) {
         const v = pose.vehicle;
@@ -797,6 +988,18 @@ export function rebaseRig(
     if (joint.limits)
       joint.limits = joint.limits.map((v) => v - value) as [number, number];
     if (joint.motor?.mode === "position") joint.motor.target -= value;
+  }
+  for (const closure of next.loopClosures ?? []) {
+    const a = next.groups.find((g) => g.id === closure.bodyA)!,
+      b = next.groups.find((g) => g.id === closure.bodyB)!;
+    closure.anchorB = position(
+      inverse(b.frame),
+      position(a.frame, closure.anchorA),
+    );
+    closure.axisB = mv(
+      inverse(b.frame).basis,
+      mv(a.frame.basis, closure.axisA),
+    );
   }
   return next;
 }

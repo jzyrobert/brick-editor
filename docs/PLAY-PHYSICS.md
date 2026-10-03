@@ -26,6 +26,15 @@ linear rack impulses, returning reaction to their shared carrier; output inertia
 and obstructions feed back to
 the native effort-limited motor. See [transmission scope and bounds](PLAY-MECHANICAL-FEATURES.md#spur-transmission-behavior).
 
+## Closed planar mechanisms
+
+Optional `loopClosures` add revolute closure bearings independently of the mount
+forest. Kinematic motion derives declared passive coordinates with bounded
+continuation and atomic failure. Dynamic Play creates the real closing joints,
+so a blocked output reacts back to the driver. The verified four-bar and
+slider-crank keep their source and posed inventories intact. See
+[limits, singular behavior and verification](PLAY-LINKAGES.md).
+
 ## Dynamic physics (opt-in)
 
 `play.enter({rigIds, dynamicRigIds})` simulates the named active rigs dynamically. In the UI, the choice is **Play → Mechanism physics → Dynamic**, a folded section shown only when the build has authored rigs.

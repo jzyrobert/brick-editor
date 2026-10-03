@@ -903,3 +903,22 @@ backlash, physical retention/clutch ratings, automatic disengagement or arbitrar
 mixed assembly convergence. Existing relation/body/member/triangle bounds apply.
 Further guides and the remaining motion phases stay open. See
 [verification](VERIFICATION.md#guided-rack-transmission-3-october-2026).
+
+## Closed planar linkages (3 October 2026)
+
+Authored rigs can now add explicit planar revolute closure edges without changing
+the mount tree. Bounded kinematic continuation solves declared passive hinge/
+slider coordinates and preserves the previous pose on failure. Swept Play
+interpolation recloses the linkage. Native Dynamic creates the actual additional
+bearing joints, retains passive travel limits, reflects a stopped output to the
+sole driver and recovers when released. Passive coordinates have no competing
+idle motors or independent controls.
+
+Original four-bar and slider-crank examples pass repeated turns on an oblique
+axis, settled 720° then −360° targets, closure and native replay checks. Known
+kinematic continuation passes both straight toggles; cold ambiguous toggles are
+refused until moved away. Native persistence, posed apply/rebase/undo, rendered
+placements and plain posed inventory are verified. This is explicit planar
+support; automatic/spatial loops, compound authoring, general contact safety and
+physical-phone performance remain open. See [scope](PLAY-LINKAGES.md) and
+[verification](VERIFICATION.md#closed-planar-linkages-3-october-2026).

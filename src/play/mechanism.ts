@@ -5,6 +5,7 @@ import RAPIER from "@dimforge/rapier3d-compat";
 import { Matrix4, Quaternion, Vector3 } from "three";
 import {
   ensure,
+  AppError,
   type Occurrence,
   type Project,
   type Transform,
@@ -466,7 +467,7 @@ export class PlayMechanism {
           ]),
         ),
       };
-    return pose;
+    return this.session.closePose(pose);
   }
   private accept(
     before: MechanismSnapshot,
@@ -669,6 +670,26 @@ export class PlayMechanism {
         this.targets.delete(other);
     return this.snapshot();
   }
+  private acceptJointStep(
+    before: MechanismSnapshot,
+    id: string,
+    value: number,
+  ) {
+    try {
+      return this.accept(before, this.session.setJointPosition(id, value));
+    } catch (error) {
+      if (
+        !(error instanceof AppError) ||
+        !/^Mechanism loop (cannot close|is at)/.test(error.message)
+      )
+        throw error;
+      this.session.setPose(before.pose);
+      this.apply(before);
+      this.blocked = true;
+      this.reason = error.message;
+      return false;
+    }
+  }
   private stepMotors() {
     for (const id of [...this.motors.keys()].sort()) {
       const motor = this.motors.get(id)!;
@@ -709,7 +730,7 @@ export class PlayMechanism {
           continue;
         }
       }
-      if (!this.accept(state, this.session.setJointPosition(id, next))) {
+      if (!this.acceptJointStep(state, id, next)) {
         motor.status = "blocked";
         motor.blockedReason = this.reason;
         continue;
@@ -764,10 +785,7 @@ export class PlayMechanism {
         Math.abs(distance) <= motion.speed / 60
           ? motion.target
           : current + (Math.sign(distance) * motion.speed) / 60;
-      const accepted = this.accept(
-        rest,
-        this.session.setJointPosition(id, next),
-      );
+      const accepted = this.acceptJointStep(rest, id, next);
       if (!accepted) {
         motion.status = "blocked";
         motion.blockedReason = this.reason;

@@ -36,6 +36,13 @@ parts move together, which connections allow motion, and how one motion drives
 another. Turning every rendered brick into a physics body would exhaust the
 current budgets without supplying that knowledge.
 
+**Implemented planar loop slice:** explicit closure edges preserve the mount
+forest, with bounded kinematic continuation and real additional native Dynamic
+constraints. Four-bar and slider-crank examples close while one motor drives,
+retain limits and source data, and transmit obstruction. Cold singular toggles
+are refused; arbitrary spatial loops and compound authoring remain open. See
+[scope](PLAY-LINKAGES.md).
+
 ## What already works
 
 | Capability                            | Current behavior                                                                                                     | Relevant implementation                                                                                                                      |

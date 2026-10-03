@@ -1131,3 +1131,41 @@ individual tooth collision, physical LEGO retention/torque and backlash are not
 verified. Loose/improvised guides are refused by inference. No physical-phone,
 larger mixed-transmission convergence or broad internal/world-collision claim is
 made here; those remain separate roadmap work.
+
+## Closed planar linkages (3 October 2026)
+
+Worktree `/home/ubuntu/brick-editor-joints`, branch `codex/joint-linkages`, from
+`e0139e5`. No dependency, library pack, remote asset or CSP change.
+
+- Focused regression: **9 files, 62 tests pass**, 15.90 s. This includes six
+  kinematic loop tests and nine Play loop tests, together with existing rigs,
+  authoring, transmissions, dynamic/multi-turn motors and joint-target tests.
+- Rotated four-bar and slider-crank commands preserve the input exactly through
+  1,080°; every accepted kinematic closure residual is at most 0.001 LDU.
+  Independent replay agrees exactly. Limits, passive commands, invalid supplied
+  poses, redundant closures, non-planar axes and excessive counts are refused.
+- Warm continuation passes 90°/270° toggles and reversal on the tested four-bar.
+  Cold poses at those toggles refuse ambiguous motion atomically; moving the
+  supplied pose away from the toggle permits a new motion path.
+- Native four-bar/slider-crank runs keep actual attachment error below 0.08 LDU
+  during twenty 60-tick batches with one 30°/s motor, on a 73° oblique axis.
+  Each rig contains all four native joints, including the closing bearing. A
+  fixed rocker stalls the input below 5° and release restores motion. Passive
+  travel limits block a 45° target, retain closure below 0.1 LDU and stay within
+  one degree of the checked stop tolerance. Multi-turn position targets settle
+  at 720° then −360°. Native replay matches exactly.
+- Native save/restore and posed apply/rebase/undo preserve closure data and source
+  placements. Fixture generation check passes for both original CC0 MPDs.
+- Production build passes: schema generation, TypeScript and Vite (35.67 s).
+  Four rendered cases cover both linkages in kinematic and Dynamic Play, settled
+  45° targets, changed PNGs/transforms, actual closure, unchanged source export,
+  unchanged four-part inventory and equivalent placements after posed re-import.
+  All **four rendered cases pass**, 31.7 s, on the private port 4403.
+- A local Node measurement of 3,600 half-degree preview commands averaged
+  **0.202 ms** (four-bar) and **0.674 ms** (slider-crank), including snapshots.
+  This measures these small solvers on the shared ARM64 VM; it is not a browser
+  tick budget, worst-case graph guarantee or physical-phone measurement.
+
+The existing forest validator still refuses cycles in mount joints. This is a
+bounded explicit planar extension, not a claim that every graph converges or
+that spatial/automatically discovered linkages and internal contacts are solved.
