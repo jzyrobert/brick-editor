@@ -1,8 +1,8 @@
 # The gallery's D1 database and R2 bucket, for `npm run gallery:publish`
 # (docs/GALLERY-PLAN.md). Kept out of wrangler.toml while no Pages Function
 # uses them (Pages reads wrangler.toml on deploy). Both databases were created
-# on 3 October 2026 with migrations/0001_gallery.sql applied; the R2 bucket
-# waits on R2 being enabled for the account.
+# on 3 October 2026 with migrations/0001_gallery.sql applied, and the R2
+# buckets brick-gallery and brick-gallery-preview.
 name = "brick-gallery"
 compatibility_date = "2026-10-01"
 

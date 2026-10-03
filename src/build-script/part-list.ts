@@ -6,7 +6,7 @@ import { footprint, localBounds, underside } from "../catalog/builds/kit";
 import { localOccupancy } from "../edit/snap";
 import { partSpec } from "../catalog/extended";
 import { partAvailability } from "../catalog/color-availability";
-import { COMMON_COLOURS, colourName } from "./palette";
+import { COMMON_COLOURS, agentColourName } from "./palette";
 import { parseSize, searchParts } from "./part-search";
 
 /** A part's body height in plates, not counting studs on top: what the
@@ -26,11 +26,16 @@ export function placement(ref: string) {
   return { x: studs(f.width), z: studs(f.depth), plates: partPlates(ref) };
 }
 
+/** Reach worth noting: more than the overlap check's margin (0.65 LDU)
+ * plus rounding, so any reach that can collide with a neighbour is listed
+ * (trees reach 3–4 LDU past their 4 × 4 footprint and hit a wall next to it). */
+const REACH_LDU = 1;
+
 /**
  * How far a part's body (what the overlap check tests) reaches past its
  * footprint at turn 0, in studs on each side, rounded up to half studs; only
- * the sides that reach a quarter stud or more. Leaves, bamboo, handles and
- * hinge fingers do; bricks do not.
+ * the sides that reach past it by more than REACH_LDU. Leaves, trees,
+ * bamboo, shutters, brackets, handles and hinge fingers do; bricks do not.
  */
 export function overreach(ref: string) {
   const boxes = localOccupancy(ref);
@@ -40,7 +45,7 @@ export function overreach(ref: string) {
   const hi = (i: number) => Math.max(...boxes.map((b) => b.max[i]));
   const out: Partial<Record<"-x" | "+x" | "-z" | "+z", number>> = {};
   const side = (key: keyof typeof out, ldu: number) => {
-    if (ldu / 20 >= 0.25) out[key] = Math.ceil((ldu / 20) * 2) / 2;
+    if (ldu > REACH_LDU) out[key] = Math.ceil((ldu / 20) * 2) / 2;
   };
   side("-x", f.minX - lo(0));
   side("+x", hi(0) - (f.minX + f.width));
@@ -79,12 +84,12 @@ export function commonColours(ref: string) {
     return (
       "common colours except " +
       COMMON_COLOURS.filter((c) => !a.colors.has(c))
-        .map(colourName)
+        .map(agentColourName)
         .join(", ") +
       more
     );
   if (!made.length) return "none of the common colours" + more;
-  return made.map(colourName).join(", ") + more;
+  return made.map(agentColourName).join(", ") + more;
 }
 
 /** Every curated part, by category: number, name and common colours. */
@@ -99,7 +104,7 @@ export function promptPartList() {
   }
   const lines = [
     "Each part: number, name, footprint at turn 0 (studs along x × along z) and height in plates, then which common colours it is made in.",
-    `Common colours: ${COMMON_COLOURS.map(colourName).join(", ")}.`,
+    `Common colours: ${COMMON_COLOURS.map(agentColourName).join(", ")}.`,
   ];
   for (const [category, list] of byCategory) {
     if (!list.length) continue;
@@ -146,7 +151,7 @@ export function searchForAgent(args: SearchArgs) {
       ? results
           .map(
             (r) =>
-              `${r.id.replace(/\.dat$/, "")} | ${r.name} | ${safePlacement(r.id, r.size)} | ${r.curated ? "curated" : "library"} | ${commonColours(r.id)}${r.inColour ? ` | in ${args.colour}: ${r.inColour}` : ""}`,
+              `${r.id.replace(/\.dat$/, "")} | ${r.name} | ${r.category} | ${safePlacement(r.id, r.size)} | ${r.curated ? "curated" : "library"} | ${commonColours(r.id)}${r.inColour ? ` | in ${args.colour}: ${r.inColour}` : ""}`,
           )
           .join("\n")
       : "No parts match.";

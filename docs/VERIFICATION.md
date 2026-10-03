@@ -840,23 +840,27 @@ complete labels inside 48px targets and a reachable Enter Play action.
 Physical phone performance and the full CI suite were not run for this design
 change. These checks do not establish large-model or Photo performance.
 
-## Agent gallery, phase 1 (3 October 2026)
+## Agent gallery backend, phase 1 (3 October 2026)
 
 - **Unit:** `tests/unit/gallery-index.test.ts` and `tests/unit/gallery-publish.test.ts` cover:
   - prompt and agent ids and names;
   - index generation from D1 rows, round-tripped through the decoder;
   - the decoder dropping inconsistent builds (an id that is not the MPD hash, an unknown agent, a render that is not a hash);
   - download checks (size, checksum, library release, damaged gzip);
-  - when the index is read (https or `?galleryIndex=1`);
+  - when a page should read the index (https or `?galleryIndex=1`);
   - SQL quoting (an injection string stays a literal);
   - one-shot folder discovery (accepted efforts only, older runs as Codex);
   - each prompt and agent inserted once.
-- **Browser:** `tests/browser/gallery-published.spec.ts` mocks the bucket and checks:
-  - published briefs, models, angles, the agent filter and a detail page;
-  - Explore importing the checked MPD, with only `index.json`, the MPD and renders requested;
-  - a damaged MPD refused with "does not match the gallery";
-  - the samples kept when the index fails, and no request at all on plain http without the switch;
-  - no horizontal overflow at 360 × 600, 1,080 × 1,800 and 686 × 411.
-- **The redesign's own `tests/browser/gallery.spec.ts`** passes on the merged build. Its Play-walking case failed once while the publish dry run was rendering on the same machine, then passed alone (it also passes on `main`).
 - **Dry run:** `npm run gallery:publish -- docs/samples/japanese-temple-one-shot*` against a local D1 applied the migration and recorded 24 builds. It refused the five first-run builds (colour errors) and skipped one unaccepted effort and one folder without a script. Re-running skips everything already published.
-- **Not checked:** a real publish (`--remote`), the bucket's CORS and cache headers, and a physical phone. Those wait on phase 0.
+- **D1:** `brick-gallery` and `brick-gallery-preview` were created through the Cloudflare connector, and the migration applied to each (10 statements, including the `d1_migrations` record).
+- **Not checked:** a real publish (`--remote`), and the bucket's CORS and cache headers. Those wait on R2. The Gallery page does not read the index yet; that is front-end work.
+
+## brick.build, draft checks and the recalibrated prompt (3 October 2026)
+
+- **brick.build.** `tests/unit/brick-build.test.ts`: the code example in `prompts/brick-build.md` makes exactly the JSON example of `prompts/build-agent.md` (and validates); loops, components, nested and conditional op lists, conditional openings and holes; code lines by op path, including inside components; a seed repeats exactly; errors name their line; an endless loop stops at the time limit; `section.constructor('return process')()` and `this.constructor.constructor(…)` fail with "Code generation from strings disallowed" (no host object is reachable); `require` and `process` are undefined. `brick-cli build --script t.js` printed `[sections[0].ops[0] (code line 6), sections[0].ops[1] > components.post.ops[0] (code line 3)]` on an overlap.
+- **Checks.** `tests/unit/one-shot-build.test.ts`: the prompt's check section, reading `{"check_build": …}`, and the answer (count, sections by size, errors only). A forced smoke run through Codex (a 120-part shed whose brief asked for one check) got back 130 parts and 8 errors, then answered with 113 parts and no errors; another smoke run answered in code without checking and was repaired once.
+- **Prompt facts.** Each was checked by compiling small scripts: turn 90 maps −z → −x (front → left; clockwise in the top view); slopes, curved and inverted slopes descend or overhang toward −z at turn 0; a 3062b or 3024 under a 2 × 4 plate is not reported floating; a part on a slope's face is; `top: "tile"` keeps the top height; a box's lid is its top 2 plates; `instance.at` [x, z] fails validation; `repeat` holds `instance`; holes in a group are local; stairs toward −x cover `at − run + 1 .. at` for the first step; an inward door in a 6b room with a floor gives `opening-height`.
+- **Counting rules.** Every op of the ten run-4 temple builds (GPT-6.1-Sol and Opus 5.5) compiled alone and summed, and single ops measured in isolation: the old rules (with +15%) missed the builds by 15.3% on average; the new rules by 2.8% (at most 6.9%), fitted to the same builds, so expect 5–10% on new ones. The largest gaps were one-brick textured boxes (solid all through: 34 × 24 is 408 parts against 63 by the old rule) and slabs or walls with parts set into them.
+- **Part list and search.** Reach is listed above 1 LDU (30 parts; 3470 and 3471 now show 0.5 stud on each side, which the overlap check sees at 0.65 LDU); common colours read "light bluish grey", "dark bluish grey", "trans-clear" as in the Colours section, and colour errors use the same names. Searches for "lantern", "bell" and "fish" return no minifigure torsos, Duplo or legs; "minifig torso" and "duplo brick" still return them.
+- **Temple run 5** ([sample](samples/japanese-temple-one-shot-brickbuild/README.md)): GPT-6.1-Sol, all five efforts accepted on their first reply (1,998–2,170 parts, 0–8.5% from 2,000), in 2–45 minutes and 6k–169k output tokens; high, xhigh and max used three checks each, low one, medium none.
+- **Tests:** `npx vitest run tests/unit` (161 files, 1,103 tests) and `tests/integration/build-cli.test.ts` passed; `npx tsc -b`; `npm run format:check`; `npm run schemas` (the `stairs.at` description).

@@ -15,12 +15,11 @@ import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
 import { Gallery } from "./Gallery";
 import {
+  GALLERY_SAMPLES,
   MODEL_TOOLS,
   galleryAsset,
-  publishedPrompts,
-  samplePrompts,
-  type GalleryEntry,
-  type GalleryPromptView,
+  type GallerySample,
+  type GallerySampleId,
   type ModelTool,
 } from "../catalog/gallery";
 import { RigAuthoring } from "./RigAuthoring";
@@ -164,18 +163,7 @@ import {
   ensure,
 } from "../core/types";
 import { identity, rotationY, compose } from "../core/math";
-import {
-  catalog,
-  catalogCategoryOrder,
-  colors,
-  libraryLock,
-  retiredLibraryLocks,
-} from "../catalog/catalog";
-import {
-  fetchGalleryModel,
-  galleryIndexEnabled,
-  loadGalleryIndex,
-} from "../catalog/gallery-index";
+import { catalog, catalogCategoryOrder, colors } from "../catalog/catalog";
 import { ColorPicker, colourAvailabilityHint } from "./ColorPicker";
 import { loadTemplate } from "../catalog/template-loader";
 import {
@@ -306,8 +294,6 @@ function enqueueSourceSave<T>(action: () => Promise<T>): Promise<T> {
   return result;
 }
 let recoveryStarted = false;
-/** `?gallery=<id>` (a published build) is read once per page load. */
-const galleryRequested = new URLSearchParams(location.search).get("gallery");
 const runtime: {
   renderer?: SceneAdapter;
   play?: BrowserPlay;
@@ -495,21 +481,13 @@ function Workspace() {
       !location.hash.startsWith("#v=") &&
       new URLSearchParams(location.search).get("automation") !== "1",
   );
-  const [galleryDetail, setGalleryDetail] = useState(
-    () => galleryRequested ?? undefined,
-  );
-  const [galleryPending, setGalleryPending] = useState<string>();
+  const [galleryDetail, setGalleryDetail] = useState<GallerySampleId>();
+  const [galleryPending, setGalleryPending] = useState<GallerySampleId>();
   const [galleryError, setGalleryError] = useState("");
   const [galleryModel, setGalleryModel] = useState<{
-    entry: GalleryEntry;
+    sample: GallerySample;
     projectId: string;
   }>();
-  // The built-in samples until the published index loads (online only; a
-  // failed load quietly keeps the samples).
-  const [galleryPrompts, setGalleryPrompts] = useState<{
-    prompts: GalleryPromptView[];
-    published: boolean;
-  }>(() => ({ prompts: samplePrompts(), published: false }));
   const galleryOpenRef = useRef(galleryOpen);
   galleryOpenRef.current = galleryOpen;
   const [generatingInstructions, setGeneratingInstructions] = useState(false);
@@ -4150,74 +4128,24 @@ function Workspace() {
     setGalleryDetail(undefined);
     setGalleryOpen(true);
   };
-  useEffect(() => {
-    if (!galleryOpen || galleryPrompts.published) return;
-    if (!galleryIndexEnabled(location)) return;
-    let live = true;
-    loadGalleryIndex()
-      .then((index) => {
-        const prompts = publishedPrompts(index);
-        if (live && prompts.length)
-          setGalleryPrompts({ prompts, published: true });
-      })
-      .catch(() => {}); // Offline or not yet published: the samples stay.
-    return () => {
-      live = false;
-    };
-  }, [galleryOpen, galleryPrompts.published]);
-  /** Opens a gallery entry as a new local project: a built-in sample's
-   * build script is compiled here; a published build's MPD is fetched and
-   * checked against the index (size, SHA-256, library release) first. */
   async function openGalleryModel(
-    entry: GalleryEntry,
+    sample: GallerySample,
     destination: ModelTool | "Play",
   ) {
     if (galleryPending) return;
-    setGalleryPending(entry.id);
+    setGalleryPending(sample.id);
     setGalleryError("");
     try {
       await applicationAPI.ready();
-      await replaceProject(`“${entry.title}”`, async () => {
+      await replaceProject(`“${sample.title}”`, async () => {
         const epoch = ++operationEpoch.current;
         const revision = editor.revision;
-        let open: () => Promise<void>;
-        if (entry.source.kind === "sample") {
-          const response = await fetch(
-            galleryAsset(entry.source.sample, "build.json"),
+        const response = await fetch(galleryAsset(sample, "build.json"));
+        if (!response.ok)
+          throw new Error(
+            "This sample could not load. Check your connection or install the offline copy.",
           );
-          if (!response.ok)
-            throw new Error(
-              "This sample could not load. Check your connection or install the offline copy.",
-            );
-          const script: unknown = await response.json();
-          open = async () => {
-            const result = await applicationAPI.buildScript.apply({
-              script,
-              expectedRevision: revision,
-            });
-            ensure(
-              result.applied,
-              "INVALID_INPUT",
-              "This sample could not be compiled.",
-            );
-          };
-        } else {
-          const text = await fetchGalleryModel(
-            entry.source.build,
-            entry.source.files,
-            {
-              maxBytes: resourceLimits(editor.resourceProfile).importBytes,
-              locks: [libraryLock, ...retiredLibraryLocks],
-            },
-          );
-          open = async () => {
-            await applicationAPI.project.import({
-              format: "ldraw",
-              text,
-              name: `${entry.title}.mpd`,
-            });
-          };
-        }
+        const script: unknown = await response.json();
         ensure(
           epoch === operationEpoch.current,
           "CANCELLED",
@@ -4226,8 +4154,16 @@ function Workspace() {
         renderer.current?.requestFitOnFirstParts();
         setBusy(true);
         try {
-          await open();
-          setGalleryModel({ entry, projectId: editor.projectId });
+          const result = await applicationAPI.buildScript.apply({
+            script,
+            expectedRevision: revision,
+          });
+          ensure(
+            result.applied,
+            "INVALID_INPUT",
+            "This sample could not be compiled.",
+          );
+          setGalleryModel({ sample, projectId: editor.projectId });
           setActiveLayer(editor.project.defaultLayerId);
           setSelectionSafe([]);
           setPanel("Canvas");
@@ -4235,8 +4171,7 @@ function Workspace() {
           await renderer.current?.ready();
           renderer.current?.fit();
           setStatus(
-            `Opened “${entry.title}” · ${entry.agent}` +
-              (entry.effort ? ` · ${entry.effort} effort` : ""),
+            `Opened “${sample.title}” · GPT-6.1-Sol · ${sample.effort} effort`,
           );
         } finally {
           renderer.current?.requestFitOnFirstParts(false);
@@ -4252,7 +4187,7 @@ function Workspace() {
     }
   }
   const currentGalleryModel =
-    galleryModel?.projectId === project.id ? galleryModel.entry : undefined;
+    galleryModel?.projectId === project.id ? galleryModel.sample : undefined;
   // Build tools (the Inspector's advanced drawers).
   const toolsTab = inspectorTools;
   const modelTools = (
@@ -4506,11 +4441,7 @@ function Workspace() {
                 await applicationAPI.ready();
                 if (galleryOpen && !occurrences(editor.project).length)
                   await openGalleryModel(
-                    galleryPrompts.published
-                      ? galleryPrompts.prompts[0].entries[0]
-                      : galleryPrompts.prompts[0].entries.find(
-                          (e) => e.id === "max",
-                        )!,
+                    GALLERY_SAMPLES.find((s) => s.id === "max")!,
                     "Play",
                   );
                 else enterMode("Play");
@@ -4531,8 +4462,6 @@ function Workspace() {
       </header>
       {galleryOpen && (
         <Gallery
-          prompts={galleryPrompts.prompts}
-          published={galleryPrompts.published}
           detailId={galleryDetail}
           onDetail={setGalleryDetail}
           onOpen={(s, m) => void openGalleryModel(s, m)}
@@ -4551,10 +4480,7 @@ function Workspace() {
               <strong>{currentGalleryModel?.title ?? project.title}</strong>
               <span>
                 {currentGalleryModel
-                  ? `${currentGalleryModel.agent} · ` +
-                    (currentGalleryModel.effort
-                      ? `${currentGalleryModel.effort} effort · `
-                      : "")
+                  ? `GPT-6.1-Sol · ${currentGalleryModel.effort} effort · `
                   : ""}
                 {all.length.toLocaleString("en")} parts
               </span>

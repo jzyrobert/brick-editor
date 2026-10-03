@@ -530,6 +530,7 @@ Each has its own document; this list only records that it shipped.
 - **Geometry rules and located errors for agents.** The build prompt states the geometry rules agents had to guess (integer coordinates, one frame for `at` and `holes`, footprints under turns, inclusive ends, `open` faces, massing versus parts, roof heights and holes, component `size`); the part list and search give each part's footprint at `turn: 0` and height in plates; overlaps are grouped with positions and where the boxes meet; schema errors show the rejected value. The third temple run was accepted at every effort in two replies ([sample](samples/japanese-temple-one-shot-geometry/README.md)).
 - **Part targets as a score.** `--target-parts N` / `targetParts` is guidance: any size compiles and is written. The report's `target` gives the distance, `costliestOps` charges each part to the op that placed it, and the CLI prints a `size:` line. `--leeway`/`leeway`, the accepted range and `under-budget` are gone (replacing the "Part targets" item above); `limits.maxParts` stays a hard cap. The build prompt's "Counting parts" rules come from per-op measurements: compiled op by op, 19 temple scripts and 7 samples came within 3% over to 14% under their real counts. One-shot repairs state the size against the target. Overlaps give where the script placed each part, the repeat copies involved and how far a body reaches past its footprint. The part list and search give that reach for 19 irregular curated parts. A closed `fence` path no longer doubles its first post. In the fourth temple run every effort was accepted, max on its first reply. First replies that compiled were 2.5–7.3% from the target, against 3–29% in run 3, and accepted builds 0.4–9.8% ([sample](samples/japanese-temple-one-shot-target/README.md)).
 - **Parts knowledge for agents.** The build prompt lists the 224 curated parts with the common colours each comes in (`{{PARTS}}`, `brick-cli parts list`); a placed part in a colour it is not made in is a compile error naming colours it does come in; old numbers (`4032`, `4073`) are built as the part the library moved them to. One-shot runs can search parts (`--search`, a `{"parts_search": …}` reply answered in the same session), retry provider capacity errors, and record every search, `find`, unlisted number and colour error ([second temple sample](samples/japanese-temple-one-shot-search/README.md)).
+- **brick.build code and draft checks in one-shot runs.** One-shot replies are a brick.build call: JavaScript that calls one helper per op, run once in a Node `vm` sandbox in a `brick-cli` child process (10 s, 50,000 ops, 200 KB), with problems naming the code line of their op ([brick.build](AGENT-BUILDING.md#brickbuild)); `brick-cli build --script build.js` compiles it too. With `--check` the model may compile up to 3 drafts per attempt and see the count, sections and errors. The prompt now states facing and turn direction, standing (studs, hanging, tiles, slopes), every opening field, `box` lids and interiors, `top: "tile"`, `instance.at`, `stairs` and `scatter`, and counting rules recalibrated on ten builds (old rules 15% off on average, new about 3% on the same builds). The part list notes reach on 30 parts (trees included) and uses the prompt's colour names, as do colour errors; parts search ranks building parts above minifigure, Duplo and printed parts and shows each part's category. GPT-6.1-Sol was accepted on its first reply at every effort, 0–8.5% from the target ([sample](samples/japanese-temple-one-shot-brickbuild/README.md)).
 - **One-shot runs through Claude Code.** `npm run oneshot -- --runner claude` runs each effort with `claude -p --effort …` (no tools, no user customisation, search rounds resumed in the same session, cost recorded). Opus 5.5 built the temple at all five efforts under run 3's rules ([sample](samples/japanese-temple-one-shot-claude/README.md)) and run 4's ([sample](samples/japanese-temple-one-shot-claude-target/README.md)). Replies Claude Code continues past the output cap are joined from its `stream-json` events.
 - **One-shot runs and a sandbox-safe renderer.** `npm run oneshot` sends the build prompt to `codex exec` with every tool off and repairs invalid or out-of-range replies MineBench-style ([one-shot runs](AGENT-BUILDING.md#one-shot-runs)); headless renders no longer write into the checkout (Vite's runner config loader and a temp cache), so they work from a sandboxed workspace.
 - **Parallel browser suite.** Playwright projects `main`, `heavy` (`@heavy`) and `perf` (`@perf`); CI builds once and runs 8 + 2 + 1 shards ([verification](VERIFICATION.md#running-the-browser-suite)).
@@ -735,11 +736,10 @@ and actual selected phone views do not certify physical assembly. The
 [independent review](reports/instruction-generation/hybrid-workflow-critic.md)
 record scope, refusals, unchanged scores and remaining feasible work.
 
-## Agent gallery, phase 1 — 3 October 2026
+## Agent gallery backend, phase 1 — 3 October 2026
 
-Builds can be published to the [agent gallery](GALLERY-PLAN.md) and the
-Gallery shows them. Nothing is published yet: the D1 databases exist (with
-the migration applied), but R2 is not yet enabled for the account. Built:
+The backend for the [agent gallery](GALLERY-PLAN.md) is built; the page side
+(Gallery reading the published index) is separate front-end work. Built:
 
 - `npm run gallery:publish` (`scripts/gallery-publish.ts`): reads one-shot run
   folders or single build scripts and recompiles each build, refusing any with
@@ -747,14 +747,12 @@ the migration applied), but R2 is not yet enabled for the account. Built:
   renders by SHA-256, records rows in D1 (`migrations/0001_gallery.sql`) and
   rebuilds `index.json`. Without `--remote` it runs against a local D1 and
   `.local/gallery-out/`.
-- Gallery reads the published index (on https pages, or with
-  `?galleryIndex=1`). It shows every published brief, model and effort through
-  the same cards, filters, comparison and detail pages as the bundled samples,
-  and falls back to those samples when the index can't load.
-- Explore on a published build checks its MPD (size, SHA-256, library
-  release) before importing it, and caches it for offline use.
-  `?gallery=<id>` opens a build's page.
+- `src/catalog/gallery-index.ts`: the `index.json` format and decoder, index
+  generation from D1 rows, and `fetchGalleryModel`/`verifyGalleryBuild`, which
+  check a build's size, SHA-256 and library release (with an offline cache).
+- D1 `brick-gallery` and `brick-gallery-preview` exist with the migration
+  applied, and so do the R2 buckets of the same names. The custom domain,
+  CORS and cache rule are not set up yet, so nothing is published.
 
 A dry run over all six temple runs recorded 24 builds (5 runs, 2 models); the
 5 builds of the first run are refused by the colour check added after them.
-Votes, the arena and the leaderboard (phases 2 and 3) are not built.

@@ -1,6 +1,6 @@
 # Plan: a gallery, arena and leaderboard of agent builds
 
-Status: **phase 1 built, not deployed.** Written 3 October 2026. The publish script and the Gallery's reading of published builds are in the repository, tested against a local D1 and mocked files ([§12](#12-phase-1-as-built), which also records how phase 1 changed after the in-app Gallery redesign). Phase 0 has started: the D1 databases `brick-gallery` and `brick-gallery-preview` exist (Western Europe), with `migrations/0001_gallery.sql` applied and recorded in `d1_migrations`, and their IDs are in `wrangler.gallery.toml`. The R2 bucket waits on R2 being enabled for the account in the dashboard (the API refuses with code 10042 until then). Nothing is published yet.
+Status: **phase 1 built, not deployed.** Written 3 October 2026. The backend (publish script, D1 schema, index format and download checks) is in the repository, tested against a local D1 ([§12](#12-phase-1-as-built)). The page side is separate front-end work. Phase 0 has started: the D1 databases `brick-gallery` and `brick-gallery-preview` exist (Western Europe), with `migrations/0001_gallery.sql` applied and recorded in `d1_migrations`, and their IDs are in `wrangler.gallery.toml`. The R2 buckets `brick-gallery` and `brick-gallery-preview` exist too. Still to do: the custom domain, CORS (`scripts/gallery-cors.json`, the dashboard's JSON format), the cache rule and a publishing token. Nothing is published yet.
 
 The idea comes from [Minebench](https://github.com/Ammaar-Alam/minebench) (see also [PERFORMANCE-MINEBENCH.md](PERFORMANCE-MINEBENCH.md)): people browse builds that models made from the same prompt, vote blind between two of them, and models are ranked from the votes.
 
@@ -375,15 +375,14 @@ CI (`.github/workflows/cloudflare.yml`):
 
 ## 12. Phase 1 as built
 
-Built on 3 October 2026. Meanwhile, a redesign on `main` made Gallery the app's default mode, inside the editor, with five bundled GPT-6.1-Sol samples ([GALLERY.md](GALLERY.md)). So phase 1's front end differs from §6: there is no separate `gallery.html`. Gallery itself reads the published index instead.
+Built on 3 October 2026. Meanwhile, a redesign on `main` made Gallery the app's default mode, with bundled samples ([GALLERY.md](GALLERY.md)), so §6's separate `gallery.html` is dropped. Gallery should read the published index itself. That page work is done separately; this phase built the backend and the contract the page uses:
 
-**Front end**
+**Contract for the front end** (`src/catalog/gallery-index.ts`)
 
-- `publishedPrompts(index)` and `samplePrompts()` (`src/catalog/gallery.ts`) map published builds and the bundled samples to one `GalleryEntry` shape. `src/ui/Gallery.tsx` draws either one.
-- The published index replaces the samples when it loads. If it can't load, the samples stay without an error.
-- The index is read only on https pages or with `?galleryIndex=1`, so local servers and browser tests never reach the real bucket.
-- Explore on a published build fetches its MPD and checks it with `verifyGalleryBuild` (size, SHA-256, library release) before import.
-- `?gallery=<id>` opens that build's page in Gallery, rather than replacing the open project at once.
+- `loadGalleryIndex()` and `decodeGalleryIndex()`: the published `index.json`, with its shape checked. Builds with an unknown prompt or agent, or an inconsistent id, are dropped.
+- `fetchGalleryModel(build, files, { maxBytes, locks })`: a build's MPD text, checked by `verifyGalleryBuild` (size, SHA-256, library release) and cached for offline use.
+- `galleryIndexEnabled(location)`: true on https pages or with `?galleryIndex=1`, so local servers and browser tests never reach the real bucket.
+- `galleryFileUrl(files, "r", sha)`: render URLs. The CSP must add `https://gallery.bricks.robertj.in` to `img-src` and `connect-src`.
 
 **Published files**
 
@@ -407,4 +406,4 @@ Built on 3 October 2026. Meanwhile, a redesign on `main` made Gallery the app's 
 
 **Refusals.** The first temple run's five builds now fail the colour check added after they were made (for example, 3633 in dark brown), so they are refused. The other 24 accepted temple builds, from 5 runs and 2 models, compile with no errors; each has one or two warnings (floating parts).
 
-What's left for phase 1's "done when": publishing for real (phase 0 first), then checking the published Gallery on a 1,080 × 1,800 phone, and that a second visit fetches only `index.json` and the renders it shows.
+What's left for phase 1's "done when": publishing for real, the front end reading the index, then checking it on a 1,080 × 1,800 phone.

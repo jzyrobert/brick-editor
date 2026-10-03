@@ -1,29 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import {
   GALLERY_ANGLES,
+  GALLERY_SAMPLES,
   MODEL_TOOLS,
+  galleryAsset,
   type GalleryAngle,
-  type GalleryEntry,
-  type GalleryPromptView,
+  type GallerySample,
+  type GallerySampleId,
   type ModelTool,
 } from "../catalog/gallery";
 import { Icon, type IconName } from "./icons";
 
 type Props = {
-  /** Built-in samples, or the published gallery when its index loaded. */
-  prompts: GalleryPromptView[];
-  /** Where `prompts` came from; built-in samples say so. */
-  published: boolean;
-  detailId?: string;
-  onDetail: (id?: string) => void;
-  onOpen: (entry: GalleryEntry, mode: ModelTool | "Play") => void;
-  pending?: string;
+  detailId?: GallerySampleId;
+  onDetail: (id?: GallerySampleId) => void;
+  onOpen: (sample: GallerySample, mode: ModelTool | "Play") => void;
+  pending?: GallerySampleId;
   error: string;
   onImport: () => void;
 };
 const count = (n: number) => n.toLocaleString("en");
-const agentLabel = (e: GalleryEntry) =>
-  e.effort ? `${e.agent}, ${e.effort} effort` : e.agent;
 
 function Angles({
   value,
@@ -51,16 +47,16 @@ function Angles({
   );
 }
 function ModelImage({
-  entry,
+  sample,
   angle,
 }: {
-  entry: GalleryEntry;
+  sample: GallerySample;
   angle: GalleryAngle;
 }) {
   return (
     <img
-      src={entry.images[angle]}
-      alt={`${entry.title}, ${agentLabel(entry)}, ${GALLERY_ANGLES.find((a) => a.id === angle)!.label} view`}
+      src={galleryAsset(sample, `${angle}.png`)}
+      alt={`${sample.title}, GPT-6.1-Sol at ${sample.effort} effort, ${GALLERY_ANGLES.find((a) => a.id === angle)!.label} view`}
       loading="lazy"
       width="1440"
       height="1000"
@@ -69,8 +65,6 @@ function ModelImage({
 }
 
 export function Gallery({
-  prompts,
-  published,
   detailId,
   onDetail,
   onOpen,
@@ -78,65 +72,32 @@ export function Gallery({
   error,
   onImport,
 }: Props) {
-  const [promptId, setPromptId] = useState(prompts[0]?.id ?? "");
+  const [prompt, setPrompt] = useState("temple");
   const [angle, setAngle] = useState<GalleryAngle>("iso");
   const [compare, setCompare] = useState(false);
-  const [pair, setPair] = useState<[string, string]>(["", ""]);
-  // Entries hidden by the agent filter (so new entries start shown).
-  const [hidden, setHidden] = useState<string[]>([]);
+  const [pair, setPair] = useState<[GallerySampleId, GallerySampleId]>([
+    "high",
+    "xhigh",
+  ]);
+  const [efforts, setEfforts] = useState<GallerySampleId[]>(
+    GALLERY_SAMPLES.map((s) => s.id),
+  );
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [detailAngle, setDetailAngle] = useState<GalleryAngle>("iso");
   const heading = useRef<HTMLHeadingElement>(null);
-  const prompt =
-    prompts.find((p) => p.id === promptId) ??
-    prompts.find((p) => !p.placeholder) ??
-    prompts[0];
-  const entries = prompt?.entries ?? [];
-  const all = prompts.flatMap((p) => p.entries.map((e) => ({ p, e })));
-  const detail = all.find((x) => x.e.id === detailId);
+  const sample = GALLERY_SAMPLES.find((s) => s.id === detailId);
   useEffect(() => {
     setDetailAngle("iso");
     heading.current?.focus({ preventScroll: true });
   }, [detailId]);
-  // A new source (the published index arriving) or prompt resets the
-  // comparison to the first two entries.
-  useEffect(() => {
-    setPair([entries[0]?.id ?? "", entries[1]?.id ?? entries[0]?.id ?? ""]);
-    setHidden([]);
-    setCompare(false);
-  }, [prompt?.id, prompts]);
-  const byId = (id: string) => entries.find((e) => e.id === id);
-  const shown = compare
-    ? pair.map(byId).filter((e): e is GalleryEntry => !!e)
-    : entries.filter((e) => !hidden.includes(e.id));
+  const open = (s: GallerySample, mode: ModelTool | "Play") => onOpen(s, mode);
+  const filtered = compare
+    ? pair.map((id) => GALLERY_SAMPLES.find((s) => s.id === id)!)
+    : GALLERY_SAMPLES.filter((s) => efforts.includes(s.id));
   const selectPrompt = (value: string) => {
-    setPromptId(value);
+    setPrompt(value);
     onDetail(undefined);
   };
-  // Agent filter: one group per model, one box per effort (or build).
-  // Repeated runs at one level share a box: it shows or hides them all.
-  const groups = [...new Set(entries.map((e) => e.agent))].map((agent) => {
-    const mine = entries.filter((e) => e.agent === agent);
-    const labels = [
-      ...new Set(mine.map((e) => (e.effort ? `${e.effort} effort` : e.title))),
-    ];
-    return {
-      agent,
-      entries: mine,
-      levels: labels.map((label) => ({
-        label,
-        entries: mine.filter(
-          (e) => (e.effort ? `${e.effort} effort` : e.title) === label,
-        ),
-      })),
-    };
-  });
-  const agentCount = groups.length;
-  const pending_ = all.find((x) => x.e.id === pending)?.e;
-  const entryLabel = (e: GalleryEntry) =>
-    agentCount > 1
-      ? `${e.agent}${e.effort ? ` · ${e.effort}` : ""}`
-      : (e.effort ?? e.title);
   return (
     <main className="gallery-page" aria-label="Agent model gallery">
       {error && (
@@ -144,12 +105,13 @@ export function Gallery({
           {error} Try opening the model again.
         </div>
       )}
-      {pending_ && (
+      {pending && (
         <div className="gallery-loading" role="status">
-          Opening {pending_.title}…
+          Opening the{" "}
+          {GALLERY_SAMPLES.find((s) => s.id === pending)?.title.toLowerCase()}…
         </div>
       )}
-      {detail ? (
+      {sample ? (
         <div className="gallery-detail">
           <button className="gallery-back" onClick={() => onDetail(undefined)}>
             <Icon name="arrowLeft" size={18} />
@@ -157,36 +119,40 @@ export function Gallery({
           </button>
           <div className="gallery-detail-layout">
             <section
-              className={`gallery-detail-stage gallery-tone-${detail.e.tone}`}
+              className={`gallery-detail-stage gallery-tone-${sample.tone}`}
               aria-label="Selected model preview"
             >
-              <ModelImage entry={detail.e} angle={detailAngle} />
+              <ModelImage sample={sample} angle={detailAngle} />
               <Angles value={detailAngle} onChange={setDetailAngle} />
             </section>
             <section className="gallery-detail-info">
               <h1 ref={heading} tabIndex={-1}>
-                {detail.e.title.replace(/\.?$/, ".")}
+                {sample.title}.
               </h1>
               <p className="gallery-source">
-                {detail.e.agent}{" "}
-                {detail.e.effort && <span>{detail.e.effort} effort</span>}
+                GPT-6.1-Sol <span>{sample.effort} effort</span>
               </p>
               <p>
-                {detail.e.description} Generated from the brief “
-                {detail.p.brief}”.
+                {sample.description} Generated from the same short temple brief.
               </p>
               <dl>
-                {detail.e.facts.map(([k, v]) => (
-                  <div key={k}>
-                    <dt>{k}</dt>
-                    <dd>{v}</dd>
-                  </div>
-                ))}
+                <div>
+                  <dt>Parts</dt>
+                  <dd>{count(sample.parts)}</dd>
+                </div>
+                <div>
+                  <dt>Generation</dt>
+                  <dd>One-shot + repair</dd>
+                </div>
+                <div>
+                  <dt>Source</dt>
+                  <dd>Geometry-rules run</dd>
+                </div>
               </dl>
               <button
                 className="primary gallery-explore"
                 disabled={!!pending}
-                onClick={() => onOpen(detail.e, "Play")}
+                onClick={() => open(sample, "Play")}
               >
                 <Icon name="resume" />
                 Explore this model
@@ -200,7 +166,7 @@ export function Gallery({
                   <button
                     key={t.name}
                     disabled={!!pending}
-                    onClick={() => onOpen(detail.e, t.name)}
+                    onClick={() => open(sample, t.name)}
                   >
                     <Icon name={t.name.toLowerCase() as IconName} size={18} />
                     {t.name}
@@ -209,13 +175,14 @@ export function Gallery({
               </div>
               <details className="gallery-notes">
                 <summary>Prompt &amp; generation notes</summary>
-                <p>{detail.p.notes}</p>
                 <p>
-                  {detail.e.source.kind === "sample"
-                    ? "Titles are editorial descriptions. "
-                    : "Titles are the models’ own. "}
-                  Models open as editable local copies; the gallery originals
-                  stay intact.
+                  “a japanese buddhist temple” · Target: 2,000 parts ± 5%.
+                  GPT-6.1-Sol, 2 October 2026. Every effort was accepted after a
+                  second reply. Warning diagnostics still apply.
+                </p>
+                <p>
+                  Titles are editorial descriptions. Models open as editable
+                  local copies; the gallery originals stay intact.
                 </p>
               </details>
             </section>
@@ -230,50 +197,46 @@ export function Gallery({
               role="group"
               aria-label="Choose a prompt"
             >
-              {prompts.map((p) => (
+              {[
+                { id: "temple", name: "Japanese temple", meta: "5" },
+                { id: "village", name: "Seaside village", meta: "Placeholder" },
+                { id: "station", name: "Space station", meta: "Placeholder" },
+              ].map((p) => (
                 <button
                   key={p.id}
-                  aria-pressed={prompt?.id === p.id}
+                  aria-pressed={prompt === p.id}
                   onClick={() => selectPrompt(p.id)}
                 >
                   {p.name}
-                  <small>
-                    {p.placeholder ? "Placeholder" : p.entries.length}
-                  </small>
+                  <small>{p.meta}</small>
                 </button>
               ))}
             </div>
             <select
               aria-label="Choose a prompt"
-              value={prompt?.id}
+              value={prompt}
               onChange={(e) => selectPrompt(e.target.value)}
             >
-              {prompts.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.placeholder
-                    ? `${p.name} · Placeholder`
-                    : p.brief.charAt(0).toUpperCase() + p.brief.slice(1)}
-                </option>
-              ))}
+              <option value="temple">Japanese Buddhist temple</option>
+              <option value="village">Seaside village · Placeholder</option>
+              <option value="station">Space station · Placeholder</option>
             </select>
           </div>
           <div className="gallery-body">
-            {prompt && !prompt.placeholder ? (
+            {prompt === "temple" ? (
               <>
                 <div className="gallery-heading">
                   <div>
                     <h1 ref={heading} tabIndex={-1}>
-                      {prompt.heading}
+                      One temple. Five takes.
                     </h1>
-                    <p>The brief: “{prompt.brief}”</p>
+                    <p>The brief: “a japanese buddhist temple”</p>
                   </div>
-                  {prompt.targetParts && (
-                    <div className="gallery-target">
-                      <Icon name="build" size={18} />
-                      <strong>{count(prompt.targetParts)} parts</strong>
-                      <span>in the brief</span>
-                    </div>
-                  )}
+                  <div className="gallery-target">
+                    <Icon name="build" size={18} />
+                    <strong>2,000 parts</strong>
+                    <span>in the brief · ± 5%</span>
+                  </div>
                 </div>
                 <div className="gallery-controls">
                   <div className="gallery-filter-wrap">
@@ -285,40 +248,27 @@ export function Gallery({
                       Agent settings
                       <Icon name="collapse" size={16} />
                     </button>
-                    <span>{shown.length} real responses</span>
+                    <span>{filtered.length} real responses</span>
                     {filtersOpen && (
                       <div className="gallery-filters">
-                        {groups.map((g) => (
-                          <fieldset key={g.agent}>
-                            <legend>
-                              <strong>{g.agent}</strong>
-                            </legend>
-                            {g.entries.some((e) => e.effort) && (
-                              <p>Reasoning levels</p>
-                            )}
-                            {g.levels.map((l) => {
-                              const ids = l.entries.map((e) => e.id);
-                              return (
-                                <label key={l.label}>
-                                  <input
-                                    type="checkbox"
-                                    checked={
-                                      !ids.every((id) => hidden.includes(id))
-                                    }
-                                    onChange={(ev) => {
-                                      setCompare(false);
-                                      setHidden((h) =>
-                                        ev.target.checked
-                                          ? h.filter((id) => !ids.includes(id))
-                                          : [...h, ...ids],
-                                      );
-                                    }}
-                                  />
-                                  {l.label}
-                                </label>
-                              );
-                            })}
-                          </fieldset>
+                        <strong>GPT-6.1-Sol</strong>
+                        <p>Reasoning levels</p>
+                        {GALLERY_SAMPLES.map((s) => (
+                          <label key={s.id}>
+                            <input
+                              type="checkbox"
+                              checked={efforts.includes(s.id)}
+                              onChange={() => {
+                                setCompare(false);
+                                setEfforts((ids) =>
+                                  ids.includes(s.id)
+                                    ? ids.filter((id) => id !== s.id)
+                                    : [...ids, s.id],
+                                );
+                              }}
+                            />
+                            {s.effort} effort
+                          </label>
                         ))}
                       </div>
                     )}
@@ -328,7 +278,6 @@ export function Gallery({
                     className="gallery-quiet gallery-compare"
                     aria-label="Compare responses"
                     aria-pressed={compare}
-                    disabled={entries.length < 2}
                     onClick={() => {
                       setCompare((v) => !v);
                       setFiltersOpen(false);
@@ -339,31 +288,13 @@ export function Gallery({
                   </button>
                 </div>
                 <p className="gallery-sample-note">
-                  {published ? (
-                    <>
-                      <span className="gallery-note-full">
-                        {agentCount === 1
-                          ? `These builds come from one model at ${entries.length} reasoning levels.`
-                          : `These builds come from ${agentCount} models, each at several reasoning levels.`}
-                      </span>
-                      <span className="gallery-note-short">
-                        {agentCount === 1
-                          ? "One model"
-                          : `${agentCount} models`}{" "}
-                        · {entries.length} real builds.
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="gallery-note-full">
-                        These samples use one agent at five reasoning levels.
-                        Other agents are shown as placeholders.
-                      </span>
-                      <span className="gallery-note-short">
-                        One agent · five reasoning levels · real builds.
-                      </span>
-                    </>
-                  )}
+                  <span className="gallery-note-full">
+                    These samples use one agent at five reasoning levels. Other
+                    agents are shown as placeholders.
+                  </span>
+                  <span className="gallery-note-short">
+                    One agent · five reasoning levels · real builds.
+                  </span>
                 </p>
                 {compare && (
                   <div
@@ -378,15 +309,15 @@ export function Gallery({
                           value={id}
                           onChange={(e) => {
                             const next = [...pair] as typeof pair;
-                            const choice = e.target.value;
+                            const choice = e.target.value as GallerySampleId;
                             if (choice === pair[1 - i]) next[1 - i] = pair[i];
                             next[i] = choice;
                             setPair(next);
                           }}
                         >
-                          {entries.map((s) => (
+                          {GALLERY_SAMPLES.map((s) => (
                             <option key={s.id} value={s.id}>
-                              {entryLabel(s)} · {s.title}
+                              {s.effort} · {s.title}
                             </option>
                           ))}
                         </select>
@@ -394,20 +325,19 @@ export function Gallery({
                     ))}
                   </div>
                 )}
-                {shown.length ? (
+                {filtered.length ? (
                   <section
                     className={`gallery-responses${compare ? " gallery-comparing" : ""}`}
                     aria-label="Responses to the same prompt"
                   >
-                    {shown.map((s) => (
+                    {filtered.map((s) => (
                       <article className="gallery-response" key={s.id}>
                         <div className={`gallery-stage gallery-tone-${s.tone}`}>
-                          <ModelImage entry={s} angle={angle} />
+                          <ModelImage sample={s} angle={angle} />
                           <div className="gallery-agent">
                             <Icon name="build" size={18} />
                             <span>
-                              {s.agent}
-                              {s.effort && <small>{s.effort} effort</small>}
+                              GPT-6.1-Sol<small>{s.effort} effort</small>
                             </span>
                           </div>
                           <button
@@ -433,7 +363,7 @@ export function Gallery({
                           <button
                             className="primary"
                             disabled={!!pending}
-                            onClick={() => onOpen(s, "Play")}
+                            onClick={() => open(s, "Play")}
                           >
                             <Icon name="resume" size={16} />
                             Explore<span className="sr-only"> {s.title}</span>
@@ -441,7 +371,7 @@ export function Gallery({
                         </div>
                       </article>
                     ))}
-                    {!compare && agentCount === 1 && (
+                    {!compare && (
                       <article className="gallery-placeholder">
                         <Icon name="layers" size={32} />
                         <h2>Another agent’s take.</h2>
@@ -457,7 +387,11 @@ export function Gallery({
                   <div className="gallery-empty">
                     <h2>No responses selected.</h2>
                     <p>Choose a reasoning level to bring its model back.</p>
-                    <button onClick={() => setHidden([])}>
+                    <button
+                      onClick={() =>
+                        setEfforts(GALLERY_SAMPLES.map((s) => s.id))
+                      }
+                    >
                       Show all responses
                     </button>
                   </div>
@@ -468,27 +402,21 @@ export function Gallery({
                 <Icon name="layers" size={36} />
                 <h1>This world is still waiting.</h1>
                 <p>
-                  {prompt?.name ?? "This prompt"} is a placeholder prompt. No
-                  generated models are available yet.
+                  {prompt === "village" ? "Seaside village" : "Space station"}{" "}
+                  is a placeholder prompt. No generated models are available
+                  yet.
                 </p>
                 <button
                   className="primary"
-                  onClick={() =>
-                    selectPrompt(prompts.find((p) => !p.placeholder)?.id ?? "")
-                  }
+                  onClick={() => selectPrompt("temple")}
                 >
-                  Browse the {prompts.find((p) => !p.placeholder)?.noun}{" "}
-                  responses
+                  Browse the temple responses
                 </button>
               </div>
             )}
             <footer className="gallery-footer">
               <strong>One prompt. Many builds. Step inside.</strong>
-              <span>
-                {published
-                  ? "Published agent builds"
-                  : "Generated sample · 2 October 2026"}
-              </span>
+              <span>Generated sample · 2 October 2026</span>
               <button className="gallery-phone-import" onClick={onImport}>
                 <Icon name="arrowUp" size={18} /> Open your model
               </button>

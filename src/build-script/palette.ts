@@ -74,6 +74,19 @@ export const colourByCode = (code: string) => (tables(), byCode.get(code));
 export const colourName = (code: string) =>
   colourByCode(code)?.name ?? "LDraw colour " + code;
 
+/** Picker names that differ from the names the build prompt's Colours
+ * section uses (BrickLink's); agents see one name for each colour. */
+const AGENT_NAMES: Record<string, string> = {
+  "71": "light bluish grey",
+  "72": "dark bluish grey",
+  "47": "trans-clear",
+};
+/** A colour as build agents see it in the part list, search results and
+ * colour errors: the prompt's lower-case names, which the compiler accepts. */
+export const agentColourName = (code: string) =>
+  AGENT_NAMES[code] ??
+  (colourByCode(code) ? colourName(code).toLowerCase() : colourName(code));
+
 /** The colours most builds use, in the order agents see them (the prompt's
  * part list and colour error hints). */
 export const COMMON_COLOURS = [

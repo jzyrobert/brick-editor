@@ -363,7 +363,7 @@ describe("build script ops", () => {
       ops: ["sections[0].ops[0]"],
     });
     expect(problem.message).toMatch(
-      /\(60593\) is not made in Blue \(1×\); it comes in White/,
+      /\(60593\) is not made in blue \(1×\); it comes in white/,
     );
     expect(() =>
       compileBuildScript(

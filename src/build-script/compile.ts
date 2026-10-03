@@ -64,6 +64,7 @@ import {
 } from "./spec";
 import {
   COMMON_COLOURS,
+  agentColourName,
   colourName,
   colourSuggestions,
   resolveColourName,
@@ -418,7 +419,7 @@ class Compiler {
       this.problem({
         severity: "warning",
         code: "texture-unavailable",
-        message: `${look.texture} bricks (${texture}) are not made in ${colours.map(colourName).join(", ")}; plain bricks used`,
+        message: `${look.texture} bricks (${texture}) are not made in ${colours.map(agentColourName).join(", ")}; plain bricks used`,
         ops: [path.replace(/\.[a-z]+$/i, "")],
       });
       texture = undefined;
@@ -2561,12 +2562,12 @@ export function compileBuildScript(
       ...[...known].filter((code) => !COMMON_COLOURS.includes(code)),
     ]
       .slice(0, 8)
-      .map(colourName);
+      .map(agentColourName);
     c.problem({
       severity: "error",
       code: "colour-unavailable",
       message:
-        `${partSpec(ref)?.name ?? ref} (${ref.replace(/\.dat$/, "")}) is not made in ${colourName(colour)} (${hit.count}×)` +
+        `${partSpec(ref)?.name ?? ref} (${ref.replace(/\.dat$/, "")}) is not made in ${agentColourName(colour)} (${hit.count}×)` +
         (hints.length
           ? `; it comes in ${hints.join(", ")}${known.size > hints.length ? " and more" : ""}`
           : ""),

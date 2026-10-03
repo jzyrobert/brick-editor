@@ -297,7 +297,10 @@ export const OPS: Record<string, OpSpec> = {
   stairs: {
     doc: "A flight of steps (massing); rise 1 plate is Play-walkable",
     fields: {
-      at: req("vec3", "[x, y, z] minimum corner of the first step"),
+      at: req(
+        "vec3",
+        "[x, y, z] of the first step: its minimum corner climbing +x/+z; climbing -x/-z the first step ends at at (it covers at - run + 1 .. at)",
+      ),
       width: req("posint", "Studs across"),
       steps: req("posint", "Number of steps"),
       dir: req({ enum: ["+x", "-x", "+z", "-z"] }, "Climbing direction"),

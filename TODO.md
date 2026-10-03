@@ -101,17 +101,19 @@ From [AGENT-BUILDING](docs/AGENT-BUILDING.md) and the [design-language study](do
 - [ ] A SNOT detail op (headlight bricks and brackets holding tiles, panels and signs flat on a facade); crenellations for castle walls.
 - [ ] Packer: a maximum brick length for plain walls (official 1-wide bricks average 3 studs, ours 5); bonding across the two rows of 2-stud walls; weighted colour mixes.
 - [ ] Instruction steps per course or storey in compiled builds; facade metrics in the compile report (colour and depth changes per stud, brick lengths).
-- [ ] A code mode for one-shot runs after MineBench's `voxel.exec`: the reply is `{"tool": "brick.exec", "input": {"code": …}}`, JavaScript run in a Node `vm` with time and op limits whose builder calls (`section`, `component`, `room`, `roof`, `place`…) produce an ordinary build script, errors naming the code line of the op. Parameterised components and loops in place of repeated JSON (asked for in the [third run's interviews](docs/samples/japanese-temple-one-shot-geometry/README.md#what-the-models-said-about-efficiency)); Node only, never in the browser (CSP).
-- [ ] Also asked for in those interviews and not done: repairs as patches against stable op IDs, a count or collision check before a one-shot answer, and tested recipes (pagoda tier, hall, lantern) with measured costs. Repairs stay MineBench-style for now.
-- [ ] Also from the [Opus 5.5 interviews](docs/samples/japanese-temple-one-shot-claude/README.md#what-the-models-said): document `door`, `frame`, `glass` and `opens` in `room.openings` (the prompt's example uses them, its op reference does not), and one colour-name table for the part list and the Colours section ("Light grey" against "light bluish grey").
-- [ ] From the [second Opus 5.5 interviews](docs/samples/japanese-temple-one-shot-claude-target/README.md#what-the-models-said): the prompt's facing convention for slopes and curved slopes at `turn: 0` and the direction of `turn`; whether a part's top has studs and whether a part hanging under a plate stands; `box` lid and `interior`, `top: "tile"`, `instance.at`, `stairs` axes and `scatter` density spelled out; reach for 3470 Fruit Tree; search ranking building parts above minifig, Duplo and printed parts; counting rules checked against walls with many openings and roofs with holes, where Opus overestimated by 15–32%.
+- [ ] Also asked for in the [third run's interviews](docs/samples/japanese-temple-one-shot-geometry/README.md#what-the-models-said-about-efficiency) and not done: repairs as patches against stable op IDs, and tested recipes (pagoda tier, hall, lantern) with measured costs. Repairs stay MineBench-style for now.
+- [ ] Still open from the [Opus 5.5 interviews](docs/samples/japanese-temple-one-shot-claude-target/README.md#what-the-models-said): parts search and checks as real tool calls rather than replies (Codex offers custom tools only through its code mode); overlap ranges in one convention (today "z 5–5" is a rounded box edge); every pair behind "(7 pairs like this)".
+- [ ] Part heights from bounds overshoot on curved parts: 15068, 11477 and 88930 are listed (and reserved) as 3 plates but are 2, 93273 as 4 (about 2), 24201 and 92950 as 4 (3). `partPlates` in `src/build-script/part-list.ts`; changing it changes what the compiler reserves.
+- [ ] 2435 Pine Tree Small: its 3 × 3 footprint cannot be centred on its origin, so its reach reads "1 stud at −x, −z" and nothing at +x, +z.
 
 ## Agent gallery
 
-From [GALLERY-PLAN](docs/GALLERY-PLAN.md); phase 1 (the publish script, and the Gallery reading published builds) is built:
+From [GALLERY-PLAN](docs/GALLERY-PLAN.md); the backend of phase 1 (publish script, D1 schema, index format and download checks in `src/catalog/gallery-index.ts`) is built:
 
 - [x] Phase 0, D1: `brick-gallery` and `brick-gallery-preview` created with the migration applied; IDs in `wrangler.gallery.toml`.
-- [ ] Phase 0, the rest: enable R2 for the account (dashboard), create the `brick-gallery` bucket on `gallery.bricks.robertj.in` with CORS and a cache rule, and a publishing API token.
+- [ ] Front end: Gallery reads the published index (`loadGalleryIndex`, `galleryIndexEnabled`), opens builds through `fetchGalleryModel`, and the CSP allows the bucket origin.
+- [x] Phase 0, R2: buckets `brick-gallery` and `brick-gallery-preview` created.
+- [ ] Phase 0, the rest: connect `gallery.bricks.robertj.in` to `brick-gallery`, apply `scripts/gallery-cors.json`, add the cache rule, and create a publishing API token (D1 Edit, R2 Edit).
 - [ ] Publish the 24 temple builds with `--remote`; check them on a 1,080 × 1,800 phone, and that a second visit to a build fetches only `index.json`.
 - [ ] Phase 2: the vote Function, the arena and the AGENTS.md rule change. Needs 2 or more prompts with 3 or more agents each.
 - [ ] Phase 3: `scripts/gallery-rank.ts`, the hourly workflow, a leaderboard view in Gallery.

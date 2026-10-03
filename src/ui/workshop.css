@@ -422,19 +422,7 @@ a {
   background: #fff;
   box-shadow: 0 10px 28px #202a3c20;
 }
-.gallery-filters fieldset {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  min-width: 0;
-}
-.gallery-filters fieldset + fieldset {
-  margin-top: 12px;
-}
-.gallery-filters legend {
-  padding: 0;
-}
-.gallery-filters p {
+.gallery-filters > p {
   color: var(--secondary);
   margin: 8px 0;
 }

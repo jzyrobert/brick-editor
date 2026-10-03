@@ -38,31 +38,6 @@ the model tool menu. Share-preview links
 still open Project. `?automation=1` starts in Build for the existing API clients
 and browser tools; Gallery remains reachable from the main switch.
 
-## Published builds
-
-When the [agent gallery](GALLERY-PLAN.md) has been published, Gallery reads its
-`index.json` from `https://gallery.bricks.robertj.in`, the bucket that
-`npm run gallery:publish` writes to. It then shows every published brief, model
-and reasoning level, not the built-in samples. Cards come from the same
-`GalleryEntry` shape (`src/catalog/gallery.ts`) as the samples:
-
-- Titles are the build scripts' own.
-- Renders are WebP files made with fixed settings: Realistic look on white,
-  1,280 × 960, corner, front and back.
-- The agent filter has one group per model.
-- The "another agent" placeholder card shows only while a brief has a single
-  model.
-
-**Opening a published build.** Explore fetches its MPD, then checks the size,
-the SHA-256 and the library release against the index before importing it.
-Opened builds stay in Cache Storage (`brick-editor-gallery-v1`), so they open
-again offline. `?gallery=<id>` opens a published build's page.
-
-**When the index is used.** The index is read only on https pages, so local
-and test servers never reach the bucket unless the URL has `?galleryIndex=1`.
-If the index can't load (offline, or nothing published yet), Gallery keeps the
-built-in samples without an error.
-
 ## Sources, assets and offline behavior
 
 The original source run is
