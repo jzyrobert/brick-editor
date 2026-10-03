@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 // One-shot build runs, the MineBench way: the build-agent prompt goes to a
 // model once, and its reply must be the build script JSON alone. A reply that
-// is not valid JSON, or that does not compile cleanly within the part range,
-// goes back with its errors ("return ONLY a corrected JSON object") up to
-// --attempts times. The prompt lists the curated parts (--parts-list) and the
+// is not valid JSON, or that does not compile cleanly (overlaps, colours a part
+// is not made in…), goes back with its errors ("return ONLY a corrected JSON
+// object") up to --attempts times. The part target is guidance: any count is
+// accepted, and how far the build lands from the target is recorded as a
+// score. The prompt lists the curated parts (--parts-list) and the
 // model may search parts (--search: it replies {"parts_search": …} and gets
 // the results in the same session) but cannot compile or see renders. Accepted builds are rendered afterwards
 // for review. docs/AGENT-BUILDING.md#one-shot-runs
@@ -13,7 +15,7 @@ import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { partRange } from "../src/build-script/budget";
+import { partTarget, targetMiss, targetText } from "../src/build-script/budget";
 import {
   promptPartList,
   searchForAgent,
@@ -24,9 +26,7 @@ import { registerAgentData } from "./build-script-cli";
 import { registerFullLibraryFromDisk } from "./full-library-node";
 import { REPO, slug } from "./new-build-workspace";
 
-type Range = ReturnType<typeof partRange>;
-
-const HELP = `npm run oneshot -- --target-parts N [--leeway 10] (--brief "…" | --brief-file f) --model M
+const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file f) --model M
     [--efforts low,medium,high,xhigh,max] [--attempts 5] [--out dir] [--views iso,front,iso-back]
     [--parts-list on|off] [--search on|off]
   Runs each reasoning effort in parallel through \`codex exec\` with its tools turned off;
@@ -45,14 +45,14 @@ const OUTPUT_LINE =
 
 const SEARCH_SECTION = `## Searching for parts
 
-You cannot compile, render or run commands. Before you answer you may search the parts library (the curated parts and the complete official library): reply with ONLY a JSON object such as \`{"parts_search": [{"query": "stone lantern"}, {"query": "slope", "size": "1x2", "colour": "dark red", "available_in_colour": true}]}\` (up to 5 searches per reply; fields: query, size as WxD studs or WxDxH plates, category, colour, available_in_colour, limit). The results come back with each part's footprint (x × z at turn 0), height and colours, and you can search again: up to 10 search replies, each with up to 5 searches, before you answer. Your answer is the build script JSON alone.`;
+You cannot compile, render or run commands. Before you answer you may search the parts library (the curated parts and the complete official library): reply with ONLY a JSON object such as \`{"parts_search": [{"query": "stone lantern"}, {"query": "slope", "size": "1x2", "colour": "dark red", "available_in_colour": true}]}\` (up to 5 searches per reply; fields: query, size as WxD studs or WxDxH plates, category, colour, available_in_colour, limit). The results come back with each part's footprint (x × z at turn 0), height, how far its body reaches past the footprint when it does, and colours, and you can search again: up to 10 search replies, each with up to 5 searches, before you answer. Your answer is the build script JSON alone.`;
 
-/** The build-agent prompt for one reply: brief, part range and (unless
+/** The build-agent prompt for one reply: brief, part target and (unless
  * turned off) the part list filled in; the search tool described when on.
  * The part list needs colour availability registered. */
 export function oneShotPrompt(
   brief: string,
-  range: Range,
+  target: number,
   { partsList = true, search = false } = {},
 ) {
   let text = below("build-agent.md");
@@ -77,9 +77,7 @@ export function oneShotPrompt(
   const fmt = (n: number) => () => n.toLocaleString("en-US");
   return (
     text
-      .replaceAll("{{TARGET_PARTS}}", fmt(range.target))
-      .replaceAll("{{MIN_PARTS}}", fmt(range.min))
-      .replaceAll("{{MAX_PARTS}}", fmt(range.max))
+      .replaceAll("{{TARGET_PARTS}}", fmt(target))
       .replaceAll("{{BRIEF}}", () => brief.trim()) + "\n"
   );
 }
@@ -98,6 +96,27 @@ Fix it by returning ONLY a corrected JSON object.
 Previous output:
 ${previous}
 `;
+}
+
+/** The reason a compiled reply goes back: its size against the target every
+ * time (a repair should not have to guess whether its fixes moved the
+ * count), then up to 20 errors with the ops that made them. */
+export function errorsReason(
+  parts: number,
+  target: number,
+  errors: { code: string; message: string; ops?: string[] }[],
+) {
+  return (
+    `The script compiled to ${targetText(parts, target)}. Errors to fix:\n` +
+    errors
+      .slice(0, 20)
+      .map(
+        (p) =>
+          `- ${p.code}: ${p.message}${p.ops?.length ? ` [${p.ops.join(", ")}]` : ""}`,
+      )
+      .join("\n") +
+    (errors.length > 20 ? `\n- … ${errors.length - 20} more errors` : "")
+  );
 }
 
 /** The first JSON object in a reply (code fences and prose around it allowed). */
@@ -406,7 +425,7 @@ export function knowledge(
 async function compile(
   dir: string,
   n: number | "final",
-  range: Range,
+  target: number,
   extra: string[] = [],
 ) {
   const name = n === "final" ? "build" : `attempt-${n}`;
@@ -420,9 +439,7 @@ async function compile(
       "--output",
       `${name}.mpd`,
       "--target-parts",
-      String(range.target),
-      "--leeway",
-      String(range.leeway),
+      String(target),
       "--json",
       ...extra,
     ],
@@ -460,7 +477,7 @@ async function runEffort(
   o: {
     prompt: string;
     model: string;
-    range: Range;
+    target: number;
     attempts: number;
     out: string;
     views: string;
@@ -499,7 +516,7 @@ async function runEffort(
         join(dir, `attempt-${n}.json`),
         JSON.stringify(json, null, 1) + "\n",
       );
-      const c = await compile(dir, n, o.range);
+      const c = await compile(dir, n, o.target);
       a.knowledge = knowledge(json, c.report, c.reason);
       if (!c.report) {
         a.outcome = "invalid";
@@ -519,15 +536,7 @@ async function runEffort(
           break;
         }
         a.outcome = "errors";
-        reason =
-          errors
-            .slice(0, 20)
-            .map(
-              (p) =>
-                `- ${p.code}: ${p.message}${p.ops?.length ? ` [${p.ops.join(", ")}]` : ""}`,
-            )
-            .join("\n") +
-          (errors.length > 20 ? `\n- … ${errors.length - 20} more errors` : "");
+        reason = errorsReason(a.parts ?? 0, o.target, errors);
       }
     }
     a.reason = reason;
@@ -536,7 +545,7 @@ async function runEffort(
   const final = attempts.at(-1);
   if (accepted && o.views) {
     await mkdir(join(dir, "views"), { recursive: true });
-    await compile(dir, "final", o.range, [
+    await compile(dir, "final", o.target, [
       "--render",
       "views/build.png",
       "--views",
@@ -548,13 +557,15 @@ async function runEffort(
   const result = {
     effort,
     model: o.model,
-    targetParts: o.range.target,
-    leeway: o.range.leeway,
-    minParts: o.range.min,
-    maxParts: o.range.max,
+    targetParts: o.target,
     accepted,
     attemptsUsed: attempts.length,
     parts: accepted ? final?.parts : undefined,
+    /** How far the accepted build landed from the target: the size score. */
+    targetMiss:
+      accepted && final?.parts !== undefined
+        ? targetMiss(final.parts, o.target)
+        : undefined,
     seconds: attempts.reduce((s, a) => s + a.seconds, 0),
     tokens: {
       input: total("input"),
@@ -571,7 +582,7 @@ async function runEffort(
     JSON.stringify(result, null, 2) + "\n",
   );
   console.log(
-    `${effort}: ${accepted ? `accepted, ${final?.parts} parts` : "not accepted"} after ${attempts.length} attempt(s), ${result.seconds} s`,
+    `${effort}: ${accepted ? `accepted, ${targetText(final?.parts ?? 0, o.target)}` : "not accepted"} after ${attempts.length} attempt(s), ${result.seconds} s`,
   );
   return result;
 }
@@ -587,7 +598,6 @@ async function main(argv: string[]) {
     if (
       ![
         "target-parts",
-        "leeway",
         "brief",
         "brief-file",
         "model",
@@ -605,10 +615,7 @@ async function main(argv: string[]) {
       throw new Error(`Missing value for ${argv[i]}`);
     flags.set(key, argv[++i]);
   }
-  const range = partRange(
-    Number(flags.get("target-parts")),
-    Number(flags.get("leeway") ?? 10),
-  );
+  const target = partTarget(Number(flags.get("target-parts")));
   const file = flags.get("brief-file");
   const brief = flags.get("brief") ?? (file ? readFileSync(file, "utf8") : "");
   const model = flags.get("model");
@@ -623,7 +630,7 @@ async function main(argv: string[]) {
   const out = resolve(
     (
       flags.get("out") ??
-      `~/brick-builds/oneshot-${slug(flags.get("name") ?? brief)}-${range.target}`
+      `~/brick-builds/oneshot-${slug(flags.get("name") ?? brief)}-${target}`
     ).replace(/^~(?=$|\/)/, homedir()),
   );
   await mkdir(out, { recursive: true });
@@ -636,16 +643,22 @@ async function main(argv: string[]) {
     search = onOff("search");
   registerFullLibraryFromDisk();
   registerAgentData();
-  const prompt = oneShotPrompt(brief, range, { partsList, search });
+  const prompt = oneShotPrompt(brief, target, { partsList, search });
   const views = flags.get("views") ?? "iso,front,iso-back";
   const results = await Promise.all(
     efforts.map((e) =>
-      runEffort(e, { prompt, model, range, attempts, out, views, search }),
+      runEffort(e, { prompt, model, target, attempts, out, views, search }),
     ),
   );
+  // "+6.9%": how far a count is from the target.
+  const miss = (parts?: number) => {
+    if (parts === undefined) return "–";
+    const p = targetMiss(parts, target).percent;
+    return `${parts.toLocaleString("en-US")} (${p > 0 ? "+" : p < 0 ? "−" : "±"}${Math.abs(p)}%)`;
+  };
   const rows = results.map(
     (r) =>
-      `| ${r.effort} | ${r.accepted ? "yes" : "no"} | ${r.parts?.toLocaleString("en-US") ?? "–"} | ${r.attemptsUsed} | ${r.seconds} | ${r.tokens.output.toLocaleString("en-US")} (${r.tokens.reasoning.toLocaleString("en-US")} reasoning) | ${r.searches} | ${r.knowledge?.finds.length ?? "–"} | ${r.knowledge ? `${r.knowledge.named.length} (${r.knowledge.notInList.length})` : "–"} | ${r.attempts.reduce((s, a) => s + (a.knowledge?.colourErrors.length ?? 0), 0)} | ${r.attempts.map((a) => a.outcome).join(", ")} |`,
+      `| ${r.effort} | ${r.accepted ? "yes" : "no"} | ${miss(r.parts)} | ${miss(r.attempts[0]?.parts)} | ${r.attemptsUsed} | ${r.seconds} | ${r.tokens.output.toLocaleString("en-US")} (${r.tokens.reasoning.toLocaleString("en-US")} reasoning) | ${r.searches} | ${r.knowledge?.finds.length ?? "–"} | ${r.knowledge ? `${r.knowledge.named.length} (${r.knowledge.notInList.length})` : "–"} | ${r.attempts.reduce((s, a) => s + (a.knowledge?.colourErrors.length ?? 0), 0)} | ${r.attempts.map((a) => a.outcome).join(", ")} |`,
   );
   await writeFile(
     join(out, "summary.json"),
@@ -653,7 +666,7 @@ async function main(argv: string[]) {
       {
         brief: brief.trim(),
         model,
-        range,
+        targetParts: target,
         attempts,
         partsList,
         search,
@@ -665,8 +678,9 @@ async function main(argv: string[]) {
   );
   await writeFile(
     join(out, "summary.md"),
-    `# ${brief.trim()} — ${model}, ${range.min}–${range.max} parts (target ${range.target} ± ${range.leeway}%)\n\n` +
-      "| effort | accepted | parts | attempts | seconds | output tokens | searches | finds | numbers named (not listed) | colour errors | outcomes |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n" +
+    `# ${brief.trim()} — ${model}, target ${target.toLocaleString("en-US")} parts\n\n` +
+      "Parts are the accepted build's count and, after it, the first reply's (the model's own estimate), each with its distance from the target.\n\n" +
+      "| effort | accepted | parts (vs target) | first reply | attempts | seconds | output tokens | searches | finds | numbers named (not listed) | colour errors | outcomes |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n" +
       rows.join("\n") +
       "\n",
   );

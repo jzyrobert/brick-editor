@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Sets up a clean directory for a build agent: the build-agent prompt with the
 // brief and part target filled in (AGENTS.md, and CLAUDE.md pointing at it), a
-// ./brick-cli wrapper that holds every build to the target's range, and views/.
+// ./brick-cli wrapper that reports every build against the target, and views/.
 // docs/AGENT-BUILDING.md#agent-workspaces
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -9,24 +9,22 @@ import { chmod, mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { partRange } from "../src/build-script/budget";
+import { partTarget } from "../src/build-script/budget";
 import { promptPartList } from "../src/build-script/part-list";
 import { registerAgentData } from "./build-script-cli";
-
-type Range = ReturnType<typeof partRange>;
 
 export const REPO = fileURLToPath(new URL("../", import.meta.url)).replace(
   /[\\/]$/,
   "",
 );
 
-const HELP = `npm run workspace -- --target-parts N[,N…] [--leeway 10] (--brief "…" | --brief-file brief.txt|-)
+const HELP = `npm run workspace -- --target-parts N[,N…] (--brief "…" | --brief-file brief.txt|-)
     [--name lighthouse] [--root ~/brick-builds] [--dir path]
-  --target-parts  part target; several (1000,4000,12000) make one workspace each
-  --leeway        percent either side of the target that is accepted (default 10)
+  --target-parts  part target (guidance: a build is judged on how close it lands);
+                  several (1000,4000,12000) make one workspace each
   --brief         what to build (--brief-file reads it from a file, - for stdin)
   --name          folder name (default: from the brief); workspaces are
-                  <root>/<name>-<target> (plus -leeway<P> when it is not 10)
+                  <root>/<name>-<target>
   --root          where workspaces go (default ~/brick-builds; must be outside this repo)
   --dir           exact folder, for a single target`;
 
@@ -41,8 +39,8 @@ function below(file: string) {
 const OUTPUT_LINE =
   "Return ONLY one JSON object (no markdown, no commentary). If the interface supports files, return it as `build.json`.";
 
-/** The build-agent prompt for a workspace, with brief and part range filled in. */
-export function workspacePrompt(brief: string, range: Range) {
+/** The build-agent prompt for a workspace, with brief and part target filled in. */
+export function workspacePrompt(brief: string, target: number) {
   const agent = below("build-agent.md");
   const workspace = below("build-workspace.md");
   const firstSection = agent.indexOf("\n## ");
@@ -68,28 +66,27 @@ export function workspacePrompt(brief: string, range: Range) {
   return (
     text
       .replace("{{PARTS}}", () => promptPartList())
-      .replaceAll("{{TARGET_PARTS}}", fmt(range.target))
-      .replaceAll("{{MIN_PARTS}}", fmt(range.min))
-      .replaceAll("{{MAX_PARTS}}", fmt(range.max))
+      .replaceAll("{{TARGET_PARTS}}", fmt(target))
       .replaceAll("{{BRIEF}}", () => brief.trim()) + "\n"
   );
 }
 
 const shellQuote = (s: string) => `'${s.replaceAll("'", `'\\''`)}'`;
 
-/** ./brick-cli: the repository's CLI, with `build` held to the part range. */
+/** ./brick-cli: the repository's CLI, with `build` reporting against the
+ * part target. */
 export function wrapperScript(
-  range: Range,
+  target: number,
   repo = REPO,
   node = process.execPath,
 ) {
   return `#!/usr/bin/env bash
-# Brick Editor CLI for this workspace. Every build is held to ${range.min}–${range.max}
-# parts (target ${range.target} ± ${range.leeway}%; a second --target-parts or --leeway is refused).
+# Brick Editor CLI for this workspace. Every build reports its part count against
+# the target of ${target} parts (a second --target-parts is refused).
 set -euo pipefail
 REPO=${shellQuote(repo)}
 NODE=${shellQuote(node)}
-if [[ \${1-} == build ]]; then set -- "$@" --target-parts ${range.target} --leeway ${range.leeway}; fi
+if [[ \${1-} == build ]]; then set -- "$@" --target-parts ${target}; fi
 exec "$NODE" "$REPO/node_modules/tsx/dist/cli.mjs" "$REPO/scripts/brick-cli.ts" "$@"
 `;
 }
@@ -121,7 +118,7 @@ function commit() {
 export async function createWorkspace(
   dir: string,
   brief: string,
-  range: Range,
+  target: number,
   name: string,
 ) {
   dir = resolve(dir);
@@ -132,19 +129,16 @@ export async function createWorkspace(
   if (existsSync(dir) && readdirSync(dir).length)
     throw new Error(`${dir} is not empty: choose another --name or --dir`);
   await mkdir(join(dir, "views"), { recursive: true });
-  await writeFile(join(dir, "AGENTS.md"), workspacePrompt(brief, range));
+  await writeFile(join(dir, "AGENTS.md"), workspacePrompt(brief, target));
   await writeFile(join(dir, "CLAUDE.md"), "@AGENTS.md\n");
-  await writeFile(join(dir, "brick-cli"), wrapperScript(range));
+  await writeFile(join(dir, "brick-cli"), wrapperScript(target));
   await chmod(join(dir, "brick-cli"), 0o755);
   await writeFile(
     join(dir, "workspace.json"),
     JSON.stringify(
       {
         name,
-        targetParts: range.target,
-        leeway: range.leeway,
-        minParts: range.min,
-        maxParts: range.max,
+        targetParts: target,
         brief: brief.trim(),
         created: new Date().toISOString(),
         repo: REPO,
@@ -166,15 +160,9 @@ async function main(argv: string[]) {
       return key === "help" ? 0 : 1;
     }
     if (
-      ![
-        "target-parts",
-        "leeway",
-        "brief",
-        "brief-file",
-        "name",
-        "root",
-        "dir",
-      ].includes(key)
+      !["target-parts", "brief", "brief-file", "name", "root", "dir"].includes(
+        key,
+      )
     )
       throw new Error(`Unknown flag ${argv[i]}\n${HELP}`);
     if (argv[i + 1] === undefined)
@@ -187,9 +175,6 @@ async function main(argv: string[]) {
     .map(Number);
   if (!targets.length || targets.some((n) => !Number.isInteger(n) || n <= 0))
     throw new Error(`--target-parts needs positive whole numbers\n${HELP}`);
-  const leeway = Number(flags.get("leeway") ?? 10);
-  if (!Number.isFinite(leeway) || leeway < 0 || leeway > 100)
-    throw new Error(`--leeway must be 0–100 (percent)\n${HELP}`);
   const file = flags.get("brief-file");
   const brief =
     flags.get("brief") ??
@@ -201,25 +186,19 @@ async function main(argv: string[]) {
   const root = resolve(
     (flags.get("root") ?? "~/brick-builds").replace(/^~(?=$|\/)/, homedir()),
   );
-  const ranges = targets.map((n) => partRange(n, leeway));
   const dirs: string[] = [];
-  for (const range of ranges)
+  for (const target of targets.map(partTarget))
     dirs.push(
       await createWorkspace(
         flags.get("dir")?.replace(/^~(?=$|\/)/, homedir()) ??
-          join(
-            root,
-            `${name}-${range.target}${leeway === 10 ? "" : `-leeway${leeway}`}`,
-          ),
+          join(root, `${name}-${target}`),
         brief,
-        range,
+        target,
         name,
       ),
     );
   for (const [i, d] of dirs.entries())
-    console.log(
-      `${d}  (${ranges[i].min}–${ranges[i].max} parts, target ${ranges[i].target})`,
-    );
+    console.log(`${d}  (target ${targets[i]} parts)`);
   console.log(
     `\nStart an agent in a workspace, e.g.\n  cd ${shellQuote(dirs[0])} && claude`,
   );

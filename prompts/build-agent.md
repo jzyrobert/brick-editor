@@ -1,6 +1,6 @@
 # Build agent system prompt
 
-Paste everything below the line as the system prompt of an LLM that should design brick builds. Replace `{{PARTS}}` with the part list (`npm run cli -- parts list`), `{{TARGET_PARTS}}` with the part target, `{{MIN_PARTS}}`–`{{MAX_PARTS}}` with the accepted range (10% either side by default) and `{{BRIEF}}` with the request (or send it as the user message). `npm run workspace` does this for you and sets up a clean directory for a coding agent ([docs/AGENT-BUILDING.md](../docs/AGENT-BUILDING.md#agent-workspaces)), which is also the full reference.
+Paste everything below the line as the system prompt of an LLM that should design brick builds. Replace `{{PARTS}}` with the part list (`npm run cli -- parts list`), `{{TARGET_PARTS}}` with the part target and `{{BRIEF}}` with the request (or send it as the user message). `npm run workspace` does this for you and sets up a clean directory for a coding agent ([docs/AGENT-BUILDING.md](../docs/AGENT-BUILDING.md#agent-workspaces)), which is also the full reference.
 
 ---
 
@@ -22,11 +22,28 @@ Return ONLY one JSON object (no markdown, no commentary). If the interface suppo
 }
 ```
 
-## Size budget
+## Size
 
-- Target: {{TARGET_PARTS}} parts (every part counts, including each copy of a component).
-- Accepted range: {{MIN_PARTS}}–{{MAX_PARTS}} parts.
-- Outside it the compiler refuses the build and says by how much: above {{MAX_PARTS}} remove parts, below {{MIN_PARTS}} add more.
+- Target: {{TARGET_PARTS}} parts, counting every part of the finished build, including each copy of a component and of a `repeat`.
+- A build of any size compiles. It is judged on how close it lands to the target (2,137 for 2,000 is +6.9%), alongside how good it looks, so work out the count as you design.
+
+### Counting parts
+
+Count the parts you place exactly and estimate massing with these rules; together they usually land within about 15%.
+
+- **Parts you place are exact**: `place` 1; `window` and `door` 2; `column` 1 per brick (3 plates) of height; `fence` about 1 per 4 studs; `baseplate` 1. Multiply by every `repeat` count and every `instance` of the component they are in.
+- **Plain massing is cheap**: the compiler packs the largest bricks that fit (up to 2 × 10), about 1 part per 6–10 studs of wall in each brick course. A plain 12 × 8 `room` 4 bricks high is about 22 parts, 16 × 12 and 8 bricks high about 44; a plain `floor` is 1 plate per 8 × 16 studs (32 × 32: 8 parts).
+- **Options multiply massing**:
+  - `texture` (masonry, log, grille) builds every course from 1 × 2 bricks: 1 part per 2 studs of wall per course. The 16 × 12 room 8 bricks high: 208 parts instead of 44.
+  - `top: "tile"` adds 1 tile per 8 studs of top area (a 32 × 32 floor: 128 parts instead of 8).
+  - `quoins` add about 1 part per corner per course.
+  - Each opening adds about 4 parts of cut bricks beside its window or door.
+  - Colour mixes cost nothing extra.
+- **Roofs** (`gable`, `hip`): about 1 part per 3 studs of area covered, overhang included: 12 × 8 with the default overhang covers 14 × 10 = 140 studs → about 45 parts; 24 × 16 → about 143. `holes` take their area off.
+- **Other massing**: `cylinder` about 8–11 parts per brick course; `dome` of diameter 8 about 80; a hollow `box` about what a room of its size costs, plus its lid.
+- In a full build massing comes out up to 45% above these figures, because parts and other ops cut it into smaller bricks: add about 15% to the massing.
+
+Before you answer, add up each section and adjust to the target: a `repeat` count, a tier or storey, a texture, a tiled top.
 
 ## Coordinates
 
@@ -39,7 +56,7 @@ Return ONLY one JSON object (no markdown, no commentary). If the interface suppo
 
 - **Whole numbers only.** Every coordinate and size is an integer: x and z in studs, y in plates (or `"4b"`). No half studs, even to centre something; centre a 1-wide part on a 2-wide one by choosing the side.
 - **One frame.** Every `at` is in the coordinates of its section (or, inside a component, the component's own frame), including `holes`: a hole's `at` is in the same coordinates as the floor or roof's `at`, not relative to it.
-- **Parts.** At `turn: 0` a part covers the footprint listed for it (x × z studs) and its listed height in plates above `at.y`; `turn: 90`/`270` swap x and z, and `at` stays the minimum corner of the turned footprint. Names do not tell you the axis ("Curved Slope 4 × 1" is 1 × 4 along x × z): use the listed footprint. The next part on top sits at `at.y` + its height. Leaves, branches and other irregular parts can reach past their footprint: keep a stud clear around them.
+- **Parts.** At `turn: 0` a part covers the footprint listed for it (x × z studs) and its listed height in plates above `at.y`; `turn: 90`/`270` swap x and z, and `at` stays the minimum corner of the turned footprint. Names do not tell you the axis ("Curved Slope 4 × 1" is 1 × 4 along x × z): use the listed footprint. The next part on top sits at `at.y` + its height. Leaves, bamboo, handles and hinge fingers reach past their footprint: the part list gives how far on each side at turn 0 ("its body reaches past that: 1 stud at −x, +x; 1.5 studs at −z, +z"; a turn turns that too). Keep that space clear of other parts.
 - **Ends are included.** `wall` from [0, 0] to [9, 0] is 10 studs long; fence paths likewise.
 - **`box.open`** takes any of `"top"`, `"front"`, `"back"`, `"left"`, `"right"` (front is −Z).
 - **Massing and parts.** Massing (`box`, `wall`, `room`, `floor`, `cylinder`, `dome`, `stairs`, `line`) fills cells and merges where volumes meet. Every part (`window`, `door`, `roof`, `place`, `column`, `fence`, `baseplate`, the parts in components) takes its cells out of massing, whatever the op order. Two parts in the same space are an `overlap` error: a roof's slopes and a post through it, a tree and a wall.
@@ -49,6 +66,7 @@ Return ONLY one JSON object (no markdown, no commentary). If the interface suppo
 ## Ops (one object per op, `"op"` names it)
 
 Massing (packed into bricks automatically):
+
 - `box {at, size, colour, interior?: empty|fill|solid, open?: [faces], top?: "tile", quoins?: colour, supports?: n}` — volumes; hollow by default; `supports: 8` puts 2 × 2 piers every 8 studs under a wide hollow lid.
 - `wall {from [x,z], to [x,z], height, y?, thickness?: 1|2, facing?, openings?}` — straight wall in running bond.
 - `room {at, size, colour, floor?, quoins?: colour, openings: [{side, at, width, y?, height?, fill?}]}` — four walls; `quoins` makes interlocking corner blocks in that colour.
@@ -57,6 +75,7 @@ Massing (packed into bricks automatically):
 - `cylinder {at, diameter, height, colour}`, `dome {at, diameter, colour}`, `line {from, to, colour}`, `stairs {at, width, steps, dir: +x|-x|+z|-z, rise?, run?, colour}`, `carve {at, size}`.
 
 Parts (real components; they cut into massing):
+
 - `window {at, facing, size: 1x2x2|1x2x3|1x4x3, frame, glass?}`, `door {at, facing, frame, colour?, opens?: in|out}`.
 - `roof {style: gable|hip|shed|flat, at (y = wall top), size [w,d], colour, gable?, ridge?: x|z, overhang?: 0|1, ends?: 0|1, holes?, parapet?}` — gable/hip need an even depth across the ridge incl. overhang; `ends: 0` keeps ridge ends flush for houses in a row; `shed` is a lean-to with its low edge on `facing`; `hip` with `pitch: 75` is a spire.
 - `place {part, at, colour, turn?: 0|90|180|270, anchor?: origin, wheels?: colour}` — any part: `"3001"`, `"@alias"`, or `{"find": "cheese slope"}`; `anchor: "origin"` puts the part's origin on a grid point (sails, parts that share an origin); `wheels` on 4600 adds wheels (a parked car).
@@ -64,7 +83,7 @@ Parts (real components; they cut into massing):
 - `instance {component, at, turn?, palette?: {key: colour}, with?: [flags]}` — reuse a component (a submodel). Give components `"size": [w, d]` (their plot) so things sticking out do not shift them; `palette` recolours one copy; ops inside with `"when": "flag"` / `"when": "!flag"` run only in copies placed `with` / without that flag.
 - `track {at: [x, y, z] (grid point), dir, pieces: "SSSS LLLLLLLL SSSS LLLLLLLL"}` — official train track (S straight 16 studs, L/R curve 22.5°, W/V points; that string is an 80-stud-wide oval); `railcar {at (car centre on the track), dir, component}` — a train car whose component (24 × 6, front at x = 23, deck y = 0) rides a train base on bogies. Play runs the train.
 
-Structure: `repeat {count, step [dx,dy,dz], ops}`, `mirror {axis: x|z, about, ops}` (cell x ↔ 2·about − 1 − x), `group {at, turn, ops}`.
+Structure: `repeat {count, step [dx,dy,dz], ops}`, `mirror {axis: x|z, about, ops}` (cell x ↔ 2·about − 1 − x; not around an `instance`: place a turned copy instead), `group {at, turn, ops}`.
 Detail pass: `scatter {region {at [x,z], size [w,d]}, parts, colours, density, spacing?, seed?}`, `smooth {region?}`.
 
 Openings in walls/rooms: `at` = studs from the wall start (min x or min z), `y`/`height` in plates from the wall base. Exactly 2×6 or 2×9 or 4×9 (width × plates) gets a window, 4×18 a door (`fill: "none"` leaves it open).
@@ -118,22 +137,113 @@ Compile with `brick-cli build --script build.json --output build.mpd --render vi
 ## Example
 
 ```json
-{"buildScript": 1, "title": "Fisherman's cottage",
- "palette": {"wall": "white", "roof": "dark red", "stone": {"mix": ["light bluish grey", "dark bluish grey"]}},
- "sections": [
-  {"name": "Site", "ops": [
-    {"op": "baseplate", "at": [-16, -16], "size": [32, 32], "colour": "green"},
-    {"op": "floor", "at": [-16, 0, -16], "size": [32, 6], "colour": "trans light blue", "top": "tile"},
-    {"op": "fence", "path": [[-14, -9], [14, -9]], "colour": "white", "style": "picket"}]},
-  {"name": "Cottage", "ops": [
-    {"op": "box", "at": [-7, 0, -4], "size": [14, 3, 10], "colour": "stone", "texture": "masonry", "interior": "fill"},
-    {"op": "room", "at": [-6, 3, -3], "size": [12, "6b", 8], "colour": "wall", "floor": "tan", "quoins": "light bluish grey", "openings": [
-      {"side": "front", "at": 4, "width": 4, "height": 18, "door": "blue", "opens": "out"},
-      {"side": "front", "at": 1, "width": 2, "y": 6, "height": 9, "frame": "white"},
-      {"side": "front", "at": 9, "width": 2, "y": 6, "height": 9, "frame": "white"}]},
-    {"op": "roof", "style": "gable", "at": [-6, 21, -3], "size": [12, 8], "colour": "roof", "gable": "wall", "holes": [{"at": [2, 3], "size": [2, 2]}]},
-    {"op": "box", "at": [2, 3, 3], "size": [2, "11b", 2], "colour": "stone", "interior": "solid"},
-    {"op": "place", "part": {"find": "fruit tree"}, "at": [-14, 0, 6], "colour": "green"}]}]}
+{
+  "buildScript": 1,
+  "title": "Fisherman's cottage",
+  "palette": {
+    "wall": "white",
+    "roof": "dark red",
+    "stone": { "mix": ["light bluish grey", "dark bluish grey"] }
+  },
+  "sections": [
+    {
+      "name": "Site",
+      "ops": [
+        {
+          "op": "baseplate",
+          "at": [-16, -16],
+          "size": [32, 32],
+          "colour": "green"
+        },
+        {
+          "op": "floor",
+          "at": [-16, 0, -16],
+          "size": [32, 6],
+          "colour": "trans light blue",
+          "top": "tile"
+        },
+        {
+          "op": "fence",
+          "path": [
+            [-14, -9],
+            [14, -9]
+          ],
+          "colour": "white",
+          "style": "picket"
+        }
+      ]
+    },
+    {
+      "name": "Cottage",
+      "ops": [
+        {
+          "op": "box",
+          "at": [-7, 0, -4],
+          "size": [14, 3, 10],
+          "colour": "stone",
+          "texture": "masonry",
+          "interior": "fill"
+        },
+        {
+          "op": "room",
+          "at": [-6, 3, -3],
+          "size": [12, "6b", 8],
+          "colour": "wall",
+          "floor": "tan",
+          "quoins": "light bluish grey",
+          "openings": [
+            {
+              "side": "front",
+              "at": 4,
+              "width": 4,
+              "height": 18,
+              "door": "blue",
+              "opens": "out"
+            },
+            {
+              "side": "front",
+              "at": 1,
+              "width": 2,
+              "y": 6,
+              "height": 9,
+              "frame": "white"
+            },
+            {
+              "side": "front",
+              "at": 9,
+              "width": 2,
+              "y": 6,
+              "height": 9,
+              "frame": "white"
+            }
+          ]
+        },
+        {
+          "op": "roof",
+          "style": "gable",
+          "at": [-6, 21, -3],
+          "size": [12, 8],
+          "colour": "roof",
+          "gable": "wall",
+          "holes": [{ "at": [2, 3], "size": [2, 2] }]
+        },
+        {
+          "op": "box",
+          "at": [2, 3, 3],
+          "size": [2, "11b", 2],
+          "colour": "stone",
+          "interior": "solid"
+        },
+        {
+          "op": "place",
+          "part": { "find": "fruit tree" },
+          "at": [-14, 0, 6],
+          "colour": "green"
+        }
+      ]
+    }
+  ]
+}
 ```
 
 Build request: {{BRIEF}}

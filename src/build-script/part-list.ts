@@ -3,6 +3,7 @@
 // colour line the parts search tool shows. Needs colour availability loaded.
 import { catalog, catalogCategoryOrder } from "../catalog/catalog";
 import { footprint, localBounds, underside } from "../catalog/builds/kit";
+import { localOccupancy } from "../edit/snap";
 import { partSpec } from "../catalog/extended";
 import { partAvailability } from "../catalog/color-availability";
 import { COMMON_COLOURS, colourName } from "./palette";
@@ -25,10 +26,45 @@ export function placement(ref: string) {
   return { x: studs(f.width), z: studs(f.depth), plates: partPlates(ref) };
 }
 
-/** "1×4 studs (x×z), 3 plates", as the part list and search show it. */
+/**
+ * How far a part's body (what the overlap check tests) reaches past its
+ * footprint at turn 0, in studs on each side, rounded up to half studs; only
+ * the sides that reach a quarter stud or more. Leaves, bamboo, handles and
+ * hinge fingers do; bricks do not.
+ */
+export function overreach(ref: string) {
+  const boxes = localOccupancy(ref);
+  if (!boxes?.length) return {};
+  const f = footprint(ref, 0);
+  const lo = (i: number) => Math.min(...boxes.map((b) => b.min[i]));
+  const hi = (i: number) => Math.max(...boxes.map((b) => b.max[i]));
+  const out: Partial<Record<"-x" | "+x" | "-z" | "+z", number>> = {};
+  const side = (key: keyof typeof out, ldu: number) => {
+    if (ldu / 20 >= 0.25) out[key] = Math.ceil((ldu / 20) * 2) / 2;
+  };
+  side("-x", f.minX - lo(0));
+  side("+x", hi(0) - (f.minX + f.width));
+  side("-z", f.minZ - lo(2));
+  side("+z", hi(2) - (f.minZ + f.depth));
+  return out;
+}
+
+/** "1×4 studs (x×z), 3 plates", as the part list and search show it, plus
+ * how far the body reaches past that footprint when it does ("its body
+ * reaches 1 stud past it at −x and +x, 1.5 at −z and +z"). */
 export function placementText(ref: string) {
   const p = placement(ref);
-  return `${p.x}×${p.z} studs (x×z), ${p.plates} plate${p.plates === 1 ? "" : "s"}`;
+  const base = `${p.x}×${p.z} studs (x×z), ${p.plates} plate${p.plates === 1 ? "" : "s"}`;
+  const reach = Object.entries(overreach(ref));
+  if (!reach.length) return base;
+  // Group the sides by distance: "1 at −x, +x; 1.5 at −z, +z".
+  const byDistance = new Map<number, string[]>();
+  for (const [s, d] of reach)
+    byDistance.set(d, [...(byDistance.get(d) ?? []), s.replace("-", "−")]);
+  const parts = [...byDistance].map(
+    ([d, sides]) => `${d} stud${d === 1 ? "" : "s"} at ${sides.join(", ")}`,
+  );
+  return `${base}; its body reaches past that: ${parts.join("; ")}`;
 }
 
 /** Which common colours a part is made in, in as few words as possible. */

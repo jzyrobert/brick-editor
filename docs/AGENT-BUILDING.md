@@ -228,12 +228,9 @@ Lessons from building the Market town, Cathedral and Harbour samples:
 
 Builds are bounded by the resource profile (docs/RESOURCE-LIMITS.md): desktop 200,000 parts, mobile 150,000 (`--resource-profile mobile`).
 
-A **part target** sets the size: `--target-parts N` with `--leeway P` (CLI), or `targetParts`/`leeway` (`buildScript.compile/apply`). The build must land within `leeway` percent of the target either way (default 10: a 4,000-part target accepts 3,600–4,400). Every part counts, including each copy of a component. A build outside the range still compiles, so the report can say by how much; its first problem is an error:
+A **part target** is guidance for the size: `--target-parts N` (CLI) or `targetParts` (`buildScript.compile/apply`). There is no accepted range: a build of any size compiles and is written, and it is judged on how close it lands. Every part counts, including each copy of a component and of a repeat. With a target, the report's `target` is `{target, parts, difference, percent}` and the CLI summary adds a line such as `size: 2,137 parts (target 2,000: +137, +6.9%); sections: Hall 1,070, …; costliest ops: sections[2].ops[6] 189, …`. `costliestOps` (in every report) charges each part to the top-level op that placed it (a component instance, a repeat), so it says what to cut or add to. The prompt's [Counting parts](../prompts/build-agent.md) rules let an agent estimate a script's count without compiling; compiled op by op, 19 temple scripts and the 7 repository samples came to between 3% over and 14% under their real counts (the real count is higher mostly because parts cut massing into smaller bricks), so the rules add about 15% to massing.
 
-- `over-budget`, e.g. `4,098 parts: 798 over the maximum of 3,300 (target 3,000 ± 10%: 2,700–3,300) (largest sections: Houses 1,950, Terraces 1,394, …; costliest ops: sections[2].ops[0].ops[1] 225, …)`, whose `ops` are the top-level ops (a component instance, a repeated part) that made the most parts;
-- `under-budget`, e.g. `2,950 parts: 650 under the minimum of 3,600 (target 4,000 ± 10%: 3,600–4,400): add more`.
-
-The CLI then writes only the report (no model, no views, and an older `--output` file is removed) and exits 2; `apply` does not apply it. A script's own `limits.maxParts` is a hard cap on top (`over-budget` above it too). Massing is limited to 4 million cells and 200,000 ops after repeats. Coordinates stay within ±4096 studs. Everything is deterministic: the same script always compiles to the same file.
+A script's own `limits.maxParts` is the one hard cap: above it the first problem is an `over-budget` error, e.g. `4,098 parts: 98 over the script's limit of 4,000 (largest sections: Houses 1,950, Terraces 1,394, …; costliest ops: sections[2].ops[0].ops[1] 225, …)`. The CLI then writes only the report (no model, no views, and an older `--output` file is removed) and exits 2; `apply` does not apply it. Massing is limited to 4 million cells and 200,000 ops after repeats. Coordinates stay within ±4096 studs. Everything is deterministic: the same script always compiles to the same file.
 
 ## Worked examples
 
@@ -273,36 +270,36 @@ To give a coding agent (Claude Code, Codex, or any agent that reads `AGENTS.md`)
 
 ```sh
 npm run workspace -- --target-parts 4000 --brief "A red-and-white lighthouse on a rocky island with a keeper's cottage"
-# one workspace per target, to compare an agent at several sizes; a 5% band; the brief from a file
-npm run workspace -- --target-parts 1000,4000,12000 --leeway 5 --brief-file lighthouse.txt --name lighthouse
+# one workspace per target, to compare an agent at several sizes; the brief from a file
+npm run workspace -- --target-parts 1000,4000,12000 --brief-file lighthouse.txt --name lighthouse
 cd ~/brick-builds/lighthouse-4000 && claude
 ```
 
-Each workspace (`<root>/<name>-<target>`, plus `-leeway<P>` when the leeway is not 10; root `~/brick-builds` unless `--root`; `--dir` for an exact folder) must be new or empty and outside this repository, so the agent never reads the repository's own coding instructions. It holds:
+Each workspace (`<root>/<name>-<target>`; root `~/brick-builds` unless `--root`; `--dir` for an exact folder) must be new or empty and outside this repository, so the agent never reads the repository's own coding instructions. It holds:
 
-- `AGENTS.md`: [prompts/build-agent.md](../prompts/build-agent.md) with `{{BRIEF}}`, `{{TARGET_PARTS}}` and the range `{{MIN_PARTS}}`–`{{MAX_PARTS}}` filled in, plus the Workspace section from [prompts/build-workspace.md](../prompts/build-workspace.md) (write `build.json`, use `./brick-cli`, look at the views). `CLAUDE.md` imports it.
-- `brick-cli`: runs this checkout's CLI with the Node that made the workspace, adding `--target-parts` and `--leeway` to every `build` (a second one of either is refused as a duplicate flag).
-- `views/` for renders, and `workspace.json` (name, target, leeway, range, brief, time, repository and commit) to tell runs apart.
+- `AGENTS.md`: [prompts/build-agent.md](../prompts/build-agent.md) with `{{BRIEF}}` and `{{TARGET_PARTS}}` filled in, plus the Workspace section from [prompts/build-workspace.md](../prompts/build-workspace.md) (write `build.json`, use `./brick-cli`, look at the views). `CLAUDE.md` imports it.
+- `brick-cli`: runs this checkout's CLI with the Node that made the workspace, adding `--target-parts` to every `build` (a second one is refused as a duplicate flag), so every summary reports the size against the target.
+- `views/` for renders, and `workspace.json` (name, target, brief, time, repository and commit) to tell runs apart.
 
-The prompt states the target and the accepted range, and that builds outside it are refused. The wrapper runs whatever this checkout holds when the agent compiles, so keep the checkout on one commit while agents run.
+The prompt states the target as guidance that the build is judged on. The wrapper runs whatever this checkout holds when the agent compiles, so keep the checkout on one commit while agents run.
 
 ## One-shot runs
 
 To test how far a model gets by reasoning alone, the MineBench way, `npm run oneshot` sends the prompt once and takes the build script from the reply:
 
 ```sh
-npm run oneshot -- --target-parts 2000 --leeway 5 --brief "a japanese buddhist temple" \
+npm run oneshot -- --target-parts 2000 --brief "a japanese buddhist temple" \
   --model gpt-6.1-sol --efforts low,medium,high,xhigh,max --attempts 5 [--parts-list on|off] [--search on|off]
 ```
 
-- The prompt is [prompts/build-agent.md](../prompts/build-agent.md) without its tools section, with the brief, part range and (`--parts-list on`, the default) the 224 curated parts and their common colours filled in; the final reply must be the JSON alone.
+- The prompt is [prompts/build-agent.md](../prompts/build-agent.md) without its tools section, with the brief, part target and (`--parts-list on`, the default) the 224 curated parts and their common colours filled in; the final reply must be the JSON alone. Parts whose body reaches past their footprint (plants, handles, hinge fingers; 19 of the curated parts) say how far on each side, in the list and in search results.
 - **Searching** (`--search on`, the default): before answering, the model may reply with only `{"parts_search": [{"query": …, "size": …, "colour": …}, …]}` (up to 5 searches a reply, 10 rounds an attempt). The runner answers with the results (number, name, size, curated or library, common colours, existence in the colour asked about) in the same Codex session (`codex exec resume`) and waits again; nobody intervenes until the build arrives. This is a reply protocol rather than a Codex tool because Codex only offers custom (MCP) tools through its code mode, which also hands the model a JavaScript runner.
 - Each effort runs in parallel through `codex exec` with every tool turned off (shell, browser, sub-agents, web search…), a read-only sandbox and an empty working folder, ignoring the user's Codex config. Ops, components and `{"find": …}` part phrases still do the heavy lifting: the compiler expands them; the model just cannot compile, search or look before it answers.
-- The runner takes the first JSON object from the reply and compiles it with the target and leeway. A reply with no JSON, an invalid script or any error (overlaps, `over-budget`, `under-budget`) goes back as MineBench's repair prompt, the original prompt followed by `Your previous output was invalid. Reason: <errors> … Fix it by returning ONLY a corrected JSON object. Previous output: <reply>`, up to `--attempts` times. Warnings are not sent back.
+- The runner takes the first JSON object from the reply and compiles it with the target. The part count never fails a reply: it is the size score, recorded per attempt and as `targetMiss` in `result.json`, and `summary.md` shows each effort's accepted count and its first reply's count against the target. A reply with no JSON, an invalid script or any error (overlaps, colours a part is not made in) goes back as MineBench's repair prompt, the original prompt followed by `Your previous output was invalid. Reason: The script compiled to 2,137 parts (target 2,000: +137, +6.9%). Errors to fix: <errors> … Fix it by returning ONLY a corrected JSON object. Previous output: <reply>`, up to `--attempts` times. Warnings are not sent back. An overlap says where the script placed each part (`placed at`, the footprint corner its `at` gives), which repeat copies collide (`repeat copy 2/3`, nested `1/3 > 2/2`) and, for a part whose body reaches past its footprint, how far it reaches.
 - Accepted builds are rendered afterwards (`--views`, default `iso,front,iso-back`) for review only.
 - Output (`~/brick-builds/oneshot-<name>-<target>` unless `--out`): per effort, the prompt, every reply, its JSON, report, searches and Codex event logs, `build.json`, `views/` and `result.json`; `summary.md` and `summary.json` for the whole run. Each attempt records its outcome, the errors sent back, parts, seconds, tokens, every search with the parts it returned, and its **part knowledge**: the part numbers named (and which are not in the prompt's list), every `{"find": …}` with what it resolved to, old numbers replaced, colour errors and any unknown number. Tool events (there should be none) are listed too.
 
-Samples: [a Japanese Buddhist temple at five reasoning efforts](samples/japanese-temple-one-shot/README.md) (no part list or search), [the same with the part list and search](samples/japanese-temple-one-shot-search/README.md) (with the models' feedback), and [again with geometry rules, footprints and located errors](samples/japanese-temple-one-shot-geometry/README.md), comparing all three.
+Samples: [a Japanese Buddhist temple at five reasoning efforts](samples/japanese-temple-one-shot/README.md) (no part list or search), [the same with the part list and search](samples/japanese-temple-one-shot-search/README.md) (with the models' feedback), [again with geometry rules, footprints and located errors](samples/japanese-temple-one-shot-geometry/README.md) (with the models' answers about efficiency), and [with the target as a score, counting rules and part reach](samples/japanese-temple-one-shot-target/README.md), comparing all four.
 
 This measures something different from an [agent workspace](#agent-workspaces), where the agent compiles and looks at renders as often as it likes; keep the two kinds of result apart.
 

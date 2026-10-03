@@ -1,0 +1,113 @@
+{
+  "effort": "low",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 2088,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2088,
+    "difference": 88,
+    "percent": 4.4
+  },
+  "seconds": 329,
+  "tokens": {
+    "input": 60175,
+    "cached": 2816,
+    "output": 10697,
+    "reasoning": 1214
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "2435",
+      "3003",
+      "30176",
+      "3031",
+      "3062b",
+      "3070b",
+      "3660b",
+      "3941",
+      "3942c",
+      "4032b",
+      "4589",
+      "6141"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 186,
+      "usage": {
+        "input": 27890,
+        "cached": 0,
+        "output": 6078,
+        "reasoning": 1034
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2435",
+          "3003",
+          "30176",
+          "3031",
+          "3062b",
+          "3660b",
+          "3942c",
+          "4032b",
+          "4589",
+          "6141"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1950,
+      "reason": "The script compiled to 1,950 parts (target 2,000: −50, −2.5%). Errors to fix:\n- overlap: 3633 Fence 1 × 4 × 1 Lattice placed at [27, 8, 23] and 3941 Round Brick 2 × 2 placed at [27, 8, 23] (repeat copy 1/6 > 1/6) overlap where their bodies meet: x 27–29, y 8–11, z 23–24 (2 pairs like this; repeat copies 1/6 > 1/6, 2/6 > 1/6) [sections[1].ops[11], sections[1].ops[5].ops[0] > components.verandaPost.ops[0]]\n- overlap: 3633 Fence 1 × 4 × 1 Lattice placed at [48, 8, 23] and 3941 Round Brick 2 × 2 placed at [51, 8, 23] (repeat copy 5/6 > 1/6) overlap where their bodies meet: x 51–52, y 8–11, z 23–24 (2 pairs like this) [sections[1].ops[12], sections[1].ops[5].ops[0] > components.verandaPost.ops[0]]\n- overlap: 4865b Panel 1 × 2 × 1 placed at [56, 8, 23] and 3941 Round Brick 2 × 2 placed at [57, 8, 23] (repeat copy 6/6 > 1/6) overlap where their bodies meet: x 57–58, y 8–11, z 23–24 [sections[1].ops[12], sections[1].ops[5].ops[0] > components.verandaPost.ops[0]]\n- overlap: 3941 Round Brick 2 × 2 placed at [13, 134, 35] and 4032b Round Plate 2 × 2 placed at [13, 134, 35] (repeat copy 1/5) overlap where their bodies meet: x 13–15, y 134–135, z 35–37 (5 pairs like this; repeat copies 1/5, 2/5, 3/5, 4/5, 5/5) [sections[2].ops[19], sections[2].ops[20].ops[0]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 143,
+      "usage": {
+        "input": 32285,
+        "cached": 2816,
+        "output": 4619,
+        "reasoning": 180
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2435",
+          "3003",
+          "30176",
+          "3031",
+          "3062b",
+          "3070b",
+          "3660b",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "6141"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2088
+    }
+  ]
+}
