@@ -77,7 +77,6 @@ export async function compileInBrowser(
     profile: ResourceProfileName;
     check?: boolean;
     targetParts?: number;
-    leeway?: number;
   },
 ): Promise<CompileResult> {
   const text = JSON.stringify(script ?? null);

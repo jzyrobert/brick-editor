@@ -9,6 +9,7 @@ import {
   outsideBudget,
   type CompileReport,
 } from "../src/build-script/compile";
+import { targetText } from "../src/build-script/budget";
 import { buildScriptJsonSchema, opReference } from "../src/build-script/spec";
 import { promptPartList } from "../src/build-script/part-list";
 import {
@@ -119,10 +120,10 @@ function parse(args: string[], allowed: string[], switches: string[]): Args {
 const HELP_BUILD = `brick-cli build --script build.json [--output build.mpd|build.brickproj] [--report report.json]
     [--render view.png [--views iso,front,back,left,right,top,iso-back] [--width 1280 --height 960]
      [--look standard|realistic|photo] [--backdrop ${BACKDROP_NAMES.join("|")}]]
-    [--no-check] [--resource-profile desktop|mobile] [--target-parts N [--leeway 10]]
-  --target-parts N  part target: a build more than --leeway percent (default 10) over or
-                    under it writes only the report (an over-budget or under-budget error
-                    says by how much) and removes an older --output file
+    [--no-check] [--resource-profile desktop|mobile] [--target-parts N]
+  --target-parts N  part target, as guidance: the summary and the report's \`target\` say
+                    how far the build landed from it, with the largest sections and the
+                    costliest ops (a build of any size is still written)
 brick-cli build --reference   op reference (units, fields, one example each)
 brick-cli build --schema      JSON Schema of build scripts`;
 
@@ -131,6 +132,18 @@ export function summary(r: CompileReport) {
   const lines = [
     `${r.title}: ${r.stats.parts} parts (${r.stats.designs} designs, ${r.stats.lots} lots) from a ${(r.stats.scriptBytes / 1024).toFixed(1)} KB script; ${r.stats.partsPerScriptKB} parts/KB; compile ${r.stats.compileMs} ms, check ${r.stats.checkMs} ms`,
   ];
+  if (r.target)
+    lines.push(
+      `size: ${targetText(r.stats.parts, r.target.target)}; sections: ${[
+        ...r.sections,
+      ]
+        .sort((a, b) => b.parts - a.parts)
+        .map((s) => `${s.name} ${s.parts.toLocaleString("en-US")}`)
+        .join(", ")}; costliest ops: ${r.costliestOps
+        .slice(0, 5)
+        .map((o) => `${o.op} ${o.parts.toLocaleString("en-US")}`)
+        .join(", ")}`,
+    );
   if (r.bounds)
     lines.push(
       `bounds (studs, y in plates): ${JSON.stringify(r.bounds.studs.min)} .. ${JSON.stringify(r.bounds.studs.max)}`,
@@ -164,7 +177,6 @@ export async function buildCommand(argv: string[]) {
       "backdrop",
       "resource-profile",
       "target-parts",
-      "leeway",
     ],
     ["reference", "schema", "no-check", "json", "help"],
   );
@@ -206,22 +218,12 @@ export async function buildCommand(argv: string[]) {
   }
   const num = (flag: string) =>
     a.flag(flag) === undefined ? undefined : Number(a.flag(flag));
-  const targetParts = num("target-parts"),
-    leeway = num("leeway");
+  const targetParts = num("target-parts");
   ensure(
     targetParts === undefined ||
       (Number.isInteger(targetParts) && targetParts > 0),
     "INVALID_INPUT",
     "--target-parts must be a positive integer",
-  );
-  ensure(
-    leeway === undefined ||
-      (targetParts !== undefined &&
-        Number.isFinite(leeway) &&
-        leeway >= 0 &&
-        leeway <= 100),
-    "INVALID_INPUT",
-    "--leeway must be 0–100 (percent) and needs --target-parts",
   );
   registerAgentData();
   const started = performance.now();
@@ -229,14 +231,13 @@ export async function buildCommand(argv: string[]) {
     profile,
     check: !a.has("no-check"),
     targetParts,
-    leeway,
     occupancyFor: (refs) =>
       fullLibraryOccupancy(refs.filter((r) => !curatedHas(r))),
   });
   const { report, project } = result;
   const output = a.flag("output");
-  // Outside the part range: no model and no views, and no older model left
-  // behind to be mistaken for this one.
+  // Over the script's own limits.maxParts: no model and no views, and no
+  // older model left behind to be mistaken for this one.
   const refused = outsideBudget(report);
   if (output && refused) await rm(output, { force: true });
   else if (output) {

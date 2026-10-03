@@ -57,7 +57,19 @@ The same brief, model, part range and efforts; one run each, so treat difference
 - **Run 2** fixed the part knowledge (only listed parts, one colour error in 20 replies) but paid for it: 5 of 20 replies failed the schema, attempts and tokens rose, and xhigh never got accepted.
 - **Run 3** keeps run 2's part knowledge and gets every effort accepted in two replies, with no schema errors, in less time and fewer tokens than run 2 at every effort, and less than run 1 at max. The geometry rules took away the schema failures (every run-2 schema error was a rule now stated) and the located errors let each repair land first time.
 
-Files per effort: `build.json` (the accepted script) and `result.json` (every attempt: outcome, errors sent back, parts, seconds, tokens, searches and part knowledge), and three views.
+Files per effort: `build.json` (the accepted script) and `result.json` (every attempt: outcome, errors sent back, parts, seconds, tokens, searches and part knowledge), three views, and `optimise.md`, the model's answer about efficiency (below).
+
+## What the models said about efficiency
+
+[interview-optimise.sh](interview-optimise.sh) resumed each effort's last session and asked where its effort went and how the process could get it to a good, accepted build with less: [low](low/optimise.md), [medium](medium/optimise.md), [high](high/optimise.md), [xhigh](xhigh/optimise.md), [max](max/optimise.md). All five agreed, roughly in this order:
+
+1. **Part counts could not be worked out from the script.** A compact `room` or `roof` became 150–200 parts; xhigh's repair became "an exact subtraction" once the report gave per-op costs. All five asked for a count (and collision) check before answering.
+2. **Repairs resend everything.** Medium's repair was four edits but 4,790 output tokens of whole script; they asked for patches against stable op IDs.
+3. **A shorter prompt**: track, railcars, vehicles and street-house advice went unused (kept: the prompt stays generic).
+4. **Tested recipes with measured costs** (a pagoda tier, a hip-and-gable hall, a lantern), with dimensions as parameters.
+5. **Real bounds for irregular parts**, separate from the footprint: max's bamboo, written at `[46, 0, 24]`, reached from `[45, 0, 22.5]`.
+
+What was done about it, for the [fourth run](../japanese-temple-one-shot-target/README.md): the prompt gives rules for counting parts (measured per op), the target became guidance scored by distance rather than a range that refuses builds, every repair states the size against the target, overlaps say where the script placed each part, which repeat copies collide and how far a part's body reaches, and the part list gives that reach for the 19 curated parts that have one. Repairs stay MineBench-style.
 
 ## low
 

@@ -217,55 +217,82 @@ it("CLI renders review views of a compiled script", async () => {
   }
 }, 240000);
 
-it("CLI writes only the report for a build outside --target-parts", async () => {
+it("CLI reports a build against --target-parts and refuses only limits.maxParts", async () => {
   const dir = await mkdtemp(join(tmpdir(), "brick-budget-"));
   try {
     const out = join(dir, "house.mpd");
-    const build = (target: number, ...more: string[]) =>
+    const build = (
+      target: number,
+      script = "fixtures/build-scripts/house.json",
+    ) =>
       main([
         "build",
         "--script",
-        "fixtures/build-scripts/house.json",
+        script,
         "--output",
         out,
         "--target-parts",
         String(target),
-        ...more,
         "--no-check",
       ]);
     const report = async () =>
       JSON.parse(await readFile(out + ".report.json", "utf8"));
     captured();
-    await build(250); // 225–275: the House is inside
+    await build(250);
     const parts = (await report()).stats.parts;
-    expect((await report()).output).toBe(out);
-    for (const [target, problem] of [
-      [parts - 10, `10 over the maximum of ${parts - 10}`],
-      [parts + 10, `10 under the minimum of ${parts + 10}`],
-    ] as const) {
-      await build(250); // a model to be removed
+    // Far from the target either way: written, with how far it landed.
+    for (const target of [Math.round(parts / 2), parts * 2]) {
+      await rm(out, { force: true });
       const log = captured();
       process.exitCode = 0;
-      await build(target, "--leeway", "0");
-      expect(process.exitCode).toBe(2);
-      process.exitCode = 0;
+      await build(target);
+      expect(process.exitCode).toBe(0);
       const r = await report();
-      expect(r.ok).toBe(false);
-      expect(r.output).toBeUndefined();
-      expect(r.problems[0].message).toMatch(
-        new RegExp(`^${parts} parts: ${problem} \\(target ${target} ± 0%`),
+      expect(r.ok).toBe(true);
+      expect(r.output).toBe(out);
+      expect(r.target).toMatchObject({
+        target,
+        parts,
+        difference: parts - target,
+      });
+      expect((await stat(out)).size).toBeGreaterThan(0);
+      expect(log.join("\n")).toMatch(
+        new RegExp(
+          `^size: ${parts} parts \\(target ${target.toLocaleString("en-US")}: [+−]\\d+, [+−][\\d.]+%\\); sections: .+; costliest ops: sections\\[`,
+          "m",
+        ),
       );
-      // The earlier model is gone, not left to be mistaken for this one.
-      await expect(stat(out)).rejects.toThrow();
-      expect(log.join("\n")).toContain("not written: " + out);
     }
-    const house = ["build", "--script", "fixtures/build-scripts/house.json"];
-    await expect(main([...house, "--target-parts", "0"])).rejects.toThrow(
+    // Over the script's own limit: only the report, as before.
+    const capped = join(dir, "capped.json");
+    const house = JSON.parse(
+      await readFile("fixtures/build-scripts/house.json", "utf8"),
+    );
+    await writeFile(
+      capped,
+      JSON.stringify({ ...house, limits: { maxParts: parts - 10 } }),
+    );
+    const log = captured();
+    process.exitCode = 0;
+    await build(250, capped);
+    expect(process.exitCode).toBe(2);
+    process.exitCode = 0;
+    const r = await report();
+    expect(r.ok).toBe(false);
+    expect(r.output).toBeUndefined();
+    expect(r.problems[0].message).toMatch(
+      new RegExp(
+        `^${parts} parts: 10 over the script's limit of ${parts - 10}`,
+      ),
+    );
+    // The earlier model is gone, not left to be mistaken for this one.
+    await expect(stat(out)).rejects.toThrow();
+    expect(log.join("\n")).toContain("not written: " + out);
+    const args = ["build", "--script", "fixtures/build-scripts/house.json"];
+    await expect(main([...args, "--target-parts", "0"])).rejects.toThrow(
       /--target-parts must be a positive integer/,
     );
-    await expect(main([...house, "--leeway", "5"])).rejects.toThrow(
-      /needs --target-parts/,
-    );
+    await expect(main([...args, "--leeway", "5"])).rejects.toThrow(/leeway/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

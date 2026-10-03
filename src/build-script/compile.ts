@@ -81,7 +81,7 @@ import {
 import { roleParts, searchParts } from "./part-search";
 import { LAYER_COMMENT, assignSectionLayers } from "./layers";
 import { placeTrackPiece, type TrackCursor } from "../play/track";
-import { partRange } from "./budget";
+import { partTarget, targetMiss } from "./budget";
 import { partPlates } from "./part-list";
 
 export type Problem = {
@@ -125,6 +125,12 @@ export type CompileReport = {
   }[];
   /** The ops that produced the most parts (to see where parts go). */
   heaviestOps: { op: string; kind: string; parts: number }[];
+  /** The section ops that cost the most parts, every component copy and
+   * repeat counted against the op that placed it (what to cut or add to). */
+  costliestOps: { op: string; parts: number }[];
+  /** With a part target: how far the build landed from it. A target is
+   * guidance: a build of any size compiles. */
+  target?: ReturnType<typeof targetMiss>;
   resolved: { op: string; find: string; ref: string; name: string }[];
   check: {
     overlaps: number;
@@ -136,7 +142,7 @@ export type CompileReport = {
   } | null;
   problems: Problem[];
 };
-export { partRange, outsideBudget } from "./budget";
+export { partTarget, outsideBudget, targetMiss } from "./budget";
 export type CompileOptions = {
   profile?: ResourceProfileName;
   /** Run the build checks (default true). */
@@ -144,13 +150,10 @@ export type CompileOptions = {
   /** Occupancy boxes for parts whose derived data is not loaded (the CLI
    * derives them from the complete library on disk). */
   occupancyFor?: (refs: string[]) => Record<string, Bounds[]>;
-  /** Part target: a build outside `targetParts` ± `leeway` percent still
-   * compiles, with an `over-budget` or `under-budget` error saying by how
-   * much; see outsideBudget(). The script's `limits.maxParts` is a hard cap on
-   * top. */
+  /** Part target: guidance, not a limit. The report's `target` says how far
+   * the build landed from it. The script's `limits.maxParts` is the only hard
+   * cap (an `over-budget` error; see outsideBudget()). */
   targetParts?: number;
-  /** Percent either side of `targetParts` (default 10). */
-  leeway?: number;
   /** Clock for timings (tests pass a fixed one). */
   now?: () => number;
 };
@@ -305,6 +308,9 @@ type Unit = {
   models: Model[];
   /** Emission order per model: op index of each type-1 line. */
   origins: Map<Model, number[]>;
+  /** Alongside `origins`: which repeat copies made each line ("2/8"; ""
+   * outside repeats), so an overlap can say which copy collides. */
+  copies: Map<Model, string[]>;
 };
 
 class Compiler {
@@ -314,6 +320,9 @@ class Compiler {
   moved = new Map<string, { to: string; ops: Set<string> }>();
   opPaths: string[] = [];
   opKinds: string[] = [];
+  /** The repeat copies being run, outermost first ("2/8"; nested repeats
+   * read "2/8 > 1/3" in reports). */
+  repeatCopies: string[] = [];
   materials: Material[] = [];
   materialIds = new Map<string, number>();
   palette = new Map<string, string[]>();
@@ -752,6 +761,9 @@ class Compiler {
     let list = u.origins.get(model);
     if (!list) u.origins.set(model, (list = []));
     list.push(op);
+    let copies = u.copies.get(model);
+    if (!copies) u.copies.set(model, (copies = []));
+    copies[list.length - 1] = this.repeatCopies.join(" > ");
   }
   checkColour(ref: string, colour: string, op: number) {
     const e = colorExistence(ref, colour);
@@ -1344,6 +1356,7 @@ class Compiler {
       case "repeat":
         for (let n = 0; n < o.count; n++) {
           const s = y3(o.step);
+          this.repeatCopies.push(`${n + 1}/${o.count}`);
           this.run(
             u,
             o.ops,
@@ -1351,6 +1364,7 @@ class Compiler {
             section,
             path + ".ops",
           );
+          this.repeatCopies.pop();
         }
         return;
       case "mirror":
@@ -2355,6 +2369,7 @@ function newUnit(name: string, models: Model[]): Unit {
     details: [],
     models,
     origins: new Map(),
+    copies: new Map(),
   };
 }
 export function slugify(s: string) {
@@ -2367,34 +2382,82 @@ export function slugify(s: string) {
   );
 }
 
-/** "3045 Slope 45° 2 × 2 Double Convex at [12, 21, 4] and … overlap where
- * their boxes meet: x 13–14, y 21–24, z 5–6" (studs, y in plates). */
-function overlapMessage(
-  refA: string,
-  ta: Transform,
-  refB: string,
-  tb: Transform,
-) {
+/** One side of an overlap: the part, where it was placed and which repeat
+ * copy placed it. */
+type OverlapSide = { ref: string; transform: Transform; copy?: string };
+
+/** "30176 Plant 1 × 1 Bamboo placed at [46, 0, 24] (repeat copy 2/3; its
+ * body reaches x 45–48, z 22.5–26.5) and … overlap where their bodies meet:
+ * x 45–46, y 0–3, z 23–24" (studs, y in plates). "Placed at" is the corner
+ * of the part's footprint, as a script's `at` gives it; the body is what the
+ * overlap check tests, and is only spelled out when it reaches past the
+ * footprint. */
+function overlapMessage(a: OverlapSide, b: OverlapSide) {
   const half = (n: number) => Math.round(n * 2) / 2;
   const name = (ref: string) =>
     `${ref.replace(/\.dat$/, "")} ${partSpec(ref)?.name ?? ""}`.trim();
-  const box = (ref: string, t: Transform) => {
-    const b = partSpec(ref)?.bounds;
-    return b ? transformBounds(b as Bounds, t) : undefined;
+  const body = ({ ref, transform }: OverlapSide) => {
+    const own = localOccupancy(ref);
+    const boxes = own?.length
+      ? own
+      : partSpec(ref)?.bounds
+        ? [partSpec(ref)!.bounds as Bounds]
+        : [];
+    if (!boxes.length) return undefined;
+    const placed = boxes.map((x) => transformBounds(x, transform));
+    return {
+      min: [0, 1, 2].map((i) => Math.min(...placed.map((p) => p.min[i]))) as V3,
+      max: [0, 1, 2].map((i) => Math.max(...placed.map((p) => p.max[i]))) as V3,
+    };
   };
-  const corner = (b?: Bounds) =>
-    b
-      ? ` at [${half(b.min[0] / 20)}, ${half(-b.max[1] / 8)}, ${half(b.min[2] / 20)}]`
-      : "";
-  const a = box(refA, ta),
-    b = box(refB, tb);
+  /** The footprint (studs) and level (plates) of a part on a quarter turn. */
+  const placedAt = ({ ref, transform }: OverlapSide) => {
+    const turn = ([0, 90, 180, 270] as Turn[]).find((t) =>
+      basis(t).every((v, i) => Math.abs(v - transform.basis[i]) < 1e-6),
+    );
+    if (turn === undefined) return undefined;
+    const f = footprint(ref, turn);
+    const p = transform.position;
+    return {
+      at: [
+        half((p[0] + f.minX) / 20),
+        half((-p[1] - underside(ref)) / 8),
+        half((p[2] + f.minZ) / 20),
+      ],
+      x: [(p[0] + f.minX) / 20, (p[0] + f.minX + f.width) / 20],
+      z: [(p[2] + f.minZ) / 20, (p[2] + f.minZ + f.depth) / 20],
+    };
+  };
+  const side = (s: OverlapSide, box?: Bounds) => {
+    const at = placedAt(s);
+    const notes: string[] = [];
+    if (s.copy) notes.push(`repeat copy ${s.copy}`);
+    let text = name(s.ref);
+    if (at) {
+      text += ` placed at [${at.at.join(", ")}]`;
+      const past =
+        box &&
+        (box.min[0] / 20 < at.x[0] - 0.2 ||
+          box.max[0] / 20 > at.x[1] + 0.2 ||
+          box.min[2] / 20 < at.z[0] - 0.2 ||
+          box.max[2] / 20 > at.z[1] + 0.2);
+      if (past)
+        notes.push(
+          `its body reaches x ${half(box.min[0] / 20)}–${half(box.max[0] / 20)}, z ${half(box.min[2] / 20)}–${half(box.max[2] / 20)}, past its footprint`,
+        );
+    } else if (box)
+      text += ` at [${half(box.min[0] / 20)}, ${half(-box.max[1] / 8)}, ${half(box.min[2] / 20)}]`;
+    return notes.length ? `${text} (${notes.join("; ")})` : text;
+  };
+  const ba = body(a),
+    bb = body(b);
   let where = "";
-  if (a && b) {
-    const lo = [0, 1, 2].map((i) => Math.max(a.min[i], b.min[i]));
-    const hi = [0, 1, 2].map((i) => Math.min(a.max[i], b.max[i]));
-    where = ` where their boxes meet: x ${half(lo[0] / 20)}–${half(hi[0] / 20)}, y ${half(-hi[1] / 8)}–${half(-lo[1] / 8)}, z ${half(lo[2] / 20)}–${half(hi[2] / 20)}`;
+  if (ba && bb) {
+    const lo = [0, 1, 2].map((i) => Math.max(ba.min[i], bb.min[i]));
+    const hi = [0, 1, 2].map((i) => Math.min(ba.max[i], bb.max[i]));
+    where = ` where their bodies meet: x ${half(lo[0] / 20)}–${half(hi[0] / 20)}, y ${half(-hi[1] / 8)}–${half(-lo[1] / 8)}, z ${half(lo[2] / 20)}–${half(hi[2] / 20)}`;
   }
-  return `${name(refA)}${corner(a)} and ${name(refB)}${corner(b)} overlap${where}`;
+  return `${side(a, ba)} and ${side(b, bb)} overlap${where}`;
 }
 
 /** The value at a validator path such as "$.sections[1].ops[9].open[1]". */
@@ -2439,10 +2502,10 @@ export function compileBuildScript(
   const started = now();
   assertBuildScript(input);
   const script = input;
-  const range =
+  const target =
     options.targetParts === undefined
       ? undefined
-      : partRange(options.targetParts, options.leeway);
+      : partTarget(options.targetParts);
   const slug = slugify(script.title);
   const limit = resourceLimits(options.profile).occurrences;
   const c = new Compiler(script, slug, limit);
@@ -2537,15 +2600,22 @@ export function compileBuildScript(
   const unitOfModel = new Map<Model, Unit>();
   for (const m of models) unitOfModel.set(m, unit);
   for (const e of c.components.values()) unitOfModel.set(e.model, e.unit);
-  const opOf = (occurrenceId: string): string | undefined => {
+  /** The op that made an occurrence and the repeat copies it came from
+   * ("2/8", or "2/8 > 1/3" for a repeat inside a repeated instance). */
+  const whence = (occurrenceId: string): { op?: string; copy?: string } => {
     const o = byId.get(occurrenceId);
-    if (!o) return undefined;
-    const own = () => {
-      const i = nodeIndex.get(o.modelId + "\u0000" + o.node.id);
-      const m = modelByName.get(project!.models[o.modelId].name.toLowerCase());
-      if (i === undefined || !m) return undefined;
-      return c.opPaths[unitOfModel.get(m)?.origins.get(m)?.[i] ?? -1];
+    if (!o) return {};
+    const at = (modelId: string, nodeId: string) => {
+      const i = nodeIndex.get(modelId + "\u0000" + nodeId);
+      const m = modelByName.get(project!.models[modelId].name.toLowerCase());
+      if (i === undefined || !m) return {};
+      const u = unitOfModel.get(m);
+      return {
+        op: c.opPaths[u?.origins.get(m)?.[i] ?? -1] as string | undefined,
+        copy: u?.copies.get(m)?.[i] || undefined,
+      };
     };
+    const own = at(o.modelId, o.node.id);
     // Parts inside a component: the instance in its section, then the
     // component's own op ("sections[1].ops[3] > components.house.ops[2]").
     const top = project!.models[project!.rootModelId].nodes.find(
@@ -2553,20 +2623,19 @@ export function compileBuildScript(
     );
     const sectionModelId = top?.ref;
     if (o.path.length > 2 && sectionModelId) {
-      const i = nodeIndex.get(sectionModelId + "\u0000" + o.path[1]);
-      const m = modelByName.get(
-        project!.models[sectionModelId].name.toLowerCase(),
-      );
-      if (i !== undefined && m) {
-        const outer = c.opPaths[unit.origins.get(m)?.[i] ?? -1];
-        const inner = own();
-        return outer && inner && inner !== outer
-          ? `${outer} > ${inner}`
-          : outer;
+      const outer = at(sectionModelId, o.path[1]);
+      if (outer.op) {
+        const inner = own.op !== outer.op ? own : {};
+        return {
+          op: inner.op ? `${outer.op} > ${inner.op}` : outer.op,
+          copy:
+            [outer.copy, inner.copy].filter(Boolean).join(" > ") || undefined,
+        };
       }
     }
-    return own();
+    return own;
   };
+  const opOf = (occurrenceId: string) => whence(occurrenceId).op;
   if (options.check !== false) {
     const extra: Record<string, Bounds[]> = {};
     const missing = new Set<string>();
@@ -2585,23 +2654,50 @@ export function compileBuildScript(
     const r = checkBuild(project, { occupancy: extra, occurrences: all });
     // One error per kind of collision (the same two ops and parts; a repeat
     // makes many alike), saying where it happens in script coordinates.
-    const groups = new Map<string, { a: string; b: string; count: number }>();
+    const groups = new Map<
+      string,
+      { a: string; b: string; count: number; copies: Set<string> }
+    >();
     for (const [a, b] of r.overlaps) {
       const side = (id: string) => `${opOf(id)}|${byId.get(id)!.node.ref}`;
-      const key = [side(a), side(b)].sort().join(" ~ ");
-      const g = groups.get(key);
+      const [first, second] = side(a) <= side(b) ? [a, b] : [b, a];
+      const key = `${side(first)} ~ ${side(second)}`;
+      let g = groups.get(key);
       if (g) g.count++;
-      else groups.set(key, { a, b, count: 1 });
+      else
+        groups.set(
+          key,
+          (g = { a: first, b: second, count: 1, copies: new Set() }),
+        );
+      const copies = [whence(first).copy, whence(second).copy];
+      // Both sides' copies only when both come from repeats.
+      if (copies.some(Boolean))
+        g.copies.add(copies.filter(Boolean).join(" with "));
     }
     for (const g of [...groups.values()].slice(0, 50)) {
       const oa = byId.get(g.a)!,
         ob = byId.get(g.b)!;
+      const list = [...g.copies];
+      const more =
+        g.count > 1
+          ? ` (${g.count} pairs like this${list.length > 1 ? `; repeat copies ${list.slice(0, 8).join(", ")}${list.length > 8 ? ", …" : ""}` : ""})`
+          : "";
       c.problem({
         severity: "error",
         code: "overlap",
         message:
-          overlapMessage(oa.node.ref, oa.transform, ob.node.ref, ob.transform) +
-          (g.count > 1 ? ` (${g.count} pairs like this)` : ""),
+          overlapMessage(
+            {
+              ref: oa.node.ref,
+              transform: oa.transform,
+              copy: whence(g.a).copy,
+            },
+            {
+              ref: ob.node.ref,
+              transform: ob.transform,
+              copy: whence(g.b).copy,
+            },
+          ) + more,
         ops: [...new Set([opOf(g.a), opOf(g.b)].filter(Boolean) as string[])],
       });
     }
@@ -2746,46 +2842,31 @@ export function compileBuildScript(
       parts: n,
     }));
   const fmt = (n: number) => n.toLocaleString("en-US");
-  const band = range
-    ? ` (target ${fmt(range.target)} ± ${range.leeway}%: ${fmt(range.min)}–${fmt(range.max)})`
-    : "";
-  const budget = Math.min(
-    range?.max ?? Infinity,
-    script.limits?.maxParts ?? Infinity,
-  );
-  const sizes = () =>
-    [...sectionCounts]
-      .sort((a, b) => b.parts - a.parts)
-      .map((s) => `${s.name} ${fmt(s.parts)}`)
-      .join(", ");
-  if (range && parts < range.min)
-    c.problems.unshift({
-      severity: "error",
-      code: "under-budget",
-      message: `${fmt(parts)} parts: ${fmt(range.min - parts)} under the minimum of ${fmt(range.min)}${band}: add more (sections: ${sizes()})`,
-    });
-  else if (parts > budget) {
-    // Every instance counts here, against the op in its section that made
-    // it (a component instance, a repeat), unlike heaviestOps.
-    const bySource = new Map<string, number>();
-    for (const o of all) {
-      const op = opOf(o.id)?.split(" > ")[0];
-      if (op) bySource.set(op, (bySource.get(op) ?? 0) + 1);
-    }
-    const costliest = [...bySource.entries()]
-      .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
-      .slice(0, 5);
+  // Every instance counts here, against the op in its section that made it
+  // (a component instance, a repeat), unlike heaviestOps.
+  const bySource = new Map<string, number>();
+  for (const o of all) {
+    const op = opOf(o.id)?.split(" > ")[0];
+    if (op) bySource.set(op, (bySource.get(op) ?? 0) + 1);
+  }
+  const costliestOps = [...bySource.entries()]
+    .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
+    .slice(0, 12)
+    .map(([op, n]) => ({ op, parts: n }));
+  const maxParts = script.limits?.maxParts;
+  if (maxParts !== undefined && parts > maxParts) {
+    const costliest = costliestOps.slice(0, 5);
     const largest = [...sectionCounts]
       .sort((a, b) => b.parts - a.parts)
       .slice(0, 3)
-      .map((s) => `${s.name} ${s.parts.toLocaleString("en-US")}`);
+      .map((s) => `${s.name} ${fmt(s.parts)}`);
     c.problems.unshift({
       severity: "error",
       code: "over-budget",
       message:
-        `${fmt(parts)} parts: ${fmt(parts - budget)} over the maximum of ${fmt(budget)}${budget === range?.max ? band : ""}` +
-        ` (largest sections: ${largest.join(", ")}; costliest ops: ${costliest.map(([op, n]) => `${op} ${fmt(n)}`).join(", ")})`,
-      ops: costliest.map(([op]) => op),
+        `${fmt(parts)} parts: ${fmt(parts - maxParts)} over the script's limit of ${fmt(maxParts)}` +
+        ` (largest sections: ${largest.join(", ")}; costliest ops: ${costliest.map((o) => `${o.op} ${fmt(o.parts)}`).join(", ")})`,
+      ops: costliest.map((o) => o.op),
     });
   }
   const problems = c.problems;
@@ -2822,6 +2903,8 @@ export function compileBuildScript(
         count: l.count,
       })),
     heaviestOps,
+    costliestOps,
+    ...(target === undefined ? {} : { target: targetMiss(parts, target) }),
     resolved: c.resolved,
     check,
     problems,

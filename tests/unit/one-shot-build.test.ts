@@ -1,34 +1,34 @@
 import { describe, expect, it } from "vitest";
 import {
+  errorsReason,
   extractJson,
   knowledge,
   oneShotPrompt,
   repairPrompt,
   searchRequest,
 } from "../../scripts/one-shot-build";
-import { partRange } from "../../src/build-script/budget";
 import { searchForAgent } from "../../src/build-script/part-list";
 
 describe("one-shot build runs", () => {
   it("asks for the JSON alone, without the tools section", () => {
-    const text = oneShotPrompt(
-      "a japanese buddhist temple",
-      partRange(2000, 5),
-    );
+    const text = oneShotPrompt("a japanese buddhist temple", 2000);
     expect(text).not.toMatch(
       /\{\{|When you can run tools|brick-cli|build\.json/,
     );
     expect(text).toContain(
       "Return ONLY one JSON object (no markdown, no commentary).",
     );
-    expect(text).toContain("Accepted range: 1,900–2,100 parts.");
+    // A target to aim at, with the rules for counting, and no pass mark.
+    expect(text).toContain("- Target: 2,000 parts, counting every part");
+    expect(text).toContain("### Counting parts");
+    expect(text).not.toMatch(/Accepted range|refuses the build/);
     expect(text.trimEnd()).toMatch(
       /Build request: a japanese buddhist temple$/,
     );
   });
 
   it("lists the curated parts and describes the search tool when on", () => {
-    const range = partRange(2000, 5);
+    const range = 2000;
     const listed = oneShotPrompt("a barn", range, { search: true });
     expect(listed).toContain("## Searching for parts");
     expect(listed).toContain('{"parts_search": [{"query": "stone lantern"}');
@@ -123,6 +123,22 @@ describe("one-shot build runs", () => {
     ).toEqual({ a: "x}{", b: { c: [1] } });
     expect(extractJson('{"a": 1,}  {"b": 2}')).toEqual({ b: 2 });
     expect(extractJson("no json here")).toBeUndefined();
+  });
+
+  it("states the size against the target with the errors", () => {
+    expect(
+      errorsReason(2137, 2000, [
+        { code: "overlap", message: "a and b overlap", ops: ["x", "y"] },
+        { code: "colour-unavailable", message: "not made in gold" },
+      ]),
+    ).toBe(
+      "The script compiled to 2,137 parts (target 2,000: +137, +6.9%). Errors to fix:\n- overlap: a and b overlap [x, y]\n- colour-unavailable: not made in gold",
+    );
+    const many = Array.from({ length: 23 }, () => ({
+      code: "overlap",
+      message: "m",
+    }));
+    expect(errorsReason(1, 2, many)).toMatch(/\n- … 3 more errors$/);
   });
 
   it("sends the errors and the previous reply back", () => {
