@@ -261,6 +261,16 @@ for (const [width, height, dynamic] of sizes)
             box: e.getBoundingClientRect().toJSON(),
           })),
       }));
+      const toolsBox = (await page
+          .getByRole("button", { name: "Model tools", exact: true })
+          .boundingBox())!,
+        statusBox = (await page.locator(".play-status-slab").boundingBox())!,
+        pauseBox = (await page
+          .getByRole("button", { name: "Pause", exact: true })
+          .boundingBox())!;
+      expect(statusBox.x + statusBox.width).toBeLessThanOrEqual(toolsBox.x - 7);
+      expect(pauseBox.width).toBeGreaterThanOrEqual(44);
+      expect(pauseBox.height).toBeGreaterThanOrEqual(44);
       const headerBox = (await page.locator(".site-header").boundingBox())!;
       expect(topBox.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height);
       expect(metrics.box.y + metrics.box.height).toBeLessThanOrEqual(height);

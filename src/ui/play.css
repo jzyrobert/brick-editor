@@ -92,6 +92,8 @@
   z-index: 4;
 }
 .play-status-slab {
+  max-width: var(--play-status-width, 100%);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   min-width: 0;
@@ -104,6 +106,7 @@
   pointer-events: auto;
 }
 .play-key {
+  flex-shrink: 0;
   display: grid;
   place-items: center;
   width: 44px;
@@ -139,6 +142,7 @@
   text-overflow: ellipsis;
 }
 .play-status .icon {
+  flex-shrink: 0;
   color: var(--hud-mute);
 }
 .play-overlay.is-paused .play-status {

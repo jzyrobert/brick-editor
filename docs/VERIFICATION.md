@@ -1286,3 +1286,35 @@ model of official pinned parts. Runtime creates no new network assets. Rider
 weight/friction, arbitrary grab/release attachments, walking around moving train
 cars, inferred seats, low-cabin fit and articulated vehicles remain outside this
 slice. Upstream Play interface acceptance is verified separately.
+
+## Mechanism controls on the workshop header (3 October 2026)
+
+Production evidence after rebasing onto `b0ac932` and integrating loaded linear
+controllers, cylindrical bearings and moving support/dynamic seats:
+
+- `npm run build`: passes (35.81 s Vite build); `npm run format:check`: passes.
+- `play-mechanism-controls.spec.ts`: all seven target cases pass (1440×1000,
+  1080×1800, 360×600, 411×685, 390×844, 686×411, plus 360×600 Dynamic). Held
+  mouse/CDP touch and keyboard input brakes on release/blur; orbit, fit, pause,
+  passive output disclosure, source preservation and 44 px targets remain valid.
+  Measured assertions keep the status slab at least 7 px clear of Tools, pause
+  at least 44×44 and the panel inside the viewport below the site header.
+- `play-linked-controls.spec.ts`: four actual rack/slider-crank desktop/phone
+  cases pass. Only the independent driver is editable; passive parts move,
+  released input is zero and rack feedback uses LDU per degree.
+- `play-cylindrical.spec.ts` and `play-platforms-seats.spec.ts`: seven cases pass,
+  including loaded bearing stops, native/kinematic lift and turntable carry and
+  jump, plus actual pinned jeep seated entry/drive/exit at desktop and 360 px.
+- Combined private-port Chromium run: 18 passed in 2.7 min, on port 4397, with
+  the rebuilt root worktree. The server was stopped by Playwright afterward.
+- Foundation checks before platform integration: 18 unit files/130 passed in
+  32.57 s. Six post-integration files/29 passed in 8.65 s, including lifecycle
+  refusal atomicity, loaded motors, bearings, support and dynamic seats.
+
+Seven final captures were opened and validated. The fresh Impeccable full review
+identified one status/Tools overlap; after one correction/rebuild/recapture,
+its verdict scored that fix resolved with `ship` scoped to that finding. The
+single detector scan had no primary findings and two inherited 17 px hint-radius
+advisories. The old surface brief still describes the former palette; this
+pre-existing drift was reported and left untouched. No new runtime assets ship.
+This checkpoint leaves general contact policy and physical-fit acceptance open.

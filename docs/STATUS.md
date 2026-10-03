@@ -999,3 +999,25 @@ The original moving-platform fixture and real pinned Off-road jeep passed six
 production Chromium checks, including the jeep at 1440×1000 and 360×600. These
 are API/viewport checks, not new touch-interface acceptance. Source queries and
 unit fixture JSON remain unchanged. See [verification](VERIFICATION.md#moving-platforms-and-dynamic-driver-seats-3-october-2026).
+
+## Mechanism controls on the workshop header (3 October 2026)
+
+The motion worktree is rebased onto `origin/main` at `b0ac932`, retaining the
+cream workshop, Gallery/model tools and new site header. Remote controls keep
+Fit build in the sheet header and compact short-screen selectors so primary
+drive feedback remains visible. The status chip reserves the measured Tools
+button width and truncates within its own boundary, keeping pause at 44 px.
+Only independent revolute/prismatic controls appear; dependent linkage and
+transmission coordinates are passive. Mixed rack outputs show LDU/degree units.
+Successful vehicle, driver-seat and train context changes leave overview;
+refused transitions preserve the existing view and input.
+
+Verification: production build and repository formatting pass; 18 production
+browser cases cover seven control viewports, four rack/linkage driver cases,
+one loaded cylindrical bearing and six platform/dynamic-seat cases. Before the
+platform merge, 18 unit files/130 checks passed; afterward, six focused files/29
+checks passed across platforms, dynamic seats, lifecycle, motors and bearings.
+The fresh Impeccable full review requested one phone status/Tools overlap fix;
+its verdict scored that fix resolved (`ship` at that scope). Documentation
+preserves the incumbent system. Contact-policy work remains in progress; these
+checks do not certify rack tooth fit, broader mating geometry or physical torque.

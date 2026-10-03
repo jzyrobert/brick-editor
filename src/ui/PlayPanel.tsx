@@ -4,6 +4,7 @@ import type { Layer } from "../core/types";
 import { PlaySettings } from "./PlaySettings";
 import {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -73,6 +74,33 @@ export function PlayPanel({
 }) {
   const state = useSyncExternalStore(play.subscribe, play.getState);
   const [message, setMessage] = useState("");
+  const topRow = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const row = topRow.current,
+      tools = row
+        ?.closest(".app")
+        ?.querySelector<HTMLElement>(".model-tools-toggle");
+    if (!row || !tools) return;
+    const reserveTools = () => {
+      const controls = tools.getBoundingClientRect(),
+        top = row.getBoundingClientRect();
+      if (controls.width)
+        row.style.setProperty(
+          "--play-status-width",
+          `${Math.max(44, controls.left - top.left - 8)}px`,
+        );
+      else row.style.removeProperty("--play-status-width");
+    };
+    reserveTools();
+    const observer = new ResizeObserver(reserveTools);
+    observer.observe(row);
+    observer.observe(tools);
+    window.addEventListener("resize", reserveTools);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", reserveTools);
+    };
+  }, [state.active]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [rigId, setRigId] = useState("");
   const [mechanismMode, setMechanismMode] = useState<
@@ -883,7 +911,7 @@ export function PlayPanel({
         onLostPointerCapture={(e) => endPointer(e.pointerId)}
       />
       {firstPerson && <span className="play-crosshair" aria-hidden="true" />}
-      <div className="play-top">
+      <div ref={topRow} className="play-top">
         <div className="play-status-slab">
           <button
             className="play-key play-menu-key"
