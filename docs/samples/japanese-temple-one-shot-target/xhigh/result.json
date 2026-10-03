@@ -1,0 +1,144 @@
+{
+  "effort": "xhigh",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 2195,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2195,
+    "difference": 195,
+    "percent": 9.8
+  },
+  "seconds": 1767,
+  "tokens": {
+    "input": 62392,
+    "cached": 0,
+    "output": 50291,
+    "reasoning": 33148
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "14716",
+      "15068",
+      "2412b",
+      "2435",
+      "2453b",
+      "3001",
+      "3003",
+      "3005",
+      "30176",
+      "3022",
+      "3024",
+      "3031",
+      "3039",
+      "3062b",
+      "3665a",
+      "3941",
+      "3942c",
+      "4032b",
+      "4070",
+      "4589",
+      "54200",
+      "6141"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1488,
+      "usage": {
+        "input": 26684,
+        "cached": 0,
+        "output": 41098,
+        "reasoning": 32114
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "invalid",
+      "knowledge": {
+        "named": [
+          "14716",
+          "15068",
+          "2412b",
+          "2435",
+          "2453b",
+          "3001",
+          "3003",
+          "3005",
+          "30176",
+          "3022",
+          "3024",
+          "3031",
+          "3039",
+          "3062b",
+          "3665a",
+          "3941",
+          "3942c",
+          "4032b",
+          "4070",
+          "4589",
+          "54200",
+          "6141"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "reason": "INVALID_INPUT: sections[4].ops[12].ops[0]: components cannot be mirrored; turn them instead"
+    },
+    {
+      "attempt": 2,
+      "seconds": 279,
+      "usage": {
+        "input": 35708,
+        "cached": 0,
+        "output": 9193,
+        "reasoning": 1034
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "14716",
+          "15068",
+          "2412b",
+          "2435",
+          "2453b",
+          "3001",
+          "3003",
+          "3005",
+          "30176",
+          "3022",
+          "3024",
+          "3031",
+          "3039",
+          "3062b",
+          "3665a",
+          "3941",
+          "3942c",
+          "4032b",
+          "4070",
+          "4589",
+          "54200",
+          "6141"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2195
+    }
+  ]
+}

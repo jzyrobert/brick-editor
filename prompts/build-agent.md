@@ -83,7 +83,7 @@ Parts (real components; they cut into massing):
 - `instance {component, at, turn?, palette?: {key: colour}, with?: [flags]}` — reuse a component (a submodel). Give components `"size": [w, d]` (their plot) so things sticking out do not shift them; `palette` recolours one copy; ops inside with `"when": "flag"` / `"when": "!flag"` run only in copies placed `with` / without that flag.
 - `track {at: [x, y, z] (grid point), dir, pieces: "SSSS LLLLLLLL SSSS LLLLLLLL"}` — official train track (S straight 16 studs, L/R curve 22.5°, W/V points; that string is an 80-stud-wide oval); `railcar {at (car centre on the track), dir, component}` — a train car whose component (24 × 6, front at x = 23, deck y = 0) rides a train base on bogies. Play runs the train.
 
-Structure: `repeat {count, step [dx,dy,dz], ops}`, `mirror {axis: x|z, about, ops}` (cell x ↔ 2·about − 1 − x), `group {at, turn, ops}`.
+Structure: `repeat {count, step [dx,dy,dz], ops}`, `mirror {axis: x|z, about, ops}` (cell x ↔ 2·about − 1 − x; not around an `instance`: place a turned copy instead), `group {at, turn, ops}`.
 Detail pass: `scatter {region {at [x,z], size [w,d]}, parts, colours, density, spacing?, seed?}`, `smooth {region?}`.
 
 Openings in walls/rooms: `at` = studs from the wall start (min x or min z), `y`/`height` in plates from the wall base. Exactly 2×6 or 2×9 or 4×9 (width × plates) gets a window, 4×18 a door (`fill: "none"` leaves it open).

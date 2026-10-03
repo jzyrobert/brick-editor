@@ -1,0 +1,128 @@
+{
+  "effort": "high",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 2031,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2031,
+    "difference": 31,
+    "percent": 1.6
+  },
+  "seconds": 944,
+  "tokens": {
+    "input": 63686,
+    "cached": 0,
+    "output": 31179,
+    "reasoning": 15792
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "2431",
+      "2435",
+      "2877",
+      "30176",
+      "3062b",
+      "3069b",
+      "3471",
+      "3660b",
+      "3665a",
+      "3941",
+      "3942c",
+      "3957a",
+      "3960",
+      "4032b",
+      "4589",
+      "98138"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 666,
+      "usage": {
+        "input": 27888,
+        "cached": 0,
+        "output": 22031,
+        "reasoning": 13722
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2431",
+          "2435",
+          "2465",
+          "2877",
+          "30176",
+          "3062b",
+          "3069b",
+          "3471",
+          "3660b",
+          "3665a",
+          "3941",
+          "3942c",
+          "3957a",
+          "3960",
+          "4032b",
+          "4589",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2116,
+      "reason": "The script compiled to 2,116 parts (target 2,000: +116, +5.8%). Errors to fix:\n- overlap: 3660b Inverted Slope 45° 2 × 2 placed at [37, 21, 8] and 2465 Brick 1 × 16 placed at [38, 21, 8] overlap where their bodies meet: x 38–39, y 21–24, z 8–9 [sections[1].ops[0] > components.gatePost.ops[2], sections[1].ops[7]]\n- overlap: 3660b Inverted Slope 45° 2 × 2 placed at [53, 21, 8] and 2465 Brick 1 × 16 placed at [38, 21, 8] overlap where their bodies meet: x 53–54, y 21–24, z 8–9 [sections[1].ops[1] > components.gatePost.ops[2], sections[1].ops[7]]\n- overlap: 3660b Inverted Slope 45° 2 × 2 placed at [37, 21, 12] and 2465 Brick 1 × 16 placed at [38, 21, 13] overlap where their bodies meet: x 38–39, y 21–24, z 13–14 [sections[1].ops[2] > components.gatePost.ops[2], sections[1].ops[8]]\n- overlap: 3660b Inverted Slope 45° 2 × 2 placed at [53, 21, 12] and 2465 Brick 1 × 16 placed at [38, 21, 13] overlap where their bodies meet: x 53–54, y 21–24, z 13–14 [sections[1].ops[3] > components.gatePost.ops[2], sections[1].ops[8]]\n- overlap: 3941 Round Brick 2 × 2 placed at [42, 23, 34] (repeat copy 1/2 > 1/2) and 3037 Slope 45° 2 × 4 placed at [41, 24, 33] overlap where their bodies meet: x 42–44, y 24–26, z 34–35 (2 pairs like this) [sections[2].ops[15].ops[2] > components.verandaPost.ops[0], sections[2].ops[33]]\n- overlap: 3941 Round Brick 2 × 2 placed at [48, 23, 34] (repeat copy 1/2 > 1/2) and 3037 Slope 45° 2 × 4 placed at [45, 24, 33] overlap where their bodies meet: x 48–49, y 24–26, z 34–35 (2 pairs like this) [sections[2].ops[15].ops[3] > components.verandaPost.ops[0], sections[2].ops[33]]\n- overlap: 3941 Round Brick 2 × 2 placed at [48, 23, 34] (repeat copy 1/2 > 1/2) and 3039 Slope 45° 2 × 2 placed at [49, 24, 33] overlap where their bodies meet: x 49–50, y 24–26, z 34–35 (2 pairs like this) [sections[2].ops[15].ops[3] > components.verandaPost.ops[0], sections[2].ops[33]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 278,
+      "usage": {
+        "input": 35798,
+        "cached": 0,
+        "output": 9148,
+        "reasoning": 2070
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2431",
+          "2435",
+          "2877",
+          "30176",
+          "3062b",
+          "3069b",
+          "3471",
+          "3660b",
+          "3665a",
+          "3941",
+          "3942c",
+          "3957a",
+          "3960",
+          "4032b",
+          "4589",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2031
+    }
+  ]
+}

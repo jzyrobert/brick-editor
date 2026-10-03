@@ -1573,14 +1573,24 @@ class Compiler {
     const colour = this.colour(o.colour, path + ".colour");
     const pts = o.path as [number, number][];
     const cells: [number, number][] = [];
+    // Each cell once: a closed path ends on its first cell, which already
+    // has a post (it used to get a second, overlapping one).
+    const seen = new Set<string>();
     for (let i = 1; i < pts.length; i++) {
       const [ax, az] = pts[i - 1],
         [bx, bz] = pts[i];
       if (ax !== bx && az !== bz)
         this.fail(`${path}.path[${i}]`, "fence segments must run along X or Z");
       const n = Math.max(Math.abs(bx - ax), Math.abs(bz - az));
-      for (let s = i === 1 ? 0 : 1; s <= n; s++)
-        cells.push([ax + Math.sign(bx - ax) * s, az + Math.sign(bz - az) * s]);
+      for (let s = i === 1 ? 0 : 1; s <= n; s++) {
+        const c: [number, number] = [
+          ax + Math.sign(bx - ax) * s,
+          az + Math.sign(bz - az) * s,
+        ];
+        if (seen.has(`${c[0]},${c[1]}`)) continue;
+        seen.add(`${c[0]},${c[1]}`);
+        cells.push(c);
+      }
     }
     // Split into straight runs (a corner cell starts the next run).
     const runs: [number, number][][] = [];

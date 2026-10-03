@@ -765,3 +765,27 @@ physical build or whole-corpus acceptance claim.
 - **Messages on real failures.** Recompiling the second temple run's failed replies: xhigh's last reply now reads `3045 Slope 45° 2 × 2 Double Convex at [9, 37, 31] and 2453b Brick 1 × 1 × 5 at [10, 38, 31] overlap where their boxes meet: x 10–11, y 38–40.5, z 31–32 (4 pairs like this)`; low's first reply's 312 overlaps fall into a few kinds led by 132 alike tile pairs; schema errors end `(got "bottom")` and `(got [0.5,31,0.5])`. 61678 "Curved Slope 4 × 1" lists as 1×4 studs (x×z), 3 plates.
 - **Temple run 3** ([sample](samples/japanese-temple-one-shot-geometry/README.md)): all five efforts accepted on their second reply (1,965–2,098 parts), no schema errors, 5–37 minutes and 9k–46k output tokens, against run 2's 13–112 minutes and 21k–142k with xhigh not accepted. No searches; one colour error (medium's first reply). Remaining gap: irregular parts such as bamboo (30176) list their 1 × 1 attachment footprint while their leaves reach three to four studs.
 - **Tests:** `tests/unit/build-script.test.ts` (grouped overlaps with positions, rejected values in schema errors, section totals on under-budget), `tests/unit/one-shot-build.test.ts` (footprints and heights in the list and search results, geometry rules and search allowance in the prompt), `tests/unit/build-workspace.test.ts`.
+
+## Part targets as a score, counting rules and part reach (3 October 2026)
+
+- **Per-op costs** (each op compiled alone, for the prompt's counting rules):
+  - A plain `room` 12 × 8 and 4 bricks high is 22 parts; 16 × 12 and 8 bricks high is 44. With `texture: "masonry"`, `"log"` or `"grille"` they are 72 and 208, with `quoins` 32 and 72, and a colour mix adds nothing.
+  - A `floor` 32 × 32 is 8 parts, or 128 with `top: "tile"`.
+  - Gable and hip roofs: 12 × 8 is 45, 24 × 16 is 141–143.
+  - `column` 4 per 12 plates; `window` and `door` 2 each; `fence` 5 per 20 studs; `dome` of diameter 8 is 81.
+- **Rules against whole builds.** The run-3 attempt-1 scripts, 14 accepted temple scripts from runs 1–3 and the 7 repository samples, each compiled op by op and summed: whole builds came out 3% under to 16% over the sum. The gap is mostly massing cut up by parts, up to 45% at most, which is why the rules add 15% to massing.
+- **Reach.** The overlap check's occupancy boxes were compared with the listed footprint for all 224 curated parts. 19 reach a quarter stud or more past it; bamboo 30176 reaches 1 stud at ±x and 1.5 at ±z. That matches run 3's max overlap: written at `[46, 0, 24]`, body from `[45, 0, 22.5]`. Recompiling that reply now reads `30176 Plant 1 × 1 Bamboo placed at [46, 0, 24] (repeat copy 1/3 > 1/2; its body reaches x 45–48, z 22.5–26.5, past its footprint) and 98138 Round Tile 1 × 1 placed at [45, 1, 24] …`.
+- **Temple run 4** ([sample](samples/japanese-temple-one-shot-target/README.md)), GPT-6.1-Sol, target 2,000, low to max:
+  - Every effort was accepted, max on its first reply.
+  - Accepted counts were 2,007–2,195, 0.4–9.8% from the target. First replies that compiled were 2.5–7.3% off, against 3.1–28.5% in run 3.
+  - Times and tokens were close to run 3's: 5–31 minutes, 11k–61k output tokens.
+  - No bamboo overlaps, though every build used bamboo.
+  - Medium's only error was a compiler fault: a closed fence path doubled its first post. It is fixed, and that reply now compiles cleanly at 1,848 parts. Xhigh's first reply mirrored a component, which the prompt now says is not allowed.
+- **Tests:**
+  - Unit and integration: `npx vitest run` passed 167 files, 1,110 tests. Coverage:
+    - `tests/unit/build-script.test.ts`: any size accepted with `target` and `costliestOps`, `limits.maxParts` still refused, `targetText`/`targetMiss`, copies and placed positions in overlaps, the bamboo message and `overreach`, the closed fence.
+    - `tests/unit/one-shot-build.test.ts`: the prompt's target and counting section, the repair reason with the size line.
+    - `tests/unit/build-workspace.test.ts`: the wrapper passes only `--target-parts`.
+    - `tests/integration/build-cli.test.ts`: far-off targets written with a `size:` line, `maxParts` refused with no model left behind, `--leeway` rejected.
+  - Browser: `tests/browser/build-script.spec.ts` passed, including `limits.maxParts` refusing `apply` and `targetParts` reported by `compile`.
+  - Templates: `tests/unit/template-*.test.ts` unchanged by the fence fix.

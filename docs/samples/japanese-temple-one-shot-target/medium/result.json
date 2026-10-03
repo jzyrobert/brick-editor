@@ -1,0 +1,128 @@
+{
+  "effort": "medium",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 2007,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2007,
+    "difference": 7,
+    "percent": 0.4
+  },
+  "seconds": 452,
+  "tokens": {
+    "input": 60195,
+    "cached": 7040,
+    "output": 14503,
+    "reasoning": 4211
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2412b",
+      "2431",
+      "2435",
+      "3003",
+      "30176",
+      "3023b",
+      "3068b",
+      "3069b",
+      "3471",
+      "3941",
+      "3942c",
+      "4032b",
+      "4589",
+      "4740",
+      "54200",
+      "6141"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 284,
+      "usage": {
+        "input": 27890,
+        "cached": 7040,
+        "output": 9007,
+        "reasoning": 3624
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "2435",
+          "3003",
+          "30176",
+          "3068b",
+          "3471",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1854,
+      "reason": "The script compiled to 1,854 parts (target 2,000: −146, −7.3%). Errors to fix:\n- overlap: 3185 Fence 1 × 4 × 2 Lattice placed at [8, 41, 27] (repeat copy 1/3 > 1/3) and 3185 Fence 1 × 4 × 2 Lattice placed at [8, 41, 27] (repeat copy 1/3 > 1/3) overlap where their bodies meet: x 8–9, y 41–47, z 27–28 (3 pairs like this; repeat copies 1/3 > 1/3 with 1/3 > 1/3, 2/3 > 1/3 with 2/3 > 1/3, 3/3 > 1/3 with 3/3 > 1/3) [sections[2].ops[10].ops[0] > components.pagodaBalcony.ops[1]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 168,
+      "usage": {
+        "input": 32305,
+        "cached": 0,
+        "output": 5496,
+        "reasoning": 587
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "2435",
+          "3003",
+          "30176",
+          "3023b",
+          "3068b",
+          "3069b",
+          "3471",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2007
+    }
+  ]
+}

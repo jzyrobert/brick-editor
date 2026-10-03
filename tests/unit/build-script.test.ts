@@ -613,6 +613,28 @@ describe("build script ops", () => {
     );
   });
 
+  it("closes a fence round a square without a doubled corner", () => {
+    // The fourth temple run's medium reply: a balcony rail round 10 × 10.
+    const { report } = compileBuildScript(
+      script([
+        {
+          op: "fence",
+          path: [
+            [0, 0],
+            [9, 0],
+            [9, 9],
+            [0, 9],
+            [0, 0],
+          ],
+          colour: "white",
+          style: "lattice",
+        },
+      ]),
+    );
+    expect(report.problems.filter((p) => p.code === "overlap")).toEqual([]);
+    expect(report.check!.overlaps).toBe(0);
+  });
+
   it("says where an irregular part's body reaches past its footprint", () => {
     // Bamboo is listed as 1 × 1, but its leaves reach 1–1.5 studs further.
     const { report } = compileBuildScript(
