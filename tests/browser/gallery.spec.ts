@@ -1,36 +1,51 @@
 import { test, expect } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { enterPlay } from "./helpers/play";
+import {
+  BUILD_IDS,
+  GALLERY_ORIGIN,
+  MPD_SHAS,
+  RENDER,
+  TITLES,
+  mockGallery,
+} from "./helpers/gallery";
 
-test("gallery browsing aligns angles, filters efforts, chooses comparisons and labels placeholders", async ({
+test("gallery browsing shows published builds by brief, aligns angles, filters, compares and imports", async ({
   page,
 }) => {
-  await page.goto("./");
+  await mockGallery(page);
+  await page.goto("./?galleryIndex=1");
   await expect(
-    page.getByRole("heading", { name: "One temple. Five takes." }),
+    page.getByRole("heading", { name: "One brief. Two takes." }),
   ).toBeVisible();
-  await expect(page.locator(".gallery-response")).toHaveCount(5);
+  const responses = page.locator(".gallery-response");
+  await expect(responses).toHaveCount(2);
+  // Grouped by model: Claude first, then GPT.
+  await expect(responses.locator("h2")).toHaveText(TITLES.slice(0, 2));
+  await expect(responses.first()).toContainText("Claude Opus 5.5High effort");
+  await expect(responses.first()).toContainText(
+    "Accepted after 2 replies · 19 min",
+  );
   await page.getByRole("button", { name: "Front", exact: true }).click();
-  for (const image of await page.locator(".gallery-stage > img").all())
-    expect(await image.getAttribute("src")).toContain("/front.png");
+  await expect(
+    responses.first().locator(".gallery-stage > img"),
+  ).toHaveAttribute("src", `${GALLERY_ORIGIN}/r/${RENDER(0, 1)}.webp`);
   await page.getByRole("button", { name: "Agent settings" }).click();
   await page.getByLabel("Low effort", { exact: true }).uncheck();
-  await expect(page.locator(".gallery-response")).toHaveCount(4);
+  await expect(responses).toHaveCount(1);
+  await page.getByLabel("Low effort", { exact: true }).check();
   await page
     .getByRole("button", { name: "Compare responses", exact: true })
     .click();
-  await page.getByLabel("Compare response 2").selectOption("max");
-  await expect(page.locator(".gallery-response")).toHaveCount(2);
-  await expect(page.locator(".gallery-response").last()).toContainText(
-    "The temple compound",
-  );
-  await page.getByRole("button", { name: /Seaside village/ }).click();
-  await expect(
-    page.getByRole("heading", { name: "This world is still waiting." }),
-  ).toBeVisible();
+  await expect(responses).toHaveCount(2);
   await page
-    .getByRole("button", { name: "Browse the temple responses" })
+    .getByRole("group", { name: "Choose a prompt" })
+    .getByRole("button", { name: /Lighthouse/ })
     .click();
+  await expect(responses.locator("h2")).toHaveText([TITLES[2]]);
+  await expect(
+    page.getByRole("button", { name: "Compare responses", exact: true }),
+  ).toBeDisabled();
   for (const viewport of [
     { width: 360, height: 600 },
     { width: 411, height: 685 },
@@ -45,11 +60,9 @@ test("gallery browsing aligns angles, filters efforts, chooses comparisons and l
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    const button = page.getByRole("button", {
-      name: "Compare responses",
-      exact: true,
-    });
-    const box = await button.boundingBox();
+    const box = await page
+      .getByRole("button", { name: "Compare responses", exact: true })
+      .boundingBox();
     expect(box!.width).toBeGreaterThanOrEqual(44);
     expect(box!.height).toBeGreaterThanOrEqual(44);
   }
@@ -72,26 +85,77 @@ test("gallery browsing aligns angles, filters efforts, chooses comparisons and l
   await expect(page.locator(".canvas-bottom")).toContainText("1 parts");
 });
 
+test("a build's page spins it in 3D on desktop and waits for a tap on phones", async ({
+  page,
+}) => {
+  const requests = await mockGallery(page);
+  await page.goto(`./?galleryIndex=1&gallery=${BUILD_IDS[0]}`);
+  await expect(page.getByRole("heading", { name: TITLES[0] })).toBeVisible();
+  const facts = page.locator(".gallery-detail-info dl");
+  await expect(facts).toContainText("Model time19 min");
+  await expect(facts).toContainText("Cost$2.84");
+  const stage = page.locator(".gallery-detail-stage");
+  await expect(stage.locator(".gallery-live.ready canvas")).toBeVisible({
+    timeout: 60000,
+  });
+  await expect(stage).toHaveClass(/live/);
+  await expect(stage).toContainText("Drag to turn");
+  // The angle tabs swing the live camera.
+  await page.getByRole("button", { name: "Back", exact: true }).click();
+  await expect(
+    stage.getByRole("button", { name: "Back", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  expect(requests).toContain(`/b/${MPD_SHAS[0]}.mpd.gz`);
+
+  const phone = await page
+    .context()
+    .browser()!
+    .newContext({
+      viewport: { width: 390, height: 844 },
+      hasTouch: true,
+      isMobile: true,
+      baseURL: new URL(page.url()).origin,
+    });
+  const p = await phone.newPage();
+  const phoneRequests = await mockGallery(p);
+  await p.goto(`./?galleryIndex=1&gallery=${BUILD_IDS[1]}`);
+  await expect(p.getByRole("heading", { name: TITLES[1] })).toBeVisible();
+  await expect(p.locator(".gallery-live")).toHaveCount(0);
+  expect(phoneRequests.some((r) => r.startsWith("/b/"))).toBe(false);
+  await p.getByRole("button", { name: "Spin in 3D" }).click();
+  await expect(p.locator(".gallery-live.ready canvas")).toBeVisible({
+    timeout: 60000,
+  });
+  expect(
+    await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+  ).toBe(true);
+  await phone.close();
+});
+
 test("a gallery model opens in all tools, walks in real Play, and protects edited copies", async ({
   page,
 }) => {
-  await page.goto("./?automation=1");
+  await mockGallery(page);
+  await page.goto("./?automation=1&galleryIndex=1");
   await page.waitForFunction(() => !!window.brickEditor);
   await page.getByRole("button", { name: "Gallery", exact: true }).click();
   await page
-    .getByRole("button", { name: "Look closer at The red pagoda", exact: true })
+    .getByRole("button", { name: `Look closer at ${TITLES[0]}`, exact: true })
     .click();
   await page.getByRole("button", { name: "Build", exact: true }).click();
   await expect(page.locator(".gallery-page")).toHaveCount(0, {
     timeout: 60000,
   });
   await expect(page.locator(".app")).toHaveClass(/mode-build/);
+  await expect(page.locator(".model-heading")).toContainText(
+    "Claude Opus 5.5 · High effort · 2 parts",
+  );
   await page.evaluate(() => window.brickEditor!.ready({ strict: true }));
   const before = await page.evaluate(async () => {
     const q = await window.brickEditor!.query();
     return { id: q.occurrences[0].id, parts: q.occurrences.length };
   });
-  expect(before.parts).toBe(1965);
+  expect(before.parts).toBe(2);
   for (const tool of ["Instructions", "Photo", "Project", "Build"] as const) {
     await openMode(page, tool);
     await expect(page.locator(".app")).toHaveClass(
@@ -127,7 +191,7 @@ test("a gallery model opens in all tools, walks in real Play, and protects edite
       commandId: crypto.randomUUID(),
       expectedRevision: q.revision,
       type: "project.rename",
-      payload: { title: "My edited pagoda" },
+      payload: { title: "My edited hall" },
     });
   });
   await page.getByRole("button", { name: "Gallery", exact: true }).click();
@@ -141,7 +205,7 @@ test("a gallery model opens in all tools, walks in real Play, and protects edite
     ),
   ).toBe(galleryRevision);
   await page
-    .getByRole("button", { name: "Explore The temple compound", exact: true })
+    .getByRole("button", { name: `Explore ${TITLES[1]}`, exact: true })
     .click();
   await expect(page.getByRole("dialog")).toContainText(
     "Save your current build first?",
@@ -156,15 +220,14 @@ test("a gallery model opens in all tools, walks in real Play, and protects edite
     ),
   ).toBe(before.id);
   await page.getByRole("button", { name: "Play", exact: true }).click();
-  await expect(page.getByLabel("Project title")).toHaveValue(
-    "My edited pagoda",
-  );
+  await expect(page.getByLabel("Project title")).toHaveValue("My edited hall");
 });
 
-test("failed sample loading preserves the current model and the offline snapshot includes gallery assets", async ({
+test("failed or damaged builds keep the current model, and the gallery says when it needs a connection", async ({
   page,
 }) => {
-  await page.goto("./?automation=1");
+  await mockGallery(page, { model: "down" });
+  await page.goto("./?automation=1&galleryIndex=1");
   await page.waitForFunction(() => !!window.brickEditor);
   await page.evaluate(async () => {
     await window.brickEditor!.project.import({
@@ -176,22 +239,46 @@ test("failed sample loading preserves the current model and the offline snapshot
   const id = await page.evaluate(
     async () => (await window.brickEditor!.query()).occurrences[0].id,
   );
-  await page.route("**/gallery/japanese-temple/high/build.json", (route) =>
-    route.fulfill({ status: 503, body: "Unavailable" }),
-  );
   await page.getByRole("button", { name: "Gallery", exact: true }).click();
   await page
-    .getByRole("button", { name: "Explore The red pagoda", exact: true })
+    .getByRole("button", { name: `Explore ${TITLES[0]}`, exact: true })
     .click();
-  await expect(page.getByRole("alert")).toContainText(
-    "This sample could not load",
+  await expect(page.locator(".gallery-error")).toContainText(
+    "The gallery is unavailable (HTTP 503)",
   );
   expect(
     await page.evaluate(
       async () => (await window.brickEditor!.query()).occurrences[0].id,
     ),
   ).toBe(id);
-  const files: string[] = await page.evaluate(
+
+  const damaged = await page.context().newPage();
+  await mockGallery(damaged, { model: "corrupt" });
+  await damaged.goto(`./?galleryIndex=1&gallery=${BUILD_IDS[1]}`);
+  await damaged.getByRole("button", { name: "Explore this model" }).click();
+  await expect(damaged.locator(".gallery-error")).toContainText(
+    "does not match the gallery",
+  );
+
+  const offline = await page.context().newPage();
+  await mockGallery(offline, { index: "offline" });
+  await offline.goto("./?galleryIndex=1");
+  await expect(
+    offline.getByRole("heading", { name: "The gallery needs a connection." }),
+  ).toBeVisible();
+  await expect(
+    offline.getByRole("button", { name: "Try again" }),
+  ).toBeVisible();
+
+  // Plain http without the switch never reaches the bucket.
+  const local = await page.context().newPage();
+  const requests = await mockGallery(local);
+  await local.goto("./");
+  await expect(local.getByRole("alert")).toContainText(
+    "does not read the published gallery",
+  );
+  expect(requests).toEqual([]);
+  const files: string[] = await local.evaluate(
     async () =>
       (
         await (
@@ -199,7 +286,5 @@ test("failed sample loading preserves the current model and the offline snapshot
         ).json()
       ).files,
   );
-  expect(files).toContain("gallery/japanese-temple/high/build.json");
-  expect(files).toContain("gallery/japanese-temple/max/iso.png");
   expect(files).toContain("fonts/BricolageGrotesque.ttf");
 });

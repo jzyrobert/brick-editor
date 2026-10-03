@@ -736,23 +736,21 @@ and actual selected phone views do not certify physical assembly. The
 [independent review](reports/instruction-generation/hybrid-workflow-critic.md)
 record scope, refusals, unchanged scores and remaining feasible work.
 
-## Agent gallery backend, phase 1 — 3 October 2026
+## Agent gallery, phase 1 — 3 October 2026
 
-The backend for the [agent gallery](GALLERY-PLAN.md) is built; the page side
-(Gallery reading the published index) is separate front-end work. Built:
+Builds are published to the [agent gallery](GALLERY-PLAN.md) and the Gallery
+shows only those (the bundled samples are gone). Live: 10 temple builds from the
+two run-4 runs (GPT-6.1-Sol and Opus 5.5) on `gallery.bricks.robertj.in`.
 
-- `npm run gallery:publish` (`scripts/gallery-publish.ts`): reads one-shot run
-  folders or single build scripts and recompiles each build, refusing any with
-  errors. It writes gzipped MPDs, scripts, run reports and Realistic WebP
-  renders by SHA-256, records rows in D1 (`migrations/0001_gallery.sql`) and
-  rebuilds `index.json`. Without `--remote` it runs against a local D1 and
-  `.local/gallery-out/`.
-- `src/catalog/gallery-index.ts`: the `index.json` format and decoder, index
-  generation from D1 rows, and `fetchGalleryModel`/`verifyGalleryBuild`, which
-  check a build's size, SHA-256 and library release (with an offline cache).
-- D1 `brick-gallery` and `brick-gallery-preview` exist with the migration
-  applied, and so do the R2 buckets of the same names. The custom domain,
-  CORS and cache rule are not set up yet, so nothing is published.
-
-A dry run over all six temple runs recorded 24 builds (5 runs, 2 models); the
-5 builds of the first run are refused by the colour check added after them.
+- `npm run gallery:publish` (`scripts/gallery-publish.ts`): recompiles each
+  accepted build (refusing errors), writes gzipped MPDs, scripts, run reports
+  and Realistic WebP renders by SHA-256, records rows in D1
+  (`migrations/0001_gallery.sql`) and rebuilds `index.json`.
+- Gallery reads the index (`src/catalog/gallery-index.ts`, `galleryPrompts`),
+  groups builds by model and effort, and opens them after checking each MPD's
+  size, SHA-256 and library release.
+- The detail page spins the build in 3D in the Realistic look
+  (`src/ui/GalleryPreview.tsx`): on open on desktops, on **Spin in 3D** on
+  touch or narrow screens.
+- Without the index (offline, or a local server without `?galleryIndex=1`) the
+  Gallery says it needs a connection and offers **Open your model**.

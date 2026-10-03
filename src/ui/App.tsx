@@ -13,15 +13,18 @@ import { InstructionTray } from "./InstructionTray";
 import { LimitedSource } from "./LimitedSource";
 import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
-import { Gallery } from "./Gallery";
+import { Gallery, type GallerySource } from "./Gallery";
 import {
-  GALLERY_SAMPLES,
   MODEL_TOOLS,
-  galleryAsset,
-  type GallerySample,
-  type GallerySampleId,
+  galleryPrompts,
+  type GalleryEntry,
   type ModelTool,
 } from "../catalog/gallery";
+import {
+  fetchGalleryModel,
+  galleryIndexEnabled,
+  loadGalleryIndex,
+} from "../catalog/gallery-index";
 import { RigAuthoring } from "./RigAuthoring";
 import { RigPhysicsAuthoring } from "./RigPhysicsAuthoring";
 import { SeatAuthoring } from "./SeatAuthoring";
@@ -163,7 +166,13 @@ import {
   ensure,
 } from "../core/types";
 import { identity, rotationY, compose } from "../core/math";
-import { catalog, catalogCategoryOrder, colors } from "../catalog/catalog";
+import {
+  catalog,
+  catalogCategoryOrder,
+  colors,
+  libraryLock,
+  retiredLibraryLocks,
+} from "../catalog/catalog";
 import { ColorPicker, colourAvailabilityHint } from "./ColorPicker";
 import { loadTemplate } from "../catalog/template-loader";
 import {
@@ -481,13 +490,21 @@ function Workspace() {
       !location.hash.startsWith("#v=") &&
       new URLSearchParams(location.search).get("automation") !== "1",
   );
-  const [galleryDetail, setGalleryDetail] = useState<GallerySampleId>();
-  const [galleryPending, setGalleryPending] = useState<GallerySampleId>();
+  // `?gallery=<id>` opens that published build's page.
+  const [galleryDetail, setGalleryDetail] = useState<string | undefined>(
+    () => new URLSearchParams(location.search).get("gallery") ?? undefined,
+  );
+  const [galleryPending, setGalleryPending] = useState<string>();
   const [galleryError, setGalleryError] = useState("");
   const [galleryModel, setGalleryModel] = useState<{
-    sample: GallerySample;
+    entry: GalleryEntry;
     projectId: string;
   }>();
+  // The published builds (docs/GALLERY-PLAN.md), read once Gallery is shown.
+  const [gallerySource, setGallerySource] = useState<GallerySource>({
+    state: "loading",
+  });
+  const [galleryAttempt, setGalleryAttempt] = useState(0);
   const galleryOpenRef = useRef(galleryOpen);
   galleryOpenRef.current = galleryOpen;
   const [generatingInstructions, setGeneratingInstructions] = useState(false);
@@ -4128,42 +4145,62 @@ function Workspace() {
     setGalleryDetail(undefined);
     setGalleryOpen(true);
   };
+  useEffect(() => {
+    if (!galleryOpen || gallerySource.state === "ready") return;
+    if (!galleryIndexEnabled(location)) {
+      setGallerySource({
+        state: "failed",
+        message:
+          "This local copy does not read the published gallery (add ?galleryIndex=1).",
+      });
+      return;
+    }
+    let live = true;
+    setGallerySource({ state: "loading" });
+    loadGalleryIndex()
+      .then((index) => {
+        if (live)
+          setGallerySource({ state: "ready", prompts: galleryPrompts(index) });
+      })
+      .catch((e: Error) => {
+        if (live) setGallerySource({ state: "failed", message: e.message });
+      });
+    return () => {
+      live = false;
+    };
+  }, [galleryOpen, galleryAttempt]);
+  /** Opens a published build as a new local project: its MPD is fetched and
+   * checked against the index (size, SHA-256, library release) first. */
   async function openGalleryModel(
-    sample: GallerySample,
+    entry: GalleryEntry,
     destination: ModelTool | "Play",
   ) {
     if (galleryPending) return;
-    setGalleryPending(sample.id);
+    setGalleryPending(entry.id);
     setGalleryError("");
     try {
       await applicationAPI.ready();
-      await replaceProject(`“${sample.title}”`, async () => {
+      await replaceProject(`“${entry.title}”`, async () => {
         const epoch = ++operationEpoch.current;
-        const revision = editor.revision;
-        const response = await fetch(galleryAsset(sample, "build.json"));
-        if (!response.ok)
-          throw new Error(
-            "This sample could not load. Check your connection or install the offline copy.",
-          );
-        const script: unknown = await response.json();
+        const text = await fetchGalleryModel(entry.build, entry.files, {
+          maxBytes: resourceLimits(editor.resourceProfile).importBytes,
+          locks: [libraryLock, ...retiredLibraryLocks],
+        });
         ensure(
           epoch === operationEpoch.current,
           "CANCELLED",
-          "Opening sample cancelled",
+          "Opening the model was cancelled",
         );
         renderer.current?.requestFitOnFirstParts();
         setBusy(true);
         try {
-          const result = await applicationAPI.buildScript.apply({
-            script,
-            expectedRevision: revision,
+          const result = await applicationAPI.project.import({
+            format: "ldraw",
+            text,
+            name: `${entry.title}.mpd`,
           });
-          ensure(
-            result.applied,
-            "INVALID_INPUT",
-            "This sample could not be compiled.",
-          );
-          setGalleryModel({ sample, projectId: editor.projectId });
+          if (result.materialization.status === "limited") return;
+          setGalleryModel({ entry, projectId: editor.projectId });
           setActiveLayer(editor.project.defaultLayerId);
           setSelectionSafe([]);
           setPanel("Canvas");
@@ -4171,7 +4208,8 @@ function Workspace() {
           await renderer.current?.ready();
           renderer.current?.fit();
           setStatus(
-            `Opened “${sample.title}” · GPT-6.1-Sol · ${sample.effort} effort`,
+            `Opened “${entry.title}” · ${entry.agent}` +
+              (entry.effort ? ` · ${entry.effort} effort` : ""),
           );
         } finally {
           renderer.current?.requestFitOnFirstParts(false);
@@ -4187,7 +4225,7 @@ function Workspace() {
     }
   }
   const currentGalleryModel =
-    galleryModel?.projectId === project.id ? galleryModel.sample : undefined;
+    galleryModel?.projectId === project.id ? galleryModel.entry : undefined;
   // Build tools (the Inspector's advanced drawers).
   const toolsTab = inspectorTools;
   const modelTools = (
@@ -4439,11 +4477,13 @@ function Workspace() {
             onClick={() => {
               void run(async () => {
                 await applicationAPI.ready();
-                if (galleryOpen && !occurrences(editor.project).length)
-                  await openGalleryModel(
-                    GALLERY_SAMPLES.find((s) => s.id === "max")!,
-                    "Play",
-                  );
+                // An empty canvas walks the first published build instead.
+                const first =
+                  gallerySource.state === "ready"
+                    ? gallerySource.prompts[0]?.entries[0]
+                    : undefined;
+                if (galleryOpen && first && !occurrences(editor.project).length)
+                  await openGalleryModel(first, "Play");
                 else enterMode("Play");
               });
             }}
@@ -4462,6 +4502,9 @@ function Workspace() {
       </header>
       {galleryOpen && (
         <Gallery
+          source={gallerySource}
+          onRetry={() => setGalleryAttempt((n) => n + 1)}
+          maxBytes={resourceLimits(editor.resourceProfile).importBytes}
           detailId={galleryDetail}
           onDetail={setGalleryDetail}
           onOpen={(s, m) => void openGalleryModel(s, m)}
@@ -4480,7 +4523,10 @@ function Workspace() {
               <strong>{currentGalleryModel?.title ?? project.title}</strong>
               <span>
                 {currentGalleryModel
-                  ? `GPT-6.1-Sol · ${currentGalleryModel.effort} effort · `
+                  ? `${currentGalleryModel.agent} · ` +
+                    (currentGalleryModel.effort
+                      ? `${currentGalleryModel.effort} effort · `
+                      : "")
                   : ""}
                 {all.length.toLocaleString("en")} parts
               </span>

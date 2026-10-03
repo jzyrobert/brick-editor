@@ -840,20 +840,17 @@ complete labels inside 48px targets and a reachable Enter Play action.
 Physical phone performance and the full CI suite were not run for this design
 change. These checks do not establish large-model or Photo performance.
 
-## Agent gallery backend, phase 1 (3 October 2026)
+## Agent gallery, phase 1 (3 October 2026)
 
-- **Unit:** `tests/unit/gallery-index.test.ts` and `tests/unit/gallery-publish.test.ts` cover:
-  - prompt and agent ids and names;
-  - index generation from D1 rows, round-tripped through the decoder;
-  - the decoder dropping inconsistent builds (an id that is not the MPD hash, an unknown agent, a render that is not a hash);
-  - download checks (size, checksum, library release, damaged gzip);
-  - when a page should read the index (https or `?galleryIndex=1`);
-  - SQL quoting (an injection string stays a literal);
-  - one-shot folder discovery (accepted efforts only, older runs as Codex);
-  - each prompt and agent inserted once.
-- **Dry run:** `npm run gallery:publish -- docs/samples/japanese-temple-one-shot*` against a local D1 applied the migration and recorded 24 builds. It refused the five first-run builds (colour errors) and skipped one unaccepted effort and one folder without a script. Re-running skips everything already published.
-- **D1:** `brick-gallery` and `brick-gallery-preview` were created through the Cloudflare connector, and the migration applied to each (10 statements, including the `d1_migrations` record).
-- **Not checked:** a real publish (`--remote`), and the bucket's CORS and cache headers. Those wait on R2. The Gallery page does not read the index yet; that is front-end work.
+- **Unit:** `tests/unit/gallery-index.test.ts` and `tests/unit/gallery-publish.test.ts`: ids and names, index generation from D1 rows and its decoder, download checks (size, checksum, library release, damaged gzip), when a page reads the index, SQL quoting, one-shot folder discovery, and each prompt and agent inserted once.
+- **Browser:** `tests/browser/gallery.spec.ts` (4 tests) mocks the bucket (`tests/browser/helpers/gallery.ts`) and checks:
+  - browsing by brief, shared angles, the effort filter, compare (disabled for a single build), no overflow and 44 px targets at six sizes, and Open your model;
+  - the detail page's facts and live 3D view loading on a desktop, the angle tabs, and on a 390 × 844 touch phone no MPD request until **Spin in 3D**;
+  - opening a build in all four tools and walking it in Play, and the save prompt protecting an edited copy;
+  - a 503 or damaged MPD keeping the current model, the "needs a connection" state, and no request to the bucket on plain http without `?galleryIndex=1`.
+- **Live:** `index.json` on `gallery.bricks.robertj.in` serves 10 builds with CORS for the site and `max-age=60`; MPDs and renders are `immutable`. Screenshots of the Gallery and the live preview (desktop 1440 × 1000, phone 390 × 844) were taken against a local mirror of the live files.
+- **Design check:** Impeccable's detector found one new off-ramp font size (fixed to the 43 px display step); its other advisories predate this change.
+- **Not checked:** a physical phone (memory and frame time with the preview beside the workspace scene).
 
 ## brick.build, draft checks and the recalibrated prompt (3 October 2026)
 

@@ -266,7 +266,7 @@ Primary Gallery buttons lift 1px on hover and press down 2px on activation over 
 
 The shared radius vocabulary progresses from field (8px) and key (10px), through card (12px) and slab (14px), to dock (16px) and sheet (18px). Compact prompt count badges use 6px. Gallery stages use 16px corners, reducing to 14px on phones; menus use 16px. Native circular walking controls remain circles.
 
-Borders define fields, part choices and disclosures rather than surrounding every section. Header and model controls can use borderless slabs. Gallery preview images multiply against their pastel stage grounds; real interactive rendering remains the scene itself. Icons use the authored 24px viewbox, 2px stroke and round caps and joins; disclosure chevrons are drawn in CSS.
+Borders define fields, part choices and disclosures rather than surrounding every section. Header and model controls can use borderless slabs. Gallery preview images multiply against their pastel stage grounds; the detail page's live 3D view multiplies the same way and fades in over its picture. Icons use the authored 24px viewbox, 2px stroke and round caps and joins; disclosure chevrons are drawn in CSS.
 
 ## Components
 

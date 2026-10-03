@@ -1,6 +1,6 @@
 # Plan: a gallery, arena and leaderboard of agent builds
 
-Status: **phase 1 built, not deployed.** Written 3 October 2026. The backend (publish script, D1 schema, index format and download checks) is in the repository, tested against a local D1 ([§12](#12-phase-1-as-built)). The page side is separate front-end work. Phase 0 has started: the D1 databases `brick-gallery` and `brick-gallery-preview` exist (Western Europe), with `migrations/0001_gallery.sql` applied and recorded in `d1_migrations`, and their IDs are in `wrangler.gallery.toml`. The R2 buckets `brick-gallery` and `brick-gallery-preview` exist too. Still to do: the custom domain, CORS (`scripts/gallery-cors.json`, the dashboard's JSON format), the cache rule and a publishing token. Nothing is published yet.
+Status: **phase 1 built and published.** Written 3 October 2026. The publish script, D1 and the R2 bucket on `gallery.bricks.robertj.in` are live with 10 temple builds (the two run-4 runs, GPT-6.1-Sol and Opus 5.5). The app's Gallery shows only published builds, with a live 3D view on each detail page ([§12](#12-phase-1-as-built)). Votes, the arena and the leaderboard (phases 2 and 3) are not built.
 
 The idea comes from [Minebench](https://github.com/Ammaar-Alam/minebench) (see also [PERFORMANCE-MINEBENCH.md](PERFORMANCE-MINEBENCH.md)): people browse builds that models made from the same prompt, vote blind between two of them, and models are ranked from the votes.
 
@@ -377,12 +377,12 @@ CI (`.github/workflows/cloudflare.yml`):
 
 Built on 3 October 2026. Meanwhile, a redesign on `main` made Gallery the app's default mode, with bundled samples ([GALLERY.md](GALLERY.md)), so §6's separate `gallery.html` is dropped. Gallery should read the published index itself. That page work is done separately; this phase built the backend and the contract the page uses:
 
-**Contract for the front end** (`src/catalog/gallery-index.ts`)
+**Front end** (the redesign's in-app Gallery)
 
-- `loadGalleryIndex()` and `decodeGalleryIndex()`: the published `index.json`, with its shape checked. Builds with an unknown prompt or agent, or an inconsistent id, are dropped.
-- `fetchGalleryModel(build, files, { maxBytes, locks })`: a build's MPD text, checked by `verifyGalleryBuild` (size, SHA-256, library release) and cached for offline use.
-- `galleryIndexEnabled(location)`: true on https pages or with `?galleryIndex=1`, so local servers and browser tests never reach the real bucket.
-- `galleryFileUrl(files, "r", sha)`: render URLs. The CSP must add `https://gallery.bricks.robertj.in` to `img-src` and `connect-src`.
+- `galleryPrompts(index)` (`src/catalog/gallery.ts`) maps published builds to Gallery entries; the five bundled GPT-6.1-Sol samples are gone, so Gallery needs a connection and says so when the index can't load.
+- Explore and the tools fetch a build's MPD with `fetchGalleryModel`, checked by `verifyGalleryBuild` (size, SHA-256, library release), and cache it for offline use.
+- The detail page has a live, spinnable view in the Realistic look (`src/ui/GalleryPreview.tsx`): a second `SceneAdapter` without the grid, freed when the page closes. The angle tabs swing its camera to the renders' framing. It loads on open on desktops and on **Spin in 3D** on touch or narrow screens. A `.glb` export was considered and rejected: the Realistic look's lighting, shader tweak and post-processing don't survive export, and the app already ships the renderer.
+- `galleryIndexEnabled(location)` keeps local servers and tests off the real bucket (https, or `?galleryIndex=1`). The CSP allows `https://gallery.bricks.robertj.in` in `img-src` and `connect-src`.
 
 **Published files**
 
@@ -406,4 +406,4 @@ Built on 3 October 2026. Meanwhile, a redesign on `main` made Gallery the app's 
 
 **Refusals.** The first temple run's five builds now fail the colour check added after they were made (for example, 3633 in dark brown), so they are refused. The other 24 accepted temple builds, from 5 runs and 2 models, compile with no errors; each has one or two warnings (floating parts).
 
-What's left for phase 1's "done when": publishing for real, the front end reading the index, then checking it on a 1,080 × 1,800 phone.
+What's left for phase 1's "done when": a check on a physical 1,080 × 1,800 phone (the live preview's memory and frame time beside the workspace scene).

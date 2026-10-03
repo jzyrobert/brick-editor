@@ -16,7 +16,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Gallery content
 
-- [ ] Add sourced responses from other agents and additional prompts; the initial gallery contains one agent at five reasoning levels and explicit placeholders ([GALLERY](docs/GALLERY.md)).
+- [ ] Publish more prompts and agents (10 temple builds from 2 models are published); see [GALLERY](docs/GALLERY.md).
 
 ## Rendering and performance
 
@@ -111,9 +111,10 @@ From [AGENT-BUILDING](docs/AGENT-BUILDING.md) and the [design-language study](do
 From [GALLERY-PLAN](docs/GALLERY-PLAN.md); the backend of phase 1 (publish script, D1 schema, index format and download checks in `src/catalog/gallery-index.ts`) is built:
 
 - [x] Phase 0, D1: `brick-gallery` and `brick-gallery-preview` created with the migration applied; IDs in `wrangler.gallery.toml`.
-- [ ] Front end: Gallery reads the published index (`loadGalleryIndex`, `galleryIndexEnabled`), opens builds through `fetchGalleryModel`, and the CSP allows the bucket origin.
+- [x] Front end: Gallery reads the published index, the detail page spins builds in 3D, and the CSP allows the bucket origin.
 - [x] Phase 0, R2: buckets `brick-gallery` and `brick-gallery-preview` created.
-- [ ] Phase 0, the rest: connect `gallery.bricks.robertj.in` to `brick-gallery`, apply `scripts/gallery-cors.json`, add the cache rule, and create a publishing API token (D1 Edit, R2 Edit).
+- [x] Phase 0, the rest: custom domain, CORS, cache rule (browser TTL respects origin) and publishing token; 10 builds from the two run-4 temple runs published.
+- [ ] Check the live 3D preview's memory and frame time on a physical phone beside the workspace scene.
 - [ ] Publish the 24 temple builds with `--remote`; check them on a 1,080 × 1,800 phone, and that a second visit to a build fetches only `index.json`.
 - [ ] Phase 2: the vote Function, the arena and the AGENTS.md rule change. Needs 2 or more prompts with 3 or more agents each.
 - [ ] Phase 3: `scripts/gallery-rank.ts`, the hourly workflow, a leaderboard view in Gallery.

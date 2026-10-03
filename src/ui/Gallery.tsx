@@ -1,25 +1,41 @@
 import { useEffect, useRef, useState } from "react";
 import {
   GALLERY_ANGLES,
-  GALLERY_SAMPLES,
   MODEL_TOOLS,
-  galleryAsset,
   type GalleryAngle,
-  type GallerySample,
-  type GallerySampleId,
+  type GalleryEntry,
+  type GalleryPromptView,
   type ModelTool,
 } from "../catalog/gallery";
+import { GalleryPreview, type PreviewState } from "./GalleryPreview";
 import { Icon, type IconName } from "./icons";
 
+/** Where the published builds are: loading, unavailable, or here. */
+export type GallerySource =
+  | { state: "loading" }
+  | { state: "failed"; message: string }
+  | { state: "ready"; prompts: GalleryPromptView[] };
+
 type Props = {
-  detailId?: GallerySampleId;
-  onDetail: (id?: GallerySampleId) => void;
-  onOpen: (sample: GallerySample, mode: ModelTool | "Play") => void;
-  pending?: GallerySampleId;
+  source: GallerySource;
+  onRetry: () => void;
+  detailId?: string;
+  onDetail: (id?: string) => void;
+  onOpen: (entry: GalleryEntry, mode: ModelTool | "Play") => void;
+  pending?: string;
   error: string;
   onImport: () => void;
+  /** This device's import limit (the 3D preview checks against it). */
+  maxBytes: number;
 };
 const count = (n: number) => n.toLocaleString("en");
+const agentLabel = (e: GalleryEntry) =>
+  e.effort ? `${e.agent}, ${e.effort} effort` : e.agent;
+/** Phones and touch tablets start the detail page on its still pictures, and
+ * load the 3D view on request (data and battery). */
+const startsStill = () =>
+  typeof matchMedia === "function" &&
+  matchMedia("(pointer: coarse), (max-width: 760px)").matches;
 
 function Angles({
   value,
@@ -47,57 +63,189 @@ function Angles({
   );
 }
 function ModelImage({
-  sample,
+  entry,
   angle,
 }: {
-  sample: GallerySample;
+  entry: GalleryEntry;
   angle: GalleryAngle;
 }) {
   return (
     <img
-      src={galleryAsset(sample, `${angle}.png`)}
-      alt={`${sample.title}, GPT-6.1-Sol at ${sample.effort} effort, ${GALLERY_ANGLES.find((a) => a.id === angle)!.label} view`}
+      src={entry.images[angle]}
+      alt={`${entry.title}, ${agentLabel(entry)}, ${GALLERY_ANGLES.find((a) => a.id === angle)!.label} view`}
       loading="lazy"
-      width="1440"
-      height="1000"
+      width="1280"
+      height="960"
     />
   );
 }
 
+function DetailStage({
+  entry,
+  maxBytes,
+}: {
+  entry: GalleryEntry;
+  maxBytes: number;
+}) {
+  const [angle, setAngle] = useState<GalleryAngle>("iso");
+  const [live, setLive] = useState(() => !startsStill());
+  const [state, setState] = useState<{ s: PreviewState; message?: string }>({
+    s: "loading",
+  });
+  useEffect(() => {
+    setAngle("iso");
+    setLive(!startsStill());
+    setState({ s: "loading" });
+  }, [entry.id]);
+  const showing3d = live && state.s === "ready";
+  return (
+    <section
+      className={`gallery-detail-stage gallery-tone-${entry.tone}${showing3d ? " live" : ""}`}
+      aria-label="Selected model preview"
+    >
+      <ModelImage entry={entry} angle={angle} />
+      {live && state.s !== "failed" && (
+        <GalleryPreview
+          entry={entry}
+          angle={angle}
+          maxBytes={maxBytes}
+          onState={(s, message) => setState({ s, message })}
+        />
+      )}
+      <div className="gallery-stage-status">
+        {!live && (
+          <button className="gallery-spin" onClick={() => setLive(true)}>
+            <Icon name="view" size={18} />
+            Spin in 3D
+          </button>
+        )}
+        {live && state.s === "loading" && (
+          <span className="gallery-stage-note" role="status">
+            Loading the 3D model…
+          </span>
+        )}
+        {live && state.s === "ready" && (
+          <span className="gallery-stage-note">
+            Drag to turn · pinch to zoom
+          </span>
+        )}
+        {live && state.s === "failed" && (
+          <span className="gallery-stage-note" role="status">
+            The 3D view could not load ({state.message?.replace(/\.$/, "")}).
+            The pictures are still here.
+          </span>
+        )}
+      </div>
+      <Angles value={angle} onChange={setAngle} />
+    </section>
+  );
+}
+
 export function Gallery({
+  source,
+  onRetry,
   detailId,
   onDetail,
   onOpen,
   pending,
   error,
   onImport,
+  maxBytes,
 }: Props) {
-  const [prompt, setPrompt] = useState("temple");
+  const prompts = source.state === "ready" ? source.prompts : [];
+  const [promptId, setPromptId] = useState("");
   const [angle, setAngle] = useState<GalleryAngle>("iso");
   const [compare, setCompare] = useState(false);
-  const [pair, setPair] = useState<[GallerySampleId, GallerySampleId]>([
-    "high",
-    "xhigh",
-  ]);
-  const [efforts, setEfforts] = useState<GallerySampleId[]>(
-    GALLERY_SAMPLES.map((s) => s.id),
-  );
+  const [pair, setPair] = useState<[string, string]>(["", ""]);
+  // Builds hidden by the agent filter (new builds start shown).
+  const [hidden, setHidden] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [detailAngle, setDetailAngle] = useState<GalleryAngle>("iso");
   const heading = useRef<HTMLHeadingElement>(null);
-  const sample = GALLERY_SAMPLES.find((s) => s.id === detailId);
+  const prompt = prompts.find((p) => p.id === promptId) ?? prompts[0];
+  const entries = prompt?.entries ?? [];
+  const all = prompts.flatMap((p) => p.entries.map((e) => ({ p, e })));
+  const detail = all.find((x) => x.e.id === detailId);
   useEffect(() => {
-    setDetailAngle("iso");
     heading.current?.focus({ preventScroll: true });
   }, [detailId]);
-  const open = (s: GallerySample, mode: ModelTool | "Play") => onOpen(s, mode);
-  const filtered = compare
-    ? pair.map((id) => GALLERY_SAMPLES.find((s) => s.id === id)!)
-    : GALLERY_SAMPLES.filter((s) => efforts.includes(s.id));
+  useEffect(() => {
+    setPair([entries[0]?.id ?? "", entries[1]?.id ?? entries[0]?.id ?? ""]);
+    setHidden([]);
+    setCompare(false);
+  }, [prompt?.id, prompts]);
+  const byId = (id: string) => entries.find((e) => e.id === id);
+  const shown = compare
+    ? pair.map(byId).filter((e): e is GalleryEntry => !!e)
+    : entries.filter((e) => !hidden.includes(e.id));
   const selectPrompt = (value: string) => {
-    setPrompt(value);
+    setPromptId(value);
     onDetail(undefined);
   };
+  // Agent filter: one group per model, one box per reasoning level (repeat
+  // runs at a level share it).
+  const groups = [...new Set(entries.map((e) => e.agent))].map((agent) => {
+    const mine = entries.filter((e) => e.agent === agent);
+    const label = (e: GalleryEntry) =>
+      e.effort ? `${e.effort} effort` : e.title;
+    return {
+      agent,
+      levels: [...new Set(mine.map(label))].map((l) => ({
+        label: l,
+        ids: mine.filter((e) => label(e) === l).map((e) => e.id),
+      })),
+    };
+  });
+  const pendingEntry = all.find((x) => x.e.id === pending)?.e;
+  const footer = (
+    <footer className="gallery-footer">
+      <strong>One prompt. Many builds. Step inside.</strong>
+      <span>
+        {prompts.length
+          ? `${count(all.length)} published builds`
+          : "Published agent builds"}
+      </span>
+      <button className="gallery-phone-import" onClick={onImport}>
+        <Icon name="arrowUp" size={18} /> Open your model
+      </button>
+    </footer>
+  );
+  if (source.state !== "ready" || !prompt)
+    return (
+      <main className="gallery-page" aria-label="Agent model gallery">
+        <div className="gallery-body">
+          {source.state === "loading" ? (
+            <div className="gallery-empty" role="status">
+              <Icon name="layers" size={36} />
+              <h1>Fetching the builds…</h1>
+              <p>The gallery loads its models from the published collection.</p>
+            </div>
+          ) : (
+            <div className="gallery-empty" role="alert">
+              <Icon name="layers" size={36} />
+              <h1>
+                {source.state === "failed" ? source.message : "No builds yet."}
+              </h1>
+              <p>
+                {source.state === "failed"
+                  ? "You can still open your own models."
+                  : "Published builds will appear here."}
+              </p>
+              <div className="gallery-empty-actions">
+                {source.state === "failed" && (
+                  <button className="primary" onClick={onRetry}>
+                    Try again
+                  </button>
+                )}
+                <button onClick={onImport}>
+                  <Icon name="arrowUp" size={18} /> Open your model
+                </button>
+              </div>
+            </div>
+          )}
+          {footer}
+        </div>
+      </main>
+    );
   return (
     <main className="gallery-page" aria-label="Agent model gallery">
       {error && (
@@ -105,54 +253,50 @@ export function Gallery({
           {error} Try opening the model again.
         </div>
       )}
-      {pending && (
+      {pendingEntry && (
         <div className="gallery-loading" role="status">
-          Opening the{" "}
-          {GALLERY_SAMPLES.find((s) => s.id === pending)?.title.toLowerCase()}…
+          Opening {pendingEntry.title}…
         </div>
       )}
-      {sample ? (
+      {detail ? (
         <div className="gallery-detail">
           <button className="gallery-back" onClick={() => onDetail(undefined)}>
             <Icon name="arrowLeft" size={18} />
             All responses
           </button>
           <div className="gallery-detail-layout">
-            <section
-              className={`gallery-detail-stage gallery-tone-${sample.tone}`}
-              aria-label="Selected model preview"
-            >
-              <ModelImage sample={sample} angle={detailAngle} />
-              <Angles value={detailAngle} onChange={setDetailAngle} />
-            </section>
+            <DetailStage entry={detail.e} maxBytes={maxBytes} />
             <section className="gallery-detail-info">
-              <h1 ref={heading} tabIndex={-1}>
-                {sample.title}.
+              <h1
+                ref={heading}
+                tabIndex={-1}
+                className={detail.e.title.length > 32 ? "long" : undefined}
+              >
+                {detail.e.title}
               </h1>
               <p className="gallery-source">
-                GPT-6.1-Sol <span>{sample.effort} effort</span>
+                {detail.e.agent}{" "}
+                {detail.e.effort && <span>{detail.e.effort} effort</span>}
               </p>
               <p>
-                {sample.description} Generated from the same short temple brief.
+                Built from the brief “{detail.p.brief}”
+                {detail.p.targetParts
+                  ? `, aiming for ${count(detail.p.targetParts)} parts`
+                  : ""}
+                . {detail.e.summary}.
               </p>
               <dl>
-                <div>
-                  <dt>Parts</dt>
-                  <dd>{count(sample.parts)}</dd>
-                </div>
-                <div>
-                  <dt>Generation</dt>
-                  <dd>One-shot + repair</dd>
-                </div>
-                <div>
-                  <dt>Source</dt>
-                  <dd>Geometry-rules run</dd>
-                </div>
+                {detail.e.facts.map(([k, v]) => (
+                  <div key={k}>
+                    <dt>{k}</dt>
+                    <dd>{v}</dd>
+                  </div>
+                ))}
               </dl>
               <button
                 className="primary gallery-explore"
                 disabled={!!pending}
-                onClick={() => open(sample, "Play")}
+                onClick={() => onOpen(detail.e, "Play")}
               >
                 <Icon name="resume" />
                 Explore this model
@@ -166,7 +310,7 @@ export function Gallery({
                   <button
                     key={t.name}
                     disabled={!!pending}
-                    onClick={() => open(sample, t.name)}
+                    onClick={() => onOpen(detail.e, t.name)}
                   >
                     <Icon name={t.name.toLowerCase() as IconName} size={18} />
                     {t.name}
@@ -176,13 +320,20 @@ export function Gallery({
               <details className="gallery-notes">
                 <summary>Prompt &amp; generation notes</summary>
                 <p>
-                  “a japanese buddhist temple” · Target: 2,000 parts ± 5%.
-                  GPT-6.1-Sol, 2 October 2026. Every effort was accepted after a
-                  second reply. Warning diagnostics still apply.
+                  “{detail.p.brief}”
+                  {detail.p.targetParts
+                    ? ` · Target: ${count(detail.p.targetParts)} parts.`
+                    : "."}{" "}
+                  The model wrote a build script, which this app compiled into
+                  real parts and checked. Warnings are the compiler’s own notes,
+                  such as parts that float.
+                  {detail.e.build.source
+                    ? ` Source run: ${detail.e.build.source}.`
+                    : ""}
                 </p>
                 <p>
-                  Titles are editorial descriptions. Models open as editable
-                  local copies; the gallery originals stay intact.
+                  Titles are the models’ own. Models open as editable local
+                  copies; the gallery originals stay intact.
                 </p>
               </details>
             </section>
@@ -197,230 +348,204 @@ export function Gallery({
               role="group"
               aria-label="Choose a prompt"
             >
-              {[
-                { id: "temple", name: "Japanese temple", meta: "5" },
-                { id: "village", name: "Seaside village", meta: "Placeholder" },
-                { id: "station", name: "Space station", meta: "Placeholder" },
-              ].map((p) => (
+              {prompts.map((p) => (
                 <button
                   key={p.id}
-                  aria-pressed={prompt === p.id}
+                  aria-pressed={prompt.id === p.id}
                   onClick={() => selectPrompt(p.id)}
                 >
                   {p.name}
-                  <small>{p.meta}</small>
+                  <small>{p.entries.length}</small>
                 </button>
               ))}
             </div>
             <select
               aria-label="Choose a prompt"
-              value={prompt}
+              value={prompt.id}
               onChange={(e) => selectPrompt(e.target.value)}
             >
-              <option value="temple">Japanese Buddhist temple</option>
-              <option value="village">Seaside village · Placeholder</option>
-              <option value="station">Space station · Placeholder</option>
+              {prompts.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} · {p.entries.length}
+                </option>
+              ))}
             </select>
           </div>
           <div className="gallery-body">
-            {prompt === "temple" ? (
-              <>
-                <div className="gallery-heading">
-                  <div>
-                    <h1 ref={heading} tabIndex={-1}>
-                      One temple. Five takes.
-                    </h1>
-                    <p>The brief: “a japanese buddhist temple”</p>
-                  </div>
-                  <div className="gallery-target">
-                    <Icon name="build" size={18} />
-                    <strong>2,000 parts</strong>
-                    <span>in the brief · ± 5%</span>
-                  </div>
+            <div className="gallery-heading">
+              <div>
+                <h1 ref={heading} tabIndex={-1}>
+                  {prompt.heading}
+                </h1>
+                <p>The brief: “{prompt.brief}”</p>
+              </div>
+              {prompt.targetParts && (
+                <div className="gallery-target">
+                  <Icon name="build" size={18} />
+                  <strong>{count(prompt.targetParts)} parts</strong>
+                  <span>in the brief</span>
                 </div>
-                <div className="gallery-controls">
-                  <div className="gallery-filter-wrap">
-                    <button
-                      className="gallery-quiet"
-                      aria-expanded={filtersOpen}
-                      onClick={() => setFiltersOpen((v) => !v)}
-                    >
-                      Agent settings
-                      <Icon name="collapse" size={16} />
-                    </button>
-                    <span>{filtered.length} real responses</span>
-                    {filtersOpen && (
-                      <div className="gallery-filters">
-                        <strong>GPT-6.1-Sol</strong>
+              )}
+            </div>
+            <div className="gallery-controls">
+              <div className="gallery-filter-wrap">
+                <button
+                  className="gallery-quiet"
+                  aria-expanded={filtersOpen}
+                  onClick={() => setFiltersOpen((v) => !v)}
+                >
+                  Agent settings
+                  <Icon name="collapse" size={16} />
+                </button>
+                <span>
+                  {shown.length} of {entries.length} builds
+                </span>
+                {filtersOpen && (
+                  <div className="gallery-filters">
+                    {groups.map((g) => (
+                      <fieldset key={g.agent}>
+                        <legend>
+                          <strong>{g.agent}</strong>
+                        </legend>
                         <p>Reasoning levels</p>
-                        {GALLERY_SAMPLES.map((s) => (
-                          <label key={s.id}>
+                        {g.levels.map((l) => (
+                          <label key={l.label}>
                             <input
                               type="checkbox"
-                              checked={efforts.includes(s.id)}
-                              onChange={() => {
+                              checked={
+                                !l.ids.every((id) => hidden.includes(id))
+                              }
+                              onChange={(ev) => {
                                 setCompare(false);
-                                setEfforts((ids) =>
-                                  ids.includes(s.id)
-                                    ? ids.filter((id) => id !== s.id)
-                                    : [...ids, s.id],
+                                setHidden((h) =>
+                                  ev.target.checked
+                                    ? h.filter((id) => !l.ids.includes(id))
+                                    : [...h, ...l.ids],
                                 );
                               }}
                             />
-                            {s.effort} effort
+                            {l.label}
                           </label>
                         ))}
-                      </div>
-                    )}
-                  </div>
-                  <Angles value={angle} onChange={setAngle} />
-                  <button
-                    className="gallery-quiet gallery-compare"
-                    aria-label="Compare responses"
-                    aria-pressed={compare}
-                    onClick={() => {
-                      setCompare((v) => !v);
-                      setFiltersOpen(false);
-                    }}
-                  >
-                    <Icon name="columns" size={18} />
-                    <span>Compare</span>
-                  </button>
-                </div>
-                <p className="gallery-sample-note">
-                  <span className="gallery-note-full">
-                    These samples use one agent at five reasoning levels. Other
-                    agents are shown as placeholders.
-                  </span>
-                  <span className="gallery-note-short">
-                    One agent · five reasoning levels · real builds.
-                  </span>
-                </p>
-                {compare && (
-                  <div
-                    className="gallery-compare-pickers"
-                    aria-label="Choose responses to compare"
-                  >
-                    {pair.map((id, i) => (
-                      <label key={i}>
-                        Response {i + 1}
-                        <select
-                          aria-label={`Compare response ${i + 1}`}
-                          value={id}
-                          onChange={(e) => {
-                            const next = [...pair] as typeof pair;
-                            const choice = e.target.value as GallerySampleId;
-                            if (choice === pair[1 - i]) next[1 - i] = pair[i];
-                            next[i] = choice;
-                            setPair(next);
-                          }}
-                        >
-                          {GALLERY_SAMPLES.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.effort} · {s.title}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                      </fieldset>
                     ))}
                   </div>
                 )}
-                {filtered.length ? (
-                  <section
-                    className={`gallery-responses${compare ? " gallery-comparing" : ""}`}
-                    aria-label="Responses to the same prompt"
-                  >
-                    {filtered.map((s) => (
-                      <article className="gallery-response" key={s.id}>
-                        <div className={`gallery-stage gallery-tone-${s.tone}`}>
-                          <ModelImage sample={s} angle={angle} />
-                          <div className="gallery-agent">
-                            <Icon name="build" size={18} />
-                            <span>
-                              GPT-6.1-Sol<small>{s.effort} effort</small>
-                            </span>
-                          </div>
-                          <button
-                            className="gallery-fit"
-                            aria-label={`Look closer at ${s.title}`}
-                            onClick={() => onDetail(s.id)}
-                          >
-                            <Icon name="view" size={18} />
-                          </button>
-                        </div>
-                        <h2>{s.title}</h2>
-                        <p>{s.description}</p>
-                        <div className="gallery-response-actions">
-                          <span>
-                            <strong>{count(s.parts)}</strong> parts
-                          </span>
-                          <button
-                            className="gallery-quiet"
-                            onClick={() => onDetail(s.id)}
-                          >
-                            Look closer
-                          </button>
-                          <button
-                            className="primary"
-                            disabled={!!pending}
-                            onClick={() => open(s, "Play")}
-                          >
-                            <Icon name="resume" size={16} />
-                            Explore<span className="sr-only"> {s.title}</span>
-                          </button>
-                        </div>
-                      </article>
-                    ))}
-                    {!compare && (
-                      <article className="gallery-placeholder">
-                        <Icon name="layers" size={32} />
-                        <h2>Another agent’s take.</h2>
-                        <p>
-                          A placeholder for the next response to this same
-                          brief.
-                        </p>
-                        <span>Placeholder · No model yet</span>
-                      </article>
-                    )}
-                  </section>
-                ) : (
-                  <div className="gallery-empty">
-                    <h2>No responses selected.</h2>
-                    <p>Choose a reasoning level to bring its model back.</p>
-                    <button
-                      onClick={() =>
-                        setEfforts(GALLERY_SAMPLES.map((s) => s.id))
-                      }
+              </div>
+              <Angles value={angle} onChange={setAngle} />
+              <button
+                className="gallery-quiet gallery-compare"
+                aria-label="Compare responses"
+                aria-pressed={compare}
+                disabled={entries.length < 2}
+                onClick={() => {
+                  setCompare((v) => !v);
+                  setFiltersOpen(false);
+                }}
+              >
+                <Icon name="columns" size={18} />
+                <span>Compare</span>
+              </button>
+            </div>
+            <p className="gallery-sample-note">
+              <span className="gallery-note-full">
+                {groups.length === 1
+                  ? `Every build here comes from ${groups[0].agent}, at several reasoning levels.`
+                  : `${groups.length} models, each at several reasoning levels, answered the same brief.`}
+              </span>
+              <span className="gallery-note-short">
+                {groups.length === 1 ? "One model" : `${groups.length} models`}{" "}
+                · {entries.length} real builds
+              </span>
+            </p>
+            {compare && (
+              <div
+                className="gallery-compare-pickers"
+                aria-label="Choose responses to compare"
+              >
+                {pair.map((id, i) => (
+                  <label key={i}>
+                    Response {i + 1}
+                    <select
+                      aria-label={`Compare response ${i + 1}`}
+                      value={id}
+                      onChange={(e) => {
+                        const next = [...pair] as typeof pair;
+                        const choice = e.target.value;
+                        if (choice === pair[1 - i]) next[1 - i] = pair[i];
+                        next[i] = choice;
+                        setPair(next);
+                      }}
                     >
-                      Show all responses
-                    </button>
-                  </div>
-                )}
-              </>
+                      {entries.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.agent}
+                          {s.effort ? ` · ${s.effort}` : ""} · {s.title}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </div>
+            )}
+            {shown.length ? (
+              <section
+                className={`gallery-responses${compare ? " gallery-comparing" : ""}`}
+                aria-label="Responses to the same prompt"
+              >
+                {shown.map((s) => (
+                  <article className="gallery-response" key={s.id}>
+                    <div className={`gallery-stage gallery-tone-${s.tone}`}>
+                      <ModelImage entry={s} angle={angle} />
+                      <div className="gallery-agent">
+                        <Icon name="build" size={18} />
+                        <span>
+                          {s.agent}
+                          {s.effort && <small>{s.effort} effort</small>}
+                        </span>
+                      </div>
+                      <button
+                        className="gallery-fit"
+                        aria-label={`Look closer at ${s.title}`}
+                        onClick={() => onDetail(s.id)}
+                      >
+                        <Icon name="view" size={18} />
+                      </button>
+                    </div>
+                    <h2>{s.title}</h2>
+                    <p>{s.summary}</p>
+                    <div className="gallery-response-actions">
+                      <span>
+                        <strong>{count(s.parts)}</strong> parts
+                      </span>
+                      <button
+                        className="gallery-quiet"
+                        onClick={() => onDetail(s.id)}
+                      >
+                        Look closer
+                      </button>
+                      <button
+                        className="primary"
+                        disabled={!!pending}
+                        onClick={() => onOpen(s, "Play")}
+                      >
+                        <Icon name="resume" size={16} />
+                        Explore<span className="sr-only"> {s.title}</span>
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </section>
             ) : (
               <div className="gallery-empty">
-                <Icon name="layers" size={36} />
-                <h1>This world is still waiting.</h1>
-                <p>
-                  {prompt === "village" ? "Seaside village" : "Space station"}{" "}
-                  is a placeholder prompt. No generated models are available
-                  yet.
-                </p>
-                <button
-                  className="primary"
-                  onClick={() => selectPrompt("temple")}
-                >
-                  Browse the temple responses
+                <h2>No responses selected.</h2>
+                <p>Choose a reasoning level to bring its builds back.</p>
+                <button onClick={() => setHidden([])}>
+                  Show all responses
                 </button>
               </div>
             )}
-            <footer className="gallery-footer">
-              <strong>One prompt. Many builds. Step inside.</strong>
-              <span>Generated sample · 2 October 2026</span>
-              <button className="gallery-phone-import" onClick={onImport}>
-                <Icon name="arrowUp" size={18} /> Open your model
-              </button>
-            </footer>
+            {footer}
           </div>
         </>
       )}

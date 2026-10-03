@@ -12,15 +12,32 @@ Phones use a native prompt chooser and a horizontally scrolling response strip;
 comparison places the two selected responses vertically. Look closer opens a
 larger preview with generation notes and direct access to each model tool.
 
-The initial dataset contains five GPT-6.1-Sol reasoning efforts for the same
-Japanese Buddhist temple prompt, not five different agents. Other agents and
-prompts are explicitly labeled placeholders. Descriptive model names are
-editorial labels, separate from the generator metadata.
+Every response is a build published to the
+[agent gallery](GALLERY-PLAN.md), read from `index.json` on
+`https://gallery.bricks.robertj.in` (`src/catalog/gallery-index.ts`, mapped for
+the page by `galleryPrompts` in `src/catalog/gallery.ts`). Responses are grouped
+by model and ordered by reasoning effort; titles are the build scripts' own.
+Agent settings has one box per model and effort (repeat runs at one effort share
+it). Pictures are the published renders (Realistic look, 1,280 × 960 WebP,
+corner, front and back).
+
+## The detail page and its live view
+
+Look closer shows the build's facts (parts, model time, cost, replies,
+warnings), its source run and the tools. Its stage is a live, spinnable 3D view
+in the Realistic look (`src/ui/GalleryPreview.tsx`): a second, small scene
+without the grid that fetches the build's MPD, checks it against the index and
+fades in over the still picture. The angle tabs swing its camera to the same
+framing as the pictures. Desktops load it when the page opens; touch devices
+and narrow screens show the picture with **Spin in 3D** first, to save data and
+battery. The scene is freed when the page closes, so at most one preview and the
+workspace exist together. `?gallery=<id>` opens a build's page.
 
 ## Opening and editing
 
-Explore compiles the selected source build script into a new local project and
-opens Play. Choose a tool from a detail page to open the same sample in that tool.
+Explore fetches the build's MPD, checks its size, SHA-256 and library release
+against the index, imports it as a new local project and opens Play. Choose a
+tool from a detail page to open the same build in that tool.
 The existing editor, instruction viewer, photo controls, project library,
 import/export, autosave and automation services remain in use.
 
@@ -38,22 +55,19 @@ the model tool menu. Share-preview links
 still open Project. `?automation=1` starts in Build for the existing API clients
 and browser tools; Gallery remains reachable from the main switch.
 
-## Sources, assets and offline behavior
+## Sources, availability and offline behavior
 
-The original source run is
-[geometry-rules temple samples](samples/japanese-temple-one-shot-geometry/README.md).
-Generated on 2 October 2026; every effort was accepted after a second reply and
-warning diagnostics still apply. Parts: Low 2,057; Medium 2,098; High 1,965;
-Xhigh 1,997; Max 2,061.
+Builds come from one-shot runs published with `npm run gallery:publish`
+([GALLERY-PLAN](GALLERY-PLAN.md)); each detail page names its source run. The
+app reads the published index only on https pages: local and test servers need
+`?galleryIndex=1`, and browser tests mock the bucket
+(`tests/browser/helpers/gallery.ts`).
 
-`public/gallery/japanese-temple/` contains unchanged source-script copies and
-three provenance-bearing preview images per response. The runtime compiles
-scripts through the existing build-script service. Editing a local copy never
-changes the gallery assets. Gallery uses static images for comparisons and only
-one interactive scene is kept in the workspace, within the existing budgets.
+Gallery needs a connection. Offline, or when the index can't load, it says so
+with **Try again** and **Open your model**; builds opened before stay in Cache
+Storage and open again offline. A failed or damaged build keeps the current
+document and shows the reason.
 
 The font is local Bricolage Grotesque; retain `public/notices/BRICOLAGE.txt`.
-Existing LDraw notices remain required. All runtime assets are same-origin,
-sub-path aware and included in the opt-in offline snapshot. No backend,
-accounts, uploads, analytics or generation service was added. A failed load
-keeps the current document and displays a retry message.
+Existing LDraw notices remain required. No accounts, uploads, analytics or
+generation service was added.
