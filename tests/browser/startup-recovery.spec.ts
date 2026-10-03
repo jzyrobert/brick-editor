@@ -30,21 +30,16 @@ test("a large autosaved project recovers without freezing the page @perf", async
     new PerformanceObserver((list) => {
       for (const e of list.getEntries()) w.__long.push(e.duration);
     }).observe({ type: "longtask", buffered: true });
-    // When the Project mode tab starts showing as pressed.
+    // When the workspace switches to Project after choosing the model tool.
     new MutationObserver(() => {
-      const pressed = document.querySelector(
-        'nav[aria-label="Editor mode"] button[aria-pressed="true"]',
-      );
-      if (
-        w.__projectPressedAt === undefined &&
-        pressed?.textContent?.includes("Project")
-      )
+      const pressed = document.querySelector(".app.mode-project");
+      if (w.__projectPressedAt === undefined && pressed)
         w.__projectPressedAt = performance.now();
     }).observe(document, {
       subtree: true,
       childList: true,
       attributes: true,
-      attributeFilter: ["aria-pressed"],
+      attributeFilter: ["class"],
     });
   });
   await page.goto("./?automation=1");
@@ -66,6 +61,7 @@ test("a large autosaved project recovers without freezing the page @perf", async
   });
 
   await page.reload();
+  await page.getByRole("button", { name: "Model tools", exact: true }).click();
   const nav = page.getByRole("navigation", { name: "Editor mode" });
   await nav.getByRole("button", { name: "Project", exact: true }).click();
   await page.waitForFunction(() => !!window.brickEditor);

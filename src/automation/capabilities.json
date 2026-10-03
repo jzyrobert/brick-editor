@@ -3,6 +3,16 @@
   "release": "development",
   "milestone": "Core editor with selected M2\u2013M5 features; remaining acceptance gates documented",
   "features": {
+    "galleryUI": {
+      "primaryModes": ["Gallery", "Play"],
+      "sampleResponses": 5,
+      "dataset": "GPT-6.1-Sol temple at five reasoning levels; other agents/prompts are placeholders",
+      "sharedAngles": true,
+      "compareResponses": 2,
+      "modelTools": ["Build", "Instructions", "Photo", "Project"],
+      "opensEditableLocalCopies": true,
+      "automationStartsInBuild": true
+    },
     "ldraw": {
       "parsed": [
         "1",

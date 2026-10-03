@@ -64,6 +64,7 @@ export function PlayPanel({
 }) {
   const state = useSyncExternalStore(play.subscribe, play.getState);
   const [message, setMessage] = useState("");
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [rigId, setRigId] = useState("");
   const [mechanismMode, setMechanismMode] = useState<
     "all" | "single" | "static"
@@ -643,23 +644,43 @@ export function PlayPanel({
   );
   if (!state.active)
     return (
-      <ModeMenu
-        menu="Play"
-        label="Play"
-        className="mode-card play-intro"
-        sections={{
-          hint: startHint,
-          enter: enterPlay,
-          mechanisms: (
-            <>
-              {mechanismChoice}
-              {children}
-            </>
-          ),
-          world: worldSettings,
-          keys: keySettings,
-        }}
-      />
+      <>
+        <div className="play-entry">
+          <div>
+            <strong>Ready to explore?</strong>
+            <p>Walk around at minifigure scale.</p>
+          </div>
+          <div className="play-entry-actions">
+            {enterPlay}
+            <button
+              className="play-entry-settings"
+              aria-label="Play settings"
+              aria-expanded={settingsOpen}
+              onClick={() => setSettingsOpen((open) => !open)}
+            >
+              <Icon name="inspector" size={20} />
+            </button>
+          </div>
+        </div>
+        {settingsOpen && (
+          <ModeMenu
+            menu="Play"
+            label="Play"
+            className="mode-card play-intro"
+            sections={{
+              hint: startHint,
+              mechanisms: (
+                <>
+                  {mechanismChoice}
+                  {children}
+                </>
+              ),
+              world: worldSettings,
+              keys: keySettings,
+            }}
+          />
+        )}
+      </>
     );
   const report = state.report!;
   const occupied = report.occupancy;

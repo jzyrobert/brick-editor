@@ -13,7 +13,10 @@ import {
  * phones held upright), and the Inspector's Tools tab does the same.
  */
 const SLOTS = [
-  ".hud-top .mode-tabs:not(.open)",
+  ".site-header",
+  ".model-heading",
+  ".model-tools-toggle",
+  ".hud-top .workspace-tool-label",
   ".hud-top .header-actions > *",
   ".canvas-toolbar",
   ".mobile-nav",

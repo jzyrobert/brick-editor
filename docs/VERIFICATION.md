@@ -802,3 +802,40 @@ physical build or whole-corpus acceptance claim.
 - **Runner fault.** Max's first reply filled the 128,000-token cap while writing JSON; Claude Code continued it and its `result` held only the last turn (4.6 kB of 17 kB), so the runner refused it as invalid. Joined from the session transcript it compiles cleanly at 1,744 parts. The runner now reads `--output-format stream-json --verbose` and joins every assistant text. Check: a reply forced to split under `CLAUDE_CODE_MAX_OUTPUT_TOKENS=600` (3 turns) had a 40-character `result`, while the joined text parsed as the full 400-number JSON. The first Opus run's cap hits happened during thinking, before any text (session transcripts), so its results stand.
 - **Temple run** ([sample](samples/japanese-temple-one-shot-claude-target/README.md)): run 4's prompt plus the `mirror` line; all five accepted, low, xhigh and max (max rerun with the fixed runner) on their first reply. Parts 1,358–2,294 (0–32% from 2,000, 14% on average against GPT-6.1-Sol's 4%), 2–34 minutes, 11k–222k output tokens, about $18 in all. The two repairs were plant and tree reach (6255, 3470, 3471, 32607). No colour errors.
 - **Tests:** `npx tsc -b`, `npm run format:check`, `tests/unit/one-shot-build.test.ts`; a 60-part smoke run through the merged runner.
+
+## Cream Gallery and Play workshop — 3 October 2026
+
+The production React app implements the approved cream Gallery/Play shell.
+Verification covers the new browsing/import flow, real model loading and tool
+switching, walking, editable-copy protection, failed-load preservation and
+local offline assets. Additional checks cover the retained editor's placement,
+parts browser, menus, keyboard controls and Play settings.
+
+Thirteen distinct focused browser checks pass: three Gallery flows, two Play
+world-layer cases, keyboard controls, two full phone HUD cases, short-landscape
+train controls, two notched-phone cases and two complete menu traversals. The
+last notched-landscape failure was corrected and rerun successfully. An
+interrupted two-test model-load run was not counted; its isolated retry passes.
+
+The production build and TypeScript check pass. All five gallery scripts match
+the supplied originals byte for byte; fifteen sourced images retain origin
+metadata. The offline snapshot includes gallery scripts, images and the local
+licensed font. Deployment file-count and individual-file limits pass; the
+existing large application chunk warning remains.
+
+Visual evidence is stored locally under `.impeccable/review/workshop-app/`.
+Gallery and Play entry were captured at 1440×1000, 390×844, 360×600, 411×685,
+1080×1800 and 686×411. Details, model tools, real walking and Build also have
+actual-app captures. The final packet has 31 app-state captures plus four
+notched-landscape regression screenshots, including placement and the parts
+sheet. Play settings include the short 600×360 landscape case; Tools include
+active walking. All 50 runtime and review rasters retain origin metadata.
+The capture checks report no JavaScript errors or horizontal page overflow.
+The independent Impeccable review returned `ship`
+for the approved cream direction; it does not certify the full roadmap or CI.
+The final responsive corrections received a separate `ship` verdict with all
+four scored fixes resolved. The final three settings captures also verify
+complete labels inside 48px targets and a reachable Enter Play action.
+
+Physical phone performance and the full CI suite were not run for this design
+change. These checks do not establish large-model or Photo performance.

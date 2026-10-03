@@ -6,6 +6,23 @@ the [artifact policy](reports/instruction-generation/README.md#local-artifacts).
 
 This report distinguishes working implementation from the full specification. The delivered scope is a usable core editor with selected later editing/reliability features. **It is not a supported full P0 release, with basic M4 exploration now implemented independently. Selected M4 publishing, the M5 kinematic-mechanism scope and a first M6 dynamic-physics slice are also implemented. The full roadmap remains incomplete.**
 
+## Cream Gallery and Play workshop — 3 October 2026
+
+The approved cream design is implemented in the production React app. Gallery
+and Play are the main modes. Five sourced temple responses support shared camera
+angles, reasoning filters, two-response comparison and larger model details.
+They are correctly attributed to one GPT-6.1-Sol agent at five reasoning levels;
+additional agents and prompts are labeled placeholders.
+
+Every sample opens as an editable local copy in Play, Build, Instructions,
+Photo or Project. Existing replacement protection, file import/export,
+autosave, saved projects, keyboard tools and automation remain available.
+The compact Play entry keeps world/mechanism settings accessible, and the
+phone Build header leaves room for growing placement controls. Runtime images,
+source scripts and the licensed display font are local and precached offline.
+See [Gallery](GALLERY.md), [design system](../DESIGN.md) and
+[verification](VERIFICATION.md#cream-gallery-and-play-workshop--3-october-2026).
+
 ## Reviewed conditional figure procedures
 
 Automatic v11 preserves supplied lower-body/torso assemblies, orders source-owned

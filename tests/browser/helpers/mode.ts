@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 export type EditorMode =
   | "Build"
@@ -6,13 +6,33 @@ export type EditorMode =
   | "Photo"
   | "Play"
   | "Project";
-/** Switch editor mode as a user would: on phones the current mode is a chip that
- * opens the switcher, so open it first when the target mode is not shown. */
+/** The main Play mode and the four model tools share the current document. */
 export async function openMode(page: Page, mode: EditorMode) {
-  const nav = page.getByRole("navigation", { name: "Editor mode" });
-  const button = nav.getByRole("button", { name: mode, exact: true });
-  if (!(await button.isVisible())) await nav.locator("button.active").click();
-  await button.click();
+  if (mode === "Play") {
+    await page
+      .getByRole("navigation", { name: "Main modes" })
+      .getByRole("button", { name: "Play", exact: true })
+      .click();
+    await expect(page.locator(".app")).toHaveClass(/mode-play/);
+    await expect(page.locator(".gallery-page")).toHaveCount(0);
+    const settings = page.getByRole("button", {
+      name: "Play settings",
+      exact: true,
+    });
+    if (
+      (await settings.isVisible()) &&
+      (await settings.getAttribute("aria-expanded")) !== "true"
+    )
+      await settings.click();
+    return;
+  }
+  const toggle = page.getByRole("button", { name: "Model tools", exact: true });
+  if ((await toggle.getAttribute("aria-expanded")) !== "true")
+    await toggle.click();
+  await page
+    .getByRole("navigation", { name: "Editor mode" })
+    .getByRole("button", { name: mode, exact: true })
+    .click();
 }
 
 /** Open a mode's menu at one of its tabs (src/ui/menus.ts), e.g.

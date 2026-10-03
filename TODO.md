@@ -7,10 +7,16 @@ Open work only. What is implemented, with its evidence, is in [docs/STATUS.md](d
 The CI and development VM measure SwiftShader triangles, draws, heap and CPU time, not phone GPU time or memory ceilings.
 
 - [ ] The raised limits (150,000 parts, 24 M scene triangles) on a physical phone, including adaptive culling cells and culled variants on phone GPUs ([PERFORMANCE-MINEBENCH](docs/PERFORMANCE-MINEBENCH.md#at-the-raised-limits)).
+- [ ] Cream Gallery/Play shell on physical phones, including horizontal response browsing and the compact toolbar during placement.
+
 - [ ] Loading skeleton: warm city loads were 1–7 s slower with it in all four pairs on a loaded VM; compare against `?skeleton=0` on a quiet machine ([PERFORMANCE-MINEBENCH §6](docs/PERFORMANCE-MINEBENCH.md#6-loading-skeleton)).
 - [ ] Photo time to a clean still and first-still shader compile on a real phone.
 - [ ] Backdrop frame times on a real phone.
 - [ ] The spec's performance gates: repeated 5,000-part trials on reference hardware (only single software runs are recorded).
+
+## Gallery content
+
+- [ ] Add sourced responses from other agents and additional prompts; the initial gallery contains one agent at five reasoning levels and explicit placeholders ([GALLERY](docs/GALLERY.md)).
 
 ## Rendering and performance
 
