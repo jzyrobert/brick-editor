@@ -891,7 +891,7 @@
   font-size: var(--text-label);
   line-height: 1.4;
 }
-.play-mechanism-viewbar button,
+.play-fit-build,
 .play-motor-state button {
   flex-shrink: 0;
   min-height: 44px;
@@ -976,6 +976,27 @@
   }
   .play-motor-lever {
     margin: 4px 0 !important;
+  }
+}
+/* Short landscape screens keep the primary drive and its feedback together. */
+@media (max-height: 500px) {
+  .play-mechanism-viewbar {
+    margin: 0 0 4px;
+  }
+  .play-mechanism .play-control-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+  }
+  .play-control-picker select {
+    flex: 1;
+    min-width: 0;
+    width: 0;
+    margin: 0;
+  }
+  .play-drive-buttons {
+    margin-bottom: 6px;
   }
 }
 @media (max-height: 700px) {

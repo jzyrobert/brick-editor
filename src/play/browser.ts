@@ -886,8 +886,9 @@ export class BrowserPlay {
   enterVehicle(request: PlaySeatRequest) {
     this.assertMutable();
     const report = this.current().enterVehicle(request);
-    this.held = {};
-    this.emit({ vehicleControl: undefined });
+    this.clearInput();
+    this.overview = undefined;
+    this.emit({ vehicleControl: undefined, mechanismOverview: undefined });
     this.draw();
     this.emit();
     return report;
@@ -921,7 +922,9 @@ export class BrowserPlay {
       mechanism?.vehicleCollision?.reason ?? "Unknown supported active vehicle",
     );
     this.clearInput();
-    this.emit({ vehicleControl: rigId });
+    this.overview = undefined;
+    this.draw();
+    this.emit({ vehicleControl: rigId, mechanismOverview: undefined });
   }
   releaseVehicle() {
     this.assertMutable();
@@ -1008,9 +1011,10 @@ export class BrowserPlay {
   /** Ride along with a train (`trainId: null` ends the ride). */
   rideTrain(input: { trainId?: string | null } = {}) {
     this.assertMutable();
-    this.releaseVehicle();
-    this.clearInput();
     const report = this.current().rideTrain(input);
+    this.clearInput();
+    this.overview = undefined;
+    this.emit({ vehicleControl: undefined, mechanismOverview: undefined });
     this.lastVisual = "";
     this.draw();
     this.emit();

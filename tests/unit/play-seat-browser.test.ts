@@ -14,7 +14,18 @@ it("occupied capture rejects seat/controller mutations atomically and pause reta
   let cameraFails = false;
   const renderer = {
     scene: new Group(),
-    renderer: { domElement: { clientWidth: 1200, clientHeight: 800 } },
+    renderer: {
+      domElement: {
+        clientWidth: 1200,
+        clientHeight: 800,
+        getBoundingClientRect: () => ({
+          left: 0,
+          top: 0,
+          width: 1200,
+          height: 800,
+        }),
+      },
+    },
     playGeometry: async (options: { include?: string[]; exclude?: string[] }) =>
       structuredClone(
         options.exclude
@@ -44,7 +55,20 @@ it("occupied capture rejects seat/controller mutations atomically and pause reta
   const request = { rigId: "vehicle", seatId: rig.vehicle!.driverSeat!.id };
   try {
     await play.enter({ rigId: "vehicle", position: [80, -0.3, -188] });
+    play.focusMechanism("vehicle");
+    const overview = play.camera(),
+      awaiting = play.snapshot();
+    expect(() =>
+      play.enterVehicle({ ...request, seatId: "missing" }),
+    ).toThrow();
+    expect(() => play.rideTrain({ trainId: "missing" })).toThrow();
+    expect(play.getState().mechanismOverview).toBe("vehicle");
+    expect(play.camera()).toEqual(overview);
+    expect(play.snapshot()).toEqual(awaiting);
     play.enterVehicle(request);
+    expect(play.getState().mechanismOverview).toBeUndefined();
+    expect(play.snapshot().occupancy).toBeDefined();
+    expect(play.camera()).not.toEqual(overview);
     play.setInput({ moveZ: 1 });
     play.stepTicks(3);
     const before = play.snapshot(),

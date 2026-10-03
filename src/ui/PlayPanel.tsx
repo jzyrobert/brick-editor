@@ -400,6 +400,20 @@ export function PlayPanel({
       leavePlayScreen();
     }
   }, [state.active]);
+  // Successful API context changes also leave the mechanism sheet. A refused
+  // seat or train request leaves these fields and the selected controls intact.
+  useEffect(() => {
+    if (
+      state.vehicleControl ||
+      state.report?.occupancy ||
+      state.report?.trains?.riding
+    )
+      setRemoteOpen(false);
+  }, [
+    state.vehicleControl,
+    state.report?.occupancy,
+    state.report?.trains?.riding,
+  ]);
   useEffect(() => () => leavePlayScreen(), []);
   useEffect(() => {
     if (!rotateAsk || typeof matchMedia !== "function") return;

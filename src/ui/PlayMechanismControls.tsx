@@ -189,6 +189,13 @@ export function PlayMechanismControls({
       <div className="play-mechanism-head">
         <h2>{title}</h2>
         <button
+          className="play-fit-build"
+          type="button"
+          onClick={() => play.fitMechanism()}
+        >
+          Fit build
+        </button>
+        <button
           className="play-key play-mechanism-close"
           aria-label={`Close ${title.toLowerCase()}`}
           title="Close"
@@ -223,9 +230,6 @@ export function PlayMechanismControls({
         )}
         <div className="play-mechanism-viewbar">
           <span>Drag to orbit · pinch or scroll to zoom</span>
-          <button type="button" onClick={() => play.fitMechanism()}>
-            Fit build
-          </button>
         </div>
         {controls.length > 1 && (
           <label className="play-control-picker">

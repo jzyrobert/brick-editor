@@ -181,7 +181,15 @@ for (const [width, height, dynamic] of sizes)
       const camera = overview.camera;
       expect(camera.position).not.toEqual(explorer.view.camera.position);
       const panel = page.locator(".play-mechanism");
-      const orbitY = height > 500 && width <= 600 ? 90 : height * 0.4;
+      const lookBox = (await page.locator(".play-look").boundingBox())!,
+        topBox = (await page.locator(".play-top").boundingBox())!,
+        panelBox = (await panel.boundingBox())!;
+      // The new site header shifts the canvas. Drag in the actual clear world
+      // between the HUD and portrait sheet rather than at an old page offset.
+      const orbitY =
+        height > 500 && width <= 600
+          ? (topBox.y + topBox.height + panelBox.y) / 2
+          : lookBox.y + lookBox.height * 0.4;
       await page.mouse.move(80, orbitY);
       await page.mouse.down();
       await page.mouse.move(120, orbitY + 20);
@@ -253,6 +261,9 @@ for (const [width, height, dynamic] of sizes)
             box: e.getBoundingClientRect().toJSON(),
           })),
       }));
+      const headerBox = (await page.locator(".site-header").boundingBox())!;
+      expect(topBox.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height);
+      expect(metrics.box.y + metrics.box.height).toBeLessThanOrEqual(height);
       for (const button of metrics.buttons) {
         expect(button.box.height).toBeGreaterThanOrEqual(44);
         expect(button.box.width).toBeGreaterThanOrEqual(44);

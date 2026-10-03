@@ -282,3 +282,46 @@ it("captures the whole mechanism without reserving sheet space and restores its 
     play.dispose();
   }
 });
+
+it("keeps overview and vehicle input on failed transitions, and leaves overview on successful remote driving", async () => {
+  const h = setup(),
+    source = await movingSource("vehicle");
+  h.renderer.playGeometry = async (options?: {
+    include?: string[];
+    exclude?: string[];
+  }) => {
+    if (options?.include && !options.exclude) {
+      const group = source.mechanism.project.motionRigs.vehicle.groups.find(
+        (g) =>
+          g.occurrenceIds.length === options.include!.length &&
+          g.occurrenceIds.every((id) => options.include!.includes(id)),
+      );
+      if (group) return source.mechanism.groups[group.id];
+    }
+    return source.geometry;
+  };
+  const { play } = h;
+  try {
+    await play.enter({ rigIds: ["door", "vehicle"], position: [200, -0.3, 0] });
+    play.focusMechanism("door");
+    const overview = play.camera();
+    expect(() => play.controlVehicle("missing")).toThrow();
+    expect(() => play.rideTrain({ trainId: "missing" })).toThrow();
+    expect(play.getState().mechanismOverview).toBe("door");
+    expect(play.camera()).toEqual(overview);
+    play.controlVehicle("vehicle");
+    expect(play.getState().mechanismOverview).toBeUndefined();
+    expect(play.getState().vehicleControl).toBe("vehicle");
+    play.setInput({ moveZ: 1 });
+    const driving = play.snapshot();
+    expect(() => play.rideTrain({ trainId: "missing" })).toThrow();
+    expect(play.getState().vehicleControl).toBe("vehicle");
+    expect(play.snapshot()).toEqual(driving);
+    play.stepTicks(10);
+    expect(
+      play.snapshot().mechanisms!.vehicle.pose.vehicle!.position,
+    ).not.toEqual(driving.mechanisms!.vehicle.pose.vehicle!.position);
+  } finally {
+    play.dispose();
+  }
+});
