@@ -100,6 +100,15 @@ From [AGENT-BUILDING](docs/AGENT-BUILDING.md) and the [design-language study](do
 - [ ] Also from the [Opus 5.5 interviews](docs/samples/japanese-temple-one-shot-claude/README.md#what-the-models-said): document `door`, `frame`, `glass` and `opens` in `room.openings` (the prompt's example uses them, its op reference does not), and one colour-name table for the part list and the Colours section ("Light grey" against "light bluish grey").
 - [ ] From the [second Opus 5.5 interviews](docs/samples/japanese-temple-one-shot-claude-target/README.md#what-the-models-said): the prompt's facing convention for slopes and curved slopes at `turn: 0` and the direction of `turn`; whether a part's top has studs and whether a part hanging under a plate stands; `box` lid and `interior`, `top: "tile"`, `instance.at`, `stairs` axes and `scatter` density spelled out; reach for 3470 Fruit Tree; search ranking building parts above minifig, Duplo and printed parts; counting rules checked against walls with many openings and roofs with holes, where Opus overestimated by 15–32%.
 
+## Agent gallery
+
+From [GALLERY-PLAN](docs/GALLERY-PLAN.md); phase 1 (publish script, gallery page, `?gallery=` in the editor) is built:
+
+- [ ] Phase 0: create D1 `brick-gallery` (and `-preview`), the R2 bucket on `gallery.bricks.robertj.in` with CORS and a cache rule, and the API tokens; put the database ID in `wrangler.gallery.toml`.
+- [ ] Publish the 24 temple builds with `--remote`; check them on a 1,080 × 1,800 phone, and that a second visit to a build fetches only `index.json`.
+- [ ] Phase 2: the vote Function, the arena and the AGENTS.md rule change. Needs 2 or more prompts with 3 or more agents each.
+- [ ] Phase 3: `scripts/gallery-rank.ts`, the hourly workflow, the leaderboard page.
+
 ## UI and docs
 
 - [ ] Migrate legacy panel-content styles (slate tones, 11 px help text) to the [DESIGN.md](DESIGN.md) scale.

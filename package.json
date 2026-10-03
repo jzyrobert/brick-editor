@@ -14,6 +14,7 @@
     "cli": "tsx scripts/brick-cli.ts",
     "workspace": "tsx scripts/new-build-workspace.ts",
     "oneshot": "tsx scripts/one-shot-build.ts",
+    "gallery:publish": "tsx scripts/gallery-publish.ts",
     "library:validate": "tsx scripts/validate-library.ts",
     "format": "prettier --write src scripts tests schemas docs/*.md README.md *.ts *.json index.html",
     "format:check": "prettier --check src scripts tests schemas docs/*.md README.md *.ts *.json index.html",

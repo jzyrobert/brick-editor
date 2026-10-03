@@ -1,6 +1,6 @@
 # Plan: a gallery, arena and leaderboard of agent builds
 
-Status: **plan, not built.** Written 3 October 2026. Nothing here is deployed yet, and no Cloudflare resources exist.
+Status: **phase 1 built, not deployed.** Written 3 October 2026. The publish script, the gallery page and the editor's `?gallery=` entry are in the repository and tested against a local D1 and mocked files ([§12](#12-phase-1-as-built)). No Cloudflare resources exist yet (phase 0), so nothing is published.
 
 The idea comes from [Minebench](https://github.com/Ammaar-Alam/minebench) (see also [PERFORMANCE-MINEBENCH.md](PERFORMANCE-MINEBENCH.md)): people browse builds that models made from the same prompt, vote blind between two of them, and models are ranked from the votes.
 
@@ -372,3 +372,23 @@ CI (`.github/workflows/cloudflare.yml`):
 - What should the arena show by default: only builds that passed checks with no warnings, or any accepted build? (The plan: any accepted build, with the warning count on the card.)
 - Which builds go in first, beyond the temple runs: the other one-shot samples, and new prompts run across several models (Claude and Codex runners at a few efforts)? The arena needs at least 3 agents per prompt to be interesting.
 - What should gallery cards show: only cost and time, or the token counts too?
+
+## 12. Phase 1 as built
+
+Built on 3 October 2026. Where it differs from the plan above:
+
+- **Config.** The D1 and R2 settings for publishing live in `wrangler.gallery.toml`, not `wrangler.toml`. Pages reads `wrangler.toml` on every deploy, and the database ID is a placeholder until phase 0 creates it. Phase 2 moves the D1 binding into `wrangler.toml` once the vote Function needs it. `--remote` refuses to run while the placeholder is there.
+- **Dry run.** Without `--remote`, the script applies `migrations/` to a local D1 (`wrangler d1 … --local --persist-to .local/gallery-d1`) and writes files to `.local/gallery-out/` in the bucket's layout. So a dry run exercises the same SQL as a real publish.
+- **Extra columns and files.**
+  - `builds.source` records the batch a build came from (the one-shot folder name), so repeated runs of the same agent can be told apart.
+  - Each build also gets a `card` render: the iso view at 480 × 360, for the grids.
+- **Prompt ids** come from the brief and target: "a japanese buddhist temple", 2,000 → `japanese-buddhist-temple-2000`. `--prompt-id` overrides that.
+- **Agent ids.** Runs made before the runner was recorded in `result.json` are taken as Codex runs.
+- **Refusals.** The first temple run's five builds now fail the colour check added after they were made (for example, 3633 in dark brown), so they are refused. The other 24 accepted temple builds compile with no errors; each has one or two warnings (floating parts).
+- **The page.** `gallery.html` is React, a separate Vite entry: about 68 KB gzipped, including React, against 2.4 MB for the editor. Builds are grouped by model on a brief's page. Its CSP adds the gallery origin to `img-src` and `connect-src`; so does the editor's.
+- **Offline.**
+  - The service worker used to answer every navigation with `index.html`. It now serves `gallery.html` for the gallery page, which it precaches.
+  - Gallery data is never precached. Builds opened in the editor stay in the `brick-editor-gallery-v1` cache.
+- **The editor link** is "See what AI models built", under the templates in Project. `?gallery=<id>` opens through the usual "replace your build?" prompt, then drops the parameter so a reload doesn't ask again.
+
+What's left for phase 1's "done when": publishing for real (phase 0 first), then checking the temple builds on a 1,080 × 1,800 phone and that a second visit fetches only `index.json`.

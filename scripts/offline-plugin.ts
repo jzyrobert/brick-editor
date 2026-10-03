@@ -120,12 +120,15 @@ export function offlinePlugin(): Plugin {
         paths = [
           ...new Set([
             "index.html",
+            // The gallery page's shell opens offline and says it needs a
+            // connection; its data (another origin) is never precached.
+            "gallery.html",
             ...assets,
             ...files.filter((f) => !full.test(f)),
             ...templateFiles,
           ]),
         ];
-      const source = `const VERSION=${JSON.stringify(version)};\nconst PATHS=${JSON.stringify(paths)};\nconst CACHE='brick-editor-offline:'+self.registration.scope+':'+VERSION;\nself.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);try{await cache.addAll(PATHS.map(p=>new URL(p,self.registration.scope).href));}catch(error){await caches.delete(CACHE);throw error;}})());});\nself.addEventListener('activate',event=>{event.waitUntil(self.clients.claim());});\nself.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_OFFLINE_UPDATE')self.skipWaiting();});\nself.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(!url.href.startsWith(self.registration.scope))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);const key=event.request.mode==='navigate'?new URL('index.html',self.registration.scope).href:event.request;return await cache.match(key,{ignoreVary:true})||fetch(event.request);})());});\n`;
+      const source = `const VERSION=${JSON.stringify(version)};\nconst PATHS=${JSON.stringify(paths)};\nconst CACHE='brick-editor-offline:'+self.registration.scope+':'+VERSION;\nself.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);try{await cache.addAll(PATHS.map(p=>new URL(p,self.registration.scope).href));}catch(error){await caches.delete(CACHE);throw error;}})());});\nself.addEventListener('activate',event=>{event.waitUntil(self.clients.claim());});\nself.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_OFFLINE_UPDATE')self.skipWaiting();});\nself.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(!url.href.startsWith(self.registration.scope))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);const key=event.request.mode==='navigate'?new URL(url.pathname.endsWith('/gallery.html')?'gallery.html':'index.html',self.registration.scope).href:event.request;return await cache.match(key,{ignoreVary:true})||fetch(event.request);})());});\n`;
       this.emitFile({ type: "asset", fileName: "service-worker.js", source });
       this.emitFile({
         type: "asset",

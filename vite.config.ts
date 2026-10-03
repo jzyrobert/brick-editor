@@ -22,7 +22,12 @@ const omrProxy: Record<string, ProxyOptions> = {
 export default defineConfig({
   base,
   plugins: [react(), offlinePlugin()],
-  build: { target: "es2022" },
+  build: {
+    target: "es2022",
+    // The agent gallery (docs/GALLERY-PLAN.md) is its own page, so it loads
+    // without the 3D editor's bundle.
+    rollupOptions: { input: { main: "index.html", gallery: "gallery.html" } },
+  },
   server: { host: "0.0.0.0", proxy: omrProxy },
   preview: { proxy: omrProxy },
 });

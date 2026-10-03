@@ -1,0 +1,17 @@
+# The gallery's D1 database and R2 bucket, for `npm run gallery:publish`
+# (docs/GALLERY-PLAN.md). Kept out of wrangler.toml while no Pages Function
+# uses them: Pages reads wrangler.toml on deploy, and these IDs are filled in
+# by the one-time Cloudflare setup (plan §3). Until then the publish script
+# only runs locally (a dry run against a local D1 under .local/).
+name = "brick-gallery"
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "brick-gallery"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "brick-gallery"

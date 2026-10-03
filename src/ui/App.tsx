@@ -154,7 +154,18 @@ import {
   ensure,
 } from "../core/types";
 import { identity, rotationY, compose } from "../core/math";
-import { catalog, catalogCategoryOrder, colors } from "../catalog/catalog";
+import {
+  catalog,
+  catalogCategoryOrder,
+  colors,
+  libraryLock,
+  retiredLibraryLocks,
+} from "../catalog/catalog";
+import {
+  fetchGalleryIndex,
+  fetchGalleryModel,
+  galleryStats,
+} from "../catalog/gallery";
 import { ColorPicker, colourAvailabilityHint } from "./ColorPicker";
 import { loadTemplate } from "../catalog/template-loader";
 import {
@@ -284,6 +295,8 @@ function enqueueSourceSave<T>(action: () => Promise<T>): Promise<T> {
   return result;
 }
 let recoveryStarted = false;
+/** `?gallery=<id>` opens once per page load (not again on a StrictMode rerun). */
+let galleryRequested = false;
 const runtime: {
   renderer?: SceneAdapter;
   play?: BrowserPlay;
@@ -1195,7 +1208,16 @@ function Workspace() {
       )
         autosave.current?.schedule(editor.project);
     };
-    void init();
+    void init().then(() => {
+      const id = new URLSearchParams(location.search).get("gallery");
+      if (id === null || galleryRequested) return;
+      galleryRequested = true;
+      // The link stays in history, but a reload should not ask again.
+      const url = new URL(location.href);
+      url.searchParams.delete("gallery");
+      history.replaceState(history.state, "", url);
+      openGalleryBuild(id);
+    });
     return () => {
       unsubscribe();
       unsubscribePlayView();
@@ -2116,6 +2138,63 @@ function Workspace() {
         }
       }).then(() => undefined),
     );
+  }
+  /** Opens a build from the agent gallery (docs/GALLERY-PLAN.md) as a new
+   * project: `index.json` names it, the MPD is checked against its hash and
+   * this app's library release, and the usual prompt protects unsaved work. */
+  function openGalleryBuild(id: string) {
+    if (!/^[0-9a-f]{12}$/.test(id)) {
+      setStatus("That gallery link is not valid.");
+      return;
+    }
+    void run(async () => {
+      setStatus("Loading the build from the gallery…");
+      const index = await fetchGalleryIndex();
+      const build = index.builds.find((b) => b.id === id);
+      ensure(
+        build,
+        "REFERENCE_MISSING",
+        "This build is no longer in the gallery.",
+      );
+      const agent =
+        index.agents.find((a) => a.id === build.agent)?.name ?? build.agent;
+      const brief =
+        index.prompts.find((p) => p.id === build.prompt)?.brief ?? build.prompt;
+      const title = `${brief} by ${agent}`;
+      await replaceOrKeep(`the gallery build “${title}”`, async () => {
+        const epoch = ++operationEpoch.current;
+        setBusy(true);
+        try {
+          const text = await fetchGalleryModel(build, index.files, {
+            maxBytes: resourceLimits(editor.resourceProfile).importBytes,
+            locks: [libraryLock, ...retiredLibraryLocks],
+          });
+          ensure(
+            epoch === operationEpoch.current,
+            "CANCELLED",
+            "Import cancelled",
+          );
+          renderer.current?.requestFitOnFirstParts();
+          const result = await api.current!.project.import({
+            format: "ldraw",
+            text,
+            name: `${title}.mpd`,
+          });
+          if (result.materialization.status === "limited") return;
+          setMode("Build");
+          setPanel("Canvas");
+          setStatus(
+            `Opened ${title} from the agent gallery (${galleryStats(build)}).`,
+          );
+          await renderer.current?.ready();
+          renderer.current?.fit();
+          setSelectionSafe([]);
+        } finally {
+          renderer.current?.requestFitOnFirstParts(false);
+          setBusy(false);
+        }
+      });
+    });
   }
   function chooseTemplate(name: TemplateName) {
     const card = TEMPLATE_CARDS.find((c) => c.name === name);
@@ -4183,6 +4262,9 @@ function Workspace() {
           ? "Show fewer templates"
           : `Show all ${TEMPLATE_CARDS.length} templates`}
       </button>
+      <a className="text-button template-more" href="./gallery.html">
+        See what AI models built
+      </a>
     </>
   );
   const projectOfficial = (
