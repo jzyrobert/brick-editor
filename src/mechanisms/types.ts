@@ -82,8 +82,8 @@ export type MotionRig = {
   mode: "kinematic";
   groups: RigidGroup[];
   joints: JointSpec[];
-  /** Ideal external spur mesh. Positions are unwrapped degrees from rest. */
-  transmissions?: SpurTransmission[];
+  /** Ideal spur/rack meshes, separate from their carrier mounting joints. */
+  transmissions?: Transmission[];
   vehicle?: VehicleSpec;
   dynamics?: RigDynamics;
 };
@@ -97,6 +97,20 @@ export type SpurTransmission = {
   /** Sign of the two shaft axes in their shared carrier frame. */
   axisSign: 1 | -1;
 };
+export type RackTransmission = {
+  id: string;
+  kind: "rack";
+  /** Revolute pinion, in unwrapped degrees. */
+  jointA: string;
+  /** Guided prismatic rack, in LDU. */
+  jointB: string;
+  /** Signed travel per radian, in LDU; sign follows the declared joint axes. */
+  pitchRadiusLdu: number;
+  teethA?: never;
+  teethB?: never;
+  axisSign?: never;
+};
+export type Transmission = SpurTransmission | RackTransmission;
 export type KinematicPose = {
   jointPositions: Record<string, number>;
   vehicle?: {

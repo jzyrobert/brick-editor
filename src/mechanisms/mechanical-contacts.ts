@@ -67,6 +67,12 @@ export type MechanicalContact =
       teethA: number;
       teethB: number;
       ratio: number;
+    })
+  | (AxialContact & { kind: "rack-guide"; limits: [number, number] })
+  | (ContactBase & {
+      kind: "rack-mesh";
+      pitchRadiusLdu: number;
+      limits: [number, number];
     });
 export type MechanicalGraph = {
   features: WorldMechanicalFeature[];
@@ -170,6 +176,84 @@ export function matchMechanicalFeatures(
   b: WorldMechanicalFeature,
 ): Match {
   if (a.occurrenceId === b.occurrenceId) return undefined;
+  if (
+    (a.kind === "rack-slide" && b.kind === "rack-guide") ||
+    (a.kind === "rack" && b.kind === "spur-gear")
+  )
+    return matchMechanicalFeatures(b, a);
+  if (a.kind === "rack-guide" && b.kind === "rack-slide") {
+    if (
+      a.mate !== b.mate ||
+      !aligned(a, b) ||
+      dot(a.axis, b.axis) < 0.99999 ||
+      dot(a.normal, b.normal) < 0.99999
+    )
+      return {
+        reason:
+          "Rack web and housing channel need the reviewed alignment and orientation.",
+      };
+    const span = interval(b, a),
+      engaged = overlap(a.span, span),
+      minimum = Math.max(a.minimumEngagementLdu, b.minimumEngagementLdu);
+    if (engaged < minimum)
+      return { reason: "Rack web has insufficient engagement in its housing." };
+    return {
+      ...axialBase(a, b),
+      kind: "rack-guide",
+      limits: [a.span[0] - span[1] + minimum, a.span[1] - span[0] - minimum],
+    };
+  }
+  if (a.kind === "spur-gear" && b.kind === "rack") {
+    if (
+      Math.abs(dot(a.axis, b.axis)) > 1e-5 ||
+      Math.abs(dot(a.axis, b.normal)) > 1e-5 ||
+      Math.abs(a.moduleLdu - b.moduleLdu) > 1e-6
+    )
+      return {
+        reason:
+          "Rack mesh needs a perpendicular pinion axis and matching module.",
+      };
+    const d = subtract(a.center, b.center),
+      radius = (a.teeth * a.moduleLdu) / 2;
+    const along = dot(d, b.axis),
+      depth = dot(d, b.normal),
+      lateral = dot(d, a.axis);
+    if (
+      Math.abs(depth - radius) > T ||
+      Math.abs(lateral) > 10 - Math.min(Math.abs(a.span[0]), a.span[1]) + T
+    )
+      return {
+        reason:
+          "Pinion needs its pitch radius above the rack pitch plane and overlapping tooth faces.",
+      };
+    const margin = b.meshPitchLdu;
+    if (along < b.span[0] + margin || along > b.span[1] - margin)
+      return { reason: "Pinion is too close to the rack tooth end." };
+    const contactDirection = b.normal.map((x) => -x) as Vec3;
+    const gearPhase =
+      (Math.atan2(
+        dot(cross(a.toothDirection, contactDirection), a.axis),
+        dot(a.toothDirection, contactDirection),
+      ) *
+        a.teeth) /
+      (2 * Math.PI);
+    // Rack centers are a gap phase. Circular pitch is ideal nominal module;
+    // source polygonal spacing is checked only at the authored rest pose.
+    const phase = gearPhase + along / b.meshPitchLdu;
+    if (Math.abs(phase - Math.round(phase)) > 0.06)
+      return {
+        reason:
+          "Rack and pinion teeth are not staggered at the authored rest phase.",
+      };
+    const sign = dot(cross(a.axis, contactDirection), b.axis) < 0 ? -1 : 1;
+    return {
+      a: featureEndpoint(a),
+      b: featureEndpoint(b),
+      kind: "rack-mesh",
+      pitchRadiusLdu: sign * radius,
+      limits: [along - b.span[1] + margin, along - b.span[0] - margin],
+    };
+  }
   if (
     (b.kind === "axle" || b.kind === "pin") &&
     a.kind !== "axle" &&
@@ -289,9 +373,13 @@ function featureBounds(f: WorldMechanicalFeature) {
       ? (f.teeth * f.moduleLdu) / 2 + T
       : f.kind === "finger-hinge"
         ? 4
-        : "radius" in f
-          ? f.radius
-          : 0;
+        : f.kind === "rack" ||
+            f.kind === "rack-guide" ||
+            f.kind === "rack-slide"
+          ? 10
+          : "radius" in f
+            ? f.radius
+            : 0;
   const ends = f.span.map((s) =>
     add(f.center, f.axis.map((x) => x * s) as Vec3),
   );

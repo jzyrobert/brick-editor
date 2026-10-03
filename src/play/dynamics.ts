@@ -727,6 +727,35 @@ export class DynamicRig {
         joint.setMotorMaxForce(effort);
         joint.configureMotorVelocity((velocity * Math.PI) / 180, damping);
       });
+    } else if (this.transmissions.has(control.spec.id)) {
+      speed = Math.min(
+        speed,
+        transmissionSpeedLimit(this.transmissions, control.spec.id),
+      );
+      const error = setpoint - control.value;
+      const holding =
+        !control.target || control.target.setpoint === control.target.target;
+      const raw = error * 6 + control.positionIntegral;
+      if (
+        holding &&
+        Math.abs(error) <= 10 &&
+        control.target?.status !== "blocked" &&
+        (Math.abs(raw) < speed || Math.sign(error) !== Math.sign(raw))
+      )
+        control.positionIntegral = Math.max(
+          -speed,
+          Math.min(speed, control.positionIntegral + error * 9 * DT),
+        );
+      const velocity = Math.max(
+        -speed,
+        Math.min(speed, error * 6 + control.positionIntegral),
+      );
+      const damping = Math.max(10000, effort / (speed * S));
+      this.configure(control, `p:${velocity}:${effort}:${damping}`, () => {
+        joint.configureMotorModel(RAPIER.MotorModel.ForceBased);
+        joint.setMotorMaxForce(effort);
+        joint.configureMotorVelocity(velocity * S, damping);
+      });
     } else
       this.configure(control, `p:${setpoint}:${effort}`, () => {
         joint.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
@@ -962,6 +991,10 @@ export class DynamicRig {
   private solveTransmissions() {
     for (let pass = 0; pass < 8; pass++)
       for (const t of this.rig.transmissions ?? []) {
+        if (t.kind === "rack") {
+          this.solveRackTransmission(t);
+          continue;
+        }
         const ca = this.joints.get(t.jointA)!,
           cb = this.joints.get(t.jointB)!;
         const a = this.bodies.get(ca.spec.bodyB)!.body;
@@ -1016,6 +1049,79 @@ export class DynamicRig {
             true,
           );
       }
+  }
+  /** Ideal rolling constraint with linear rack impulses and angular pinion
+   * impulses. Applying rack/carrier forces at the same world point preserves
+   * their moment as well as returning the pinion torque to the carrier. */
+  private solveRackTransmission(
+    t: import("../mechanisms/types").RackTransmission,
+  ) {
+    const ca = this.joints.get(t.jointA)!,
+      cb = this.joints.get(t.jointB)!;
+    const a = this.bodies.get(ca.spec.bodyB)!.body;
+    const b = this.bodies.get(cb.spec.bodyB)!.body;
+    const c = this.bodies.get(ca.spec.bodyA)!.body;
+    const u = rotate(c.rotation(), cb.axis),
+      axis = rotate(c.rotation(), ca.axis);
+    const r = t.pitchRadiusLdu * S;
+    // The native prismatic joint locks rack orientation to its carrier. Use
+    // the reduced sliding coordinate and apply at the rack center of mass;
+    // counting its forbidden relative rotation as available inverse inertia
+    // would absorb mesh impulses that the guide removes on the next tick.
+    const com = b.worldCom();
+    const p = { x: com.x, y: com.y, z: com.z };
+    const dot = (v: RAPIER.Vector, w: RAPIER.Vector) =>
+      v.x * w.x + v.y * w.y + v.z * w.z;
+    const cross = (v: RAPIER.Vector, w: RAPIER.Vector) => ({
+      x: v.y * w.z - v.z * w.y,
+      y: v.z * w.x - v.x * w.z,
+      z: v.x * w.y - v.y * w.x,
+    });
+    const scale = (v: RAPIER.Vector, n: number) => ({
+      x: v.x * n,
+      y: v.y * n,
+      z: v.z * n,
+    });
+    const sub = (v: RAPIER.Vector, w: RAPIER.Vector) => ({
+      x: v.x - w.x,
+      y: v.y - w.y,
+      z: v.z - w.z,
+    });
+    const ja = scale(axis, -r);
+    const lever = cross(sub(p, c.worldCom()), u),
+      jc = {
+        x: r * axis.x - lever.x,
+        y: r * axis.y - lever.y,
+        z: r * axis.z - lever.z,
+      };
+    const angularMass = (body: RAPIER.RigidBody, v: RAPIER.Vector) => {
+      const m = body.effectiveWorldInvInertia();
+      return dot(v, {
+        x: m.m11 * v.x + m.m12 * v.y + m.m13 * v.z,
+        y: m.m21 * v.x + m.m22 * v.y + m.m23 * v.z,
+        z: m.m31 * v.x + m.m32 * v.y + m.m33 * v.z,
+      });
+    };
+    const linearMass = (body: RAPIER.RigidBody) => {
+      const m = body.effectiveInvMass();
+      return u.x * u.x * m.x + u.y * u.y * m.y + u.z * u.z * m.z;
+    };
+    const invMass =
+      angularMass(a, ja) + angularMass(c, jc) + linearMass(b) + linearMass(c);
+    if (invMass <= 1e-12) return;
+    const error = cb.value * S - (r * ca.value * Math.PI) / 180;
+    const vb = b.linvel(),
+      vbCopy = { x: vb.x, y: vb.y, z: vb.z };
+    const relativeVelocity = sub(vbCopy, c.linvel());
+    const speed =
+      dot(a.angvel(), ja) + dot(c.angvel(), jc) + dot(relativeVelocity, u);
+    const correction = Math.max(-72, Math.min(72, (0.8 * error) / DT));
+    const impulse = -(speed + correction) / invMass;
+    if (Math.abs(impulse) < 1e-10) return;
+    b.applyImpulseAtPoint(scale(u, impulse), p, true);
+    c.applyImpulseAtPoint(scale(u, -impulse), p, true);
+    a.applyTorqueImpulse(scale(ja, impulse), true);
+    c.applyTorqueImpulse(scale(axis, r * impulse), true);
   }
   private frames(): Record<string, Transform> {
     const frames: Record<string, Transform> = {};

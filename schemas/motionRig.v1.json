@@ -398,53 +398,97 @@
     "transmissions": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1024
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "kind": {
+                "const": "spur"
+              },
+              "jointA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "jointB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "teethA": {
+                "type": "integer",
+                "minimum": 4,
+                "maximum": 256
+              },
+              "teethB": {
+                "type": "integer",
+                "minimum": 4,
+                "maximum": 256
+              },
+              "axisSign": {
+                "enum": [
+                  -1,
+                  1
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "jointA",
+              "jointB",
+              "teethA",
+              "teethB",
+              "axisSign"
+            ],
+            "additionalProperties": false
           },
-          "kind": {
-            "const": "spur"
-          },
-          "jointA": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1024
-          },
-          "jointB": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1024
-          },
-          "teethA": {
-            "type": "integer",
-            "minimum": 4,
-            "maximum": 256
-          },
-          "teethB": {
-            "type": "integer",
-            "minimum": 4,
-            "maximum": 256
-          },
-          "axisSign": {
-            "enum": [
-              -1,
-              1
-            ]
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "kind": {
+                "const": "rack"
+              },
+              "jointA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "jointB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "pitchRadiusLdu": {
+                "type": "number",
+                "minimum": -10000,
+                "maximum": 10000,
+                "not": {
+                  "exclusiveMinimum": -0.1,
+                  "exclusiveMaximum": 0.1
+                }
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "jointA",
+              "jointB",
+              "pitchRadiusLdu"
+            ],
+            "additionalProperties": false
           }
-        },
-        "required": [
-          "id",
-          "kind",
-          "jointA",
-          "jointB",
-          "teethA",
-          "teethB",
-          "axisSign"
-        ],
-        "additionalProperties": false
+        ]
       },
       "maxItems": 100
     },

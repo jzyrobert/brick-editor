@@ -1,9 +1,9 @@
 import { ensure } from "../core/types";
 import type { MotionRig } from "./types";
 
-/** For each shaft, all coupled shafts and their displacement per driver degree. */
+/** For each coordinate, coupled displacement per driver unit (degrees or LDU). */
 export type TransmissionMap = Map<string, Map<string, number>>;
-/** Keep every shaft under 60 degrees per fixed tick for reliable unwrapping. */
+/** Keep every coordinate under 60 units per fixed tick; shaft unwrapping stays reliable. */
 export const TRANSMISSION_MAX_SPEED = 3600;
 export function transmissionSpeedLimit(map: TransmissionMap, id: string) {
   return (
@@ -34,6 +34,7 @@ export function transmissionMap(rig: MotionRig): TransmissionMap {
             "teethA",
             "teethB",
             "axisSign",
+            "pitchRadiusLdu",
           ].includes(k),
         ) &&
         typeof t.id === "string" &&
@@ -41,13 +42,19 @@ export function transmissionMap(rig: MotionRig): TransmissionMap {
         t.id.length <= 128 &&
         !["__proto__", "prototype", "constructor"].includes(t.id) &&
         !ids.has(t.id) &&
-        t.kind === "spur" &&
-        [t.teethA, t.teethB].every(
-          (n) => Number.isInteger(n) && n >= 4 && n <= 256,
-        ) &&
-        (t.axisSign === 1 || t.axisSign === -1),
+        ((t.kind === "spur" &&
+          [t.teethA, t.teethB].every(
+            (n) => Number.isInteger(n) && n >= 4 && n <= 256,
+          ) &&
+          (t.axisSign === 1 || t.axisSign === -1) &&
+          !("pitchRadiusLdu" in t)) ||
+          (t.kind === "rack" &&
+            Number.isFinite(t.pitchRadiusLdu) &&
+            Math.abs(t.pitchRadiusLdu) >= 0.1 &&
+            Math.abs(t.pitchRadiusLdu) <= 10000 &&
+            !["teethA", "teethB", "axisSign"].some((k) => k in t))),
       "INVALID_INPUT",
-      "Invalid or duplicate spur transmission.",
+      "Invalid or duplicate transmission.",
     );
     ids.add(t.id);
     const a = rig.joints.find((j) => j.id === t.jointA);
@@ -57,15 +64,23 @@ export function transmissionMap(rig: MotionRig): TransmissionMap {
         b &&
         a !== b &&
         a.kind === "revolute" &&
-        b.kind === "revolute" &&
         a.bodyA === b.bodyA &&
-        Math.abs(
-          a.axisA!.reduce((s, x, i) => s + x * b.axisA![i], 0) - t.axisSign,
-        ) < 1e-5,
+        (t.kind === "spur"
+          ? b.kind === "revolute" &&
+            Math.abs(
+              a.axisA!.reduce((s, x, i) => s + x * b.axisA![i], 0) - t.axisSign,
+            ) < 1e-5
+          : b.kind === "prismatic" &&
+            !!b.limits &&
+            Math.abs(a.axisA!.reduce((s, x, i) => s + x * b.axisA![i], 0)) <
+              1e-5),
       "INVALID_INPUT",
-      "Spur transmissions require distinct parallel revolute shafts on the same carrier and the declared axis sign.",
+      "Transmissions require a shared carrier: parallel revolute spur shafts or a perpendicular, limited prismatic rack guide.",
     );
-    const ratio = (-t.axisSign * t.teethA) / t.teethB;
+    const ratio =
+      t.kind === "spur"
+        ? (-t.axisSign * t.teethA) / t.teethB
+        : (t.pitchRadiusLdu * Math.PI) / 180;
     if (!graph.has(a.id)) graph.set(a.id, []);
     if (!graph.has(b.id)) graph.set(b.id, []);
     graph.get(a.id)!.push([b.id, ratio]);

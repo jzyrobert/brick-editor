@@ -1088,3 +1088,46 @@ work.
   phone measurement or a new large-model performance measurement. Direct
   proposal/review/save UI, arbitrary Technic inference and the remaining motion
   roadmap remain open.
+
+## Guided rack transmission (3 October 2026)
+
+Run in `/home/ubuntu/brick-editor-rack`, branch `codex/rack-transmission`, from
+spur checkpoint `e0139e5`. Tests resolve actual official geometry from the pinned
+local pack without network access. The original eight-part acceptance source
+references a reviewed 18940 housing, 18942 rack and retained 8-tooth shaft.
+
+- Focused Vitest command below passes **59 tests in seven files**. New rack
+  coverage includes reproducible fixture source; one reviewed guide and one
+  motor; wrong web orientation/offset, withdrawal, pitch distance and rest-phase
+  refusal; oblique source placements; atomic reflected limits and pose rejection;
+  native persistence and posed source isolation. Native dynamics checks pinion
+  accumulated 720° positioning, slider reversal, authored slider position motor,
+  increased output inertia, a blocked rack and recovery, external rack back-drive,
+  free-carrier reaction and linear momentum. With native damping disabled, each
+  isolated coupling pass preserves angular momentum within 10⁻⁵ over 120 ticks.
+- Production build passes (`npm run build`: schemas, TypeScript and Vite).
+- Private Playwright config `.local/rack.config.ts` uses port 4401; one worker
+  runs `tests/browser/play-rack-transmissions.spec.ts`: **two tests pass (41.1 s)**.
+  Actual Kinematic and Dynamic rendering reaches 720° / −125.66 LDU, completes
+  slider reversal to 100 LDU, changes pixels and rack transforms, preserves all
+  eight source occurrences and default LDraw bytes, and exports eight posed parts.
+- Fixture generation/check and changed-file Prettier checks pass. No dependency,
+  runtime asset, library geometry or remote request is added.
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/rack-transmissions.test.ts \
+  tests/unit/play-rack-transmissions.test.ts tests/unit/transmissions.test.ts \
+  tests/unit/play-transmissions.test.ts tests/unit/mechanical-contacts.test.ts \
+  tests/unit/mechanical-proposals.test.ts tests/unit/play-kinematic-transmissions.test.ts
+npx tsx scripts/build-rack-fixture.ts --check
+FORCE_COLOR=0 npm run build
+FORCE_COLOR=0 BROWSER_WORKERS=1 npx playwright test -c .local/rack.config.ts \
+  --project=main tests/browser/play-rack-transmissions.spec.ts
+```
+
+This is a bounded ideal rack constraint with source-bound mounting inference.
+The polygonal 8-LDU rack spacing approximates the ideal nominal circular pitch;
+individual tooth collision, physical LEGO retention/torque and backlash are not
+verified. Loose/improvised guides are refused by inference. No physical-phone,
+larger mixed-transmission convergence or broad internal/world-collision claim is
+made here; those remain separate roadmap work.

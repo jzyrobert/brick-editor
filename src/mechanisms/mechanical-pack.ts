@@ -31,6 +31,12 @@ export type MechanicalFeature = AxisFeature &
         toothDirection: Vec3;
       }
     | { kind: "rack"; normal: Vec3; moduleLdu: number; meshPitchLdu: number }
+    | {
+        kind: "rack-slide" | "rack-guide";
+        normal: Vec3;
+        mate: string;
+        minimumEngagementLdu: number;
+      }
     | { kind: "finger-hinge"; fingers: 2 | 3; leafDirection: Vec3 }
   );
 export type MechanicalPartProfile = {
@@ -203,6 +209,52 @@ export const MECHANICAL_PARTS: Readonly<Record<string, MechanicalPartProfile>> =
       review:
         "24 tooth24.dat placements in s/3648s01; keyed Z bore ±9.625 in s/3648s02. Nominal module 2.5 LDU (30-LDU pitch radius). Peripheral pin holes not reviewed here.",
       features: [keyed(9.625), gear(24)],
+    },
+    "18940.dat": {
+      sourceSha256:
+        "3c913080b5efe9412212ee2b6c9745bb9e2af386458c1dd03c008487150796f4",
+      review:
+        "Outrigger housing: X sliding channel, paired Y walls -13/-27 and Z cheeks ±10..20 over X -60..100. Reviewed ideal guide for the 18942 web, with at least 40 LDU engaged; external pin holes not reviewed.",
+      features: [
+        {
+          id: "rack-channel",
+          kind: "rack-guide",
+          center: [20, -20, 0],
+          axis: [1, 0, 0],
+          span: [-80, 80],
+          normal: [0, -1, 0],
+          mate: "18942-web",
+          minimumEngagementLdu: 40,
+        },
+      ],
+    },
+    "18942.dat": {
+      sourceSha256:
+        "520a0f2b01ecb61112cebba1d75d972503930b4add5bf3b8492562087745e686",
+      review:
+        "Outrigger rack: web X -121..139, Y -19..-9, Z ±10; toothr placements X -112..136, Y -22.5, facing -Y, 8-LDU spacing. Ideal nominal module 2.5 rolling pitch at Y -25; keyed/end holes not reviewed.",
+      features: [
+        {
+          id: "rack-web",
+          kind: "rack-slide",
+          center: [9, -14, 0],
+          axis: [1, 0, 0],
+          span: [-130, 130],
+          normal: [0, -1, 0],
+          mate: "18942-web",
+          minimumEngagementLdu: 40,
+        },
+        {
+          id: "rack-teeth",
+          kind: "rack",
+          center: [12, -25, 0],
+          axis: [1, 0, 0],
+          span: [-128, 128],
+          normal: [0, -1, 0],
+          moduleLdu: 2.5,
+          meshPitchLdu: 8,
+        },
+      ],
     },
     "3743.dat": {
       sourceSha256:

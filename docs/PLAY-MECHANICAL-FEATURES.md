@@ -15,20 +15,21 @@ pinning includes subparts/primitives; a source pack update disables the profiles
 until reviewed. No library geometry is modified, and no proprietary/shadow data
 is used. Existing catalogue connector coverage is not upgraded by this pack.
 
-| Profiles         | Reviewed features                                                                                     |
-| ---------------- | ----------------------------------------------------------------------------------------------------- |
-| 3700, 3701, 3702 | Round through bores: axes, bearing intervals, mouth faces and radius from peghole/cylinder placements |
-| 3673, 2780       | Separate pin halves, collar/lip seating intervals, plain versus frictional rotation                   |
-| 3705, 3706, 3707 | Axle intervals, cross-section phase and axis                                                          |
-| 3713, 4265a      | Keyed collars with ideal axial grip and stop flanges                                                  |
-| 3647, 3648b      | Keyed centre bores; 8/24 tooth counts, face intervals and tooth phase; nominal module 2.5 LDU         |
-| 3743             | Rack travel axis, tooth-facing normal and pitch plane; mesh pitch 8 LDU                               |
-| 4275b, 4276b     | Complementary three/two-finger pivots and axes; explicitly reviewed top studs                         |
+| Profiles         | Reviewed features                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------- |
+| 3700, 3701, 3702 | Round through bores: axes, bearing intervals, mouth faces and radius from peghole/cylinder placements   |
+| 3673, 2780       | Separate pin halves, collar/lip seating intervals, plain versus frictional rotation                     |
+| 3705, 3706, 3707 | Axle intervals, cross-section phase and axis                                                            |
+| 3713, 4265a      | Keyed collars with ideal axial grip and stop flanges                                                    |
+| 3647, 3648b      | Keyed centre bores; 8/24 tooth counts, face intervals and tooth phase; nominal module 2.5 LDU           |
+| 18940, 18942     | Matched outrigger housing channel and sliding web; bounded engagement, travel axis and rack pitch plane |
+| 3743             | Rack travel axis, tooth-facing normal and pitch plane; mesh pitch 8 LDU                                 |
+| 4275b, 4276b     | Complementary three/two-finger pivots and axes; explicitly reviewed top studs                           |
 
 These are ideal simulation interfaces, not measured snap-fit, pin-friction or
 clutch-power guarantees. Gear pitch radii are 10 and 30 LDU for the reviewed
 spur pair. The rack's polygonal 8-LDU tooth spacing approximates the nominal
-module's circular pitch; a later rack controller must document that distinction.
+module's circular pitch; rack simulation uses ideal nominal pitch without replacing polygonal teeth.
 Peripheral holes of the 24-tooth gear, aliases and complete assemblies are not
 reviewed in this slice.
 
@@ -50,6 +51,8 @@ The graph keeps these contacts separate:
 - `pin-bearing`: free or frictional rotation; seated retention reported separately.
 - `finger-hinge`: complementary, coincident finger halves.
 - `spur-mesh`: signed ratio and tooth counts, without an invented rigid attachment.
+- `rack-guide`: matched sliding web/channel with minimum engagement and travel limits.
+- `rack-mesh`: signed pinion radius and tooth-end travel limits, separate from mounting.
 
 [mechanical-proposals.ts](../src/mechanisms/mechanical-proposals.ts) reduces
 multiple coaxial frame bearings to one shaft joint only when collar stops restrain
@@ -97,7 +100,7 @@ At most 100 relations are accepted per rig. Commands and authored velocity
 motors must keep every coupled shaft at or below 3,600°/s (60° per fixed tick);
 position-controller rates and phase correction are bounded too. Ratios in a
 connected chain are limited to 10⁻⁶–10⁶. Existing body/member/triangle budgets
-also apply. Rack, bevel, worm, differential, backlash, slip and measured clutch
+also apply. Bevel, worm, differential, backlash, slip and measured clutch
 strength remain unsupported.
 
 The original [Technic acceptance source](../fixtures/ldraw/technic-motion.mpd)
@@ -107,6 +110,46 @@ above Play's default ground. Tests load geometry from the pinned local source
 closure without network access.
 Regenerate it with `npx tsx scripts/build-technic-fixture.ts`, or check it with
 the same command followed by `--check`.
+
+## Guided rack transmission behavior
+
+Optional `{id,kind:"rack",jointA,jointB,pitchRadiusLdu}` relates a revolute pinion
+to a limited prismatic rack on the same carrier. Their axes must be perpendicular.
+`qB = pitchRadiusLdu * qA * π/180`, with unwrapped pinion degrees and rack LDU.
+The signed radius follows the declared joint directions. Both coordinates can
+drive; connected limits, atomic pose acceptance and one authored motor per
+component apply across mixed spur/rack chains. Numeric component ratios carry
+the destination coordinate's units per source coordinate's unit.
+
+Reviewed proposals require the source-bound 18942 sliding web aligned with one
+18940 housing in the chosen frame. The ideal channel keeps at least 40 LDU of
+web engaged; this is a simulation requirement, not a certified physical retention
+rating. The source's paired housing walls and cheeks define the guide frame.
+Travel is shortened further to leave a full 8-LDU tooth spacing between the
+pinion center and either end of the reviewed tooth interval. Wrong guide
+orientation, insufficient engagement, missing/ambiguous guide, wrong pitch
+distance, tooth-face separation and wrong rest phase refuse inference.
+The loose 3743 rack has reviewed teeth but no automatically inferred mounting.
+An authored, reviewed prismatic guide can still use it explicitly.
+
+Dynamic solves the rolling relation with linear rack impulses and angular pinion
+impulses, returning both force and torque to the carrier. The native prismatic
+joint locks rack orientation; its reduced sliding coordinate avoids treating a
+forbidden rack rotation as extra available inertia. Rack/carrier forces are
+applied at the same rack center-of-mass point, preserving the moment, while
+opposite pinion/carrier torque preserves net torque. No poses or velocities are
+assigned. A blocked rack stalls the pinion; a heavier rack slows it; an external
+rack impulse back-drives an unpowered pinion. Coupled rack position motors use
+bounded force-based velocity feedback. Eight passes and 100 total relations per
+rig apply; all coupled coordinates stay within 3,600 degrees/s or LDU/s, with
+reflected speed bounds limiting the faster member.
+
+The original eight-part [rack source](../fixtures/ldraw/rack-motion.mpd) and
+[generator](../src/mechanisms/rack-fixture.ts) exercise 720° pinion travel to
+−125.66 LDU, reversal from the slider, source/native/posed isolation and pinned
+geometry. Generate/check with `npx tsx scripts/build-rack-fixture.ts [--check]`.
+This ideal constraint has no tooth collision, backlash, clutch or automatic
+disengagement; limits keep the reviewed engagement present.
 
 ## Bounds and verification
 
@@ -120,5 +163,5 @@ dependency is added.
 
 See [verification](VERIFICATION.md#reviewed-mechanical-proposals-3-october-2026)
 for the exact test and rendered scope. A broader automatic Technic authoring UI,
-rack simulation, collision policy, closed linkages and other actuators remain
+further rack guides, collision policy, closed linkages and other actuators remain
 in the [motion roadmap](PLAY-MOTION-ROADMAP.md).

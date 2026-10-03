@@ -478,15 +478,31 @@ const motionRig = obj(
     },
     joints: arr(joint, 100),
     transmissions: arr(
-      obj({
-        id,
-        kind: { const: "spur" },
-        jointA: id,
-        jointB: id,
-        teethA: { type: "integer", minimum: 4, maximum: 256 },
-        teethB: { type: "integer", minimum: 4, maximum: 256 },
-        axisSign: { enum: [-1, 1] },
-      }),
+      {
+        oneOf: [
+          obj({
+            id,
+            kind: { const: "spur" },
+            jointA: id,
+            jointB: id,
+            teethA: { type: "integer", minimum: 4, maximum: 256 },
+            teethB: { type: "integer", minimum: 4, maximum: 256 },
+            axisSign: { enum: [-1, 1] },
+          }),
+          obj({
+            id,
+            kind: { const: "rack" },
+            jointA: id,
+            jointB: id,
+            pitchRadiusLdu: {
+              type: "number",
+              minimum: -10000,
+              maximum: 10000,
+              not: { exclusiveMinimum: -0.1, exclusiveMaximum: 0.1 },
+            },
+          }),
+        ],
+      },
       100,
     ),
     vehicle: obj(

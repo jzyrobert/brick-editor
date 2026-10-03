@@ -18,8 +18,8 @@ with one motor in preview, kinematic Play and Dynamic. Dynamic impulses reflect
 output inertia and obstruction back to the input and return reaction to the
 carrier. Unwrapped positioning, reversed/back-driven control, source isolation
 and rendered accessories are covered by focused tests. See
-[mechanical scope](PLAY-MECHANICAL-FEATURES.md). Rack transmission, direct
-session-only Play entry, contact policy and the other phases remain open.
+[mechanical scope](PLAY-MECHANICAL-FEATURES.md). Reviewed outrigger racks now couple a limited slider to its pinion, with load,
+stall and back-drive feedback. Further rack guides, direct session-only Play entry, contact policy and the other phases remain open.
 
 **Implemented controls:** session-only proportional motor input now drives,
 reverses and brakes reviewed motors without changing authored presets or effort

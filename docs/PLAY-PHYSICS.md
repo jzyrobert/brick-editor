@@ -12,17 +12,18 @@ The [reviewed mechanical proposal API](PLAY-MECHANICAL-FEATURES.md) can supply a
 draft rig from a small official-parts assembly with explicit fixed anchors.
 Analysis preserves the project; a reviewed draft is saved with `rigs.upsert`
 before using the existing controls. Reviewed spur meshes now produce coupled
-shaft relations in both kinematic and Dynamic Play. Rack coupling and direct
-session-only proposal entry are subsequent roadmap work.
+shaft relations in both kinematic and Dynamic Play. Reviewed guided racks also
+couple a pinion to a limited slider; direct session-only proposal entry remains open.
 
 Authored `motor` metadata on revolute and prismatic joints now runs in Play. Kinematic rigs have no forces, so a motor moves at a declared rate. Position motors travel to their target at 90 degrees/s or 40 LDU/s, reduced when necessary to respect a coupled shaft's speed bound. Velocity motors run at their target speed; continuously rotating axles retain accumulated turns so reduced outputs keep their phase. Each step uses the same swept actor-clearance check as other joint motion. A motor stops before touching the explorer, reports `blocked` and retries on later ticks. It reports `at-limit` at a limit and `holding` at its position target.
 
 Motors start running when Play starts. Remote controls fit and orbit the whole active mechanism while the explorer waits. Held **Reverse / Forward** buttons or the folded speed lever supply proportional session input; releasing brakes. **Brake** also stops live travel. Folded **Motor settings** offers **Stop motor / Run preset**, restoring the authored setting when requested. `play.setMotor({rigId,jointId,enabled,input?})` supplies the same controls: optional input from −1 to 1 requires an enabled motor; zero brakes and omitting input restores the preset. Rate, coupled speed and authored effort bounds remain in force. A manual joint command (slider, `setMechanismJoint`, joint target or the nearby action) stops the connected component's authored motor and replaces its earlier travel target. Reports carry effective mode/target, optional input, units, status and whether they are simulated at a kinematic rate or as a dynamic motor. Closing remote controls restores the explorer view.
 
-External spur meshes use optional `rig.transmissions`, separate from the joints
+External spur and rack meshes use optional `rig.transmissions`, separate from the joints
 that mount the shafts. Kinematic motion derives every linked coordinate and
-checks their limits together. Dynamic motion uses angular impulses on both
-shafts and their shared carrier; output inertia and obstructions feed back to
+checks their limits together. Dynamic motion uses angular shaft impulses and
+linear rack impulses, returning reaction to their shared carrier; output inertia
+and obstructions feed back to
 the native effort-limited motor. See [transmission scope and bounds](PLAY-MECHANICAL-FEATURES.md#spur-transmission-behavior).
 
 ## Dynamic physics (opt-in)

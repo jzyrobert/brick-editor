@@ -103,12 +103,16 @@ Analysis loads missing same-origin connector shards and verifies the document
 revision after loading. It needs no renderer and creates no undo entry. A
 reviewed `rig` can be saved explicitly with `rigs.upsert` and then used by the
 existing mechanism preview or Play controls. A `motors` key must identify the
-shaft, pin or hinge leaf that owns its joint; efforts use `N*m`. Reviewed spur
+shaft, pin, hinge leaf or guided rack that owns its joint; efforts use `N*m` for
+revolute joints and `N` for sliders. Reviewed spur and guided rack
 `relations` also populate the draft's optional `transmissions`, with unwrapped
 ratios in preview and Play and inertia/load reaction in Dynamic. A connected
 component accepts one authored motor; manual control of either shaft replaces
-its current driver. All coupled limits and speed bounds are checked. Rack teeth
-are reviewed geometry only. See [mechanical proposal scope](PLAY-MECHANICAL-FEATURES.md).
+its current driver. All coupled limits and speed bounds are checked. Rack entries
+use `{id,kind:"rack",jointA,jointB,pitchRadiusLdu}`: pinion `jointA` is revolute,
+guided `jointB` is limited prismatic on the same carrier, and signed LDU radius
+maps pinion degrees to slider LDU via `qB=pitchRadiusLdu*qA*π/180`. Loose rack
+mounting is not inferred. See [mechanical proposal scope](PLAY-MECHANICAL-FEATURES.md).
 
 ```js
 await api.project.import({ format: "template", template: "mechanisms" });

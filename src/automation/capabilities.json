@@ -216,18 +216,20 @@
       "poseApplication": true,
       "mechanicalProposals": {
         "api": "mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})",
-        "pack": "reviewed-mechanics-1; 15 source-bound official part profiles",
+        "pack": "reviewed-mechanics-1; 17 source-bound official part profiles",
         "contacts": [
           "stud-weld",
           "bearing",
           "keyed-slide",
           "pin-bearing",
           "finger-hinge",
-          "spur-mesh"
+          "spur-mesh",
+          "rack-guide",
+          "rack-mesh"
         ],
-        "proposals": "Explicit fixed anchors; retained shafts and captured keyed accessories; separate pin/arm articulations; complementary finger hinges with rigid stud accessories",
+        "proposals": "Explicit fixed anchors; retained shafts and captured keyed accessories; separate pin/arm articulations; complementary finger hinges with rigid stud accessories; reviewed 18942 web / 18940 housing sliders with travel and tooth-end engagement limits",
         "isolation": "Read-only draft; explicit rigs.upsert saves; no automatic Play entry or project mutation",
-        "transmissions": "Reviewed external spur meshes become ideal coupled shaft relations in the draft; rack transmission remains pending",
+        "transmissions": "Reviewed external spur and guided rack meshes become ideal coupled relations in the draft",
         "limits": {
           "occurrences": 2048,
           "features": 8192,
@@ -242,7 +244,7 @@
         "engine": "@dimforge/rapier3d-compat@0.21.0 (bundled, Apache-2.0)",
         "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces",
         "joints": ["fixed", "revolute", "prismatic", "spherical"],
-        "motors": "Authored position/velocity motors limited by maxEffort; revolute position targets use accumulated turns with bounded velocity feedback and settled completion; prismatic position targets use native position motors",
+        "motors": "Authored position/velocity motors limited by maxEffort; revolute position targets use accumulated turns with bounded velocity feedback and settled completion; coupled rack position targets use bounded force-based velocity feedback; uncoupled prismatic position targets use native position motors",
         "vehicles": "Rapier ray-cast wheels with sprung suspension, engine force, brake and authored maxSpeed/maxSteer",
         "pushing": "Walking pushes loose dynamic bodies with bounded impulses; bodies never move the explorer",
         "limits": {
@@ -253,7 +255,7 @@
         },
         "reproducibility": "Identical reports for identical inputs in the pinned engine/browser; not promised across platforms",
         "notSimulated": [
-          "rack, worm, bevel and differential transmissions",
+          "worm, bevel and differential transmissions",
           "closed-loop linkages",
           "spring and rope joints",
           "internal collisions between groups of one rig",
@@ -265,13 +267,15 @@
         ],
         "transmissions": {
           "spur": "Ideal external spur relations between parallel revolute shafts on a shared carrier; unwrapped degree positions",
-          "loadReaction": "Sequential angular impulses use shaft/carrier effective inertia and feed output resistance back to the single effort-limited motor",
+          "loadReaction": "Angular pinion/shaft and linear rack impulses reflect output resistance to one effort-limited motor and return torque/force to its carrier",
           "limits": {
             "relationsPerRig": 100,
             "solverPassesPerTick": 8,
-            "coupledShaftDegreesPerSecond": 3600
+            "coupledShaftDegreesPerSecond": 3600,
+            "coupledRackLduPerSecond": 3600
           },
-          "scope": "No tooth contact, backlash, slip or certified clutch strength; rack, worm, bevel and differential relations remain pending"
+          "scope": "No tooth contact, backlash, slip, automatic disengagement or certified clutch strength; worm, bevel and differential relations remain pending",
+          "rack": "Ideal signed radius relation between a revolute pinion and limited perpendicular prismatic rack on the same carrier; unwrapped degrees and LDU"
         }
       },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",

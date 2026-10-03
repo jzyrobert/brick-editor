@@ -878,3 +878,28 @@ desktop/phone sizes, large-mechanism projection proofs, and existing Play
 regressions. The Impeccable reviewer scored its two material fixes resolved
 (overflow discoverability and documentation), with `ship` at that fix-list scope.
 See [verification](VERIFICATION.md#live-motor-controls-and-mechanism-overview-3-october-2026).
+
+## Guided rack transmission (3 October 2026)
+
+Reviewed 18940 outrigger housing / 18942 rack profiles bring the mechanical pack
+to 17 source-bound parts. A uniquely aligned housing in the explicit frame
+produces a limited slider; pinion engagement shortens travel to retain both
+housing-web overlap and a full tooth-spacing margin at each tooth end. A loose
+3743 rack, ambiguous guide or unsupported mounting remains unresolved.
+
+Optional `kind:"rack"` transmissions connect a revolute pinion to a perpendicular
+limited slider on the same carrier. Signed nominal radius relates unwrapped
+degrees and LDU. Kinematic motion accepts coupled coordinates and limits
+atomically. Dynamic linear/angular impulses reflect rack mass and obstruction,
+allow rack back-drive and return force/torque to the carrier. One authored motor
+powers a component; neither body poses nor velocities are assigned. Coupled rack
+position motors use bounded force-based velocity feedback.
+
+The original eight-part pinned-geometry arrangement drives 720° to −125.66 LDU
+and reverses from a 100-LDU slider target in rendered Kinematic and Dynamic Play.
+Native save, source/occurrence isolation and static posed export are covered.
+This verifies an ideal rolling constraint, not tooth-by-tooth clearance,
+backlash, physical retention/clutch ratings, automatic disengagement or arbitrary
+mixed assembly convergence. Existing relation/body/member/triangle bounds apply.
+Further guides and the remaining motion phases stay open. See
+[verification](VERIFICATION.md#guided-rack-transmission-3-october-2026).

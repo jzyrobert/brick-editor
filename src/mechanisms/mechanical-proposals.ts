@@ -24,7 +24,7 @@ export type MechanicalProposalRequest = {
   /** Limit inference to this assembly; omitted means all visible occurrences. */
   occurrenceIds?: string[];
   includeHidden?: boolean;
-  /** A shaft/pin/leaf occurrence, not an inferred second transmission motor. */
+  /** A shaft/pin/leaf/rack occurrence, not an inferred second transmission motor. */
   motors?: Record<string, NonNullable<JointSpec["motor"]>>;
 };
 export type SpurRelationProposal = {
@@ -37,11 +37,19 @@ export type SpurRelationProposal = {
   occurrenceA: string;
   occurrenceB: string;
 };
+export type RackRelationProposal = {
+  kind: "rack";
+  jointA: string;
+  jointB: string;
+  pitchRadiusLdu: number;
+  occurrenceA: string;
+  occurrenceB: string;
+};
 export type MechanicalProposal = {
   sourceRevision: number;
   rig?: MotionRig;
   /** Reviewed relations also installed as ideal transmissions on the draft. */
-  relations: SpurRelationProposal[];
+  relations: Array<SpurRelationProposal | RackRelationProposal>;
   graph: MechanicalGraph;
   unresolved: Array<{ occurrenceIds: string[]; reason: string }>;
   warnings: string[];
@@ -113,7 +121,7 @@ export function proposeMechanicalRig(
     warnings: [
       "Review the fixed frame and moving groups before using this session draft. Unknown contacts remain unknown.",
       "Collars are ideal axial grips; friction pins remain articulations. Physical snap fit and clutch strength are not certified.",
-      "Spur meshes use ideal ratio constraints; they do not simulate individual tooth contacts or real clutch strength.",
+      "Spur and rack meshes use ideal ratio constraints; they do not simulate individual tooth contacts or real clutch strength.",
     ],
   };
   const owned = new Set(
@@ -200,11 +208,12 @@ export function proposeMechanicalRig(
     pivot: Vec3,
     axis: Vec3,
     driver: string,
+    kind: "revolute" | "prismatic" = "revolute",
   ) => {
     const id = `joint-${rig.joints.length}`;
     const joint: JointSpec = {
       id,
-      kind: "revolute",
+      kind,
       bodyA: a.id,
       bodyB: b.id,
       anchorA: localPoint(a, pivot),
@@ -343,6 +352,36 @@ export function proposeMechanicalRig(
     );
     if (g)
       addJoint(rig.groups[0], g, shaft.center, shaft.axis, shaft.occurrenceId);
+  }
+  for (const rack of graph.features.filter((f) => f.kind === "rack")) {
+    if (frame.has(rack.occurrenceId)) continue;
+    const guides = graph.contacts.filter(
+      (c) =>
+        c.kind === "rack-guide" &&
+        c.b.occurrenceId === rack.occurrenceId &&
+        frame.has(c.a.occurrenceId),
+    );
+    if (guides.length !== 1) {
+      unresolved(
+        [rack.occurrenceId],
+        "A rack needs one unique reviewed housing in the fixed frame; loose racks and improvised rails require authored guide review.",
+      );
+      continue;
+    }
+    const guide = guides[0];
+    if (guide.kind !== "rack-guide") continue;
+    const g = addGroup([rack.occurrenceId], rack.occurrenceId);
+    if (g) {
+      const j = addJoint(
+        rig.groups[0],
+        g,
+        guide.pivot,
+        guide.axis,
+        rack.occurrenceId,
+        "prismatic",
+      );
+      j.limits = [...guide.limits];
+    }
   }
   // A pin retains two bearings but can spin in both. Keep the pin as its own
   // body and use two revolute joints rather than freezing a friction pin.
@@ -493,22 +532,76 @@ export function proposeMechanicalRig(
         occurrenceB: c.b.occurrenceId,
       });
     }
+  for (const c of graph.contacts)
+    if (c.kind === "rack-mesh") {
+      const jointA = jointFor.get(c.a.occurrenceId),
+        jointB = jointFor.get(c.b.occurrenceId);
+      if (!jointA || !jointB) {
+        unresolved(
+          [c.a.occurrenceId, c.b.occurrenceId],
+          "A rack mesh needs a retained pinion shaft and a reviewed guided rack on the same carrier.",
+        );
+        continue;
+      }
+      const ja = rig.joints.find((j) => j.id === jointA)!,
+        jb = rig.joints.find((j) => j.id === jointB)!;
+      if (
+        ja.kind !== "revolute" ||
+        jb.kind !== "prismatic" ||
+        ja.bodyA !== jb.bodyA
+      ) {
+        unresolved(
+          [c.a.occurrenceId, c.b.occurrenceId],
+          "Rack and pinion mounting is not a supported shared carrier.",
+        );
+        continue;
+      }
+      const axisA = mv(
+        rig.groups.find((g) => g.id === ja.bodyA)!.frame.basis,
+        ja.axisA!,
+      );
+      const gear = features.get(keyOf(c.a))!;
+      const sign =
+        axisA.reduce((sum, x, i) => sum + x * gear.axis[i], 0) < 0 ? -1 : 1;
+      jb.limits = [
+        Math.max(jb.limits![0], c.limits[0]),
+        Math.min(jb.limits![1], c.limits[1]),
+      ];
+      result.relations.push({
+        kind: "rack",
+        jointA,
+        jointB,
+        pitchRadiusLdu: c.pitchRadiusLdu * sign,
+        occurrenceA: c.a.occurrenceId,
+        occurrenceB: c.b.occurrenceId,
+      });
+    }
   for (const id of Object.keys(request.motors ?? {}))
     ensure(
       usedMotors.has(id),
       "INVALID_INPUT",
-      "A requested motor has no supported shaft, pin or hinge-leaf joint in this proposal.",
+      "A requested motor has no supported shaft, pin, hinge-leaf or guided rack joint in this proposal.",
     );
   if (result.relations.length)
-    rig.transmissions = result.relations.map((r, i) => ({
-      id: `spur-${i + 1}`,
-      kind: "spur",
-      jointA: r.jointA,
-      jointB: r.jointB,
-      teethA: r.teethA,
-      teethB: r.teethB,
-      axisSign: r.ratio < 0 ? 1 : -1,
-    }));
+    rig.transmissions = result.relations.map((r, i) =>
+      r.kind === "rack"
+        ? {
+            id: `rack-${i + 1}`,
+            kind: "rack",
+            jointA: r.jointA,
+            jointB: r.jointB,
+            pitchRadiusLdu: r.pitchRadiusLdu,
+          }
+        : {
+            id: `spur-${i + 1}`,
+            kind: "spur",
+            jointA: r.jointA,
+            jointB: r.jointB,
+            teethA: r.teethA,
+            teethB: r.teethB,
+            axisSign: r.ratio < 0 ? 1 : -1,
+          },
+    );
   if (rig.joints.length) {
     validateRig(project, rig, true, lookup);
     result.rig = rig;
