@@ -9,8 +9,8 @@ RUN=${1:?usage: interview.sh <oneshot run folder>}
 ask() {
   local e=$1 n log session summary
   n=$(jq '.attemptsUsed' "$RUN/$e/result.json")
-  log=$(ls "$RUN/$e"/attempt-"$n".*claude.json | sort -V | tail -1)
-  session=$(jq -r '.session_id' "$log")
+  log=$(ls "$RUN/$e"/attempt-"$n".*claude.json* | sort -V | tail -1)
+  session=$(jq -r 'select(.type == "result") | .session_id' "$log")
   summary=$(jq -r '
     "Your run (\(.effort) effort): " + (if .accepted then "accepted at \(.parts) parts" else "not accepted" end) +
     " after \(.attemptsUsed) attempt(s); \(.searches) parts searches in all.\n" +

@@ -1,0 +1,123 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 1999,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 1999,
+    "difference": -1,
+    "percent": 0
+  },
+  "seconds": 749,
+  "tokens": {
+    "input": 65939,
+    "cached": 2934,
+    "output": 77417,
+    "reasoning": 60430,
+    "costUsd": 2.0529508000000005
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "2435",
+      "24866",
+      "3022",
+      "32607",
+      "3470",
+      "3471",
+      "3941",
+      "3942c",
+      "3943b",
+      "4032b",
+      "4589",
+      "60474",
+      "87081"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 680,
+      "usage": {
+        "input": 28208,
+        "cached": 1467,
+        "output": 67825,
+        "reasoning": 59239,
+        "costUsd": 1.5707134000000003
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2435",
+          "24866",
+          "3022",
+          "32607",
+          "3470",
+          "3471",
+          "3941",
+          "3942c",
+          "3943b",
+          "4032b",
+          "4589",
+          "60474",
+          "6255",
+          "87081"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2009,
+      "reason": "The script compiled to 2,009 parts (target 2,000: +9, +0.5%). Errors to fix:\n- overlap: 6255 Plant 1 × 1 Large Leaves placed at [2, 1, 2] (its body reaches x 0–5, z 1–5, past its footprint) and 3006 Brick 2 × 10 placed at [0, 3, 5] overlap where their bodies meet: x 0–5, y 3–6, z 5–5 [sections[0].ops[26], sections[1].ops[1]]\n- overlap: 6255 Plant 1 × 1 Large Leaves placed at [8, 1, 2] (its body reaches x 6–11, z 1–5, past its footprint) and 3006 Brick 2 × 10 placed at [0, 3, 5] overlap where their bodies meet: x 6–10, y 3–6, z 5–5 [sections[0].ops[27], sections[1].ops[1]]\n- overlap: 6255 Plant 1 × 1 Large Leaves placed at [33, 1, 2] (its body reaches x 31–36, z 1–5, past its footprint) and 3006 Brick 2 × 10 placed at [26, 3, 5] overlap where their bodies meet: x 31–36, y 3–6, z 5–5 [sections[0].ops[28], sections[1].ops[4]]\n- overlap: 6255 Plant 1 × 1 Large Leaves placed at [39, 1, 2] (its body reaches x 37–42, z 1–5, past its footprint) and 3006 Brick 2 × 10 placed at [36, 3, 5] overlap where their bodies meet: x 37–42, y 3–6, z 5–5 [sections[0].ops[29], sections[1].ops[4]]\n- overlap: 6255 Plant 1 × 1 Large Leaves placed at [45, 1, 2] (its body reaches x 43–48, z 1–5, past its footprint) and 3006 Brick 2 × 10 placed at [36, 3, 5] overlap where their bodies meet: x 43–46, y 3–6, z 5–5 [sections[0].ops[30], sections[1].ops[4]]\n- overlap: 32607 Round Plate 1 × 1 with Leaves placed at [19, 1, 42] (its body reaches x 19–21, z 41–43, past its footprint) and 98283 Brick 1 × 2 Masonry placed at [18, 0, 41] overlap where their bodies meet: x 19–20, y 1–2.5, z 41–42 (7 pairs like this) [sections[0].ops[31], sections[2].ops[0]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 69,
+      "usage": {
+        "input": 37731,
+        "cached": 1467,
+        "output": 9592,
+        "reasoning": 1191,
+        "costUsd": 0.48223740000000004
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2435",
+          "24866",
+          "3022",
+          "32607",
+          "3470",
+          "3471",
+          "3941",
+          "3942c",
+          "3943b",
+          "4032b",
+          "4589",
+          "60474",
+          "87081"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1999
+    }
+  ]
+}

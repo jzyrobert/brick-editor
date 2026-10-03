@@ -1,0 +1,125 @@
+{
+  "effort": "medium",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 1871,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 1871,
+    "difference": -129,
+    "percent": -6.4
+  },
+  "seconds": 512,
+  "tokens": {
+    "input": 63017,
+    "cached": 2934,
+    "output": 52763,
+    "reasoning": 40279,
+    "costUsd": 1.5364948
+  },
+  "searches": 0,
+  "knowledge": {
+    "named": [
+      "2412b",
+      "2431",
+      "2435",
+      "24866",
+      "3001",
+      "3022",
+      "3069b",
+      "3470",
+      "3471",
+      "3941",
+      "3942c",
+      "4589",
+      "60474",
+      "6255"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 446,
+      "usage": {
+        "input": 28209,
+        "cached": 1467,
+        "output": 44248,
+        "reasoning": 38061,
+        "costUsd": 1.0991814
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2431",
+          "2435",
+          "24866",
+          "3001",
+          "3022",
+          "3069b",
+          "3470",
+          "3471",
+          "3941",
+          "3942c",
+          "4589",
+          "60474",
+          "6255"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1757,
+      "reason": "The script compiled to 1,757 parts (target 2,000: −243, −12.1%). Errors to fix:\n- overlap: 3006 Brick 2 × 10 placed at [0, 6, 38] and 3471 Pine Tree Large placed at [2, 1, 42] overlap where their bodies meet: x 2–2, y 6–9, z 42–46 [sections[1].ops[7], sections[6].ops[14]]\n- overlap: 3006 Brick 2 × 10 placed at [0, 9, 26] and 3470 Fruit Tree placed at [2, 1, 28] overlap where their bodies meet: x 2–2, y 9–12, z 28–32 [sections[1].ops[7], sections[6].ops[12]]\n- overlap: 4162 Tile 1 × 8 placed at [1, 12, 22] and 3470 Fruit Tree placed at [2, 1, 28] overlap where their bodies meet: x 2–2, y 12–13, z 28–30 (2 pairs like this) [sections[1].ops[8], sections[6].ops[12]]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 66,
+      "usage": {
+        "input": 34808,
+        "cached": 1467,
+        "output": 8515,
+        "reasoning": 2218,
+        "costUsd": 0.4373134
+      },
+      "searches": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2431",
+          "2435",
+          "24866",
+          "3001",
+          "3022",
+          "3069b",
+          "3470",
+          "3471",
+          "3941",
+          "3942c",
+          "4589",
+          "60474",
+          "6255"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1871
+    }
+  ]
+}

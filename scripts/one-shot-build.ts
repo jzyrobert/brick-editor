@@ -343,7 +343,9 @@ function codexRunner(
 /** `claude -p` (Claude Code) with every tool off and no user customisation
  * (CLAUDE.md, memory, skills, plugins, hooks, MCP): Claude Code's own system
  * prompt and the message alone. The message goes in on stdin (a repair
- * message can pass the 128 kB argument limit). */
+ * message can pass the 128 kB argument limit). A reply that reaches the
+ * output cap is continued by Claude Code in further turns, and its `result`
+ * holds only the last one, so the reply is every assistant text joined. */
 function claudeRunner(model: string, effort: string, cwd: string) {
   const common = [
     "-p",
@@ -357,11 +359,12 @@ function claudeRunner(model: string, effort: string, cwd: string) {
     "--strict-mcp-config",
     "--disable-slash-commands",
     "--output-format",
-    "json",
+    "stream-json",
+    "--verbose",
   ];
   return {
     name: "claude",
-    log: "claude.json",
+    log: "claude.jsonl",
     async send(message, thread, usage, toolEvents) {
       const r = await run(
         "claude",
@@ -386,10 +389,19 @@ function claudeRunner(model: string, effort: string, cwd: string) {
           output_tokens_details?: { thinking_tokens?: number };
         };
       } = {};
-      try {
-        e = JSON.parse(r.stdout);
-      } catch {
-        // not a result: the exit code and stderr say why
+      const texts: string[] = [];
+      for (const line of r.stdout.split("\n")) {
+        if (!line.trim()) continue;
+        try {
+          const ev = JSON.parse(line);
+          if (ev.type === "result") e = ev;
+          if (ev.type === "assistant")
+            for (const c of ev.message?.content ?? [])
+              if (c.type === "text") texts.push(c.text);
+              else if (c.type === "tool_use") toolEvents.push(c.name);
+        } catch {
+          // not an event line
+        }
       }
       const u = e.usage ?? {};
       usage.cached += u.cache_read_input_tokens ?? 0;
@@ -405,7 +417,7 @@ function claudeRunner(model: string, effort: string, cwd: string) {
         ...r,
         code: e.is_error ? r.code || 1 : r.code,
         thread: e.session_id ?? thread,
-        text: e.is_error ? "" : (e.result ?? ""),
+        text: e.is_error ? "" : texts.join("") || (e.result ?? ""),
       };
     },
   } satisfies Runner;

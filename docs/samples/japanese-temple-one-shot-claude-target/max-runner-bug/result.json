@@ -1,0 +1,305 @@
+{
+  "effort": "max",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 1949,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 1949,
+    "difference": -51,
+    "percent": -2.5
+  },
+  "seconds": 5630,
+  "tokens": {
+    "input": 573887,
+    "cached": 238612,
+    "output": 597585,
+    "reasoning": 582630,
+    "costUsd": 18.2523424
+  },
+  "searches": 10,
+  "knowledge": {
+    "named": [
+      "2435",
+      "24866",
+      "3022",
+      "3069b",
+      "3470",
+      "3471",
+      "3941",
+      "3942c",
+      "3943b",
+      "3960",
+      "60474",
+      "6183",
+      "87081"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 2017,
+      "usage": {
+        "input": 481520,
+        "cached": 234211,
+        "output": 217582,
+        "reasoning": 208486,
+        "costUsd": 9.947698200000001
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "stone lantern"
+          },
+          "results": [
+            "98283",
+            "36451a",
+            "30646",
+            "37776",
+            "65581",
+            "30650",
+            "30621",
+            "45407",
+            "42604",
+            "43058",
+            "65092",
+            "30187c05",
+            "42607",
+            "30640c02",
+            "50163"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell"
+          },
+          "results": [
+            "6017",
+            "30151a",
+            "u608",
+            "u609",
+            "30151b",
+            "101117",
+            "1021704",
+            "25613",
+            "23222",
+            "22385p039",
+            "101117p01",
+            "101117p02",
+            "101117p03",
+            "101117p04",
+            "101117p05"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "plant leaves",
+            "colour": "bright pink",
+            "available_in_colour": true
+          },
+          "results": [
+            "2423",
+            "2417",
+            "32607"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bridge"
+          },
+          "results": [
+            "3659",
+            "6005",
+            "6182",
+            "6183",
+            "3307",
+            "92950",
+            "4490",
+            "3455",
+            "2549",
+            "55767",
+            "35494",
+            "3068bp74",
+            "18603c02p1k",
+            "18605p1k"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "pagoda roof"
+          },
+          "results": [
+            "3039",
+            "3037",
+            "3040b",
+            "3038",
+            "3043",
+            "54200",
+            "11477",
+            "85984",
+            "4286",
+            "3665a",
+            "3298",
+            "15068",
+            "3660b",
+            "60481a",
+            "61678"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "fish",
+            "colour": "orange",
+            "available_in_colour": true
+          },
+          "results": [
+            "64648",
+            "93223"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "rock"
+          },
+          "results": [
+            "30385",
+            "30153",
+            "42284",
+            "42291",
+            "10178",
+            "47847",
+            "70880",
+            "36451a",
+            "6083",
+            "30342",
+            "6082",
+            "30286",
+            "11127",
+            "15745",
+            "35646"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "lily pad"
+          },
+          "results": [
+            "11438",
+            "22402",
+            "31990",
+            "88295",
+            "3900",
+            "37614",
+            "35635",
+            "12618",
+            "11097",
+            "15086",
+            "15490",
+            "87585",
+            "7549",
+            "41202",
+            "86123"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "flower",
+            "colour": "bright pink",
+            "available_in_colour": true
+          },
+          "results": [
+            "24866",
+            "3742",
+            "33291",
+            "4728",
+            "18853",
+            "96483",
+            "96487",
+            "5904",
+            "15469",
+            "3742c01",
+            "76382p1z"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "cauldron"
+          },
+          "results": [
+            "4341",
+            "31330"
+          ],
+          "round": 2
+        }
+      ],
+      "toolEvents": [
+        "turns:2"
+      ],
+      "providerRetries": [],
+      "outcome": "invalid",
+      "knowledge": {
+        "named": [],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "reason": "INVALID_INPUT: Invalid build script: $.buildScript is required; $.title is required; $.sections is required; $.op unknown field (allowed: buildScript, title, description, author, palette, parts, defaults, components, sections, limits) (got \"column\"); $.at unknown field (allowed: buildScript, title, description, author, palette, parts, defaults, components, sections, limits) (got [56,3,21]) (+3 more)"
+    },
+    {
+      "attempt": 2,
+      "seconds": 3613,
+      "usage": {
+        "input": 92367,
+        "cached": 4401,
+        "output": 380003,
+        "reasoning": 374144,
+        "costUsd": 8.304644199999998
+      },
+      "searches": [],
+      "toolEvents": [
+        "turns:3"
+      ],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2435",
+          "24866",
+          "3022",
+          "3069b",
+          "3470",
+          "3471",
+          "3941",
+          "3942c",
+          "3943b",
+          "3960",
+          "60474",
+          "6183",
+          "87081"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1949
+    }
+  ]
+}
