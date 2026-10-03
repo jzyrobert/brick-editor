@@ -7,10 +7,16 @@ Open work only. What is implemented, with its evidence, is in [docs/STATUS.md](d
 The CI and development VM measure SwiftShader triangles, draws, heap and CPU time, not phone GPU time or memory ceilings.
 
 - [ ] The raised limits (150,000 parts, 24 M scene triangles) on a physical phone, including adaptive culling cells and culled variants on phone GPUs ([PERFORMANCE-MINEBENCH](docs/PERFORMANCE-MINEBENCH.md#at-the-raised-limits)).
+- [ ] Cream Gallery/Play shell on physical phones, including horizontal response browsing and the compact toolbar during placement.
+
 - [ ] Loading skeleton: warm city loads were 1–7 s slower with it in all four pairs on a loaded VM; compare against `?skeleton=0` on a quiet machine ([PERFORMANCE-MINEBENCH §6](docs/PERFORMANCE-MINEBENCH.md#6-loading-skeleton)).
 - [ ] Photo time to a clean still and first-still shader compile on a real phone.
 - [ ] Backdrop frame times on a real phone.
 - [ ] The spec's performance gates: repeated 5,000-part trials on reference hardware (only single software runs are recorded).
+
+## Gallery content
+
+- [ ] Add sourced responses from other agents and additional prompts; the initial gallery contains one agent at five reasoning levels and explicit placeholders ([GALLERY](docs/GALLERY.md)).
 
 ## Rendering and performance
 
@@ -102,12 +108,13 @@ From [AGENT-BUILDING](docs/AGENT-BUILDING.md) and the [design-language study](do
 
 ## Agent gallery
 
-From [GALLERY-PLAN](docs/GALLERY-PLAN.md); phase 1 (publish script, gallery page, `?gallery=` in the editor) is built:
+From [GALLERY-PLAN](docs/GALLERY-PLAN.md); phase 1 (the publish script, and the Gallery reading published builds) is built:
 
-- [ ] Phase 0: create D1 `brick-gallery` (and `-preview`), the R2 bucket on `gallery.bricks.robertj.in` with CORS and a cache rule, and the API tokens; put the database ID in `wrangler.gallery.toml`.
+- [x] Phase 0, D1: `brick-gallery` and `brick-gallery-preview` created with the migration applied; IDs in `wrangler.gallery.toml`.
+- [ ] Phase 0, the rest: enable R2 for the account (dashboard), create the `brick-gallery` bucket on `gallery.bricks.robertj.in` with CORS and a cache rule, and a publishing API token.
 - [ ] Publish the 24 temple builds with `--remote`; check them on a 1,080 × 1,800 phone, and that a second visit to a build fetches only `index.json`.
 - [ ] Phase 2: the vote Function, the arena and the AGENTS.md rule change. Needs 2 or more prompts with 3 or more agents each.
-- [ ] Phase 3: `scripts/gallery-rank.ts`, the hourly workflow, the leaderboard page.
+- [ ] Phase 3: `scripts/gallery-rank.ts`, the hourly workflow, a leaderboard view in Gallery.
 
 ## UI and docs
 

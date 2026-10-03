@@ -1,6 +1,6 @@
 # Plan: a gallery, arena and leaderboard of agent builds
 
-Status: **phase 1 built, not deployed.** Written 3 October 2026. The publish script, the gallery page and the editor's `?gallery=` entry are in the repository and tested against a local D1 and mocked files ([§12](#12-phase-1-as-built)). No Cloudflare resources exist yet (phase 0), so nothing is published.
+Status: **phase 1 built, not deployed.** Written 3 October 2026. The publish script and the Gallery's reading of published builds are in the repository, tested against a local D1 and mocked files ([§12](#12-phase-1-as-built), which also records how phase 1 changed after the in-app Gallery redesign). Phase 0 has started: the D1 databases `brick-gallery` and `brick-gallery-preview` exist (Western Europe), with `migrations/0001_gallery.sql` applied and recorded in `d1_migrations`, and their IDs are in `wrangler.gallery.toml`. The R2 bucket waits on R2 being enabled for the account in the dashboard (the API refuses with code 10042 until then). Nothing is published yet.
 
 The idea comes from [Minebench](https://github.com/Ammaar-Alam/minebench) (see also [PERFORMANCE-MINEBENCH.md](PERFORMANCE-MINEBENCH.md)): people browse builds that models made from the same prompt, vote blind between two of them, and models are ranked from the votes.
 
@@ -375,20 +375,36 @@ CI (`.github/workflows/cloudflare.yml`):
 
 ## 12. Phase 1 as built
 
-Built on 3 October 2026. Where it differs from the plan above:
+Built on 3 October 2026. Meanwhile, a redesign on `main` made Gallery the app's default mode, inside the editor, with five bundled GPT-6.1-Sol samples ([GALLERY.md](GALLERY.md)). So phase 1's front end differs from §6: there is no separate `gallery.html`. Gallery itself reads the published index instead.
 
-- **Config.** The D1 and R2 settings for publishing live in `wrangler.gallery.toml`, not `wrangler.toml`. Pages reads `wrangler.toml` on every deploy, and the database ID is a placeholder until phase 0 creates it. Phase 2 moves the D1 binding into `wrangler.toml` once the vote Function needs it. `--remote` refuses to run while the placeholder is there.
-- **Dry run.** Without `--remote`, the script applies `migrations/` to a local D1 (`wrangler d1 … --local --persist-to .local/gallery-d1`) and writes files to `.local/gallery-out/` in the bucket's layout. So a dry run exercises the same SQL as a real publish.
-- **Extra columns and files.**
-  - `builds.source` records the batch a build came from (the one-shot folder name), so repeated runs of the same agent can be told apart.
-  - Each build also gets a `card` render: the iso view at 480 × 360, for the grids.
-- **Prompt ids** come from the brief and target: "a japanese buddhist temple", 2,000 → `japanese-buddhist-temple-2000`. `--prompt-id` overrides that.
-- **Agent ids.** Runs made before the runner was recorded in `result.json` are taken as Codex runs.
-- **Refusals.** The first temple run's five builds now fail the colour check added after they were made (for example, 3633 in dark brown), so they are refused. The other 24 accepted temple builds compile with no errors; each has one or two warnings (floating parts).
-- **The page.** `gallery.html` is React, a separate Vite entry: about 68 KB gzipped, including React, against 2.4 MB for the editor. Builds are grouped by model on a brief's page. Its CSP adds the gallery origin to `img-src` and `connect-src`; so does the editor's.
-- **Offline.**
-  - The service worker used to answer every navigation with `index.html`. It now serves `gallery.html` for the gallery page, which it precaches.
-  - Gallery data is never precached. Builds opened in the editor stay in the `brick-editor-gallery-v1` cache.
-- **The editor link** is "See what AI models built", under the templates in Project. `?gallery=<id>` opens through the usual "replace your build?" prompt, then drops the parameter so a reload doesn't ask again.
+**Front end**
 
-What's left for phase 1's "done when": publishing for real (phase 0 first), then checking the temple builds on a 1,080 × 1,800 phone and that a second visit fetches only `index.json`.
+- `publishedPrompts(index)` and `samplePrompts()` (`src/catalog/gallery.ts`) map published builds and the bundled samples to one `GalleryEntry` shape. `src/ui/Gallery.tsx` draws either one.
+- The published index replaces the samples when it loads. If it can't load, the samples stay without an error.
+- The index is read only on https pages or with `?galleryIndex=1`, so local servers and browser tests never reach the real bucket.
+- Explore on a published build fetches its MPD and checks it with `verifyGalleryBuild` (size, SHA-256, library release) before import.
+- `?gallery=<id>` opens that build's page in Gallery, rather than replacing the open project at once.
+
+**Published files**
+
+- Renders match the bundled samples' pictures: Realistic look, white background, 1,280 × 960 WebP, and only Gallery's three angles (corner, front, back). There is no top view or card image.
+- The index carries each build's script `title`, and each agent's `model` and `effort`.
+
+**Config**
+
+- The D1 and R2 settings for publishing live in `wrangler.gallery.toml`, not `wrangler.toml`. Pages reads `wrangler.toml` on every deploy, and the database ID is a placeholder until phase 0 creates it.
+- Phase 2 moves the D1 binding into `wrangler.toml` once the vote Function needs it.
+- `--remote` needs `CLOUDFLARE_API_TOKEN` in the shell (D1 Edit, R2 Edit).
+
+**Dry run.** Without `--remote`, the script applies `migrations/` to a local D1 (`--local --persist-to .local/gallery-d1`) and writes files to `.local/gallery-out/` in the bucket's layout. So a dry run exercises the same SQL as a real publish.
+
+**Data**
+
+- `builds.source` records the batch a build came from (the one-shot folder name), so repeated runs of the same agent can be told apart.
+- `builds.title` holds the script's title.
+- Prompt ids come from the brief and target: "a japanese buddhist temple", 2,000 → `japanese-buddhist-temple-2000`. `--prompt-id` overrides that.
+- Runs made before the runner was recorded in `result.json` are taken as Codex runs.
+
+**Refusals.** The first temple run's five builds now fail the colour check added after they were made (for example, 3633 in dark brown), so they are refused. The other 24 accepted temple builds, from 5 runs and 2 models, compile with no errors; each has one or two warnings (floating parts).
+
+What's left for phase 1's "done when": publishing for real (phase 0 first), then checking the published Gallery on a 1,080 × 1,800 phone, and that a second visit fetches only `index.json` and the renders it shows.

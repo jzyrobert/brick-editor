@@ -13,6 +13,16 @@ import { InstructionTray } from "./InstructionTray";
 import { LimitedSource } from "./LimitedSource";
 import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
+import { Gallery } from "./Gallery";
+import {
+  MODEL_TOOLS,
+  galleryAsset,
+  publishedPrompts,
+  samplePrompts,
+  type GalleryEntry,
+  type GalleryPromptView,
+  type ModelTool,
+} from "../catalog/gallery";
 import { RigAuthoring } from "./RigAuthoring";
 import { RigPhysicsAuthoring } from "./RigPhysicsAuthoring";
 import { SeatAuthoring } from "./SeatAuthoring";
@@ -162,10 +172,10 @@ import {
   retiredLibraryLocks,
 } from "../catalog/catalog";
 import {
-  fetchGalleryIndex,
   fetchGalleryModel,
-  galleryStats,
-} from "../catalog/gallery";
+  galleryIndexEnabled,
+  loadGalleryIndex,
+} from "../catalog/gallery-index";
 import { ColorPicker, colourAvailabilityHint } from "./ColorPicker";
 import { loadTemplate } from "../catalog/template-loader";
 import {
@@ -214,6 +224,7 @@ import "./hud.css";
 import "./parts-picker.css";
 import "./guide.css";
 import "./menus.css";
+import "./workshop.css";
 const editor = new Editor();
 // A stored preference was acknowledged when chosen; otherwise the device decides.
 try {
@@ -295,8 +306,8 @@ function enqueueSourceSave<T>(action: () => Promise<T>): Promise<T> {
   return result;
 }
 let recoveryStarted = false;
-/** `?gallery=<id>` opens once per page load (not again on a StrictMode rerun). */
-let galleryRequested = false;
+/** `?gallery=<id>` (a published build) is read once per page load. */
+const galleryRequested = new URLSearchParams(location.search).get("gallery");
 const runtime: {
   renderer?: SceneAdapter;
   play?: BrowserPlay;
@@ -479,6 +490,28 @@ export default function App() {
   );
 }
 function Workspace() {
+  const [galleryOpen, setGalleryOpen] = useState(
+    () =>
+      !location.hash.startsWith("#v=") &&
+      new URLSearchParams(location.search).get("automation") !== "1",
+  );
+  const [galleryDetail, setGalleryDetail] = useState(
+    () => galleryRequested ?? undefined,
+  );
+  const [galleryPending, setGalleryPending] = useState<string>();
+  const [galleryError, setGalleryError] = useState("");
+  const [galleryModel, setGalleryModel] = useState<{
+    entry: GalleryEntry;
+    projectId: string;
+  }>();
+  // The built-in samples until the published index loads (online only; a
+  // failed load quietly keeps the samples).
+  const [galleryPrompts, setGalleryPrompts] = useState<{
+    prompts: GalleryPromptView[];
+    published: boolean;
+  }>(() => ({ prompts: samplePrompts(), published: false }));
+  const galleryOpenRef = useRef(galleryOpen);
+  galleryOpenRef.current = galleryOpen;
   const [generatingInstructions, setGeneratingInstructions] = useState(false);
   const instructionGenerationToken = useRef(0);
   const instructionGenerationJob = useRef<
@@ -964,7 +997,10 @@ function Workspace() {
   );
   useEffect(() => {
     const openSharedPreview = () => {
-      if (location.hash.startsWith("#v=")) setMode("Project");
+      if (location.hash.startsWith("#v=")) {
+        setGalleryOpen(false);
+        setMode("Project");
+      }
     };
     window.addEventListener("hashchange", openSharedPreview);
     return () => window.removeEventListener("hashchange", openSharedPreview);
@@ -1208,16 +1244,7 @@ function Workspace() {
       )
         autosave.current?.schedule(editor.project);
     };
-    void init().then(() => {
-      const id = new URLSearchParams(location.search).get("gallery");
-      if (id === null || galleryRequested) return;
-      galleryRequested = true;
-      // The link stays in history, but a reload should not ask again.
-      const url = new URL(location.href);
-      url.searchParams.delete("gallery");
-      history.replaceState(history.state, "", url);
-      openGalleryBuild(id);
-    });
+    void init();
     return () => {
       unsubscribe();
       unsubscribePlayView();
@@ -1767,6 +1794,7 @@ function Workspace() {
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (
+        galleryOpenRef.current ||
         modeRef.current !== "Build" ||
         guideRef.current ||
         play.current?.getState().active
@@ -1931,6 +1959,8 @@ function Workspace() {
           );
           renderer.current?.requestFitOnFirstParts();
           const result = await api.current!.buildScript.apply({ script });
+          setGalleryOpen(false);
+          setMode("Build");
           const errors = result.report.problems.filter(
             (p) => p.severity !== "info",
           ).length;
@@ -1961,6 +1991,8 @@ function Workspace() {
         renderer.current?.requestFitOnFirstParts();
         const result = await api.current!.project.import(input);
         if (result.materialization.status === "limited") return;
+        setGalleryOpen(false);
+        setMode("Build");
         setStatus("Imported revision " + result.revision);
         await renderer.current?.ready();
         renderer.current?.fit();
@@ -2138,63 +2170,6 @@ function Workspace() {
         }
       }).then(() => undefined),
     );
-  }
-  /** Opens a build from the agent gallery (docs/GALLERY-PLAN.md) as a new
-   * project: `index.json` names it, the MPD is checked against its hash and
-   * this app's library release, and the usual prompt protects unsaved work. */
-  function openGalleryBuild(id: string) {
-    if (!/^[0-9a-f]{12}$/.test(id)) {
-      setStatus("That gallery link is not valid.");
-      return;
-    }
-    void run(async () => {
-      setStatus("Loading the build from the gallery…");
-      const index = await fetchGalleryIndex();
-      const build = index.builds.find((b) => b.id === id);
-      ensure(
-        build,
-        "REFERENCE_MISSING",
-        "This build is no longer in the gallery.",
-      );
-      const agent =
-        index.agents.find((a) => a.id === build.agent)?.name ?? build.agent;
-      const brief =
-        index.prompts.find((p) => p.id === build.prompt)?.brief ?? build.prompt;
-      const title = `${brief} by ${agent}`;
-      await replaceOrKeep(`the gallery build “${title}”`, async () => {
-        const epoch = ++operationEpoch.current;
-        setBusy(true);
-        try {
-          const text = await fetchGalleryModel(build, index.files, {
-            maxBytes: resourceLimits(editor.resourceProfile).importBytes,
-            locks: [libraryLock, ...retiredLibraryLocks],
-          });
-          ensure(
-            epoch === operationEpoch.current,
-            "CANCELLED",
-            "Import cancelled",
-          );
-          renderer.current?.requestFitOnFirstParts();
-          const result = await api.current!.project.import({
-            format: "ldraw",
-            text,
-            name: `${title}.mpd`,
-          });
-          if (result.materialization.status === "limited") return;
-          setMode("Build");
-          setPanel("Canvas");
-          setStatus(
-            `Opened ${title} from the agent gallery (${galleryStats(build)}).`,
-          );
-          await renderer.current?.ready();
-          renderer.current?.fit();
-          setSelectionSafe([]);
-        } finally {
-          renderer.current?.requestFitOnFirstParts(false);
-          setBusy(false);
-        }
-      });
-    });
   }
   function chooseTemplate(name: TemplateName) {
     const card = TEMPLATE_CARDS.find((c) => c.name === name);
@@ -4149,12 +4124,135 @@ function Workspace() {
     />
   );
   const enterMode = (m: typeof mode) => {
+    setGalleryOpen(false);
     setModesOpen(false);
     if (m === mode) return;
     setMode(m);
     if (m !== "Build") setPanel("Canvas");
     if (m === "Photo") setCamera(renderer.current?.currentCamera() || camera);
   };
+  useEffect(() => {
+    if (!modesOpen) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      setModesOpen(false);
+      document.querySelector<HTMLButtonElement>(".model-tools-toggle")?.focus();
+    };
+    document.addEventListener("keydown", close);
+    return () => document.removeEventListener("keydown", close);
+  }, [modesOpen]);
+  const showGallery = () => {
+    play.current?.exit();
+    mechanisms.current?.exit();
+    setModesOpen(false);
+    setGalleryDetail(undefined);
+    setGalleryOpen(true);
+  };
+  useEffect(() => {
+    if (!galleryOpen || galleryPrompts.published) return;
+    if (!galleryIndexEnabled(location)) return;
+    let live = true;
+    loadGalleryIndex()
+      .then((index) => {
+        const prompts = publishedPrompts(index);
+        if (live && prompts.length)
+          setGalleryPrompts({ prompts, published: true });
+      })
+      .catch(() => {}); // Offline or not yet published: the samples stay.
+    return () => {
+      live = false;
+    };
+  }, [galleryOpen, galleryPrompts.published]);
+  /** Opens a gallery entry as a new local project: a built-in sample's
+   * build script is compiled here; a published build's MPD is fetched and
+   * checked against the index (size, SHA-256, library release) first. */
+  async function openGalleryModel(
+    entry: GalleryEntry,
+    destination: ModelTool | "Play",
+  ) {
+    if (galleryPending) return;
+    setGalleryPending(entry.id);
+    setGalleryError("");
+    try {
+      await applicationAPI.ready();
+      await replaceProject(`“${entry.title}”`, async () => {
+        const epoch = ++operationEpoch.current;
+        const revision = editor.revision;
+        let open: () => Promise<void>;
+        if (entry.source.kind === "sample") {
+          const response = await fetch(
+            galleryAsset(entry.source.sample, "build.json"),
+          );
+          if (!response.ok)
+            throw new Error(
+              "This sample could not load. Check your connection or install the offline copy.",
+            );
+          const script: unknown = await response.json();
+          open = async () => {
+            const result = await applicationAPI.buildScript.apply({
+              script,
+              expectedRevision: revision,
+            });
+            ensure(
+              result.applied,
+              "INVALID_INPUT",
+              "This sample could not be compiled.",
+            );
+          };
+        } else {
+          const text = await fetchGalleryModel(
+            entry.source.build,
+            entry.source.files,
+            {
+              maxBytes: resourceLimits(editor.resourceProfile).importBytes,
+              locks: [libraryLock, ...retiredLibraryLocks],
+            },
+          );
+          open = async () => {
+            await applicationAPI.project.import({
+              format: "ldraw",
+              text,
+              name: `${entry.title}.mpd`,
+            });
+          };
+        }
+        ensure(
+          epoch === operationEpoch.current,
+          "CANCELLED",
+          "Opening sample cancelled",
+        );
+        renderer.current?.requestFitOnFirstParts();
+        setBusy(true);
+        try {
+          await open();
+          setGalleryModel({ entry, projectId: editor.projectId });
+          setActiveLayer(editor.project.defaultLayerId);
+          setSelectionSafe([]);
+          setPanel("Canvas");
+          enterMode(destination);
+          await renderer.current?.ready();
+          renderer.current?.fit();
+          setStatus(
+            `Opened “${entry.title}” · ${entry.agent}` +
+              (entry.effort ? ` · ${entry.effort} effort` : ""),
+          );
+        } finally {
+          renderer.current?.requestFitOnFirstParts(false);
+          setBusy(false);
+        }
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setGalleryError(message);
+      setStatus(message);
+    } finally {
+      setGalleryPending(undefined);
+    }
+  }
+  const currentGalleryModel =
+    galleryModel?.projectId === project.id ? galleryModel.entry : undefined;
   // Build tools (the Inspector's advanced drawers).
   const toolsTab = inspectorTools;
   const modelTools = (
@@ -4262,9 +4360,6 @@ function Workspace() {
           ? "Show fewer templates"
           : `Show all ${TEMPLATE_CARDS.length} templates`}
       </button>
-      <a className="text-button template-more" href="./gallery.html">
-        See what AI models built
-      </a>
     </>
   );
   const projectOfficial = (
@@ -4375,46 +4470,158 @@ function Workspace() {
     <div
       ref={appRoot}
       className={
-        "app mode-" +
+        "app workshop-app mode-" +
         mode.toLowerCase() +
+        (galleryOpen ? " gallery-open" : "") +
         (guideOpen ? " guide-open" : "") +
         (panel !== "Canvas" ? " sheet-open" : "") +
         (sheetFull ? " sheet-full" : "")
       }
     >
-      <div className="hud-top hud-el">
-        <nav
-          className={"mode-tabs hud-slab" + (modesOpen ? " open" : "")}
-          aria-label="Editor mode"
+      <header className="site-header">
+        <button
+          className="site-brand"
+          aria-label="brickeditor gallery"
+          onClick={showGallery}
         >
-          {(["Build", "Instructions", "Photo", "Play", "Project"] as const).map(
-            (m) => (
-              <button
-                key={m}
-                aria-label={m}
-                title={m}
-                aria-pressed={mode === m}
-                className={mode === m ? "active" : ""}
-                onClick={() => {
-                  // On phones the current mode is a chip that opens the switcher.
-                  if (m === mode) {
-                    setModesOpen((open) => !open);
-                    return;
-                  }
-                  enterMode(m);
-                }}
-              >
-                <Icon name={m.toLowerCase() as IconName} />
-                <span className="mode-label">{m}</span>
-                {mode === m && (
-                  <span className="mode-chevron">
-                    <Icon name="collapse" size={16} />
-                  </span>
-                )}
-              </button>
-            ),
-          )}
+          <svg viewBox="0 0 28 32" aria-hidden="true">
+            <path fill="#f48a4d" d="M3 12h22v18H3zM6 4h6v8H6zm10 0h6v8h-6z" />
+            <path
+              stroke="#faf7f1"
+              strokeWidth="2"
+              d="M8 19v5m6-5v5m6-5v5M9 6v4m10-4v4"
+            />
+          </svg>
+          <span>brickeditor</span>
+        </button>
+        <nav className="primary-modes" aria-label="Main modes">
+          <button aria-pressed={galleryOpen} onClick={showGallery}>
+            Gallery
+          </button>
+          <button
+            aria-pressed={!galleryOpen}
+            disabled={!!galleryPending}
+            onClick={() => {
+              void run(async () => {
+                await applicationAPI.ready();
+                if (galleryOpen && !occurrences(editor.project).length)
+                  await openGalleryModel(
+                    galleryPrompts.published
+                      ? galleryPrompts.prompts[0].entries[0]
+                      : galleryPrompts.prompts[0].entries.find(
+                          (e) => e.id === "max",
+                        )!,
+                    "Play",
+                  );
+                else enterMode("Play");
+              });
+            }}
+          >
+            Play
+          </button>
         </nav>
+        <button
+          className="site-open"
+          disabled={!!galleryPending}
+          onClick={() => fileInput.current?.click()}
+        >
+          <Icon name="arrowUp" size={18} />
+          <span>Open your model</span>
+        </button>
+      </header>
+      {galleryOpen && (
+        <Gallery
+          prompts={galleryPrompts.prompts}
+          published={galleryPrompts.published}
+          detailId={galleryDetail}
+          onDetail={setGalleryDetail}
+          onOpen={(s, m) => void openGalleryModel(s, m)}
+          onImport={() => fileInput.current?.click()}
+          pending={galleryPending}
+          error={galleryError}
+        />
+      )}
+      {!galleryOpen && (
+        <div className="model-context">
+          <div className="model-heading">
+            <button aria-label="Back to gallery" onClick={showGallery}>
+              <Icon name="arrowLeft" size={18} />
+            </button>
+            <div>
+              <strong>{currentGalleryModel?.title ?? project.title}</strong>
+              <span>
+                {currentGalleryModel
+                  ? `${currentGalleryModel.agent} · ` +
+                    (currentGalleryModel.effort
+                      ? `${currentGalleryModel.effort} effort · `
+                      : "")
+                  : ""}
+                {all.length.toLocaleString("en")} parts
+              </span>
+            </div>
+          </div>
+          <div className="model-tool-picker">
+            <button
+              className="model-tools-toggle"
+              aria-label="Model tools"
+              aria-expanded={modesOpen}
+              aria-controls="model-tools-menu"
+              onClick={() => {
+                if (play.current?.getState().active) play.current.pause(true);
+                setModesOpen((open) => !open);
+              }}
+            >
+              <Icon name="inspector" size={18} />
+              Tools
+              <Icon name="collapse" size={16} />
+            </button>
+            {modesOpen && (
+              <nav
+                className="model-tools-menu"
+                id="model-tools-menu"
+                aria-label="Editor mode"
+              >
+                <div className="model-tools-title">
+                  <h2>Your building kit.</h2>
+                  <button
+                    aria-label="Close model tools"
+                    onClick={() => setModesOpen(false)}
+                  >
+                    <Icon name="close" size={18} />
+                  </button>
+                </div>
+                <p>A whole workshop, whenever you need it.</p>
+                {MODEL_TOOLS.map((t) => (
+                  <button
+                    key={t.name}
+                    aria-label={t.name}
+                    aria-pressed={mode === t.name}
+                    onClick={() => enterMode(t.name)}
+                  >
+                    <span className="model-tool-icon">
+                      <Icon name={t.name.toLowerCase() as IconName} />
+                    </span>
+                    <span>
+                      <strong>{t.name}</strong>
+                      <small>{t.description}</small>
+                    </span>
+                    <Icon name="arrowRight" size={18} />
+                  </button>
+                ))}
+                <small>Your changes stay on this device.</small>
+              </nav>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="hud-top hud-el">
+        <button
+          className="workspace-tool-label hud-slab"
+          onClick={() => setModesOpen((open) => !open)}
+        >
+          <Icon name={mode.toLowerCase() as IconName} size={18} />
+          {mode}
+        </button>
         <div className="project-bar hud-slab">
           <span className="brand" aria-hidden="true">
             brick<b>editor</b>

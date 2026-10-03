@@ -6,6 +6,23 @@ the [artifact policy](reports/instruction-generation/README.md#local-artifacts).
 
 This report distinguishes working implementation from the full specification. The delivered scope is a usable core editor with selected later editing/reliability features. **It is not a supported full P0 release, with basic M4 exploration now implemented independently. Selected M4 publishing, the M5 kinematic-mechanism scope and a first M6 dynamic-physics slice are also implemented. The full roadmap remains incomplete.**
 
+## Cream Gallery and Play workshop — 3 October 2026
+
+The approved cream design is implemented in the production React app. Gallery
+and Play are the main modes. Five sourced temple responses support shared camera
+angles, reasoning filters, two-response comparison and larger model details.
+They are correctly attributed to one GPT-6.1-Sol agent at five reasoning levels;
+additional agents and prompts are labeled placeholders.
+
+Every sample opens as an editable local copy in Play, Build, Instructions,
+Photo or Project. Existing replacement protection, file import/export,
+autosave, saved projects, keyboard tools and automation remain available.
+The compact Play entry keeps world/mechanism settings accessible, and the
+phone Build header leaves room for growing placement controls. Runtime images,
+source scripts and the licensed display font are local and precached offline.
+See [Gallery](GALLERY.md), [design system](../DESIGN.md) and
+[verification](VERIFICATION.md#cream-gallery-and-play-workshop--3-october-2026).
+
 ## Reviewed conditional figure procedures
 
 Automatic v11 preserves supplied lower-body/torso assemblies, orders source-owned
@@ -717,3 +734,27 @@ and actual selected phone views do not certify physical assembly. The
 [trial](reports/instruction-generation/hybrid-workflow.md) and
 [independent review](reports/instruction-generation/hybrid-workflow-critic.md)
 record scope, refusals, unchanged scores and remaining feasible work.
+
+## Agent gallery, phase 1 — 3 October 2026
+
+Builds can be published to the [agent gallery](GALLERY-PLAN.md) and the
+Gallery shows them. Nothing is published yet: the D1 databases exist (with
+the migration applied), but R2 is not yet enabled for the account. Built:
+
+- `npm run gallery:publish` (`scripts/gallery-publish.ts`): reads one-shot run
+  folders or single build scripts and recompiles each build, refusing any with
+  errors. It writes gzipped MPDs, scripts, run reports and Realistic WebP
+  renders by SHA-256, records rows in D1 (`migrations/0001_gallery.sql`) and
+  rebuilds `index.json`. Without `--remote` it runs against a local D1 and
+  `.local/gallery-out/`.
+- Gallery reads the published index (on https pages, or with
+  `?galleryIndex=1`). It shows every published brief, model and effort through
+  the same cards, filters, comparison and detail pages as the bundled samples,
+  and falls back to those samples when the index can't load.
+- Explore on a published build checks its MPD (size, SHA-256, library
+  release) before importing it, and caches it for offline use.
+  `?gallery=<id>` opens a build's page.
+
+A dry run over all six temple runs recorded 24 builds (5 runs, 2 models); the
+5 builds of the first run are refused by the colour check added after them.
+Votes, the arena and the leaderboard (phases 2 and 3) are not built.

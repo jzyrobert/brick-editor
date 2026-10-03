@@ -1,411 +1,263 @@
-// The agent-build gallery (docs/GALLERY-PLAN.md): types, ids and the checks
-// shared by the publish script, the gallery page and the editor's
-// `?gallery=<id>` entry. Gallery files are static objects on one origin (a
-// public R2 bucket); nothing here talks to a server of ours. Kept free of the
-// catalogue so the gallery page stays a small bundle: callers pass the
-// library locks they accept.
-import { Gunzip } from "fflate";
-import { sha256 } from "../core/hash";
-import { AppError, ensure } from "../core/types";
+import {
+  galleryDuration,
+  galleryFileUrl,
+  type GalleryBuild,
+  type GalleryIndex,
+} from "./gallery-index";
+/** Editorial labels; source agent/effort metadata is preserved separately. */
+export const GALLERY_SAMPLES = [
+  {
+    id: "high",
+    title: "The red pagoda",
+    effort: "High",
+    parts: 1965,
+    tone: "peach",
+    description: "A red-and-white pagoda, stone steps and a raked rock garden.",
+  },
+  {
+    id: "xhigh",
+    title: "The timber courtyard",
+    effort: "Xhigh",
+    parts: 1997,
+    tone: "sage",
+    description: "Bracketed eaves, a hip-and-gable hall and a gravel garden.",
+  },
+  {
+    id: "max",
+    title: "The temple compound",
+    effort: "Max",
+    parts: 2061,
+    tone: "sand",
+    description: "A tall pagoda, two-storey gate and a bell pavilion.",
+  },
+  {
+    id: "low",
+    title: "The garden hall",
+    effort: "Low",
+    parts: 2057,
+    tone: "sand",
+    description: "A timber-framed hall, deep hip roof and a garden gate.",
+  },
+  {
+    id: "medium",
+    title: "The walled pagoda",
+    effort: "Medium",
+    parts: 2098,
+    tone: "peach",
+    description: "A red pagoda, a garden hall and a walled lawn.",
+  },
+] as const;
+export type GallerySample = (typeof GALLERY_SAMPLES)[number];
+export type GallerySampleId = GallerySample["id"];
+export type ModelTool = "Build" | "Instructions" | "Photo" | "Project";
+export const MODEL_TOOLS: { name: ModelTool; description: string }[] = [
+  { name: "Build", description: "Edit parts, colours and layers" },
+  {
+    name: "Instructions",
+    description: "Follow steps and check the parts list",
+  },
+  { name: "Photo", description: "Set up a view and render a picture" },
+  { name: "Project", description: "Save a copy, import or export" },
+];
+export type GalleryAngle = "iso" | "front" | "iso-back";
+export const GALLERY_ANGLES: { id: GalleryAngle; label: string }[] = [
+  { id: "iso", label: "Three-quarter" },
+  { id: "front", label: "Front" },
+  { id: "iso-back", label: "Back" },
+];
+export function galleryAsset(sample: GallerySample, file: string) {
+  return `${import.meta.env.BASE_URL}gallery/japanese-temple/${sample.id}/${file}`;
+}
 
-/** Where the gallery's files live (also in the CSP of both pages). */
-export const GALLERY_ORIGIN = "https://gallery.bricks.robertj.in";
+// ---------------------------------------------------------------------------
+// One shape for both sources: the built-in samples above and builds published
+// to the gallery bucket (gallery-index.ts, docs/GALLERY-PLAN.md). Gallery
+// shows published builds when the index loads, else the built-in samples.
 
-export const GALLERY_VIEWS = ["iso", "front", "iso-back", "top"] as const;
-export type GalleryView = (typeof GALLERY_VIEWS)[number];
-/** The card image: the iso view, smaller. */
-export type GalleryRenderKey = GalleryView | "card";
-
-/** Render settings every published build shares, so builds compare fairly. */
-export const GALLERY_RENDER = {
-  width: 1024,
-  height: 768,
-  card: { width: 480, height: 360 },
-  look: "standard",
-  backdrop: "blank",
-  background: "#ffffff",
-  webpQuality: 0.86,
-} as const;
-
-export type GalleryPrompt = {
+export type GalleryTone = "peach" | "sage" | "sand";
+export type GalleryEntry = {
   id: string;
+  title: string;
+  /** The model ("GPT-6.1-Sol") and its reasoning effort ("High"). */
+  agent: string;
+  effort?: string;
+  parts: number;
+  tone: GalleryTone;
+  description: string;
+  /** Detail-page facts, in order. */
+  facts: [string, string][];
+  images: Record<GalleryAngle, string>;
+  source:
+    | { kind: "sample"; sample: GallerySample }
+    | { kind: "published"; build: GalleryBuild; files: string };
+};
+export type GalleryPromptView = {
+  id: string;
+  /** Short tab label ("Japanese temple") and the noun for it ("temple"). */
+  name: string;
+  noun: string;
   brief: string;
   targetParts?: number;
-  arena: boolean;
-};
-export type GalleryAgent = { id: string; name: string };
-export type GalleryLibrary = { release: string; hash: string };
-export type GalleryBuild = {
-  id: string;
-  prompt: string;
-  agent: string;
-  /** SHA-256 of the uncompressed MPD; the file is `b/<mpd>.mpd.gz`. */
-  mpd: string;
-  mpdBytes: number;
-  script?: string;
-  report?: string;
-  renders: Partial<Record<GalleryRenderKey, string>>;
-  parts: number;
-  warnings: number;
-  attempts?: number;
-  seconds?: number;
-  costUsd?: number;
-  outputTokens?: number;
-  /** A label for the batch the build came from (e.g. the one-shot run). */
-  source?: string;
-  library: GalleryLibrary;
-  created: string;
-};
-export type GalleryIndex = {
-  v: 1;
-  generated: string;
-  files: string;
-  prompts: GalleryPrompt[];
-  agents: GalleryAgent[];
-  builds: GalleryBuild[];
+  heading: string;
+  /** The generation notes on a detail page. */
+  notes: string;
+  /** A prompt with no builds yet, shown as a placeholder. */
+  placeholder?: boolean;
+  entries: GalleryEntry[];
 };
 
-const SHA = /^[0-9a-f]{64}$/;
-const ID = /^[a-z0-9][a-z0-9._/-]{0,119}$/;
-
-/** A build's public id: the first 12 hex digits of its MPD hash. */
-export const galleryBuildId = (mpdSha: string) => mpdSha.slice(0, 12);
-
-const slug = (text: string) =>
-  text
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-/** "a japanese buddhist temple", 2000 → "japanese-buddhist-temple-2000". */
-export function galleryPromptId(brief: string, targetParts?: number) {
-  const words = slug(brief).replace(/^(a|an|the)-/, "");
-  ensure(words.length > 0, "INVALID_INPUT", "The brief has no words");
-  return (words.slice(0, 60).replace(/-+$/, "") +
-    (targetParts ? `-${targetParts}` : "")) as string;
-}
-
-/** "claude", "claude-opus-5-5", "high" → "claude/claude-opus-5-5/high". */
-export function galleryAgentId(runner: string, model: string, effort?: string) {
-  const id = [runner, model, effort]
-    .filter((p): p is string => !!p)
-    .map(slug)
-    .join("/");
-  ensure(ID.test(id), "INVALID_INPUT", `Unusable agent id: ${id}`);
-  return id;
-}
-
-const MODEL_NAMES: [RegExp, (m: RegExpMatchArray) => string][] = [
-  [
-    /^claude-([a-z]+)-(\d+)-(\d+)$/,
-    (m) => `Claude ${cap(m[1])} ${m[2]}.${m[3]}`,
-  ],
-  [/^gpt-(.+)$/, (m) => `GPT-${m[1].replace(/-([a-z])/g, "-$1")}`],
+const sentenceCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const NUMBER_WORDS = [
+  "No",
+  "One",
+  "Two",
+  "Three",
+  "Four",
+  "Five",
+  "Six",
+  "Seven",
+  "Eight",
+  "Nine",
+  "Ten",
 ];
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-/** A plain display name: "Claude Opus 5.5 (high)", "GPT-6.1-sol (low)". */
-export function galleryAgentName(model: string, effort?: string) {
-  let name = model;
-  for (const [re, f] of MODEL_NAMES) {
-    const m = model.match(re);
-    if (m) {
-      name = f(m);
-      break;
-    }
-  }
-  return effort ? `${name} (${effort})` : name;
+const takes = (n: number) =>
+  `${NUMBER_WORDS[n] ?? n.toLocaleString("en")} take${n === 1 ? "" : "s"}.`;
+
+/** The built-in samples (bundled, offline) as a prompt list. */
+export function samplePrompts(): GalleryPromptView[] {
+  const angles = (s: GallerySample) =>
+    Object.fromEntries(
+      GALLERY_ANGLES.map((a) => [a.id, galleryAsset(s, `${a.id}.png`)]),
+    ) as Record<GalleryAngle, string>;
+  return [
+    {
+      id: "temple",
+      name: "Japanese temple",
+      noun: "temple",
+      brief: "a japanese buddhist temple",
+      targetParts: 2000,
+      heading: "One temple. Five takes.",
+      notes:
+        "“a japanese buddhist temple” · Target: 2,000 parts ± 5%. GPT-6.1-Sol, 2 October 2026. Every effort was accepted after a second reply. Warning diagnostics still apply.",
+      entries: GALLERY_SAMPLES.map((s) => ({
+        id: s.id,
+        title: s.title,
+        agent: "GPT-6.1-Sol",
+        effort: s.effort,
+        parts: s.parts,
+        tone: s.tone,
+        description: s.description,
+        facts: [
+          ["Parts", s.parts.toLocaleString("en")],
+          ["Generation", "One-shot + repair"],
+          ["Source", "Geometry-rules run"],
+        ],
+        images: angles(s),
+        source: { kind: "sample", sample: s },
+      })),
+    },
+    {
+      id: "village",
+      name: "Seaside village",
+      noun: "village",
+      brief: "a seaside village",
+      heading: "This world is still waiting.",
+      notes: "",
+      placeholder: true,
+      entries: [],
+    },
+    {
+      id: "station",
+      name: "Space station",
+      noun: "station",
+      brief: "a space station",
+      heading: "This world is still waiting.",
+      notes: "",
+      placeholder: true,
+      entries: [],
+    },
+  ];
 }
 
-export const galleryFileUrl = (
-  files: string,
-  kind: "b" | "s" | "r" | "p",
-  sha: string,
-) =>
-  `${files.replace(/\/+$/, "")}/${kind}/${sha}.${
-    kind === "b" ? "mpd.gz" : kind === "r" ? "webp" : "json"
-  }`;
+const EFFORT_ORDER = ["low", "medium", "high", "xhigh", "max"];
+const TONES: GalleryTone[] = ["peach", "sage", "sand"];
 
-/** Checks the shape of `index.json` (it is fetched from another origin) and
- * drops builds whose prompt or agent is missing. */
-export function decodeGalleryIndex(raw: unknown): GalleryIndex {
-  const bad = () =>
-    new AppError("INVALID_INPUT", "The gallery index is invalid");
-  if (!raw || typeof raw !== "object") throw bad();
-  const r = raw as Partial<GalleryIndex>;
-  if (
-    r.v !== 1 ||
-    typeof r.generated !== "string" ||
-    typeof r.files !== "string" ||
-    !/^https:\/\/[^/]+/.test(r.files) ||
-    !Array.isArray(r.prompts) ||
-    !Array.isArray(r.agents) ||
-    !Array.isArray(r.builds)
-  )
-    throw bad();
-  const prompts = r.prompts.filter(
-    (p) => p && ID.test(p.id) && typeof p.brief === "string",
-  );
-  const agents = r.agents.filter(
-    (a) => a && ID.test(a.id) && typeof a.name === "string",
-  );
-  const promptIds = new Set(prompts.map((p) => p.id)),
-    agentIds = new Set(agents.map((a) => a.id));
-  const builds = r.builds.filter(
-    (b) =>
-      b &&
-      /^[0-9a-f]{12}$/.test(b.id) &&
-      SHA.test(b.mpd) &&
-      b.id === galleryBuildId(b.mpd) &&
-      Number.isInteger(b.mpdBytes) &&
-      Number.isInteger(b.parts) &&
-      promptIds.has(b.prompt) &&
-      agentIds.has(b.agent) &&
-      b.renders &&
-      Object.values(b.renders).every(
-        (s) => typeof s === "string" && SHA.test(s),
-      ) &&
-      b.library &&
-      typeof b.library.release === "string" &&
-      typeof b.library.hash === "string",
-  );
-  return { ...(r as GalleryIndex), prompts, agents, builds };
-}
-
-/** Index rows → `index.json`. Rows come from D1 (see migrations/), newest
- * build first; prompts and agents without visible builds are left out. */
-export type GalleryRow = {
-  build_id: string;
-  prompt_id: string;
-  brief: string;
-  target_parts: number | null;
-  arena: number;
-  agent_id: string;
-  display_name: string;
-  mpd_sha: string;
-  mpd_bytes: number;
-  script_sha: string | null;
-  report_sha: string | null;
-  renders: string;
-  parts: number;
-  attempts: number | null;
-  seconds: number | null;
-  cost_usd: number | null;
-  output_tokens: number | null;
-  source: string | null;
-  library_release: string;
-  library_hash: string;
-  warnings: number;
-  created_at: number;
-};
-export function galleryIndexFromRows(
-  rows: GalleryRow[],
-  files: string,
-  generated: Date,
-): GalleryIndex {
-  const sorted = [...rows].sort(
-    (a, b) =>
-      b.created_at - a.created_at || a.build_id.localeCompare(b.build_id),
-  );
-  const prompts = new Map<string, GalleryPrompt>(),
-    agents = new Map<string, GalleryAgent>();
-  const opt = <T>(v: T | null) => (v === null ? undefined : v);
-  const builds = sorted.map((r): GalleryBuild => {
-    if (!prompts.has(r.prompt_id))
-      prompts.set(r.prompt_id, {
-        id: r.prompt_id,
-        brief: r.brief,
-        ...(r.target_parts ? { targetParts: r.target_parts } : {}),
-        arena: !!r.arena,
-      });
-    if (!agents.has(r.agent_id))
-      agents.set(r.agent_id, { id: r.agent_id, name: r.display_name });
-    const b: GalleryBuild = {
-      id: r.build_id,
-      prompt: r.prompt_id,
-      agent: r.agent_id,
-      mpd: r.mpd_sha,
-      mpdBytes: r.mpd_bytes,
-      script: opt(r.script_sha),
-      report: opt(r.report_sha),
-      renders: JSON.parse(r.renders),
-      parts: r.parts,
-      warnings: r.warnings,
-      attempts: opt(r.attempts),
-      seconds: opt(r.seconds),
-      costUsd: opt(r.cost_usd),
-      outputTokens: opt(r.output_tokens),
-      source: opt(r.source),
-      library: { release: r.library_release, hash: r.library_hash },
-      created: new Date(r.created_at * 1000)
-        .toISOString()
-        .replace(/\.\d{3}Z$/, "Z"),
-    };
-    for (const k of Object.keys(b) as (keyof GalleryBuild)[])
-      if (b[k] === undefined) delete b[k];
-    return b;
-  });
-  const byName = <T extends { id: string }>(m: Map<string, T>) =>
-    [...m.values()].sort((a, b) => a.id.localeCompare(b.id));
-  return {
-    v: 1,
-    generated: generated.toISOString().replace(/\.\d{3}Z$/, "Z"),
-    files,
-    prompts: byName(prompts),
-    agents: byName(agents),
-    builds,
-  };
-}
-
-/** Inflates a gzip member, refusing to grow past `maxBytes`. */
-export function gunzipBounded(bytes: Uint8Array, maxBytes: number) {
-  const chunks: Uint8Array[] = [];
-  let size = 0;
-  const gunzip = new Gunzip((data) => {
-    size += data.length;
-    ensure(
-      size <= maxBytes,
-      "LIMIT_EXCEEDED",
-      "This build is over this device's import limit.",
-    );
-    chunks.push(data);
-  });
-  for (let i = 0; i < bytes.length; i += 65536)
-    gunzip.push(bytes.subarray(i, i + 65536), i + 65536 >= bytes.length);
-  const out = new Uint8Array(size);
-  let offset = 0;
-  for (const c of chunks) {
-    out.set(c, offset);
-    offset += c.length;
-  }
-  return out;
-}
-
-/** Checks a downloaded build against its index entry: size, hash and library
- * release. Returns the MPD text. */
-export async function verifyGalleryBuild(
-  build: GalleryBuild,
-  gz: Uint8Array,
-  o: {
-    maxBytes: number;
-    locks: { releaseId: string; manifestSha256: string }[];
-  },
-) {
-  ensure(
-    build.mpdBytes <= o.maxBytes,
-    "LIMIT_EXCEEDED",
-    "This build is over this device's import limit.",
-  );
-  ensure(
-    o.locks.some(
-      (l) =>
-        l.releaseId === build.library.release &&
-        l.manifestSha256 === build.library.hash,
-    ),
-    "REFERENCE_MISSING",
-    "This build needs a parts library version this app no longer has.",
-  );
-  let bytes: Uint8Array;
-  try {
-    bytes = gunzipBounded(gz, Math.min(o.maxBytes, build.mpdBytes));
-  } catch (e) {
-    if (e instanceof AppError) throw e;
-    throw new AppError("INVALID_INPUT", "The build file is damaged.");
-  }
-  ensure(
-    bytes.length === build.mpdBytes && (await sha256(bytes)) === build.mpd,
-    "INVALID_INPUT",
-    "The build file does not match the gallery (checksum mismatch).",
-  );
-  return new TextDecoder().decode(bytes);
-}
-
-/** `index.json`, fresh from the network (the CDN caches it for a minute). */
-export async function fetchGalleryIndex(origin = GALLERY_ORIGIN) {
-  let res: Response;
-  try {
-    res = await fetch(`${origin}/index.json`, { cache: "no-cache" });
-  } catch {
-    throw new AppError(
-      "NETWORK_UNAVAILABLE",
-      "The gallery needs a connection.",
-    );
-  }
-  ensure(
-    res.ok,
-    "NETWORK_UNAVAILABLE",
-    `The gallery is unavailable (HTTP ${res.status}). Try again later.`,
-  );
-  return decodeGalleryIndex(await res.json());
-}
-
-export const galleryCacheName = "brick-editor-gallery-v1";
-
-/** One build's MPD, verified. Builds are immutable, so a copy opened before
- * comes from this device's cache (and opens offline). */
-export async function fetchGalleryModel(
-  build: GalleryBuild,
-  files: string,
-  o: Parameters<typeof verifyGalleryBuild>[2],
-) {
-  const url = galleryFileUrl(files, "b", build.mpd);
-  let cache: Cache | undefined;
-  try {
-    cache =
-      typeof caches === "undefined"
-        ? undefined
-        : await caches.open(galleryCacheName);
-  } catch {
-    cache = undefined;
-  }
-  const hit = await cache?.match(url).catch(() => undefined);
-  if (hit) {
-    try {
-      return await verifyGalleryBuild(
-        build,
-        new Uint8Array(await hit.arrayBuffer()),
-        o,
-      );
-    } catch {
-      await cache!.delete(url).catch(() => false);
-    }
-  }
-  let res: Response;
-  try {
-    res = await fetch(url);
-  } catch {
-    throw new AppError(
-      "NETWORK_UNAVAILABLE",
-      "The gallery needs a connection. Builds you have opened before also open offline.",
-    );
-  }
-  ensure(
-    res.ok,
-    "NETWORK_UNAVAILABLE",
-    `The gallery is unavailable (HTTP ${res.status}). Try again later.`,
-  );
-  const gz = new Uint8Array(await res.arrayBuffer());
-  const text = await verifyGalleryBuild(build, gz, o);
-  await cache
-    ?.put(
-      url,
-      new Response(gz, { headers: { "Content-Type": "application/gzip" } }),
-    )
-    .catch(() => {}); // Quota: still opens, just not offline.
-  return text;
-}
-
-/** "84 s", "19 min". */
-export const galleryDuration = (seconds: number) =>
-  seconds < 90
-    ? `${seconds} s`
-    : `${Math.round(seconds / 60).toLocaleString("en-US")} min`;
-
-/** Plain stats for cards: "1,921 parts · 19 min · $2.84". */
-export function galleryStats(b: GalleryBuild) {
-  const out = [`${b.parts.toLocaleString("en-US")} parts`];
-  if (b.seconds !== undefined) out.push(galleryDuration(b.seconds));
-  if (b.costUsd !== undefined) out.push(`$${b.costUsd.toFixed(2)}`);
-  return out.join(" · ");
+/** Published builds as a prompt list: per prompt, grouped by model and
+ * ordered by effort. */
+export function publishedPrompts(index: GalleryIndex): GalleryPromptView[] {
+  const agents = new Map(index.agents.map((a) => [a.id, a]));
+  return index.prompts
+    .map((p): GalleryPromptView => {
+      const builds = index.builds
+        .filter((b) => b.prompt === p.id)
+        .sort((a, b) => {
+          const x = agents.get(a.agent),
+            y = agents.get(b.agent);
+          return (
+            (x?.model ?? a.agent).localeCompare(y?.model ?? b.agent, "en") ||
+            EFFORT_ORDER.indexOf(x?.effort ?? "") -
+              EFFORT_ORDER.indexOf(y?.effort ?? "") ||
+            b.created.localeCompare(a.created)
+          );
+        });
+      const name = sentenceCase(p.brief.replace(/^(a|an|the)\s+/i, ""));
+      const target = p.targetParts
+        ? ` · Target: ${p.targetParts.toLocaleString("en")} parts.`
+        : ".";
+      return {
+        id: p.id,
+        name,
+        noun: name.split(" ").at(-1)!.toLowerCase(),
+        brief: p.brief,
+        targetParts: p.targetParts,
+        heading: `One brief. ${takes(builds.length)}`,
+        notes: `“${p.brief}”${target} Each model wrote a build script that this app compiled into real parts; accepted builds may still carry warnings.`,
+        entries: builds.map((b, i) => {
+          const a = agents.get(b.agent);
+          const facts: [string, string][] = [
+            ["Parts", b.parts.toLocaleString("en")],
+          ];
+          if (b.seconds !== undefined)
+            facts.push(["Time", galleryDuration(b.seconds)]);
+          if (b.costUsd !== undefined)
+            facts.push(["Cost", `$${b.costUsd.toFixed(2)}`]);
+          if (b.attempts !== undefined)
+            facts.push(["Replies", String(b.attempts)]);
+          facts.push(["Warnings", String(b.warnings)]);
+          if (b.source) facts.push(["Source", b.source]);
+          const details = [
+            b.attempts === undefined
+              ? ""
+              : b.attempts === 1
+                ? "Accepted on its first reply."
+                : `Accepted after ${b.attempts} replies.`,
+            b.seconds === undefined
+              ? ""
+              : `${galleryDuration(b.seconds)} of model time.`,
+          ].filter(Boolean);
+          return {
+            id: b.id,
+            title: b.title ?? `${a?.model ?? b.agent}’s ${name.toLowerCase()}`,
+            agent: a?.model ?? a?.name ?? b.agent,
+            effort: a?.effort ? sentenceCase(a.effort) : undefined,
+            parts: b.parts,
+            tone: TONES[i % TONES.length],
+            description: details.join(" "),
+            facts,
+            images: Object.fromEntries(
+              GALLERY_ANGLES.map((v) => [
+                v.id,
+                galleryFileUrl(
+                  index.files,
+                  "r",
+                  b.renders[v.id] ?? b.renders.iso ?? "",
+                ),
+              ]),
+            ) as Record<GalleryAngle, string>,
+            source: { kind: "published", build: b, files: index.files },
+          };
+        }),
+      };
+    })
+    .filter((p) => p.entries.length);
 }

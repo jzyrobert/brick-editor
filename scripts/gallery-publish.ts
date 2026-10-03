@@ -22,7 +22,7 @@ import {
   galleryPromptId,
   type GalleryRenderKey,
   type GalleryRow,
-} from "../src/catalog/gallery";
+} from "../src/catalog/gallery-index";
 import type { Project } from "../src/core/types";
 import { AppError, ensure } from "../src/core/types";
 
@@ -39,7 +39,7 @@ npm run gallery:publish -- --hide <buildId> [--remote]
 npm run gallery:publish -- --reindex [--remote]
 
   Compiles each accepted build (refusing any with errors), exports and gzips
-  its MPD, renders ${GALLERY_VIEWS.join(", ")} and a card (${GALLERY_RENDER.width} × ${GALLERY_RENDER.height}, ${GALLERY_RENDER.look} look, ${GALLERY_RENDER.backdrop} backdrop, WebP),
+  its MPD, renders ${GALLERY_VIEWS.join(", ")} (${GALLERY_RENDER.width} × ${GALLERY_RENDER.height}, ${GALLERY_RENDER.look} look, ${GALLERY_RENDER.backdrop} backdrop, WebP),
   names every file by its SHA-256, uploads the files, inserts the rows and
   rebuilds index.json. Builds already in the database are skipped.
 
@@ -156,6 +156,7 @@ export type Prepared = {
   mpd: { sha: string; bytes: number; gz: Uint8Array };
   script: { sha: string; bytes: Uint8Array };
   report: { sha: string; bytes: Uint8Array };
+  title?: string;
   parts: number;
   warnings: number;
   library: { release: string; hash: string };
@@ -200,6 +201,7 @@ export function publishSql(
         id: b.id,
         prompt_id: c.promptId,
         agent_id: c.agentId,
+        title: b.title,
         mpd_sha: b.mpd.sha,
         mpd_bytes: b.mpd.bytes,
         script_sha: b.script.sha,
@@ -225,7 +227,7 @@ export function publishSql(
 }
 
 export const INDEX_QUERY = `SELECT b.id AS build_id, b.prompt_id, p.brief, p.target_parts, p.arena,
-  b.agent_id, a.display_name, b.mpd_sha, b.mpd_bytes, b.script_sha, b.report_sha,
+  b.agent_id, a.display_name, a.model, a.effort, b.title, b.mpd_sha, b.mpd_bytes, b.script_sha, b.report_sha,
   b.renders, b.parts, b.attempts, b.seconds, b.cost_usd, b.output_tokens, b.source,
   b.library_release, b.library_hash, b.warnings, b.created_at
 FROM builds b JOIN prompts p ON p.id = b.prompt_id JOIN agents a ON a.id = b.agent_id
@@ -291,7 +293,7 @@ function target(remote: boolean): Target {
         "00000000-0000-0000-0000-000000000000",
       ),
       "INVALID_INPUT",
-      "wrangler.gallery.toml still has the placeholder database_id: run the Cloudflare setup (docs/GALLERY-PLAN.md §3) first.",
+      "wrangler.gallery.toml has no database_id: run the Cloudflare setup (docs/GALLERY-PLAN.md §3) first.",
     );
     ensure(
       process.env.CLOUDFLARE_API_TOKEN,
@@ -423,6 +425,7 @@ async function prepare(
     project,
     bounds: report.bounds!.ldu,
     id: galleryBuildId(mpdSha),
+    title: report.title || undefined,
     mpd: {
       sha: mpdSha,
       bytes: mpdBytes.length,
@@ -440,7 +443,7 @@ async function prepare(
   };
 }
 
-/** Renders every build in one headless page: the fixed views plus a card. */
+/** Renders every build's views in one headless page. */
 async function renderAll(
   builds: { id: string; project: Project; bounds: { min: any; max: any } }[],
 ): Promise<Map<string, Record<GalleryRenderKey, Uint8Array>>> {
@@ -501,8 +504,6 @@ async function renderAll(
               strict: true,
             });
             result[view] = await webp(blob, s.width, s.height);
-            if (view === "iso")
-              result.card = await webp(blob, s.card.width, s.card.height);
           }
           return result;
         },

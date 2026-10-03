@@ -21,7 +21,10 @@ const house = `0 FILE house.ldr
 
 // Every floating HUD slot; none may cover another or leave the screen.
 const SLOTS = [
-  ".hud-top .mode-tabs:not(.open)",
+  ".site-header",
+  ".model-heading",
+  ".model-tools-toggle",
+  ".hud-top .workspace-tool-label",
   ".hud-top .header-actions > *",
   ".canvas-toolbar",
   ".tool-more-menu",
@@ -127,21 +130,50 @@ for (const viewport of [
       window.brickEditor!.camera.set({
         space: "ldraw",
         projection: "perspective",
-        position: [0, -560, 120],
-        target: [0, -192, 0],
+        position: [-40, -560, 120],
+        target: [-40, -192, 0],
         up: [0, -1, 0],
         fovDeg: 40,
         near: 1,
         far: 5000,
       }),
     );
-    const canvas = (await page.locator(".viewport canvas").boundingBox())!;
-    await page.touchscreen.tap(
-      canvas.x + canvas.width / 2,
-      canvas.y + canvas.height / 2,
-    );
+    // Project the roof's stud surface after the camera update. The new header
+    // changes the canvas height; fixed screen fractions no longer hit the roof.
+    const point = await page.evaluate(async () => {
+      await new Promise((r) =>
+        requestAnimationFrame(() => requestAnimationFrame(r)),
+      );
+      const scene = window.__brickScene as {
+        camera: {
+          updateMatrixWorld: (force: boolean) => void;
+          position: {
+            constructor: new (
+              x: number,
+              y: number,
+              z: number,
+            ) => { project(c: unknown): { x: number; y: number } };
+          };
+        };
+        renderer: { domElement: HTMLCanvasElement };
+      };
+      scene.camera.updateMatrixWorld(true);
+      const p = new scene.camera.position.constructor(0, 216, 0).project(
+        scene.camera,
+      );
+      const box = scene.renderer.domElement.getBoundingClientRect();
+      return {
+        x: box.left + ((p.x + 1) * box.width) / 2,
+        y: box.top + ((1 - p.y) * box.height) / 2,
+      };
+    });
+    await page.touchscreen.tap(point.x, point.y);
     await expect(button("Next fit")).toBeVisible();
     await check("placing with connector fits");
+    await page.screenshot({
+      path: test.info().outputPath("placement-fits.png"),
+      animations: "disabled",
+    });
     await button("Place part").click();
     await expect(page.locator(".status-bar.fresh")).toBeVisible();
     await check("placing with a status message");
@@ -466,7 +498,9 @@ const insetViolations = (page: Page, insets: Insets, list: string[]) =>
         return true;
       };
       const found: string[] = [];
-      for (const selector of selectors)
+      for (const selector of selectors.flatMap((s) =>
+        s === ".site-header" ? [".site-header button"] : [s],
+      ))
         for (const el of document.querySelectorAll(selector)) {
           if (!shown(el)) continue;
           const r = el.getBoundingClientRect();
@@ -495,17 +529,22 @@ const insetViolations = (page: Page, insets: Insets, list: string[]) =>
           if (box.bottom > innerHeight - insets.bottom + 1)
             found.push(`${selector} under the bottom inset`);
         }
-      // The canvas alone fills the whole screen, insets included.
+      // The canvas fills the workspace below the persistent primary header,
+      // including its side and bottom insets.
       const canvas = document
         .querySelector(".viewport canvas")!
         .getBoundingClientRect();
       if (
         Math.abs(canvas.left) > 1 ||
-        Math.abs(canvas.top) > 1 ||
+        Math.abs(
+          canvas.top -
+            document.querySelector(".site-header")!.getBoundingClientRect()
+              .bottom,
+        ) > 1 ||
         Math.abs(canvas.right - innerWidth) > 1 ||
         Math.abs(canvas.bottom - innerHeight) > 1
       )
-        found.push("the canvas does not fill the screen");
+        found.push("the canvas does not fill the workspace");
       return found;
     },
     { insets, selectors: list, sheets: EDGE_SHEETS },
@@ -570,6 +609,7 @@ for (const { name, viewport, insets } of [
     await shot("editor");
     await button("Place").click();
     await check("placing");
+    await shot("placing");
     await button("Cancel").click();
     await button("Camera views").click();
     await check("camera views");

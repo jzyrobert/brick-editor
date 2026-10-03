@@ -2,6 +2,7 @@ import { expect, test } from "vitest";
 import { gzipSync, strToU8 } from "fflate";
 import {
   decodeGalleryIndex,
+  galleryIndexEnabled,
   galleryAgentId,
   galleryAgentName,
   galleryBuildId,
@@ -11,7 +12,7 @@ import {
   galleryStats,
   verifyGalleryBuild,
   type GalleryRow,
-} from "../../src/catalog/gallery";
+} from "../../src/catalog/gallery-index";
 import { sha256 } from "../../src/core/hash";
 
 const lock = { releaseId: "lib-1", manifestSha256: "f".repeat(64) };
@@ -27,11 +28,14 @@ async function row(over: Partial<GalleryRow> = {}): Promise<GalleryRow> {
     arena: 1,
     agent_id: "claude/claude-opus-5-5/high",
     display_name: "Claude Opus 5.5 (high)",
+    model: "claude-opus-5-5",
+    effort: "high",
+    title: "Horyu-ji temple",
     mpd_sha: sha,
     mpd_bytes: strToU8(MPD).length,
     script_sha: "a".repeat(64),
     report_sha: null,
-    renders: JSON.stringify({ iso: "b".repeat(64), card: "c".repeat(64) }),
+    renders: JSON.stringify({ iso: "b".repeat(64) }),
     parts: 1921,
     attempts: 2,
     seconds: 1148,
@@ -59,7 +63,7 @@ test("prompt and agent ids are plain, stable slugs", () => {
   expect(galleryAgentName("claude-opus-5-5", "xhigh")).toBe(
     "Claude Opus 5.5 (xhigh)",
   );
-  expect(galleryAgentName("gpt-6.1-sol", "low")).toBe("GPT-6.1-sol (low)");
+  expect(galleryAgentName("gpt-6.1-sol", "low")).toBe("GPT-6.1-Sol (low)");
   expect(galleryAgentName("mystery")).toBe("mystery");
 });
 
@@ -69,7 +73,9 @@ test("index generation from D1 rows round-trips through the decoder", async () =
       build_id: "0123456789ab",
       mpd_sha: "0123456789ab" + "0".repeat(52),
       agent_id: "codex/gpt-6-1-sol/low",
-      display_name: "GPT-6.1-sol (low)",
+      display_name: "GPT-6.1-Sol (low)",
+      model: "gpt-6.1-sol",
+      effort: "low",
       cost_usd: null,
       created_at: 1_790_000_100,
     });
@@ -85,6 +91,7 @@ test("index generation from D1 rows round-trips through the decoder", async () =
   ]);
   expect(index.builds[0]).not.toHaveProperty("costUsd");
   expect(index.builds[1]).toMatchObject({
+    title: "Horyu-ji temple",
     costUsd: 2.84,
     warnings: 1,
     renders: { iso: "b".repeat(64) },
@@ -98,9 +105,19 @@ test("index generation from D1 rows round-trips through the decoder", async () =
       arena: true,
     },
   ]);
-  expect(index.agents.map((a) => a.id)).toEqual([
-    "claude/claude-opus-5-5/high",
-    "codex/gpt-6-1-sol/low",
+  expect(index.agents).toEqual([
+    {
+      id: "claude/claude-opus-5-5/high",
+      name: "Claude Opus 5.5 (high)",
+      model: "Claude Opus 5.5",
+      effort: "high",
+    },
+    {
+      id: "codex/gpt-6-1-sol/low",
+      name: "GPT-6.1-Sol (low)",
+      model: "GPT-6.1-Sol",
+      effort: "low",
+    },
   ]);
   expect(decodeGalleryIndex(JSON.parse(JSON.stringify(index)))).toEqual(index);
 });
@@ -157,4 +174,12 @@ test("downloads are checked for size, hash and library release", async () => {
     `https://f.example/b/${build.mpd}.mpd.gz`,
   );
   expect(galleryStats(build)).toBe("1,921 parts · 19 min · $2.84");
+});
+
+test("only https pages (or an explicit request) read the published index", () => {
+  expect(galleryIndexEnabled({ protocol: "https:", search: "" })).toBe(true);
+  expect(galleryIndexEnabled({ protocol: "http:", search: "" })).toBe(false);
+  expect(
+    galleryIndexEnabled({ protocol: "http:", search: "?galleryIndex=1" }),
+  ).toBe(true);
 });

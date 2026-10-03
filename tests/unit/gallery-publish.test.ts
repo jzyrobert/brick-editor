@@ -97,6 +97,7 @@ test("publish SQL inserts each prompt and agent once, then the builds", () => {
       mpd: { sha, bytes: 100, gz: new Uint8Array() },
       script: { sha: "s".repeat(64), bytes: new Uint8Array() },
       report: { sha: "p".repeat(64), bytes: new Uint8Array() },
+      title: "Temple",
       parts: 1921,
       warnings: 1,
       library: { release: "lib", hash: "h" },

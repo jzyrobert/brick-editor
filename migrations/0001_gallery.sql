@@ -18,11 +18,12 @@ CREATE TABLE builds (
   id TEXT PRIMARY KEY,                 -- first 12 hex of mpd_sha
   prompt_id TEXT NOT NULL REFERENCES prompts(id),
   agent_id TEXT NOT NULL REFERENCES agents(id),
+  title TEXT,                          -- the build script's own title
   mpd_sha TEXT NOT NULL,
   mpd_bytes INTEGER NOT NULL,
   script_sha TEXT,
   report_sha TEXT,
-  renders TEXT NOT NULL,               -- JSON {"iso": sha, "front": sha, "iso-back": sha, "top": sha, "card": sha}
+  renders TEXT NOT NULL,               -- JSON {"iso": sha, "front": sha, "iso-back": sha}
   parts INTEGER NOT NULL,
   attempts INTEGER,
   seconds INTEGER,

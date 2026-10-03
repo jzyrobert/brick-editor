@@ -1,5 +1,11 @@
 /** Authored 24px, 2px-stroke icon set: one weight and cap style across the HUD. */
 const paths = {
+  columns: (
+    <>
+      <rect x="4" y="4" width="6" height="16" />
+      <rect x="14" y="4" width="6" height="16" />
+    </>
+  ),
   select: <path d="M6 3.5l12.5 7.3-5.6 1.7-2.4 5.9z" />,
   place: (
     <>
