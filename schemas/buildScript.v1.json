@@ -1362,7 +1362,7 @@
                 ],
                 "minItems": 3,
                 "maxItems": 3,
-                "description": "[x, y, z] minimum corner of the first step"
+                "description": "[x, y, z] of the first step: its minimum corner climbing +x/+z; climbing -x/-z the first step ends at at (it covers at - run + 1 .. at)"
               },
               "width": {
                 "type": "integer",

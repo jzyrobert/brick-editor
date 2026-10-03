@@ -65,6 +65,10 @@ export type PartSearchResult = {
 /** Builder slang and roles → parts that answer them (boosted to the top). */
 export const PART_ROLES: Record<string, string[]> = {
   "cheese slope": ["54200.dat", "85984.dat"],
+  // Things built from parts: what builders use for them.
+  bell: ["30151a.dat", "3942c.dat", "3943b.dat"],
+  lantern: ["37776.dat", "65581.dat", "4081b.dat"],
+  "stone lantern": ["3062b.dat", "4589.dat", "3942c.dat", "4081b.dat"],
   cheese: ["54200.dat", "85984.dat"],
   "headlight brick": ["4070.dat"],
   "erling brick": ["4070.dat"],
@@ -162,6 +166,10 @@ const SYNONYMS: Record<string, string[]> = {
 };
 const PENALISED =
   /pattern|sticker|duplo|fabuland|quatro|primo|minifig torso|minifig head\b|constraction|technic panel/i;
+/** Categories that rarely answer a building search (figures, other
+ * systems, stickers): demoted unless the query names them. */
+const DEMOTED_CATEGORY =
+  /^(minifig|figure|duplo|primo|quatro|fabuland|sticker|znap|bionicle|hose|electric)/i;
 
 type Entry = {
   id: string;
@@ -418,7 +426,13 @@ export function searchParts(
       (PENALISED.test(text) && !PENALISED.test(slangQuery) ? 25 : 0) +
       (/\d[a-z]?(p|d|pb|pr)[0-9a-z]+\.dat$/i.test(e.id) ? 10 : 0) +
       (e.obsolete ? 8 : 0) +
-      (/c\d\d\.dat$/.test(e.id) ? 3 : 0);
+      (/c\d\d\.dat$/.test(e.id) ? 3 : 0) +
+      (DEMOTED_CATEGORY.test(e.category) &&
+      !query.some((w) =>
+        e.category.toLowerCase().startsWith(w.toLowerCase().slice(0, 5)),
+      )
+        ? 15
+        : 0);
     score +=
       (e.curated ? 20 : 0) +
       Math.min(12, 2 * Math.log2(1 + colours)) +
@@ -452,7 +466,12 @@ export function searchParts(
   // Nothing matches every word: rank parts matching some of them.
   if (!results.length && !partial && query.length > 1)
     return searchParts(request, true).map((r) => ({ ...r, partial: true }));
-  return results.slice(0, limit).map(({ order: _order, ...r }) => r);
+  // Penalised near-misses (printed torsos, other systems) never pad a list
+  // that has real matches.
+  const kept = results.some((r) => r.score > 0)
+    ? results.filter((r) => r.score > 0)
+    : results;
+  return kept.slice(0, limit).map(({ order: _order, ...r }) => r);
 }
 
 /** Parses "1x4", "1x4x3" (plates) or "1x4x1b" (bricks) into a size filter. */

@@ -48,6 +48,12 @@ import { fullLibraryDir, fullLibraryOccupancy } from "./full-library-node";
 import { curatedHas } from "../src/catalog/full-library";
 import { occurrences } from "../src/core/document";
 import { withHeadlessPage } from "./headless";
+import {
+  BrickBuildError,
+  isBrickBuild,
+  runBrickBuild,
+  withLine,
+} from "./brick-build";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -117,10 +123,14 @@ function parse(args: string[], allowed: string[], switches: string[]): Args {
   return { flag: (k) => values.get(k), has: (k) => on.has(k), positional };
 }
 
-const HELP_BUILD = `brick-cli build --script build.json [--output build.mpd|build.brickproj] [--report report.json]
+const HELP_BUILD = `brick-cli build --script build.json|build.js [--output build.mpd|build.brickproj] [--report report.json]
     [--render view.png [--views iso,front,back,left,right,top,iso-back] [--width 1280 --height 960]
      [--look standard|realistic|photo] [--backdrop ${BACKDROP_NAMES.join("|")}]]
     [--no-check] [--resource-profile desktop|mobile] [--target-parts N]
+  build.js, or a JSON file holding {"tool": "brick.build", "input": {"code"}}: brick.build code
+                    (JavaScript calling op helpers) run in a sandbox, then compiled; problems
+                    name the code line of their op; --expanded file writes the build script it made;
+                    --seed N seeds rng() for a .js file
   --target-parts N  part target, as guidance: the summary and the report's \`target\` say
                     how far the build landed from it, with the largest sections and the
                     costliest ops (a build of any size is still written)
@@ -177,6 +187,8 @@ export async function buildCommand(argv: string[]) {
       "backdrop",
       "resource-profile",
       "target-parts",
+      "expanded",
+      "seed",
     ],
     ["reference", "schema", "no-check", "json", "help"],
   );
@@ -208,13 +220,38 @@ export async function buildCommand(argv: string[]) {
     "Build script exceeds the import budget",
   );
   let script: unknown;
-  try {
-    script = JSON.parse(await readFile(scriptPath, "utf8"));
-  } catch (e) {
-    throw new AppError(
-      "INVALID_INPUT",
-      `${scriptPath} is not valid JSON: ${(e as Error).message}`,
-    );
+  const text = await readFile(scriptPath, "utf8");
+  let code: { code: string; seed?: number } | undefined;
+  if (/\.(js|mjs)$/i.test(scriptPath))
+    code = {
+      code: text,
+      ...(a.flag("seed") === undefined ? {} : { seed: Number(a.flag("seed")) }),
+    };
+  else {
+    try {
+      script = JSON.parse(text);
+    } catch (e) {
+      throw new AppError(
+        "INVALID_INPUT",
+        `${scriptPath} is not valid JSON: ${(e as Error).message}`,
+      );
+    }
+    if (isBrickBuild(script)) code = script.input;
+  }
+  // brick.build code: run it in a sandbox (in this process, which the
+  // one-shot runner spawns per compile) and compile what it made.
+  let lines: Record<string, number> | undefined;
+  if (code) {
+    try {
+      ({ script, lines } = runBrickBuild(code.code, { seed: code.seed }));
+    } catch (e) {
+      if (e instanceof BrickBuildError)
+        throw new AppError("INVALID_INPUT", `brick.build: ${e.message}`);
+      throw e;
+    }
+    const expanded = a.flag("expanded");
+    if (expanded)
+      await writeFile(expanded, JSON.stringify(script, null, 1) + "\n");
   }
   const num = (flag: string) =>
     a.flag(flag) === undefined ? undefined : Number(a.flag(flag));
@@ -235,6 +272,10 @@ export async function buildCommand(argv: string[]) {
       fullLibraryOccupancy(refs.filter((r) => !curatedHas(r))),
   });
   const { report, project } = result;
+  // Problems name the code line of each op they cite.
+  if (lines)
+    for (const p of report.problems)
+      if (p.ops) p.ops = p.ops.map((o) => withLine(o, lines));
   const output = a.flag("output");
   // Over the script's own limits.maxParts: no model and no views, and no
   // older model left behind to be mistaken for this one.

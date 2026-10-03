@@ -1,0 +1,217 @@
+{
+  "effort": "max",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2000,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2000,
+    "difference": 0,
+    "percent": 0
+  },
+  "seconds": 2712,
+  "tokens": {
+    "input": 681826,
+    "cached": 408832,
+    "output": 168981,
+    "reasoning": 126200
+  },
+  "searches": 5,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "14716",
+      "14769",
+      "15068",
+      "2412b",
+      "2417",
+      "2423",
+      "2453b",
+      "24866",
+      "25269",
+      "3003",
+      "3004",
+      "3005",
+      "30145",
+      "30176",
+      "3020",
+      "3039",
+      "3062b",
+      "3068b",
+      "3070b",
+      "3660b",
+      "3665a",
+      "3941",
+      "3942c",
+      "3960",
+      "4032b",
+      "4589",
+      "54200",
+      "60474",
+      "6141",
+      "90398"
+    ],
+    "notInList": [
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 2712,
+      "usage": {
+        "input": 681826,
+        "cached": 408832,
+        "output": 168981,
+        "reasoning": 126200,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bell",
+            "limit": 5
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statue",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "1x2",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "11477",
+            "24201",
+            "6091",
+            "29119",
+            "29120"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "plant leaves",
+            "colour": "bright pink",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "2423",
+            "2417",
+            "32607"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "horn",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "2142",
+            "89522",
+            "40379",
+            "1997",
+            "53451"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "ok": false,
+          "reason": "INVALID_INPUT: Invalid build script: $.sections[2].ops[3].openings[10] must be an object; $.sections[2].ops[3].openings[11] must be an object; $.sections[2].ops[80].openings[0] must be an object; $.sections[2].ops[80].openings[1] must be an object; $.sections[2].ops[80].openings[2] must be an object (+9 more)"
+        },
+        {
+          "round": 2,
+          "parts": 2488,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 1929,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "14716",
+          "14769",
+          "15068",
+          "2412b",
+          "2417",
+          "2423",
+          "2453b",
+          "24866",
+          "25269",
+          "3003",
+          "3004",
+          "3005",
+          "30145",
+          "30176",
+          "3020",
+          "3039",
+          "3062b",
+          "3068b",
+          "3070b",
+          "3660b",
+          "3665a",
+          "3941",
+          "3942c",
+          "3960",
+          "4032b",
+          "4589",
+          "54200",
+          "60474",
+          "6141",
+          "90398"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2000
+    }
+  ]
+}

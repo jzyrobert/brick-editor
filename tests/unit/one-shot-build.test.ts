@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  CHECKS,
+  checkAnswer,
+  checkRequest,
   errorsReason,
   extractJson,
   knowledge,
@@ -10,14 +13,17 @@ import {
 import { searchForAgent } from "../../src/build-script/part-list";
 
 describe("one-shot build runs", () => {
-  it("asks for the JSON alone, without the tools section", () => {
+  it("asks for a brick.build call alone, without the tools section", () => {
     const text = oneShotPrompt("a japanese buddhist temple", 2000);
     expect(text).not.toMatch(
-      /\{\{|When you can run tools|brick-cli|build\.json/,
+      /\{\{|When you can run tools|brick-cli|build\.json|"buildScript": 1/,
     );
     expect(text).toContain(
-      "Return ONLY one JSON object (no markdown, no commentary).",
+      '`{"tool": "brick.build", "input": {"code": "…", "seed": 1}}`',
     );
+    // The example is code, and the JSON skeleton is gone.
+    expect(text).toContain('```js\nscript({\n  title: "Fisherman\'s cottage"');
+    expect(text).not.toContain("## Checking a draft");
     // A target to aim at, with the rules for counting, and no pass mark.
     expect(text).toContain("- Target: 2,000 parts, counting every part");
     expect(text).toContain("### Counting parts");
@@ -77,7 +83,7 @@ describe("one-shot build runs", () => {
     });
     expect(out.ids).toContain("3040b");
     expect(out.text).toMatch(
-      /^3040b \| Slope 45° 2 × 1 \| 1×2 studs \(x×z\), 3 plates \| curated \| .* \| in dark red: verified$/m,
+      /^3040b \| Slope 45° 2 × 1 \| Slopes \| 1×2 studs \(x×z\), 3 plates \| curated \| .* \| in dark red: verified$/m,
     );
     expect(searchForAgent({ size: "banana" }).text).toMatch(
       /^Search failed|No parts match/,
@@ -147,5 +153,55 @@ describe("one-shot build runs", () => {
     expect(text).toContain("Reason:\n- overlap: …");
     expect(text).toContain("returning ONLY a corrected JSON object");
     expect(text.trimEnd().endsWith('{"x":1}')).toBe(true);
+  });
+
+  it("describes checks when on and reads check requests", () => {
+    const text = oneShotPrompt("a barn", 2000, { check: true });
+    expect(text).toContain("## Checking a draft");
+    expect(text).toContain(`up to ${CHECKS} times`);
+    expect(
+      checkRequest(
+        '{"check_build": {"code": "section(\'a\', [])", "seed": 2}}',
+      ),
+    ).toEqual({ code: "section('a', [])", seed: 2 });
+    expect(
+      checkRequest('{"tool": "brick.build", "input": {"code": "x"}}'),
+    ).toBe(undefined);
+  });
+
+  it("answers a check with the count, sections and errors", () => {
+    const report = {
+      ok: false,
+      stats: { parts: 2137 },
+      sections: [
+        { name: "Hall", parts: 900 },
+        { name: "Pagoda", parts: 1237 },
+      ],
+      problems: [
+        {
+          severity: "error",
+          code: "overlap",
+          message: "3005 … overlap",
+          ops: ["sections[1].ops[0] (code line 4)"],
+        },
+        { severity: "warning", code: "floating", message: "loose" },
+      ],
+    };
+    const text = checkAnswer(1, 2000, { report });
+    expect(text).toContain(
+      "Check 1 of 3: the code compiled to 2,137 parts (target 2,000: +137, +6.9%). Sections: Pagoda 1,237, Hall 900.",
+    );
+    expect(text).toContain(
+      "Errors (1):\n- overlap: 3005 … overlap [sections[1].ops[0] (code line 4)]",
+    );
+    expect(text).not.toContain("loose");
+    expect(
+      checkAnswer(2, 2000, { report: { ...report, ok: true, problems: [] } }),
+    ).toContain("No errors: as an answer it would be accepted.");
+    expect(
+      checkAnswer(3, 2000, { reason: "INVALID_INPUT: brick.build: x" }),
+    ).toBe(
+      "Check 3 of 3: the code did not compile. INVALID_INPUT: brick.build: x",
+    );
   });
 });

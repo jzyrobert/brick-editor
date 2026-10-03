@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 // One-shot build runs, the MineBench way: the build-agent prompt goes to a
-// model once, and its reply must be the build script JSON alone. A reply that
-// is not valid JSON, or that does not compile cleanly (overlaps, colours a part
-// is not made in…), goes back with its errors ("return ONLY a corrected JSON
-// object") up to --attempts times. The part target is guidance: any count is
-// accepted, and how far the build lands from the target is recorded as a
-// score. The prompt lists the curated parts (--parts-list) and the
-// model may search parts (--search: it replies {"parts_search": …} and gets
-// the results in the same session) but cannot compile or see renders. Accepted builds are rendered afterwards
-// for review. docs/AGENT-BUILDING.md#one-shot-runs
+// model once, and its reply must be a brick.build call alone: JavaScript that
+// makes the build script, after MineBench's voxel.exec (prompts/brick-build.md).
+// A reply that is not that call, or whose code does not compile cleanly
+// (overlaps, colours a part is not made in…), goes back with its errors
+// ("return ONLY a corrected JSON object") up to --attempts times. The part
+// target is guidance: any count is accepted, and how far the build lands from
+// the target is recorded as a score. The prompt lists the curated parts
+// (--parts-list); the model may search parts (--search: it replies
+// {"parts_search": …} and gets the results in the same session) and compile
+// up to 3 drafts per attempt (--check: {"check_build": {"code"}} returns the
+// count and errors), but cannot render. Accepted builds are rendered
+// afterwards for review. docs/AGENT-BUILDING.md#one-shot-runs
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
@@ -25,14 +28,17 @@ import { catalog } from "../src/catalog/catalog";
 import { registerAgentData } from "./build-script-cli";
 import { registerFullLibraryFromDisk } from "./full-library-node";
 import { REPO, slug } from "./new-build-workspace";
+import { isBrickBuild, type BrickBuildCall } from "./brick-build";
 
 const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file f) --model M
     [--efforts low,medium,high,xhigh,max] [--attempts 5] [--out dir] [--views iso,front,iso-back]
-    [--parts-list on|off] [--search on|off] [--runner codex|claude]
+    [--parts-list on|off] [--search on|off] [--check on|off] [--runner codex|claude]
   Runs each reasoning effort in parallel through \`codex exec\` (or, with --runner claude,
   \`claude -p\` with --effort) with its tools turned off;
   --search on (default) lets it search parts by replying {"parts_search": …}. --parts-list on (default) puts the
-  224 curated parts and their common colours in the prompt.
+  224 curated parts and their common colours in the prompt. The reply is a brick.build call
+  ({"tool": "brick.build", "input": {"code"}}); --check on (default) lets the model compile up to
+  3 drafts per attempt by replying {"check_build": {"code"}} and get back their count and errors.
   --out  default ~/brick-builds/oneshot-<name>-<target>; one folder per effort, plus summary.md`;
 
 /** Text below the first "---" line of a prompt file. */
@@ -41,39 +47,77 @@ function below(file: string) {
   return text.slice(text.indexOf("\n---\n") + 5).trim();
 }
 
-const OUTPUT_LINE =
-  "Return ONLY one JSON object (no markdown, no commentary). If the interface supports files, return it as `build.json`.";
+/** A `## Heading` section of a prompt: from its heading to the next. */
+function sectionOf(text: string, heading: string) {
+  const at = text.indexOf(`\n## ${heading}\n`);
+  if (at < 0) return undefined;
+  const next = text.indexOf("\n## ", at + 1);
+  return { at, end: next < 0 ? text.length : next };
+}
+
+function replaceSection(text: string, heading: string, by: string) {
+  const s = sectionOf(text, heading);
+  if (!s)
+    throw new Error(
+      `prompts/build-agent.md has no "## ${heading}": update one-shot-build.ts`,
+    );
+  return `${text.slice(0, s.at)}\n${by.trim()}\n${text.slice(s.end)}`;
+}
 
 const SEARCH_SECTION = `## Searching for parts
 
-You cannot compile, render or run commands. Before you answer you may search the parts library (the curated parts and the complete official library): reply with ONLY a JSON object such as \`{"parts_search": [{"query": "stone lantern"}, {"query": "slope", "size": "1x2", "colour": "dark red", "available_in_colour": true}]}\` (up to 5 searches per reply; fields: query, size as WxD studs or WxDxH plates, category, colour, available_in_colour, limit). The results come back with each part's footprint (x × z at turn 0), height, how far its body reaches past the footprint when it does, and colours, and you can search again: up to 10 search replies, each with up to 5 searches, before you answer. Your answer is the build script JSON alone.`;
+You cannot render or run commands. Before you answer you may search the parts library (the curated parts and the complete official library): reply with ONLY a JSON object such as \`{"parts_search": [{"query": "stone lantern"}, {"query": "slope", "size": "1x2", "colour": "dark red", "available_in_colour": true}]}\` (up to 5 searches per reply; fields: query, size as WxD studs or WxDxH plates, category, colour, available_in_colour, limit). The results come back with each part's footprint (x × z at turn 0), height, how far its body reaches past the footprint when it does, and colours, and you can search again: up to 10 search replies, each with up to 5 searches, before you answer. Your answer is the brick.build call alone.`;
+
+/** Drafts the model may compile per attempt. */
+export const CHECKS = 3;
+
+const CHECK_SECTION = `## Checking a draft
+
+Before you answer you may compile a draft up to ${CHECKS} times: reply with ONLY \`{"check_build": {"code": "…", "seed": 1}}\` (the same input as your brick.build call). It runs and compiles exactly as your answer would and comes back with the part count against the target, the count of each section and every error (overlaps, colours a part is not made in, invalid ops, code errors) with the code line that made it. A check is not your answer: after checking, reply with the brick.build call.`;
 
 /** The build-agent prompt for one reply: brief, part target and (unless
- * turned off) the part list filled in; the search tool described when on.
- * The part list needs colour availability registered. */
+ * turned off) the part list filled in, the brick.build reply format in place
+ * of the JSON output and example, and the search and check protocols
+ * described when on. The part list needs colour availability registered. */
 export function oneShotPrompt(
   brief: string,
   target: number,
-  { partsList = true, search = false } = {},
+  { partsList = true, search = false, check = false } = {},
 ) {
   let text = below("build-agent.md");
-  const tools = text.indexOf("\n## When you can run tools");
-  const next = text.indexOf("\n## ", tools + 1);
-  if (!text.includes(OUTPUT_LINE) || tools < 0 || next < 0)
+  const tools = sectionOf(text, "When you can run tools");
+  if (!tools)
     throw new Error("prompts/build-agent.md changed: update one-shot-build.ts");
-  text = (text.slice(0, tools) + text.slice(next)).replace(
-    OUTPUT_LINE,
-    "Return ONLY one JSON object (no markdown, no commentary).",
+  text = text.slice(0, tools.at) + text.slice(tools.end);
+  const code = below("brick-build.md");
+  const output = sectionOf(`\n${code}`, "Output")!,
+    example = sectionOf(`\n${code}`, "Example")!;
+  text = replaceSection(
+    text,
+    "Output",
+    `\n${code}`.slice(output.at, output.end),
+  );
+  // The example becomes code; what follows its block (the build request)
+  // stays.
+  const ex = sectionOf(text, "Example")!;
+  const tail = text.slice(ex.at, ex.end).split("```").slice(2).join("```");
+  text = replaceSection(
+    text,
+    "Example",
+    `\n${code}`.slice(example.at, example.end).trim() + tail,
   );
   registerAgentData(); // colour availability, for the part list
   if (partsList) text = text.replace("{{PARTS}}", () => promptPartList());
   else {
-    const at = text.indexOf("\n## Parts\n");
-    text = text.slice(0, at) + text.slice(text.indexOf("\n## ", at + 1));
+    const parts = sectionOf(text, "Parts")!;
+    text = text.slice(0, parts.at) + text.slice(parts.end);
   }
-  if (search) {
+  const extra = [search && SEARCH_SECTION, check && CHECK_SECTION].filter(
+    Boolean,
+  );
+  if (extra.length) {
     const first = text.indexOf("\n## ");
-    text = `${text.slice(0, first)}\n\n${SEARCH_SECTION}\n${text.slice(first)}`;
+    text = `${text.slice(0, first)}\n\n${extra.join("\n\n")}\n${text.slice(first)}`;
   }
   const fmt = (n: number) => () => n.toLocaleString("en-US");
   return (
@@ -180,12 +224,20 @@ type Attempt = {
   usage: Usage;
   /** Every parts search it asked for, with the part numbers returned. */
   searches: Search[];
+  /** Every draft it compiled before answering. */
+  checks: Check[];
   /** Other tool calls the model made anyway (there should be none). */
   toolEvents: string[];
   /** Provider errors waited out and retried (not the model's doing). */
   providerRetries: { round: number; error: string }[];
   knowledge?: Knowledge;
-  outcome: "accepted" | "no-json" | "invalid" | "errors" | "agent-failed";
+  outcome:
+    | "accepted"
+    | "no-json"
+    | "no-call"
+    | "invalid"
+    | "errors"
+    | "agent-failed";
   reason?: string;
   parts?: number;
 };
@@ -277,6 +329,58 @@ export function searchRequest(text: string): SearchArgs[] | undefined {
   const req = json?.parts_search;
   if (!req || typeof req !== "object") return undefined;
   return (Array.isArray(req) ? req : [req]).slice(0, 5) as SearchArgs[];
+}
+
+/** The draft a reply asks to check ({"check_build": {"code"}}), if any. */
+export function checkRequest(
+  text: string,
+): BrickBuildCall["input"] | undefined {
+  const json = extractJson(text) as { check_build?: unknown } | undefined;
+  const req = json?.check_build as BrickBuildCall["input"] | undefined;
+  return req && typeof req === "object" && typeof req.code === "string"
+    ? req
+    : undefined;
+}
+
+type CheckReport = {
+  ok: boolean;
+  stats: { parts: number };
+  sections?: { name: string; parts: number }[];
+  problems: Problem[];
+};
+type Check = {
+  round: number;
+  parts?: number;
+  errors?: number;
+  ok: boolean;
+  reason?: string;
+};
+
+/** What a check sends back: the count against the target, the sections by
+ * size and every error (up to 20), or why the code did not compile. */
+export function checkAnswer(
+  k: number,
+  target: number,
+  c: { report?: CheckReport; reason?: string },
+) {
+  const head = `Check ${k} of ${CHECKS}`;
+  if (!c.report) return `${head}: the code did not compile. ${c.reason}`;
+  const r = c.report;
+  const sections = [...(r.sections ?? [])]
+    .sort((a, b) => b.parts - a.parts)
+    .map((s) => `${s.name} ${s.parts.toLocaleString("en-US")}`)
+    .join(", ");
+  const errors = r.problems.filter((p) => p.severity === "error");
+  const list = errorsReason(r.stats.parts, target, errors)
+    .split("\n")
+    .slice(1)
+    .join("\n");
+  return (
+    `${head}: the code compiled to ${targetText(r.stats.parts, target)}. Sections: ${sections}.\n` +
+    (errors.length
+      ? `Errors (${errors.length}):\n${list}`
+      : "No errors: as an answer it would be accepted.")
+  );
 }
 
 type Reply = Awaited<ReturnType<typeof run>> & { text: string };
@@ -423,9 +527,10 @@ function claudeRunner(model: string, effort: string, cwd: string) {
   } satisfies Runner;
 }
 
-/** One attempt: the message, then (with --search) as many search rounds as
- * the model asks for, each answered in the same session, until it replies
- * with something else. Every tool stays off. */
+/** One attempt: the message, then (with --search and --check) as many
+ * search rounds and up to CHECKS draft compiles as the model asks for, each
+ * answered in the same session, until it replies with something else. Every
+ * tool stays off. */
 async function askAgent(
   prompt: string,
   runner: "codex" | "claude",
@@ -434,6 +539,11 @@ async function askAgent(
   dir: string,
   n: number,
   search: boolean,
+  check?: (
+    input: BrickBuildCall["input"],
+    k: number,
+    round: number,
+  ) => Promise<{ answer: string; check: Check }>,
 ) {
   const empty = join(dir, "empty");
   await mkdir(empty, { recursive: true });
@@ -450,6 +560,8 @@ async function askAgent(
   };
   const toolEvents: string[] = [];
   const searches: Search[] = [];
+  const checks: Check[] = [];
+  let searchRounds = 0;
   const retries: { round: number; error: string }[] = [];
   const started = Date.now();
   let thread: string | undefined,
@@ -481,28 +593,43 @@ async function askAgent(
     code = r.code;
     stderr = r.stderr;
     text = r.text;
-    if (code !== 0 || !search) break;
-    const asked = searchRequest(text);
-    if (!asked || !thread) break;
-    if (round >= SEARCH_ROUNDS) {
-      message = "No more searches. Answer now with ONLY the build script JSON.";
-      if (round > SEARCH_ROUNDS) break;
-      continue;
-    }
-    const answers = asked.map((args) => {
-      const out = searchForAgent(args);
-      searches.push({ args, results: out.ids, round: round + 1 });
-      return `### ${JSON.stringify(args)}\n${out.text}`;
-    });
-    await writeFile(
-      join(dir, `attempt-${n}.searches.jsonl`),
-      searches.map((x) => JSON.stringify(x)).join("\n") + "\n",
-    );
-    message = `Search results:\n\n${answers.join("\n\n")}\n\nSearch again (${SEARCH_ROUNDS - round - 1} search replies left) or answer with ONLY the build script JSON.`;
+    if (code !== 0 || !thread) break;
+    const asked = search ? searchRequest(text) : undefined;
+    const draft = check && !asked ? checkRequest(text) : undefined;
+    if (asked) {
+      if (++searchRounds > SEARCH_ROUNDS) {
+        if (searchRounds > SEARCH_ROUNDS + 1) break;
+        message =
+          "No more searches. Answer now with ONLY the brick.build call.";
+        continue;
+      }
+      const answers = asked.map((args) => {
+        const out = searchForAgent(args);
+        searches.push({ args, results: out.ids, round: round + 1 });
+        return `### ${JSON.stringify(args)}\n${out.text}`;
+      });
+      await writeFile(
+        join(dir, `attempt-${n}.searches.jsonl`),
+        searches.map((x) => JSON.stringify(x)).join("\n") + "\n",
+      );
+      message = `Search results:\n\n${answers.join("\n\n")}\n\nSearch again (${SEARCH_ROUNDS - searchRounds} search replies left)${check ? `, check a draft (${CHECKS - checks.length} checks left)` : ""} or answer with ONLY the brick.build call.`;
+    } else if (draft && check) {
+      if (checks.length >= CHECKS) {
+        if (checks.length > CHECKS) break;
+        checks.push({ round: round + 1, ok: false, reason: "no checks left" });
+        message = "No checks left. Answer now with ONLY the brick.build call.";
+        continue;
+      }
+      const c = await check(draft, checks.length + 1, round + 1);
+      checks.push(c.check);
+      const left = CHECKS - checks.length;
+      message = `${c.answer}\n\n${left ? `Check again (${left} left)${search ? " or search" : ""}, or answer` : "Answer now"} with ONLY the brick.build call.`;
+    } else break;
   }
   return {
     code,
     searches,
+    checks: checks.filter((c) => c.reason !== "no checks left"),
     retries,
     text,
     seconds: Math.round((Date.now() - started) / 1000),
@@ -569,19 +696,22 @@ export function knowledge(
   };
 }
 
+/** Compiles `<name>.js` (brick.build code) in its own process, writing the
+ * build script it made to `<name>.json` and the model to `<name>.mpd`. */
 async function compile(
   dir: string,
-  n: number | "final",
+  name: string,
   target: number,
   extra: string[] = [],
 ) {
-  const name = n === "final" ? "build" : `attempt-${n}`;
   const r = await run(
     process.execPath,
     [
       ...CLI,
       "build",
       "--script",
+      `${name}.js`,
+      "--expanded",
       `${name}.json`,
       "--output",
       `${name}.mpd`,
@@ -629,6 +759,7 @@ async function runEffort(
     out: string;
     views: string;
     search: boolean;
+    check: boolean;
     runner: "codex" | "claude";
   },
 ) {
@@ -647,12 +778,39 @@ async function runEffort(
       dir,
       n,
       o.search,
+      o.check
+        ? async (input, k) => {
+            const name = `attempt-${n}.check-${k}`;
+            await writeFile(join(dir, `${name}.js`), input.code);
+            const c = await compile(dir, name, o.target, [
+              ...(input.seed === undefined
+                ? []
+                : ["--seed", String(input.seed)]),
+            ]);
+            const errors = c.report?.problems.filter(
+              (p: Problem) => p.severity === "error",
+            ).length;
+            const answer = checkAnswer(k, o.target, c);
+            await writeFile(join(dir, `${name}.answer.md`), answer + "\n");
+            return {
+              answer,
+              check: {
+                round: k,
+                parts: c.report?.stats?.parts,
+                errors,
+                ok: !!c.report?.ok,
+                ...(c.reason ? { reason: c.reason.slice(0, 500) } : {}),
+              },
+            };
+          }
+        : undefined,
     );
     const a: Attempt = {
       attempt: n,
       seconds: ask.seconds,
       usage: ask.usage,
       searches: ask.searches,
+      checks: ask.checks,
       toolEvents: ask.toolEvents,
       providerRetries: ask.retries,
       outcome: "agent-failed",
@@ -667,13 +825,22 @@ async function runEffort(
     if (json === undefined) {
       a.outcome = "no-json";
       reason = "Could not find a valid JSON object in the response";
+    } else if (!isBrickBuild(json)) {
+      a.outcome = "no-call";
+      reason =
+        'The reply was not a brick.build call: answer with ONLY {"tool": "brick.build", "input": {"code": "…"}}';
     } else {
-      await writeFile(
-        join(dir, `attempt-${n}.json`),
-        JSON.stringify(json, null, 1) + "\n",
-      );
-      const c = await compile(dir, n, o.target);
-      a.knowledge = knowledge(json, c.report, c.reason);
+      const name = `attempt-${n}`;
+      await writeFile(join(dir, `${name}.js`), json.input.code);
+      const c = await compile(dir, name, o.target, [
+        ...(json.input.seed === undefined
+          ? []
+          : ["--seed", String(json.input.seed)]),
+      ]);
+      const script = existsSync(join(dir, `${name}.json`))
+        ? JSON.parse(readFileSync(join(dir, `${name}.json`), "utf8"))
+        : undefined;
+      a.knowledge = script ? knowledge(script, c.report, c.reason) : undefined;
       if (!c.report) {
         a.outcome = "invalid";
         reason = c.reason!;
@@ -685,10 +852,8 @@ async function runEffort(
         if (c.report.ok) {
           a.outcome = "accepted";
           accepted = true;
-          await copyFile(
-            join(dir, `attempt-${n}.json`),
-            join(dir, "build.json"),
-          );
+          await copyFile(join(dir, `${name}.js`), join(dir, "build.js"));
+          await copyFile(join(dir, `${name}.json`), join(dir, "build.json"));
           break;
         }
         a.outcome = "errors";
@@ -701,7 +866,7 @@ async function runEffort(
   const final = attempts.at(-1);
   if (accepted && o.views) {
     await mkdir(join(dir, "views"), { recursive: true });
-    await compile(dir, "final", o.target, [
+    await compile(dir, "build", o.target, [
       "--render",
       "views/build.png",
       "--views",
@@ -732,6 +897,7 @@ async function runEffort(
       ...(o.runner === "claude" ? { costUsd: total("costUsd") } : {}),
     },
     searches: attempts.reduce((s, a) => s + a.searches.length, 0),
+    checks: attempts.reduce((s, a) => s + a.checks.length, 0),
     knowledge: final?.knowledge,
     attempts,
   };
@@ -766,6 +932,7 @@ async function main(argv: string[]) {
         "name",
         "parts-list",
         "search",
+        "check",
         "runner",
       ].includes(key)
     )
@@ -799,13 +966,14 @@ async function main(argv: string[]) {
     return v === "on";
   };
   const partsList = onOff("parts-list"),
-    search = onOff("search");
+    search = onOff("search"),
+    check = onOff("check");
   const runner = flags.get("runner") ?? "codex";
   if (runner !== "codex" && runner !== "claude")
     throw new Error("--runner takes codex or claude");
   registerFullLibraryFromDisk();
   registerAgentData();
-  const prompt = oneShotPrompt(brief, target, { partsList, search });
+  const prompt = oneShotPrompt(brief, target, { partsList, search, check });
   const views = flags.get("views") ?? "iso,front,iso-back";
   const results = await Promise.all(
     efforts.map((e) =>
@@ -817,6 +985,7 @@ async function main(argv: string[]) {
         out,
         views,
         search,
+        check,
         runner,
       }),
     ),
@@ -829,7 +998,7 @@ async function main(argv: string[]) {
   };
   const rows = results.map(
     (r) =>
-      `| ${r.effort} | ${r.accepted ? "yes" : "no"} | ${miss(r.parts)} | ${miss(r.attempts[0]?.parts)} | ${r.attemptsUsed} | ${r.seconds} | ${r.tokens.output.toLocaleString("en-US")} (${r.tokens.reasoning.toLocaleString("en-US")} reasoning) | ${r.searches} | ${r.knowledge?.finds.length ?? "–"} | ${r.knowledge ? `${r.knowledge.named.length} (${r.knowledge.notInList.length})` : "–"} | ${r.attempts.reduce((s, a) => s + (a.knowledge?.colourErrors.length ?? 0), 0)} | ${r.attempts.map((a) => a.outcome).join(", ")} |`,
+      `| ${r.effort} | ${r.accepted ? "yes" : "no"} | ${miss(r.parts)} | ${miss(r.attempts[0]?.parts)} | ${r.attemptsUsed} | ${r.seconds} | ${r.tokens.output.toLocaleString("en-US")} (${r.tokens.reasoning.toLocaleString("en-US")} reasoning) | ${r.searches} | ${r.checks} | ${r.knowledge?.finds.length ?? "–"} | ${r.knowledge ? `${r.knowledge.named.length} (${r.knowledge.notInList.length})` : "–"} | ${r.attempts.reduce((s, a) => s + (a.knowledge?.colourErrors.length ?? 0), 0)} | ${r.attempts.map((a) => a.outcome).join(", ")} |`,
   );
   await writeFile(
     join(out, "summary.json"),
@@ -842,6 +1011,7 @@ async function main(argv: string[]) {
         attempts,
         partsList,
         search,
+        check,
         results,
       },
       null,
@@ -852,7 +1022,7 @@ async function main(argv: string[]) {
     join(out, "summary.md"),
     `# ${brief.trim()} — ${model}, target ${target.toLocaleString("en-US")} parts\n\n` +
       "Parts are the accepted build's count and, after it, the first reply's (the model's own estimate), each with its distance from the target.\n\n" +
-      "| effort | accepted | parts (vs target) | first reply | attempts | seconds | output tokens | searches | finds | numbers named (not listed) | colour errors | outcomes |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n" +
+      "| effort | accepted | parts (vs target) | first reply | attempts | seconds | output tokens | searches | checks | finds | numbers named (not listed) | colour errors | outcomes |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n" +
       rows.join("\n") +
       "\n",
   );
