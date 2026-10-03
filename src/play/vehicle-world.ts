@@ -1,3 +1,7 @@
+import { Vector3 } from "three";
+import { toPhysics, frameRotation } from "./physics-frame";
+import type { Vec3 } from "../core/types";
+import type { SeatedPlacement } from "./seated-profile";
 import type { DrivingBox, DrivingPose } from "./vehicle-collision";
 import { AppError } from "../core/types";
 import type { MechanismSnapshot } from "../mechanisms/types";
@@ -217,6 +221,48 @@ export class PlayVehicleWorld {
       delete report.obstacle;
     }
     return { report: this.report(rigId) };
+  }
+  sweepSeatedBody(placement: SeatedPlacement, from: Vec3, to: Vec3) {
+    if (!this.staticWorld)
+      return {
+        accepted: false,
+        reason: "Complete collision geometry is unavailable",
+      };
+    const origin = placement.pelvisFrame.position;
+    const boxes = placement.envelopes.map((box) => ({
+      center: toPhysics(
+        box.frame.position.map((v, i) => v + from[i] - origin[i]) as Vec3,
+      ),
+      halfExtents: box.halfExtents.map((n) => n * 0.02) as Vec3,
+      rotation: frameRotation(box.frame),
+    }));
+    const delta = toPhysics(to.map((v, i) => v - from[i]) as Vec3);
+    if (this.ground)
+      for (const box of boxes) {
+        const q = box.rotation;
+        const low =
+          box.center.y -
+          Math.abs(new Vector3(1, 0, 0).applyQuaternion(q).y) *
+            box.halfExtents[0] -
+          Math.abs(new Vector3(0, 1, 0).applyQuaternion(q).y) *
+            box.halfExtents[1] -
+          Math.abs(new Vector3(0, 0, 1).applyQuaternion(q).y) *
+            box.halfExtents[2];
+        if (Math.min(low, low + delta.y) < -0.00001)
+          return {
+            accepted: false,
+            reason: "Body transfer intersects session ground",
+          };
+      }
+    try {
+      for (const snapshot of this.snapshots("")) {
+        const result = snapshot.sweepRigidBoxes(boxes, delta);
+        if (!result.accepted) return result;
+      }
+      return { accepted: true };
+    } catch (error) {
+      return { accepted: false, reason: reason(error) };
+    }
   }
   /** Body queries include own-vehicle geometry unless the attachment invariant
    * has already been certified. Caller supplies no opaque visibility filters.

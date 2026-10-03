@@ -236,16 +236,16 @@ Several can already be animated through manual hinge/slider authoring.
 | Sliding/lifting doors, drawers, portcullises              | Excluded from the automatic hinge table                                                                                                                    | Reviewed guides/stops → prismatic groups                                                                          |
 | Roller/sectional garage doors                             | Segments do not follow the bent rail path                                                                                                                  | Bounded segmented path follower; articulated dynamic chain later                                                  |
 | Ropes, winches, chains, belts, tracks                     | Static authored geometry; no changing length, tension, pulley routing or drive relation                                                                    | Rope constraints and winch length; visual path plus simplified transmission; bounded link simulation where needed |
-| Cranes, grippers and lifting platforms                    | No runtime grab/release attachment, carrying or actor support transfer                                                                                     | Explicit attachment lifecycle and support-body tracking                                                           |
+| Cranes, grippers and lifting platforms                    | No runtime grab/release attachment; actor support transfer now carries standing explorers                                                                  | Explicit attachment lifecycle and support-body tracking                                                           |
 | Trains                                                    | Initial car grouping/spacing works; no runtime coupling changes, wheel/rod animation, slopes, flexible/crossing/turntable track or build-obstacle checking | Extend existing rail/path system before treating a whole train as a free dynamic mechanism                        |
 | Imported minifigures                                      | Explorer avatar animates its own configured limbs; ordinary model figures do not become articulated/playable                                               | Reviewed figure component profiles, inventory-preserving visuals                                                  |
 | Breakable/clutch connections                              | No strength or separation model                                                                                                                            | Optional declared simulation thresholds; no claim of measured LEGO clutch strength                                |
 
-The explorer can stand on dynamic colliders but is not transported by a support
-body and is not pushed by moving bodies. Train riding attaches the figure to the
-cab as a special case; it does not allow walking around a moving carriage. Dynamic
-vehicles offer remote driving, not the authored seated-driving path. These gaps
-affect lifts, ferries, rotating platforms and vehicles as much as Technic itself.
+Moving support now transports the explorer through capsule sweeps on kinematic
+and dynamic lifts/turntables; jump and walk-off retain point velocity. Authored
+open-bench seats also work on a native dynamic chassis. Train riding remains a
+cab attachment and does not allow walking around a moving carriage. Arbitrary
+grabbing/releasing and rider weight/friction are still outside this slice.
 
 ## Suggested implementation sequence
 

@@ -1256,3 +1256,33 @@ This verifies authored two-freedom constraints. It does not claim automatic axle
 recognition, internal actuator component maps, bearing friction, two-axis motor
 controls or phone hardware performance. Turn readings unwrap consecutive fixed
 samples and may alias above 180° of spin per tick.
+
+## Moving platforms and dynamic driver seats (3 October 2026)
+
+- `play-platforms.test.ts`: seven cases cover kinematic/native dynamic lift and
+  turntable transport, exact deterministic replay, platform-relative position,
+  tangential/vertical jump velocity, source preservation, blocked ceilings and
+  leaving/re-entering Walk. The native actor has a 1 LDU collision safety pad;
+  its exact supporting body is contact-excluded only while predicted carrying
+  is clear. An owned EventQueue is necessary for the pinned Rapier hooks.
+- `play-dynamic-seats.test.ts`: three cases cover native-chassis entry/driving,
+  full-frame root/eye/avatar alignment, deterministic replay, snapshot schema,
+  safe current-frame exit, source preservation, unchanged chassis mass, a
+  head-only wall with reverse recovery, atomic unknown-seat failure and fallback
+  from an unsupported first authored exit.
+- `play-platforms-seats.spec.ts`: six production Chromium checks pass in 1.4 min
+  using private port 4407: kinematic/native lift and turntable carrying/jumping,
+  and the real pinned 80-part Off-road jeep seated/driven/exited at desktop
+  1440×1000 and viewport 360×600. Each exits Play with the same source query.
+  Actual rendered platform/figure/jeep captures were inspected. Phone viewport
+  uses API inputs; no new touch-gesture or physical-device acceptance is claimed.
+- The production build passed (Vite 36.31 s). The nine-file focused unit run passed
+  all 38 checks (new support/seats plus legacy moving, dynamics, seated profile,
+  seat geometry, browser lifecycle and API); TypeScript, formatting and fixture
+  generation checks passed. No new large-model or physical-phone performance claim.
+
+The fixtures are original CC0 probe geometry; the jeep is the existing original
+model of official pinned parts. Runtime creates no new network assets. Rider
+weight/friction, arbitrary grab/release attachments, walking around moving train
+cars, inferred seats, low-cabin fit and articulated vehicles remain outside this
+slice. Upstream Play interface acceptance is verified separately.

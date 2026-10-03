@@ -33,7 +33,7 @@ import {
 import type { AutoDoor, AutoDoorSkip } from "./auto-doors";
 import { TrainWorld, type CarPose, type DerivedTrains } from "./trains";
 import { alightPoints, trainCab, type TrainCab } from "./train-cab";
-import { frameRotation } from "./physics-frame";
+import { frameRotation, basisFromRotation } from "./physics-frame";
 import { inverse } from "../core/math";
 import {
   PlayDynamicsWorld,
@@ -185,6 +185,16 @@ export class PlaySession {
   private tick = 0;
   private accumulator = 0;
   private grounded = false;
+  /** Feet expressed in the supporting group's frame, refreshed after walking. */
+  private support?: {
+    handle: number;
+    rigId: string;
+    groupId: string;
+    local: Vec3;
+    frame: Transform;
+    pointVelocity: Vec3;
+  };
+  private inheritedVelocity: Vec3 = [0, 0, 0];
   private jumpHeld = false;
   private disposed = false;
   private locomotion: PlayLocomotion = "walk";
@@ -344,6 +354,7 @@ export class PlaySession {
           new PlayMechanism(this.world, source, () => ({
             position: this.feet,
             walk: this.locomotion === "walk",
+            ...(this.support ? { support: this.support } : {}),
             ...(this.occupied
               ? {
                   seat: {
@@ -354,6 +365,16 @@ export class PlaySession {
               : {}),
           })),
         );
+      for (const [id, mechanism] of this.mechanisms)
+        mechanism.setSupportGuard((before, after) => {
+          if (this.support?.rigId !== id) return undefined;
+          return this.supportTransferClear(
+            before.groupFrames[this.support.groupId],
+            after.groupFrames[this.support.groupId],
+          )
+            ? undefined
+            : "Moving support stopped before carrying the explorer into geometry";
+        });
       const sources = allSources.filter(
         (source) => !dynamicIds.has(source.rigId),
       );
@@ -363,12 +384,12 @@ export class PlaySession {
           this.dynamics.syncKinematicRig(id, mechanism.groupFrames(), true);
         }
       if (
-        sources.some(
+        allSources.some(
           (source) => source.project.motionRigs[source.rigId].vehicle,
         )
       ) {
         this.vehicleWorld = new PlayVehicleWorld(
-          sources,
+          allSources,
           drivingStatic,
           request.ground !== false,
           (exclude) => [
@@ -392,7 +413,7 @@ export class PlaySession {
             (before, after) => this.vehicleWorld!.check(id, before, after),
             this.vehicleWorld.report(id),
           );
-        for (const source of sources) {
+        for (const source of allSources) {
           const vehicle = source.project.motionRigs[source.rigId].vehicle;
           if (vehicle?.driverSeat)
             this.seatSources.set(source.rigId, {
@@ -400,7 +421,7 @@ export class PlaySession {
               seat: structuredClone(vehicle.driverSeat),
               chassisGroup: vehicle.chassisGroup,
             });
-          this.mechanisms.get(source.rigId)!.setRiderGuard((before, after) => {
+          this.mechanisms.get(source.rigId)?.setRiderGuard((before, after) => {
             if (this.occupied?.request.rigId !== source.rigId) return undefined;
             const info = this.seatSources.get(source.rigId)!;
             const old = seatPlacement(
@@ -523,6 +544,7 @@ export class PlaySession {
       );
     this.syncCollider();
     this.world.step();
+    this.refreshSupport(this.locomotion === "walk");
     if (autoDoors) {
       const groups = new Map(
         allSources.map((source) => [source.rigId, source.groups] as const),
@@ -930,6 +952,34 @@ export class PlaySession {
       "Seat request needs bounded rig and seat IDs",
     );
   }
+  private seatStandingPoint(position: Vec3, dynamic: boolean) {
+    if (!dynamic) return position;
+    const start: Vec3 = [position[0], position[1] - P.stepHeight, position[2]];
+    const hit = this.world.castShape(
+      this.center(start),
+      rot,
+      { x: 0, y: -S, z: 0 },
+      this.capsule,
+      0,
+      P.stepHeight * 2,
+      true,
+      undefined,
+      undefined,
+      this.collider,
+      undefined,
+      (c) => !c.isSensor(),
+    );
+    ensure(
+      hit && hit.normal1.y >= Math.cos((P.maxSlopeDegrees * Math.PI) / 180),
+      "INVALID_INPUT",
+      "Driver seat approach or exit needs nearby walkable support",
+    );
+    return [
+      position[0],
+      start[1] + hit.time_of_impact - 0.2,
+      position[2],
+    ] as Vec3;
+  }
   private seatEntry(request: PlaySeatRequest, fullTransfer = true) {
     this.validateSeatRequest(request);
     this.alive();
@@ -945,10 +995,12 @@ export class PlaySession {
       "INVALID_INPUT",
       "Unknown active driver seat",
     );
-    const mechanism = this.mechanisms.get(request.rigId)!,
+    const mechanism = this.rigTarget(request.rigId).rig,
       state = mechanism.snapshot();
     ensure(
-      state.vehicleCollision?.supported,
+      state.mode === "dynamic"
+        ? this.vehicleWorld?.report(request.rigId)?.supported
+        : state.vehicleCollision?.supported,
       "INVALID_INPUT",
       state.vehicleCollision?.reason ??
         "Vehicle does not support protected driving",
@@ -980,8 +1032,11 @@ export class PlaySession {
       "INVALID_INPUT",
       "Driver seat access is obstructed",
     );
-    const approach = seatPoint(frame, info.seat.approachPosition),
-      placement = seatPlacement(frame, info.seat);
+    const approach = this.seatStandingPoint(
+        seatPoint(frame, info.seat.approachPosition),
+        state.mode === "dynamic",
+      ),
+      placement = seatPlacement(frame, info.seat, state.mode === "dynamic");
     verifyWheelAttachment(info.source, state, placement);
     // Eligibility is a preliminary access/profile hint. Only explicit entry
     // performs every standing and staged-body transfer query against this tick.
@@ -998,6 +1053,7 @@ export class PlaySession {
       placement,
       false,
       (a, b) => this.sweepStanding(a, b),
+      state.mode === "dynamic",
     );
     return { info, placement };
   }
@@ -1025,10 +1081,7 @@ export class PlaySession {
       this.locomotion,
       this.cameraSettings.eyeHeight,
       this.occupied?.request,
-      [...this.mechanisms].map(([id, mechanism]) => [
-        id,
-        mechanism.snapshot().groupFrames,
-      ]),
+      this.snapshot().mechanisms,
     ]);
     if (this.seatEligibilityCache?.key === key)
       return { ...this.seatEligibilityCache.result };
@@ -1056,6 +1109,9 @@ export class PlaySession {
       localLookYaw: 0,
       localLookPitch: this.pitch,
     };
+    this.support = undefined;
+    this.inheritedVelocity = [0, 0, 0];
+    this.dynamics?.rig(request.rigId)?.setRider(placement);
     this.collider.setEnabled(false);
     for (const box of placement.envelopes)
       this.seatedColliders.push(
@@ -1082,7 +1138,7 @@ export class PlaySession {
     );
     keys(input, ["exitIndex"]);
     const info = this.seatSources.get(this.occupied.request.rigId)!,
-      frame = this.mechanisms.get(this.occupied.request.rigId)!.snapshot()
+      frame = this.rigTarget(this.occupied.request.rigId).rig.snapshot()
         .groupFrames[info.chassisGroup];
     ensure(
       input.exitIndex === undefined ||
@@ -1098,9 +1154,12 @@ export class PlaySession {
       ? info.seat.exits.map((_, i) => i)
       : [input.exitIndex]) {
       const exit = info.seat.exits[index],
-        position = seatPoint(frame, exit.position),
         yaw = seatYaw(frame) + (exit.yawDegrees * Math.PI) / 180;
       try {
+        const position = this.seatStandingPoint(
+          seatPoint(frame, exit.position),
+          !!this.dynamics?.rig(this.occupied.request.rigId),
+        );
         this.validateSpawn({ position });
         validateSeatTransfer(
           this.vehicleWorld!,
@@ -1108,6 +1167,7 @@ export class PlaySession {
           this.occupied.placement,
           true,
           (a, b) => this.sweepStanding(a, b),
+          !!this.dynamics?.rig(this.occupied.request.rigId),
         );
         chosen = { position, yaw };
         break;
@@ -1120,6 +1180,7 @@ export class PlaySession {
       "INVALID_INPUT",
       "Exit blocked — move the vehicle to a clear space",
     );
+    this.dynamics?.rig(this.occupied.request.rigId)?.setRider();
     for (const collider of this.seatedColliders)
       this.world.removeCollider(collider, true);
     this.seatedColliders = [];
@@ -1136,6 +1197,8 @@ export class PlaySession {
     };
     this.settle();
     this.velocity = [0, 0, 0];
+    this.support = undefined;
+    this.inheritedVelocity = [0, 0, 0];
     this.grounded = false;
     this.syncCollider();
     this.world.step();
@@ -1145,9 +1208,13 @@ export class PlaySession {
   private updateOccupant() {
     if (!this.occupied) return;
     const info = this.seatSources.get(this.occupied.request.rigId)!,
-      frame = this.mechanisms.get(this.occupied.request.rigId)!.snapshot()
+      frame = this.rigTarget(this.occupied.request.rigId).rig.snapshot()
         .groupFrames[info.chassisGroup];
-    this.occupied.placement = seatPlacement(frame, info.seat);
+    this.occupied.placement = seatPlacement(
+      frame,
+      info.seat,
+      !!this.dynamics?.rig(this.occupied.request.rigId),
+    );
     this.feet = [...this.occupied.placement.avatarRoot];
     this.velocity = [0, 0, 0];
     this.grounded = true;
@@ -1160,13 +1227,7 @@ export class PlaySession {
     this.pitch = this.occupied.localLookPitch;
     this.occupied.placement.envelopes.forEach((box, i) => {
       this.seatedColliders[i].setTranslation(physics(box.frame.position));
-      const yaw = seatYaw(box.frame);
-      this.seatedColliders[i].setRotation({
-        x: 0,
-        y: Math.sin(yaw / 2),
-        z: 0,
-        w: Math.cos(yaw / 2),
-      });
+      this.seatedColliders[i].setRotation(frameRotation(box.frame));
     });
   }
   setInput(input: PlayInput) {
@@ -1234,7 +1295,7 @@ export class PlaySession {
         Math.cos(this.yaw - this.heading),
       );
       this.occupied.localLookPitch = this.pitch;
-      this.mechanisms.get(this.occupied.request.rigId)!.setVehicleInput({
+      this.rigTarget(this.occupied.request.rigId).rig.setVehicleInput({
         throttle: input.moveZ ?? 0,
         steering: -(input.moveX ?? 0),
       });
@@ -1287,6 +1348,8 @@ export class PlaySession {
       this.settle();
     }
     this.locomotion = mode;
+    this.support = undefined;
+    this.inheritedVelocity = [0, 0, 0];
     this.velocity = [0, 0, 0];
     this.clearInput();
     this.syncCollider();
@@ -1330,6 +1393,8 @@ export class PlaySession {
     this.previous = [...this.feet];
     this.settle();
     this.velocity = [0, 0, 0];
+    this.support = undefined;
+    this.inheritedVelocity = [0, 0, 0];
     this.grounded = false;
     this.setInput({ yaw: input.yaw, pitch: input.pitch });
     this.syncCollider();
@@ -1385,6 +1450,127 @@ export class PlaySession {
     }
     return count;
   }
+  private supportFrame(handle: number) {
+    for (const mechanism of this.mechanisms.values()) {
+      const found = mechanism.supportFrame(handle);
+      if (found) return found;
+    }
+    return this.dynamics?.supportFrame(handle);
+  }
+  private supportTransferClear(from: Transform, to: Transform) {
+    const support = this.support;
+    if (!support) return true;
+    const angle = frameRotation(from).angleTo(frameRotation(to));
+    const distance =
+      Math.hypot(...to.position.map((v, i) => v - from.position[i])) +
+      Math.hypot(...support.local) * angle;
+    const steps = Math.max(1, Math.ceil(distance / 0.5));
+    if (steps > 128) return false;
+    // Interpolate the rigid point's arc, retaining an upright standing capsule.
+    const qa = frameRotation(from),
+      qb = frameRotation(to);
+    let previous = [...this.feet] as Vec3;
+    for (let n = 1; n <= steps; n++) {
+      const q = qa.clone().slerp(qb, n / steps);
+      const basis = basisFromRotation(q);
+      const frame: Transform = {
+        basis,
+        position: from.position.map(
+          (v, i) => v + ((to.position[i] - v) * n) / steps,
+        ) as Vec3,
+      };
+      const next = seatPoint(frame, support.local);
+      const hit = this.world.castShape(
+        this.center(previous),
+        rot,
+        physics(next.map((v, i) => v - previous[i]) as Vec3),
+        this.capsule,
+        0,
+        1,
+        true,
+        undefined,
+        undefined,
+        this.collider,
+        undefined,
+        (c) => c.handle !== support.handle && !c.isSensor(),
+      );
+      if (hit && hit.time_of_impact < 0.999) return false;
+      previous = next;
+    }
+    return true;
+  }
+  private transferSupport() {
+    const support = this.support;
+    if (!support) return;
+    const current = this.supportFrame(support.handle);
+    if (!current || !this.supportTransferClear(support.frame, current.frame)) {
+      this.support = undefined;
+      this.grounded = false;
+      this.inheritedVelocity = [...support.pointVelocity];
+      return;
+    }
+    const next = seatPoint(current.frame, support.local);
+    support.pointVelocity = next.map((v, i) => (v - this.feet[i]) / DT) as Vec3;
+    const requested = next.map((v, i) => v - this.feet[i]) as Vec3;
+    const moved = this.moveCharacter(requested, support.handle);
+    this.feet = this.feet.map((v, i) => v + moved[i]) as Vec3;
+    if (Math.hypot(...moved.map((v, i) => v - requested[i])) > 0.05) {
+      this.support = undefined;
+      this.grounded = false;
+      this.inheritedVelocity = [...support.pointVelocity];
+      this.syncCollider();
+      return;
+    }
+    // An upright capsule follows platform yaw, never its roll/pitch.
+    const turn = wrapAngle(seatYaw(current.frame) - seatYaw(support.frame));
+    this.yaw += turn;
+    this.motion = { ...this.motion, body: wrapAngle(this.motion.body + turn) };
+    support.frame = current.frame;
+    this.syncCollider();
+  }
+  private refreshSupport(supported = this.grounded) {
+    if (!supported || this.locomotion !== "walk") {
+      if (this.support && this.locomotion === "walk") {
+        this.inheritedVelocity = [...this.support.pointVelocity];
+        this.velocity[1] += this.inheritedVelocity[1];
+        this.inheritedVelocity[1] = 0;
+      }
+      this.support = undefined;
+      return;
+    }
+    const hit = this.world.castShape(
+      this.center([this.feet[0], this.feet[1] - 0.5, this.feet[2]]),
+      rot,
+      { x: 0, y: -S, z: 0 },
+      this.capsule,
+      0,
+      3,
+      true,
+      RAPIER.QueryFilterFlags.EXCLUDE_SENSORS,
+      undefined,
+      this.collider,
+    );
+    const found =
+      hit && hit.normal1.y >= Math.cos((P.maxSlopeDegrees * Math.PI) / 180)
+        ? this.supportFrame(hit.collider.handle)
+        : undefined;
+    if (!found) {
+      if (this.support)
+        this.inheritedVelocity = [...this.support.pointVelocity];
+      this.support = undefined;
+      return;
+    }
+    const pointVelocity =
+      this.support?.handle === hit!.collider.handle
+        ? this.support.pointVelocity
+        : ([0, 0, 0] as Vec3);
+    this.support = {
+      handle: hit!.collider.handle,
+      ...found,
+      local: seatPoint(inverse(found.frame), this.feet),
+      pointVelocity,
+    };
+  }
   private step() {
     this.previousMotion = this.motion;
     for (const id of [...this.mechanisms.keys()].sort()) {
@@ -1399,6 +1585,14 @@ export class PlaySession {
       this.dynamics.step(
         this.feet,
         this.locomotion === "walk" && !this.occupied && !this.riding,
+        this.support &&
+          this.supportTransferClear(
+            this.support.frame,
+            this.dynamics.supportNextFrame(this.support.handle) ??
+              this.support.frame,
+          )
+          ? this.support.handle
+          : undefined,
       );
     }
     if (this.riding) {
@@ -1415,8 +1609,9 @@ export class PlaySession {
       return;
     }
     if (this.occupied) {
-      this.world.step();
       this.previous = [...this.feet];
+      this.updateOccupant();
+      this.world.step();
       this.settle();
       this.updateArm();
       this.tick++;
@@ -1425,6 +1620,7 @@ export class PlaySession {
     if (this.mechanisms.size || this.dynamics || this.trainProxies.size)
       this.world.step();
     this.previous = [...this.feet];
+    this.transferSupport();
     const i = this.input;
     let x = i.moveX,
       z = i.moveZ,
@@ -1459,8 +1655,17 @@ export class PlaySession {
     }
     let stopped = false;
     if (this.locomotion === "walk") {
-      if (i.jump && !this.jumpHeld && this.grounded)
-        this.velocity[1] = -P.jumpSpeed;
+      if (i.jump && !this.jumpHeld && this.grounded) {
+        this.inheritedVelocity = this.support
+          ? [...this.support.pointVelocity]
+          : [0, 0, 0];
+        this.support = undefined;
+        this.grounded = false;
+        this.velocity[1] = -P.jumpSpeed + this.inheritedVelocity[1];
+        this.inheritedVelocity[1] = 0;
+      }
+      delta[0] += this.inheritedVelocity[0] * DT;
+      delta[2] += this.inheritedVelocity[2] * DT;
       this.velocity[1] = Math.min(500, this.velocity[1] + P.gravity * DT);
       // While standing, the controller is asked only for horizontal travel;
       // snap-to-ground keeps the feet on the floor. Adding gravity's small
@@ -1510,6 +1715,8 @@ export class PlaySession {
     this.velocity = [delta[0] / DT, stopped ? 0 : delta[1] / DT, delta[2] / DT];
     this.syncCollider();
     this.world.step();
+    this.refreshSupport();
+    if (this.grounded) this.inheritedVelocity = [0, 0, 0];
     this.motion = advanceMotion(this.motion, {
       dx: delta[0],
       dz: delta[2],
@@ -1661,17 +1868,29 @@ export class PlaySession {
   }
   /** One character-controller pass from the collider's current position;
    * returns the corrected LDraw displacement and reports dynamic pushes. */
-  private moveCharacter(desired: Vec3): Vec3 {
+  private moveCharacter(desired: Vec3, excludeHandle?: number): Vec3 {
     // A zero request is skipped: Rapier's controller answers it against a
     // half-space with a spurious lift instead of no motion.
     if (Math.hypot(...desired) < 1e-9) return [0, 0, 0];
-    this.controller.computeColliderMovement(this.collider, physics(desired));
+    this.controller.computeColliderMovement(
+      this.collider,
+      physics(desired),
+      undefined,
+      undefined,
+      excludeHandle === undefined
+        ? undefined
+        : (c) => c.handle !== excludeHandle,
+    );
     const moved = ldraw(this.controller.computedMovement());
     if (this.dynamics) {
       const hits = [];
       for (let n = 0; n < this.controller.numComputedCollisions(); n++) {
         const hit = this.controller.computedCollision(n);
-        if (hit?.collider && this.dynamics.isMirror(hit.collider.handle))
+        if (
+          hit?.collider &&
+          hit.collider.handle !== this.support?.handle &&
+          this.dynamics.isMirror(hit.collider.handle)
+        )
           hits.push({
             handle: hit.collider.handle,
             point: hit.witness1,
@@ -1703,6 +1922,7 @@ export class PlaySession {
       return {
         state: "seated",
         heading: motion.body,
+        basis: [...this.occupied.placement.pelvisFrame.basis],
         phase: motion.phase,
         swing: 0,
         // The seated head follows the look like the standing one, within
@@ -1992,11 +2212,17 @@ export class PlaySession {
     const look: Vec3 =
       this.cameraMode === "third-person"
         ? follow.look
-        : [
-            Math.sin(this.yaw) * Math.cos(this.pitch),
-            -Math.sin(this.pitch),
-            -Math.cos(this.yaw) * Math.cos(this.pitch),
-          ];
+        : this.occupied
+          ? mv(this.occupied.placement.pelvisFrame.basis, [
+              Math.sin(this.occupied.localLookYaw) * Math.cos(this.pitch),
+              -Math.sin(this.pitch),
+              -Math.cos(this.occupied.localLookYaw) * Math.cos(this.pitch),
+            ])
+          : [
+              Math.sin(this.yaw) * Math.cos(this.pitch),
+              -Math.sin(this.pitch),
+              -Math.cos(this.yaw) * Math.cos(this.pitch),
+            ];
     const target: Vec3 =
       this.cameraMode === "third-person"
         ? follow.target
@@ -2023,7 +2249,10 @@ export class PlaySession {
         Math.hypot(...pos.map((v, k) => v - target[k])) < 0.01
           ? (pos.map((v, k) => v + look[k] * 100) as Vec3)
           : target,
-      up: [0, -1, 0],
+      up:
+        this.occupied && this.cameraMode === "first-person"
+          ? mv(this.occupied.placement.pelvisFrame.basis, [0, -1, 0])
+          : [0, -1, 0],
       fovDeg: this.cameraSettings.fovDeg,
       near: this.cameraSafety().effectiveNear,
       far: 100000,
@@ -2328,6 +2557,8 @@ export class PlaySession {
     this.feet = [...spot];
     this.previous = [...this.feet];
     this.velocity = [0, 0, 0];
+    this.support = undefined;
+    this.inheritedVelocity = [0, 0, 0];
     this.grounded = false;
     this.motion = initialMotion(this.trainYaw(trainId));
     this.settle();

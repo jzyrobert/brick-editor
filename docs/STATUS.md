@@ -978,3 +978,24 @@ simple authoring form refuse this two-freedom joint. Automatic unretained-axle
 recognition, bearing friction and separate spin/translation controls remain open.
 See [scope](PLAY-ACTUATORS.md#cylindrical-bearings) and
 [verification](VERIFICATION.md#free-cylindrical-bearings-3-october-2026).
+
+## Moving platforms and dynamic driver seats (3 October 2026)
+
+Standing/walking actors now follow kinematic and dynamic supporting groups in
+translation and yaw. Group-local feet tracking, bounded rigid-arc capsule sweeps,
+ordinary character-controller travel, jump/walk-off point-velocity inheritance,
+ceiling rejection and Fly-to-Walk re-entry are verified. The support model does
+not add rider mass or model friction. Dynamic obstruction uses native contact
+response, without assigning a body pose or velocity.
+
+Authored open-bench seats work on dynamic vehicle chassis, including suspension
+and tilt. Entry and exit use the actual frame and complete included triangle
+geometry; ordered current-frame standing exits search nearby walkable support.
+Two zero-mass rider boxes resist head-only obstacles without changing chassis
+mass; `avatar.basis` poses the seated figure and the first-person eye/up direction
+follows the frame. Unknown-seat entry remains atomic.
+
+The original moving-platform fixture and real pinned Off-road jeep passed six
+production Chromium checks, including the jeep at 1440×1000 and 360×600. These
+are API/viewport checks, not new touch-interface acceptance. Source queries and
+unit fixture JSON remain unchanged. See [verification](VERIFICATION.md#moving-platforms-and-dynamic-driver-seats-3-october-2026).

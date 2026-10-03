@@ -1,5 +1,5 @@
 import RAPIER from "@dimforge/rapier3d-compat";
-import { add, mv } from "../core/math";
+import { add, mv, compose, inverse } from "../core/math";
 import { ensure, type Vec3, type Transform } from "../core/types";
 import type { DriverSeatSpec, MechanismSnapshot } from "../mechanisms/types";
 import { CHARACTER_PROFILE as P } from "./types";
@@ -11,17 +11,26 @@ import {
 import type { DrivingBox, DrivingPose } from "./vehicle-collision";
 import type { PlayVehicleWorld } from "./vehicle-world";
 import type { PlayMechanismSource } from "./mechanism";
-import { certifyDrivingProfile, drivingPose } from "./vehicle-profile";
+import { toPhysics, fromPhysics, frameRotation } from "./physics-frame";
+import { certifyDrivingProfile } from "./vehicle-profile";
 const S = P.scaleMetresPerLdu;
 export const seatPoint = (frame: Transform, point: Vec3) =>
   add(frame.position, mv(frame.basis, point));
 export const seatYaw = (frame: Transform) =>
   Math.atan2(-frame.basis[2], frame.basis[8]);
-export const seatPlacement = (frame: Transform, seat: DriverSeatSpec) =>
-  seatedPlacement(frame, {
-    position: seat.pelvisPosition,
-    yawDegrees: seat.yawDegrees,
-  });
+export const seatPlacement = (
+  frame: Transform,
+  seat: DriverSeatSpec,
+  allowTilt = false,
+) =>
+  seatedPlacement(
+    frame,
+    {
+      position: seat.pelvisPosition,
+      yawDegrees: seat.yawDegrees,
+    },
+    allowTilt,
+  );
 export const seatBodyBoxes = (): DrivingBox[] =>
   SEATED_BODY_PROFILE.envelopes.map((box) => ({
     center: [box.center[0] * S, -box.center[1] * S, -box.center[2] * S],
@@ -53,26 +62,39 @@ export function verifyWheelAttachment(
   placement: SeatedPlacement,
 ) {
   const profile = certifyDrivingProfile(source),
-    pose = drivingPose(profile, state),
-    body = seatBodyPose(placement),
     rig = source.project.motionRigs[source.rigId];
-  const rotated = (center: Vec3, root: DrivingPose) => ({
-    x: root.x + Math.cos(root.yaw) * center[0] + Math.sin(root.yaw) * center[2],
-    y: root.y + center[1],
-    z: root.z - Math.sin(root.yaw) * center[0] + Math.cos(root.yaw) * center[2],
-  });
+  const rest = rig.groups.find(
+    (g) => g.id === rig.vehicle!.chassisGroup,
+  )!.frame;
+  const delta = compose(
+    state.groupFrames[rig.vehicle!.chassisGroup],
+    inverse(rest),
+  );
   for (let i = 0; i < rig.groups.length; i++) {
     if (!rig.vehicle!.wheels.some((w) => w.groupId === rig.groups[i].id))
       continue;
     const wheel = profile.boxes[i],
       shape = new RAPIER.Cuboid(...wheel.halfExtents);
-    for (const box of seatBodyBoxes()) {
+    const center = toPhysics(
+      seatPoint(
+        delta,
+        add(
+          rest.position,
+          fromPhysics({
+            x: wheel.center[0],
+            y: wheel.center[1],
+            z: wheel.center[2],
+          }),
+        ),
+      ),
+    );
+    for (const box of placement.envelopes) {
       const contact = shape.contactShape(
-        rotated(wheel.center, pose),
-        q(pose.yaw),
-        new RAPIER.Cuboid(...box.halfExtents),
-        rotated(box.center, body),
-        q(body.yaw),
+        center,
+        frameRotation(delta),
+        new RAPIER.Cuboid(...(box.halfExtents.map((n) => n * S) as Vec3)),
+        toPhysics(box.frame.position),
+        frameRotation(box.frame),
         0,
       );
       ensure(
@@ -91,6 +113,7 @@ export function validateSeatTransfer(
   placement: SeatedPlacement,
   exiting: boolean,
   sweepStanding: (a: Vec3, b: Vec3) => boolean,
+  dynamic = false,
 ) {
   const pelvis = placement.pelvisFrame.position,
     standingPelvis: Vec3 = [
@@ -137,7 +160,9 @@ export function validateSeatTransfer(
         [highSeat, pelvis],
       ];
   for (const [a, b] of stages) {
-    const result = world.sweepBody(body, at(a, yaw), at(b, yaw));
+    const result = dynamic
+      ? world.sweepSeatedBody(placement, a, b)
+      : world.sweepBody(body, at(a, yaw), at(b, yaw));
     ensure(
       result.accepted,
       "INVALID_INPUT",

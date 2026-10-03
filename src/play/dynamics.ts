@@ -1,3 +1,5 @@
+import { Quaternion, Vector3 } from "three";
+import type { SeatedPlacement } from "./seated-profile";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { effectiveMotor, validateMotorInput } from "./motor-input";
 import { AppError, ensure, type Transform, type Vec3 } from "../core/types";
@@ -599,6 +601,37 @@ export class DynamicRig {
       brake: Math.max(1, mass * 0.1),
     };
   }
+  private riderColliders: RAPIER.Collider[] = [];
+  /** Rigid, zero-mass occupant shapes share the actual chassis response. */
+  setRider(placement?: SeatedPlacement) {
+    const chassis = this.vehicle?.chassis;
+    ensure(chassis, "INVALID_INPUT", "A rider needs an active dynamic chassis");
+    for (const collider of this.riderColliders)
+      this.world.removeCollider(collider, false);
+    this.riderColliders = [];
+    if (!placement) return;
+    const nativeFrame: Transform = {
+      position: fromPhysics(chassis.body.translation()),
+      basis: basisFromRotation(chassis.body.rotation()),
+    };
+    for (const box of placement.envelopes) {
+      const local = compose(inverse(nativeFrame), box.frame);
+      const t = toPhysics(local.position);
+      this.riderColliders.push(
+        this.world.createCollider(
+          RAPIER.ColliderDesc.cuboid(
+            ...(box.halfExtents.map((n) => n * S) as Vec3),
+          )
+            .setTranslation(t.x, t.y, t.z)
+            .setRotation(frameRotation(local))
+            .setMass(0)
+            .setFriction(0.7)
+            .setCollisionGroups(chassis.body.collider(0).collisionGroups()),
+          chassis.body,
+        ),
+      );
+    }
+  }
   private syncMirrors() {
     for (const entry of this.bodies.values()) {
       if (entry.anchored) continue;
@@ -617,6 +650,43 @@ export class DynamicRig {
       if (!entry.anchored)
         for (const mirror of entry.mirrors) out.set(mirror.handle, entry.body);
     return out;
+  }
+  supportFrame(handle: number) {
+    for (const entry of this.bodies.values())
+      if (entry.mirrors.some((c) => c.handle === handle))
+        return {
+          rigId: this.rigId,
+          groupId: entry.groupId,
+          frame: this.frames()[entry.groupId],
+        };
+    return undefined;
+  }
+  supportNextFrame(handle: number) {
+    for (const entry of this.bodies.values())
+      if (entry.mirrors.some((c) => c.handle === handle)) {
+        const p = entry.body.translation(),
+          v = entry.body.linvel(),
+          a = entry.body.angvel(),
+          q = entry.body.rotation();
+        const angle = Math.hypot(a.x, a.y, a.z) * DT;
+        const rotation = new Quaternion(q.x, q.y, q.z, q.w);
+        if (angle > 1e-12)
+          rotation.premultiply(
+            new Quaternion().setFromAxisAngle(
+              new Vector3(a.x, a.y, a.z).normalize(),
+              angle,
+            ),
+          );
+        return {
+          position: fromPhysics({
+            x: p.x + v.x * DT,
+            y: p.y + v.y * DT,
+            z: p.z + v.z * DT,
+          }),
+          basis: mv3(basisFromRotation(rotation), entry.rest.basis),
+        };
+      }
+    return undefined;
   }
   hasJoint(id: string) {
     return this.joints.has(id);
@@ -1456,7 +1526,7 @@ export class DynamicRig {
         "Dynamic rigid-body simulation (Rapier): each authored group is one body with convex member proxies; anchored groups keep exact surfaces. Masses, motor efforts and friction are simulation settings, not measured brick clutch strength.",
         ...(this.rig.vehicle
           ? [
-              "Dynamic vehicle: ray-cast wheels with sprung suspension. Driver seats use the kinematic profile.",
+              "Dynamic vehicle: ray-cast wheels with sprung suspension. Authored open-bench seats attach their rigid rider body to the dynamic chassis.",
             ]
           : []),
         ...(this.rig.joints.some((j) => j.kind === "cylindrical")
@@ -1469,7 +1539,7 @@ export class DynamicRig {
               "Spherical joints retain free swing; optional angular resistance opposes rotation. Powered orientation and swing/twist limits are not exposed.",
             ]
           : []),
-        "Moving dynamic bodies can push the explorer's surroundings but never the explorer; walking pushes loose bodies.",
+        "Standing explorers follow moving supports through capsule sweeps; walking pushes loose bodies. Other dynamic contacts do not push the explorer.",
       ],
     };
     this.cache = { tick: this.tick, report };
@@ -1502,6 +1572,7 @@ export class PlayDynamicsWorld {
   readonly world: RAPIER.World;
   private rigs = new Map<string, DynamicRig>();
   private player: RAPIER.RigidBody;
+  private events = new RAPIER.EventQueue(false);
   private playerCollider: RAPIER.Collider;
   private kinematic = new Map<
     string,
@@ -1542,8 +1613,12 @@ export class PlayDynamicsWorld {
       this.playerCollider = this.world.createCollider(
         RAPIER.ColliderDesc.capsule(
           (P.height / 2 - P.radius) * S,
-          P.radius * S,
-        ).setCollisionGroups(groups(MOVER_BIT, 0xffff & ~MOVER_BIT)),
+          // One LDU safety pad resists solver penetration when a supported
+          // explorer is pinned beneath a ceiling; the walking capsule is unchanged.
+          (P.radius + 1) * S,
+        )
+          .setCollisionGroups(groups(MOVER_BIT, 0xffff & ~MOVER_BIT))
+          .setActiveHooks(RAPIER.ActiveHooks.FILTER_CONTACT_PAIRS),
         this.player,
       );
       [...sources]
@@ -1562,6 +1637,7 @@ export class PlayDynamicsWorld {
         });
     } catch (error) {
       for (const rig of this.rigs.values()) rig.dispose();
+      this.events.free();
       this.world.free();
       throw error instanceof Error
         ? error
@@ -1618,7 +1694,7 @@ export class PlayDynamicsWorld {
     }
   }
   /** One fixed tick. `feet` is the explorer's standing position in LDU. */
-  step(feet: Vec3, actorSolid: boolean) {
+  step(feet: Vec3, actorSolid: boolean, supportHandle?: number) {
     this.playerCollider.setEnabled(actorSolid);
     const next = toPhysics([feet[0], feet[1] - P.height / 2, feet[2]]),
       now = this.player.translation();
@@ -1628,8 +1704,34 @@ export class PlayDynamicsWorld {
       this.player.setTranslation(next, false);
     else this.player.setNextKinematicTranslation(next);
     for (const id of this.rigIds()) this.rigs.get(id)!.beforeStep();
-    this.world.step();
+    const supportingBody =
+      supportHandle === undefined
+        ? undefined
+        : this.mirrorBodies.get(supportHandle)?.handle;
+    this.world.step(this.events, {
+      filterContactPair: (_a, _b, bodyA, bodyB) =>
+        supportingBody !== undefined &&
+        ((bodyA === this.player.handle && bodyB === supportingBody) ||
+          (bodyB === this.player.handle && bodyA === supportingBody))
+          ? null
+          : RAPIER.SolverFlags.COMPUTE_IMPULSE,
+      filterIntersectionPair: () => true,
+    });
     for (const id of this.rigIds()) this.rigs.get(id)!.afterStep();
+  }
+  supportFrame(handle: number) {
+    for (const rig of this.rigs.values()) {
+      const support = rig.supportFrame(handle);
+      if (support) return support;
+    }
+    return undefined;
+  }
+  supportNextFrame(handle: number) {
+    for (const rig of this.rigs.values()) {
+      const frame = rig.supportNextFrame(handle);
+      if (frame) return frame;
+    }
+    return undefined;
   }
   /** Walking collisions against mirrored dynamic bodies become bounded pushes. */
   push(
@@ -1662,6 +1764,7 @@ export class PlayDynamicsWorld {
     this.rigs.clear();
     this.kinematic.clear();
     this.mirrorBodies.clear();
+    this.events.free();
     this.world.free();
   }
 }

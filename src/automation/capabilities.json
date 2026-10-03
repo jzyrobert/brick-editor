@@ -252,7 +252,7 @@
         ],
         "motors": "Authored position/velocity motors limited by maxEffort; revolute position targets use accumulated turns with bounded velocity feedback and settled completion; prismatic position targets use bounded force-based velocity feedback with integral load compensation; active low-rate drives stay awake",
         "vehicles": "Rapier ray-cast wheels with sprung suspension, engine force, brake and authored maxSpeed/maxSteer",
-        "pushing": "Walking pushes loose dynamic bodies with bounded impulses; bodies never move the explorer",
+        "pushing": "Walking pushes loose bodies with bounded impulses; supported moving bodies carry an upright actor through capsule sweeps, with point velocity on detachment; other contacts do not push the explorer",
         "limits": {
           "rigs": 14,
           "bodies": 64,
@@ -265,9 +265,7 @@
           "internal collisions between groups of one rig",
           "spherical joint orientation controls",
           "clutch strength",
-          "breaking",
-          "riding moving platforms",
-          "seated driving of dynamic vehicles"
+          "breaking"
         ],
         "transmissions": {
           "spur": "Ideal external spur relations between parallel revolute shafts on a shared carrier; unwrapped degree positions",
@@ -310,7 +308,8 @@
           "motion": "Native free axial translation and spin; radial/tilt axes constrained; optional translationLimitsLdu stops",
           "reports": "Read-only dynamics.bearings translationLdu and unwrapped angleDegrees; actual group frames and posed placements",
           "limits": "No scalar motors/targets; kinematic preview retains rest with an explicit warning; current planar closure solver excludes cylindrical edges"
-        }
+        },
+        "seatedDriving": "Explicit open-bench seats attach two zero-mass body boxes to the native chassis; actual tilt/suspension frame drives avatar and eyes; supported current-frame ordered exits"
       },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
       "profile": "ldraw-minifig-v1",
@@ -356,9 +355,9 @@
         "authoring": "Explicit chassis-local pelvis/access/approach and 1\u20134 ordered standing exits; metadata review and undoable save",
         "body": "Independent compound boxes enclosing original rigid straight-leg seated visual; no mesh-derived physics",
         "entry": "Reach, access ray, supported approach, wheel-envelope clearance and swept raised transfer; refuse before mutation",
-        "driving": "Conservative vehicle and rider sweeps; retain accepted poses when blocked",
-        "exit": "Current-frame authored exits with real walkable support and swept transfer; blocked exit retains occupancy",
-        "scope": "Supported upright unarticulated chassis/wheel rigs only; no inferred seats, low cabins, general platform riding or dynamic suspension"
+        "driving": "Kinematic conservative rider sweeps; Dynamic zero-mass torso/head and leg colliders attach to the actual native chassis with own-body exclusion",
+        "exit": "Ordered current-frame authored exits with real walkable support (dynamic projection within one step) and 3D raised transfer; blocked exit retains occupancy",
+        "scope": "Source-certified unarticulated chassis/wheel rigs with explicit open-bench seats; dynamic tilt/suspension supported; no inferred seats or low-cabin articulation"
       },
       "motors": {
         "kinematic": "Position motors travel at 90 degrees/s or 40 LDU/s; velocity motors run at their target; swept actor checks block and auto-retry",
@@ -378,7 +377,13 @@
         "runtime": "Session-only trains derived from wheels on the rails; fixed-tick deterministic motion along the rail graph with bogie pivots, coupling spacing, points, end stops and explorer waiting",
         "control": "Train slab (Go/Stop, speed, reverse, ride along, horn, points), play.setTrainThrottle/stopTrain/setPoints/rideTrain, CLI --train-throttle/--points/--ride-train/--no-trains; disable with trains:false"
       },
-      "posedExport": "play.exportPosedModel() / mechanisms.exportPosedModel() / CLI --posed-output: static posed LDraw MPD; project and rest pose unchanged"
+      "posedExport": "play.exportPosedModel() / mechanisms.exportPosedModel() / CLI --posed-output: static posed LDraw MPD; project and rest pose unchanged",
+      "movingPlatforms": {
+        "support": "Collider/group-local feet point; translation and yaw through character-controller capsule sweeps; jump/walk-off inherit point velocity",
+        "limits": "0.5 LDU arc subdivisions, at most 128 per transfer; native capsule has 1 LDU safety padding",
+        "blocking": "Kinematic carry refuses unsafe pose; dynamic blocked carry restores native contact and detaches without assigning body pose or velocity",
+        "scope": "Standing/walking only; no rider mass, friction model, runtime grab/release or walking around train cars"
+      }
     },
     "sharing": {
       "selfContainedMpdLinks": true,
@@ -599,7 +604,6 @@
     "snap-candidate cycling",
     "general structural regrouping",
     "whole-library BFC conformance beyond audited fixtures",
-    "riding dynamic bodies and seated driving of dynamic vehicles",
     "compound-rig and arbitrary-frame authoring UI",
     "auto-rig proposals beyond official door leaves"
   ],

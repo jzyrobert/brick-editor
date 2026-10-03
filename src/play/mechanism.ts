@@ -227,6 +227,23 @@ export class PlayMechanism {
     });
     return this.geometryCache;
   }
+  supportFrame(handle: number) {
+    const proxy = this.proxies.find((p) => p.collider.handle === handle);
+    return proxy
+      ? {
+          rigId: this.session.snapshot().rigId,
+          groupId: proxy.id,
+          frame: this.groupFrames()[proxy.id],
+        }
+      : undefined;
+  }
+  private supportGuard?: (
+    before: MechanismSnapshot,
+    after: MechanismSnapshot,
+  ) => string | undefined;
+  setSupportGuard(guard: NonNullable<PlayMechanism["supportGuard"]>) {
+    this.supportGuard = guard;
+  }
   /** Group-local physics surfaces (metres), for mirroring into dynamic Play. */
   movingShapes() {
     return this.proxies.map(({ id, vertices, indices }) => ({
@@ -256,6 +273,7 @@ export class PlayMechanism {
     private actor: () => {
       position: Vec3;
       walk: boolean;
+      support?: { rigId: string; groupId: string };
       seat?: {
         rigId: string;
         envelopes: Array<{ frame: Transform; halfExtents: Vec3 }>;
@@ -357,6 +375,11 @@ export class PlayMechanism {
     if (actor.walk)
       for (const proxy of this.proxies) {
         if (actor.seat?.rigId === before.rigId) continue;
+        if (
+          actor.support?.rigId === before.rigId &&
+          actor.support.groupId === proxy.id
+        )
+          continue;
         const a = before.groupFrames[proxy.id],
           b = after.groupFrames[proxy.id];
         let distance =
@@ -516,7 +539,8 @@ export class PlayMechanism {
       this.session.clearInput();
       return false;
     }
-    const riderFailure = this.riderGuard?.(before, target);
+    const riderFailure =
+      this.supportGuard?.(before, target) ?? this.riderGuard?.(before, target);
     if (typeof riderFailure === "object") {
       this.session.setPose(before.pose);
       this.apply(before);

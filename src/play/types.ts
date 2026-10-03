@@ -1,5 +1,5 @@
 import type { MechanismSnapshot } from "../mechanisms/types";
-import type { Vec3 } from "../core/types";
+import type { Vec3, Basis } from "../core/types";
 import type { PlayTrainsReport } from "./trains";
 /** Public coordinates are LDraw LDU: up is -Y. Angles are radians. */
 export type PlayLocomotion = "walk" | "fly-noclip";
@@ -122,6 +122,8 @@ export type AvatarPose = {
   state: "idle" | "walk" | "run" | "jump" | "fall" | "fly" | "seated";
   /** Body (root) yaw. */
   heading: number;
+  /** Actual seated chassis orientation in LDraw axes; absent on foot. */
+  basis?: Basis;
   /** Gait phase: advances 2π per stride of travelled distance. */
   phase: number;
   /** Swing amount in [0, 1], blended toward horizontal speed each tick. */

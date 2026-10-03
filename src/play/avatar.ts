@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { AvatarPose, PlaySnapshotReport } from "./types";
 import type { Vec3 } from "../core/types";
+import { frameRotation } from "./physics-frame";
 import { conversion } from "../core/math";
 import { ensure } from "../core/types";
 import { sha256 } from "../core/hash";
@@ -337,7 +338,16 @@ export class BrickAvatar {
       state.avatarVisible && state.cameraMode === "third-person";
     this.group.position.fromArray(conversion(view?.position ?? state.position));
     this.group.position.y += pose.bob ?? 0;
-    this.group.rotation.y = pose.heading + Math.PI;
+    if (pose.basis)
+      this.group.quaternion
+        .copy(frameRotation({ position: [0, 0, 0], basis: pose.basis }))
+        .multiply(
+          new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(0, 1, 0),
+            Math.PI,
+          ),
+        );
+    else this.group.rotation.set(0, pose.heading + Math.PI, 0);
     const neck = this.joints.get("head")!;
     neck.rotation.y = pose.headYaw;
     neck.rotation.x = pose.headPitch ?? 0;

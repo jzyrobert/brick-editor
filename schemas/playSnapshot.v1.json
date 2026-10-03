@@ -287,6 +287,14 @@
         },
         "rightWrist": {
           "type": "number"
+        },
+        "basis": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 9,
+          "maxItems": 9
         }
       },
       "required": [

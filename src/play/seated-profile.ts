@@ -66,6 +66,7 @@ const finitePosition = (position: readonly number[]) =>
 export function seatedPlacement(
   chassisFrame: Transform,
   pelvis: SeatedPelvisAnchor,
+  allowTilt = false,
 ): SeatedPlacement {
   ensure(
     finitePosition(chassisFrame.position) &&
@@ -77,9 +78,10 @@ export function seatedPlacement(
   );
   const up = mv(chassisFrame.basis, [0, -1, 0]);
   ensure(
-    Math.abs(up[0]) < 1e-8 &&
-      Math.abs(up[1] + 1) < 1e-8 &&
-      Math.abs(up[2]) < 1e-8,
+    allowTilt ||
+      (Math.abs(up[0]) < 1e-8 &&
+        Math.abs(up[1] + 1) < 1e-8 &&
+        Math.abs(up[2]) < 1e-8),
     "INVALID_INPUT",
     "Open-bench seats require a world-upright chassis",
   );

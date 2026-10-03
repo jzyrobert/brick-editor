@@ -1444,6 +1444,12 @@ const playSnapshot = obj({
     rightWrist: num,
   }),
 });
+playSnapshot.properties.avatar.properties.basis = {
+  type: "array",
+  items: num,
+  minItems: 9,
+  maxItems: 9,
+};
 playSnapshot.properties.occupancy = obj({
   rigId: id,
   seatId: id,

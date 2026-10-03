@@ -567,12 +567,7 @@ export class BrowserPlay {
       )
       .map((target) => {
         const seat = rigs[target.rigId]?.vehicle?.driverSeat;
-        const dynamic =
-          (report.mechanisms?.[target.rigId] ?? report.mechanism)?.mode ===
-          "dynamic";
-        // Driver seats use the kinematic profile; dynamic vehicles are driven
-        // from the explorer's position instead.
-        if (target.kind !== "vehicle" || !seat || dynamic) return target;
+        if (target.kind !== "vehicle" || !seat) return target;
         const mechanism = report.mechanisms?.[target.rigId] ?? report.mechanism;
         const frame =
           mechanism!.groupFrames[rigs[target.rigId].vehicle!.chassisGroup];

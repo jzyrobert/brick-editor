@@ -57,10 +57,9 @@ not appear as scalar controls; kinematic preview explicitly retains rest. See
 
 - **Bodies.** Each authored rigid group is one body. Individual bricks are never separate bodies (spec 19.4). Moving groups get one convex proxy per member occurrence. Its points are deduplicated on a quarter-LDU grid and reduced to at most 256 points using directional extremes, so the proxy can shrink but never grow. A flat member gets a thin box. Anchored groups keep their exact triangle surfaces, so a door frame keeps its opening.
 - **Anchoring and mass.** Root groups of non-vehicle rigs are anchored by default, such as a door frame or an axle post. Vehicle groups and explicitly unanchored groups move. Mass comes from proxy volume at 200 kg/m³, or from an authored `massKg` per group. Friction defaults to 0.7.
-
 - **Joints.** Fixed, revolute, prismatic, spherical and cylindrical joints become Rapier impulse joints with authored limits. Bodies of one rig do not collide with each other. Authored motors use `maxEffort` (N·m or N at the 0.02 m/LDU gameplay scale). An animated joint target, from the nearby action, the drawer slider or `setJointTarget`, moves a motor setpoint at the requested speed. The target completes within 1° or 0.5 LDU and reports `blocked` if it stalls for 1.5 s. `setMechanismJoint` (an immediate pose) is refused for dynamic rigs.
-- **Vehicles.** The chassis is a dynamic body driven by Rapier's ray-cast wheel controller. Each authored wheel becomes a sprung wheel at its declared centre, radius and axle. Engine force, a holding brake at zero throttle, and the authored `maxSteerDegrees`/`maxSpeed` apply. Steering uses the kinematic sign convention. Wheel groups are drawn from the suspension length, steering and rolling angle. Suspension, engine force and friction are optional rig settings. Driver seats keep the kinematic profile: a dynamic vehicle offers **Drive vehicle**, not seated entry.
-- **Explorer.** The walking capsule is a kinematic body in the dynamic world, so bodies cannot fall through the explorer. Dynamic bodies are mirrored into the walking world, where the explorer can stand on them, and walking into a loose body applies a bounded push. Bodies never push the explorer, and riding moving bodies is not simulated. Kinematic rigs appear in the dynamic world as kinematic bodies, so an animated door pushes a crate.
+- **Vehicles.** The chassis is a dynamic body driven by Rapier's ray-cast wheel controller. Each authored wheel becomes a sprung wheel at its declared centre, radius and axle. Engine force, a holding brake at zero throttle, and the authored `maxSteerDegrees`/`maxSpeed` apply. Steering uses the kinematic sign convention. Wheel groups are drawn from the suspension length, steering and rolling angle. Suspension, engine force and friction are optional rig settings. Authored open-bench driver seats also offer **Get in**: the rigid rider collision boxes attach to the native chassis, with zero added mass, and the avatar/first-person eye follows its actual tilt. Entry and ordered exits retain source-bound clearance checks.
+- **Explorer.** The walking capsule is a kinematic body in the dynamic world, so bodies cannot fall through the explorer. Dynamic bodies are mirrored into the walking world, where the explorer can stand on them, and walking into a loose body applies a bounded push. Standing actors follow a moving support through capsule sweeps, including translation and rotation. Jumping and walking off inherit the support point velocity; blocked transfers detach, and kinematic supports refuse unsafe carrying moves. Other dynamic contact does not push the explorer. The native capsule adds a 1 LDU safety pad; only its exact supporting native body is excluded from contacts while carrying is clear. Kinematic rigs appear in the dynamic world as kinematic bodies, so an animated door pushes a crate.
 - **Limits.** At most 14 dynamic rigs, 64 bodies and 512 dynamic member proxies, with the existing 32-rig, 128-group and 200,000-moving-triangle Play budgets. The dynamic world needs complete included collision geometry. A member without surfaces, an anchored vehicle chassis and settings for unknown groups each fail with an actionable message before any simulation starts.
 - **Reports.** Dynamic reports use `mode:"dynamic"` and `dynamics:{engine,gravity,bodies,wheels?,speed?,bearings?}`. They also carry per-body mass, collider count, sleep state and velocities (LDU/s, degrees/s), and per-wheel contact and suspension length (LDU).
 
@@ -155,8 +154,36 @@ Measured by `tests/browser/play-physics-performance.spec.ts` on the Linux ARM64 
 
 ## Not implemented
 
-Riding dynamic or kinematic platforms, and seated driving of dynamic vehicles. Clutch strength and breaking assemblies. Sliding, roller and lift doors. Auto-rig proposals for other connector families (spec 19.5 future assistant). Compound-rig and arbitrary-frame authoring UI. Measured phone-hardware frame times.
+Runtime grab/release attachments and walking around train cars. Clutch strength and breaking assemblies. Sliding, roller and lift doors. Auto-rig proposals for other connector families (spec 19.5 future assistant). Compound-rig and arbitrary-frame authoring UI. Measured phone-hardware frame times.
 
 The [motion and Technic investigation](PLAY-MOTION-ROADMAP.md) records the current
 connector, contact, topology and control gaps, reproducible probes, and a proposed
 implementation sequence for transmissions and further movable-part families.
+
+### Moving support and dynamic seats
+
+Walking records the supporting collider, group frame and local feet point. A
+0.5 LDU subdivided capsule sweep checks the point's rigid arc (at most 128
+segments per transfer); actual travel uses the ordinary character controller.
+The upright capsule follows platform yaw and keeps walking controls. Jumping
+inherits tangential and vertical support velocity; walking off retains point
+velocity until the next supported landing. Fly, teleport and seated entry clear
+the support. Kinematic blocked carrying is refused before committing its pose.
+Dynamic supports retain native force/contact response and detach the actor when
+transfer is blocked; a predicted blocked transfer restores native player contact.
+This is a gameplay support model without rider weight or friction simulation.
+
+Dynamic seats use the actual chassis frame, preserving suspension/roll/pitch.
+The two declared body boxes are zero-mass chassis colliders; own-body contact
+is excluded by the native engine. Entry/exit translates their true 3D orientation
+against complete included source triangles, with 4,096 candidates and 65,536 BVH
+node visits per snapshot. Standing approaches/exits project to walkable support
+within one 24 LDU step above/below their authored current-frame point; an
+unsupported first exit does not suppress later authored exits. The report's
+optional `avatar.basis` poses the seated figure; the ordinary standing figure
+continues using `avatar.heading`. No dynamic body pose or velocity is assigned
+to reach a driver or platform target.
+
+Rapier hooks require an owned `EventQueue`: the pinned JavaScript wrapper skips
+hooks for `world.step(undefined, hooks)`. The queue is session-owned and freed
+with the world. See [verification](VERIFICATION.md#moving-platforms-and-dynamic-driver-seats-3-october-2026).

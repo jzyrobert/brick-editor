@@ -1,5 +1,5 @@
 import RAPIER from "@dimforge/rapier3d-compat";
-import { Triangle, Vector3 } from "three";
+import { Triangle, Vector3, Quaternion } from "three";
 import { ensure } from "../core/types";
 import {
   drivingCoordinate,
@@ -206,6 +206,135 @@ export class DrivingObstacleSnapshot {
    * (Rapier's own BVH handles the rest). Budget failures still refuse the
    * whole operation; there is no truncated candidate set.
    */
+  /** Complete source-triangle query for a translating body held at its actual
+   * 3D orientation (dynamic seat entry/exit). No yaw projection or hull filling. */
+  sweepRigidBoxes(
+    boxes: readonly {
+      center: RAPIER.Vector;
+      halfExtents: [number, number, number];
+      rotation: RAPIER.Rotation;
+    }[],
+    delta: RAPIER.Vector,
+  ) {
+    const query = freshBounds();
+    for (const box of boxes) {
+      const q = new Quaternion(
+        box.rotation.x,
+        box.rotation.y,
+        box.rotation.z,
+        box.rotation.w,
+      );
+      for (const x of [-1, 1])
+        for (const y of [-1, 1])
+          for (const z of [-1, 1]) {
+            const p = new Vector3(
+              x * box.halfExtents[0],
+              y * box.halfExtents[1],
+              z * box.halfExtents[2],
+            )
+              .applyQuaternion(q)
+              .add(box.center);
+            for (const d of [0, 1])
+              for (let i = 0; i < 3; i++) {
+                const v =
+                  p.getComponent(i) + d * [delta.x, delta.y, delta.z][i];
+                query[i] = Math.min(query[i], v - 0.00001);
+                query[i + 3] = Math.max(query[i + 3], v + 0.00001);
+              }
+          }
+    }
+    const candidates: number[] = [];
+    let visited = 0,
+      exceeded = false;
+    const visit = (branch: Branch) => {
+      if (exceeded || !overlaps(query, branch.bounds)) return;
+      if (++visited > 65536) {
+        exceeded = true;
+        return;
+      }
+      if (branch.left && branch.right) {
+        visit(branch.left);
+        visit(branch.right);
+        return;
+      }
+      for (let i = branch.start; i < branch.end; i++) {
+        const id = this.order[i];
+        if (
+          !overlaps(
+            query,
+            Array.from(this.bounds.subarray(id * 6, id * 6 + 6)) as Bound,
+          )
+        )
+          continue;
+        if (candidates.length === DRIVING_CANDIDATE_LIMIT) {
+          exceeded = true;
+          return;
+        }
+        candidates.push(id);
+      }
+    };
+    if (this.root) visit(this.root);
+    if (exceeded || boxes.length > 32)
+      return {
+        accepted: false,
+        reason: "Body transfer exceeds collision work budget",
+      };
+    if (!candidates.length) return { accepted: true };
+    const world = new RAPIER.World({ x: 0, y: 0, z: 0 });
+    try {
+      const vertices = new Float32Array(candidates.length * 9);
+      candidates.forEach((id, n) => {
+        const source = this.sources[this.sourceIndex[id]],
+          triangle = this.triangleIndex[id];
+        for (let corner = 0; corner < 3; corner++) {
+          const index = source.indices[triangle * 3 + corner] * 3;
+          vertices.set(
+            source.vertices.subarray(index, index + 3),
+            n * 9 + corner * 3,
+          );
+        }
+      });
+      const collider = world.createCollider(
+        RAPIER.ColliderDesc.trimesh(
+          vertices,
+          Uint32Array.from({ length: candidates.length * 3 }, (_, i) => i),
+        ),
+      );
+      for (const box of boxes) {
+        const shape = new RAPIER.Cuboid(...box.halfExtents);
+        const contact = collider.contactShape(
+          shape,
+          box.center,
+          box.rotation,
+          0,
+        );
+        if (contact && contact.distance < -0.00001)
+          return {
+            accepted: false,
+            reason: "Body transfer intersects included geometry",
+          };
+        if (
+          collider.castShape(
+            { x: 0, y: 0, z: 0 },
+            shape,
+            box.center,
+            box.rotation,
+            delta,
+            0,
+            1,
+            true,
+          )
+        )
+          return {
+            accepted: false,
+            reason: "Body transfer intersects included geometry",
+          };
+      }
+      return { accepted: true };
+    } finally {
+      world.free();
+    }
+  }
   sweep(
     rigId: string,
     boxes: readonly DrivingBox[],
