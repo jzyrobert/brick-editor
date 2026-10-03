@@ -1247,7 +1247,12 @@ const playJointTargetReport = obj(
   ["current", "target", "speed", "status", "units", "speedUnits"],
 );
 const playMotorRequest = obj(
-  { rigId: id, jointId: id, enabled: { type: "boolean" } },
+  {
+    rigId: id,
+    jointId: id,
+    enabled: { type: "boolean" },
+    input: { type: "number", minimum: -1, maximum: 1 },
+  },
   ["jointId", "enabled"],
 );
 const playMotorReport = obj(
@@ -1260,6 +1265,7 @@ const playMotorReport = obj(
     targetUnits: { enum: ["degrees", "LDU", "degrees/s", "LDU/s"] },
     simulation: { enum: ["kinematic-rate", "dynamic-motor"] },
     blockedReason: str,
+    input: { type: "number", minimum: -1, maximum: 1 },
   },
   ["mode", "target", "enabled", "status", "units", "targetUnits", "simulation"],
 );
@@ -1568,6 +1574,7 @@ const api = {
     "play.setLocomotion": { enum: ["walk", "fly-noclip"] },
     "play.pause": { type: "boolean" },
     "play.snapshot": obj({}),
+    "play.view": obj({}),
     "play.exit": obj({}),
     "clipboard.copy": obj(
       { occurrenceIds: arr(occurrenceId), includeHidden: { type: "boolean" } },

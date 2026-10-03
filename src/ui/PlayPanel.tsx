@@ -256,6 +256,7 @@ export function PlayPanel({
         return;
       }
       if (play.getState().paused) return;
+      if (play.getState().mechanismOverview) return;
       if (!e.repeat && action === "interact") {
         clear();
         // While riding, the action gets off the train.
@@ -687,11 +688,19 @@ export function PlayPanel({
   const mechanisms =
     report.mechanisms ??
     (report.mechanism ? { [report.mechanism.rigId]: report.mechanism } : {});
-  const activeRigs = Object.values(rigs).filter((rig) => !!mechanisms[rig.id]);
+  const activeRigs = Object.values(rigs).filter(
+    (rig) =>
+      !!mechanisms[rig.id] &&
+      (rig.joints.some(
+        (j) => j.kind === "revolute" || j.kind === "prismatic",
+      ) ||
+        (rig.vehicle &&
+          mechanisms[rig.id].vehicleCollision?.supported !== false)),
+  );
   const nearbyRigId = state.interaction?.rigId;
-  const activeRigId = mechanisms[remoteRigId]
+  const activeRigId = activeRigs.some((rig) => rig.id === remoteRigId)
     ? remoteRigId
-    : nearbyRigId && mechanisms[nearbyRigId]
+    : nearbyRigId && activeRigs.some((rig) => rig.id === nearbyRigId)
       ? nearbyRigId
       : activeRigs[0]?.id;
   const seatRig =
@@ -708,26 +717,30 @@ export function PlayPanel({
         : report.mechanism;
 
   const walking = report.locomotion === "walk";
-  const firstPerson = report.cameraMode === "first-person";
+  const firstPerson =
+    !state.mechanismOverview && report.cameraMode === "first-person";
   const inVehicle = !!(state.vehicleControl || occupied);
-  const status: { icon: IconName; text: string } = occupied
-    ? {
-        icon: "wheel",
-        text: "Driving · " + (rigs[occupied.rigId]?.name ?? "driver seat"),
-      }
-    : state.vehicleControl
-      ? { icon: "wheel", text: "Controlling vehicle · on foot" }
-      : report.trains?.riding
-        ? {
-            icon: "train",
-            text:
-              "Riding · " +
-              (report.trains.trains.find((t) => t.id === report.trains!.riding)
-                ?.name ?? "train"),
-          }
-        : walking
-          ? { icon: "play", text: "Walking" }
-          : { icon: "fly", text: "Flying · through walls" };
+  const status: { icon: IconName; text: string } = state.mechanismOverview
+    ? { icon: "hand", text: "Controlling mechanism" }
+    : occupied
+      ? {
+          icon: "wheel",
+          text: "Driving · " + (rigs[occupied.rigId]?.name ?? "driver seat"),
+        }
+      : state.vehicleControl
+        ? { icon: "wheel", text: "Controlling vehicle · on foot" }
+        : report.trains?.riding
+          ? {
+              icon: "train",
+              text:
+                "Riding · " +
+                (report.trains.trains.find(
+                  (t) => t.id === report.trains!.riding,
+                )?.name ?? "train"),
+            }
+          : walking
+            ? { icon: "play", text: "Walking" }
+            : { icon: "fly", text: "Flying · through walls" };
   const interactIcon: IconName =
     state.vehicleControl || state.interaction?.kind === "vehicle"
       ? "wheel"
@@ -751,7 +764,6 @@ export function PlayPanel({
     !!activeRigId &&
     !!rigs[activeRigId] &&
     !!mechanisms[activeRigId];
-  const showRemote = canRemote && remoteOpen && !state.paused;
   const remoteTitle =
     activeRigs.length > 1
       ? "Remote controls"
@@ -860,13 +872,14 @@ export function PlayPanel({
           </span>
         </div>
       </div>
-      {showRemote && (
+      {canRemote && remoteOpen && (
         <PlayMechanismControls
           play={play}
           rig={rigs[activeRigId!]}
           report={mechanisms[activeRigId!]}
           choices={activeRigs}
           title={remoteTitle}
+          paused={state.paused}
           onClose={() => {
             clear();
             setRemoteOpen(false);
@@ -917,10 +930,14 @@ export function PlayPanel({
             }}
           >
             <Icon name="resume" />
-            {occupied ? "Resume driving" : "Resume exploring"}
+            {remoteOpen
+              ? "Resume controls"
+              : occupied
+                ? "Resume driving"
+                : "Resume exploring"}
           </button>
           <div className="play-menu-grid">
-            {!occupied && (
+            {!occupied && !remoteOpen && (
               <button
                 className="play-tile"
                 aria-keyshortcuts={bindings.fly || undefined}
@@ -931,28 +948,32 @@ export function PlayPanel({
                 {keyHint(bindings.fly)}
               </button>
             )}
-            <button
-              className="play-tile"
-              aria-keyshortcuts={bindings.camera || undefined}
-              onClick={toggleCamera}
-            >
-              <Icon name={firstPerson ? "play" : "eye"} size={24} />
-              <span>{firstPerson ? "Third person" : "First person"}</span>
-              {keyHint(bindings.camera)}
-            </button>
-            <button
-              className="play-tile"
-              disabled={!!occupied}
-              onClick={() =>
-                attempt(() => {
-                  play.respawn();
-                  play.pause(false);
-                })
-              }
-            >
-              <Icon name="rotate" size={24} />
-              <span>Recover last safe position</span>
-            </button>
+            {!remoteOpen && (
+              <button
+                className="play-tile"
+                aria-keyshortcuts={bindings.camera || undefined}
+                onClick={toggleCamera}
+              >
+                <Icon name={firstPerson ? "play" : "eye"} size={24} />
+                <span>{firstPerson ? "Third person" : "First person"}</span>
+                {keyHint(bindings.camera)}
+              </button>
+            )}
+            {!remoteOpen && (
+              <button
+                className="play-tile"
+                disabled={!!occupied}
+                onClick={() =>
+                  attempt(() => {
+                    play.respawn();
+                    play.pause(false);
+                  })
+                }
+              >
+                <Icon name="rotate" size={24} />
+                <span>Recover last safe position</span>
+              </button>
+            )}
             <button className="play-tile" onClick={() => attempt(bookmark)}>
               <Icon name="photo" size={24} />
               <span>Save this view to Photo</span>
@@ -963,12 +984,12 @@ export function PlayPanel({
                 onClick={() => {
                   clear();
                   setRemoteRigId(activeRigId!);
-                  setRemoteOpen(true);
+                  setRemoteOpen(!remoteOpen);
                   play.pause(false);
                 }}
               >
                 <Icon name="sliders" size={24} />
-                <span>{remoteTitle}</span>
+                <span>{remoteOpen ? "Back to exploring" : remoteTitle}</span>
               </button>
             )}
           </div>
@@ -979,7 +1000,7 @@ export function PlayPanel({
                 : "The joystick or movement keys drive and steer. You stay on foot; included walls and other rigs can stop the vehicle."}
             </p>
           )}
-          <PlaySettings play={play} report={report} />
+          {!remoteOpen && <PlaySettings play={play} report={report} />}
           <PlayKeySettings
             value={bindings}
             onChange={changeBindings}
@@ -1009,7 +1030,7 @@ export function PlayPanel({
         </div>
       ) : (
         <>
-          {finePointer && !locked && (
+          {finePointer && !locked && !remoteOpen && (
             <div className="play-hint play-lock-hint">
               {lockRefused
                 ? "Drag to look around · Esc to pause"
@@ -1018,7 +1039,7 @@ export function PlayPanel({
           )}
           <div
             className="play-hint play-keys-hint"
-            hidden={finePointer && !locked}
+            hidden={remoteOpen || (finePointer && !locked)}
           >
             {riding ? (
               // Driving a train: the lever and the brake.
@@ -1054,7 +1075,7 @@ export function PlayPanel({
             </div>
           )}
           {/* Riding a train ignores walking input: no stick or actions. */}
-          {!riding && (
+          {!riding && !remoteOpen && (
             <div
               className="play-stick-zone"
               onPointerDown={stickDown}

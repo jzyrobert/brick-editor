@@ -396,6 +396,11 @@ export function createAPI(
       },
       stepTicks: async (count: number) => player().stepTicks(count),
       snapshot: async () => player().snapshot(),
+      /** Current browser presentation, including a whole-mechanism overview. */
+      view: async () => ({
+        camera: player().camera(),
+        mechanismOverview: player().getState().mechanismOverview,
+      }),
       /** Diagnostics: static collider triangles/vertices after compaction. */
       collisionStats: async () => player().collisionStats(),
       /** Diagnostics: recent realtime frames (camera, interpolated figure). */

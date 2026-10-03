@@ -21,6 +21,14 @@ and rendered accessories are covered by focused tests. See
 [mechanical scope](PLAY-MECHANICAL-FEATURES.md). Rack transmission, direct
 session-only Play entry, contact policy and the other phases remain open.
 
+**Implemented controls:** session-only proportional motor input now drives,
+reverses and brakes reviewed motors without changing authored presets or effort
+bounds. Remote controls select one independent control, fold passive output
+feedback, and automatically fit/orbit the whole rig in clear canvas space.
+Closing restores the explorer view. Desktop and phone capture/interaction checks
+and the bounded Impeccable finish review are recorded in
+[verification](VERIFICATION.md#live-motor-controls-and-mechanism-overview-3-october-2026).
+
 The strongest next step is a small mechanical feature pack and a transmission
 layer on top of the existing rigid-group system. Brick Editor already has the
 basic physics engine and moving renderer. What is missing is knowledge of which

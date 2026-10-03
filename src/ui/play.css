@@ -774,12 +774,11 @@
   width: min(340px, calc(100% - var(--play-left) - var(--play-right)));
   z-index: 4;
   box-sizing: border-box;
-  /* Stops above the resting stick so walking stays possible. Measured
-     against the Play view (100%), which starts below the site header. */
-  max-height: calc(
-    100% - var(--play-top) - 56px - var(--play-bottom) - var(--stick) - 16px
-  );
-  overflow: auto;
+  /* The explorer waits while the whole mechanism is being controlled. */
+  max-height: calc(100% - var(--play-top) - 56px - var(--play-bottom));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   overscroll-behavior: contain;
   padding: 4px 16px 12px;
   border-radius: var(--r-dock);
@@ -799,11 +798,39 @@
   margin: 0 -8px 0 0;
   padding-top: 4px;
   background: var(--chalk);
+  flex-shrink: 0;
+}
+.play-mechanism[hidden] {
+  display: none;
+}
+.play-mechanism-content {
+  overflow: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
 }
 .play-mechanism-head h2 {
   margin: 0;
   font-size: var(--text-title);
   font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+.play-mechanism-scroll-cue {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 24px;
+  background: var(--chalk);
+  color: var(--ink);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.4;
 }
 .play-mechanism .play-mechanism-close {
   color: var(--ink);
@@ -844,6 +871,117 @@
 .play-drive-buttons button {
   flex: 1;
   touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.play-mechanism-viewbar,
+.play-control-reading,
+.play-motor-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.play-mechanism-viewbar {
+  margin: 4px 0 12px;
+  font-size: var(--text-label);
+  line-height: 1.4;
+}
+.play-mechanism-viewbar button,
+.play-motor-state button {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+.play-control-reading {
+  margin: 16px 0 12px;
+  font-size: var(--text-body);
+}
+.play-control-reading output {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.play-motor-state {
+  font-size: var(--text-label);
+}
+.play-motor-lever input {
+  accent-color: var(--accent);
+  touch-action: none;
+}
+.play-output-details {
+  margin-top: 8px;
+  font-size: var(--text-label);
+}
+.play-output-details summary,
+.play-motor-settings summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+}
+.play-drive-feedback {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--text-label);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+.play-motor-settings {
+  font-size: var(--text-label);
+  margin-top: 4px;
+}
+.play-output-details p span {
+  display: block;
+}
+.play-mechanism .play-control-blocked {
+  color: var(--ink);
+  font-weight: 650;
+}
+.play-mechanism ::selection {
+  color: var(--ink);
+  background: var(--sun);
+}
+@media (max-width: 600px) and (min-height: 501px) {
+  .play-mechanism {
+    top: auto;
+    left: var(--play-left);
+    right: var(--play-right);
+    bottom: var(--play-bottom);
+    width: auto;
+    max-height: min(48dvh, 410px);
+    padding: 4px 12px 8px;
+  }
+  .play-mechanism-viewbar {
+    margin-bottom: 4px;
+  }
+  .play-mechanism .play-control-picker {
+    margin: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .play-control-picker select {
+    flex: 1;
+    min-width: 0;
+    width: 0;
+    margin: 0;
+  }
+  .play-control-reading {
+    margin: 10px 0 8px;
+  }
+  .play-motor-lever {
+    margin: 4px 0 !important;
+  }
+}
+@media (max-height: 700px) {
+  .play-mechanism .play-control-reading {
+    margin: 6px 0;
+  }
 }
 
 /* ---- Rotate prompt (phones in portrait) ---- */

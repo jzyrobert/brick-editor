@@ -169,6 +169,8 @@ export type PlayMotorRequest = {
   rigId?: string;
   jointId: string;
   enabled: boolean;
+  /** Session-only speed/direction, -1..1. Zero brakes; omit to use defaults. */
+  input?: number;
 };
 /**
  * Authored joint motors in Play. Kinematic rigs travel at a declared rate
@@ -184,6 +186,8 @@ export type PlayMotorReport = {
   targetUnits: "degrees" | "LDU" | "degrees/s" | "LDU/s";
   simulation: "kinematic-rate" | "dynamic-motor";
   blockedReason?: string;
+  /** Present while using a live speed/direction override. */
+  input?: number;
 };
 export type PlayDynamicsReport = {
   engine: string;

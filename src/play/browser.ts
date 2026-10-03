@@ -5,6 +5,13 @@ import {
 } from "./world-profile";
 import type { SceneAdapter } from "../render/adapter";
 import type { Project } from "../core/types";
+import {
+  mechanismViewGeometry,
+  mechanismOverviewCamera,
+  mechanismUsableRect,
+  type MechanismViewGeometry,
+  type ViewRect,
+} from "./mechanism-view";
 import type { PlayMechanismSource } from "./mechanism";
 import { ensure } from "../core/types";
 import type {
@@ -78,6 +85,7 @@ export type PlayViewState = {
   error?: string;
   vehicleControl?: string;
   interaction?: PlayInteraction;
+  mechanismOverview?: string;
 };
 /** Owns browser lifetime, never authoring state. API sessions are manual-tick by default. */
 export class BrowserPlay {
@@ -86,6 +94,14 @@ export class BrowserPlay {
    * revision changes, so one snapshot per entry is exact; reading the live
    * project per frame would deep-copy the whole document every frame. */
   private sessionRigs: Project["motionRigs"] = {};
+  private mechanismViews: Record<string, MechanismViewGeometry> = {};
+  private overview?: {
+    rigId: string;
+    yaw: number;
+    pitch: number;
+    zoom: number;
+    panel?: ViewRect;
+  };
   private captureSession?: PlaySession;
   private captureInputClear = false;
   private pauseVersion = 0;
@@ -346,6 +362,7 @@ export class BrowserPlay {
           lookup,
           ...(dynamic ? { members } : {}),
         });
+        this.mechanismViews[rig.id] = mechanismViewGeometry(rig, groups);
       }
       ensure(
         geometry.revision === this.revision(),
@@ -456,12 +473,14 @@ export class BrowserPlay {
           )
         : undefined;
     const interpolate = this.realtime && !this.state.paused;
-    const camera = this.session.camera(interpolate);
+    const camera = this.overviewCamera() ?? this.session.camera(interpolate);
     // The figure uses the same interpolation factor as the camera, so both
     // move together between fixed ticks instead of the figure juddering.
     const view = this.session.presentation(interpolate);
     const figureShown =
-      report.avatarVisible && report.cameraMode === "third-person";
+      !this.overview &&
+      report.avatarVisible &&
+      report.cameraMode === "third-person";
     // Only redraw when something Play controls on screen changed; standing still
     // (or paused) no longer re-renders the whole world every animation frame.
     // Values are compared at 1/1000 precision: ground snapping jitters a resting
@@ -500,7 +519,10 @@ export class BrowserPlay {
       if (transforms && sceneChanged) r.applyTransientPose(transforms);
       r.playCamera(camera);
       // camera() is read-only, so one snapshot serves the avatar, pose and UI.
-      this.avatar?.update(report, view);
+      this.avatar?.update(
+        this.overview ? { ...report, avatarVisible: false } : report,
+        view,
+      );
       r.invalidate({ cameraOnly: !sceneChanged });
     }
     this.trace(camera.position, view);
@@ -608,7 +630,11 @@ export class BrowserPlay {
   setInput(input: PlayInput) {
     this.assertMutable();
     const session = this.current();
-    if (this.state.vehicleControl) {
+    if (this.overview) {
+      // Controls operate the assembly; explorer movement waits until leaving.
+      session.setInput(input);
+      session.setInput({});
+    } else if (this.state.vehicleControl) {
       // Let the normal validator reject malformed input before changing the vehicle.
       session.setInput(input);
       session.setInput({ yaw: input.yaw, pitch: input.pitch });
@@ -657,6 +683,18 @@ export class BrowserPlay {
     if (!this.session || this.state.paused || this.captureSession) return;
     const s = this.session.snapshot();
     const k = options.radiansPerPixel ?? 0.004;
+    if (this.overview) {
+      this.overview.yaw -= dx * k;
+      this.overview.pitch = Math.max(
+        -1.35,
+        Math.min(
+          1.35,
+          this.overview.pitch + dy * k * (options.invertY ? -1 : 1),
+        ),
+      );
+      this.draw();
+      return;
+    }
     this.setInput({
       ...this.held,
       yaw: s.yaw - dx * k,
@@ -760,6 +798,20 @@ export class BrowserPlay {
    */
   zoom(factor: number) {
     if (!this.session || this.state.paused || this.captureSession) return;
+    if (this.overview) {
+      ensure(
+        Number.isFinite(factor) && factor > 0,
+        "INVALID_INPUT",
+        "Zoom factor must be positive.",
+      );
+      this.overview.zoom = Math.max(
+        1,
+        Math.min(16, this.overview.zoom * factor),
+      );
+      this.draw();
+      this.emit();
+      return this.session.snapshot();
+    }
     const report = this.session.zoomCamera(factor);
     storeZoom(report.cameraSettings.followDistance);
     this.draw();
@@ -791,13 +843,18 @@ export class BrowserPlay {
     let restore: (() => void) | undefined;
     try {
       restore = session.beginCameraCapture(aspectRatio);
-      this.renderer().playCamera(session.camera());
-      this.avatar?.update(session.snapshot());
+      this.renderer().playCamera(
+        this.overviewCamera(aspectRatio) ?? session.camera(),
+      );
+      const report = session.snapshot();
+      this.avatar?.update(
+        this.overview ? { ...report, avatarVisible: false } : report,
+      );
     } catch (error) {
       restore?.();
       this.captureSession = undefined;
       try {
-        this.renderer().playCamera(session.camera());
+        this.renderer().playCamera(this.overviewCamera() ?? session.camera());
       } catch {
         /* Preserve the original camera preparation failure. */
       }
@@ -1023,7 +1080,66 @@ export class BrowserPlay {
     return this.current().snapshot();
   }
   camera() {
-    return this.current().camera();
+    this.current();
+    return this.overviewCamera() ?? this.current().camera();
+  }
+  /** Browser presentation only: no authored pose or explorer camera changes. */
+  focusMechanism(rigId?: string, panel?: ViewRect) {
+    this.assertMutable();
+    if (!this.session) return;
+    if (rigId !== undefined) {
+      ensure(
+        this.mechanismViews[rigId],
+        "INVALID_INPUT",
+        "Unknown active mechanism.",
+      );
+      if (this.overview?.rigId !== rigId) {
+        this.clearInput();
+        this.overview = {
+          rigId,
+          yaw: Math.PI / 5,
+          pitch: Math.PI / 7,
+          zoom: 1,
+        };
+      }
+      const rect = this.renderer().renderer.domElement.getBoundingClientRect();
+      this.overview.panel = panel
+        ? { ...panel, x: panel.x - rect.left, y: panel.y - rect.top }
+        : undefined;
+    } else {
+      this.clearInput();
+      this.overview = undefined;
+    }
+    this.draw();
+    this.emit({ mechanismOverview: rigId });
+  }
+  fitMechanism() {
+    if (!this.overview || this.captureSession) return;
+    this.overview.zoom = 1;
+    this.draw();
+  }
+  private overviewCamera(captureAspect?: number) {
+    if (!this.session || !this.overview) return;
+    const s = this.session.snapshot();
+    const rig = s.mechanisms?.[this.overview.rigId];
+    if (!rig) return;
+    const canvas = this.renderer().renderer.domElement;
+    const height = Math.max(1, canvas.clientHeight);
+    const width = captureAspect
+      ? height * captureAspect
+      : Math.max(1, canvas.clientWidth);
+    return mechanismOverviewCamera(
+      this.mechanismViews[this.overview.rigId],
+      rig,
+      { width, height },
+      mechanismUsableRect(
+        width,
+        height,
+        captureAspect ? undefined : this.overview.panel,
+      ),
+      this.overview,
+      s.cameraSettings.fovDeg,
+    );
   }
   sourceChanged() {
     if (this.state.active || this.state.loading) {
@@ -1047,6 +1163,8 @@ export class BrowserPlay {
     this.session?.dispose();
     this.session = undefined;
     this.sessionRigs = {};
+    this.mechanismViews = {};
+    this.overview = undefined;
     this.avatar?.dispose();
     this.avatar = undefined;
     this.restorePose?.();
@@ -1060,6 +1178,7 @@ export class BrowserPlay {
       report: undefined,
       vehicleControl: undefined,
       interaction: undefined,
+      mechanismOverview: undefined,
     });
   }
   dispose() {

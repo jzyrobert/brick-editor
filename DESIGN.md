@@ -296,6 +296,8 @@ Gallery responses are open groups: a large pastel stage, image, source label, di
 
 The paper tools panel groups the four model views in full-width rows with peach icon wells and orange art. Desktop width is 360px with 22px padding; phones fit the viewport inside safe-area edges with 18px padding and scroll. Phone menus anchor to the right and retain that usable width even when their opener is compact, including during active Play. A native disclosure reveals source notes. The navy Play entry dock pairs a display title with a primary walking action and an icon-only settings button; at phone width secondary prose recedes. Play settings use a height-bounded panel above the entry dock, keeping Enter Play reachable on phones and in landscape. During active Play, the engine’s walking and vehicle controls remain the operative interface.
 
+**Remote mechanism controls:** open from the pause menu's Remote controls tile. A compact paper sheet sits at right on wide/landscape screens and at the bottom on upright phones. The whole active mechanism fits into the clear canvas area, with drag-to-orbit and pinch/scroll zoom; closing restores the explorer view. Explorer movement and unrelated actions wait while controlling. One motor/part is active at a time: held Reverse/Forward and Brake are primary, release brakes, and speed/preset settings and passive linked outputs fold away. A scroll cue appears only when more controls remain below the sheet. Pause retains the selected rig and orbit for resumption.
+
 ## Do's and Don'ts
 
 ### Do:

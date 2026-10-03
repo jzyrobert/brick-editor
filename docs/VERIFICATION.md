@@ -1040,3 +1040,51 @@ tooth clearance, energy conservation under position correction, general contact
 safety or arbitrary assembly convergence. Rack coupling, other actuators and the
 approved contextual-control/whole-mechanism camera slice remain active roadmap
 work.
+
+## Live motor controls and mechanism overview (3 October 2026)
+
+- Focused unit checks: six files, **45 tests passed**, covering proportional
+  kinematic/native input, reverse/brake and restoration of authored presets,
+  invalid-input atomic refusal, coupled output stalls and recovery, multi-turn
+  positioning and camera fitting. A separate browser-controller/capture and
+  motor-input run passed **11 tests in two files** (motor-input overlaps the
+  first run). Overview/capture assertions preserve the project and live pose;
+  the capture-only camera aspect changes temporarily by design.
+- The fit proof projects every real group-bound corner for a large moving
+  mechanism at four orbit angles and three arm poses into six viewport sizes:
+  1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411. All corners remain
+  inside the area clear of the control sheet and between clipping planes.
+- Production Chromium/SwiftShader: **seven new cases passed**, the six viewport
+  sizes above in kinematic mode and 360×600 in Dynamic. They load the actual
+  pinned 13-part Technic fixture, save its reviewed proposal, exercise held
+  mouse/touch input and release, Enter-key and blur braking, passive output
+  ratio, orbit/zoom/Fit build, pause/resume, 44 px buttons, page overflow,
+  explorer-view restoration and source equality on exit. Captures were opened
+  together for the first bounded Impeccable inspection. The changed UI detector
+  ran once and returned no findings. The independent reviewer requested an
+  overflow cue and updated behavioral documentation. Its first verdict found
+  cue/feedback overlap; the second correction reserves a footer, keeps braking
+  feedback above it and preserves the sheet height. All seven browser cases pass
+  again, with assertions for cue visibility, unobscured feedback and access to
+  linked outputs. The reviewer scored both material fixes **resolved**, with
+  disposition **ship** at the listed-fix scope.
+- Existing production regression: **13 cases passed** for default/selected rigs,
+  vehicle controls, keyboard focus, seated driving, explorer orbit/zoom, official
+  doors and Dynamic controls. The final vehicle/remote subset passed **three
+  cases** again after the reserved-footer change; this is not a full
+  browser-suite claim.
+- The fresh Impeccable documenter checked the components, camera implementation,
+  tokens, surface brief, incumbent DESIGN/sidecar and test evidence. It confirmed
+  this ordinary extension matches the existing system and preserved its tokens.
+  It reported pre-existing sidecar wording omitting the Play-control exception;
+  that unrelated drift was left unchanged.
+- Harness corrections: one CDP connection must span touch press and release;
+  reconnecting at release fails the browser protocol. The floor's presented
+  height eases separately from reported capsule feet, so the explorer-camera
+  restoration assertion allows 0.05 LDU vertical tolerance while keeping exact
+  horizontal placement and unchanged explorer yaw/pitch. A separate no-clip unit
+  fixture checks exact restoration without floor presentation.
+- Build and TypeScript checks passed. This is VM browser evidence, not a physical
+  phone measurement or a new large-model performance measurement. Direct
+  proposal/review/save UI, arbitrary Technic inference and the remaining motion
+  roadmap remain open.

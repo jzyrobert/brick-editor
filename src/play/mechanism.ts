@@ -24,11 +24,12 @@ import {
   type PlayJointTargetReport,
   type PlayMotorReport,
 } from "./types";
-/** Kinematic travel rate of authored position motors (maxEffort is not simulated). */
-export const KINEMATIC_MOTOR_RATE = Object.freeze({
-  revolute: 90,
-  prismatic: 40,
-});
+import {
+  effectiveMotor,
+  validateMotorInput,
+  KINEMATIC_MOTOR_RATE,
+} from "./motor-input";
+export { KINEMATIC_MOTOR_RATE } from "./motor-input";
 const S = P.scaleMetresPerLdu;
 const physics = ([x, y, z]: Vec3) => ({ x: x * S, y: -y * S, z: -z * S });
 const rotation = (frame: Transform) => {
@@ -158,6 +159,7 @@ export class PlayMechanism {
       enabled: boolean;
       status: PlayMotorReport["status"];
       blockedReason?: string;
+      input?: number;
     }
   >();
   private targets = new Map<string, Omit<PlayJointTargetReport, "current">>();
@@ -649,19 +651,17 @@ export class PlayMechanism {
     }
   }
   /** Enable or stop one authored motor. Manual joint commands stop it too. */
-  setMotor(id: string, enabled: boolean) {
+  setMotor(id: string, enabled: boolean, input?: number) {
     const motor = this.motors.get(id);
     ensure(
       motor,
       "INVALID_INPUT",
       "This joint has no authored revolute or prismatic motor",
     );
-    ensure(
-      typeof enabled === "boolean",
-      "INVALID_INPUT",
-      "Motor enabled must be boolean",
-    );
+    validateMotorInput(enabled, input);
+    if (motor.enabled === enabled && motor.input === input) return;
     motor.enabled = enabled;
+    motor.input = input;
     motor.status = enabled ? "running" : "stopped";
     motor.blockedReason = undefined;
     if (enabled)
@@ -674,7 +674,11 @@ export class PlayMechanism {
       const motor = this.motors.get(id)!;
       if (!motor.enabled) continue;
       const joint = motor.joint,
-        spec = joint.motor!,
+        spec = effectiveMotor(
+          joint,
+          motor.input,
+          this.session.jointSpeedLimit(id),
+        ),
         kind = joint.kind as "revolute" | "prismatic",
         state = this.session.snapshot(),
         current = state.pose.jointPositions[id],
@@ -773,6 +777,8 @@ export class PlayMechanism {
   }
   clearInput() {
     this.session.clearInput();
+    for (const motor of this.motors.values())
+      if (motor.input !== undefined) motor.input = 0;
   }
   snapshot() {
     const state = this.session.snapshot();
@@ -795,7 +801,11 @@ export class PlayMechanism {
     const motors = Object.fromEntries(
       [...this.motors].map(([id, motor]): [string, PlayMotorReport] => {
         const revolute = motor.joint.kind === "revolute",
-          spec = motor.joint.motor!;
+          spec = effectiveMotor(
+            motor.joint,
+            motor.input,
+            this.session.jointSpeedLimit(id),
+          );
         return [
           id,
           {
@@ -813,6 +823,7 @@ export class PlayMechanism {
                   ? "degrees/s"
                   : "LDU/s",
             simulation: "kinematic-rate",
+            ...(motor.input !== undefined ? { input: motor.input } : {}),
             ...(motor.blockedReason
               ? { blockedReason: motor.blockedReason }
               : {}),

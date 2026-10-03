@@ -325,7 +325,9 @@
       "motors": {
         "kinematic": "Position motors travel at 90 degrees/s or 40 LDU/s; velocity motors run at their target; swept actor checks block and auto-retry",
         "dynamic": "Rapier joint motors with maxEffort",
-        "control": "play.setMotor({rigId,jointId,enabled}); manual joint commands stop that joint's motor"
+        "control": "play.setMotor({rigId,jointId,enabled,input?}); optional input in [-1,1] requires enabled:true and overrides session velocity at bounded rate/effort; zero brakes, omitted input restores the authored preset; manual joint commands stop the component's motor",
+        "remoteControls": "One active motor/joint control at a time; held reverse/forward and proportional speed with release-to-brake; passive coupled outputs are read-only",
+        "overview": "Remote controls fit and orbit the entire active rig in the canvas area clear of the control sheet; walking controls are hidden; leaving restores the explorer view; play.view() reads the rendered camera and overview rig ID"
       },
       "automaticDoors": {
         "table": "src/play/door-parts.json: hinge axis, pivot and leaf for official LDraw door leaves derived from part geometry",

@@ -75,12 +75,12 @@ for (const width of [360, 1080, 1440]) {
           name: "Movement joystick",
           exact: true,
         });
-      const panelBox = await remote.boundingBox(),
-        stickBox = await stick.boundingBox();
+      await expect(remote).toBeVisible();
+      await expect(stick).toHaveCount(0);
       expect(
-        panelBox && stickBox && panelBox.y + panelBox.height <= stickBox.y - 8,
-      ).toBe(true);
-      await expect(stick).toBeVisible();
+        (await page.evaluate(() => window.brickEditor!.play.view()))
+          .mechanismOverview,
+      ).toBeDefined();
       await page
         .getByRole("combobox", { name: "Remote mechanism", exact: true })
         .selectOption("vehicle");
@@ -130,6 +130,7 @@ for (const width of [360, 1080, 1440]) {
           .mechanisms!.vehicle.pose.vehicle!.position,
       ).toEqual(driven.mechanisms!.vehicle.pose.vehicle!.position);
       await closeRemoteControls(page);
+      await expect(stick).toBeVisible();
       await expect(page.locator(".play-interaction")).toBeVisible();
       await page.evaluate(async () => {
         const api = window.brickEditor!,

@@ -250,13 +250,14 @@ for (const viewport of [desktop, phone])
         .getByRole("combobox", { name: "Remote mechanism" })
         .selectOption("spinner");
       const stop = page.getByRole("button", { name: /Stop motor/ });
+      await page.getByText("Motor settings", { exact: true }).click();
       await expect(stop).toBeVisible();
       await page.screenshot({
         path: `${shots}physics-drawer-${viewport.width}.png`,
       });
       await stop.click();
       await expect(
-        page.getByRole("button", { name: /Start motor/ }),
+        page.getByRole("button", { name: "Run preset" }),
       ).toBeVisible();
       expect(
         (await snapshot(page)).mechanisms!.spinner.motors!.axle.enabled,

@@ -2073,13 +2073,17 @@ export class PlaySession {
       "INVALID_INPUT",
       "Motor request must be an object",
     );
-    keys(input, ["rigId", "jointId", "enabled"]);
+    keys(input, ["rigId", "jointId", "enabled", "input"]);
     ensure(
       typeof input.jointId === "string",
       "INVALID_INPUT",
       "Motor request needs a joint ID",
     );
-    this.rigTarget(input.rigId).rig.setMotor(input.jointId, input.enabled);
+    this.rigTarget(input.rigId).rig.setMotor(
+      input.jointId,
+      input.enabled,
+      input.input,
+    );
     return this.snapshot();
   }
   setMechanismJoint(id: string, value: number, rigId?: string) {

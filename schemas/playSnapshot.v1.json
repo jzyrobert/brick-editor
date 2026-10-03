@@ -990,6 +990,11 @@
               "blockedReason": {
                 "type": "string",
                 "maxLength": 4096
+              },
+              "input": {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
               }
             },
             "required": [
@@ -1496,6 +1501,11 @@
                 "blockedReason": {
                   "type": "string",
                   "maxLength": 4096
+                },
+                "input": {
+                  "type": "number",
+                  "minimum": -1,
+                  "maximum": 1
                 }
               },
               "required": [

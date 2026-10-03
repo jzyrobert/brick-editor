@@ -849,3 +849,32 @@ the sheet occupies much of a small phone viewport. The next interface slice uses
 the impeccable workflow for contextual drive controls and the user's approved
 whole-mechanism fit/orbit view. These captures establish a baseline, not a new UI
 or an interface acceptance result.
+
+## Live motor controls and mechanism overview (3 October 2026)
+
+Play now accepts session-only proportional motor input from −1 to 1. Zero brakes;
+omitting input restores the authored preset. The same rate, transmission speed
+and effort bounds apply, and the source motor and rest pose remain unchanged.
+Repeated held input does not restart a stall timer. Dynamic live motors report
+blocking after sustained lack of progress and recover when their load clears.
+
+Remote controls present one active motor or movable joint. Motors have held
+reverse/forward buttons, brake, a folded speed lever and preset settings; coupled
+passive shafts are feedback. Release, cancellation, focus loss and input clearing
+brake a live command. Walking controls and unrelated camera/movement options
+disappear while this control mode is active; pause retains the selected rig and
+orbit for resumption.
+
+The active rig automatically fits into the canvas region clear of the control
+sheet, using all moving groups' actual geometry bounds. Dragging orbits, pinch or
+scroll zooms out, and **Fit build** restores the full fit. Closing controls
+restores the explorer view. Capture fits the mechanism to the export frame
+without reserving HUD space. `play.view()` reads the rendered camera and active
+overview rig ID. Direct proposal/review/save UI and the remaining motion roadmap
+are still open.
+
+Verification covers seven production mechanism-control cases at all required
+desktop/phone sizes, large-mechanism projection proofs, and existing Play
+regressions. The Impeccable reviewer scored its two material fixes resolved
+(overflow discoverability and documentation), with `ship` at that fix-list scope.
+See [verification](VERIFICATION.md#live-motor-controls-and-mechanism-overview-3-october-2026).

@@ -5,6 +5,7 @@ import { conversion } from "../../src/core/math";
 import { BrowserPlay } from "../../src/play/browser";
 import { mechanismFixture } from "../../src/mechanisms/fixtures";
 import type { SceneAdapter } from "../../src/render/adapter";
+import type { CameraSpec } from "../../src/core/types";
 import type { CollisionSnapshot } from "../../src/play/types";
 afterEach(() => vi.unstubAllGlobals());
 function setup() {
@@ -15,7 +16,18 @@ function setup() {
   const restores = { pose: 0, view: 0 };
   const renderer = {
     scene: new Group(),
-    renderer: { domElement: { clientWidth: 1200, clientHeight: 800 } },
+    renderer: {
+      domElement: {
+        clientWidth: 1200,
+        clientHeight: 800,
+        getBoundingClientRect: () => ({
+          left: 0,
+          top: 0,
+          width: 1200,
+          height: 800,
+        }),
+      },
+    },
     playGeometry: async (): Promise<CollisionSnapshot> => ({
       revision: project.revision,
       vertices: new Float32Array(),
@@ -31,7 +43,7 @@ function setup() {
     applyTransientPose: () => {
       if (busy) throw Error("Capture busy");
     },
-    playCamera: () => {},
+    playCamera: (_spec: CameraSpec) => {},
     invalidate: () => {},
   };
   const play = new BrowserPlay(
@@ -194,5 +206,79 @@ it("vehicle keyboard/joystick left and right steer toward the corresponding proj
     expect(driven.position[0]).toBeCloseTo(80);
     expect(driven.position[2]).toBeCloseTo(-200);
     h.play.dispose();
+  }
+});
+
+it("orbits and fits a whole active mechanism without moving the explorer, and restores the explorer view on leaving", async () => {
+  const { play, project } = setup();
+  const original = JSON.stringify(project);
+  try {
+    await play.enter({
+      rigIds: ["door", "vehicle"],
+      position: [200, -0.3, 0],
+      locomotion: "fly-noclip",
+    });
+    play.stepTicks(60);
+    const before = play.snapshot(),
+      camera = play.camera();
+    play.focusMechanism("door", { x: 850, y: 80, width: 340, height: 600 });
+    const overview = play.camera();
+    expect(overview).not.toEqual(camera);
+    expect(play.getState().mechanismOverview).toBe("door");
+    play.setInput({ moveZ: 1 });
+    play.stepTicks(60);
+    expect(play.snapshot().position).toEqual(before.position);
+    expect(() => play.setInput({ moveZ: 2 })).toThrow();
+    play.look(100, 40);
+    expect(play.camera()).not.toEqual(overview);
+    expect(play.snapshot().yaw).toBe(before.yaw);
+    expect(play.snapshot().pitch).toBe(before.pitch);
+    const orbited = play.camera();
+    play.zoom(2);
+    expect(
+      new Vector3(...play.camera().position).distanceTo(
+        new Vector3(...play.camera().target),
+      ),
+    ).toBeCloseTo(
+      new Vector3(...orbited.position).distanceTo(
+        new Vector3(...orbited.target),
+      ) * 2,
+      8,
+    );
+    play.fitMechanism();
+    expect(play.camera()).toEqual(orbited);
+    play.pause(true);
+    expect(play.getState().mechanismOverview).toBe("door");
+    play.focusMechanism();
+    expect(play.camera()).toEqual(camera);
+    expect(play.getState().mechanismOverview).toBeUndefined();
+    expect(JSON.stringify(project)).toBe(original);
+  } finally {
+    play.dispose();
+  }
+});
+
+it("captures the whole mechanism without reserving sheet space and restores its live overview", async () => {
+  const { play, renderer } = setup();
+  const cameras: CameraSpec[] = [];
+  renderer.playCamera = (spec) => cameras.push(structuredClone(spec));
+  try {
+    await play.enter({ rigId: "door", position: [200, -0.3, 0] });
+    play.focusMechanism("door", { x: 850, y: 80, width: 340, height: 600 });
+    const live = play.camera(),
+      snapshot = play.snapshot();
+    const restore = play.prepareCapture(1);
+    const captured = cameras.at(-1)!;
+    expect(captured.target).not.toEqual(live.target);
+    expect(play.snapshot().mechanisms).toEqual(snapshot.mechanisms);
+    expect(play.snapshot().position).toEqual(snapshot.position);
+    expect(play.snapshot().tick).toEqual(snapshot.tick);
+    expect(() => play.focusMechanism("vehicle")).toThrow(/capture/);
+    restore();
+    expect(play.snapshot()).toEqual(snapshot);
+    expect(cameras.at(-1)).toEqual(live);
+    expect(play.getState().mechanismOverview).toBe("door");
+  } finally {
+    play.dispose();
   }
 });

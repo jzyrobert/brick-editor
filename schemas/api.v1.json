@@ -582,6 +582,29 @@
           "const": "1.0"
         },
         "method": {
+          "const": "play.view"
+        },
+        "input": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "play.exit"
         },
         "input": {

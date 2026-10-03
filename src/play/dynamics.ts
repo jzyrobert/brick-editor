@@ -1,4 +1,5 @@
 import RAPIER from "@dimforge/rapier3d-compat";
+import { effectiveMotor, validateMotorInput } from "./motor-input";
 import { AppError, ensure, type Transform, type Vec3 } from "../core/types";
 import { add, compose, inverse, mv } from "../core/math";
 import { axisRotation, KinematicSession } from "../mechanisms/kinematic";
@@ -220,6 +221,9 @@ type JointControl = {
   motor?: {
     enabled: boolean;
     status: PlayMotorReport["status"];
+    input?: number;
+    stalledTicks?: number;
+    blockedReason?: string;
     configured: string;
   };
   configured: string;
@@ -571,6 +575,9 @@ export class DynamicRig {
   }
   clearInput() {
     if (this.vehicle) this.vehicle.throttle = 0;
+    for (const control of this.joints.values())
+      if (control.motor?.input !== undefined) control.motor.input = 0;
+    this.cache = undefined;
   }
   setJointTarget(id: string, target: number, speed: number) {
     const control = this.joints.get(id);
@@ -620,19 +627,20 @@ export class DynamicRig {
     this.wake();
     this.cache = undefined;
   }
-  setMotor(id: string, enabled: boolean) {
+  setMotor(id: string, enabled: boolean, input?: number) {
     const control = this.joints.get(id);
     ensure(
       control?.motor,
       "INVALID_INPUT",
       "This joint has no authored revolute or prismatic motor",
     );
-    ensure(
-      typeof enabled === "boolean",
-      "INVALID_INPUT",
-      "Motor enabled must be boolean",
-    );
+    validateMotorInput(enabled, input);
+    if (control.motor.enabled === enabled && control.motor.input === input)
+      return;
     control.motor.enabled = enabled;
+    control.motor.input = input;
+    control.motor.stalledTicks = 0;
+    control.motor.blockedReason = undefined;
     control.positionIntegral = 0;
     control.motor.status = enabled ? "running" : "stopped";
     if (enabled)
@@ -756,7 +764,11 @@ export class DynamicRig {
       }
       const motor = control.motor;
       if (motor?.enabled && spec.motor) {
-        const m = spec.motor;
+        const m = effectiveMotor(
+          spec,
+          motor.input,
+          transmissionSpeedLimit(this.transmissions, id),
+        );
         if (m.mode === "position") {
           const [low, high] = this.jointLimits(id);
           this.configurePosition(
@@ -764,12 +776,30 @@ export class DynamicRig {
             Math.min(high, Math.max(low, m.target)),
             m.maxEffort.value,
           );
-        } else
-          this.configure(control, `m:${m.target}:${m.maxEffort.value}`, () => {
-            joint.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
-            joint.setMotorMaxForce(m.maxEffort.value);
-            joint.configureMotorVelocity(m.target * scale, 10);
-          });
+        } else {
+          const [low, high] = this.jointLimits(id);
+          const velocity =
+            (m.target > 0 && control.value >= high) ||
+            (m.target < 0 && control.value <= low)
+              ? 0
+              : m.target;
+          this.configure(
+            control,
+            `m:${velocity}:${m.maxEffort.value}:${motor.input !== undefined}`,
+            () => {
+              joint.configureMotorModel(
+                motor.input !== undefined
+                  ? RAPIER.MotorModel.ForceBased
+                  : RAPIER.MotorModel.AccelerationBased,
+              );
+              joint.setMotorMaxForce(m.maxEffort.value);
+              joint.configureMotorVelocity(
+                velocity * scale,
+                motor.input !== undefined ? 10000 : 10,
+              );
+            },
+          );
+        }
         continue;
       }
       this.configure(control, "idle", () => {
@@ -885,7 +915,11 @@ export class DynamicRig {
       }
       const motor = control.motor;
       if (motor?.enabled && spec.motor) {
-        const m = spec.motor;
+        const m = effectiveMotor(
+          spec,
+          motor.input,
+          transmissionSpeedLimit(this.transmissions, id),
+        );
         if (m.mode === "position") {
           const [low, high] = this.jointLimits(id);
           motor.status =
@@ -899,7 +933,21 @@ export class DynamicRig {
           (m.target < 0 && control.value <= this.jointLimits(id)[0] + tolerance)
         )
           motor.status = "at-limit";
-        else motor.status = m.target === 0 ? "holding" : "running";
+        else {
+          motor.status = m.target === 0 ? "holding" : "running";
+          if (motor.input !== undefined && m.target !== 0) {
+            const progress = Math.abs(control.value - previousValue) / DT;
+            motor.stalledTicks =
+              progress < Math.abs(m.target) * 0.1
+                ? (motor.stalledTicks ?? 0) + 1
+                : 0;
+            if (motor.stalledTicks >= 90) motor.status = "blocked";
+          } else motor.stalledTicks = 0;
+        }
+        motor.blockedReason =
+          motor.status === "blocked"
+            ? "The motor cannot turn: something obstructs it, or its effort is too low."
+            : undefined;
       }
     }
     this.solveTransmissions();
@@ -1073,15 +1121,20 @@ export class DynamicRig {
         } = control.target;
         jointTargets[id] = { ...report, current: control.value };
       }
-      if (control.motor && spec.motor)
+      if (control.motor && spec.motor) {
+        const m = effectiveMotor(
+          spec,
+          control.motor.input,
+          transmissionSpeedLimit(this.transmissions, id),
+        );
         motors[id] = {
-          mode: spec.motor.mode,
-          target: spec.motor.target,
+          mode: m.mode,
+          target: m.target,
           enabled: control.motor.enabled,
           status: control.motor.status,
           units: revolute ? "degrees" : "LDU",
           targetUnits:
-            spec.motor.mode === "position"
+            m.mode === "position"
               ? revolute
                 ? "degrees"
                 : "LDU"
@@ -1089,7 +1142,14 @@ export class DynamicRig {
                 ? "degrees/s"
                 : "LDU/s",
           simulation: "dynamic-motor",
+          ...(control.motor.input !== undefined
+            ? { input: control.motor.input }
+            : {}),
+          ...(control.motor.blockedReason
+            ? { blockedReason: control.motor.blockedReason }
+            : {}),
         };
+      }
     }
     const bodies: PlayDynamicsReport["bodies"] = {};
     for (const entry of this.bodies.values()) {
@@ -1142,9 +1202,9 @@ export class DynamicRig {
         wheelAngles,
       };
     }
-    const stalled = Object.values(jointTargets).find(
-      (t) => t.status === "blocked",
-    );
+    const stalled =
+      Object.values(jointTargets).find((t) => t.status === "blocked") ??
+      Object.values(motors).find((m) => m.status === "blocked");
     const report: PlayMechanismReport = {
       sourceRevision: this.revision,
       rigId: this.rigId,

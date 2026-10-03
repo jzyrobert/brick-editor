@@ -112,6 +112,24 @@ async function fixture(
   return { rig, world, step, input, output, outputBody, definition };
 }
 describe("physical spur coupling", () => {
+  it("reports a held motor input blocked by its output, then recovers and brakes", async () => {
+    const { rig, step, input, outputBody } = await fixture();
+    const blocked = outputBody();
+    blocked.lockRotations(true, true);
+    rig.setMotor(input, true, 1);
+    let report = step(120);
+    expect(report.motors![input].status).toBe("blocked");
+    expect(report.blocked).toBe(true);
+    expect(report.blockedReason).toMatch(/motor cannot turn/);
+    rig.setMotor(input, true, 1);
+    expect(step(1).motors![input].status).toBe("blocked");
+    blocked.lockRotations(false, true);
+    report = step(120);
+    expect(report.motors![input].status).toBe("running");
+    expect(report.blocked).toBe(false);
+    rig.setMotor(input, true, 0);
+    expect(step(120).motors![input].status).toBe("holding");
+  });
   it("reports a genuinely underpowered arm as blocked without bypassing its authored effort", async () => {
     const { rig, step, definition } = await fixture(undefined, {
       gravity: true,
