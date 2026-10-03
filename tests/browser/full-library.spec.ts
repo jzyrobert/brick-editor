@@ -148,6 +148,9 @@ test("the parts picker searches every official LDraw part on request", async ({
     .click();
   const dome = scope.getByRole("button", { name: /Dome 4 × 4 Smooth 86500/ });
   await expect(dome).toBeVisible({ timeout: 20000 });
+  // Thumbnails load as they scroll near the viewport; below the site header
+  // and model heading the result can start below the fold.
+  await dome.scrollIntoViewIfNeeded();
   // Its own rendering, from the complete library's sprite sheets.
   await expect(dome.locator(".part-thumb.atlas.loaded")).toBeVisible({
     timeout: 20000,

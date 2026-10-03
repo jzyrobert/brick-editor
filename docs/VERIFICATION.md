@@ -861,3 +861,15 @@ change. These checks do not establish large-model or Photo performance.
 - **Part list and search.** Reach is listed above 1 LDU (30 parts; 3470 and 3471 now show 0.5 stud on each side, which the overlap check sees at 0.65 LDU); common colours read "light bluish grey", "dark bluish grey", "trans-clear" as in the Colours section, and colour errors use the same names. Searches for "lantern", "bell" and "fish" return no minifigure torsos, Duplo or legs; "minifig torso" and "duplo brick" still return them.
 - **Temple run 5** ([sample](samples/japanese-temple-one-shot-brickbuild/README.md)): GPT-6.1-Sol, all five efforts accepted on their first reply (1,998–2,170 parts, 0–8.5% from 2,000), in 2–45 minutes and 6k–169k output tokens; high, xhigh and max used three checks each, low one, medium none.
 - **Tests:** `npx vitest run tests/unit` (161 files, 1,103 tests) and `tests/integration/build-cli.test.ts` passed; `npx tsc -b`; `npm run format:check`; `npm run schemas` (the `stairs.at` description).
+
+## Shell layout fixes after the cream redesign (3 October 2026)
+
+CI runs 102–104 failed in browser shards main-2/3/4, so nothing deployed. The causes, all from the new site header and model heading:
+
+- The model heading (z-index 25) sat over the step viewer's top row, catching taps on Step options and Close steps at 360 × 600 and 411 × 685 and in generated-step views. It now hides with the rest of the build HUD while the viewer is open (`guide.css`).
+- The Play view is now about 300 px tall in short landscape (below the 60 px header): the look hint at 46% overlapped the action prompt (raised to 30% at heights up to 420 px), and the remote-controls panel's height was bounded by `100dvh` and ran 60 px off the bottom (now bounded by the Play view, `100%`).
+- With a phone on its side, the status line started 6 px inside the header actions; it now sits below them (`site-h + 132px`).
+- The empty canvas's welcome card (z-index 16) covered the toolbar's More tools menu (15) on phones, so Rectangular fill could not be tapped; an open toolbar menu now rises to 17.
+- The complete-library search result now starts below the fold; its thumbnail loads when scrolled near (by design), so the test scrolls it into view.
+
+Locally all 9 failing tests pass, with hud-layout, menus, instruction-viewer, gallery, editor, fill-set, full-library, startup-recovery and the Play mechanism specs (45 tests). `load-performance.spec.ts:152` (skeleton frames) failed once in run 104 with only two frames sampled; it passes repeatedly here and is left to the next CI run.

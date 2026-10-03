@@ -552,6 +552,14 @@
   pointer-events: none;
   animation: play-hint-life 6s ease-out forwards;
 }
+/* Short landscape screens: below the site header the Play view is only about
+   300px tall, so the hint rises clear of the action prompt above the jump
+   cluster. */
+@media (max-height: 420px) {
+  .play-look-hint {
+    top: 30%;
+  }
+}
 /* The build's own Play hint ("Push the crates!"): a short line above the
    crosshair that fades after a few seconds. */
 .play-start-hint {
@@ -766,9 +774,10 @@
   width: min(340px, calc(100% - var(--play-left) - var(--play-right)));
   z-index: 4;
   box-sizing: border-box;
-  /* Stops above the resting stick so walking stays possible. */
+  /* Stops above the resting stick so walking stays possible. Measured
+     against the Play view (100%), which starts below the site header. */
   max-height: calc(
-    100dvh - var(--play-top) - 56px - var(--play-bottom) - var(--stick) - 16px
+    100% - var(--play-top) - 56px - var(--play-bottom) - var(--stick) - 16px
   );
   overflow: auto;
   overscroll-behavior: contain;
@@ -1042,7 +1051,7 @@
     top: calc(var(--play-top) + 56px);
   }
   .play-mechanism {
-    max-height: calc(100dvh - var(--play-top) - 56px - var(--play-bottom));
+    max-height: calc(100% - var(--play-top) - 56px - var(--play-bottom));
   }
   .play-overlay:has(.play-mechanism) .play-stick-zone {
     width: calc(100% - min(340px, 100%) - var(--play-right) - 8px);

@@ -110,6 +110,11 @@ a {
 .site-header .site-open:hover {
   background: #344157;
 }
+/* An open toolbar menu (More tools, Camera views) rises above the empty
+   canvas's welcome card, which can sit under it on phones. */
+.workshop-app .canvas-toolbar:has([aria-expanded="true"]) {
+  z-index: 17;
+}
 .model-context {
   position: absolute;
   top: calc(var(--site-h) + 22px);
@@ -1452,6 +1457,12 @@ a {
   }
   .workshop-app .hud-top {
     top: calc(var(--site-h) + 76px);
+  }
+  /* The status line drops below the 48px header actions (76 + 48 + 8). */
+  .workshop-app.sheet-open .status-bar,
+  .workshop-app:has(.mode-card) .status-bar,
+  .workshop-app:has(.measure-chip) .status-bar {
+    top: calc(var(--site-h) + 132px);
   }
   .play-entry {
     max-width: 480px;
