@@ -1205,3 +1205,26 @@ These are authored force constraints on original bodies, not automatic animated
 shock/actuator inventory parts. Kinematic preview remains a rest preview. No
 reported tension, arbitrary ball orientation control, routed rope, visual cable
 or physical-phone performance claim is made.
+
+## Loaded linear position control (3 October 2026)
+
+Separate controller follow-up after `0dbc9fd`. Reuses the coupled-prismatic PI
+velocity strategy from rack commit `fbeb02f` for isolated actuators, retaining
+native effort limits and contact response.
+
+- The prior local gravity probe reached **12.369 LDU**, `blocked`, for a
+  **10 LDU** target after 900 ticks on a 1 kg vertical slider with 500 N effort.
+  The revised controller settles within 0.05 LDU of 10 and keeps holding.
+- **Seven new tests pass**; the final focused regression is **6 files, 47 tests**,
+  7.71 s. They cover a guided spring load; requested 2 LDU/s
+  travel with measured peak below 2.2 LDU/s; reversal at 5 LDU/s; a 1 N motor
+  which cannot lift the load; collision with an actual world collider, stalled
+  status and recovery after removing it; an authored 0.2 LDU/s motor kept awake;
+  oblique frames, byte-identical replay and unchanged authored data.
+- Production build passes (39.30 s), with TypeScript checked again after the last
+  test addition. No schema, asset, dependency or CSP change is needed.
+- The rendered spring-load acceptance passes: **1 test, 14.6 s**, private port 4403. It reaches/holds 10 LDU at 2 LDU/s, reverses to −10 at 5 LDU/s, preserves
+  source export, and re-imports the static posed placements with two occurrences.
+
+This repairs physical held-position behavior; it does not add a screw/valve model,
+automatically animate a complete official actuator or claim phone hardware speed.

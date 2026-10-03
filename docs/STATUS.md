@@ -940,3 +940,21 @@ native re-import, source isolation and posed placements/inventory are verified.
 Simple authoring forms refuse definitions they would discard; Physics settings
 still preserves the whole rig. See [scope](PLAY-ACTUATORS.md) and
 [verification](VERIFICATION.md#springs-ropes-and-ball-resistance-3-october-2026).
+
+## Loaded linear position control (3 October 2026)
+
+Isolated prismatic targets now use the same bounded force-based PI velocity
+feedback as the coupled-rack controller. A vertical 1 kg 10 LDU target formerly
+settled at 12.369 LDU and reported blocked despite 500 N available effort. It now
+settles at the requested position, including a guided spring load. Requested
+linear rates, authored effort caps and native travel/contact limits still apply.
+An underpowered motor remains blocked; a real obstruction stalls the actuator
+and removal lets it recover.
+
+Active travel and nonzero drives keep the native island awake once per rig/tick,
+so low-rate motion does not stop at Rapier's sleep threshold. No body poses or
+velocities are assigned. Seven focused controller checks cover held gravity and
+spring targets, slow rate/reversal, insufficient effort, obstruction recovery,
+low-rate motors, oblique axes, exact replay and source isolation. A rendered
+spring-loaded 2 LDU/s target and reversal preserve posed placements/inventory.
+See [verification](VERIFICATION.md#loaded-linear-position-control-3-october-2026).

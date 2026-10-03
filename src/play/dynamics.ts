@@ -737,7 +737,9 @@ export class DynamicRig {
     control: JointControl,
     setpoint: number,
     effort: number,
-    speed = JOINT_TARGET_SPEED_LIMITS.revolute.max,
+    speed = control.spec.kind === "revolute"
+      ? JOINT_TARGET_SPEED_LIMITS.revolute.max
+      : 40,
   ) {
     const joint = control.joint as RAPIER.UnitImpulseJoint;
     if (control.spec.kind === "revolute") {
@@ -785,11 +787,14 @@ export class DynamicRig {
         joint.setMotorMaxForce(effort);
         joint.configureMotorVelocity((velocity * Math.PI) / 180, damping);
       });
-    } else if (this.transmissions.has(control.spec.id)) {
-      speed = Math.min(
-        speed,
-        transmissionSpeedLimit(this.transmissions, control.spec.id),
-      );
+    } else {
+      // The same effort-limited slider feedback used by coupled racks also
+      // holds an isolated linear actuator against gravity and spring loads.
+      if (this.transmissions.has(control.spec.id))
+        speed = Math.min(
+          speed,
+          transmissionSpeedLimit(this.transmissions, control.spec.id),
+        );
       const error = setpoint - control.value;
       const holding =
         !control.target || control.target.setpoint === control.target.target;
@@ -814,15 +819,17 @@ export class DynamicRig {
         joint.setMotorMaxForce(effort);
         joint.configureMotorVelocity(velocity * S, damping);
       });
-    } else
-      this.configure(control, `p:${setpoint}:${effort}`, () => {
-        joint.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
-        joint.setMotorMaxForce(effort);
-        joint.configureMotorPosition(setpoint * S, 200, 45);
-      });
+    }
   }
   /** Motor/controller inputs for the next world step. */
   beforeStep() {
+    let awakened = false;
+    const keepAwake = () => {
+      if (!awakened) {
+        this.wake();
+        awakened = true;
+      }
+    };
     for (const id of [...this.joints.keys()].sort()) {
       const control = this.joints.get(id)!,
         spec = control.spec;
@@ -831,6 +838,7 @@ export class DynamicRig {
         scale = spec.kind === "revolute" ? Math.PI / 180 : S;
       const target = control.target;
       if (target && target.status !== "complete") {
+        keepAwake();
         const step = target.speed / 60,
           remaining = target.target - target.setpoint;
         target.setpoint =
@@ -856,6 +864,13 @@ export class DynamicRig {
           motor.input,
           transmissionSpeedLimit(this.transmissions, id),
         );
+        if (
+          (m.mode === "velocity" && m.target !== 0) ||
+          (m.mode === "position" &&
+            Math.abs(control.value - m.target) >
+              DYNAMIC_DEFAULTS.tolerance[spec.kind])
+        )
+          keepAwake();
         if (m.mode === "position") {
           const [low, high] = this.jointLimits(id);
           this.configurePosition(

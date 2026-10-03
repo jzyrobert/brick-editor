@@ -11,7 +11,9 @@ A spring uses `kind:"spring"`, `restLengthLdu` (0–10,000),
 `dampingNewtonsSecondsPerMetre` (0–100,000). Native spring constraints oppose
 extension and compression and damp relative attachment motion. A prismatic
 mount joint can guide a spring to make a bounded shock or linear spring actuator.
-Its travel stops remain ordinary authored joint limits.
+Its travel stops remain ordinary authored joint limits. Linear position control
+uses bounded force-based velocity feedback to hold its target against gravity
+and spring loads, with the requested speed and authored effort retained.
 
 A rope uses `kind:"rope"` and `maxLengthLdu` (0.01–10,000). Its authored attachment
 distance must not already exceed the length. The native rope constraint leaves

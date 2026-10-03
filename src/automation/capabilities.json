@@ -244,7 +244,7 @@
         "engine": "@dimforge/rapier3d-compat@0.21.0 (bundled, Apache-2.0)",
         "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces",
         "joints": ["fixed", "revolute", "prismatic", "spherical"],
-        "motors": "Authored position/velocity motors limited by maxEffort; revolute position targets use accumulated turns with bounded velocity feedback and settled completion; coupled rack position targets use bounded force-based velocity feedback; uncoupled prismatic position targets use native position motors",
+        "motors": "Authored position/velocity motors limited by maxEffort; revolute position targets use accumulated turns with bounded velocity feedback and settled completion; prismatic position targets use bounded force-based velocity feedback with integral load compensation; active low-rate drives stay awake",
         "vehicles": "Rapier ray-cast wheels with sprung suspension, engine force, brake and authored maxSpeed/maxSteer",
         "pushing": "Walking pushes loose dynamic bodies with bounded impulses; bodies never move the explorer",
         "limits": {

@@ -62,7 +62,12 @@ Revolute position targets use accumulated degrees: 720° requests two full turns
 and −720° requests two turns in the opposite direction. The app closes the
 position loop against its unwrapped joint coordinate and requests a bounded
 Rapier velocity motor, retaining `maxEffort` and physical collision response.
-Authored position motors use the same controller. Completion requires both the
+Authored position motors use the same controller. Prismatic targets use bounded
+force-based velocity feedback too, so held linear targets oppose gravity and
+spring loads without the native position spring's steady offset. Integral
+compensation and speed/effort caps apply; authored linear position motors default
+to a 40 LDU/s cap. Active travel and nonzero velocity drives keep their native
+island awake, including motion below Rapier's sleep threshold. Completion requires both the
 position tolerance and settling (at most 2°/s, or 1 LDU/s for a slider), so
 crossing the target at speed does not complete it. Meaningful progress resets
 the stall timer; blocked targets continue trying with bounded effort. A held
