@@ -90,7 +90,7 @@ it("CLI play simulates dynamic rigs with motors and vehicle input from a native 
     report = join(dir, "physics.json");
   try {
     await writeFile(input, await encodeNative(template("physics")));
-    const args = (dynamic: boolean) => [
+    const args = (dynamic: boolean, ticks = 90) => [
       "play",
       "--input",
       input,
@@ -110,7 +110,7 @@ it("CLI play simulates dynamic rigs with motors and vehicle input from a native 
       "--joint-targets",
       '[{"rigId":"door","jointId":"hinge","target":90,"speed":90}]',
       "--ticks",
-      "90",
+      String(ticks),
       "--width",
       "96",
       "--height",
@@ -131,7 +131,16 @@ it("CLI play simulates dynamic rigs with motors and vehicle input from a native 
     expect(dynamic.mechanisms.spinner.motors.axle.simulation).toBe(
       "dynamic-motor",
     );
-    expect(dynamic.mechanisms.door.jointTargets.hinge.status).toBe("complete");
+    // Completion requires a settled body, not just crossing the angle tolerance.
+    // Keep the original 90-tick run: the door is close but still rotating.
+    expect(dynamic.tick).toBe(90);
+    const movingDoor = dynamic.mechanisms.door;
+    expect(
+      Math.abs(movingDoor.pose.jointPositions.hinge - 90),
+    ).toBeLessThanOrEqual(1);
+    expect(movingDoor.dynamics.bodies.door.angularSpeed).toBeGreaterThan(2);
+    expect(movingDoor.jointTargets.hinge.status).toBe("moving");
+    expect(movingDoor.blocked).toBe(false);
     await main(args(false));
     const kinematic = JSON.parse(await readFile(report, "utf8")).playRun.final;
     expect(kinematic.mechanisms.vehicle.mode).toBe("kinematic");
@@ -139,6 +148,20 @@ it("CLI play simulates dynamic rigs with motors and vehicle input from a native 
       135,
       6,
     );
+    // Independently verify the CLI's final report after a bounded settling hold,
+    // retaining the native 1-degree position and 2-degrees/s speed thresholds.
+    await main(args(true, 120));
+    const settled = JSON.parse(await readFile(report, "utf8")).playRun.final;
+    expect(settled.tick).toBe(120);
+    const settledDoor = settled.mechanisms.door;
+    expect(
+      Math.abs(settledDoor.pose.jointPositions.hinge - 90),
+    ).toBeLessThanOrEqual(1);
+    expect(settledDoor.dynamics.bodies.door.angularSpeed).toBeLessThanOrEqual(
+      2,
+    );
+    expect(settledDoor.jointTargets.hinge.status).toBe("complete");
+    expect(settledDoor.blocked).toBe(false);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
