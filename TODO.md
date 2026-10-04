@@ -46,6 +46,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Editing and connectors
 
+- [ ] Prove source identity and actual hinge seating for embedded official door copies before restoring ordinary Play controls; support remaining genuine hinge-holder families without proximity fallback.
 - [ ] Connector families: clips and bars, brick hinges and hinge plates, Technic pins and axles, side anti-studs (brackets). LDCad shadow data only after its own licence review. Older doors without pins (3644, 3861c) are not hinge-seated.
 - [ ] Snap together: check paste, duplicate, arrays and fill; warn when a move leaves parts floating; live tint while dragging handles; upper-floor ground levels.
 - [ ] M2: general structural regrouping.

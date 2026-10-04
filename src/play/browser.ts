@@ -296,6 +296,7 @@ export class BrowserPlay {
       let derived: DerivedDoors | undefined;
       if (project && request.autoDoors !== false) {
         derived = deriveDoorRigs(project, {
+          requirePhysicalConnection: true,
           all,
           included: worldProfile
             ? new Set(worldProfile.includedOccurrenceIds)

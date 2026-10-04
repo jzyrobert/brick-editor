@@ -6,6 +6,9 @@ Ordinary Play now checks source-connected hinges, retained shafts and guided
 racks before enabling authored controls. Powered joints bind to an actual
 stud-mounted Power Functions M motor with an engaged keyed axle. The source
 case stays fixed; the socket contact allowance is local to that casing and shaft.
+Bearing clearance is limited to actual source contact pairs; unrelated parts in
+the same frame keep their collisions. Automatic doors require a verified seated
+holder; nearby bricks and unverified embedded copies cannot supply a hinge.
 Unsupported proximity grippers, abstract closed linkages and springs/ropes remain
 engineering fixtures. Definitions still load and export losslessly. Loose source
 solids retain gravity/collision, and source-supported cars and trains need no motor.
@@ -24,7 +27,7 @@ fresh offline loading passed seven production browser checks. Source admission,
 physical mounting/socket and imported-wheelbase coverage have focused unit proofs;
 final integrated publication checks are recorded in [verification](VERIFICATION.md).
 
-## Ready-to-play motion showcases — 4 October 2026
+## Earlier motion showcases (superseded above) — 4 October 2026
 
 Four new selectable samples demonstrate the delivered mechanics: **Motor & gears**,
 **Rack drive**, **Crank & slider**, and **Grab & lift**. Find them under

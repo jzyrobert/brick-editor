@@ -154,6 +154,7 @@ export function physicalPlayEligibility(
   };
   // Doors use the verified leaf/holder sockets rather than generic axle profiles.
   const doors = deriveDoorRigs(project, {
+    requirePhysicalConnection: true,
     all: selected,
     reserved: new Set(),
     maxRigs: 32,

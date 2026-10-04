@@ -1,5 +1,47 @@
 # Verification — 27 September 2026
 
+## Physical-source Play correction — 4 October 2026
+
+Ordinary Play now admits controls only for reviewed actual connections. Motors
+require a source-bound, stud-mounted 58120 case and an engaged keyed shaft.
+Bearing allowances apply to actual contact pairs, preserving foreign parts in
+the same frame. Source-backed four-wheel cars retain the requested unpowered
+exception. Unsupported synthetic grippers/linkages/force links remain native
+engineering data; their low-level runtime tests still run, while ordinary Play
+refuses to invent their physical connections.
+
+The visible samples are now the 15-part mounted **Motor & gears** and the
+manually operated two-part **Rack guide**. Crank & slider and Grab & lift are
+removed from normal selection. The earlier four-sample and abstract mechanism
+browser results below are historical and do not establish physical connections.
+
+Local acceptance before publication:
+
+- **39 focused unit checks / five files** pass in 26.65 s, covering physical
+  admission, motor mounting/socket binding, source contact policy, canonical
+  solids and real wheelbase detection. Separate source witnesses include full
+  360° kinematic/native motor rotation, the measured Rapier entrance-seam false
+  contact, and crossed/foreign/closed-back rejection.
+- Five House/Café desktop/phone rapid-slider and thin-wall checks pass; animated
+  targets and one latest input per animation frame preserve existing collision
+  caps. Seven sample chooser/desktop/phone/fresh offline checks pass.
+- Four actual imported car/jeep/fleet driving checks, ten actual seat/world/HUD
+  checks and 21 unsupported-rig admission/lossless-export checks pass.
+- Real motor proposal review, linked controls and cold offline motor/rack
+  restore pass in the production browser. Proposal controls are checked across
+  all six required desktop/phone viewports, including 44 px targets and whole
+  mechanism framing. Cold restore covers both Kinematic and Dynamic modes.
+- The broad pre-integration unit run passed 1,506 tests and found seven isolated
+  coordinator tests using synthetic source fixtures. Their focused nine-test
+  rerun passes with the admission boundary mocked only in those coordinator
+  tests; production BrowserPlay has no bypass. Full CI remains the publication
+  gate.
+- Library validation and full formatting pass. Pinned geometry packs are
+  unchanged; schemas, validators, template MPDs and previews use their generators.
+
+Private production previews use isolated ports and are stopped after tests.
+Browser evidence uses Chromium/SwiftShader and does not measure phone GPU rates.
+
 ## Play showcases and publication checks — 4 October 2026
 
 The first main run at `8da12e9` passed build, formatting, library validation,

@@ -402,7 +402,7 @@
       },
       "automaticDoors": {
         "table": "src/play/door-parts.json: hinge axis, pivot and leaf for official LDraw door leaves derived from part geometry",
-        "runtime": "Session-only derived kinematic rigs hinged to the part holding each door; never written to the project",
+        "runtime": "Session-only derived kinematic rigs require two distinct physically seated source-reviewed holder interfaces; proximity boxes and unverified embedded copies remain static with a reason; never written to the project",
         "swing": "Free direction decided by sweeping an inset leaf proxy against the Play world; two-way doors open away from the explorer",
         "control": "E / on-screen Open door action, play.interact(), play.setJointTarget, CLI --open-doors; disable with autoDoors:false"
       },
