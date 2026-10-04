@@ -135,10 +135,12 @@ for (const [width, height, dynamic] of sizes)
       ).toBeLessThan(mechanism.pose.jointPositions[input] - 20);
       // Zero power removes powered drive without losing the selected direction.
       await speed.fill("0");
-      expect(
-        (await page.evaluate(() => window.brickEditor!.play.snapshot()))
-          .mechanisms!["technic-drive"].motors![input],
-      ).toMatchObject({ input: 0, power: 0, status: "stopped" });
+      const unpowered = (
+        await page.evaluate(() => window.brickEditor!.play.snapshot())
+      ).mechanisms!["technic-drive"].motors![input];
+      // Reverse multiplied by zero is IEEE -0, which commands the same stop.
+      expect(Math.abs(unpowered.input!)).toBe(0);
+      expect(unpowered).toMatchObject({ power: 0, status: "stopped" });
       await speed.fill("0.5");
       expect(
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))

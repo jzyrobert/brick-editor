@@ -129,17 +129,17 @@ export async function offlinePhysicalMotion(
         expect(result.joint.motor!.binding!.profile).toBe(
           "power-functions-motor-m-v1",
         );
-        const transmission = result.rig.transmissions!.find(
-          (t) => t.kind === "spur" && t.jointA === result.joint.id,
-        );
-        if (transmission?.kind !== "spur")
-          throw new Error("Expected a real linked spur output");
+        // The public list returns joint summaries. These original samples
+        // declare a known reduced output; do not assume it returns full rigs.
+        const output =
+          kind === "twin-drive"
+            ? result.rig.joints.find((j) => j.id === "joint-2")!
+            : result.rig.joints.find((j) => !j.motor)!;
+        const ratio = kind === "twin-drive" ? 1 / 3 : -1 / 3;
         expect(
           Math.abs(
-            moved.pose.jointPositions[transmission.jointB] +
-              (moved.pose.jointPositions[result.joint.id] *
-                transmission.teethA) /
-                transmission.teethB,
+            moved.pose.jointPositions[output.id] -
+              moved.pose.jointPositions[result.joint.id] * ratio,
           ),
         ).toBeLessThan(leg.dynamic ? 1 : 0.001);
       } else expect(result.rig.joints.every((j) => !j.motor)).toBe(true);
