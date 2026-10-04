@@ -110,8 +110,60 @@ Frozen input SHA-256 values:
 - Independent audit script: `359196b7da7ec3045f00414dc98cc0c78f8a05a47db4b7995182d275f3a363e0`
 - Audit result: `23629628c9f1bffbb3cd8ae91bada2fb6c5c55acde4cf7b2b51b550673bd2b4f`
 
-Private evidence is in the parent worktree's
-`.local/housing-volume-audit-e858a79/`; its audit is
-`.local/audit-housing-tapered-volumes.ts`. These counterexamples reject this
+Private evidence, including the frozen `audit.ts`, is in the parent worktree's
+`.local/housing-volume-audit-e858a79/`. These counterexamples reject this
 candidate. Passing the same sampled audit would still not certify complete
 finite coverage, native admission, loaded motion or carrier reaction.
+
+## Source-plane cell construction and admission checkpoint
+
+Removing the midpoint merges alone does not repair the loft: an unmerged
+16,670-triangle construction still adds up to 1,000.794118 LDU² outside source
+material in five samples of the worst [−13,−10] band. Matching only corresponding
+triangle vertices, instead of slicing their actual hulls, also fails near both
+band ends. This isolates two faults: triangulation diagonals change validity
+inside a band, and convexifying a warped triangle loft adds further volume.
+
+Reconstructing contour corners from adjacent source planes greatly reduces
+these errors but still leaves 13.718926 LDU² of sampled outside area in an
+8,600-cell candidate. The subsequent vertical construction intersects source
+upper/lower planes, affine X slab planes and Z bounds. Its 30 cells in the worst
+band pass all five sampled depths with zero measured outside area or pair
+overlap; summed area differs from source by at most 1.82e-12 LDU².
+
+Coalescing cells with identical boundary halfspaces reduces the full construction
+from 58,019 to **2,168 cells**. Across 200 sampled slices, all 101 material/void
+controls pass. Maximum sampled outside area is 0.003832197 LDU², pair overlap
+4.54e-9 LDU², and absolute summed-area difference 0.003754189 LDU². Source-plane
+reconciliation is still a diagnostic assumption: near-coplanar grouping and
+measured corner drift require a separate bounded precision review. Small area
+differences alone do not approve it. The snapshot also exceeds the remaining
+1,308-child housing allowance with the currently native-admitting rack candidate.
+
+A bounded private native admission experiment admits **2,119/2,168** centered
+housing hulls. The 49 failed microregions have summed mathematical volume
+1.2853e-12 m³ and remain retained. Native vertex/child-position Float32 conversion
+has measured maximum displacement 5.9437e-6 LDU. Expected total housing volume
+is 1.398891848737 m³; the admitted native shapes report 1.398889081056 m³.
+This incomplete admission stops the experiment before any fixture target run.
+No cap is raised and no physical motion claim follows.
+
+An independent private finite containment tool additionally enumerates exact
+quadratic orientation/projection events over depth rather than sampling a grid.
+Eleven predicate/root cases pass, including a convex candidate exactly filling
+a source hole. It rejects the old piece 118 near Z −12.997738, between the sampled
+depths, and conditionally contains old piece 0 over all 52 event intervals. Its
+exact decimal test of new vertical piece 0 detects a roughly 1.21e-15 LDU boundary
+rounding discrepancy. Rational source-plane ancestry and a separately reviewed
+numerical realization are needed before claiming exact construction. Whole-band
+source topology, union coverage, native admission and loaded motion remain
+independent obligations.
+
+Private parent snapshots: `.local/housing-unmerged-audit-716f3ec/`,
+`.local/housing-plane-audit-716f3ec/`, `.local/housing-vertical-audit-716f3ec/`,
+`.local/housing-coalesced-audit-716f3ec/` and `.local/housing-volume-certifier/`.
+The coalesced candidate SHA-256 is
+`ac5915f448d58c6c52bfbc3a8f879ff6a1b06c3ca864d542e8e213046d1e7fc0`.
+Native admission evidence remains in the diagnostic checkout's
+`.local/housing-native-admission.{json,log}`. These are investigation artifacts,
+not committed runtime assets or passing clean-checkout rack acceptance tests.
