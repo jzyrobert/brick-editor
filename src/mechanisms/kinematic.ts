@@ -199,6 +199,7 @@ export function validateRig(
       "motor",
       "angularResistance",
       "translationLimitsLdu",
+      "mating",
     ]);
     ensure(
       safeId(joint.id) && !jointIds.has(joint.id),
@@ -254,6 +255,24 @@ export function validateRig(
       "INVALID_INPUT",
       "Axial translation stops belong only to cylindrical bearings.",
     );
+    if (joint.mating !== undefined) {
+      ensure(
+        joint.kind === "revolute",
+        "INVALID_INPUT",
+        "Local mating allowances currently support revolute joints only",
+      );
+      fields(joint.mating, ["radiusLdu", "halfLengthLdu"]);
+      ensure(
+        finite(joint.mating.radiusLdu) &&
+          joint.mating.radiusLdu > 0 &&
+          joint.mating.radiusLdu <= 32 &&
+          finite(joint.mating.halfLengthLdu) &&
+          joint.mating.halfLengthLdu > 0 &&
+          joint.mating.halfLengthLdu <= 2048,
+        "INVALID_INPUT",
+        "Joint mating allowance exceeds the supported local bearing region",
+      );
+    }
     if (
       joint.kind === "revolute" ||
       joint.kind === "prismatic" ||
@@ -317,7 +336,11 @@ export function validateRig(
       }
     } else
       ensure(
-        !joint.limits && !joint.motor && !joint.axisA && !joint.axisB,
+        !joint.limits &&
+          !joint.motor &&
+          !joint.axisA &&
+          !joint.axisB &&
+          !joint.mating,
         "INVALID_INPUT",
         "Fixed and spherical joints do not accept scalar limits, motors or axes.",
       );
@@ -352,6 +375,7 @@ export function validateRig(
         "axisA",
         "axisB",
         "dependentJointIds",
+        "mating",
       ]);
       ensure(
         safeId(c.id) &&
@@ -364,6 +388,19 @@ export function validateRig(
         "Invalid or duplicate closure identity or bodies.",
       );
       jointIds.add(c.id);
+      if (c.mating !== undefined) {
+        fields(c.mating, ["radiusLdu", "halfLengthLdu"]);
+        ensure(
+          finite(c.mating.radiusLdu) &&
+            c.mating.radiusLdu > 0 &&
+            c.mating.radiusLdu <= 32 &&
+            finite(c.mating.halfLengthLdu) &&
+            c.mating.halfLengthLdu > 0 &&
+            c.mating.halfLengthLdu <= 2048,
+          "INVALID_INPUT",
+          "Closure mating allowance exceeds the supported local bearing region",
+        );
+      }
       const pair = [c.bodyA, c.bodyB].sort().join("\u0000");
       ensure(
         !closurePairs.has(pair),

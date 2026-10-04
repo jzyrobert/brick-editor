@@ -2,6 +2,7 @@ import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import type { PlayVehicleCollisionReport } from "./types";
 import type { VehicleCheck } from "./vehicle-world";
 import RAPIER from "@dimforge/rapier3d-compat";
+import { MechanicalQueryWorld } from "./mechanical-query-world";
 import { Matrix4, Quaternion, Vector3 } from "three";
 import {
   ensure,
@@ -13,6 +14,14 @@ import {
 } from "../core/types";
 import { add, inverse, mv } from "../core/math";
 import { KinematicSession } from "../mechanisms/kinematic";
+import {
+  MechanicalContactPolicy,
+  mechanicalSolids,
+  mechanicalStationarySolids,
+  MECHANICAL_CONTACT_LIMITS,
+  type MechanicalSolid,
+  type PreparedMechanicalSource,
+} from "./mechanical-solids";
 import type {
   JointSpec,
   KinematicPose,
@@ -60,6 +69,8 @@ export type PlayMechanismSource = {
   project: Project;
   rigId: string;
   groups: Record<string, CollisionSnapshot>;
+  /** Optional per-occurrence surfaces for local mechanical collision solids. */
+  members?: Record<string, CollisionSnapshot>;
   /** Optional shared occurrence index of `project` (avoids re-expansion per rig). */
   lookup?: ReadonlyMap<string, Occurrence>;
 };
@@ -86,7 +97,8 @@ export function validatePlayMechanismSource(
     "LIMIT_EXCEEDED",
     "Play supports at most 128 moving rigid groups",
   );
-  let triangles = 0;
+  let triangles = 0,
+    memberTriangles = 0;
   for (const group of rig.groups) {
     const mesh = source.groups[group.id];
     ensure(
@@ -100,6 +112,33 @@ export function validatePlayMechanismSource(
       "INVALID_INPUT",
       "Moving groups require valid complete geometry from the source revision",
     );
+    if (source.members !== undefined) {
+      for (const id of group.occurrenceIds) {
+        const member = source.members[id];
+        ensure(
+          member &&
+            member.revision === revision &&
+            !member.unsupported &&
+            member.vertices.length % 3 === 0 &&
+            member.indices.length % 3 === 0 &&
+            member.vertices.every(Number.isFinite) &&
+            member.indices.every((i) => i < member.vertices.length / 3),
+          "INVALID_INPUT",
+          "Moving parts need complete geometry for every member from this project. Reload the parts and try again.",
+        );
+        memberTriangles += member.indices.length / 3;
+        ensure(
+          memberTriangles <= 200000,
+          "LIMIT_EXCEEDED",
+          "This mechanism is too complex to check safely. Try fewer moving parts.",
+          {
+            limit: "memberTriangles",
+            maximum: 200000,
+            actual: memberTriangles,
+          },
+        );
+      }
+    }
     triangles += mesh.indices.length / 3;
     ensure(
       triangles <= 200000,
@@ -151,8 +190,18 @@ export function validatePlayMechanismSources(
 }
 /** Kinematic surfaces collide with the actor; this is not vehicle/world dynamics. */
 export class PlayMechanism {
+  private contactPolicy: MechanicalContactPolicy;
+  private contactSolids: MechanicalSolid[];
+  private stationarySolids: MechanicalSolid[];
+  private contactChecks = 0;
+  private contactEnumeration = 0;
+  private queries: MechanicalQueryWorld;
+  private ownsQueries: boolean;
+  private worldFailure?: string;
+  private worldNeedsRefinement = false;
   private session: KinematicSession;
   private jointKinds = new Map<string, string>();
+  private jointSpecs: JointSpec[];
   private motors = new Map<
     string,
     {
@@ -279,13 +328,26 @@ export class PlayMechanism {
         envelopes: Array<{ frame: Transform; halfExtents: Vec3 }>;
       };
     },
+    private completeWorld = true,
+    prepared?: PreparedMechanicalSource,
+    queries?: MechanicalQueryWorld,
   ) {
+    validatePlayMechanismSource(source, source.project.revision);
+    this.queries = queries ?? new MechanicalQueryWorld();
+    this.ownsQueries = !queries;
     this.session = new KinematicSession(
       source.project,
       source.rigId,
       source.lookup,
     );
     const rig = source.project.motionRigs![source.rigId];
+    this.contactPolicy =
+      prepared?.policy ?? new MechanicalContactPolicy(rig, source);
+    this.contactSolids =
+      prepared?.solids ?? mechanicalSolids(source, this.contactPolicy);
+    this.stationarySolids =
+      prepared?.stationary ?? mechanicalStationarySolids(source);
+    this.jointSpecs = structuredClone(rig.joints);
     this.jointKinds = new Map(rig.joints.map((j) => [j.id, j.kind]));
     for (const joint of rig.joints)
       if (
@@ -371,6 +433,9 @@ export class PlayMechanism {
     }
   }
   private move(before: MechanismSnapshot, after: MechanismSnapshot) {
+    this.worldFailure = undefined;
+    this.worldNeedsRefinement = false;
+    if (!this.checkWorld(before, after)) return false;
     const actor = this.actor();
     if (actor.walk)
       for (const proxy of this.proxies) {
@@ -454,6 +519,263 @@ export class PlayMechanism {
           return false;
       }
     this.apply(after);
+    return true;
+  }
+  /** The surface travel bound encloses every rotating point between samples.
+   * Equal/separating existing contact permits a part to slide on a support;
+   * new contact or deeper penetration refuses the complete connected move. */
+  private checkWorld(before: MechanismSnapshot, after: MechanismSnapshot) {
+    if (
+      before.pose.vehicle &&
+      JSON.stringify(before.pose.jointPositions) ===
+        JSON.stringify(after.pose.jointPositions)
+    )
+      return true;
+    const moving = this.contactSolids.filter(
+      (s) =>
+        JSON.stringify(before.groupFrames[s.groupId]) !==
+        JSON.stringify(after.groupFrames[s.groupId]),
+    );
+    if (!moving.length) return true;
+    if (!this.completeWorld) {
+      this.worldFailure =
+        "Joint motion needs complete included collision geometry";
+      return false;
+    }
+    const movingGroups = new Set(moving.map((s) => s.groupId));
+    const worldBounds = new Map<
+      MechanicalSolid,
+      { min: number[]; max: number[] }
+    >();
+    const sweptBounds = (solid: MechanicalSolid) => {
+      let box = worldBounds.get(solid);
+      if (box) return box;
+      box = {
+        min: [Infinity, Infinity, Infinity],
+        max: [-Infinity, -Infinity, -Infinity],
+      };
+      for (const frames of [before.groupFrames, after.groupFrames]) {
+        const f = frames[solid.groupId],
+          q = rotation(f),
+          t = physics(f.position);
+        for (let n = 0; n < 8; n++) {
+          const p = new Vector3(
+            ...([0, 1, 2].map((k) =>
+              n & (1 << k) ? solid.bounds.max[k] : solid.bounds.min[k],
+            ) as Vec3),
+          )
+            .applyQuaternion(q)
+            .add(new Vector3(t.x, t.y, t.z));
+          p.toArray().forEach((v, k) => {
+            box!.min[k] = Math.min(box!.min[k], v);
+            box!.max[k] = Math.max(box!.max[k], v);
+          });
+        }
+      }
+      worldBounds.set(solid, box);
+      return box;
+    };
+    const near = (
+      a: MechanicalSolid,
+      b: MechanicalSolid,
+      prediction: number,
+    ) => {
+      const aa = sweptBounds(a),
+        bb = sweptBounds(b);
+      return (
+        Math.hypot(
+          ...[0, 1, 2].map((k) =>
+            Math.max(0, aa.min[k] - bb.max[k], bb.min[k] - aa.max[k]),
+          ),
+        ) <= prediction
+      );
+    };
+    const stationaryByGroup = new Map<string, MechanicalSolid[]>();
+    for (const solid of this.stationarySolids) {
+      const list = stationaryByGroup.get(solid.groupId) ?? [];
+      list.push(solid);
+      stationaryByGroup.set(solid.groupId, list);
+    }
+    for (const groupId of new Set(this.contactSolids.map((s) => s.groupId)))
+      stationaryByGroup.set(
+        groupId,
+        this.contactSolids.filter((s) => s.groupId === groupId),
+      );
+    const own = new Map(this.proxies.map((p) => [p.collider.handle, p.id]));
+    const colliders: RAPIER.Collider[] = [];
+    this.world.forEachCollider((c) => {
+      if (!c.isSensor()) colliders.push(c);
+    });
+    const enumerate = () =>
+      ensure(
+        ++this.contactEnumeration <= MECHANICAL_CONTACT_LIMITS.enumeration,
+        "LIMIT_EXCEEDED",
+        "This mechanism is too complex to check safely. Try fewer moving parts.",
+        {
+          limit: "enumeration",
+          maximum: MECHANICAL_CONTACT_LIMITS.enumeration,
+        },
+      );
+    const contact = (
+      solid: MechanicalSolid,
+      a: Transform,
+      other: RAPIER.Shape,
+      b: Transform,
+      prediction: number,
+    ) => {
+      ensure(
+        ++this.contactChecks <= MECHANICAL_CONTACT_LIMITS.pairChecks,
+        "LIMIT_EXCEEDED",
+        "This mechanism is too complex to check safely. Try fewer moving parts.",
+        { limit: "pairChecks", maximum: MECHANICAL_CONTACT_LIMITS.pairChecks },
+      );
+      const ca = this.queries.collider(solid.shape),
+        cb = this.queries.collider(other);
+      ca.setTranslation(physics(a.position));
+      ca.setRotation(rotation(a));
+      cb.setTranslation(physics(b.position));
+      cb.setRotation(rotation(b));
+      return ca.contactCollider(cb, prediction)?.distance;
+    };
+    const blocked = (
+      old: number | undefined,
+      next: number | undefined,
+      travel: number,
+    ) => {
+      const hit =
+        next !== undefined &&
+        next < travel + 0.001 * S &&
+        (old === undefined ||
+          (old > 0.001 * S ? next <= old + 0.001 * S : next < old - 0.001 * S));
+      // A positive endpoint gap can be certified by a smaller travel bound.
+      // Subdivision never permits a known penetration or spends unbounded work.
+      if (hit && next! > 0.001 * S && (old === undefined || old > 0.001 * S))
+        this.worldNeedsRefinement = true;
+      return hit;
+    };
+    try {
+      for (const solid of moving) {
+        const a = before.groupFrames[solid.groupId],
+          b = after.groupFrames[solid.groupId];
+        const travel =
+          (Math.hypot(...a.position.map((v, k) => v - b.position[k])) +
+            solid.radius * rotation(a).angleTo(rotation(b))) *
+          S;
+        if (travel > MECHANICAL_CONTACT_LIMITS.sweepLdu * S + 1e-8) {
+          this.worldNeedsRefinement = true;
+          this.worldFailure = "Motion needs smaller collision-check segments";
+          return false;
+        }
+        for (const collider of colliders) {
+          enumerate();
+          const ownGroup = own.get(collider.handle);
+          if (
+            ownGroup &&
+            this.contactPolicy.allowed(solid, { groupId: ownGroup })
+          )
+            continue;
+          if (ownGroup && movingGroups.has(ownGroup)) continue;
+          if (ownGroup) {
+            const frame = after.groupFrames[ownGroup];
+            for (const other of stationaryByGroup.get(ownGroup) ?? []) {
+              enumerate();
+              if (
+                this.contactPolicy.allowed(solid, other) ||
+                !near(solid, other, travel + 0.001 * S)
+              )
+                continue;
+              const old = contact(
+                  solid,
+                  a,
+                  other.shape,
+                  frame,
+                  travel + 0.001 * S,
+                ),
+                next = contact(
+                  solid,
+                  b,
+                  other.shape,
+                  frame,
+                  travel + 0.001 * S,
+                );
+              if (blocked(old, next, travel)) {
+                this.worldFailure =
+                  "Motion stopped before intersecting included world or another assembly. Move clear and retry.";
+                return false;
+              }
+            }
+          } else {
+            ensure(
+              this.contactChecks + 2 <= MECHANICAL_CONTACT_LIMITS.pairChecks,
+              "LIMIT_EXCEEDED",
+              "This mechanism is too complex to check safely. Try fewer moving parts.",
+              {
+                limit: "pairChecks",
+                maximum: MECHANICAL_CONTACT_LIMITS.pairChecks,
+              },
+            );
+            this.contactChecks += 2;
+            // Foreign handles never cross collider sets: cache an owned shape
+            // shadow and synchronize only its accepted live pose.
+            const ca = this.queries.collider(solid.shape),
+              cb = this.queries.collider(collider.shape);
+            cb.setTranslation(collider.translation());
+            cb.setRotation(collider.rotation());
+            ca.setTranslation(physics(a.position));
+            ca.setRotation(rotation(a));
+            const old = ca.contactCollider(cb, travel + 0.001 * S)?.distance;
+            ca.setTranslation(physics(b.position));
+            ca.setRotation(rotation(b));
+            const next = ca.contactCollider(cb, travel + 0.001 * S)?.distance;
+            if (blocked(old, next, travel)) {
+              this.worldFailure =
+                "Motion stopped before intersecting included world or another assembly. Move clear and retry.";
+              return false;
+            }
+          }
+        }
+        for (const other of this.contactSolids) {
+          enumerate();
+          if (
+            !movingGroups.has(other.groupId) ||
+            this.contactPolicy.allowed(solid, other)
+          )
+            continue;
+          const c = before.groupFrames[other.groupId],
+            d = after.groupFrames[other.groupId];
+          const otherTravel =
+            (Math.hypot(...c.position.map((v, k) => v - d.position[k])) +
+              other.radius * rotation(c).angleTo(rotation(d))) *
+            S;
+          if (!near(solid, other, travel + otherTravel + 0.001 * S)) continue;
+          const old = contact(
+            solid,
+            a,
+            other.shape,
+            c,
+            travel + otherTravel + 0.001 * S,
+          );
+          const next = contact(
+            solid,
+            b,
+            other.shape,
+            d,
+            travel + otherTravel + 0.001 * S,
+          );
+          if (blocked(old, next, travel + otherTravel)) {
+            this.worldFailure =
+              "Motion stopped before intersecting another moving part in this mechanism. Move clear and retry.";
+            return false;
+          }
+        }
+      }
+    } catch (error) {
+      this.worldFailure =
+        error instanceof Error
+          ? error.message
+          : "Joint collision could not be checked";
+      return false;
+    }
     return true;
   }
   private interpolate(
@@ -586,30 +908,101 @@ export class PlayMechanism {
           ),
         ),
       );
-    const steps = Math.max(1, Math.ceil(travel / 2));
+    const parents = new Map(this.jointSpecs.map((j) => [j.bodyB, j]));
+    const slidePadding = this.jointSpecs
+      .filter((j) => j.kind === "prismatic")
+      .reduce(
+        (n, j) =>
+          n +
+          Math.abs(
+            (target.pose.jointPositions[j.id] ?? 0) -
+              (before.pose.jointPositions[j.id] ?? 0),
+          ),
+        0,
+      );
+    const frameTravel = Math.max(
+      0,
+      ...this.contactSolids.map((s) => {
+        const a = before.groupFrames[s.groupId],
+          b = target.groupFrames[s.groupId];
+        let unwrapped = 0,
+          id = s.groupId;
+        while (parents.has(id)) {
+          const joint = parents.get(id)!;
+          const delta = Math.abs(
+            (target.pose.jointPositions[joint.id] ?? 0) -
+              (before.pose.jointPositions[joint.id] ?? 0),
+          );
+          if (joint.kind === "prismatic") unwrapped += delta;
+          else if (joint.kind === "revolute") {
+            const carrier = before.groupFrames[joint.bodyA],
+              pivot = add(carrier.position, mv(carrier.basis, joint.anchorA));
+            unwrapped +=
+              ((delta * Math.PI) / 180) *
+              (Math.hypot(...a.position.map((v, k) => v - pivot[k])) +
+                s.radius +
+                slidePadding);
+          }
+          id = joint.bodyA;
+        }
+        return Math.max(
+          unwrapped,
+          Math.hypot(...a.position.map((v, k) => v - b.position[k])) +
+            s.radius * rotation(a).angleTo(rotation(b)),
+        );
+      }),
+    );
+    const steps = Math.max(
+      1,
+      Math.ceil(travel / 2),
+      Math.ceil(frameTravel / MECHANICAL_CONTACT_LIMITS.sweepLdu),
+    );
     if (steps > 1024) {
       this.session.setPose(before.pose);
       this.apply(before);
       this.session.clearInput();
       this.blocked = true;
       this.reason =
-        "Motion exceeds 1,024 swept segments. Use a smaller joint target or lower the authored vehicle speed.";
+        "This motion needs too many safety checks. Try a nearer target or a slower control.";
       return false;
     }
     let last = before;
+    this.contactChecks = 0;
+    this.contactEnumeration = 0;
     this.blocked = false;
     this.reason = undefined;
+    let visited = 0;
+    const advance = (
+      from: MechanismSnapshot,
+      to: MechanismSnapshot,
+    ): boolean => {
+      if (++visited > MECHANICAL_CONTACT_LIMITS.sweepSegments) {
+        this.worldFailure =
+          "This motion needs too many safety checks. Try a nearer target or a slower control.";
+        return false;
+      }
+      this.session.setPose(to.pose);
+      if (this.move(from, to)) return true;
+      if (!this.worldNeedsRefinement) return false;
+      const middle = this.session.setPose(
+        this.interpolate(from.pose, to.pose, 0.5),
+      );
+      this.session.setPose(from.pose);
+      this.apply(from);
+      return advance(from, middle) && advance(middle, to);
+    };
     for (let n = 1; n <= steps; n++) {
       const next = this.session.setPose(
         n === steps
           ? target.pose
           : this.interpolate(before.pose, target.pose, n / steps),
       );
-      if (!this.move(last, next)) {
+      if (!advance(last, next)) {
         this.session.setPose(before.pose);
         this.apply(before);
         this.blocked = true;
         this.reason =
+          this.worldFailure ??
           "Motion stopped before it could intersect the player. Move clear and retry.";
         return false;
       }
@@ -909,6 +1302,7 @@ export class PlayMechanism {
     };
   }
   dispose() {
+    if (this.ownsQueries) this.queries.dispose();
     for (const proxy of this.proxies)
       this.world.removeCollider(proxy.collider, true);
     this.proxies = [];

@@ -407,6 +407,26 @@
                   "maxEffort"
                 ],
                 "additionalProperties": false
+              },
+              "mating": {
+                "type": "object",
+                "properties": {
+                  "radiusLdu": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 32
+                  },
+                  "halfLengthLdu": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 2048
+                  }
+                },
+                "required": [
+                  "radiusLdu",
+                  "halfLengthLdu"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [
@@ -601,15 +621,35 @@
             "maxItems": 16,
             "minItems": 2,
             "uniqueItems": true
+          },
+          "mating": {
+            "type": "object",
+            "properties": {
+              "radiusLdu": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 32
+              },
+              "halfLengthLdu": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 2048
+              }
+            },
+            "required": [
+              "radiusLdu",
+              "halfLengthLdu"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
           "id",
+          "kind",
           "bodyA",
           "bodyB",
           "anchorA",
           "anchorB",
-          "kind",
           "axisA",
           "axisB",
           "dependentJointIds"

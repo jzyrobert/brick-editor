@@ -19,6 +19,8 @@ export type JointSpec = {
   angularResistance?: { maxTorqueNm: number; dampingNmSeconds: number };
   /** Optional axial stops for a free cylindrical bearing, LDU from rest. */
   translationLimitsLdu?: [number, number];
+  /** Explicit ideal bearing overlap, local to the joint axis/anchor. */
+  mating?: { radiusLdu: number; halfLengthLdu: number };
   /** Degrees for revolute, LDU for prismatic. */
   limits?: [number, number];
   motor?: {
@@ -151,6 +153,7 @@ export type PlanarLoopClosure = {
   anchorB: Vec3;
   axisA: Vec3;
   axisB: Vec3;
+  mating?: { radiusLdu: number; halfLengthLdu: number };
   /** Passive tree coordinates solved for closure; never independently driven. */
   dependentJointIds: string[];
 };

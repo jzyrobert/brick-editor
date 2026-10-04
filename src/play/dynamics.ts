@@ -2,12 +2,24 @@ import { Quaternion, Vector3 } from "three";
 import type { SeatedPlacement } from "./seated-profile";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { effectiveMotor, validateMotorInput } from "./motor-input";
+import { occurrences } from "../core/document";
+import { worldMechanicalFeatures } from "../mechanisms/mechanical-contacts";
 import { AppError, ensure, type Transform, type Vec3 } from "../core/types";
 import { add, compose, inverse, mv } from "../core/math";
 import { axisRotation, KinematicSession } from "../mechanisms/kinematic";
 import type { JointSpec, MotionRig, RigDynamics } from "../mechanisms/types";
-import type { PlayMechanismSource } from "./mechanism";
+import {
+  validatePlayMechanismSource,
+  type PlayMechanismSource,
+} from "./mechanism";
 import { anchoredGroup } from "../mechanisms/dynamics-settings";
+import {
+  MechanicalContactPolicy,
+  mechanicalSolids,
+  prepareMechanicalSources,
+  type PreparedMechanicalSource,
+  type MechanicalSolid,
+} from "./mechanical-solids";
 import {
   transmissionMap,
   transmissionSpeedLimit,
@@ -264,6 +276,34 @@ const rotate = (
 
 /** One dynamically simulated authored rig. */
 export class DynamicRig {
+  private contactEvents?: RAPIER.EventQueue;
+  /** The pinned wrapper only invokes hooks through its event-queue path. */
+  stepPhysics() {
+    this.world.step(
+      (this.contactEvents ??= new RAPIER.EventQueue(false)),
+      this.physicsHooks,
+    );
+  }
+  private contactPolicy!: MechanicalContactPolicy;
+  private contactSolids = new Map<
+    number,
+    | MechanicalSolid
+    | { groupId: string; memberId?: string; feature?: "rack-guide" }
+  >();
+  /** Direct Rapier harnesses must supply these hooks, as PlayDynamicsWorld does. */
+  readonly physicsHooks: RAPIER.PhysicsHooks = {
+    filterContactPair: (a, b) =>
+      this.contactAllowed(a, b) ? RAPIER.SolverFlags.COMPUTE_IMPULSE : null,
+    filterIntersectionPair: () => true,
+  };
+  contactAllowed(a: number, b: number) {
+    const sa = this.contactSolids.get(a),
+      sb = this.contactSolids.get(b);
+    if (!sa || !sb) return true;
+    if ("shape" in sa) return !this.contactPolicy.allowed(sa, sb);
+    if ("shape" in sb) return !this.contactPolicy.allowed(sb, sa);
+    return true;
+  }
   readonly rigId: string;
   private rig: MotionRig;
   private settings: RigDynamics;
@@ -291,15 +331,21 @@ export class DynamicRig {
     source: DynamicRigSource,
     private index: number,
     private revision: number,
+    prepared?: PreparedMechanicalSource,
   ) {
+    validatePlayMechanismSource(source, revision);
     this.rigId = source.rigId;
     this.rig = structuredClone(source.project.motionRigs[source.rigId]);
     this.transmissions = transmissionMap(this.rig);
     this.settings = structuredClone(this.rig.dynamics ?? {});
     this.meshes = source.groups;
+    this.contactPolicy =
+      prepared?.policy ?? new MechanicalContactPolicy(this.rig, source);
+    const solids =
+      prepared?.solids ?? mechanicalSolids(source, this.contactPolicy);
     const friction = this.settings.friction ?? DYNAMIC_DEFAULTS.friction,
       own = rigBit(index),
-      colliderGroups = groups(own, 0xffff & ~own);
+      colliderGroups = groups(own, 0xffff);
     const wheels = new Set(
       this.rig.vehicle?.wheels.map((w) => w.groupId) ?? [],
     );
@@ -337,69 +383,88 @@ export class DynamicRig {
       };
       if (anchored) {
         // Anchored groups never move: exact trimesh keeps door-frame openings.
-        const mesh = source.groups[group.id];
-        const local = new Float32Array(mesh.vertices.length),
-          worldVertices = new Float32Array(mesh.vertices.length);
-        for (let i = 0; i < mesh.vertices.length; i += 3) {
-          const p: Vec3 = [
-            mesh.vertices[i],
-            mesh.vertices[i + 1],
-            mesh.vertices[i + 2],
-          ];
-          const a = toPhysics([
-              p[0] - origin[0],
-              p[1] - origin[1],
-              p[2] - origin[2],
-            ]),
-            b = toPhysics(p);
-          local.set([a.x, a.y, a.z], i);
-          worldVertices.set([b.x, b.y, b.z], i);
-        }
-        if (mesh.indices.length) {
-          world.createCollider(
-            RAPIER.ColliderDesc.trimesh(local, mesh.indices.slice())
-              .setFriction(friction)
-              .setCollisionGroups(colliderGroups),
-            body,
-          );
-          entry.mirrors.push(
-            characterWorld.createCollider(
-              RAPIER.ColliderDesc.trimesh(worldVertices, mesh.indices.slice()),
-            ),
-          );
-          entry.colliders = 1;
+        const fixedMembers = source.members
+          ? group.occurrenceIds.map((id) => [id, source.members[id]] as const)
+          : [[undefined, source.groups[group.id]] as const];
+        for (const [memberId, mesh] of fixedMembers) {
+          const local = new Float32Array(mesh.vertices.length),
+            worldVertices = new Float32Array(mesh.vertices.length);
+          for (let i = 0; i < mesh.vertices.length; i += 3) {
+            const p: Vec3 = [
+              mesh.vertices[i],
+              mesh.vertices[i + 1],
+              mesh.vertices[i + 2],
+            ];
+            const a = toPhysics([
+                p[0] - origin[0],
+                p[1] - origin[1],
+                p[2] - origin[2],
+              ]),
+              b = toPhysics(p);
+            local.set([a.x, a.y, a.z], i);
+            worldVertices.set([b.x, b.y, b.z], i);
+          }
+          if (mesh.indices.length) {
+            const collider = world.createCollider(
+              RAPIER.ColliderDesc.trimesh(local, mesh.indices.slice())
+                .setFriction(friction)
+                .setCollisionGroups(colliderGroups)
+                .setActiveHooks(RAPIER.ActiveHooks.FILTER_CONTACT_PAIRS),
+              body,
+            );
+            const occurrence =
+              memberId &&
+              (
+                source.lookup ??
+                new Map(occurrences(source.project).map((o) => [o.id, o]))
+              ).get(memberId);
+            this.contactSolids.set(collider.handle, {
+              groupId: group.id,
+              ...(memberId ? { memberId } : {}),
+              ...(occurrence &&
+              worldMechanicalFeatures(occurrence)?.some(
+                (f) => f.kind === "rack-guide",
+              )
+                ? { feature: "rack-guide" as const }
+                : {}),
+            });
+            entry.mirrors.push(
+              characterWorld.createCollider(
+                RAPIER.ColliderDesc.trimesh(
+                  worldVertices,
+                  mesh.indices.slice(),
+                ),
+              ),
+            );
+            entry.colliders++;
+          }
         }
       } else {
-        for (const id of group.occurrenceIds) {
-          const points = proxyPoints(source.members[id], origin);
-          let desc = RAPIER.ColliderDesc.convexHull(points),
-            mirror = desc ? RAPIER.ColliderDesc.convexHull(points) : null;
-          if (!desc) {
-            // Degenerate (flat or collinear) member: a thin box around it.
-            const min = [Infinity, Infinity, Infinity],
-              max = [-Infinity, -Infinity, -Infinity];
-            for (let i = 0; i < points.length; i++) {
-              min[i % 3] = Math.min(min[i % 3], points[i]);
-              max[i % 3] = Math.max(max[i % 3], points[i]);
-            }
-            const half = min.map((m, k) =>
-                Math.max((max[k] - m) / 2, 0.5 * S),
-              ) as Vec3,
-              center = min.map((m, k) => (m + max[k]) / 2) as Vec3;
-            desc = RAPIER.ColliderDesc.cuboid(...half).setTranslation(
-              ...center,
-            );
-            mirror = RAPIER.ColliderDesc.cuboid(...half).setTranslation(
-              ...center,
-            );
-          }
-          world.createCollider(
+        for (const solid of solids.filter((s) => s.groupId === group.id)) {
+          // Native bodies begin with identity rotation at the authored origin;
+          // their member solids therefore include the authored group basis.
+          const q = frameRotation(group.frame);
+          // Rapier requires a flat compound: rotate each existing child through
+          // the authored rest frame rather than nesting a compound.
+          const native =
+            solid.shape instanceof RAPIER.Compound
+              ? new RAPIER.Compound(
+                  solid.shape.shapes,
+                  solid.shape.positions,
+                  solid.shape.rotations.map((r) => quatMul(q, r)),
+                )
+              : new RAPIER.Compound([solid.shape], [{ x: 0, y: 0, z: 0 }], [q]);
+          const desc = new RAPIER.ColliderDesc(native);
+          const mirror = new RAPIER.ColliderDesc(native);
+          const collider = world.createCollider(
             desc
               .setDensity(DYNAMIC_DEFAULTS.density)
               .setFriction(friction)
-              .setCollisionGroups(colliderGroups),
+              .setCollisionGroups(colliderGroups)
+              .setActiveHooks(RAPIER.ActiveHooks.FILTER_CONTACT_PAIRS),
             body,
           );
+          this.contactSolids.set(collider.handle, solid);
           entry.mirrors.push(characterWorld.createCollider(mirror!));
           entry.colliders++;
         }
@@ -478,7 +543,7 @@ export class DynamicRig {
                 )
               : RAPIER.JointData.spherical(anchorA, anchorB);
     const joint = this.world.createImpulseJoint(data, a.body, b.body, true);
-    joint.setContactsEnabled(false);
+    joint.setContactsEnabled(true);
     if (spec.angularResistance) {
       // Rapier 0.21 wraps spherical data as Generic. Its exported spherical
       // wrapper accepts an existing handle and uses the public angular-axis
@@ -1523,7 +1588,7 @@ export class DynamicRig {
         ? { blockedReason: stalled.blockedReason }
         : {}),
       warnings: [
-        "Dynamic rigid-body simulation (Rapier): each authored group is one body with convex member proxies; anchored groups keep exact surfaces. Masses, motor efforts and friction are simulation settings, not measured brick clutch strength.",
+        "Dynamic rigid-body simulation (Rapier): each authored group is one body with bounded convex compounds; anchored groups keep exact surfaces. Reviewed bores and gear openings are retained. Default proxy mass and inertia approximate the simulation geometry; thin source skins are hollow. Authored mass, motor effort and friction are simulation settings, not measured brick weight or clutch strength.",
         ...(this.rig.vehicle
           ? [
               "Dynamic vehicle: ray-cast wheels with sprung suspension. Authored open-bench seats attach their rigid rider body to the dynamic chassis.",
@@ -1546,6 +1611,7 @@ export class DynamicRig {
     return structuredClone(report);
   }
   dispose() {
+    this.contactEvents?.free();
     for (const entry of this.bodies.values())
       for (const mirror of entry.mirrors)
         this.characterWorld.removeCollider(mirror, false);
@@ -1585,7 +1651,9 @@ export class PlayDynamicsWorld {
     private characterWorld: RAPIER.World,
     sources: DynamicRigSource[],
     revision: number,
+    preparedContacts?: Map<string, PreparedMechanicalSource>,
   ) {
+    preparedContacts ??= prepareMechanicalSources(sources);
     this.world = new RAPIER.World({ x: 0, y: -DYNAMIC_DEFAULTS.gravity, z: 0 });
     this.world.timestep = DT;
     try {
@@ -1630,6 +1698,7 @@ export class PlayDynamicsWorld {
             source,
             index,
             revision,
+            preparedContacts!.get(source.rigId),
           );
           this.rigs.set(source.rigId, rig);
           for (const [handle, body] of rig.mirrorBodies())
@@ -1709,12 +1778,17 @@ export class PlayDynamicsWorld {
         ? undefined
         : this.mirrorBodies.get(supportHandle)?.handle;
     this.world.step(this.events, {
-      filterContactPair: (_a, _b, bodyA, bodyB) =>
-        supportingBody !== undefined &&
-        ((bodyA === this.player.handle && bodyB === supportingBody) ||
-          (bodyB === this.player.handle && bodyA === supportingBody))
-          ? null
-          : RAPIER.SolverFlags.COMPUTE_IMPULSE,
+      filterContactPair: (a, b, bodyA, bodyB) => {
+        if (
+          supportingBody !== undefined &&
+          ((bodyA === this.player.handle && bodyB === supportingBody) ||
+            (bodyB === this.player.handle && bodyA === supportingBody))
+        )
+          return null;
+        for (const rig of this.rigs.values())
+          if (!rig.contactAllowed(a, b)) return null;
+        return RAPIER.SolverFlags.COMPUTE_IMPULSE;
+      },
       filterIntersectionPair: () => true,
     });
     for (const id of this.rigIds()) this.rigs.get(id)!.afterStep();

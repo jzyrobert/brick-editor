@@ -90,7 +90,7 @@ async function fixture(
   const step = (ticks: number) => {
     for (let i = 0; i < ticks; i++) {
       rig.beforeStep();
-      world.step();
+      rig.stepPhysics();
       rig.afterStep();
     }
     expect(JSON.stringify(project)).toBe(source);
@@ -232,7 +232,7 @@ describe("physical spur coupling", () => {
     // each of its torque impulses must conserve all three momentum components.
     for (let i = 0; i < 120; i++) {
       rig.beforeStep();
-      world.step();
+      rig.stepPhysics();
       const before = momentum();
       rig.afterStep();
       const after = momentum();

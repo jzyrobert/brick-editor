@@ -3,7 +3,11 @@ import { occurrences } from "../core/document";
 import type { Project, Vec3 } from "../core/types";
 import type { MotionRig, RigidGroup } from "./types";
 /** Original CC0 demonstration geometry; custom parts have no marketplace mapping. */
-export function mechanismFixtureSource(openBench = false) {
+export function mechanismFixtureSource(
+  openBench = false,
+  freeRotation = false,
+  bearingDoor = false,
+) {
   const out = [
     "0 FILE mechanisms.ldr",
     "0 Original CC0-1.0 hinged door and planar vehicle test",
@@ -46,11 +50,21 @@ export function mechanismFixtureSource(openBench = false) {
   // A two-stud doorway five bricks high: the Play minifig (104 LDU with its
   // hair) walks through it.
   begin("frame.dat");
-  box([-8, -128, -4], [0, 0, 4]);
-  box([40, -128, -4], [48, 0, 4]);
-  box([0, -128, -4], [40, -120, 4]);
+  if (freeRotation) {
+    // A separate controller probe: a narrow bearing post, with no doorway
+    // header/latch stop in the panel's full-turn sweep.
+    box([-1, -120, -1], [1, 0, 1]);
+  } else {
+    // Basic editable hinge: the post sits behind the opening leaf, leaving
+    // genuine clearance through its authored 0..110 degree travel.
+    box([-8, -128, bearingDoor ? -4 : 2.5], [0, 0, bearingDoor ? 4 : 10.5]);
+    box([40, -128, -4], [48, 0, 4]);
+    box([0, -128, -4], [40, -120, 4]);
+  }
   begin("door.dat");
-  box([-20, -60, -2], [20, 60, 2]);
+  // Half-LDU clearance lets the square latch corner leave the closed frame
+  // under native contacts; the hinge position and authored footprint stay put.
+  box([-20, -59.5, -2], [19.5, 59.5, 2]);
   begin("chassis.dat");
   box([-36, -8, -32], [36, 8, 32]);
   if (openBench) {
@@ -161,8 +175,11 @@ export function openBenchFixture(): Project {
 }
 
 /** Original CC0 physics playground: the door and car plus a loose crate and a motorised spinner. */
-export function physicsFixtureSource() {
-  const base = mechanismFixtureSource().replace(/\n0 NOFILE\n$/, "\n");
+export function physicsFixtureSource(freeRotation = false) {
+  const base = mechanismFixtureSource(false, freeRotation, true).replace(
+    /\n0 NOFILE\n$/,
+    "\n",
+  );
   const firstPart = base.indexOf("0 FILE frame.dat");
   const extraRefs = [
     "1 14 -120 -16 60 1 0 0 0 1 0 0 0 1 crate.dat",
@@ -214,8 +231,11 @@ export function physicsFixtureSource() {
  * Door, car, crate and spinner with optional dynamic settings. Everything is
  * kinematic until Play is entered with Dynamic physics.
  */
-export function physicsFixture(): Project {
-  const project = importLDraw(physicsFixtureSource(), "physics.mpd");
+export function physicsFixture(freeRotation = false): Project {
+  const project = importLDraw(
+    physicsFixtureSource(freeRotation),
+    "physics.mpd",
+  );
   project.title = "Physics playground";
   const all = occurrences(project);
   // Root order: frame, door, chassis, four wheels, crate, post, paddle.
@@ -246,6 +266,7 @@ export function physicsFixture(): Project {
   };
   const reference = mechanismFixture();
   const door = structuredClone(reference.motionRigs.door);
+  door.joints[0].mating = { radiusLdu: 5, halfLengthLdu: 61 };
   const vehicle = structuredClone(reference.motionRigs.vehicle);
   door.groups = [group("frame", "frame.dat"), group("door", "door.dat")];
   vehicle.groups = [
@@ -282,6 +303,7 @@ export function physicsFixture(): Project {
         anchorB: [0, 2, 0],
         axisA: [0, -1, 0],
         axisB: [0, -1, 0],
+        mating: { radiusLdu: 6.1, halfLengthLdu: 6 },
         motor: {
           mode: "velocity",
           target: 90,

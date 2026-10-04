@@ -22,7 +22,7 @@ async function fixture(
   positionMotor?: number,
   options: { pose?: Transform; massKg?: number; effort?: number } = {},
 ) {
-  const project = physicsFixture();
+  const project = physicsFixture(true);
   const joint = project.motionRigs.door.joints[0];
   delete joint.limits;
   if (positionMotor !== undefined)
@@ -61,7 +61,7 @@ async function fixture(
   const step = (ticks: number) => {
     for (let i = 0; i < ticks; i++) {
       rig.beforeStep();
-      world.step();
+      rig.stepPhysics();
       rig.afterStep();
     }
     expect(JSON.stringify(project)).toBe(before);

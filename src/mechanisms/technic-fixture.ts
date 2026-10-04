@@ -37,7 +37,7 @@ export function technicFixture() {
       row("4265a.dat", pose([40, 0, 35], 7.5)),
       row("3700.dat", pose([120, -10, -10])),
       row("3673.dat", shaft(120)),
-      row("3701.dat", pose([140, -10, 10])),
+      row("3701.dat", pose([140, -10, 10.5])),
     ].join("\n"),
   );
   const all = occurrences(project);

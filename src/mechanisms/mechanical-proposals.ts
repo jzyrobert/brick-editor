@@ -209,6 +209,7 @@ export function proposeMechanicalRig(
     axis: Vec3,
     driver: string,
     kind: "revolute" | "prismatic" = "revolute",
+    matingSource = driver,
   ) => {
     const id = `joint-${rig.joints.length}`;
     const joint: JointSpec = {
@@ -221,6 +222,32 @@ export function proposeMechanicalRig(
       axisA: mv(inverse(a.frame).basis, axis),
       axisB: mv(inverse(b.frame).basis, axis),
     };
+    if (kind === "revolute") {
+      const sourceFeatures = graph.features.filter(
+        (f) => f.occurrenceId === matingSource,
+      );
+      const shaft = sourceFeatures.find(
+        (f) => f.kind === "axle" || f.kind === "pin",
+      );
+      if (shaft && "radius" in shaft) {
+        const collars = graph.features.filter(
+          (f) =>
+            b.occurrenceIds.includes(f.occurrenceId) &&
+            f.kind === "keyed-hole" &&
+            "stopRadius" in f &&
+            f.stopRadius,
+        );
+        const radius = Math.max(
+          shaft.radius,
+          "stopRadius" in shaft ? shaft.stopRadius : 0,
+          ...collars.map((f) => ("stopRadius" in f ? f.stopRadius! : 0)),
+        );
+        joint.mating = {
+          radiusLdu: radius + 0.1,
+          halfLengthLdu: Math.max(...shaft.span.map(Math.abs)) + 0.1,
+        };
+      }
+    }
     const motor = request.motors?.[driver];
     if (motor) {
       joint.motor = structuredClone(motor);
@@ -460,7 +487,7 @@ export function proposeMechanicalRig(
     const p = addGroup([pinId], pinId)!,
       arm = addGroup([mc.b.occurrenceId], mc.b.occurrenceId)!;
     addJoint(rig.groups[0], p, fc.pivot, fc.axis, pinId);
-    addJoint(p, arm, mc.pivot, mc.axis, mc.b.occurrenceId);
+    addJoint(p, arm, mc.pivot, mc.axis, mc.b.occurrenceId, "revolute", pinId);
     if (fc.friction || mc.friction)
       result.warnings.push(
         "This friction pin remains movable; its measured rotational resistance is not available.",

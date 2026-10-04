@@ -472,6 +472,22 @@ const joint = {
           axisB: vec,
           limits: { ...arr(num, 2), minItems: 2 },
           motor: motor(kind === "revolute" ? "N*m" : "N"),
+          ...(kind === "revolute"
+            ? {
+                mating: obj({
+                  radiusLdu: {
+                    type: "number",
+                    exclusiveMinimum: 0,
+                    maximum: 32,
+                  },
+                  halfLengthLdu: {
+                    type: "number",
+                    exclusiveMinimum: 0,
+                    maximum: 2048,
+                  },
+                }),
+              }
+            : {}),
         },
         [...Object.keys(jointBase), "kind", "axisA", "axisB"],
       ),
@@ -502,13 +518,34 @@ const motionRig = obj(
     },
     joints: arr(joint, 100),
     loopClosures: arr(
-      obj({
-        ...jointBase,
-        kind: { const: "revolute" },
-        axisA: vec,
-        axisB: vec,
-        dependentJointIds: { ...arr(id, 16), minItems: 2, uniqueItems: true },
-      }),
+      obj(
+        {
+          ...jointBase,
+          kind: { const: "revolute" },
+          axisA: vec,
+          axisB: vec,
+          dependentJointIds: { ...arr(id, 16), minItems: 2, uniqueItems: true },
+          mating: obj({
+            radiusLdu: { type: "number", exclusiveMinimum: 0, maximum: 32 },
+            halfLengthLdu: {
+              type: "number",
+              exclusiveMinimum: 0,
+              maximum: 2048,
+            },
+          }),
+        },
+        [
+          "id",
+          "kind",
+          "bodyA",
+          "bodyB",
+          "anchorA",
+          "anchorB",
+          "axisA",
+          "axisB",
+          "dependentJointIds",
+        ],
+      ),
       8,
     ),
     forceLinks: arr(

@@ -3,7 +3,10 @@ import { Editor } from "../../src/core/commands";
 import { exportLDraw, importLDraw } from "../../src/ldraw/io";
 import { occurrences } from "../../src/core/document";
 import { validate } from "../../src/core/validate";
-import { physicsFixture } from "../../src/mechanisms/fixtures";
+import {
+  physicsFixture,
+  mechanismFixture,
+} from "../../src/mechanisms/fixtures";
 import { KinematicSession, validateRig } from "../../src/mechanisms/kinematic";
 import {
   buildJointRig,
@@ -44,7 +47,7 @@ it("the physics playground persists and restores rigs, motors and dynamic settin
 });
 
 it("physics-only drafts change nothing else, undo in one step and survive rig edits", () => {
-  const editor = new Editor(physicsFixture());
+  const editor = new Editor(mechanismFixture());
   const project = editor.project;
   const draft = buildRigDynamicsDraft(project, {
     rigId: "door",

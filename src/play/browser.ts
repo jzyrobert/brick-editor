@@ -321,7 +321,7 @@ export class BrowserPlay {
         const members: DynamicRigSource["members"] = {};
         const dynamic = dynamicRigIds.includes(rig.id);
         for (const group of rig.groups) {
-          if (dynamic)
+          if (dynamic || group.occurrenceIds.length <= 512)
             for (const id of group.occurrenceIds) {
               members[id] = await r.playGeometry({ include: [id] });
               ensure(
@@ -360,7 +360,10 @@ export class BrowserPlay {
           rigId: rig.id,
           groups,
           lookup,
-          ...(dynamic ? { members } : {}),
+          ...(Object.keys(members).length ===
+          rig.groups.flatMap((g) => g.occurrenceIds).length
+            ? { members }
+            : {}),
         });
         this.mechanismViews[rig.id] = mechanismViewGeometry(rig, groups);
       }

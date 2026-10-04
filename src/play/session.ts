@@ -1,3 +1,5 @@
+import { MechanicalQueryWorld } from "./mechanical-query-world";
+import { prepareMechanicalSources } from "./mechanical-solids";
 import { add, mv } from "../core/math";
 import type { DriverSeatSpec } from "../mechanisms/types";
 import {
@@ -230,6 +232,7 @@ export class PlaySession {
   private collisionIssue?: string;
   private ready: boolean;
   private warnings: string[];
+  private contactQueries = new MechanicalQueryWorld();
   private bounds: CollisionSnapshot["bounds"];
   private staticStats?: CompactCollisionMesh["stats"];
   private constructor(
@@ -257,6 +260,13 @@ export class PlaySession {
     Object.freeze(this.worldProfile);
     this.cameraSettings = resolvePlayCameraSettings(request.cameraSettings);
     this.arm = this.cameraSettings.followDistance;
+    const preparedContacts = prepareMechanicalSources(
+      Array.isArray(mechanismSource)
+        ? mechanismSource
+        : mechanismSource
+          ? [mechanismSource]
+          : [],
+    );
     this.world = new RAPIER.World({ x: 0, y: 0, z: 0 });
     this.world.timestep = DT;
     this.bounds = structuredClone(snapshot.bounds);
@@ -344,6 +354,7 @@ export class PlaySession {
           this.world,
           dynamicSources,
           revision,
+          preparedContacts,
         );
       }
       for (const source of allSources.filter(
@@ -351,19 +362,26 @@ export class PlaySession {
       ))
         this.mechanisms.set(
           source.rigId,
-          new PlayMechanism(this.world, source, () => ({
-            position: this.feet,
-            walk: this.locomotion === "walk",
-            ...(this.support ? { support: this.support } : {}),
-            ...(this.occupied
-              ? {
-                  seat: {
-                    rigId: this.occupied.request.rigId,
-                    envelopes: this.occupied.placement.envelopes,
-                  },
-                }
-              : {}),
-          })),
+          new PlayMechanism(
+            this.world,
+            source,
+            () => ({
+              position: this.feet,
+              walk: this.locomotion === "walk",
+              ...(this.support ? { support: this.support } : {}),
+              ...(this.occupied
+                ? {
+                    seat: {
+                      rigId: this.occupied.request.rigId,
+                      envelopes: this.occupied.placement.envelopes,
+                    },
+                  }
+                : {}),
+            }),
+            this.ready,
+            preparedContacts.get(source.rigId),
+            this.contactQueries,
+          ),
         );
       for (const [id, mechanism] of this.mechanisms)
         mechanism.setSupportGuard((before, after) => {
@@ -448,7 +466,9 @@ export class PlaySession {
       }
     } catch (error) {
       for (const mechanism of this.mechanisms.values()) mechanism.dispose();
+      this.contactQueries.dispose();
       this.dynamics?.dispose();
+      this.contactQueries.dispose();
       this.world.free();
       throw error;
     }
@@ -2685,6 +2705,7 @@ export class PlaySession {
   dispose() {
     if (this.disposed) return;
     for (const mechanism of this.mechanisms.values()) mechanism.dispose();
+    this.contactQueries.dispose();
     this.mechanisms.clear();
     this.dynamics?.dispose();
     this.dynamics = undefined;

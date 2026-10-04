@@ -49,7 +49,7 @@ async function fixture(
     for (let n = 0; n < ticks; n++)
       if (rig instanceof DynamicRig) {
         rig.beforeStep();
-        world.step();
+        rig.stepPhysics();
         rig.afterStep();
       } else rig.step();
     return rig.snapshot();

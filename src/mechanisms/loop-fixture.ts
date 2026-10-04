@@ -61,6 +61,11 @@ export function loopFixture(
             [5, 5, 5],
           ],
         ];
+  // Link bodies occupy separate physical layers; imaginary bearing shafts
+  // bridge those layers at the same planar joint coordinates.
+  points.forEach((point, i) => {
+    point[2] = [-20, -8, 4, -8][i];
+  });
   const source = [
     "0 FILE linkage.ldr",
     "0 Original CC0-1.0 closed linkage",
@@ -123,8 +128,8 @@ export function loopFixture(
     kind: "revolute",
     bodyA,
     bodyB,
-    anchorA,
-    anchorB,
+    anchorA: [anchorA[0], anchorA[1], -points[names.indexOf(bodyA)][2]],
+    anchorB: [anchorB[0], anchorB[1], -points[names.indexOf(bodyB)][2]],
     axisA: [0, 0, 1],
     axisB: [0, 0, 1],
   });
@@ -143,8 +148,8 @@ export function loopFixture(
             kind: "prismatic",
             bodyA: "frame",
             bodyB: "output",
-            anchorA: [80, 0, 0],
-            anchorB: [0, 0, 0],
+            anchorA: [80, 0, 20],
+            anchorB: [0, 0, 8],
             axisA: [1, 0, 0],
             axisB: [1, 0, 0],
             limits: [-70, 20],
