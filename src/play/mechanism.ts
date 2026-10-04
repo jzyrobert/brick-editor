@@ -732,6 +732,36 @@ export class PlayMechanism {
             normal.normalize();
             const origin = collider.translation();
             const plane = new Vector3(origin.x, origin.y, origin.z);
+            // A local box encloses every boundary point. Its support gap at
+            // the old frame, minus the complete segment travel, certifies a
+            // distant plane without scanning every convex vertex each tick.
+            const oldNormal = normal
+              .clone()
+              .applyQuaternion(rotation(a).invert());
+            const oldPosition = physics(a.position);
+            const lower =
+              normal.dot(
+                new Vector3(oldPosition.x, oldPosition.y, oldPosition.z).sub(
+                  plane,
+                ),
+              ) +
+              [oldNormal.x, oldNormal.y, oldNormal.z].reduce(
+                (sum, component, k) =>
+                  sum +
+                  component *
+                    (component < 0 ? solid.bounds.max[k] : solid.bounds.min[k]),
+                0,
+              );
+            ensure(
+              ++this.contactChecks <= MECHANICAL_CONTACT_LIMITS.pairChecks,
+              "LIMIT_EXCEEDED",
+              "This mechanism is too complex to check safely. Try fewer moving parts.",
+              {
+                limit: "pairChecks",
+                maximum: MECHANICAL_CONTACT_LIMITS.pairChecks,
+              },
+            );
+            if (Number.isFinite(lower) && lower > travel + 0.001 * S) continue;
             const distance = (frame: Transform) => {
               const local = normal
                 .clone()
@@ -1355,7 +1385,7 @@ export class PlayMechanism {
                 )
               : warning,
         ),
-        "Moving surfaces stop conservatively before touching the player. Riding and pushing are not simulated.",
+        "Moving surfaces carry standing players and stop before blocked movement. Seated vehicles and trains use their authored controls. Pushing is not simulated.",
         ...(this.vehicleReport
           ? [
               this.vehicleReport.supported

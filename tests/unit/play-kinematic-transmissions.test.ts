@@ -66,7 +66,9 @@ describe("kinematic Play spur drive", () => {
     } finally {
       play.dispose();
     }
-  }, 15000);
+    // 4,080 fixed ticks include compiled-source world/internal contact sweeps;
+    // the isolated trial takes 44 seconds on the shared VM.
+  }, 90000);
   it("stops a velocity motor at a driven output's limit and validates manual targets without changing its state", async () => {
     const { play, rig, input, output, report, unchanged } = await fixture([
       -30, 60,
