@@ -6,7 +6,7 @@ import { refusePointerLock } from "./pointer";
 export async function offlinePhysicalMotion(
   page: Page,
   context: BrowserContext,
-  kind: "motor-gears" | "rack-drive",
+  kind: "motor-gears" | "rack-drive" | "twin-drive",
 ) {
   await refusePointerLock(page);
   await page.goto("./?automation=1");
@@ -34,7 +34,13 @@ export async function offlinePhysicalMotion(
     const result = await page.evaluate(
       async ({ saved, kind }) => {
         const api = window.brickEditor!;
-        await api.project.import({ format: "native", bytes: saved });
+        // The larger sample must build its source-derived rig on its first
+        // template open in a fresh offline realm, not rely on a saved rig.
+        await api.project.import(
+          kind === "twin-drive"
+            ? { format: "template", template: kind }
+            : { format: "native", bytes: saved },
+        );
         await api.ready({ strict: true });
         const query = await api.query(),
           source = await api.project.export({ format: "ldraw" }),
@@ -48,7 +54,7 @@ export async function offlinePhysicalMotion(
           });
         const rig = (await api.mechanisms.list())[0],
           joint = rig.joints.find((j) =>
-            kind === "motor-gears" ? !!j.motor : j.kind === "prismatic",
+            kind !== "rack-drive" ? !!j.motor : j.kind === "prismatic",
           )!;
         const legs = [];
         for (const dynamic of [false, true]) {
@@ -59,7 +65,7 @@ export async function offlinePhysicalMotion(
             realtime: false,
           });
           const rest = await api.play.snapshot();
-          if (kind === "motor-gears")
+          if (kind !== "rack-drive")
             await api.play.setMotor({
               rigId: rig.id,
               jointId: joint.id,
@@ -106,7 +112,7 @@ export async function offlinePhysicalMotion(
       inventory: result.inventory,
     });
     expect(result.query.occurrences.length).toBe(
-      kind === "motor-gears" ? 15 : 2,
+      kind === "twin-drive" ? 35 : kind === "motor-gears" ? 15 : 2,
     );
     for (const leg of result.legs) {
       const moved = leg.moved.mechanisms![result.rig.id],
@@ -118,16 +124,22 @@ export async function offlinePhysicalMotion(
           moved.pose.jointPositions[result.joint.id] -
             rest.pose.jointPositions[result.joint.id],
         ),
-      ).toBeGreaterThan(kind === "motor-gears" ? 10 : 20);
-      if (kind === "motor-gears") {
+      ).toBeGreaterThan(kind !== "rack-drive" ? 10 : 20);
+      if (kind !== "rack-drive") {
         expect(result.joint.motor!.binding!.profile).toBe(
           "power-functions-motor-m-v1",
         );
-        const output = result.rig.joints.find((j) => !j.motor)!;
+        const transmission = result.rig.transmissions!.find(
+          (t) => t.kind === "spur" && t.jointA === result.joint.id,
+        );
+        if (transmission?.kind !== "spur")
+          throw new Error("Expected a real linked spur output");
         expect(
           Math.abs(
-            moved.pose.jointPositions[output.id] +
-              moved.pose.jointPositions[result.joint.id] / 3,
+            moved.pose.jointPositions[transmission.jointB] +
+              (moved.pose.jointPositions[result.joint.id] *
+                transmission.teethA) /
+                transmission.teethB,
           ),
         ).toBeLessThan(leg.dynamic ? 1 : 0.001);
       } else expect(result.rig.joints.every((j) => !j.motor)).toBe(true);

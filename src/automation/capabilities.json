@@ -396,8 +396,8 @@
       "motors": {
         "kinematic": "Position motors travel at 90 degrees/s or 40 LDU/s; velocity motors run at their target; swept actor checks block and auto-retry",
         "dynamic": "Rapier joint motors with maxEffort",
-        "control": "play.setMotor({rigId,jointId,enabled,input?}); optional input in [-1,1] requires enabled:true and overrides session velocity at bounded rate/effort; zero brakes, omitted input restores the authored preset; manual joint commands stop the component's motor",
-        "remoteControls": "Usable source-bound motor or manual joint controls; rapid hand sliders coalesce to one latest target per animation frame and travel through checked steps; paused or closed controls cancel pending input",
+        "control": "play.setMotor({rigId,jointId,enabled,input?,power?}); signed input [-1,1] requires enabled:true and overrides bounded velocity; power [0,1] defaults1 and reduces native effort within authored cap; power0 removes powered drive, input0 brakes at requested power; global clear resets live input0,power1; omitted input restores preset; manual commands stop the component motor",
+        "remoteControls": "Active HUD Controls action only for usable source-bound mechanisms; latched direction and primary Power slider, independent motor tabs and Brake all; selecting a motor preserves other inputs; closing brakes the viewed rig; rapid manual sliders coalesce to the latest checked travel target; paused or closed controls cancel pending input",
         "overview": "Remote controls fit every live group bound into the canvas area clear of the status bar and control sheet; orbit and closer zoom inspect the mechanism, Fit restores the whole system; walking controls are hidden; leaving restores the explorer view; successful seat/train/vehicle context changes switch to the active driving or riding view; refused transitions retain the overview; play.view() reads the rendered camera and overview rig ID"
       },
       "automaticDoors": {

@@ -62,6 +62,9 @@ export function PlayMechanismControls({
   const [selected, setSelected] = useState(controls[0]?.id ?? "");
   const joint = controls.find((j) => j.id === selected) ?? controls[0];
   const motor = joint && report.motors?.[joint.id];
+  const [powers, setPowers] = useState<Record<string, number>>({});
+  const directions = useRef<Record<string, number>>({});
+  const power = powers[JSON.stringify([rig.id, joint?.id])] ?? 1;
   const dynamic = report.mode === "dynamic";
   const controlKey = JSON.stringify([rig.id, joint?.id]);
   const [manualDraft, setManualDraft] = useState<{
@@ -165,12 +168,22 @@ export function PlayMechanismControls({
       observer.disconnect();
       window.removeEventListener("resize", frame);
       if (play.getState().active) {
+        const motors = play.snapshot().mechanisms?.[rig.id]?.motors;
+        for (const j of rig.joints)
+          if (motors?.[j.id]?.enabled)
+            play.setMotor({
+              rigId: rig.id,
+              jointId: j.id,
+              enabled: true,
+              input: 0,
+              power: 1,
+            });
         play.clearInput();
         play.focusMechanism();
       }
     };
   }, [play, rig.id, onError]);
-  const input = (value: number) => {
+  const input = (value: number, power = 1) => {
     if (!joint || !motor || !play.getState().active || play.getState().paused)
       return;
     attempt(() =>
@@ -179,6 +192,7 @@ export function PlayMechanismControls({
         jointId: joint.id,
         enabled: true,
         input: value,
+        power,
       }),
     );
   };
@@ -233,17 +247,28 @@ export function PlayMechanismControls({
   });
   const motorState = !motor
     ? ""
-    : motor.status === "blocked"
-      ? "Motor blocked"
-      : motor.status === "at-limit"
-        ? "At limit"
-        : motor.input !== undefined
-          ? motor.input === 0
-            ? "Braking"
-            : `${Math.round(Math.abs(motor.input) * 100)}% ${motor.input < 0 ? "reverse" : "forward"}`
-          : motor.enabled
-            ? "Running preset"
-            : "Motor stopped";
+    : !motor.enabled || motor.power === 0
+      ? "Motor off"
+      : motor.status === "blocked"
+        ? "Motor blocked"
+        : motor.status === "at-limit"
+          ? "At limit"
+          : motor.input !== undefined
+            ? motor.input === 0
+              ? "Braking"
+              : `${Math.round(Math.abs(motor.input) * 100)}% ${motor.input < 0 ? "reverse" : "forward"}`
+            : motor.enabled
+              ? "Running preset"
+              : "Motor stopped";
+  const runningOthers = controls.filter((j) => {
+    const drive = report.motors?.[j.id];
+    return (
+      j.id !== joint?.id &&
+      drive?.enabled &&
+      drive.power !== 0 &&
+      drive.input !== 0
+    );
+  }).length;
   const position = joint ? (report.pose.jointPositions[joint.id] ?? 0) : 0;
   const base = Math.floor((position + 180) / 360) * 360;
   const outputs = joint
@@ -305,25 +330,56 @@ export function PlayMechanismControls({
         <div className="play-mechanism-viewbar">
           <span>Drag to orbit · pinch or scroll to zoom</span>
         </div>
-        {controls.length > 1 && (
-          <label className="play-control-picker">
-            Part control
-            <select
-              aria-label="Part control"
-              value={joint?.id}
-              onChange={(e) => {
-                cancelQueuedMove();
-                play.clearInput();
-                setSelected(e.target.value);
-              }}
-            >
-              {controls.map((j) => (
-                <option key={j.id} value={j.id}>
-                  {label(j.id)}
-                </option>
-              ))}
-            </select>
-          </label>
+        {controls.length > 1 && controls.every((j) => j.motor) ? (
+          <div
+            className="play-motor-picker"
+            role="group"
+            aria-label="Motor controls"
+          >
+            {controls.map((j) => {
+              const drive = report.motors?.[j.id];
+              const input = drive?.input;
+              return (
+                <button
+                  key={j.id}
+                  type="button"
+                  aria-pressed={joint?.id === j.id}
+                  onClick={() => setSelected(j.id)}
+                >
+                  <strong>{label(j.id)}</strong>
+                  <span>
+                    {!drive?.enabled || drive.power === 0
+                      ? "Stopped"
+                      : input
+                        ? `${Math.round(Math.abs(input) * 100)}% ${input < 0 ? "reverse" : "forward"}`
+                        : input === undefined
+                          ? "Preset running"
+                          : "Braking"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          controls.length > 1 && (
+            <label className="play-control-picker">
+              Part control
+              <select
+                aria-label="Part control"
+                value={joint?.id}
+                onChange={(e) => {
+                  cancelQueuedMove();
+                  setSelected(e.target.value);
+                }}
+              >
+                {controls.map((j) => (
+                  <option key={j.id} value={j.id}>
+                    {label(j.id)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )
         )}
         {dynamic && report.grippers && (
           <PlayGripperControls
@@ -338,58 +394,109 @@ export function PlayMechanismControls({
             <div className="play-control-reading">
               <strong>{label(joint.id)}</strong>
               <output>
-                {position.toFixed(1)}{" "}
-                {joint.kind === "revolute" ? "degrees" : "LDU"}
+                {motor
+                  ? motorState
+                  : `${position.toFixed(1)} ${joint.kind === "revolute" ? "degrees" : "LDU"}`}
               </output>
             </div>
             {motor ? (
               <>
+                <label className="play-motor-power">
+                  <span>
+                    Power <output>{Math.round(power * 100)}%</output>
+                  </span>
+                  <input
+                    type="range"
+                    aria-label={`${label(joint.id)} power`}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    value={power}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      setPowers((previous) => ({
+                        ...previous,
+                        [controlKey]: value,
+                      }));
+                      const direction = motor.input
+                        ? Math.sign(motor.input)
+                        : motor.power === 0
+                          ? (directions.current[controlKey] ?? 0)
+                          : 0;
+                      if (direction) input(direction * value, value);
+                    }}
+                  />
+                </label>
                 <div className="play-drive-buttons">
                   <button
                     type="button"
-                    {...heldButton(-1, input)}
-                    aria-label={`Hold ${label(joint.id).toLowerCase()} reverse`}
+                    onClick={() => {
+                      directions.current[controlKey] = -1;
+                      input(-power, power);
+                    }}
+                    aria-pressed={!!motor.input && motor.input < 0}
+                    aria-label={`Run ${label(joint.id).toLowerCase()} reverse`}
                   >
                     Reverse
                   </button>
                   <button
                     type="button"
-                    onClick={() => input(0)}
+                    onClick={() => {
+                      directions.current[controlKey] = 0;
+                      input(0);
+                    }}
                     aria-label="Brake motor"
                   >
                     Brake
                   </button>
                   <button
                     type="button"
-                    {...heldButton(1, input)}
-                    aria-label={`Hold ${label(joint.id).toLowerCase()} forward`}
+                    onClick={() => {
+                      directions.current[controlKey] = 1;
+                      input(power, power);
+                    }}
+                    aria-pressed={!!motor.input && motor.input > 0}
+                    aria-label={`Run ${label(joint.id).toLowerCase()} forward`}
                   >
                     Forward
                   </button>
                 </div>
                 <div className="play-drive-feedback">
-                  <span>Release to brake</span>
-                  <output role="status">{motorState}</output>
+                  <span>Keeps running until you brake or close controls.</span>
                 </div>
+                {runningOthers > 0 && (
+                  <div className="play-motor-state play-other-motors">
+                    <span>
+                      {runningOthers} other{" "}
+                      {runningOthers === 1 ? "motor is" : "motors are"} active.
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        attempt(() => {
+                          for (const j of controls.filter((j) => j.motor))
+                            play.setMotor({
+                              rigId: rig.id,
+                              jointId: j.id,
+                              enabled: true,
+                              input: 0,
+                              power: 1,
+                            });
+                        })
+                      }
+                    >
+                      Brake all
+                    </button>
+                  </div>
+                )}
                 <details className="play-motor-settings">
                   <summary>Motor settings</summary>
-                  <label className="play-motor-lever">
-                    Speed and direction
-                    <input
-                      type="range"
-                      aria-label="Motor speed and direction"
-                      min={-1}
-                      max={1}
-                      step={0.05}
-                      value={motor.input ?? 0}
-                      onChange={(e) => input(Number(e.target.value))}
-                      onPointerUp={() => input(0)}
-                      onPointerCancel={() => input(0)}
-                      onLostPointerCapture={() => input(0)}
-                      onKeyUp={() => input(0)}
-                      onBlur={() => input(0)}
-                    />
-                  </label>
+                  <p>
+                    Shaft position: {position.toFixed(1)} degrees.{" "}
+                    {dynamic
+                      ? "Power limits speed and available motor force."
+                      : "Power limits turning speed. Dynamic mode also simulates motor force."}
+                  </p>
                   <div className="play-motor-state">
                     <span>Use the motor's saved setting.</span>
                     <button

@@ -96,16 +96,18 @@ for (const phone of [false, true])
         );
         if (c.name === "motor-gears") {
           const forward = page.getByRole("button", {
-            name: "Hold motor 1 forward",
+            name: "Run motor 1 forward",
             exact: true,
           });
           const bounds = (await forward.boundingBox())!;
           expect(bounds.height).toBeGreaterThanOrEqual(44);
           expect(bounds.width).toBeGreaterThanOrEqual(44);
           await forward.focus();
-          await page.keyboard.down("Enter");
+          await page.keyboard.press("Enter");
           await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
-          await page.keyboard.up("Enter");
+          await page
+            .getByRole("button", { name: "Brake motor", exact: true })
+            .click();
         } else {
           await page
             .getByLabel("Explore joint joint-0", { exact: true })

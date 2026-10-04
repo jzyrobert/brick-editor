@@ -227,7 +227,7 @@ for (const [width, height] of [
         .getByRole("button", { name: "Try in Play", exact: true })
         .click();
       await expect(
-        page.getByRole("button", { name: "Hold motor 1 forward", exact: true }),
+        page.getByRole("button", { name: "Run motor 1 forward", exact: true }),
       ).toBeVisible();
       await expect(
         page.getByRole("group", { name: "Movement joystick", exact: true }),

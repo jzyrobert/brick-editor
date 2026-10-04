@@ -26,15 +26,17 @@ Each sample opens on a backdrop that suits it ([rendering](RENDERING.md#backdrop
 ## Ready-to-play motion samples
 
 Open **Project → New → Show all templates** and choose a motion sample. Enter
-**Play**, open **Pause**, then choose the mechanism's **controls**. The overview
+**Play**, then tap **Controls** on the active HUD. The overview
 fits the whole mechanism; drag to orbit and pinch or scroll to zoom. Forward and
-Reverse work while held, with braking on release. Each sample opens separately
+Reverse keep running until **Brake**, pause or close. **Power** sets the rate and,
+in Dynamic mode, the available motor effort; the authored cap stays in force. Each sample opens separately
 so the reviewed contact and native collider budgets remain bounded.
 
-| Sample        |            Pieces | What to try                                                                                                                                                                                                              |
-| ------------- | ----------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Motor & gears | 15 official parts | The actual Power Functions M motor is mounted on studs and connected to the retained input axle. Hold Forward to turn the red 8-tooth gear; the blue 24-tooth gear follows at one third speed in the opposite direction. |
-| Rack guide    |  2 official parts | Move the blue rack manually inside its real outrigger housing using the joint control. The source-derived guide bounds keep the rack captured.                                                                           |
+| Sample           |            Pieces | What to try                                                                                                                                                                                                                                                |
+| ---------------- | ----------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Motor & gears    | 15 official parts | The actual Power Functions M motor is mounted on studs and connected to the retained input axle. Tap Forward to turn the red 8-tooth gear; the blue 24-tooth gear follows at one third speed in the opposite direction.                                    |
+| Twin motor table | 35 official parts | Two actually mounted PF-M motors share a stud-connected frame. Run the red two-stage reduction (same direction, one-third speed) and blue direct drive (opposite direction, equal speed) independently. Switch motor tabs, adjust power and use Brake all. |
+| Rack guide       |  2 official parts | Move the blue rack manually inside its real outrigger housing using the joint control. The source-derived guide bounds keep the rack captured.                                                                                                             |
 
 The motor uses the reviewed 58120 output socket, a six-stud axle and a common
 stud-connected base carrying both the motor and bearings. Its simulated effort
@@ -45,7 +47,10 @@ capture-zone demonstrations remain developer fixtures, outside normal Play.
 
 Native samples retain their source-derived rigs and motor binding; ordinary
 LDraw exports preserve the source geometry. Save a `.brickproj` to retain controls.
-`src/catalog/motion-samples.ts` reuses the source-reviewed factories. The generator
+`src/catalog/motion-samples.ts` reuses the source-reviewed factories. The twin
+table retains five shafts through actual bearing mouths and collars; its 2,737
+moving convex children stay inside the existing 4,096 shared native cap.
+[Source review](reviews/TWIN-DRIVE-SAMPLE.md) records the parts and gear phases. The generator
 validates the rigs, exports the MPDs and renders actual 320 × 240 chooser previews.
 Architectural occupancy checks remain separate because axles, bearings and gears
 nest deliberately. The generated MPDs extend the offline dependency scan, including

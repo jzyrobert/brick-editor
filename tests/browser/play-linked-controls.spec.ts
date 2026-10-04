@@ -56,13 +56,15 @@ for (const kind of ["real gearbox"] as const)
           window.brickEditor!.play.snapshot(),
         );
         const forward = page.getByRole("button", {
-          name: "Hold motor 1 forward",
+          name: "Run motor 1 forward",
           exact: true,
         });
         await forward.focus();
-        await page.keyboard.down("Enter");
+        await page.keyboard.press("Enter");
         await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
-        await page.keyboard.up("Enter");
+        await page
+          .getByRole("button", { name: "Brake motor", exact: true })
+          .click();
         const moved = await page.evaluate(() =>
           window.brickEditor!.play.snapshot(),
         );

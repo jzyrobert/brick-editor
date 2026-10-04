@@ -65,36 +65,40 @@ for (const [width, height, dynamic] of sizes)
       // One source-backed driver needs no redundant part picker; the gear is feedback.
       await expect(page.getByLabel("Part control")).toHaveCount(0);
       const forward = page.getByRole("button", {
-        name: "Hold motor 1 forward",
+        name: "Run motor 1 forward",
         exact: true,
       });
-      await forward.scrollIntoViewIfNeeded();
-      const touch =
-        width === 1440 ? undefined : await context.newCDPSession(page);
-      const down = async () => {
-        const b = (await forward.boundingBox())!;
-        if (width === 1440) {
-          await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
-          await page.mouse.down();
-        } else {
-          await touch!.send("Input.dispatchTouchEvent", {
-            type: "touchStart",
-            touchPoints: [
-              { x: b.x + b.width / 2, y: b.y + b.height / 2, id: 1 },
-            ],
-          });
-        }
-      };
-      const up = async () => {
-        if (width === 1440) await page.mouse.up();
-        else {
-          await touch!.send("Input.dispatchTouchEvent", {
-            type: "touchEnd",
-            touchPoints: [],
-          });
-        }
-      };
-      await down();
+      const reverse = page.getByRole("button", {
+        name: "Run motor 1 reverse",
+        exact: true,
+      });
+      const brake = page.getByRole("button", {
+        name: "Brake motor",
+        exact: true,
+      });
+      const speed = page.getByLabel("Motor 1 power", { exact: true });
+      await expect(speed).toBeVisible();
+      await speed.fill("0.25");
+      await forward.click();
+      await expect
+        .poll(() =>
+          page.evaluate(
+            async (j) =>
+              (await window.brickEditor!.play.snapshot()).mechanisms![
+                "technic-drive"
+              ].motors![j].input,
+            input,
+          ),
+        )
+        .toBe(0.25);
+      await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
+      const slow = await page.evaluate(() =>
+        window.brickEditor!.play.snapshot(),
+      );
+      expect(
+        slow.mechanisms!["technic-drive"].pose.jointPositions[input],
+      ).toBeGreaterThan(20);
+      await speed.fill("1");
       await expect
         .poll(() =>
           page.evaluate(
@@ -107,7 +111,7 @@ for (const [width, height, dynamic] of sizes)
         )
         .toBe(1);
       await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
-      await up();
+      await brake.click();
       const driven = await page.evaluate(() =>
         window.brickEditor!.play.snapshot(),
       );
@@ -121,27 +125,47 @@ for (const [width, height, dynamic] of sizes)
         0,
       );
       expect(mechanism.motors![input].input).toBe(0);
+      await reverse.click();
       await page.evaluate(() => window.brickEditor!.play.stepTicks(60));
+      const reversed = await page.evaluate(() =>
+        window.brickEditor!.play.snapshot(),
+      );
+      expect(
+        reversed.mechanisms!["technic-drive"].pose.jointPositions[input],
+      ).toBeLessThan(mechanism.pose.jointPositions[input] - 20);
+      // Zero power removes powered drive without losing the selected direction.
+      await speed.fill("0");
+      expect(
+        (await page.evaluate(() => window.brickEditor!.play.snapshot()))
+          .mechanisms!["technic-drive"].motors![input],
+      ).toMatchObject({ input: 0, power: 0, status: "stopped" });
+      await speed.fill("0.5");
+      expect(
+        (await page.evaluate(() => window.brickEditor!.play.snapshot()))
+          .mechanisms!["technic-drive"].motors![input],
+      ).toMatchObject({ input: -0.5, power: 0.5 });
+      await brake.click();
+      await speed.fill("1");
+      // Keyboard activation latches just like a tap, until an explicit brake.
       await forward.focus();
-      await page.keyboard.down("Enter");
+      await page.keyboard.press("Enter");
       expect(
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))
           .mechanisms!["technic-drive"].motors![input].input,
       ).toBe(1);
-      await page.keyboard.up("Enter");
+      await brake.focus();
+      await page.keyboard.press("Space");
       expect(
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))
           .mechanisms!["technic-drive"].motors![input].input,
       ).toBe(0);
-      // Stop held input on blur, cancellation and pause.
-      await forward.focus();
-      await page.keyboard.down("Enter");
-      await page.getByRole("button", { name: "Brake motor" }).focus();
-      await page.keyboard.up("Enter");
+      await forward.click();
+      await page.evaluate(() => window.dispatchEvent(new Event("blur")));
       expect(
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))
           .mechanisms!["technic-drive"].motors![input].input,
       ).toBe(0);
+      await page.getByRole("button", { name: "Resume", exact: true }).click();
       await page
         .locator(".play-mechanism-content")
         .evaluate((el) => (el.scrollTop = 0));
@@ -172,7 +196,12 @@ for (const [width, height, dynamic] of sizes)
       await page
         .getByRole("button", { name: "Fit build", exact: true })
         .click();
+      await forward.click();
       await page.getByRole("button", { name: "Pause", exact: true }).click();
+      expect(
+        (await page.evaluate(() => window.brickEditor!.play.snapshot()))
+          .mechanisms!["technic-drive"].motors![input].input,
+      ).toBe(0);
       expect(
         (await page.evaluate(() => window.brickEditor!.play.view()))
           .mechanismOverview,

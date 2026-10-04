@@ -27,9 +27,17 @@ export async function exitPlay(page: Page) {
   await exit.click();
 }
 
-/** Remote mechanism controls open from a pause-menu tile ("Remote controls",
- * or "<name> controls" for a single mechanism) and resume Play. */
+/** Open usable mechanism controls directly from the active Play HUD; the pause menu retains the same action. */
 export async function openRemoteControls(page: Page) {
+  const controls = page.getByRole("button", {
+    name: "Open mechanism controls",
+    exact: true,
+  });
+  if (await controls.isVisible()) {
+    await controls.click();
+    await expect(page.locator(".play-mechanism")).toBeVisible();
+    return;
+  }
   await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page
     .locator(".play-menu .play-tile")

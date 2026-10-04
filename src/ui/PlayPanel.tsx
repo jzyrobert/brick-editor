@@ -306,7 +306,7 @@ export function PlayPanel({
           "input,textarea,select,[contenteditable]:not([contenteditable=false]),[role=textbox]",
         )
       ) {
-        clear();
+        if (!play.getState().mechanismOverview) clear();
         return;
       }
       if (
@@ -375,7 +375,8 @@ export function PlayPanel({
     // pauses Play so every button is reachable again.
     const lock = () => {
       setLocked(!!document.pointerLockElement);
-      if (!document.pointerLockElement) pause();
+      if (!document.pointerLockElement && !play.getState().mechanismOverview)
+        pause();
       else setLockRefused(false);
     };
     const lockError = () => setLockRefused(true);
@@ -404,7 +405,8 @@ export function PlayPanel({
       if (
         (e.target as HTMLElement).closest(
           "input,textarea,select,[contenteditable]:not([contenteditable=false]),[role=textbox]",
-        )
+        ) &&
+        !play.getState().mechanismOverview
       )
         clear();
     };
@@ -877,8 +879,7 @@ export function PlayPanel({
   const showTrains = !!trains && !state.paused && !inVehicle && !remoteOpen;
   const keyHint = (key: string) =>
     finePointer && key ? <kbd aria-hidden="true">{key}</kbd> : null;
-  // Remote controls for the build's mechanisms: rarely needed, so they open
-  // from the pause menu rather than holding a key on the HUD.
+  // Offer the build controls only when a usable mechanism is active.
   const canRemote =
     !inVehicle &&
     !riding &&
@@ -991,6 +992,23 @@ export function PlayPanel({
             <Icon name={status.icon} size={16} />
             <span>{status.text}</span>
           </span>
+          {canRemote && !remoteOpen && !state.paused && (
+            <button
+              className="play-key play-controls-key"
+              type="button"
+              aria-label="Open mechanism controls"
+              onClick={() => {
+                clear();
+                play.focusMechanism(activeRigId!);
+                document.exitPointerLock?.();
+                setRemoteRigId(activeRigId!);
+                setRemoteOpen(true);
+              }}
+            >
+              <Icon name="sliders" size={18} />
+              <span>Controls</span>
+            </button>
+          )}
         </div>
       </div>
       {canRemote && remoteOpen && (

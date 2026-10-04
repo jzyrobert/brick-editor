@@ -72,14 +72,16 @@ for (const width of [1440, 360])
             .mechanismOverview,
         ).toBe(rig.id);
         const forward = page.getByRole("button", {
-          name: "Hold motor 1 forward",
+          name: "Run motor 1 forward",
           exact: true,
         });
         await forward.scrollIntoViewIfNeeded();
         await forward.focus();
-        await page.keyboard.down("Enter");
+        await page.keyboard.press("Enter");
         await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
-        await page.keyboard.up("Enter");
+        await page
+          .getByRole("button", { name: "Brake motor", exact: true })
+          .click();
         poses.push(
           await page.evaluate(() => window.brickEditor!.play.snapshot()),
         );

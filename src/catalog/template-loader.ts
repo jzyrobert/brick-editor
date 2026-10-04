@@ -27,8 +27,7 @@ export async function loadTemplate(name: TemplateName) {
   }
   // Reviewed Technic proposals require source identities from the full index
   // before their rigs can be authored, including the first open in a fresh tab.
-  if (isMotionSample(name) && (name === "motor-gears" || name === "rack-drive"))
-    await loadFullLibraryIndex();
+  if (isMotionSample(name)) await loadFullLibraryIndex();
   const first = template(name);
   if (!unresolvedCuratedRefs(first).size) return first;
   try {

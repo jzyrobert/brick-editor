@@ -141,6 +141,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.play-controls-key {
+  display: flex;
+  gap: 6px;
+  width: auto;
+  padding: 0 10px;
+  font-size: var(--text-label);
+  font-weight: 650;
+}
 .play-status .icon {
   flex-shrink: 0;
   color: var(--hud-mute);
@@ -916,9 +924,56 @@
 .play-motor-state {
   font-size: var(--text-label);
 }
-.play-motor-lever input {
+.play-motor-power input {
   accent-color: var(--accent);
-  touch-action: none;
+}
+.play-mechanism .play-motor-power {
+  margin: 6px 0;
+}
+.play-motor-power > span {
+  display: flex;
+  justify-content: space-between;
+}
+.play-motor-power output {
+  font-variant-numeric: tabular-nums;
+}
+.play-drive-buttons button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--chalk);
+}
+.play-motor-picker {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  overflow-x: auto;
+}
+.play-motor-picker button {
+  flex: 1;
+  min-width: 112px;
+  padding: 8px;
+  text-align: left;
+}
+.play-motor-picker button[aria-pressed="true"] {
+  background: var(--grass);
+  color: var(--grass-ink);
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+.play-motor-picker strong,
+.play-motor-picker span {
+  display: block;
+}
+.play-motor-picker span {
+  margin-top: 2px;
+  font-size: var(--text-label);
+  font-variant-numeric: tabular-nums;
+}
+.play-other-motors {
+  margin-top: 8px;
+}
+.play-other-motors button {
+  width: auto;
+  margin: 0;
 }
 .play-output-details {
   margin-top: 8px;
@@ -981,9 +1036,6 @@
   }
   .play-control-reading {
     margin: 10px 0 8px;
-  }
-  .play-motor-lever {
-    margin: 4px 0 !important;
   }
 }
 /* Short landscape screens keep the primary drive and its feedback together. */
