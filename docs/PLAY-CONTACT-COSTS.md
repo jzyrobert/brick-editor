@@ -16,6 +16,7 @@ export PATH=/tmp/brick-node/node-v22.14.0-linux-arm64/bin:$PATH
 FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=spur --mode=dynamic --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 --baseline=237c339 > .local/spur-contact-cost.jsonl
 FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=rack --mode=dynamic --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 --baseline=237c339 > .local/rack-contact-cost.jsonl
 FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=spur --mode=kinematic --rounds=2 --warmup=1 --ticks=60 > .local/spur-kinematic-cost.jsonl
+FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=spur --mode=kinematic --ground=true --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 > .local/spur-ground-cost.jsonl
 ```
 
 Create `.local` before redirecting output if it is absent. The script writes a
@@ -109,6 +110,36 @@ p95 9.94/6.11 ms; first ticks cost 46/22 ms. Both accepted 90° / −30° after
 optimization candidate, not a claim that the production implementation already
 contains it. Foreign colliders must be shadowed into the same query world;
 handles from different collider sets cannot be mixed.
+
+## Integrated spur with ground (4 October 2026)
+
+The integrated checkpoint at `a7297d8` was measured separately with the optional
+kinematic ground plane enabled. The normal 90°/s drive accepts 270° / −90° after
+180 ticks in both trials. The 150 measured ticks follow 30 warm-up ticks; source
+hashes are identical at process entry and exit. Load is 0.72–0.82 on the same
+four-core VM. Rendering, the actor and vehicle work are still excluded.
+
+| Kinematic ground trial | Mean ms/tick | p95 ms/tick | Entry  | First tick |
+| ---------------------- | ------------ | ----------- | ------ | ---------- |
+| Cold                   | 7.04         | 7.82        | 606 ms | 53 ms      |
+| Warm                   | 6.75         | 7.14        | 396 ms | 24 ms      |
+
+This fixture has 15 moving policy classes, 1,956 convex children, 13 stationary
+solids and six walking-world colliders including ground. Plane checks use a
+conservative enclosing-box certificate when every intermediate point stays
+clear; near planes retain exact boundary support and swept refinement. A faster
+reverse tick now uses 252 counted checks instead of exhausting the 200,000-work
+limit. The full 4,080-tick phase/reversal unit remains unchanged apart from its
+deadline: an isolated trial takes 44 seconds, so its former 15-second allowance
+was replaced with 90 seconds. This long mixed-rate replay is distinct from the
+normal-rate sampling above.
+
+The measured `mechanism.ts` hash is
+`5189ab8921c6bce6f38e55cd7432f7f3170de16c364135e7cbfd8dce36119fa7`;
+`mechanical-solids.ts` is
+`0bdf7d6b1c526e524e79186402df5501f7474ca763d9043440d1417abf05f610`.
+Later shape fixes require new measurements. These results neither accept the
+unresolved rack contact path nor establish a phone frame budget.
 
 ## Budget advice
 

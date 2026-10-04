@@ -42,6 +42,9 @@ const bounded = (key: string, fallback: number, min: number, max: number) => {
 const rounds = bounded("rounds", 2, 1, 5),
   ticks = bounded("ticks", 150, 1, 1200),
   warmup = bounded("warmup", 30, 0, 120);
+if (args.ground !== undefined && !["true", "false"].includes(args.ground))
+  throw new Error("Use --ground=true|false for the kinematic probe");
+const ground = args.ground === "true";
 const massKg = Number(args["mass-kg"] ?? 1);
 if (!Number.isFinite(massKg) || massKg < 0.001 || massKg > 100000)
   throw new Error("Invalid --mass-kg");
@@ -49,6 +52,7 @@ const files = [
   "src/play/dynamics.ts",
   "src/play/mechanism.ts",
   "src/play/mechanical-solids.ts",
+  "src/play/mechanical-query-world.ts",
   "src/play/surface-compound.ts",
   `src/mechanisms/${fixture === "spur" ? "technic" : "rack"}-fixture.ts`,
 ];
@@ -265,6 +269,10 @@ for (let round = 0; round < rounds; round++) {
     const world = new RAPIER.World({ x: 0, y: 0, z: 0 });
     let rig: PlayMechanism | undefined;
     try {
+      if (ground)
+        world.createCollider(
+          new RAPIER.ColliderDesc(new RAPIER.HalfSpace({ x: 0, y: 1, z: 0 })),
+        );
       const t = performance.now();
       rig = new PlayMechanism(world, sources[0], () => ({
         position: [10000, 0, 10000],
@@ -288,6 +296,7 @@ for (let round = 0; round < rounds; round++) {
       console.log(
         JSON.stringify({
           type: "kinematic",
+          ground,
           fixture,
           round,
           entryMs,
