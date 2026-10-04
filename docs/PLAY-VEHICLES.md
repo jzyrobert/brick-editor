@@ -1,25 +1,46 @@
 # Protected kinematic driving
 
-Play's vehicle control remains on foot: movement keys or the touch joystick drive the selected source-supported vehicle, and Stop driving returns to walking controls. Vehicles now stop conservatively before included static geometry or another active rig. This is kinematic collision protection, not dynamic vehicle physics, seated entry, riding, pushing or suspension.
+Play supports remote driving from on foot and entry through an explicitly authored driver seat. Movement keys or the touch joystick drive the selected source-supported vehicle; Stop driving returns to walking controls. Kinematic vehicles stop conservatively before included static geometry or another active rig. Dynamic chassis response, suspension and authored seats are described below.
 
 The supported profile requires exactly the authored chassis and declared wheel groups, no extra groups or joints, complete compiled geometry, and world-horizontal wheel axles. A chassis box encloses all its compiled vertices. Wheel envelopes enclose complete spin and steering motion. These conservative shapes can stop the vehicle before visible surfaces touch. Unsupported rigs retain their source and other exploration/joint functionality; driving is disabled with an explanation. Authored vehicles must pass the same real wheel/tyre and mounting checks. Mathematical cylinder wheels do not make a drivable vehicle.
 
 ## Imported cars without explicit power
 
 Play also derives session-only vehicles from an imported stable wheelbase. The
-initial source-reviewed families are `4624 + 3641` and `6014b + 56890`, seated on
-actual `4600` wheel-pin plates. Exactly four matched wheels must form two parallel
-axles, with their holders connected through real chassis stud interfaces.
-Radii come from the complete source tyres. No motor or vehicle metadata is needed.
+source-reviewed wheel and holder combinations are:
+
+| Holder | Rim + tyre                       | Source mounting              |
+| ------ | -------------------------------- | ---------------------------- |
+| `4600` | `4624 + 3641`, `6014b + 56890`   | One axle per wheel-pin plate |
+| `2441` | `4624 + 3641`                    | Two axles on the car base    |
+| `6157` | `93593 + 50951`, `93595 + 50951` | One axle per bearing holder  |
+
+Exactly four matched wheels must form two parallel axles, with their holders
+connected through real chassis stud interfaces. Radii come from the complete
+source tyres. No motor or vehicle metadata is needed.
 
 Authored rigs and trains reserve their members first. Two separate connected
 cars stay separate; root-level scenery remains static. Missing tyres, ambiguous
 mounts, disconnected holders, unsupported wheel families and incomplete bounds
-remain static. Automatic detection initially supports world-X wheel axles;
-rotated authored car/jeep rigs retain their checked horizontal axes. Detection
-is bounded to eight vehicles, 600 parts per vehicle, 256 wheel parts, 128 holders,
+remain static. Stable arbitrary horizontal yaw is supported: the source holder
+axis defines a rigid session driving frame, while the original rounded LDraw
+transforms remain unchanged. Tilted or ambiguous wheelbases are not snapped into
+a supported pose. Detection is bounded to eight vehicles, 600 parts per vehicle, 256 wheel parts, 128 holders,
 2,000 nearby candidates and 100,000 connector comparisons. No seat is invented.
 The original document, LDraw export and inventory remain unchanged.
+
+A separately rooted imported minifigure remains included foreign geometry, even
+when it appears to sit in a car. Play does not invent a passenger weld, seat or
+collision exemption. Such a figure can correctly stop the car before movement.
+
+For a supported vehicle session, the optional temporary ground is lowered once
+from source Y=0 to enclose the complete included compiled geometry and certified
+vehicle envelopes. Walking, native bodies and vehicle checks share this immutable
+plane. Nonvehicle sessions keep Y=0, and `ground:false` still adds no plane.
+Authored parts, wheel radii and contact tolerances stay unchanged; included real
+floors and foreign obstacles still respond. This supplies a session floor, not
+a source shift or an automatic suspension/pose correction. See
+[the ground policy review](reviews/VEHICLE-SESSION-GROUND.md).
 
 The complete included static triangle mesh is cached in a spatial index (a BVH). Foreign moving meshes use accepted poses and are rebuilt only when those poses change. Floor and wall triangles remain separate collision candidates, allowing flat ground contact without ignoring walls in the same mesh. Excluded Play layers are excluded from this world; ordinary editor visibility does not remove collision geometry. The optional session-only ground has an explicit plane check.
 

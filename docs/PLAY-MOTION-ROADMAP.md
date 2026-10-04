@@ -10,7 +10,7 @@ implementation progress is recorded below.
 the 720° probe target. Positive/negative turns, reversal, obstruction recovery,
 rotated axes and loaded progress are covered by focused tests. See
 [verification](PLAY-PHYSICS.md) and [the checkpoint](VERIFICATION.md#accumulated-turn-position-control-3-october-2026).
-**Implemented foundation:** 17 source-bound mechanical profiles and typed
+**Implemented foundation:** 18 source-bound mechanical profiles and typed
 contacts now support read-only `mechanisms.propose()` drafts for retained shafts,
 separate pin/arm articulations and complementary finger hinges with accessories.
 **Implemented spur drive:** the reviewed 8:24 mesh now couples retained shafts
@@ -32,20 +32,32 @@ Direct reviewed session
 entry and explicit undoable Save are implemented; the scoped setup reviewer
 scored its three hierarchy/label/content corrections resolved.
 
-**Implemented controls:** session-only proportional motor input now drives,
-reverses and brakes reviewed motors without changing authored presets or effort
-bounds. Remote controls select one independent control, fold passive output
-feedback, and automatically fit/orbit the whole rig in clear canvas space.
-Closing restores the explorer view. Desktop and phone capture/interaction checks
-and the bounded Impeccable finish review are recorded in
-[verification](VERIFICATION.md#live-motor-controls-and-mechanism-overview-3-october-2026).
+**Implemented controls:** source-bound motors require a real mounted `58120`
+case and engaged keyed output. Live controls latch Forward or Reverse and expose
+Power from 0–100%: the UI scales signed target rate and, in Dynamic, available
+effort downward from the authored cap. Kinematic motion uses the requested rate;
+it does not simulate torque. Zero power removes powered drive and can leave a
+native body coasting. Brake and Brake all restore capped braking.
 
-The strongest next step is a small mechanical feature pack and a transmission
-layer on top of the existing rigid-group system. Brick Editor already has the
-basic physics engine and moving renderer. What is missing is knowledge of which
-parts move together, which connections allow motion, and how one motion drives
-another. Turning every rendered brick into a physics body would exhaust the
-current budgets without supplying that knowledge.
+Independent motor tabs within a rig preserve other live inputs. Pause and closing
+controls clear live input; closing also brakes the viewed rig's enabled presets.
+Saved position presets remain available under advanced controls: a saved 90°
+target is not a limit on continuous live rotation. Passive output feedback stays
+folded, and third-person controls fit/orbit the whole rig in clear canvas space.
+Leaving restores the explorer view.
+
+The **Twin motor table** (`twin-drive`) uses two mounted motors on one connected
+frame: a red 8→8→24 reduction and a blue 8→8 direct drive. Direction, proportional
+rate/effort, independent control and bounded obstruction/recovery are exercised
+without changing authored source. **Motor & gears** and the manual **Rack guide**
+remain smaller source-supported examples. These scenes do not imply support for
+arbitrary Technic assemblies.
+
+The implementation adds a small mechanical feature pack and transmission layer
+to the existing rigid-group system. Broader support still requires knowledge of
+which parts move together, which connections allow motion, and how one motion
+drives another. Turning every rendered brick into a physics body would exhaust
+the current budgets without supplying that knowledge.
 
 **Implemented planar loop slice:** explicit closure edges preserve the mount
 forest, with bounded kinematic continuation and real additional native Dynamic
@@ -64,26 +76,39 @@ kinematic preview explicitly retains rest. See [scope](PLAY-ACTUATORS.md).
 
 ## What already works
 
-| Capability                            | Current behavior                                                                                                     | Relevant implementation                                                                                                                      |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Authored hinge or axle                | Revolute joint; limits; continuous rotation when unbounded; position/velocity motors in Play                         | [Rig types](../src/mechanisms/types.ts), [kinematic evaluation](../src/mechanisms/kinematic.ts), [Play controller](../src/play/mechanism.ts) |
-| Authored slider                       | Prismatic joint with scalar travel, limits and motors                                                                | Same controllers; travel is LDU                                                                                                              |
-| Fixed attachment                      | Two groups keep their relative pose                                                                                  | Kinematic controller; Rapier fixed impulse joint in Dynamic                                                                                  |
-| Ball joint                            | Preserves rest orientation in kinematic mode; rotates freely in Dynamic                                              | [Dynamic controller](../src/play/dynamics.ts); no authored orientation control or cone/twist limits                                          |
-| Loose objects                         | Explicitly unanchored groups fall, collide and can be pushed by walking                                              | Dynamic controller; playground sample                                                                                                        |
-| Vehicles                              | Authored planar driving with obstacle protection and optional driver seat; separate Dynamic ray-cast suspension mode | [Vehicle profile](PLAY-VEHICLES.md)                                                                                                          |
-| Automatic movement in imported models | Pinned hinged door/window/shutter/gate/trapdoor leaves; trains on supported flat track                               | [Automatic doors](../src/play/auto-doors.ts), [trains](PLAY-TRAINS.md)                                                                       |
-| Rendering and export                  | Session transforms move existing occurrence handles; explicit posed export; authored project stays unchanged         | [Renderer](../src/render/adapter.ts), [posed export](../src/mechanisms/posed-export.ts)                                                      |
+The table includes engine capabilities exercised by explicit engineering benches.
+Ordinary UI and automation Play require reviewed physical source connections:
+actual seated hinges, retained shafts, guided racks and bound mounted motors.
+Unbound motors, generic authored lifts, capture-zone grippers, closed linkages and
+force links remain stored losslessly but static in ordinary Play until their real
+part connections are reviewed. Gravity/collision and source-supported cars and
+trains do not require an explicit motor.
 
-An authored Technic crane arm can therefore already swing if its groups, pivot
-and axis are supplied explicitly. Importing an ordinary Technic model does not
-create those groups or joints. Reviewed supported shafts, gears, pin arms and
+| Capability                            | Current behavior                                                                                                           | Relevant implementation                                                                                                                      |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Authored hinge or axle                | Revolute joint; limits; continuous rotation when unbounded; position/velocity motors in Play                               | [Rig types](../src/mechanisms/types.ts), [kinematic evaluation](../src/mechanisms/kinematic.ts), [Play controller](../src/play/mechanism.ts) |
+| Authored slider                       | Prismatic joint with scalar travel, limits and motors                                                                      | Same controllers; travel is LDU                                                                                                              |
+| Fixed attachment                      | Two groups keep their relative pose                                                                                        | Kinematic controller; Rapier fixed impulse joint in Dynamic                                                                                  |
+| Ball joint                            | Preserves rest orientation in kinematic mode; rotates freely in Dynamic                                                    | [Dynamic controller](../src/play/dynamics.ts); no authored orientation control or cone/twist limits                                          |
+| Loose objects                         | Explicitly unanchored groups fall, collide and can be pushed by walking                                                    | Dynamic controller; playground sample                                                                                                        |
+| Vehicles                              | Source-supported cars at arbitrary horizontal yaw, obstacle protection and authored seats; Dynamic ray-cast suspension     | [Vehicle profile](PLAY-VEHICLES.md)                                                                                                          |
+| Automatic movement in imported models | Physically seated reviewed door/window/shutter/gate/trapdoor leaves, stable-wheelbase cars and supported flat-track trains | [Automatic doors](../src/play/auto-doors.ts), [trains](PLAY-TRAINS.md)                                                                       |
+| Rendering and export                  | Session transforms move existing occurrence handles; explicit posed export; authored project stays unchanged               | [Renderer](../src/render/adapter.ts), [posed export](../src/mechanisms/posed-export.ts)                                                      |
+
+An explicit engine bench can swing an authored Technic crane arm when its groups,
+pivot and axis are supplied. Those coordinates alone do not establish a physical
+connection or admit that crane to ordinary Play. Importing an ordinary Technic
+model does not create those groups or joints. Reviewed supported shafts, gears, pin arms and
 finger hinges can now enter through the explicit mechanism setup flow; an
 imported motor alone does not supply their ownership or transmission graph.
 The mechanism preview also differs from Play: authored motor metadata does not
 automatically simulate forces or start a motor in `KinematicSession` alone.
 
 ## Findings and reproduced limitations
+
+These findings record the original investigation baseline. The implemented slices
+above and current mechanical scope supersede repaired behavior; the executable
+probe now checks the current contact and accumulated-turn contracts.
 
 Run `npx tsx scripts/audit-play-motion.ts` from the repository root. The
 [probe script](../scripts/audit-play-motion.ts) reads only committed packs and
@@ -234,7 +259,8 @@ decomposition with honest inventory semantics.
 ## Other movable parts that remain unsupported or incomplete
 
 "Missing" here usually means no automatic recognition or mechanical behavior.
-Several can already be animated through manual hinge/slider authoring.
+Several can be animated in explicit engine benches through manual hinge/slider
+authoring; ordinary Play still requires reviewed physical connections.
 
 | Family                                                    | What does not work automatically or physically today                                                                                                         | Proposed representation                                                                                           |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
@@ -254,16 +280,18 @@ Several can already be animated through manual hinge/slider authoring.
 | Imported minifigures                                      | Explorer avatar animates its own configured limbs; ordinary model figures do not become articulated/playable                                                 | Reviewed figure component profiles, inventory-preserving visuals                                                  |
 | Breakable/clutch connections                              | No strength or separation model                                                                                                                              | Optional declared simulation thresholds; no claim of measured LEGO clutch strength                                |
 
-Moving support now transports the explorer through capsule sweeps on kinematic
+Engine benches transport the explorer through capsule sweeps on kinematic
 and dynamic lifts/turntables; jump and walk-off retain point velocity. Authored
 open-bench seats also work on a native dynamic chassis. Train riding remains a
 cab attachment and does not allow walking around a moving carriage. Authored
-capture zones support bounded native grab/release; arbitrary automatic grasping
-and rider weight/friction remain outside this slice.
+capture zones support bounded native grab/release in engine benches; they do not
+supply a real jaw connection for ordinary Play. Arbitrary automatic grasping and
+rider weight/friction remain outside this slice.
 
 ## Suggested implementation sequence
 
-The proposed pipeline keeps the current simulation and renderer:
+This original implementation sequence guided the bounded slices above. Broader
+source families remain future work. The pipeline keeps the simulation and renderer:
 
 ```mermaid
 flowchart LR

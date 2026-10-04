@@ -214,7 +214,7 @@
       "limbAnimation": "minecraft-style swing, idle sway, head follow, jump/fall/fly poses",
       "authoringIsolation": true,
       "poseApplication": true,
-      "readyToPlaySamples": ["motor-gears", "rack-drive"],
+      "readyToPlaySamples": ["twin-drive", "motor-gears", "rack-drive"],
       "mechanicalProposals": {
         "api": "mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})",
         "pack": "reviewed-mechanics-1; 18 source-bound official part profiles",
@@ -394,10 +394,11 @@
         "scope": "Source-certified unarticulated chassis/wheel rigs with explicit open-bench seats; dynamic tilt/suspension supported; no inferred seats or low-cabin articulation"
       },
       "motors": {
-        "kinematic": "Position motors travel at 90 degrees/s or 40 LDU/s; velocity motors run at their target; swept actor checks block and auto-retry",
-        "dynamic": "Rapier joint motors with maxEffort",
-        "control": "play.setMotor({rigId,jointId,enabled,input?,power?}); signed input [-1,1] requires enabled:true and overrides bounded velocity; power [0,1] defaults1 and reduces native effort within authored cap; power0 removes powered drive, input0 brakes at requested power; global clear resets live input0,power1; omitted input restores preset; manual commands stop the component motor",
-        "remoteControls": "Active HUD Controls action only for usable source-bound mechanisms; latched direction and primary Power slider, independent motor tabs and Brake all; selecting a motor preserves other inputs; closing brakes the viewed rig; rapid manual sliders coalesce to the latest checked travel target; paused or closed controls cancel pending input",
+        "kinematic": "Position presets travel at 90 degrees/s or 40 LDU/s; live signed input controls bounded continuous rate beyond a saved position target; positive power does not simulate effort, zero power removes driven motion; complete world/actor checks retain obstruction response",
+        "dynamic": "Rapier joint motors; session power [0,1] scales available maxEffort downward from the authored cap, without changing source or presets; zero power can coast",
+        "control": "play.setMotor({rigId,jointId,enabled,input?,power?}); signed input [-1,1] requires enabled:true and overrides bounded velocity; optional power [0,1] defaults to 1 and reduces native effort within authored cap; power0 removes powered drive, input0 brakes at requested power; global clear resets live input0,power1; omitted input restores preset; manual commands stop the component motor",
+        "remoteControls": "Active HUD Controls action only for usable source-bound mechanisms; latched Forward/Reverse and Power percentage scale signed rate and native available effort, with independent motor tabs and Brake all; selecting another motor within the rig preserves other inputs; pause, switching rigs and closing clear live input, closing also brakes viewed presets; rapid manual sliders coalesce to the latest checked travel target",
+        "samples": "Twin motor table: two mounted motors on one connected frame, red 8-to-8-to-24 reduction and blue 8-to-8 direct drive; independent direction/power and bounded obstruction/recovery; smaller Motor & gears and manual Rack guide examples",
         "overview": "Remote controls fit every live group bound into the canvas area clear of the status bar and control sheet; orbit and closer zoom inspect the mechanism, Fit restores the whole system; walking controls are hidden; leaving restores the explorer view; successful seat/train/vehicle context changes switch to the active driving or riding view; refused transitions retain the overview; play.view() reads the rendered camera and overview rig ID"
       },
       "automaticDoors": {
@@ -425,10 +426,11 @@
         "unsupported": "Proximity grippers, unbound motors, closed linkages, force links, generic spherical/cylindrical joints require real reviewed part profiles before ordinary Play"
       },
       "automaticVehicles": {
-        "families": "4624+3641 and 6014b+56890 on real4600 wheel-pin plates; exact tyre/rim seats, two parallel stable axles and a stud-connected chassis",
-        "session": "Read-only derived rigs after authored mechanisms/doors/trains reserve members; separate cars remain separate; no motor or seat inferred",
+        "families": "4600 holders with 4624+3641 or 6014b+56890; two-axle 2441 base with 4624+3641; 6157 holders with 93593+50951 or 93595+50951; exact source tyre/rim seats, two parallel stable axles and a stud-connected chassis",
+        "session": "Read-only derived rigs after authored mechanisms/doors/trains reserve members; source holder axes define a rigid driving frame at arbitrary stable horizontal yaw; authored rounded transforms stay unchanged; separate cars remain separate; no motor, seat or minifigure passenger weld inferred; separately rooted passengers retain foreign collision",
+        "ground": "Supported vehicle sessions lower one immutable shared temporary plane from source Y=0 using complete admitted included geometry and certified vehicle envelopes; walking/native/vehicle checks agree, real floors and foreign contacts remain; nonvehicle Y=0 and ground:false unchanged; no source shift or tilted-car snap",
         "authored": "Real source wheel pivots, conservative radius, wheelbase, connected holders; exactly chassis plus four wheel groups; no unrelated joint/group vehicle bypass",
-        "limits": "Initial auto detection uses world-X wheel axes, 8 vehicles,600parts/vehicle,256wheelparts,128holders,2000candidates,100000connector comparisons; unsupported or partial assemblies remainstatic"
+        "limits": "Horizontal wheel axes and stable checked wheelbase; 8 vehicles, 600 parts/vehicle, 256 wheel parts, 128 holders, 2000 candidates, 100000 connector comparisons; unsupported, tilted, ambiguous or partial assemblies remain static"
       }
     },
     "sharing": {
