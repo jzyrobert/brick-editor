@@ -57,6 +57,24 @@ inside an authored revolute bearing cylinder retain their original hull instead
 of receiving unnecessary radial cuts. See [verification](VERIFICATION.md#bounded-contact-and-spur-regressions-4-october-2026)
 and [measured costs](PLAY-CONTACT-COSTS.md#integrated-spur-after-oblique-admission-4-october-2026).
 
+A complete source-triangle support certificate handles eligible literal Y-axis
+rotation on an unchanged carrier. It binds the actual immutable static collider,
+its native geometry and pose. A full-turn enclosure supports the lighthouse;
+independent root-mounted leaves use their actual unwrapped angular interval,
+so walls outside the requested movement do not masquerade as floor contact.
+Every candidate triangle must lie outside the invariant axial slab within the
+existing 0.001 LDU guard. Unsupported axes, frames, compounds, moving carriers
+and unresolved walls keep the normal contact/refinement path. All enclosure
+scans and BVH queries consume the existing work limits.
+
+The smooth 60616a door now uses five conservative source-derived covers for its
+body, axial pins and protruding handle studs. Whole-part convex filling had
+created a false below-floor wedge and a false frame obstruction while closing.
+Clipping the actual triangles retains their surfaces without those wedges;
+source geometry, inventory, rest transforms and contact defaults stay unchanged.
+These are simulation proxies with remaining within-cover concavity filling. See
+[source review and blocker/retry evidence](reviews/CATHEDRAL-DOOR-PROXY-REVIEW.md).
+
 The corrected 24-tooth rack mounting and limits have pinned-triangle clearance
 checks. Reviewed 18940/18942 native packets now retain 900 housing regions/927
 children and 1,245 rack regions, including source openings, supplied supporting

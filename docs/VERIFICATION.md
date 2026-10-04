@@ -1,5 +1,39 @@
 # Verification — 27 September 2026
 
+## Final physics and motion acceptance — 4 October 2026
+
+Final runtime in `/home/ubuntu/brick-editor-physics-motion`, branch
+`codex/physics-motion-investigation`, includes the source-preserving door repair
+`de62bcc` and anchored-leaf support interval `1131dc3`. All named bounded roadmap
+slices have implementations and acceptance evidence: multi-turn control,
+reviewed features/Try/Save, spur and guided rack drives, contact policy/proxies,
+planar loops and steering, authored force links/bearings, platforms/seats/grippers,
+resource admission and contextual whole-mechanism controls. The source supports
+reviewed families and authored mechanisms; broader automatic articulation is
+still future work.
+
+- `npm test -- --maxWorkers=2`: **211 files / 1,501 tests pass**, 694.12 s. This
+  includes the original lighthouse, cathedral, CLI and playground regressions,
+  new source/contact negatives and source/inventory preservation checks.
+- Fresh schemas/TypeScript/Vite build passes; Vite takes 35.86 s. Generated
+  schemas and validators have no changes.
+- Private port 4397, one browser worker: **16 production cases pass in 4.5 min**.
+  Rack forward/reverse in both modes, linked rack/slider-crank controls, every
+  required viewport (1440×1000, 1080×1800, 360×600, 411×685, 390×844, 686×411),
+  Dynamic phone controls, whole-system fit/orbit/return, and fresh installed
+  offline rack restore remain verified.
+- The rendered lighthouse reaches 30° after 30 ticks with changed pixels/posed
+  export and exact normal source. A rendered official 60596/60616a door over a
+  real 4162 tile opens 90° and closes to 0 with exact source/occurrences on exit.
+- Full formatting, TypeScript and `git diff --check` pass; the eight-part rack
+  fixture matches its generator. The owned browser preview is stopped.
+
+The broad pass replaces the initial 1,476/1,480 checkpoint below. Source-bound
+rack openings, native load/reaction/stall tests, thin-blocker response and public
+reconstruction retain their separately documented finite scopes. Nothing here
+claims universal molded-part fit, arbitrary spatial mechanisms or physical-phone
+60 Hz throughput. Larger-contact costs remain in [measurements](PLAY-CONTACT-COSTS.md).
+
 ## Reviewed guided rack checkpoint — 4 October 2026
 
 Production binding now admits only the actual source-bound reviewed 18940/18942
@@ -80,6 +114,17 @@ occurrences remain exact. The private 4397 preview is stopped. Complete finite
 source-triangle support applies only to the registered unchanged aggregate
 collider and eligible literal Y-axis motion; wall, moved/changed collider,
 unsupported compound and near-scaled/oblique frame checks retain fallback.
+
+The doorway follow-up preserves the original cathedral west-entry and
+organ-gallery stair assertions, adding exact project/inventory checks. Seven
+focused source/physical/sample cases pass in 20.54 s; the final six door cases
+pass in 9.21 s after a typed face-plane oracle correction. Actual 60596/60616a
+geometry reaches 90° and closes to 0; included and 0.1 LDU native walls block,
+removal permits retry, and raising the floor 0.01 LDU still blocks. Five convex
+covers retain source surfaces and native hinge pins. The separate anchored-leaf
+interval helper passes 23 focused checks and independent 6-case review with
+exact source pivots, native rounding bounds and unchanged work/guard limits.
+See [door source scope](reviews/CATHEDRAL-DOOR-PROXY-REVIEW.md).
 
 ## Canonical capture and native preparation integration — 4 October 2026
 

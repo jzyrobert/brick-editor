@@ -1,5 +1,28 @@
 # Implementation status
 
+## Physics and motion acceptance — 4 October 2026
+
+The bounded motion roadmap is implemented in `codex/physics-motion-investigation`:
+reviewed Technic proposals with Try/undoable Save, multi-turn motors, spur/rack
+transmissions, world/internal contacts, planar closed linkages, authored force
+links and movable bearings, standing support, dynamic seats and reversible
+payload attachments. Contextual proportional controls fit and orbit the whole
+active mechanism on desktop and phone; the workshop-header design is retained.
+The lighthouse and cathedral contact regressions are repaired without changing
+source models, physics defaults, contact guards or resource caps.
+
+Final integration passes **1,501 unit/integration tests in 211 files** and
+**16 production browser cases**, including all required phone/desktop control
+viewports, fresh offline rack restore and rendered lamp/door movement. Build,
+TypeScript, generated schemas, formatting and fixture checks pass. Source/rest
+poses and inventory remain intact through Play. See
+[final evidence](VERIFICATION.md#final-physics-and-motion-acceptance--4-october-2026)
+and [implemented scope and future families](PLAY-MOTION-ROADMAP.md).
+
+This checkpoint supersedes the earlier rack-refusal and regression-investigation
+checkpoints below. Broader automatic families and authoring, cheaper contact
+work for larger systems and physical-phone throughput remain future work.
+
 ## Source-bound guided rack checkpoint — 4 October 2026
 
 The corrected 24-tooth 18940/18942 assembly now works in Kinematic and Dynamic
@@ -22,16 +45,17 @@ session negatives pass for thin blockers/retry, physical stops beyond widened
 limits, authored misalignment refusal and restored native hook response.
 See [current verification](VERIFICATION.md#reviewed-guided-rack-checkpoint--4-october-2026).
 
-The broad regression run passes 1,476 of 1,480 tests. The old CLI 90-tick completion
+The initial broad regression run passed 1,476 of 1,480 tests. The old CLI 90-tick completion
 assertion predates settled completion; its follow-up now preserves the original
 90-tick motion check and verifies true completion at 120 ticks without changing
 1°/2°·s⁻¹ limits. The crate follow-up checks actual source-bottom clearance throughout
 pushing and settling instead of its tilted frame origin; it passes with the
 original 3 LDU clearance allowance. Lighthouse lamp rotation and its beach-to-top walkthrough now pass after a
 bounded source-triangle support certificate. Its production browser witness also
-passes with changed pixels and exact source preservation. Cathedral doorway
-entry remains under investigation. The broader regression checkpoint remains open;
-these sample checks are separate from scoped rack/browser acceptance above.
+passes with changed pixels and exact source preservation. Cathedral entry and organ-gallery stairs pass after splitting the actual door
+body, pins and handle into source-preserving proxies; full opening/closing and
+foreign-blocker checks also pass. The final broad rerun passes all 1,501 tests;
+these follow-ups preserve the original behavior and remain separately scoped.
 Physical-phone throughput and cheaper larger contacts remain open.
 
 ## Canonical mechanical geometry — 4 October 2026
