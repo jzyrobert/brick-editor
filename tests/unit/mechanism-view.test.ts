@@ -51,7 +51,8 @@ describe("whole-mechanism presentation camera", () => {
               height: height * 0.45,
             }
           : { x: width - 356, y: 80, width: 340, height: height - 100 };
-      const usable = mechanismUsableRect(width, height, panel);
+      const usable = mechanismUsableRect(width, height, panel, 76);
+      expect(usable.y).toBe(76);
       expect(usable.width * usable.height).toBeGreaterThan(
         width * height * 0.35,
       );

@@ -71,17 +71,24 @@ export function PlayMechanismControls({
     }
   };
   useEffect(() => {
+    const hud = panel.current
+      ?.closest(".play-overlay")
+      ?.querySelector(".play-top");
     const frame = () => {
       updateScrollCue();
       const box = panel.current?.getBoundingClientRect();
       if (!box || !box.width || !box.height || !play.getState().active) return;
       try {
-        play.focusMechanism(rig.id, {
-          x: box.left,
-          y: box.top,
-          width: box.width,
-          height: box.height,
-        });
+        play.focusMechanism(
+          rig.id,
+          {
+            x: box.left,
+            y: box.top,
+            width: box.width,
+            height: box.height,
+          },
+          hud ? hud.getBoundingClientRect().bottom + 12 : undefined,
+        );
       } catch (e) {
         onError(e instanceof Error ? e.message : String(e));
       }
@@ -90,6 +97,7 @@ export function PlayMechanismControls({
     const observer = new ResizeObserver(frame);
     if (panel.current) observer.observe(panel.current);
     if (content.current) observer.observe(content.current);
+    if (hud) observer.observe(hud);
     window.addEventListener("resize", frame);
     return () => {
       observer.disconnect();

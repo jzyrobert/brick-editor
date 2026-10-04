@@ -1439,3 +1439,43 @@ children, 7,011 native hook calls / 5,754 exclusions, and the prior actual
 coordinates. VM load is higher than the earlier measurements, so the evidence
 supports lower sampled kinematic cost without a controlled speedup or
 native-performance claim. See [hashes and measurements](PLAY-CONTACT-COSTS.md#indexed-contact-relationships-4-october-2026).
+
+## Clear and closer whole-mechanism overview (4 October 2026)
+
+Fit now solves the four shifted perspective-frustum planes for every live group
+bound, reserving the measured status bar plus 12 px and the control sheet.
+The camera remains ahead of all group bounds at Fit. Manual zoom permits closer
+inspection (minimum 0.25×); Fit restores 1× and closing restores the explorer.
+This replaces the enclosing-sphere distance that left narrow phones underused.
+
+- Six unit viewport cases project every conservative group corner through
+  multiple orbit angles and moving-arm poses, including a 76 px top reserve;
+  all pass in 0.92 seconds. An independent review verifies the shifted-frustum
+  inequalities and positive-depth condition. TypeScript and production build pass.
+- Seven existing production-browser control cases pass in 2.1 minutes at
+  1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411, including native
+  controls at 360×600. Held input/release, context restoration, scrolling,
+  source invariants and camera interaction assertions remain intact.
+- Four combined-build production-browser cases pass in 1.4 minutes: 26 pinned
+  parts, nine groups and two motors, each kinematic/native at 1440×1000 and
+  360×600. Six independent choices omit coupled output controls. Both drivers
+  advance their 8:24 outputs and brake on release. Zoom 2.5× and 0.5× changes the
+  camera; Fit restores it exactly. All 72 full compiled-geometry group-bound
+  corners remain clear of the actual canvas/header/HUD/sheet. Query, LDraw
+  export and complete inventory preview are identical after Play exit.
+
+At 360×600 the clear rectangle is x=0…360, y=144…284. Native combined-build
+projected bounds change from x=100.85…246.55, y=156.93…199.33 to
+x=16.25…297.77, y=175.36…270.38, increasing their projected bounding area by
+4.33× while preserving clearance. The kinematic increase is 4.47×. These are
+camera-layout measurements, not frame-rate claims. Desktop and phone captures
+were inspected in the bounded confirmation pass; no further styling changes.
+
+Tested SHA-256:
+`browser.ts` = `7af580b0e834b5a261564215d8f86c514f76f58d173ed512e4b46eb859e379d3`;
+`mechanism-view.ts` = `39f636c5f8decf23461705c9de731fd8d8f5b273cd60dfdf2a8acc4a53942441`;
+`PlayMechanismControls.tsx` = `ca7ff04e8285b1e33466a3793a53b08b9255076ef89007ffa17a3e6c449bbf82`.
+Both private previews stop; ports 4397/4398 are free. Source hashes, prior/new
+projection measurements and JSON/PNG witnesses remain private in the platform
+worktree's `.local/combined-controls-tight-*.json` and
+`test-results/combined-controls/`. No runtime asset or dependency is added.

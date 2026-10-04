@@ -1071,3 +1071,13 @@ obstructions, gear phase and native hook exclusions. Two-drive kinematic samples
 drop to 18.43 / 23.21 ms per tick under higher VM load; native samples remain
 26.45 / 26.71 ms. Larger-build performance and rack guide acceptance remain open.
 See [verification](VERIFICATION.md#indexed-mechanical-contact-policy-4-october-2026).
+
+## Fit larger mechanisms into usable Play space (4 October 2026)
+
+The whole-system camera now fits actual live group bounds below the status bar
+and outside the control sheet. Closer zoom allows inspection; Fit restores the
+overview. A two-drive build uses 4.33× the previous projected bounding area on
+the narrow phone while all 72 group corners remain clear of controls. Six camera
+unit cases and eleven production-browser cases verify motion, independent
+drivers, zoom/Fit, input release and source/inventory preservation. The upstream
+workshop/header design remains intact. See [verification](VERIFICATION.md#clear-and-closer-whole-mechanism-overview-4-october-2026).

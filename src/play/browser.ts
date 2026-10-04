@@ -101,6 +101,7 @@ export class BrowserPlay {
     pitch: number;
     zoom: number;
     panel?: ViewRect;
+    topInset?: number;
   };
   private captureSession?: PlaySession;
   private captureInputClear = false;
@@ -803,7 +804,7 @@ export class BrowserPlay {
         "Zoom factor must be positive.",
       );
       this.overview.zoom = Math.max(
-        1,
+        0.25,
         Math.min(16, this.overview.zoom * factor),
       );
       this.draw();
@@ -1086,7 +1087,7 @@ export class BrowserPlay {
     return this.overviewCamera() ?? this.current().camera();
   }
   /** Browser presentation only: no authored pose or explorer camera changes. */
-  focusMechanism(rigId?: string, panel?: ViewRect) {
+  focusMechanism(rigId?: string, panel?: ViewRect, clearTop?: number) {
     this.assertMutable();
     if (!this.session) return;
     if (rigId !== undefined) {
@@ -1108,6 +1109,8 @@ export class BrowserPlay {
       this.overview.panel = panel
         ? { ...panel, x: panel.x - rect.left, y: panel.y - rect.top }
         : undefined;
+      this.overview.topInset =
+        clearTop === undefined ? 0 : Math.max(0, clearTop - rect.top);
     } else {
       this.clearInput();
       this.overview = undefined;
@@ -1138,6 +1141,7 @@ export class BrowserPlay {
         width,
         height,
         captureAspect ? undefined : this.overview.panel,
+        captureAspect ? 0 : this.overview.topInset,
       ),
       this.overview,
       s.cameraSettings.fovDeg,

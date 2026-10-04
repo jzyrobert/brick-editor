@@ -377,7 +377,7 @@
         "dynamic": "Rapier joint motors with maxEffort",
         "control": "play.setMotor({rigId,jointId,enabled,input?}); optional input in [-1,1] requires enabled:true and overrides session velocity at bounded rate/effort; zero brakes, omitted input restores the authored preset; manual joint commands stop the component's motor",
         "remoteControls": "One usable independent revolute/prismatic motor/joint control at a time; held reverse/forward and proportional speed with release-to-brake; passive transmission and loop coordinates are not editable; rack feedback carries mixed degree/LDU units",
-        "overview": "Remote controls fit and orbit the entire active rig in the canvas area clear of the control sheet; walking controls are hidden; leaving restores the explorer view; successful seat/train/vehicle context changes switch to the active driving or riding view; refused transitions retain the overview; play.view() reads the rendered camera and overview rig ID"
+        "overview": "Remote controls fit every live group bound into the canvas area clear of the status bar and control sheet; orbit and closer zoom inspect the mechanism, Fit restores the whole system; walking controls are hidden; leaving restores the explorer view; successful seat/train/vehicle context changes switch to the active driving or riding view; refused transitions retain the overview; play.view() reads the rendered camera and overview rig ID"
       },
       "automaticDoors": {
         "table": "src/play/door-parts.json: hinge axis, pivot and leaf for official LDraw door leaves derived from part geometry",
