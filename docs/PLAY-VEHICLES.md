@@ -1,8 +1,25 @@
 # Protected kinematic driving
 
-Play's vehicle control remains on foot: movement keys or the touch joystick drive the selected authored vehicle, and Stop driving returns to walking controls. Vehicles now stop conservatively before included static geometry or another active rig. This is kinematic collision protection, not dynamic vehicle physics, seated entry, riding, pushing or suspension.
+Play's vehicle control remains on foot: movement keys or the touch joystick drive the selected source-supported vehicle, and Stop driving returns to walking controls. Vehicles now stop conservatively before included static geometry or another active rig. This is kinematic collision protection, not dynamic vehicle physics, seated entry, riding, pushing or suspension.
 
-The supported profile requires exactly the authored chassis and declared wheel groups, no extra groups or joints, complete compiled geometry, and world-horizontal wheel axles. A chassis box encloses all its compiled vertices. Wheel envelopes enclose complete spin and steering motion. These conservative shapes can stop the vehicle before visible surfaces touch. Unsupported rigs retain their source and other exploration/joint functionality; driving is disabled with an explanation. Mechanical groups and axes are authored, never guessed from filenames.
+The supported profile requires exactly the authored chassis and declared wheel groups, no extra groups or joints, complete compiled geometry, and world-horizontal wheel axles. A chassis box encloses all its compiled vertices. Wheel envelopes enclose complete spin and steering motion. These conservative shapes can stop the vehicle before visible surfaces touch. Unsupported rigs retain their source and other exploration/joint functionality; driving is disabled with an explanation. Authored vehicles must pass the same real wheel/tyre and mounting checks. Mathematical cylinder wheels do not make a drivable vehicle.
+
+## Imported cars without explicit power
+
+Play also derives session-only vehicles from an imported stable wheelbase. The
+initial source-reviewed families are `4624 + 3641` and `6014b + 56890`, seated on
+actual `4600` wheel-pin plates. Exactly four matched wheels must form two parallel
+axles, with their holders connected through real chassis stud interfaces.
+Radii come from the complete source tyres. No motor or vehicle metadata is needed.
+
+Authored rigs and trains reserve their members first. Two separate connected
+cars stay separate; root-level scenery remains static. Missing tyres, ambiguous
+mounts, disconnected holders, unsupported wheel families and incomplete bounds
+remain static. Automatic detection initially supports world-X wheel axles;
+rotated authored car/jeep rigs retain their checked horizontal axes. Detection
+is bounded to eight vehicles, 600 parts per vehicle, 256 wheel parts, 128 holders,
+2,000 nearby candidates and 100,000 connector comparisons. No seat is invented.
+The original document, LDraw export and inventory remain unchanged.
 
 The complete included static triangle mesh is cached in a spatial index (a BVH). Foreign moving meshes use accepted poses and are rebuilt only when those poses change. Floor and wall triangles remain separate collision candidates, allowing flat ground contact without ignoring walls in the same mesh. Excluded Play layers are excluded from this world; ordinary editor visibility does not remove collision geometry. The optional session-only ground has an explicit plane check.
 

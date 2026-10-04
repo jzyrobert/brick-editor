@@ -423,6 +423,12 @@
         "power": "JointSpec.motor.binding names source-reviewed 58120.dat with real stud-mounted case, connected bearing carrier and engaged keyed axle output",
         "exceptions": "Gravity/collision for loose source solids, source-supported stable-wheelbase vehicles and trains need no motor",
         "unsupported": "Proximity grippers, unbound motors, closed linkages, force links, generic spherical/cylindrical joints require real reviewed part profiles before ordinary Play"
+      },
+      "automaticVehicles": {
+        "families": "4624+3641 and 6014b+56890 on real4600 wheel-pin plates; exact tyre/rim seats, two parallel stable axles and a stud-connected chassis",
+        "session": "Read-only derived rigs after authored mechanisms/doors/trains reserve members; separate cars remain separate; no motor or seat inferred",
+        "authored": "Real source wheel pivots, conservative radius, wheelbase, connected holders; exactly chassis plus four wheel groups; no unrelated joint/group vehicle bypass",
+        "limits": "Initial auto detection uses world-X wheel axes, 8 vehicles,600parts/vehicle,256wheelparts,128holders,2000candidates,100000connector comparisons; unsupported or partial assemblies remainstatic"
       }
     },
     "sharing": {

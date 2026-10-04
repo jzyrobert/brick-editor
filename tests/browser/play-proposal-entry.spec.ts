@@ -1,12 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { unzipSync, strFromU8 } from "fflate";
-import { readFileSync } from "node:fs";
 import { openMenuTab } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
-const source = readFileSync(
-  new URL("../../fixtures/ldraw/technic-motion.mpd", import.meta.url),
-  "utf8",
-);
+import { mountedMotorFixture } from "./helpers/physical-fixtures";
+const source = mountedMotorFixture().text;
 
 for (const physics of ["kinematic", "dynamic"] as const)
   test(`unsaved ${physics} proposal drives a full Play session, exports a pose and exits without changing source`, async ({
@@ -42,10 +39,14 @@ for (const physics of ["kinematic", "dynamic"] as const)
           name: "Unsaved drive",
           expectedRevision: before.revision,
           occurrenceIds: before.occurrences.map((o) => o.id),
-          frameOccurrenceIds: [0, 1, 10].map((i) => before.occurrences[i].id),
+          frameOccurrenceIds: [12].map((i) => before.occurrences[i].id),
           motors: {
             [before.occurrences[2].id]: {
               mode: "velocity" as const,
+              binding: {
+                occurrenceId: before.occurrences[10].id,
+                profile: "power-functions-motor-m-v1" as const,
+              },
               target: 90,
               maxEffort: { value: 50, unit: "N*m" as const },
             },
@@ -189,42 +190,33 @@ for (const [width, height] of [
       // <section> carries its accessible label without a redundant explicit role.
       const surface = page.locator(".play-mechanism-setup");
       await expect(surface).toBeVisible();
-      for (const i of [0, 1, 10]) {
+      for (const i of [12]) {
         const checkbox = surface.getByRole("checkbox").nth(i);
         await expect(checkbox).toHaveAttribute(
           "data-occurrence-id",
           before.occurrences[i].id,
         );
-        await expect(checkbox).toHaveAccessibleName(
-          /^Technic Brick .* · Part n\d+$/,
-        );
+        await expect(checkbox).toHaveAccessibleName(/^Plate .* · Part n\d+$/);
         await checkbox.check();
       }
       await surface
         .getByRole("button", { name: "Review connections", exact: true })
         .click();
       await expect(
-        surface.getByText("4 moving groups · 4 joints · 1 linked outputs", {
+        surface.getByText("2 moving groups · 2 joints · 1 linked outputs", {
           exact: true,
         }),
       ).toBeVisible();
       await surface
         .getByLabel("Proposal motor", { exact: true })
-        .selectOption("joint-0");
-      const inputOption = surface
-        .getByLabel("Proposal motor", { exact: true })
-        .locator("option[value=joint-0]");
-      await expect(inputOption).toHaveText(
-        /^Technic Axle\s+4 · Part n\d+ · Rotate$/,
-      );
-      await expect(inputOption).toHaveAttribute(
-        "data-occurrence-id",
-        before.occurrences[2].id,
-      );
-      await expect(inputOption).toHaveAttribute("title", "3705.dat");
+        .selectOption(JSON.stringify(["joint-0", before.occurrences[10].id]));
+      await expect(
+        surface.getByLabel("Proposal motor").locator("option").nth(1),
+      ).toContainText("Motor");
       await expect(
         page.getByRole("button", { name: "Enter Play", exact: true }),
       ).toHaveCount(0);
+      await surface.getByLabel("Proposal motor effort").fill("50");
       await surface
         .getByRole("button", { name: "Try in Play", exact: true })
         .scrollIntoViewIfNeeded();
@@ -235,7 +227,7 @@ for (const [width, height] of [
         .getByRole("button", { name: "Try in Play", exact: true })
         .click();
       await expect(
-        page.getByLabel("Part control", { exact: true }),
+        page.getByRole("button", { name: "Hold motor 1 forward", exact: true }),
       ).toBeVisible();
       await expect(
         page.getByRole("group", { name: "Movement joystick", exact: true }),
@@ -276,7 +268,7 @@ for (const [width, height] of [
         ).toBeEnabled();
         await expect(
           surface.getByLabel("Proposal motor", { exact: true }),
-        ).toHaveValue("joint-0");
+        ).toHaveValue(JSON.stringify(["joint-0", before.occurrences[10].id]));
         await surface
           .getByRole("button", { name: "Save mechanism to build", exact: true })
           .click();

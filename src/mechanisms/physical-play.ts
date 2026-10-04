@@ -37,6 +37,7 @@ export function physicalPlayEligibility(
     );
   // A single source solid may always fall and collide without a mechanical joint.
   if (
+    !rig.vehicle &&
     !rig.joints.length &&
     rig.groups.every((g) => g.occurrenceIds.length === 1)
   )
@@ -91,7 +92,7 @@ export function physicalPlayEligibility(
         mv(originals.get(joint.bodyA)!.frame.basis, joint.axisA),
       );
       const otherAxis = unit(mv(a.frame.basis, candidate.axisA));
-      if (Math.abs(dot(axis, otherAxis)) < 0.999) return false;
+      if (Math.abs(dot(axis, otherAxis)) < 0.99999) return false;
       const sign = dot(axis, otherAxis) < 0 ? -1 : 1;
       signs.set(joint.id, sign);
       const p = anchor(originals.get(joint.bodyA)!, joint),

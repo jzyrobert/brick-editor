@@ -128,7 +128,12 @@ to supported motor input occurrence IDs; linked joints are not extra independent
 motors. Query, native backup, normal LDraw export and inventory stay unchanged until
 explicit saving or a separately requested posed export.
 
-Dynamic rigs can declare bounded `grippers` with `id`, `groupId`, local `anchor`,
+Ordinary `play.enter` requires real reviewed connections. Anonymous motor metadata,
+proximity grabs and unbound engineering linkages are refused; they remain
+losslessly loadable for storage and direct engine verification. Source-supported
+cars and trains need no motor. See [physical Play admission](PLAY-PHYSICS.md#physical-parts-in-ordinary-play).
+
+Engineering rig definitions can retain bounded `grippers` with `id`, `groupId`, local `anchor`,
 `captureRadiusLdu` and `maxPayloadMassKg`. Use
 `play.grab({rigId,gripperId,target:{rigId,groupId}})` and
 `play.release({rigId,gripperId})`; both return the current snapshot. A temporary
@@ -148,7 +153,7 @@ attachments; native persistence saves definitions only. See
 returns a read-only mechanical draft with `sourceRevision`, optional `rig`, typed
 `graph`, `relations`, `unresolved` and `warnings`. Choose explicit fixed frame
 anchors from queried occurrence IDs. Limit the selection to at most 2,048 parts;
-omitting it analyses visible parts. The 15 source-bound profiles cover round
+omitting it analyses visible parts. The 18 source-bound profiles cover round
 bearings, axles, plain/friction pins, collars, 8/24-tooth gears, a rack and a
 complementary finger hinge pair. Stud contacts recruit rigid accessories, while
 axial freedom, articulation and gear mesh remain distinct. Existing authored
@@ -159,8 +164,7 @@ Analysis loads missing same-origin connector shards and verifies the document
 revision after loading. It needs no renderer and creates no undo entry. A
 reviewed `rig` can be saved explicitly with `rigs.upsert` and then used by the
 existing mechanism preview or Play controls. A `motors` key must identify the
-shaft, pin, hinge leaf or guided rack that owns its joint; efforts use `N*m` for
-revolute joints and `N` for sliders. Reviewed spur and guided rack
+shaft that owns a revolute joint and include `binding: {occurrenceId, profile: "power-functions-motor-m-v1"}`. The occurrence must be a mounted, engaged real `58120.dat` motor; filename or torque metadata alone is insufficient. Hand controls do not require a motor. Reviewed spur and guided rack
 `relations` also populate the draft's optional `transmissions`, with unwrapped
 ratios in preview and Play and inertia/load reaction in Dynamic. A connected
 component accepts one authored motor; manual control of either shaft replaces

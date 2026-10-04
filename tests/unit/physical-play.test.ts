@@ -1,3 +1,5 @@
+import { inverse, mv } from "../../src/core/math";
+import { axisRotation, validateRig } from "../../src/mechanisms/kinematic";
 import { beforeAll, expect, it } from "vitest";
 import { registerFullLibraryFromDisk } from "../../scripts/full-library-node";
 import { occurrences } from "../../src/core/document";
@@ -68,7 +70,7 @@ it("preserves gravity and collision for individual loose source solids", () => {
   rig.groups[0].occurrenceIds = rig.groups[0].occurrenceIds.slice(0, 1);
   expect(physicalPlayEligibility(project, rig)).toEqual({ eligible: true });
 });
-it("permits a reviewed real finger hinge and refuses a powered proposal without a motor", async () => {
+const fingerScene = () => {
   const project = importLDraw(
     [
       "1 7 0 0 0 1 0 0 0 1 0 0 0 1 4275b.dat",
@@ -84,6 +86,10 @@ it("permits a reviewed real finger hinge and refuses a powered proposal without 
       frameOccurrenceIds: [all[0].id],
     };
   const proposal = proposeMechanicalRig(project, request);
+  return { project, request, proposal };
+};
+it("permits a reviewed real finger hinge and refuses a powered proposal without a motor", async () => {
+  const { project, request, proposal } = fingerScene();
   expect(physicalPlayEligibility(project, proposal.rig!)).toEqual({
     eligible: true,
   });
@@ -118,5 +124,25 @@ it("admits reversed axis conventions with the matching physical gear relation", 
 it("refuses shifting a bearing contact exemption along an otherwise valid shaft line", () => {
   const { project, rig } = scene();
   rig.joints[1].anchorA[2] += 10;
+  expect(physicalPlayEligibility(project, rig).eligible).toBe(false);
+});
+
+it("does not treat fabricated single-part wheel groups as the loose-solid gravity exception", () => {
+  const project = mechanismFixture();
+  expect(
+    physicalPlayEligibility(project, project.motionRigs.vehicle).eligible,
+  ).toBe(false);
+});
+
+it("refuses a mathematically valid hinge tilted away from its actual molded axis", () => {
+  const { project, proposal } = fingerScene(),
+    rig = proposal.rig!;
+  const joint = rig.joints[0],
+    a = rig.groups.find((g) => g.id === joint.bodyA)!,
+    b = rig.groups.find((g) => g.id === joint.bodyB)!;
+  const axis = mv(axisRotation([0, 1, 0], 2), mv(a.frame.basis, joint.axisA!));
+  joint.axisA = mv(inverse(a.frame).basis, axis);
+  joint.axisB = mv(inverse(b.frame).basis, axis);
+  validateRig(project, rig);
   expect(physicalPlayEligibility(project, rig).eligible).toBe(false);
 });

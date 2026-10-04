@@ -1,5 +1,29 @@
 # Implementation status
 
+## Physical Play admission and responsive sliders — 4 October 2026
+
+Ordinary Play now checks source-connected hinges, retained shafts and guided
+racks before enabling authored controls. Powered joints bind to an actual
+stud-mounted Power Functions M motor with an engaged keyed axle. The source
+case stays fixed; the socket contact allowance is local to that casing and shaft.
+Unsupported proximity grippers, abstract closed linkages and springs/ropes remain
+engineering fixtures. Definitions still load and export losslessly. Loose source
+solids retain gravity/collision, and source-supported cars and trains need no motor.
+
+The chooser now contains **Motor & gears** with 15 actually connected official
+parts and a **Rack guide** with its two real manually operated parts. The synthetic
+Crank & slider and Grab & lift cards are removed. Powered rack mounting remains
+open work. See [templates](TEMPLATES.md) and
+[physical source review](reviews/POWER-FUNCTIONS-MOTOR-M-REVIEW.md).
+
+Fast remote sliders coalesce input to one latest target per animation frame and
+travel through checked steps. House/Café desktop/phone rapid drags, pending-input
+cancellation and real thin-wall obstruction/retry passed five browser cases.
+No collision budget was increased. Sample chooser, desktop/phone operation and
+fresh offline loading passed seven production browser checks. Source admission,
+physical mounting/socket and imported-wheelbase coverage have focused unit proofs;
+final integrated publication checks are recorded in [verification](VERIFICATION.md).
+
 ## Ready-to-play motion showcases — 4 October 2026
 
 Four new selectable samples demonstrate the delivered mechanics: **Motor & gears**,

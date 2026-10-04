@@ -1,44 +1,19 @@
 import { expect, test } from "@playwright/test";
-import { execFileSync } from "node:child_process";
-import type { MotionRig } from "../../src/mechanisms/types";
 import { openMode } from "./helpers/mode";
 import { openRemoteControls } from "./helpers/play";
 import { refusePointerLock } from "./helpers/pointer";
+import { mountedMotorFixture } from "./helpers/physical-fixtures";
 
-// Run fixture producers with the repository's TS loader: Playwright's native
-// ESM transform does not support the catalogue's generated JSON imports.
-function nativeFixture(kind: "rack" | "slider-crank"): {
-  rig: MotionRig;
-  bytes: number[];
-} {
-  const script = `
-    import { encodeNative } from './src/persistence/native';
-    import { registerFullLibraryFromDisk } from './scripts/full-library-node';
-    import { rackFixture } from './src/mechanisms/rack-fixture';
-    import { loopFixture } from './src/mechanisms/loop-fixture';
-    registerFullLibraryFromDisk();
-    const project = ${kind === "rack" ? "rackFixture()" : "loopFixture('slider-crank')"}.project;
-    encodeNative(project).then(bytes => process.stdout.write(JSON.stringify({ rig: Object.values(project.motionRigs)[0], bytes: Array.from(bytes) })));
-  `;
-  return JSON.parse(
-    execFileSync(
-      process.execPath,
-      ["node_modules/tsx/dist/cli.mjs", "--eval", script],
-      { encoding: "utf8" },
-    ),
-  );
-}
-
-for (const kind of ["rack", "slider-crank"] as const)
+for (const kind of ["real gearbox"] as const)
   for (const dynamic of [false, true])
     test(`${kind} controls expose the driver and preserve passive motion (${dynamic ? "dynamic phone" : "kinematic desktop"})`, async ({
       browser,
       baseURL,
     }) => {
       test.setTimeout(120000);
-      const { rig, bytes } = nativeFixture(kind),
+      const { rig, bytes } = mountedMotorFixture(),
         driver = rig.joints.find((j) => j.motor)!,
-        passive = rig.joints.find((j) => j.kind === "prismatic")!;
+        passive = rig.joints.find((j) => !j.motor)!;
       const context = await browser.newContext({
         viewport: dynamic
           ? { width: 360, height: 600 }
@@ -104,14 +79,10 @@ for (const kind of ["rack", "slider-crank"] as const)
               rest.mechanisms![rig.id].pose.jointPositions[passive.id],
           ),
         ).toBeGreaterThan(1);
-        if (kind === "rack") {
-          const outputs = page.getByText("Linked outputs (1)", { exact: true });
-          await outputs.click();
-          await expect(page.getByText(/LDU per degree/)).toBeVisible();
-          await expect(page.locator(".play-output-details")).toContainText(
-            "LDU",
-          );
-        }
+        await page.getByText("Linked outputs (1)", { exact: true }).click();
+        await expect(page.locator(".play-output-details")).toContainText(
+          "0.33× speed · opposite direction",
+        );
         expect(
           (await page.evaluate(() => window.brickEditor!.play.view()))
             .mechanismOverview,
