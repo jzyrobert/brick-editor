@@ -405,11 +405,18 @@ const scoped = {
 const effort = (unit: string) =>
   obj({ value: { type: "number", minimum: 0 }, unit: { const: unit } });
 const motor = (unit: string) =>
-  obj({
-    mode: { enum: ["position", "velocity"] },
-    target: num,
-    maxEffort: effort(unit),
-  });
+  obj(
+    {
+      mode: { enum: ["position", "velocity"] },
+      target: num,
+      maxEffort: effort(unit),
+      binding: obj({
+        occurrenceId,
+        profile: { const: "power-functions-motor-m-v1" },
+      }),
+    },
+    ["mode", "target", "maxEffort"],
+  );
 const jointBase = { id, bodyA: id, bodyB: id, anchorA: vec, anchorB: vec };
 const mechanicalProposalRequest = obj(
   {

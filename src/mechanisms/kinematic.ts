@@ -322,7 +322,17 @@ export function validateRig(
           "Limits must enclose the authored zero rest position.",
         );
       if (joint.motor) {
-        fields(joint.motor, ["mode", "target", "maxEffort"]);
+        fields(joint.motor, ["mode", "target", "maxEffort", "binding"]);
+        if (joint.motor.binding) {
+          fields(joint.motor.binding, ["occurrenceId", "profile"]);
+          ensure(
+            typeof joint.motor.binding.occurrenceId === "string" &&
+              joint.motor.binding.occurrenceId.length > 0 &&
+              joint.motor.binding.profile === "power-functions-motor-m-v1",
+            "INVALID_INPUT",
+            "Motor binding must name a supported physical motor occurrence.",
+          );
+        }
         fields(joint.motor.maxEffort, ["value", "unit"]);
         ensure(
           ["position", "velocity"].includes(joint.motor.mode) &&

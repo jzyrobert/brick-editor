@@ -399,6 +399,25 @@
                       "unit"
                     ],
                     "additionalProperties": false
+                  },
+                  "binding": {
+                    "type": "object",
+                    "properties": {
+                      "occurrenceId": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 393409,
+                        "format": "occurrence-id"
+                      },
+                      "profile": {
+                        "const": "power-functions-motor-m-v1"
+                      }
+                    },
+                    "required": [
+                      "occurrenceId",
+                      "profile"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -528,6 +547,25 @@
                     "required": [
                       "value",
                       "unit"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "binding": {
+                    "type": "object",
+                    "properties": {
+                      "occurrenceId": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 393409,
+                        "format": "occurrence-id"
+                      },
+                      "profile": {
+                        "const": "power-functions-motor-m-v1"
+                      }
+                    },
+                    "required": [
+                      "occurrenceId",
+                      "profile"
                     ],
                     "additionalProperties": false
                   }
