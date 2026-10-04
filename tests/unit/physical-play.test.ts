@@ -4,6 +4,7 @@ import { beforeAll, expect, it } from "vitest";
 import { registerFullLibraryFromDisk } from "../../scripts/full-library-node";
 import { occurrences } from "../../src/core/document";
 import { importLDraw } from "../../src/ldraw/io";
+import { deriveDoorRigs } from "../../src/play/auto-doors";
 import { physicalMotorFixture } from "../../src/mechanisms/motor-fixture";
 import { mechanismFixture } from "../../src/mechanisms/fixtures";
 import { gripperFixture } from "../../src/mechanisms/gripper-fixture";
@@ -29,6 +30,35 @@ it("admits hand movement of the same real, retained shafts without inventing pow
   const { project, rig } = scene();
   for (const joint of rig.joints) delete joint.motor;
   expect(physicalPlayEligibility(project, rig)).toEqual({ eligible: true });
+});
+it("requires actual hinge seating for authored doors as well as automatic doors", () => {
+  const scenes = [
+    {
+      source:
+        "1 15 0 -152 0 -1 0 0 0 1 0 0 0 -1 60596.dat\n1 4 32 -152 -5 -1 0 0 0 1 0 0 0 -1 60616a.dat",
+      eligible: true,
+    },
+    {
+      source:
+        "1 15 -42 -72 5 1 0 0 0 1 0 0 0 1 3005.dat\n1 4 -32 -144 5 1 0 0 0 1 0 0 0 1 60616a.dat",
+      eligible: false,
+    },
+  ];
+  for (const { source, eligible } of scenes) {
+    const project = importLDraw(source);
+    const legacy = deriveDoorRigs(project, {
+      all: occurrences(project),
+      reserved: new Set(),
+      maxRigs: 32,
+      maxGroups: 128,
+    });
+    const rig = Object.values(legacy.rigs)[0];
+    expect(rig).toBeDefined();
+    project.motionRigs = { [rig.id]: rig };
+    const before = JSON.stringify(project);
+    expect(physicalPlayEligibility(project, rig).eligible).toBe(eligible);
+    expect(JSON.stringify(project)).toBe(before);
+  }
 });
 it("refuses torque metadata without hardware while preserving legacy definitions", () => {
   const { project, rig } = scene();
