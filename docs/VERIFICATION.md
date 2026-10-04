@@ -1493,6 +1493,12 @@ Float32 storage. Force events and post-step geometric/solver reports are separat
 TypeScript, diagnostic execution and formatting pass. This is a reproduction
 of the unresolved contact behavior, not acceptance of the complete rack.
 
+The same public diagnostic with `--triangle=749` keeps only three source vertices
+and one triangle. It reproduces 223.05 N on the translated first tick, three
+active solver contacts and 6.50676 N·s summed contact impulse. The origin maximum
+over five ticks is 0.000110 N. Matching geometry hashes rule out differing mesh
+content; no compound, multi-triangle traversal or Play filter is present.
+
 Independent review of the private 1,245-prism rack candidate establishes
 area-preserving extracted sections within stated tolerances, 29 native
 containment tests including all 32 teeth/gaps, and zero mismatches in 16,804

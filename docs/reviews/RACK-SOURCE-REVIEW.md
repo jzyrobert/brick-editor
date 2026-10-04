@@ -248,6 +248,16 @@ solver evidence. It characterizes the current engine and source geometry rather
 than asserting that the defect should persist. No runtime contact exclusion,
 origin shift, CCD change or proxy approximation is enabled by this probe.
 
+The optional `--triangle=749` mode retains just that source triangle's three
+vertices and indices, removing all other mesh geometry. This independently
+reproduces the response: maximum force over five ticks is `0.000110 N` at the
+origin and `223.05 N` after the common translation. The translated first tick
+reports **three active solver contacts**, summed contact impulse `6.50676 N·s`
+and geometric distance `-9.499983 LDU`. Thus this smaller case has actual solver
+evidence as well as cached geometry; neither compound grouping nor traversal of
+multiple housing triangles is needed to reproduce it. Its geometry hashes also
+match between the two translations.
+
 ## Housing tapered-volume decomposition analysis
 
 A later independent source audit counts 3,212 housing triangles: 1,618 horizontal,

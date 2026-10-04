@@ -1,6 +1,6 @@
 /**
  * Reproduce translation-sensitive native housing/rack contact without Play hooks.
- * Run: npx tsx scripts/audit-rack-contact-translation.ts
+ * Run: npx tsx scripts/audit-rack-contact-translation.ts [--triangle=749]
  * This characterizes the pinned engine; it does not accept a rack proxy.
  * The housing is compiled from the unchanged pinned official LDraw closure.
  * The small rack prism is derived from Philippe Hurbain's 18942.dat (CC BY 4.0).
@@ -46,6 +46,23 @@ for (let i = 0; i < mesh.vertices.length; i += 3) {
   );
   vertices.set([p.x, p.y, p.z], i);
 }
+const args = process.argv.slice(2);
+if (args.length > 1 || (args.length && !/^--triangle=\d+$/.test(args[0])))
+  throw new Error("Usage: audit-rack-contact-translation.ts [--triangle=749]");
+const triangle = args.length ? Number(args[0].split("=")[1]) : undefined;
+if (triangle !== undefined && triangle >= mesh.indices.length / 3)
+  throw new Error("Source triangle index outside the pinned housing");
+const nativeVertices =
+    triangle === undefined
+      ? vertices
+      : Float32Array.from(
+          [0, 1, 2].flatMap((k) => {
+            const offset = 3 * mesh.indices[3 * triangle + k];
+            return Array.from(vertices.slice(offset, offset + 3));
+          }),
+        ),
+  nativeIndices =
+    triangle === undefined ? mesh.indices : new Uint32Array([0, 1, 2]);
 const points = Float32Array.from(
   rackPrism.flatMap((p) => {
     const v = toPhysics(p);
@@ -57,10 +74,11 @@ const hash = (data: ArrayBufferView) =>
     .update(Buffer.from(data.buffer, data.byteOffset, data.byteLength))
     .digest("hex");
 const geometry = {
-  housingVertices: hash(vertices),
-  housingIndices: hash(mesh.indices),
+  housingVertices: hash(nativeVertices),
+  housingIndices: hash(nativeIndices),
   rackPoints: hash(points),
-  housingTriangles: mesh.indices.length / 3,
+  housingTriangles: nativeIndices.length / 3,
+  sourceTriangleIndex: triangle,
 };
 
 for (const shiftYMetres of [0, 3.2]) {
@@ -79,7 +97,7 @@ for (const shiftYMetres of [0, 3.2]) {
         ),
       ),
       a = world.createCollider(
-        RAPIER.ColliderDesc.trimesh(vertices, mesh.indices.slice())
+        RAPIER.ColliderDesc.trimesh(nativeVertices, nativeIndices.slice())
           .setActiveEvents(RAPIER.ActiveEvents.CONTACT_FORCE_EVENTS)
           .setContactForceEventThreshold(0),
         frame,
