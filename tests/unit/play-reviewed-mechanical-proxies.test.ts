@@ -74,6 +74,30 @@ it("binds lazy licensed packets to the actual source and refuses changed buffers
   // A failed batch does not publish its otherwise valid members.
   expect(reviewedMechanicalMember({ ...source }, rack)).toBeUndefined();
   source.memberLocals![housing] = original;
+  const custom = {
+    ...source,
+    lookup: new Map(
+      all.map((o) => [
+        o.id,
+        {
+          ...o,
+          namespace:
+            o.id === housing || o.id === rack
+              ? ("project" as const)
+              : o.namespace,
+        },
+      ]),
+    ),
+    memberLocals: { ...source.memberLocals },
+  };
+  for (const id of [housing, rack])
+    custom.memberLocals[id] = {
+      ...source.memberLocals![id],
+      namespace: "project",
+    };
+  await loadReviewedMechanicalProxies([custom]);
+  expect(reviewedMechanicalMember(custom, housing)).toBeUndefined();
+  expect(reviewedMechanicalMember(custom, rack)).toBeUndefined();
   project.revision++;
   expect(() => reviewedMechanicalMember(source, rack)).toThrow(/build changed/);
   project.revision--;

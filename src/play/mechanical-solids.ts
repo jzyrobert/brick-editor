@@ -11,7 +11,10 @@ import {
   orthonormalized,
 } from "../core/math";
 import { ensure, type Transform, type Vec3 } from "../core/types";
-import { worldMechanicalFeatures } from "../mechanisms/mechanical-contacts";
+import {
+  worldMechanicalFeatures,
+  matchMechanicalFeatures,
+} from "../mechanisms/mechanical-contacts";
 import type { MotionRig } from "../mechanisms/types";
 import { anchoredGroup } from "../mechanisms/dynamics-settings";
 import { unsupportedMechanicalPlayContact } from "../mechanisms/mechanical-play-support";
@@ -19,6 +22,9 @@ import type { PlayMechanismSource } from "./mechanism";
 import { METRES_PER_LDU as S, toPhysics, frameRotation } from "./physics-frame";
 import type { CollisionSnapshot } from "./types";
 import { surfaceCompound, surfaceCompoundLocal } from "./surface-compound";
+import { reviewedMechanicalMember } from "./reviewed-mechanical-proxies";
+import { prepareReviewedConvexRegions } from "./reviewed-convex-packet";
+import { reviewedGuideAlignment } from "./reviewed-guide-alignment";
 
 export const MECHANICAL_CONTACT_LIMITS = Object.freeze({
   solids: 4096,
@@ -46,6 +52,7 @@ export type MechanicalSolid = {
   /** Explicit bearing regions that wholly contain this solid at rest. */
   mating: Set<string>;
   feature?: "spur-gear" | "rack" | "rack-guide";
+  reviewedPlaneClass?: -1 | 0 | 1;
 };
 type Bearing = {
   id: string;
@@ -84,6 +91,17 @@ export class MechanicalContactPolicy {
   private fixedRoots = new Map<string, string>();
   private meshes = new Map<string, Set<string>>();
   private bearingsByPair = new Map<string, Map<string, Bearing[]>>();
+  private guides: Array<{
+    carrierId: string;
+    rackId: string;
+    carrierGroup: string;
+    rackGroup: string;
+    carrierLocal: Transform;
+    rackLocal: Transform;
+    bounds: { min: Vec3; max: Vec3 };
+    restBasis: Transform["basis"];
+    aligned: boolean;
+  }> = [];
   constructor(rig: MotionRig, _source?: PlayMechanismSource) {
     const groups = new Map(rig.groups.map((g) => [g.id, g]));
     this.bearings = [...rig.joints, ...(rig.loopClosures ?? [])]
@@ -135,17 +153,107 @@ export class MechanicalContactPolicy {
         adjacent.set(to, list);
         this.bearingsByPair.set(from, adjacent);
       }
+    if (_source) {
+      const lookup =
+        _source.lookup ??
+        new Map(occurrences(_source.project).map((o) => [o.id, o]));
+      for (const joint of rig.joints.filter((j) => j.kind === "prismatic")) {
+        const carrier = groups.get(joint.bodyA)!,
+          rack = groups.get(joint.bodyB)!;
+        for (const carrierId of carrier.occurrenceIds)
+          for (const rackId of rack.occurrenceIds) {
+            const a = lookup.get(carrierId)!,
+              b = lookup.get(rackId)!;
+            if (a.node.ref !== "18940.dat" || b.node.ref !== "18942.dat")
+              continue;
+            if (
+              !reviewedMechanicalMember(_source, carrierId) ||
+              !reviewedMechanicalMember(_source, rackId)
+            )
+              continue;
+            const guide = worldMechanicalFeatures(a)?.find(
+                (f) => f.kind === "rack-guide",
+              ),
+              slide = worldMechanicalFeatures(b)?.find(
+                (f) => f.kind === "rack-slide",
+              );
+            if (!guide || !slide) continue;
+            const match = matchMechanicalFeatures(guide, slide),
+              axis = mv(carrier.frame.basis, joint.axisA!);
+            ensure(
+              match &&
+                "kind" in match &&
+                match.kind === "rack-guide" &&
+                Math.abs(dot(axis, guide.axis)) > 0.99999,
+              "INVALID_INPUT",
+              "The rack and housing need their reviewed guide alignment to move safely.",
+            );
+            const af = orthonormalized(a.transform),
+              bf = orthonormalized(b.transform);
+            this.guides.push({
+              carrierId,
+              rackId,
+              carrierGroup: carrier.id,
+              rackGroup: rack.id,
+              carrierLocal: compose(inverse(carrier.frame), af),
+              rackLocal: compose(inverse(rack.frame), bf),
+              bounds: _source.memberLocals![rackId].bounds,
+              restBasis: compose(inverse(af), bf).basis,
+              aligned: false,
+            });
+          }
+      }
+      this.updateGuideFrames(
+        Object.fromEntries(rig.groups.map((g) => [g.id, g.frame])),
+      );
+    }
+  }
+  /** Cache outside native callbacks. A sweep must satisfy both endpoint poses. */
+  updateGuideFrames(
+    frames: Record<string, Transform>,
+    next?: Record<string, Transform>,
+  ) {
+    for (const guide of this.guides)
+      guide.aligned = [frames, ...(next ? [next] : [])].every(
+        (p) =>
+          p[guide.carrierGroup] &&
+          p[guide.rackGroup] &&
+          reviewedGuideAlignment(
+            compose(p[guide.carrierGroup], guide.carrierLocal),
+            compose(p[guide.rackGroup], guide.rackLocal),
+            guide.bounds,
+            guide.restBasis,
+          ).allowed,
+      );
   }
   allowed(
     a: MechanicalSolid,
     b:
       | MechanicalSolid
-      | { groupId: string; memberId?: string; feature?: "rack-guide" },
+      | {
+          groupId: string;
+          memberId?: string;
+          feature?: "rack-guide";
+          reviewedPlaneClass?: -1 | 0 | 1;
+        },
   ) {
     const fixedRoot = this.fixedRoots.get(a.groupId);
     if (
       a.groupId === b.groupId ||
       (fixedRoot !== undefined && fixedRoot === this.fixedRoots.get(b.groupId))
+    )
+      return true;
+    if (
+      (a.reviewedPlaneClass === 1 ||
+        a.reviewedPlaneClass === -1 ||
+        b.reviewedPlaneClass === 1 ||
+        b.reviewedPlaneClass === -1) &&
+      this.guides.some(
+        (g) =>
+          g.aligned &&
+          ((a.memberId === g.carrierId && b.memberId === g.rackId) ||
+            (b.memberId === g.carrierId && a.memberId === g.rackId)),
+      )
     )
       return true;
     if (
@@ -314,6 +422,79 @@ function rackSolids(
   return surfaceCompound(mesh, occurrence.transform, occurrence.node.ref);
 }
 
+function reviewedMemberSolids(
+  source: PlayMechanismSource,
+  group: MotionRig["groups"][number],
+  id: string,
+): MechanicalSolid[] | undefined {
+  const occurrence =
+    source.lookup?.get(id) ??
+    occurrences(source.project).find((o) => o.id === id);
+  if (
+    !occurrence ||
+    !["18940.dat", "18942.dat"].includes(occurrence.node.ref) ||
+    !worldMechanicalFeatures(occurrence)?.some(
+      (f) => f.kind === "rack-guide" || f.kind === "rack-slide",
+    )
+  )
+    return undefined;
+  const packet = reviewedMechanicalMember(source, id);
+  ensure(
+    packet,
+    "INVALID_INPUT",
+    "This rack needs matching reviewed geometry to move safely. Reload its original parts and try again.",
+  );
+  const prepared = prepareReviewedConvexRegions(packet.regions),
+    relative = compose(
+      inverse(group.frame),
+      orthonormalized(occurrence.transform),
+    ),
+    q = frameRotation(relative).normalize(),
+    t = toPhysics(relative.position);
+  const out: MechanicalSolid[] = [];
+  for (const planeClass of [-1, 0, 1] as const) {
+    const children = prepared.children.filter(
+      (c) => c.planeClass === planeClass,
+    );
+    if (!children.length) continue;
+    const local: Vec3[] = [];
+    for (const region of packet.regions.filter(
+      (r) => r.planeClass === planeClass,
+    ))
+      for (let i = 0; i < region.vertices.length; i += 3) {
+        const p = new Vector3(
+          region.vertices[i] + region.position[0],
+          region.vertices[i + 1] + region.position[1],
+          region.vertices[i + 2] + region.position[2],
+        ).applyQuaternion(q);
+        local.push([p.x + t.x, p.y + t.y, p.z + t.z]);
+      }
+    out.push({
+      groupId: group.id,
+      memberId: id,
+      shape: new RAPIER.Compound(
+        children.map((c) => c.shape),
+        children.map((c) => {
+          const p = new Vector3(
+            c.position.x,
+            c.position.y,
+            c.position.z,
+          ).applyQuaternion(q);
+          return { x: p.x + t.x, y: p.y + t.y, z: p.z + t.z };
+        }),
+        children.map(() => q),
+      ),
+      points: Float32Array.from(local.flat()),
+      bounds: bounds(local),
+      childCount: children.length,
+      radius: local.reduce((r, p) => Math.max(r, Math.hypot(...p) / S), 0),
+      mating: new Set(),
+      feature: occurrence.node.ref === "18940.dat" ? "rack-guide" : "rack",
+      reviewedPlaneClass: planeClass,
+    });
+  }
+  return out;
+}
 export function mechanicalSolids(
   source: PlayMechanismSource,
   policy: MechanicalContactPolicy,
@@ -345,11 +526,11 @@ export function mechanicalSolids(
     for (const [id, mesh] of entries) {
       if (!mesh?.indices.length) continue;
       const occurrence = id ? lookup.get(id) : undefined;
-      ensure(
-        occurrence?.node.ref !== "18940.dat",
-        "INVALID_INPUT",
-        "This moving rack housing needs a reviewed hollow collision proxy. Anchor its frame and try again.",
-      );
+      const reviewed = id ? reviewedMemberSolids(source, group, id) : undefined;
+      if (reviewed) {
+        out.push(...reviewed);
+        continue;
+      }
       const memberLocal = id ? source.memberLocals?.[id] : undefined;
       const canonical =
         occurrence &&
@@ -660,6 +841,7 @@ export function mechanicalSolids(
       solid.groupId,
       solid.memberId,
       solid.feature,
+      solid.reviewedPlaneClass,
       [...solid.mating].sort(),
     ]);
     const list = classes.get(k) ?? [];
@@ -702,7 +884,10 @@ export function mechanicalSolids(
 /** Exact per-member stationary surfaces keep a reviewed guide distinct from
  * neighboring structural pieces. These are private query shapes, not extra
  * walking geometry. */
-export function mechanicalStationarySolids(source: PlayMechanismSource) {
+export function mechanicalStationarySolids(
+  source: PlayMechanismSource,
+  moving: readonly MechanicalSolid[] = [],
+) {
   const rig = source.project.motionRigs[source.rigId],
     lookup =
       source.lookup ??
@@ -714,6 +899,23 @@ export function mechanicalStationarySolids(source: PlayMechanismSource) {
       : [[undefined, source.groups[group.id]] as const];
     for (const [memberId, mesh] of entries) {
       if (!mesh?.indices.length) continue;
+      const existing = moving.filter(
+        (s) =>
+          s.memberId === memberId &&
+          s.groupId === group.id &&
+          s.reviewedPlaneClass !== undefined,
+      );
+      if (existing.length) {
+        out.push(...existing);
+        continue;
+      }
+      const reviewed = memberId
+        ? reviewedMemberSolids(source, group, memberId)
+        : undefined;
+      if (reviewed) {
+        out.push(...reviewed);
+        continue;
+      }
       const inv = inverse(group.frame),
         local: Vec3[] = [];
       for (let i = 0; i < mesh.vertices.length; i += 3) {
@@ -769,7 +971,9 @@ export function prepareMechanicalSources(sources: PlayMechanismSource[]) {
       source.lookup,
     );
     ensure(
-      !unsupported,
+      !unsupported ||
+        (reviewedMechanicalMember(source, unsupported.guideOccurrenceId) &&
+          reviewedMechanicalMember(source, unsupported.rackOccurrenceId)),
       "INVALID_INPUT",
       unsupported?.reason ?? "Unsupported mechanical contact",
       unsupported,
@@ -778,8 +982,19 @@ export function prepareMechanicalSources(sources: PlayMechanismSource[]) {
         source.project.motionRigs[source.rigId],
         source,
       ),
-      solids = mechanicalSolids(source, policy);
-    count += solids.reduce((n, s) => n + s.childCount, 0);
+      solids = mechanicalSolids(source, policy),
+      stationary = mechanicalStationarySolids(source, solids);
+    // Ordinary fixed surfaces retain their source-triangle budget; reviewed
+    // fixed compounds spend every native primitive from the shared cap.
+    count +=
+      solids.reduce((n, s) => n + s.childCount, 0) +
+      stationary
+        .filter(
+          (s) =>
+            s.reviewedPlaneClass !== undefined &&
+            anchoredGroup(source.project.motionRigs[source.rigId], s.groupId),
+        )
+        .reduce((n, s) => n + s.childCount, 0);
     ensure(
       count <= MECHANICAL_CONTACT_LIMITS.solids,
       "LIMIT_EXCEEDED",
@@ -788,7 +1003,7 @@ export function prepareMechanicalSources(sources: PlayMechanismSource[]) {
     prepared.set(source.rigId, {
       policy,
       solids,
-      stationary: mechanicalStationarySolids(source),
+      stationary,
     });
   }
   return prepared;

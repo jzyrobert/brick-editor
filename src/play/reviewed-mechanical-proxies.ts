@@ -1,5 +1,6 @@
 import { occurrences } from "../core/document";
 import { ensure } from "../core/types";
+import { worldMechanicalFeatures } from "../mechanisms/mechanical-contacts";
 import type { PlayMechanismSource } from "./mechanism";
 import type { PlayMemberLocalGeometry } from "./types";
 import type { ReviewedConvexRegion } from "./reviewed-convex-packet";
@@ -64,12 +65,20 @@ export async function loadReviewedMechanicalProxies(
       for (const id of group.occurrenceIds) {
         const occurrence = lookup.get(id),
           ref = occurrence?.node.ref.toLowerCase();
-        if (!ref || !refs.has(ref)) continue;
+        if (
+          !ref ||
+          !refs.has(ref) ||
+          !worldMechanicalFeatures(occurrence!)?.some(
+            (f) => f.kind === "rack-guide" || f.kind === "rack-slide",
+          )
+        )
+          continue;
         const local = source.memberLocals?.[id];
         ensure(
           local &&
             !local.unsupported &&
             local.revision === source.project.revision &&
+            local.namespace === occurrence!.namespace &&
             local.occurrenceId === id &&
             JSON.stringify(local.frame) ===
               JSON.stringify(occurrence!.transform),
@@ -157,7 +166,8 @@ export function reviewedMechanicalMember(
     source.lookup?.get(id) ??
     occurrences(source.project).find((o) => o.id === id);
   ensure(
-    occurrence?.node.ref.toLowerCase() === member.ref &&
+    occurrence?.namespace === "official" &&
+      occurrence.node.ref.toLowerCase() === member.ref &&
       JSON.stringify(occurrence.transform) === member.frame,
     "REVISION_CONFLICT",
     "The build changed after its moving geometry was checked. Try Play again.",

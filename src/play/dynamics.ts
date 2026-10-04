@@ -18,6 +18,7 @@ import { anchoredGroup } from "../mechanisms/dynamics-settings";
 import {
   MechanicalContactPolicy,
   mechanicalSolids,
+  mechanicalStationarySolids,
   prepareMechanicalSources,
   type PreparedMechanicalSource,
   type MechanicalSolid,
@@ -345,6 +346,8 @@ export class DynamicRig {
       prepared?.policy ?? new MechanicalContactPolicy(this.rig, source);
     const solids =
       prepared?.solids ?? mechanicalSolids(source, this.contactPolicy);
+    const stationary =
+      prepared?.stationary ?? mechanicalStationarySolids(source, solids);
     const friction = this.settings.friction ?? DYNAMIC_DEFAULTS.friction,
       own = rigBit(index),
       colliderGroups = groups(own, 0xffff);
@@ -403,6 +406,42 @@ export class DynamicRig {
           ? group.occurrenceIds.map((id) => [id, source.members[id]] as const)
           : [[undefined, source.groups[group.id]] as const];
         for (const [memberId, mesh] of fixedMembers) {
+          const reviewed = stationary.filter(
+            (s) =>
+              s.groupId === group.id &&
+              s.memberId === memberId &&
+              s.reviewedPlaneClass !== undefined,
+          );
+          if (reviewed.length) {
+            const q = frameRotation(group.frame);
+            for (const solid of reviewed) {
+              const shape = solid.shape as RAPIER.Compound;
+              const native = new RAPIER.Compound(
+                shape.shapes,
+                shape.positions.map((p) => rotate(q, p)),
+                shape.rotations.map((r) => quatMul(q, r)),
+              );
+              const collider = world.createCollider(
+                new RAPIER.ColliderDesc(native)
+                  .setFriction(friction)
+                  .setCollisionGroups(colliderGroups)
+                  .setActiveHooks(RAPIER.ActiveHooks.FILTER_CONTACT_PAIRS),
+                body,
+              );
+              this.contactSolids.set(collider.handle, solid);
+              entry.mirrors.push(
+                characterWorld.createCollider(
+                  new RAPIER.ColliderDesc(native).setTranslation(
+                    start.x,
+                    start.y,
+                    start.z,
+                  ),
+                ),
+              );
+              entry.colliders++;
+            }
+            continue;
+          }
           const local = new Float32Array(mesh.vertices.length),
             worldVertices = new Float32Array(mesh.vertices.length);
           for (let i = 0; i < mesh.vertices.length; i += 3) {
@@ -1021,6 +1060,7 @@ export class DynamicRig {
         awakened = true;
       }
     };
+    this.contactPolicy.updateGuideFrames(this.frames());
     for (const id of [...this.joints.keys()].sort()) {
       const control = this.joints.get(id)!,
         spec = control.spec;

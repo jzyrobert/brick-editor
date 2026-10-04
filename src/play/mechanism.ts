@@ -460,7 +460,8 @@ export class PlayMechanism {
     this.contactSolids =
       prepared?.solids ?? mechanicalSolids(source, this.contactPolicy);
     this.stationarySolids =
-      prepared?.stationary ?? mechanicalStationarySolids(source);
+      prepared?.stationary ??
+      mechanicalStationarySolids(source, this.contactSolids);
     this.jointSpecs = structuredClone(rig.joints);
     this.jointKinds = new Map(rig.joints.map((j) => [j.id, j.kind]));
     for (const joint of rig.joints)
@@ -526,9 +527,30 @@ export class PlayMechanism {
         vertices.set([p.x, p.y, p.z], i);
       }
       if (!mesh.indices.length) continue;
-      const collider = world.createCollider(
-        RAPIER.ColliderDesc.trimesh(vertices, mesh.indices),
+      const reviewed = [...this.contactSolids, ...this.stationarySolids].some(
+        (s) => s.groupId === group.id && s.reviewedPlaneClass !== undefined,
       );
+      const groupSolids = this.contactSolids.some((s) => s.groupId === group.id)
+        ? this.contactSolids.filter((s) => s.groupId === group.id)
+        : this.stationarySolids.filter((s) => s.groupId === group.id);
+      const shape = reviewed
+        ? new RAPIER.Compound(
+            groupSolids.flatMap((s) =>
+              s.shape instanceof RAPIER.Compound ? s.shape.shapes : [s.shape],
+            ),
+            groupSolids.flatMap((s) =>
+              s.shape instanceof RAPIER.Compound
+                ? s.shape.positions
+                : [{ x: 0, y: 0, z: 0 }],
+            ),
+            groupSolids.flatMap((s) =>
+              s.shape instanceof RAPIER.Compound
+                ? s.shape.rotations
+                : [{ x: 0, y: 0, z: 0, w: 1 }],
+            ),
+          )
+        : new RAPIER.TriMesh(vertices, mesh.indices);
+      const collider = world.createCollider(new RAPIER.ColliderDesc(shape));
       this.proxies.push({
         id: group.id,
         collider,
@@ -639,6 +661,7 @@ export class PlayMechanism {
    * Equal/separating existing contact permits a part to slide on a support;
    * new contact or deeper penetration refuses the complete connected move. */
   private checkWorld(before: MechanismSnapshot, after: MechanismSnapshot) {
+    this.contactPolicy.updateGuideFrames(before.groupFrames, after.groupFrames);
     if (
       before.pose.vehicle &&
       JSON.stringify(before.pose.jointPositions) ===
