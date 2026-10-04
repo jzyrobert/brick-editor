@@ -10,7 +10,7 @@ export const GUIDED_RACK_PLAY_REFUSAL =
   "This rack guide needs matching reviewed geometry before Play can start. Reload its original parts and try again.";
 
 export const GUIDED_RACK_PROXY_WARNING =
-  "This rack guide uses reviewed simulation geometry in Play. Physical LEGO fit and loads are not certified.";
+  "Rack collisions are simplified in Play. Keep the rack aligned with its guide.";
 
 /** Identify an aligned guide contact that requires source-bound Play geometry.
  * Callers must check both captured member bindings before admitting this contact;
