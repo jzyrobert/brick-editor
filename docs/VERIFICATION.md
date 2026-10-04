@@ -1327,3 +1327,17 @@ single detector scan had no primary findings and two inherited 17 px hint-radius
 advisories. The old surface brief still describes the former palette; this
 pre-existing drift was reported and left untouched. No new runtime assets ship.
 This checkpoint leaves general contact policy and physical-fit acceptance open.
+
+## Independent mechanical contact cost probe (4 October 2026)
+
+A read-only probe of the contact-agent worktree repeats native and kinematic
+costs with source hashes, equal prescribed 1 kg moving-body masses, constructor
+entry time, actual coordinates, and native/mirrored collider counts. The public
+reproduction driver typechecks and runs against both current and historical
+adapters; a live contact-source smoke run also exercises its owned event queue.
+
+Separate surface handles exceed a fixed-tick frame budget, policy-class compounds
+reduce the native work, and persistent native query colliders avoid rebuilding
+large shapes during kinematic sweeps. The initial rack performance sample used
+an interpenetrating fixture mount and is a blocked diagnostic, not an accepted
+rack or phone result. See [measurements, reproduction and budget advice](PLAY-CONTACT-COSTS.md).

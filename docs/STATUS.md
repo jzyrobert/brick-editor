@@ -1026,3 +1026,13 @@ The fresh Impeccable full review requested one phone status/Tools overlap fix;
 its verdict scored that fix resolved (`ship` at that scope). Documentation
 preserves the incumbent system. Contact-policy work remains in progress; these
 checks do not certify rack tooth fit, broader mating geometry or physical torque.
+
+## Mechanical contact cost investigation (4 October 2026)
+
+Independent read-only measurements of the experimental contact implementation
+found native and kinematic costs that require bounded compound policy classes,
+persistent query shapes and aggregate preparation/enumeration limits. A public
+Node driver records hashes, actual coordinates, equal prescribed body masses,
+entry time and tick distributions for reproducible comparison. These are shared
+VM diagnostics, not physical-phone results. Corrected rack acceptance and larger
+mechanism performance remain to be measured. See [scope and findings](PLAY-CONTACT-COSTS.md).
