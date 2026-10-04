@@ -10,6 +10,7 @@ import {
 import { deriveDoorRigs } from "../play/auto-doors";
 import { proposeMechanicalRig } from "./mechanical-proposals";
 import { checkPhysicalMotorBinding } from "./motor-binding";
+import { mechanicalContactGraph } from "./mechanical-contacts";
 import type { JointSpec, MotionRig, RigidGroup } from "./types";
 
 const members = (g: RigidGroup) => JSON.stringify([...g.occurrenceIds].sort());
@@ -35,13 +36,47 @@ export function physicalPlayEligibility(
     return refuse(
       "This linkage needs reviewed physical joints and attachment points before it can move in Play.",
     );
-  // A single source solid may always fall and collide without a mechanical joint.
-  if (
-    !rig.vehicle &&
-    !rig.joints.length &&
-    rig.groups.every((g) => g.occurrenceIds.length === 1)
-  )
-    return { eligible: true };
+  const owned = new Set(rig.groups.flatMap((g) => g.occurrenceIds));
+  const selected = all.filter((o) => owned.has(o.id));
+  if (selected.length !== owned.size || selected.length > 2048)
+    return refuse(
+      "Choose a complete assembly of at most 2,048 parts for connection review.",
+    );
+  // Gravity needs no powered joint. A compound brick body still needs actual
+  // rigid connections; grouping disconnected pieces cannot supply a weld.
+  if (!rig.vehicle && !rig.joints.length) {
+    if (rig.groups.every((g) => g.occurrenceIds.length === 1))
+      return { eligible: true };
+    try {
+      const welds = mechanicalContactGraph(project, selected).contacts.filter(
+        (c) => c.kind === "stud-weld",
+      );
+      const connected = rig.groups.every((group) => {
+        const ids = new Set(group.occurrenceIds),
+          reached = new Set(group.occurrenceIds.slice(0, 1));
+        for (let pass = 0; pass < ids.size; pass++) {
+          const before = reached.size;
+          for (const c of welds)
+            if (
+              ids.has(c.a.occurrenceId) &&
+              ids.has(c.b.occurrenceId) &&
+              (reached.has(c.a.occurrenceId) || reached.has(c.b.occurrenceId))
+            ) {
+              reached.add(c.a.occurrenceId);
+              reached.add(c.b.occurrenceId);
+            }
+          if (reached.size === before) break;
+        }
+        return ids.size > 0 && reached.size === ids.size;
+      });
+      if (connected) return { eligible: true };
+    } catch {
+      // Connection-review limits remain a conservative admission refusal.
+    }
+    return refuse(
+      "This loose object needs verified brick connections before its parts can move together.",
+    );
+  }
   // Vehicles have a separate wheelbase heuristic and need no motor part.
   if (rig.vehicle) return checkAuthoredVehicleSource(project, rig, all);
   for (const joint of rig.joints) {
@@ -62,12 +97,6 @@ export function physicalPlayEligibility(
         check.reason ?? "The motor is not mounted and coupled to this shaft.",
       );
   }
-  const owned = new Set(rig.groups.flatMap((g) => g.occurrenceIds));
-  const selected = all.filter((o) => owned.has(o.id));
-  if (selected.length !== owned.size || selected.length > 2048)
-    return refuse(
-      "Choose a complete assembly of at most 2,048 parts for connection review.",
-    );
   const sameRig = (reviewed: MotionRig) => {
     const byMembers = new Map(reviewed.groups.map((g) => [members(g), g]));
     const mapped = new Map(

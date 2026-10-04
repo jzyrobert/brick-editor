@@ -14,8 +14,42 @@ import {
   requirePhysicalPlay,
 } from "../../src/mechanisms/physical-play";
 import { prepareMechanicalProposal } from "../../src/mechanisms/proposal-entry";
+import type { MotionRig } from "../../src/mechanisms/types";
 
 beforeAll(() => expect(registerFullLibraryFromDisk()).toBe(true));
+it("admits an actual connected compound gravity body and refuses a fabricated weld", () => {
+  const project = importLDraw(
+    "1 4 0 0 0 1 0 0 0 1 0 0 0 1 3003.dat\n1 4 0 -24 0 1 0 0 0 1 0 0 0 1 3003.dat",
+  );
+  const all = occurrences(project);
+  const rig: MotionRig = {
+    schemaVersion: 1,
+    id: "gravity-body",
+    name: "Connected bricks",
+    mode: "kinematic",
+    groups: [
+      {
+        id: "body",
+        occurrenceIds: all.map((o) => o.id),
+        frame: { position: [0, 0, 0], basis: [1, 0, 0, 0, 1, 0, 0, 0, 1] },
+        restTransforms: Object.fromEntries(
+          all.map((o) => [o.id, structuredClone(o.transform)]),
+        ),
+      },
+    ],
+    joints: [],
+    dynamics: { groups: { body: { anchored: false, massKg: 1 } } },
+  };
+  project.motionRigs = { [rig.id]: rig };
+  expect(physicalPlayEligibility(project, rig).eligible).toBe(true);
+  const disconnected = structuredClone(all);
+  disconnected[1].transform.position[0] = 100;
+  const before = JSON.stringify(project);
+  expect(physicalPlayEligibility(project, rig, disconnected).eligible).toBe(
+    false,
+  );
+  expect(JSON.stringify(project)).toBe(before);
+});
 const scene = () => {
   const f = physicalMotorFixture();
   return { ...f, rig: f.project.motionRigs["technic-drive"] };
