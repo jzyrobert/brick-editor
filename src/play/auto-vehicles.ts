@@ -306,7 +306,7 @@ function wheelbase(wheels: Wheel[]) {
   return length;
 }
 
-/** Complete bounded source stud graph, shared by inferred and authored cars. */
+/** Bounded enumeration of reviewed stud interfaces for inferred/authored cars. */
 function sourceStudGraph(candidates: Occurrence[]) {
   if (candidates.length > AUTO_VEHICLE_LIMITS.candidates)
     return {
