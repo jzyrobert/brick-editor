@@ -17,8 +17,16 @@ make unsupported attachments controllable. Normal Play refuses virtual
 proximity grippers, unreviewed closed linkages, springs/ropes and generic ball or
 cylindrical joints until their actual part connections have reviewed profiles.
 Their engine fixtures and numerical tests remain engineering benches. Individual
-loose source solids may still fall and collide. Cars with a supported stable
+loose source solids and compound groups joined by verified studs may fall and
+collide without a powered joint. Disconnected parts cannot become one body
+merely by sharing an authored group. Cars with a supported stable
 wheelbase and trains remain drivable without a motor part.
+
+The windmill sails, lighthouse lamp and castle drawbridge retain their older
+mathematical rigs for direct engine benches. Their actual sample parts do not
+supply the reviewed bearing/motor or hinge connections needed by ordinary
+Play, so they remain at their authored rest poses. Native projects preserve the
+rig data; source placements and geometry stay unchanged.
 
 Remote hand sliders set a target rather than jumping directly across the whole
 sweep. Rapid changes coalesce to the latest target each animation frame; doors
@@ -76,7 +84,7 @@ not appear as scalar controls; kinematic preview explicitly retains rest. See
 
 ## Dynamic physics (opt-in)
 
-`play.enter({rigIds, dynamicRigIds})` simulates the named active rigs dynamically. In the UI, the choice is **Play → Mechanism physics → Dynamic**, a folded section shown only when the build has authored rigs.
+`play.enter({rigIds, dynamicRigIds})` simulates the named active rigs dynamically. In the UI, the choice is **Play → Mechanism physics → Dynamic**, a folded section shown when the build has eligible authored rigs.
 
 - **Bodies.** Each authored rigid group is one body. Individual bricks are never separate bodies (spec 19.4). Moving groups get one convex proxy per member occurrence. Its points are deduplicated on a quarter-LDU grid and reduced to at most 256 points using directional extremes, so the proxy can shrink but never grow. A flat member gets a thin box. Anchored groups keep their exact triangle surfaces, so a door frame keeps its opening.
 - **Anchoring and mass.** Root groups of non-vehicle rigs are anchored by default, such as a door frame or an axle post. Vehicle groups and explicitly unanchored groups move. Mass comes from proxy volume at 200 kg/m³, or from an authored `massKg` per group. Friction defaults to 0.7.
@@ -116,7 +124,9 @@ and the [loaded-arm verification](VERIFICATION.md#ideal-spur-transmissions-and-l
 
 ### The playground park sample
 
-The **Playground park** sample (see [templates](TEMPLATES.md)) shows dynamic physics out of the box: its rigs set `dynamics.startDynamic`, so the Play card opens with **Mechanism physics · Dynamic** chosen, and its one-line Play hint (“Push the crates and barrels, then swing!”) shows on the Play card and for six seconds when Play starts (`project.scene.playHint`, `scene.set` command). Walking into a crate or barrel pushes it across the tiled plaza; walking into the swing seat swings it up to its ±70° limit; the see-saw tips about its post and the roundabout turns. Unit and browser tests push crate 3 at least 20 LDU with its height within 3 LDU, and swing the seat.
+The **Playground park** sample (see [templates](TEMPLATES.md)) starts with six dynamic gravity objects: four crates and two barrels. Each contains three source parts joined by verified studs, with no mechanical joint. Their rigs set `dynamics.startDynamic`, so the Play card opens with **Mechanism physics · Dynamic** chosen. The hint “Push the crates and barrels.” shows on the card and for six seconds when Play starts (`project.scene.playHint`, `scene.set` command). Walking into a crate or barrel pushes it across the tiled plaza.
+
+The decorative swing, see-saw and roundabout have no reviewed source pivot bearings and remain static in ordinary Play. Their stored engineering rigs, source placements and rest poses are preserved; they set `startDynamic: false`. Unit and production browser tests verify exactly six active gravity rigs, push crate 3 more than 20 LDU in 40 ticks, keep its lowest source point within 3 LDU above the plaza and at most 0.5 LDU below it, and check settled support and velocities. Source geometry and inventory remain unchanged. The source-floor measurement handles rocking without treating the body frame origin as a floor-clearance measurement.
 
 ### Physics settings (rig authoring)
 

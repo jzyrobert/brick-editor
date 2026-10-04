@@ -68,6 +68,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Play
 
+- [ ] Add real, reviewed hinge/bearing hardware to architectural sample motion (windmill sails, lighthouse lamp, castle drawbridge and playground equipment), with mounted motor parts where powered. Current unverified rigs remain static in ordinary Play; preserve their stored engineering data until a source-backed redesign is ready.
 - [ ] Review actual linear-actuator, ball/cylindrical, spring/rope and closed Technic linkage part connections before admitting their engineering rigs to ordinary Play.
 - [ ] Real jaw/contact grasping with attached LEGO/Technic jaws; proximity fixed-joint grippers are engineering fixtures only.
 - [ ] Physically mounted powered rack assembly: verify the guide housing mounting pins and offset carrier before adding motor control.

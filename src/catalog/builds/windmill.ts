@@ -1,20 +1,20 @@
 /**
  * "Windmill farm": an original CC0 build from official LDraw parts.
  *
- * A stone-and-white windmill whose sails turn on a motorised axle (rig
- * "windmill": a revolute joint with a velocity motor, so the sails turn as
- * soon as Play starts), a red barn with two doors that open inwards, a
- * fenced pasture with cows and a pig, a vegetable field, chickens, hay and
- * trees on a 32 × 32 baseplate. Fronts face −Z, towards the default camera.
+ * A stone-and-white windmill with lattice sails, a red barn with two doors
+ * that open inwards, a fenced pasture with cows and a pig, a vegetable field,
+ * chickens, hay and trees on a 32 × 32 baseplate. Fronts face −Z, towards the
+ * default camera.
  *
  * The sails are built flat in their own section and stood up in front of the
  * mill's cap: the section's studs face −Z. Its hub (a 2 × 2 round plate) sits
- * on the side stud of a 1 × 1 brick at the end of the cap's shaft, so the
+ * on the side studs of a 1 × 2 brick at the end of the cap's shaft, so the
  * whole windmill is one stud-connected build.
  *
  * Play: walk through the mill's door and the barn's doors (E or tap opens
- * them); the sails turn at 30 degrees a second and stop if they would hit
- * the explorer.
+ * them). The sails stay static: their stored "windmill" velocity-motor rig
+ * has no actual motor part or reviewed rotating bearing. The mathematical
+ * rig remains a direct engine bench with its source and rest poses preserved.
  */
 import type { Basis, Project, Vec3 } from "../../core/types";
 import { importLDraw } from "../../ldraw/io";

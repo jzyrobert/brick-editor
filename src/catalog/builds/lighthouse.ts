@@ -3,13 +3,14 @@
  *
  * A rocky island in a blue sea on a 32 × 32 baseplate: a sandy beach with a
  * wooden jetty and a rowing boat, stone steps up three tiers of rock, a
- * red-and-white striped lighthouse whose lamp turns on a motor (rig
- * "lighthouse": a revolute joint with a velocity motor, so the lamp sweeps
- * round as soon as Play starts), and a keeper's cottage whose door opens
- * outwards. Fronts face −Z, towards the default camera.
+ * red-and-white striped lighthouse with a lamp, and a keeper's cottage whose
+ * door opens outwards. Fronts face −Z, towards the default camera.
  *
  * Play: walk up the jetty and the beach, climb the steps (two plates each,
  * the last one plate) to the top of the island and go into the cottage.
+ * The lamp stays static: its stored "lighthouse" velocity-motor rig has no
+ * actual motor part or reviewed bearing. It remains a direct engine bench,
+ * preserving the authored source geometry and rest poses.
  *
  * The rowing boat comes from the complete official library; every other
  * part is in the curated catalogue.
