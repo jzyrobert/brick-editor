@@ -313,6 +313,7 @@ export class DynamicRig {
   private bodies = new Map<string, Body>();
   private joints = new Map<string, JointControl>();
   private transmissions: TransmissionMap;
+  private rackTransmissionJoints = new Set<string>();
   private vehicle?: {
     controller: RAPIER.DynamicRayCastVehicleController;
     chassis: Body;
@@ -340,6 +341,10 @@ export class DynamicRig {
     this.rigId = source.rigId;
     this.rig = structuredClone(source.project.motionRigs[source.rigId]);
     this.transmissions = transmissionMap(this.rig);
+    for (const transmission of this.rig.transmissions ?? [])
+      if (transmission.kind === "rack")
+        for (const id of this.transmissions.get(transmission.jointA)!.keys())
+          this.rackTransmissionJoints.add(id);
     this.settings = structuredClone(this.rig.dynamics ?? {});
     this.meshes = source.groups;
     this.contactPolicy =
@@ -1112,7 +1117,12 @@ export class DynamicRig {
         } else {
           const [low, high] = this.jointLimits(id);
           const forceBased =
-            motor.input !== undefined || !!this.rig.loopClosures?.length;
+            motor.input !== undefined ||
+            // A sliding output reflects linear inertia onto this shaft. The
+            // shaft-only acceleration damping cannot recover a loaded rack;
+            // use the same effort-limited damping as its live input control.
+            this.rackTransmissionJoints.has(id) ||
+            !!this.rig.loopClosures?.length;
           const velocity =
             (m.target > 0 && control.value >= high) ||
             (m.target < 0 && control.value <= low)

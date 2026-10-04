@@ -17,6 +17,7 @@ import {
 import { add, inverse, mv } from "../core/math";
 import { KinematicSession } from "../mechanisms/kinematic";
 import { unsupportedMechanicalPlayContact } from "../mechanisms/mechanical-play-support";
+import { reviewedMechanicalMember } from "./reviewed-mechanical-proxies";
 import {
   MechanicalContactPolicy,
   mechanicalSolids,
@@ -240,7 +241,9 @@ export function validatePlayMechanismSource(
       source.lookup,
     );
     ensure(
-      !unsupported,
+      !unsupported ||
+        (reviewedMechanicalMember(source, unsupported.guideOccurrenceId) &&
+          reviewedMechanicalMember(source, unsupported.rackOccurrenceId)),
       "INVALID_INPUT",
       unsupported?.reason ?? "Unsupported mechanical contact",
       unsupported,
