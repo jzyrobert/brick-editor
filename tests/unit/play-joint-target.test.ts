@@ -158,8 +158,9 @@ it("keeps targets independent across simultaneous rigs and immediate positioning
       anchorB: rig.groups[0].frame.position.map(
         (x, i) => x - rig.groups[1].frame.position[i],
       ) as [number, number, number],
-      axisA: [0, 1, 0],
-      axisB: [0, 1, 0],
+      // Lift this independent coordinate away from the included floor.
+      axisA: [0, -1, 0],
+      axisB: [0, -1, 0],
       limits: [0, 20],
     },
   ];

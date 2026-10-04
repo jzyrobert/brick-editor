@@ -47,6 +47,7 @@ async function fixture(dynamic: boolean, position = false) {
     unchanged: () => expect(JSON.stringify(project)).toBe(original),
   };
 }
+// Detailed native tooth contacts need about 6 ms per simulated tick on this VM.
 for (const dynamic of [false, true])
   describe(`${dynamic ? "dynamic" : "kinematic"} live motor input`, () => {
     it("reverses at proportional speed, brakes on release and restores authored presets without changing source", async () => {
@@ -90,7 +91,7 @@ for (const dynamic of [false, true])
       } finally {
         play.dispose();
       }
-    });
+    }, 15_000);
     it("temporarily drives a position motor, replaces connected travel and validates requests atomically", async () => {
       const { play, rig, joint, motor, report, unchanged } = await fixture(
         dynamic,

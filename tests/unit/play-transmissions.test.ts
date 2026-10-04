@@ -111,7 +111,9 @@ async function fixture(
   };
   return { rig, world, step, input, output, outputBody, definition };
 }
-describe("physical spur coupling", () => {
+// The longest replay integrates 3,240 native ticks with the reviewed tooth
+// compounds (about 6 ms/tick on the shared VM); retain every physical assertion.
+describe("physical spur coupling", { timeout: 30_000 }, () => {
   it("reports a held motor input blocked by its output, then recovers and brakes", async () => {
     const { rig, step, input, outputBody } = await fixture();
     const blocked = outputBody();

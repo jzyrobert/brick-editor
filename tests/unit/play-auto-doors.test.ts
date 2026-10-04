@@ -182,6 +182,8 @@ describe("automatic doors in Play", () => {
     expect(project.motionRigs).toEqual({});
   });
 
+  // This 460-tick walk-through plus loading/contact checks takes 5.2–6.4 s
+  // on the shared VM; retain every movement and source-isolation assertion.
   it("opens only the free way, lets the explorer through, and exports a static posed snapshot", async () => {
     const { play, project, derived } = await doorSession();
     const original = JSON.stringify(project);
@@ -240,7 +242,7 @@ describe("automatic doors in Play", () => {
     );
     expect(JSON.stringify(project)).toBe(original);
     play.dispose();
-  });
+  }, 15_000);
 
   it("opens a two-way door away from the explorer and reports skipped doors", async () => {
     // A lone door hinged on a brick column, free both ways.
