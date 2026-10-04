@@ -10,7 +10,7 @@ implementation progress is recorded below.
 the 720° probe target. Positive/negative turns, reversal, obstruction recovery,
 rotated axes and loaded progress are covered by focused tests. See
 [verification](PLAY-PHYSICS.md) and [the checkpoint](VERIFICATION.md#accumulated-turn-position-control-3-october-2026).
-**Implemented foundation:** 15 source-bound mechanical profiles and typed
+**Implemented foundation:** 17 source-bound mechanical profiles and typed
 contacts now support read-only `mechanisms.propose()` drafts for retained shafts,
 separate pin/arm articulations and complementary finger hinges with accessories.
 **Implemented spur drive:** the reviewed 8:24 mesh now couples retained shafts
@@ -20,9 +20,14 @@ carrier. Unwrapped positioning, reversed/back-driven control, source isolation
 and rendered accessories are covered by focused tests. See
 [mechanical scope](PLAY-MECHANICAL-FEATURES.md). Reviewed outrigger racks have an
 ideal slider/pinion relation and corrected 24-tooth source mounting. Historical
-load/back-drive checks disabled same-rig contacts; integrated native housing
-contacts currently stall near rest and are not accepted. Further rack guides,
-physical Play acceptance and other families remain open. Direct reviewed session
+load/back-drive checks disabled same-rig contacts. Later private diagnostics keep
+the full source-preserving housing and reach both corrected targets in Kinematic
+and Dynamic, including native load/stall recovery and a rotated mobile carrier.
+The production rack path is still unavailable pending finite cavity/source
+coverage and canonical local-geometry integration; these private results are
+not production acceptance. Further rack guides and other families remain open.
+See [contact evidence and its limits](reviews/RACK-CONTACT-ORIGIN-AND-FACTORING.md).
+Direct reviewed session
 entry and explicit undoable Save are implemented; the scoped setup reviewer
 scored its three hierarchy/label/content corrections resolved.
 

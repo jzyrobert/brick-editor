@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { registerFullLibraryFromDisk } from "../../scripts/full-library-node";
 import { occurrences } from "../../src/core/document";
-import { compose, identity } from "../../src/core/math";
 import { posedLDraw } from "../../src/mechanisms/posed-export";
 import { importLDraw, exportLDraw } from "../../src/ldraw/io";
 import { decodeNative, encodeNative } from "../../src/persistence/native";
@@ -77,7 +76,6 @@ describe("reviewed guided rack", () => {
     expect(exportLDraw(posed)).not.toBe(exportLDraw(project));
   });
   it("matches rotated placement frames without changing the reviewed signed relation", () => {
-    const { project } = rackFixture();
     const rotation = {
       position: [300, -120, 90] as [number, number, number],
       basis: axisRotation(
@@ -85,8 +83,7 @@ describe("reviewed guided rack", () => {
         63,
       ),
     };
-    for (const n of project.models[project.rootModelId].nodes)
-      n.transform = compose(rotation, n.transform);
+    const { project } = rackFixture(rotation);
     const p = draft(project);
     expect(p.unresolved).toEqual([]);
     expect(p.rig!.transmissions).toMatchObject([

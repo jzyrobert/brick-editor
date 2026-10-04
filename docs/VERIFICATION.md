@@ -1,5 +1,26 @@
 # Verification — 27 September 2026
 
+## Canonical capture and native preparation integration — 4 October 2026
+
+The parent integrates occurrence-bound canonical capture, the oblique native
+consumer, exact-facet packet preparation, source-surface hashing and the maintainer
+native compiler. **46 cases across eight files pass in 17.60 seconds**: capture,
+oblique Kinematic/Dynamic spur motion, explicit thin/triangle/segment support,
+surface binding, contact policy, anchored sliders and rack source/proposal checks.
+The posed rack fixture generator retains its exact default eight-part source;
+its existing oblique proposal check passes independently after adopting the new
+optional fixture pose. This does not accept production rack physics.
+
+The fresh production build passes, including schemas and TypeScript (Vite:
+35.11 seconds). **Three browser cases pass in 41.6 seconds** on private port 4397:
+oblique embedded same-name Kinematic/Dynamic entry at 390 × 844 and installed
+offline pinned Technic entry/control after reload. The native WASM marker occurs
+only in lazy `session-CZlDKufc.js`, absent initial `index-D8gvn4NH.js`. Generated
+schemas remain unchanged; the owned preview has stopped. Focused formatting and
+`git diff --check` pass. See [capture](reviews/PLAY-MEMBER-LOCAL-CAPTURE.md),
+[canonical consumer](reviews/CANONICAL-MECHANICAL-PROXIES.md) and
+[packet preparation](reviews/REVIEWED-NATIVE-PROXY-PACKETS.md).
+
 ## Centered collision children in rotated builds — 4 October 2026
 
 Native compound children now compose both position and orientation through the

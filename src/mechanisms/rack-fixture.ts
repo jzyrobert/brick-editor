@@ -7,10 +7,10 @@ import { proposeMechanicalRig } from "./mechanical-proposals";
 
 /** Original CC0 rack acceptance arrangement. Library geometry is referenced,
  * never copied: a retained 24-tooth pinion drives the reviewed outrigger rack. */
-export function rackFixture() {
+export function rackFixture(worldPose: Transform = identity()) {
   const pose = (position: Vec3): Transform => ({ ...identity(), position });
   const row = (ref: string, t: Transform) => {
-    const w = compose(pose([0, -160, 0]), t);
+    const w = compose(worldPose, compose(pose([0, -160, 0]), t));
     return `1 7 ${[...w.position, ...w.basis].join(" ")} ${ref}`;
   };
   const project = importLDraw(

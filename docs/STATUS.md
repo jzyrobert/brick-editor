@@ -1,5 +1,22 @@
 # Implementation status
 
+## Canonical mechanical geometry — 4 October 2026
+
+Play now captures complete moving-member surfaces in part-local coordinates
+from their actual loaded prototypes before rounding world placement. One bounded
+request covers all active rigs; embedded overrides, authored frames and revisions
+stay source-bound. Reviewed bore/gear surface compounds compose native child
+poses through the authored group frame, so oblique placement no longer rebuilds
+thin hulls from rounded world vertices.
+
+The parent integration passes 46 focused cases, the production build and three
+browser cases: both physics modes on an oblique custom same-name part and fresh
+offline Technic entry. Native packet preparation and its exact compiler now
+retain supplied facets and lower-dimensional support, but generated housing/rack
+data and physical rack acceptance are still separate. See
+[capture scope](reviews/PLAY-MEMBER-LOCAL-CAPTURE.md) and
+[native proxy scope](reviews/CANONICAL-MECHANICAL-PROXIES.md).
+
 ## Mechanism entry and moving-render diagnostics — 4 October 2026
 
 Reviewed mechanical proposals can now enter a private Kinematic or Dynamic Play
