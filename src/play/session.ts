@@ -19,6 +19,7 @@ import type {
   PlayOccupancy,
 } from "./types";
 import { PlayVehicleWorld } from "./vehicle-world";
+import { sessionGroundY } from "./session-ground";
 import {
   compactCollisionMesh,
   type CompactCollisionMesh,
@@ -190,6 +191,7 @@ export class PlaySession {
   private tick = 0;
   private accumulator = 0;
   private grounded = false;
+  private groundY = 0;
   /** Feet expressed in the supporting group's frame, refreshed after walking. */
   private support?: {
     handle: number;
@@ -270,6 +272,15 @@ export class PlaySession {
           ? [mechanismSource]
           : [],
     );
+    const allSources = Array.isArray(mechanismSource)
+      ? mechanismSource
+      : mechanismSource
+        ? [mechanismSource]
+        : [];
+    const groundY =
+      request.ground === false ? 0 : sessionGroundY(snapshot, allSources);
+    this.groundY = groundY;
+    const groundHeight = -groundY * S;
     this.world = new RAPIER.World({ x: 0, y: 0, z: 0 });
     this.world.timestep = DT;
     this.bounds = structuredClone(snapshot.bounds);
@@ -339,11 +350,13 @@ export class PlaySession {
     }
     if (request.ground !== false)
       this.warnings.push(
-        "Session-only ground is an infinite plane at Y=0; it is not an authored part.",
+        `Session-only ground is an infinite plane at Y=${groundY}; it is not an authored part.`,
       );
     if (request.ground !== false)
       this.world.createCollider(
-        new RAPIER.ColliderDesc(new RAPIER.HalfSpace({ x: 0, y: 1, z: 0 })),
+        new RAPIER.ColliderDesc(
+          new RAPIER.HalfSpace({ x: 0, y: 1, z: 0 }),
+        ).setTranslation(0, groundHeight, 0),
       );
     this.capsule = new RAPIER.Capsule(
       (P.height / 2 - P.radius) * S,
@@ -355,11 +368,6 @@ export class PlaySession {
         P.radius * S,
       ).setSensor(true),
     );
-    const allSources = Array.isArray(mechanismSource)
-      ? mechanismSource
-      : mechanismSource
-        ? [mechanismSource]
-        : [];
     const dynamicIds = new Set(request.dynamicRigIds ?? []);
     try {
       const dynamicSources = allSources.filter((source) =>
@@ -378,7 +386,7 @@ export class PlaySession {
                 indices: drivingStatic.indices,
               }
             : undefined,
-          request.ground !== false,
+          request.ground === false ? false : groundHeight,
           this.world,
           dynamicSources,
           revision,
@@ -437,7 +445,7 @@ export class PlaySession {
         this.vehicleWorld = new PlayVehicleWorld(
           allSources,
           drivingStatic,
-          request.ground !== false,
+          request.ground === false ? false : groundHeight,
           (exclude) => [
             ...[...this.mechanisms]
               .filter(([id]) => id !== exclude)
@@ -957,7 +965,7 @@ export class PlaySession {
         0,
         // Far enough to reach the ground from above the tallest build
         // (the default spawn starts over its highest point).
-        Math.max(2000, -start[1] + 400),
+        Math.max(2000, this.groundY - start[1] + 400),
         true,
         undefined,
         undefined,
@@ -1806,7 +1814,7 @@ export class PlaySession {
     });
     if (this.grounded && this.clear(this.feet)) this.safe = [...this.feet];
     if (
-      this.feet[1] > Math.max(this.bounds.max[1], 0) + 3000 &&
+      this.feet[1] > Math.max(this.bounds.max[1], this.groundY) + 3000 &&
       this.locomotion === "walk"
     ) {
       this.feet = [...(this.safe ?? this.spawn)];

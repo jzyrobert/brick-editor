@@ -76,6 +76,7 @@ export type VehicleCheck = {
 /** Session-owned static BVH plus foreign-rig BVHs cached by accepted geometry
  * identity. No authored mutation and no retained Rapier query worlds. */
 export class PlayVehicleWorld {
+  private groundHeight?: number;
   private profiles = new Map<string, DrivingProfile>();
   private reports = new Map<string, PlayVehicleCollisionReport>();
   private staticWorld?: DrivingObstacleSnapshot;
@@ -89,12 +90,14 @@ export class PlayVehicleWorld {
   constructor(
     sources: PlayMechanismSource[],
     staticSource: DrivingTriangleSource | undefined,
-    private ground: boolean,
+    ground: boolean | number,
     private acceptedGeometry: (
       excludeRigId: string,
     ) => Array<{ rigId: string; sources: readonly DrivingTriangleSource[] }>,
     unavailable?: string,
   ) {
+    this.groundHeight =
+      ground === false ? undefined : typeof ground === "number" ? ground : 0;
     let staticFailure = unavailable;
     try {
       if (!staticFailure)
@@ -193,9 +196,11 @@ export class PlayVehicleWorld {
       to = drivingPose(profile, after);
     try {
       if (
-        this.ground &&
+        this.groundHeight !== undefined &&
         profile.boxes.some(
-          (box) => to.y + box.center[1] - box.halfExtents[1] < -0.00001,
+          (box) =>
+            to.y + box.center[1] - box.halfExtents[1] <
+            this.groundHeight! - 0.00001,
         )
       )
         throw new AppError(
@@ -237,7 +242,7 @@ export class PlayVehicleWorld {
       rotation: frameRotation(box.frame),
     }));
     const delta = toPhysics(to.map((v, i) => v - from[i]) as Vec3);
-    if (this.ground)
+    if (this.groundHeight !== undefined)
       for (const box of boxes) {
         const q = box.rotation;
         const low =
@@ -248,7 +253,7 @@ export class PlayVehicleWorld {
             box.halfExtents[1] -
           Math.abs(new Vector3(0, 0, 1).applyQuaternion(q).y) *
             box.halfExtents[2];
-        if (Math.min(low, low + delta.y) < -0.00001)
+        if (Math.min(low, low + delta.y) < this.groundHeight - 0.00001)
           return {
             accepted: false,
             reason: "Body transfer intersects session ground",
@@ -279,11 +284,11 @@ export class PlayVehicleWorld {
         reason: "Complete collision geometry is unavailable",
       };
     if (
-      this.ground &&
+      this.groundHeight !== undefined &&
       boxes.some(
         (box) =>
           Math.min(from.y, to.y) + box.center[1] - box.halfExtents[1] <
-          -0.00001,
+          this.groundHeight! - 0.00001,
       )
     )
       return {

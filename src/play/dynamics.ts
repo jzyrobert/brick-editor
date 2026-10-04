@@ -1753,7 +1753,7 @@ export class PlayDynamicsWorld {
   private mirrorBodies = new Map<number, RAPIER.RigidBody>();
   constructor(
     staticMesh: { vertices: Float32Array; indices: Uint32Array } | undefined,
-    ground: boolean,
+    ground: boolean | number,
     private characterWorld: RAPIER.World,
     sources: DynamicRigSource[],
     revision: number,
@@ -1777,9 +1777,10 @@ export class PlayDynamicsWorld {
             .setCollisionGroups(groups(STATIC_BIT, 0xffff)),
         );
       }
-      if (ground)
+      if (ground !== false)
         this.world.createCollider(
           new RAPIER.ColliderDesc(new RAPIER.HalfSpace({ x: 0, y: 1, z: 0 }))
+            .setTranslation(0, typeof ground === "number" ? ground : 0, 0)
             .setFriction(DYNAMIC_DEFAULTS.friction)
             .setCollisionGroups(groups(STATIC_BIT, 0xffff)),
         );
