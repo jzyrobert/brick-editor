@@ -148,3 +148,77 @@ preserve all passages, that mass/inertia are correct, or that native contact,
 foreign blockers, end stops, backdrive and mobile-carrier response pass. Those
 require separate proxy coverage tests and native acceptance. No LDraw pack,
 contact solver, collision exemption or Play interface was changed in this review.
+
+## Private thick-section candidate review
+
+A separate private contact prototype generated 1,245 closed convex prisms from
+closed XY contours at Z 0.5, 4.5 and 8.5, mirrored across the rack's five signed
+bands. It triangulates the exterior with holes, then joins adjoining triangles
+only when the convex union preserves their summed area. This candidate is
+identified by the SHA-256 of its rack-local LDU point-list JSON:
+`51f01244f4af0cc600cc620ef81a5e40f86b872a3cd8f102c4888b4d27f68343`.
+The JSON and diagnostic harnesses remain private under `.local/`; this review
+commits their findings, not candidate runtime geometry.
+
+Independent finite polygon checks found no proper contour self-intersections,
+no inter-hole crossings or nested holes, and no hole vertices outside the
+exterior. The central section has 12 closed paths including its exterior;
+the other two sections each have 18. Radius-8 mouth and adjoining keyed-recess
+bounding boxes overlap slightly, but the actual faceted hole polygons do not.
+
+| Signed Z band | Convex regions | Exterior minus hole area (LDU²) |
+| ------------- | -------------: | ------------------------------: |
+| `[-2,2]`      |            197 |               8121.590730775199 |
+| `[2,8]`       |            263 |              4222.9925960865985 |
+| `[-8,-2]`     |            263 |              4222.9925960865985 |
+| `[8,10]`      |            261 |              3623.3702630950984 |
+| `[-10,-8]`    |            261 |              3623.3702630950984 |
+
+For every band, convex clipping checked every candidate region against the
+exterior and every hole, and every potentially overlapping region pair against
+each other. The summed region area differs from the section's exterior-minus-holes
+area by at most `8.2e-12 LDU²`. A region's measured area outside the exterior is
+at most `2.3e-13 LDU²`, and its intersection with holes is at most `1.2e-13 LDU²`.
+There are no same-band pair overlaps above the reported `1e-7 LDU²` tolerance.
+Together these establish area-preserving coverage of these extracted finite
+contours to the stated numerical tolerances. They depend on correct extraction
+of all source exterior and hole contours; they are not a universal certificate
+for the original source's internal faces or every future source revision.
+
+The 28 calibrated source material/void controls all pass on the candidate.
+All 1,245 prism centroids have material-side source winding above 0.5, with range
+`0.62949..1.40873`. A further 16,804 occupancy comparisons have zero mismatches:
+a grid in all six signed depth bands and points 0.02 LDU on either side of every
+nondegenerate source-triangle centroid. This sampling corroborates the finite
+section checks and does not replace them.
+
+The prospective `tests/unit/play-rack-solids.test.ts` was copied to a private
+test helper with the candidate shapes injected into its prepared rack collider,
+without changing production code. A single native `RAPIER.Compound` queried by
+`Collider.containsPoint` passes **29 of 29 tests**: 28 individual material/void
+controls plus the sweep testing all 32 tooth interiors and following gaps.
+This is native geometric containment evidence, not a loaded simulation test.
+
+No near-zero planar pieces were found. Minimum region area is `0.484326 LDU²`
+(child 890), minimum transverse width is `0.133581 LDU` (child 301), and shortest
+edge is `0.592191 LDU` (child 306); no region area or width is below `1e-3` in its
+respective units. Active contact child 1126 has area `2.785967 LDU²`, width
+`0.569833 LDU`, and thickness 2 LDU; child 1128 is similar. These measurements
+exclude the extremely thin source skins from this candidate, but do not establish
+native numerical conditioning under every contact configuration.
+
+A reported post-step deep geometric manifold pairs housing triangle 749 with
+rack child 1126. In source-local coordinates, the housing triangle is
+`[(100,-26,-18),(-60,-26,-10),(100,-26,-10)]`; its reported witness is on its
+window-wall diagonal edge within float precision. Child 1126 lies over rack Z
+`[-10,-8]`, whereas the housing triangle lies over Z `[-18,-10]`. At authored
+rest these depth ranges only meet at Z `-10`; source probes do not show intervening
+common material along the reported witness ray. This cached manifold has zero
+reported solver contacts and impulse and cannot establish the cause of the stall.
+
+**Native dynamic acceptance has still not passed.** The full candidate compound
+stalls in the private full native fixture while an isolated leaf pair behaves
+correctly. Coverage, successful point queries and the deep geometric manifold do
+not explain that behavior. Source-derived mass/inertia, loaded motion, foreign
+blockers, end stops, backdrive, mobile carriers and contact budget behavior remain
+separate requirements before this candidate can be claimed as supported.
