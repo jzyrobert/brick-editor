@@ -1,7 +1,7 @@
 import { ensure, type Project, type Transform } from "../core/types";
 import { occurrences } from "../core/document";
 import { RESOURCE_PROFILES } from "../core/resource-profile";
-import { compose, inverse, physical } from "../core/math";
+import { compose, inverse, nearlyPhysical, physical } from "../core/math";
 import { parentTransform, uniqueNode } from "../core/commands";
 import { exportLDraw } from "../ldraw/io";
 
@@ -43,7 +43,11 @@ export function posedLDraw(
         Array.isArray(t.basis) &&
         t.basis.length === 9 &&
         [...t.position, ...t.basis].every(Number.isFinite) &&
-        physical(t),
+        // Preserve the authored decimal basis under a strictly rigid motion.
+        // The original rounding allowance never permits new scale or shear.
+        (physical(t) ||
+          (nearlyPhysical(o.transform) &&
+            physical(compose(t, inverse(o.transform))))),
       "INVALID_TRANSFORM",
       "Posed transforms must be finite rigid placements",
     );

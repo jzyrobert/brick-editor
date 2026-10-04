@@ -9,6 +9,7 @@ import { mv, rotationY } from "../../src/core/math";
 import { importLDraw, exportLDraw } from "../../src/ldraw/io";
 import { partsList } from "../../src/inventory/parts-list";
 import { KinematicSession } from "../../src/mechanisms/kinematic";
+import { posedLDraw } from "../../src/mechanisms/posed-export";
 import {
   deriveVehicleRigs,
   checkAuthoredVehicleSource,
@@ -100,6 +101,14 @@ describe("reviewed official road-car source mounts", () => {
         expect(
           Math.abs(session.stepTicks(30).pose.vehicle!.headingDegrees),
         ).toBeGreaterThan(20);
+        const posed = posedLDraw(p, session.snapshot().transforms);
+        expect(posed.posedOccurrenceIds).toHaveLength(all.length);
+        expect(
+          partsList(
+            importLDraw(posed.text),
+            occurrences(importLDraw(posed.text)),
+          ),
+        ).toEqual(inventory);
         expect(JSON.stringify(p)).toBe(original);
         expect(exportLDraw(p)).toBe(exported);
         expect(partsList(p, occurrences(p))).toEqual(inventory);
