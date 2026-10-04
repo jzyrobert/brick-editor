@@ -93,6 +93,7 @@ const CAMERAS: Partial<Record<TemplateName, CameraSpec>> = {
   town: cam([1800, -1650, -2600], [60, -300, 0], 40),
   cathedral: cam([2600, -2300, -3900], [120, -700, -150], 40),
   "motor-gears": cam([260, -220, -350], [20, -35, 65], 38),
+  "twin-drive": cam([440, -280, -460], [90, -35, 60], 38),
   "rack-drive": cam([240, -210, -430], [-35, -25, 0], 38),
   harbour: cam([1900, -1700, -2700], [60, -280, -80], 40),
 };

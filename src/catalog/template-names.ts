@@ -18,6 +18,7 @@ export const SAMPLE_TEMPLATES = [
   "cathedral",
   "harbour",
   "motor-gears",
+  "twin-drive",
   "rack-drive",
 ] as const;
 /**
@@ -60,6 +61,7 @@ export const TEMPLATE_CARDS: { name: SampleTemplateName; title: string }[] = [
   { name: "castle", title: "Small castle" },
   { name: "car", title: "Roadster car" },
   { name: "motor-gears", title: "Motor & gears" },
+  { name: "twin-drive", title: "Twin motor table" },
   { name: "rack-drive", title: "Rack guide" },
   { name: "blank", title: "Blank canvas" },
 ];

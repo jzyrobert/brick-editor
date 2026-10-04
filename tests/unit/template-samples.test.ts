@@ -114,6 +114,7 @@ describe("sample builds", () => {
         "cathedral",
         "harbour",
         "motor-gears",
+        "twin-drive",
         "rack-drive",
       ].sort(),
     );

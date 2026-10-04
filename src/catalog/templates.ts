@@ -28,6 +28,7 @@ import { identity, rotationY } from "../core/math";
 import { uid, type Vec3 } from "../core/types";
 /** Each sample opens on a backdrop that suits it (saved in project.scene). */
 export const TEMPLATE_BACKDROPS: Partial<Record<TemplateName, BackdropName>> = {
+  "twin-drive": "studio",
   "motor-gears": "studio",
   "rack-drive": "studio",
   house: "grass",

@@ -31,6 +31,7 @@ describe("ready-to-play motion samples", () => {
       expect(p.scene?.backdrop).toBe("studio");
       expect(occurrences(p)).toHaveLength(
         {
+          "twin-drive": 35,
           "motor-gears": 15,
           "rack-drive": 2,
         }[name],
@@ -65,6 +66,19 @@ describe("ready-to-play motion samples", () => {
         ]);
         expect(p.motionRigs["rack-drive"].joints[0].motor).toBeUndefined();
       }
+      if (name === "twin-drive") {
+        expect(p.motionRigs["twin-drive"].groups).toHaveLength(6);
+        expect(p.motionRigs["twin-drive"].transmissions).toHaveLength(3);
+        expect(
+          p.motionRigs["twin-drive"].joints
+            .filter((j) => j.motor)
+            .map((j) => j.id),
+        ).toEqual(["joint-0", "joint-3"]);
+        for (const j of p.motionRigs["twin-drive"].joints.filter(
+          (j) => j.motor,
+        ))
+          expect(j.motor!.binding?.profile).toBe("power-functions-motor-m-v1");
+      }
       if (name === "motor-gears")
         expect(
           p.motionRigs["technic-drive"].joints[0].motor?.binding,
@@ -97,7 +111,7 @@ describe("ready-to-play motion samples", () => {
     const curated = JSON.parse(
       readFileSync("src/catalog/data.json", "utf8"),
     ).catalog;
-    for (const name of ["motor-gears", "rack-drive"] as const)
+    for (const name of Object.keys(MOTION_SAMPLES) as MotionSampleName[])
       for (const o of occurrences(template(name)))
         if (!curated[o.node.ref])
           for (const chunk of index.parts[o.node.ref]?.[0] ?? [])
