@@ -30,7 +30,12 @@ export class MechanicalQueryWorld {
           triangles: s.indices.length / 3,
         };
       if (s instanceof RAPIER.ConvexPolyhedron)
-        return { vertices: s.vertices.length / 3, triangles: 0 };
+        return {
+          vertices: s.vertices.length / 3,
+          triangles: s.indices ? s.indices.length / 3 : 0,
+        };
+      if (s instanceof RAPIER.Triangle) return { vertices: 3, triangles: 1 };
+      if (s instanceof RAPIER.Segment) return { vertices: 2, triangles: 0 };
       return { vertices: 0, triangles: 0 };
     };
     const usage = count(shape);
