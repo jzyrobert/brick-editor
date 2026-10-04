@@ -71,7 +71,9 @@ kinematic preview explicitly retains rest. See [scope](PLAY-ACTUATORS.md).
 
 An authored Technic crane arm can therefore already swing if its groups, pivot
 and axis are supplied explicitly. Importing an ordinary Technic model does not
-create those groups or joints, and turning its motor does not drive its gears.
+create those groups or joints. Reviewed supported shafts, gears, pin arms and
+finger hinges can now enter through the explicit mechanism setup flow; an
+imported motor alone does not supply their ownership or transmission graph.
 The mechanism preview also differs from Play: authored motor metadata does not
 automatically simulate forces or start a motor in `KinematicSession` alone.
 
@@ -228,29 +230,30 @@ decomposition with honest inventory semantics.
 "Missing" here usually means no automatic recognition or mechanical behavior.
 Several can already be animated through manual hinge/slider authoring.
 
-| Family                                                    | What does not work automatically or physically today                                                                                                       | Proposed representation                                                                                           |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Brick/finger/click hinges, clip–bar pivots, turntables    | No general mating detection, moving-assembly ownership or detents                                                                                          | Reviewed feature pair → revolute joint; explicit limits and optional rotational resistance                        |
-| Axles in round holes                                      | No bearing inference or axial retention                                                                                                                    | Cylindrical freedom initially; revolute only after axial restraint is established                                 |
-| Keyed axle connections                                    | No shared shaft rotation or insertion-depth reasoning                                                                                                      | Rigid rotation coupling; axial freedom/retention represented separately                                           |
-| Gears, bevel gears, worms, racks, differentials           | No transmission graph or ratios                                                                                                                            | Relations between shaft/slider coordinates; explicit engagement geometry                                          |
-| Universal joints and CV joints                            | No linked multi-axis shaft motion; complete assemblies are frozen internally                                                                               | Component rig plus shaft relation; universal joint needs angle-dependent motion                                   |
-| Ball/socket parts, towballs, articulated creatures/robots | No auto joints, pose controls, cone/twist limits or part-specific joint friction                                                                           | Spherical orientation state and bounded swing/twist; suitable collider proxies                                    |
-| Shock absorbers and spring mechanisms                     | Vehicle ray-cast suspension exists; actual shock parts supply no spring/damper behavior                                                                    | Slider + spring/damper + travel stops                                                                             |
-| Linear actuators, pistons and pneumatics                  | No screw/shaft-to-extension relation, valve/pressure model or composed assembly articulation                                                               | Slider plus screw coupling first; optional pressure actuator later                                                |
-| Sliding/lifting doors, drawers, portcullises              | Excluded from the automatic hinge table                                                                                                                    | Reviewed guides/stops → prismatic groups                                                                          |
-| Roller/sectional garage doors                             | Segments do not follow the bent rail path                                                                                                                  | Bounded segmented path follower; articulated dynamic chain later                                                  |
-| Ropes, winches, chains, belts, tracks                     | Static authored geometry; no changing length, tension, pulley routing or drive relation                                                                    | Rope constraints and winch length; visual path plus simplified transmission; bounded link simulation where needed |
-| Cranes, grippers and lifting platforms                    | No runtime grab/release attachment; actor support transfer now carries standing explorers                                                                  | Explicit attachment lifecycle and support-body tracking                                                           |
-| Trains                                                    | Initial car grouping/spacing works; no runtime coupling changes, wheel/rod animation, slopes, flexible/crossing/turntable track or build-obstacle checking | Extend existing rail/path system before treating a whole train as a free dynamic mechanism                        |
-| Imported minifigures                                      | Explorer avatar animates its own configured limbs; ordinary model figures do not become articulated/playable                                               | Reviewed figure component profiles, inventory-preserving visuals                                                  |
-| Breakable/clutch connections                              | No strength or separation model                                                                                                                            | Optional declared simulation thresholds; no claim of measured LEGO clutch strength                                |
+| Family                                                    | What does not work automatically or physically today                                                                                                                  | Proposed representation                                                                                           |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Brick/finger/click hinges, clip–bar pivots, turntables    | No general mating detection, moving-assembly ownership or detents                                                                                                     | Reviewed feature pair → revolute joint; explicit limits and optional rotational resistance                        |
+| Axles in round holes                                      | Reviewed retained shafts can become revolute bearings; authored cylindrical freedom works. General unretained-bearing inference remains open                          | Cylindrical freedom initially; revolute only after axial restraint is established                                 |
+| Keyed axle connections                                    | Reviewed shaft accessories rotate together; broader insertion-depth and retention families remain open                                                                | Rigid rotation coupling; axial freedom/retention represented separately                                           |
+| Gears, bevel gears, worms, racks, differentials           | Reviewed external spur ratios work; the guided rack's ideal relation exists but physical housing contact is unaccepted. Bevel/worm/differential behavior remains open | Relations between shaft/slider coordinates; explicit engagement geometry                                          |
+| Universal joints and CV joints                            | No linked multi-axis shaft motion; complete assemblies are frozen internally                                                                                          | Component rig plus shaft relation; universal joint needs angle-dependent motion                                   |
+| Ball/socket parts, towballs, articulated creatures/robots | Authored native ball joints and bounded angular resistance work; auto joints, orientation controls, cone/twist limits and measured part friction remain open          | Spherical orientation state and bounded swing/twist; suitable collider proxies                                    |
+| Shock absorbers and spring mechanisms                     | Authored spring/damper links and slider stops work; actual imported shock parts do not automatically articulate                                                       | Slider + spring/damper + travel stops                                                                             |
+| Linear actuators, pistons and pneumatics                  | No screw/shaft-to-extension relation, valve/pressure model or composed assembly articulation                                                                          | Slider plus screw coupling first; optional pressure actuator later                                                |
+| Sliding/lifting doors, drawers, portcullises              | Excluded from the automatic hinge table                                                                                                                               | Reviewed guides/stops → prismatic groups                                                                          |
+| Roller/sectional garage doors                             | Segments do not follow the bent rail path                                                                                                                             | Bounded segmented path follower; articulated dynamic chain later                                                  |
+| Ropes, winches, chains, belts, tracks                     | Authored slack/tension rope constraints work; changing length, cable visuals, pulley routing and belt/chain drive remain open                                         | Rope constraints and winch length; visual path plus simplified transmission; bounded link simulation where needed |
+| Cranes, grippers and lifting platforms                    | Authored native grab/release and standing-actor support work; automatic jaw articulation and physical finger grasping remain open                                     | Explicit attachment lifecycle and support-body tracking                                                           |
+| Trains                                                    | Initial car grouping/spacing works; no runtime coupling changes, wheel/rod animation, slopes, flexible/crossing/turntable track or build-obstacle checking            | Extend existing rail/path system before treating a whole train as a free dynamic mechanism                        |
+| Imported minifigures                                      | Explorer avatar animates its own configured limbs; ordinary model figures do not become articulated/playable                                                          | Reviewed figure component profiles, inventory-preserving visuals                                                  |
+| Breakable/clutch connections                              | No strength or separation model                                                                                                                                       | Optional declared simulation thresholds; no claim of measured LEGO clutch strength                                |
 
 Moving support now transports the explorer through capsule sweeps on kinematic
 and dynamic lifts/turntables; jump and walk-off retain point velocity. Authored
 open-bench seats also work on a native dynamic chassis. Train riding remains a
-cab attachment and does not allow walking around a moving carriage. Arbitrary
-grabbing/releasing and rider weight/friction are still outside this slice.
+cab attachment and does not allow walking around a moving carriage. Authored
+capture zones support bounded native grab/release; arbitrary automatic grasping
+and rider weight/friction remain outside this slice.
 
 ## Suggested implementation sequence
 
@@ -363,12 +366,12 @@ defaults, not a plain-pin/friction-pin distinction. Model actuator torque/force
 at the existing **0.02 m/LDU gameplay scale**, not miniature real-world hardware
 ratings without a declared conversion.
 
-Add live session motor speed/target input and reversal. `play.setMotor` currently
-only enables/disables an authored target; `setJointTarget` supplies position
-travel, not a live velocity-motor throttle. Map simple buttons and levers onto
-these inputs before adding more elaborate electrical or pneumatic systems. This
-would let an authored crane, conveyor, lift or fairground ride be controlled in
-Play while retaining its saved rest pose and authored default settings.
+Live session motor speed, reversal and braking are now implemented through
+`play.setMotor({enabled:true,input})` and contextual controls; omitting `input`
+restores the authored preset, and `setJointTarget` supplies position travel. These controls preserve
+saved rest poses, authored presets and effort caps. Further electrical or
+pneumatic controls should extend this separation of session input and authored
+defaults.
 
 ### E. Shared support and interaction behavior
 

@@ -68,3 +68,50 @@ erase real material. The review also gives explicit positive/negative faceted
 blind-slot controls. It does not establish a completed housing compound,
 finite whole-housing coverage, native admission, contact acceptance or a
 successful mobile-carrier budget.
+
+## Tapered housing candidate: independent rejection
+
+After the oriented material review, private section construction produces closed
+contours in all 40 signed Z bands. The seam reconciliation compares the midpoint
+and both endpoint reprojected positions; its measured maximum representative
+displacement is 0.000503540 LDU. The 79 oriented controls and 22 original controls
+all pass section parity. This is diagnostic precision handling, not an accepted
+production tolerance or a complete volume proof.
+
+The first lofted housing construction has **5,316 regions**, already exceeding
+the aggregate 4,096-child admission cap before other mechanism parts. More
+importantly, an independent audit rejects its 3D geometry even though all 101
+material/void controls also pass the candidate. Each piece's actual convex hull
+is sliced as the weighted Minkowski sum of its lower and upper vertex sets;
+interpolating only matching vertex pairs would miss convex fill. Source contours
+are separately reprojected and triangulated at five interior fractions per band,
+for **200 sampled sections**. Source polygon and triangle areas agree within
+1.01e-11 LDU².
+
+| Rejection evidence                                               | Largest sampled value                          |
+| ---------------------------------------------------------------- | ---------------------------------------------- |
+| Sum of candidate area outside reviewed material                  | 1,088.079503 LDU² at Z −12.625, band [−13,−10] |
+| Sum of pairwise candidate overlap area                           | 4,274.577755 LDU² at Z −11.5                   |
+| Absolute difference of summed candidate and source section areas | 3,318.338788 LDU² at Z −11.875                 |
+
+For example, candidate piece 118 covers 588.349048 LDU² outside the reviewed
+material at Z −12.625. Its hull contains `[-36,-25,-12.625]`, which the reviewed
+source section classifies as void; the witness is more than 0.01 LDU from both
+source and candidate boundaries. A midpoint-only convex merge does not establish
+that the loft remains convex or preserves openings throughout its depth. The
+construction must check 3D boundary compatibility before merging, as well as
+factor unchanged regions to meet the resource cap. No native trial or production
+change is accepted from this candidate.
+
+Frozen input SHA-256 values:
+
+- Candidate pieces: `0b9708efdbeca2dad823a9897dcd6a7038169f2fea0ff0d454cad883c54d3db9`
+- Reviewed source graphs: `a5fe467a35fa58e0b4dfa39f08dd9ba0d9031034eafaffcc069d8e9ec1e4b5b9`
+- Independent audit script: `359196b7da7ec3045f00414dc98cc0c78f8a05a47db4b7995182d275f3a363e0`
+- Audit result: `23629628c9f1bffbb3cd8ae91bada2fb6c5c55acde4cf7b2b51b550673bd2b4f`
+
+Private evidence is in the parent worktree's
+`.local/housing-volume-audit-e858a79/`; its audit is
+`.local/audit-housing-tapered-volumes.ts`. These counterexamples reject this
+candidate. Passing the same sampled audit would still not certify complete
+finite coverage, native admission, loaded motion or carrier reaction.
