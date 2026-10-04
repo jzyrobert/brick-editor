@@ -375,6 +375,20 @@ export class DynamicRig {
           .setCcdEnabled(!anchored),
       );
       if (!anchored && articulated) body.setAdditionalSolverIterations(8);
+      // A slider on a fixed carrier has no world rotational degrees of
+      // freedom. Realize those existing joint locks on the body too: solver
+      // drift under a translation obstruction can otherwise rotate the guide.
+      // Moving carriers retain the native joint's relative rotation constraint.
+      if (
+        !anchored &&
+        this.rig.joints.some(
+          (joint) =>
+            joint.kind === "prismatic" &&
+            joint.bodyB === group.id &&
+            anchoredGroup(this.rig, joint.bodyA),
+        )
+      )
+        body.lockRotations(true, true);
       const entry: Body = {
         groupId: group.id,
         body,
