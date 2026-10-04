@@ -1,11 +1,51 @@
 import { expect, test, type Page } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
+import { execFileSync } from "node:child_process";
 
 /** Backdrops draw a sky, a textured ground and horizon silhouettes around the
  * build, in the editor, in Play and in captures (docs/RENDERING.md). */
 test.describe.configure({ timeout: 240000 });
 const shots = "test-results/backdrops/";
+
+/** Use the TS loader for generated catalogue imports. Only the authored crate
+ * and plaza's pinned local dependencies are compiled; no library requests. */
+function playgroundSupportSource(): {
+  vertices: number[][];
+  plaza: { min: number[]; max: number[] };
+} {
+  const script = `
+    import { playgroundProject } from './src/catalog/builds/playground';
+    import { occurrences } from './src/core/document';
+    import { inverse, mv, add } from './src/core/math';
+    import { officialMesh } from './tests/helpers/official-geometry';
+    const project = playgroundProject(), group = project.motionRigs['crate-3'].groups[0],
+      local = inverse(group.frame),
+      moving = new Set(Object.values(project.motionRigs).flatMap(r => r.groups.flatMap(g => g.occurrenceIds))),
+      tiles = occurrences(project).filter(o => o.node.ref === '87079.dat' && !moving.has(o.id));
+    Promise.all([officialMesh(project,group.occurrenceIds), officialMesh(project,tiles.map(o => o.id))])
+      .then(([crate,plaza]) => {
+        const vertices = [], min = [Infinity,Infinity,Infinity], max = [-Infinity,-Infinity,-Infinity];
+        for(let k=0;k<crate.vertices.length;k+=3)
+          vertices.push(add(local.position,mv(local.basis,Array.from(crate.vertices.slice(k,k+3)))));
+        for(let k=0;k<plaza.vertices.length;k++) {
+          const axis=k%3; min[axis]=Math.min(min[axis],plaza.vertices[k]); max[axis]=Math.max(max[axis],plaza.vertices[k]);
+        }
+        process.stdout.write(JSON.stringify({vertices,plaza:{min,max}}));
+      });
+  `;
+  return JSON.parse(
+    execFileSync(
+      process.execPath,
+      ["node_modules/tsx/dist/cli.mjs", "--eval", script],
+      {
+        encoding: "utf8",
+        maxBuffer: 4 * 1024 * 1024,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    ),
+  );
+}
 
 const camera = {
   space: "ldraw",
@@ -269,6 +309,10 @@ test("Play shows the backdrop: driving the jeep over the street map", async ({
 test("the playground park starts Play with dynamic physics, and walking pushes a crate", async ({
   page,
 }) => {
+  // Compile the authored crate's complete pinned source, independently of its
+  // native collision proxy. Rocking lifts its frame origin while a real source
+  // corner stays supported; the origin is not a floor-clearance measurement.
+  const { vertices, plaza } = playgroundSupportSource();
   await refusePointerLock(page);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -300,8 +344,23 @@ test("the playground park starts Play with dynamic physics, and walking pushes a
   await page.evaluate(() => window.brickEditor!.play.exit());
 
   // A deterministic push: walk into crate 3 (x -260..-220, z -160..-120).
-  const push = await page.evaluate(async () => {
+  const push = await page.evaluate(async (vertices) => {
     const a = window.brickEditor!;
+    const authored = async () => {
+      const query = await a.query();
+      return {
+        source: Array.from((await a.project.export({ format: "ldraw" })).bytes),
+        inventory: await a.inventory.preview({
+          expectedRevision: query.revision,
+          scope: { kind: "all" },
+          format: "bricklink-wanted-xml",
+          acceptDerivedMappings: true,
+          acceptUnknownColors: true,
+          errorPolicy: "export-resolved",
+        }),
+      };
+    };
+    const original = await authored();
     const rigIds = (await a.mechanisms.list()).map((rig) => rig.id);
     await a.play.enter({
       rigIds,
@@ -311,17 +370,82 @@ test("the playground park starts Play with dynamic physics, and walking pushes a
       cameraMode: "third-person",
     });
     const start = await a.play.stepTicks(30);
+    const support = (s: typeof start) => {
+      const frame = s.mechanisms!["crate-3"].groupFrames.body;
+      let lowest = -Infinity,
+        point: number[] = [];
+      for (const p of vertices) {
+        const y =
+          frame.position[1] +
+          frame.basis[3] * p[0] +
+          frame.basis[4] * p[1] +
+          frame.basis[5] * p[2];
+        if (y > lowest) {
+          lowest = y;
+          point = [
+            frame.position[0] +
+              frame.basis[0] * p[0] +
+              frame.basis[1] * p[1] +
+              frame.basis[2] * p[2],
+            y,
+            frame.position[2] +
+              frame.basis[6] * p[0] +
+              frame.basis[7] * p[1] +
+              frame.basis[8] * p[2],
+          ];
+        }
+      }
+      return { lowest, point };
+    };
     await a.play.setInput({ moveZ: 1 });
-    const end = await a.play.stepTicks(40);
+    let end = start;
+    const supports = [];
+    for (let tick = 0; tick < 40; tick++) {
+      end = await a.play.stepTicks(1);
+      supports.push(support(end));
+    }
     await a.play.setInput({});
+    await a.play.teleport({ position: [-240, -8.3, -70] });
+    const settled = await a.play.stepTicks(180);
     return {
       before: start.mechanisms!["crate-3"].groupFrames.body.position,
       after: end.mechanisms!["crate-3"].groupFrames.body.position,
-      bodies: end.mechanisms!["crate-3"].dynamics,
+      mode: end.mechanisms!["crate-3"].mode,
+      tickDelta:
+        end.mechanisms!["crate-3"].tick - start.mechanisms!["crate-3"].tick,
+      supports,
+      settledSupport: support(settled),
+      settledBody: settled.mechanisms!["crate-3"].dynamics!.bodies.body,
+      original,
+      afterSource: await authored(),
     };
+  }, vertices);
+  await test.info().attach("crate-source-support", {
+    contentType: "application/json",
+    body: JSON.stringify({
+      before: push.before,
+      after: push.after,
+      plaza,
+      supports: push.supports,
+      settled: push.settledSupport,
+      body: push.settledBody,
+    }),
   });
+  expect(push.mode).toBe("dynamic");
   expect(push.after[2]).toBeLessThan(push.before[2] - 20);
-  expect(Math.abs(push.after[1] - push.before[1])).toBeLessThan(3);
+  expect(push.tickDelta).toBe(40);
+  for (const support of [...push.supports, push.settledSupport]) {
+    expect(support.point[0]).toBeGreaterThan(plaza.min[0]);
+    expect(support.point[0]).toBeLessThan(plaza.max[0]);
+    expect(support.point[2]).toBeGreaterThan(plaza.min[2]);
+    expect(support.point[2]).toBeLessThan(plaza.max[2]);
+    expect(support.lowest).toBeGreaterThan(plaza.min[1] - 3);
+    expect(support.lowest).toBeLessThan(plaza.min[1] + 0.5);
+  }
+  expect(push.settledSupport.lowest).toBeCloseTo(plaza.min[1], 1);
+  expect(Math.hypot(...push.settledBody.linearVelocity)).toBeLessThan(0.01);
+  expect(push.settledBody.angularSpeed).toBeLessThan(0.01);
+  expect(push.afterSource).toEqual(push.original);
   await page.screenshot({ path: `${shots}playground-push.png` });
   await page.evaluate(() => window.brickEditor!.play.exit());
   expect(errors).toEqual([]);
