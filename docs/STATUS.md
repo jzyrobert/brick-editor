@@ -1102,3 +1102,14 @@ inventory remain exact after exit. All fixture dependency chunks are cached,
 and the WASM-bearing lazy Play asset is served by the service worker. Extracting
 the pure seat-point calculation also removes the native engine from the initial
 app asset. See [verification](VERIFICATION.md#offline-technic-mechanism-witness--4-october-2026).
+
+## Twin-loop steering acceptance (4 October 2026)
+
+An original eight-occurrence steering bench now drives separate left/right
+wheel knuckles through two tie rods and real closure constraints. Repeated
+reversal, rotated frames, stops, singular refusal, reflected load and fixed-wheel
+and world-obstacle recovery pass focused checks. Native closure tolerances remain
+load-specific. Four production-browser cases preserve source/inventory and posed
+transforms on desktop and phone in both modes. This verifies a bench linkage,
+without claiming calibrated vehicle steering or tire integration. See
+[verification](VERIFICATION.md#twin-loop-steering-acceptance-4-october-2026).

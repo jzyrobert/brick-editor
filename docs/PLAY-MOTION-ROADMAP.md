@@ -41,7 +41,7 @@ current budgets without supplying that knowledge.
 
 **Implemented planar loop slice:** explicit closure edges preserve the mount
 forest, with bounded kinematic continuation and real additional native Dynamic
-constraints. Four-bar and slider-crank examples close while one motor drives,
+constraints. Four-bar, slider-crank and twin-loop steering examples close while one motor drives,
 retain limits and source data, and transmit obstruction. Cold singular toggles
 are refused; arbitrary spatial loops and compound authoring remain open. See
 [scope](PLAY-LINKAGES.md).

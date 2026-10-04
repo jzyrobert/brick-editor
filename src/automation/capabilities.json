@@ -295,7 +295,7 @@
         "closedLinkages": {
           "representation": "Explicit planar revolute loopClosures separate from acyclic mount joints",
           "kinematic": "Bounded passive-coordinate continuation; supplied poses must already close; ambiguous cold dead centers and unreachable positions refused atomically",
-          "dynamic": "Native closure joints transmit load and retain passive travel limits; four-bar and slider-crank replay verified",
+          "dynamic": "Native closure joints transmit load and retain passive travel limits; four-bar, slider-crank and twin-loop steering bench replay verified; steering contact error bounds are load-specific",
           "limits": {
             "closuresPerRig": 8,
             "dependentCoordinates": 16,

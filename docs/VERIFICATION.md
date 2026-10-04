@@ -1548,3 +1548,32 @@ The verified source-only extraction has SHA-256 hashes:
 - `src/play/seated-profile.ts`: `17d41242ecfbe66e67506a47067c810a5a636ac07a323ee63b9463c0a5b81933`
 - `src/play/vehicle-seat.ts`: `9a5e3b07becae8811ef8c2b7e20dbb5ac1d0dad7c321af7fbf9d9a20fbe4ff4d`
 - `src/play/browser.ts`: `31d4c1fdfece4821bc20a0e5ff3e49591519b2c35553fca702a24a321997f5c8`
+
+## Twin-loop steering acceptance (4 October 2026)
+
+The original CC0 bench has six groups, eight occurrences, five mount joints and
+two real native closure joints. One +/-25° input drives four passive coordinates
+with +/-50° stops. Geometry and native save/restore retain the fixture exactly.
+It is a steering linkage acceptance scene, without Ackermann or tire calibration.
+
+- Nine unit checks pass in 27.04 s: rotated-frame deterministic reversal,
+  cold-toggle/passive-input/limit refusal, swept/native repeated targets,
+  fixed-wheel stall/recovery, reflected output inertia with a 2 N·m motor,
+  and actual rotated world-obstacle response at 10 and 100 N·m. Closure is
+  measured at every tick; tested normal/load and 10 N·m contact remain below
+  0.1 LDU. The 100 N·m impact uses an explicit 0.2 LDU bound, with measured
+  transient approximately 0.174 LDU. Source and rest export remain unchanged.
+- The prior seven steering checks and fifteen existing linkage checks pass
+  together in 45.89 s with one worker. An initial concurrent run hit the
+  unchanged four-bar deadline; the isolated rerun retains that deadline.
+- Four production-browser cases pass in 1.2 minutes at 1440×1000 and 360×600
+  in kinematic and Dynamic modes. Wheel/source transforms and captures change,
+  both closures remain bounded, source query/export/full inventory stay exact,
+  and all eight posed occurrence matrices match after static posed re-import.
+- The isolated build passes in 48.92 s; TypeScript and full formatting pass.
+  Port 4401 is stopped/free. Raw logs and captures remain private in
+  `/home/ubuntu/brick-editor-steering/.local/` and its `test-results/steering/`.
+
+The runtime kernels are unchanged by this fixture. The pure seat-point extraction
+has seven separate existing seated-profile, browser-seat and native-seat unit
+checks passing in 7.45 s, and its offline lazy-entry witness above passes.

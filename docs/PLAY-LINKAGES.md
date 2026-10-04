@@ -3,7 +3,7 @@
 Authored rigs can retain their acyclic mount tree and add explicit
 `loopClosures`. A closure joins two bodies in that tree with a revolute bearing;
 it is not traversed as a parent edge. The first verified arrangements are the
-original four-bar and slider-crank fixtures in `fixtures/ldraw/`.
+original four-bar, slider-crank and twin-loop steering fixtures in `fixtures/ldraw/`.
 
 A closure declares `id`, `kind:"revolute"`, `bodyA`, `bodyB`, `anchorA`, `anchorB`,
 `axisA`, `axisB` and `dependentJointIds`. Anchors and unit axes are group-local.
@@ -52,13 +52,31 @@ turns on an oblique world axis. A fixed output stalls the sole motor and motion
 recovers when that body is released. Passive travel limits prevent a requested
 45° motion and produce `blocked`, with closure intact.
 
+## Twin-loop steering bench
+
+The original CC0 [steering fixture](../src/mechanisms/steering-fixture.ts) has one
+central bell crank, two tie rods and separate wheel/knuckle outputs: six groups,
+eight occurrences, five tree joints and two actual closure joints. Four passive
+coordinates follow the sole input. Separate depth layers keep ordinary contacts
+enabled. Input stops are +/-25° and passive stops +/-50°. At +25° the kinematic
+wheel outputs are approximately 11.646° and 2.333°; reversing mirrors the motion.
+This is a steering linkage bench, without Ackermann calibration or tire dynamics.
+
+Repeated reversed targets retain closure and source in rotated frames. Reflected
+output inertia slows a bounded 2 N·m input; fixing a wheel stalls the sole motor,
+and releasing it restores motion. A real world obstacle also stalls and releases.
+Every-tick native closure error stays below 0.1 LDU in tested free/load motion and
+10 N·m obstacle response. The separate 100 N·m impact case uses a 0.2 LDU bound;
+it does not inherit the smaller effort's tolerance. Cold singular starts and
+passive-input edits are refused. See [verification](VERIFICATION.md#twin-loop-steering-acceptance-4-october-2026).
+
 ## Persistence and scope
 
 The optional data is backwards compatible with motion-rig schema version 1.
 Native save/restore retains it. Explicit posed application rebases local anchors
 and rest frames, and undo restores the original rig. Play and preview preserve
 authored placements, source export and inventory. Posed export is a plain static
-copy with the same four fixture occurrences.
+copy with the same fixture occurrences.
 
 This establishes these planar examples and bounded failure behavior. It does not
 establish arbitrary spatial loop solving, automatic linkage recognition,
