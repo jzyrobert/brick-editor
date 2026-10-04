@@ -16,7 +16,10 @@ source placements round-trip unchanged. CLI and browser fixtures now use actual
 mounted motors, seated doors, stable wheelbases and the two-part manual rack.
 The vehicle obstacle test starts at the real driver stand and retains its stop,
 reverse, capture and source-preservation checks. Publication status and scoped
-results are recorded in [verification](VERIFICATION.md).
+results are recorded in [verification](VERIFICATION.md). The delayed train look
+hint now sits below the control chip on short screens; its visible timed state
+passes eight desktop/phone viewport checks without changing hint timers or touch
+sizes.
 
 ## Physical Play admission and responsive sliders — 4 October 2026
 

@@ -45,6 +45,22 @@ desktop and phone rack cases pass in 48.8 s. No runtime or budget change was
 needed. Full CI remains the publication gate; the prior deployed version remains
 live until the complete follow-up run succeeds.
 
+Final runtime follow-up [37216378449](https://github.com/jzyrobert/brick-editor/actions/runs/37216378449)
+passes all unit/CLI and library checks, Photo, performance and seven main browser
+shards. The remaining landscape train failure exposed a real delayed-hint
+overlap: the six-second sample hint gives way to “Drag to look” in the same band
+as the running train chip. Short-screen CSS now places the look hint below the
+chip; the measured 30 px overlap becomes a 6 px gap. A browser-frame regression
+captures the visible hint and train together before either can fade. Timers,
+44 px controls and open-drawer hint hiding are unchanged.
+
+All eight production viewport checks pass: the persistent 360 × 600,
+600 × 360 and 800 × 360 cases in 4.6 min; private 411 × 685, 390 × 844 and
+686 × 411 checks; and 1440 × 1000 / 1080 × 1800 reruns in 3.2 min. The first two
+large-view capture attempts missed the short-lived hint; the passing reruns arm
+capture before Play starts. The corrected production build passes in 43.81 s.
+The complete publication gate remains required for this CSS follow-up.
+
 ## Physical-source Play correction — 4 October 2026
 
 Ordinary Play now admits controls only for reviewed actual connections. Motors
