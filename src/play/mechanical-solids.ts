@@ -1,17 +1,24 @@
 import RAPIER from "@dimforge/rapier3d-compat";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry.js";
-import { Vector3 } from "three";
+import { Quaternion, Vector3 } from "three";
 import { occurrences } from "../core/document";
-import { add, inverse, mv } from "../core/math";
+import {
+  add,
+  inverse,
+  mv,
+  compose,
+  identity,
+  orthonormalized,
+} from "../core/math";
 import { ensure, type Transform, type Vec3 } from "../core/types";
 import { worldMechanicalFeatures } from "../mechanisms/mechanical-contacts";
 import type { MotionRig } from "../mechanisms/types";
 import { anchoredGroup } from "../mechanisms/dynamics-settings";
 import { unsupportedMechanicalPlayContact } from "../mechanisms/mechanical-play-support";
 import type { PlayMechanismSource } from "./mechanism";
-import { METRES_PER_LDU as S, toPhysics } from "./physics-frame";
+import { METRES_PER_LDU as S, toPhysics, frameRotation } from "./physics-frame";
 import type { CollisionSnapshot } from "./types";
-import { surfaceCompound } from "./surface-compound";
+import { surfaceCompound, surfaceCompoundLocal } from "./surface-compound";
 
 export const MECHANICAL_CONTACT_LIMITS = Object.freeze({
   solids: 4096,
@@ -343,9 +350,55 @@ export function mechanicalSolids(
         "INVALID_INPUT",
         "This moving rack housing needs a reviewed hollow collision proxy. Anchor its frame and try again.",
       );
-      let pieces = occurrence
-        ? (boreSolids(mesh, occurrence) ?? rackSolids(mesh, occurrence))
+      const memberLocal = id
+        ? (
+            source as PlayMechanismSource & {
+              memberLocals?: Record<
+                string,
+                {
+                  vertices: Float64Array;
+                  indices: Uint32Array;
+                  frame: Transform;
+                }
+              >;
+            }
+          ).memberLocals?.[id]
         : undefined;
+      const canonical =
+        occurrence &&
+        memberLocal &&
+        worldMechanicalFeatures(occurrence) &&
+        [
+          "3700.dat",
+          "3701.dat",
+          "3702.dat",
+          "3647.dat",
+          "3648b.dat",
+          "18942.dat",
+        ].includes(occurrence.node.ref);
+      // Use the same rounded-rotation realization as reviewed feature frames.
+      // Canonical vertices stay unchanged; only their rigid child pose moves.
+      const partFrame = canonical
+        ? orthonormalized(occurrence.transform)
+        : undefined;
+      const geometryBearings = partFrame
+        ? policy.bearings.map((b) => {
+            const inv = inverse(partFrame);
+            return {
+              ...b,
+              pivot: position(inv, b.pivot),
+              normals: b.normals.map((n) => mv(inv.basis, n)),
+            };
+          })
+        : policy.bearings;
+      let pieces = canonical
+        ? (boreSolids(memberLocal as unknown as CollisionSnapshot, {
+            ...occurrence,
+            transform: identity(),
+          }) ?? surfaceCompoundLocal(memberLocal, occurrence.node.ref))
+        : occurrence
+          ? (boreSolids(mesh, occurrence) ?? rackSolids(mesh, occurrence))
+          : undefined;
       if (!pieces) {
         const points: Vec3[] = [],
           seen = new Set<string>();
@@ -404,7 +457,7 @@ export function mechanicalSolids(
           pieces = [extremes];
         }
       }
-      for (const bearing of policy.bearings.filter(
+      for (const bearing of geometryBearings.filter(
         (b) => b.a === group.id || b.b === group.id,
       )) {
         const all = pieces.flat();
@@ -515,22 +568,61 @@ export function mechanicalSolids(
           "Mechanical convex solid exceeds 256 boundary vertices",
         );
         const inv = inverse(group.frame),
-          points = Float32Array.from(
+          relative = partFrame ? compose(inv, partFrame) : undefined,
+          nativePosition = relative
+            ? toPhysics(relative.position)
+            : { x: 0, y: 0, z: 0 },
+          nativeRotation = relative
+            ? frameRotation(relative).normalize()
+            : new Quaternion(),
+          hullPoints = Float32Array.from(
             piece.flatMap((p) => {
-              const q = toPhysics(position(inv, p));
+              const q = toPhysics(partFrame ? p : position(inv, p));
               return [q.x, q.y, q.z];
             }),
-          );
-        const desc = RAPIER.ColliderDesc.convexHull(points);
+          ),
+          points = relative
+            ? Float32Array.from(
+                Array.from({ length: hullPoints.length / 3 }, (_, i) => {
+                  const p = new Vector3(
+                    hullPoints[i * 3],
+                    hullPoints[i * 3 + 1],
+                    hullPoints[i * 3 + 2],
+                  ).applyQuaternion(nativeRotation);
+                  return [
+                    p.x + nativePosition.x,
+                    p.y + nativePosition.y,
+                    p.z + nativePosition.z,
+                  ];
+                }).flat(),
+              )
+            : hullPoints;
+        const desc = RAPIER.ColliderDesc.convexHull(hullPoints);
         ensure(
           desc,
           "INVALID_INPUT",
           "A mechanical compound solid could not be prepared",
         );
+        if (relative) {
+          const raw = desc.shape.intoRaw();
+          ensure(
+            raw,
+            "INVALID_INPUT",
+            "This part cannot be checked safely. Try a simpler mechanism.",
+            { memberId: id, feature, stage: "canonicalNativeAdmission" },
+          );
+          raw.free();
+        }
         out.push({
           groupId: group.id,
           memberId: id,
-          shape: desc.shape,
+          shape: relative
+            ? new RAPIER.Compound(
+                [desc.shape],
+                [nativePosition],
+                [nativeRotation],
+              )
+            : desc.shape,
           points,
           childCount: 1,
           bounds: bounds(
@@ -539,12 +631,14 @@ export function mechanicalSolids(
               (_, n) => Array.from(points.slice(3 * n, 3 * n + 3)) as Vec3,
             ),
           ),
-          radius: piece.reduce(
-            (r, p) => Math.max(r, Math.hypot(...position(inv, p))),
-            0,
-          ),
+          radius: Array.from(
+            { length: points.length / 3 },
+            (_, i) =>
+              Math.hypot(points[i * 3], points[i * 3 + 1], points[i * 3 + 2]) /
+              S,
+          ).reduce((r, n) => Math.max(r, n), 0),
           mating: new Set(
-            policy.bearings
+            geometryBearings
               .filter(
                 (b) =>
                   (b.a === group.id || b.b === group.id) &&
@@ -596,14 +690,24 @@ export function mechanicalSolids(
     return {
       ...children[0],
       shape: new RAPIER.Compound(
-        children.map((s) => s.shape),
-        children.map(() => ({ x: 0, y: 0, z: 0 })),
-        children.map(() => ({ x: 0, y: 0, z: 0, w: 1 })),
+        children.flatMap((s) =>
+          s.shape instanceof RAPIER.Compound ? s.shape.shapes : [s.shape],
+        ),
+        children.flatMap((s) =>
+          s.shape instanceof RAPIER.Compound
+            ? s.shape.positions
+            : [{ x: 0, y: 0, z: 0 }],
+        ),
+        children.flatMap((s) =>
+          s.shape instanceof RAPIER.Compound
+            ? s.shape.rotations
+            : [{ x: 0, y: 0, z: 0, w: 1 }],
+        ),
       ),
       points: Float32Array.from(local.flat()),
       bounds: bounds(local),
       radius: Math.max(...children.map((s) => s.radius)),
-      childCount: children.length,
+      childCount: children.reduce((n, s) => n + s.childCount, 0),
     };
   });
 }

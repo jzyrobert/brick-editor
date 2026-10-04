@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import { inverse, add, mv } from "../core/math";
+import { inverse, add, mv, identity } from "../core/math";
 import { ensure, type Transform, type Vec3 } from "../core/types";
 import { compactCollisionMesh } from "./collision-mesh";
 import type { CollisionSnapshot } from "./types";
@@ -49,6 +49,7 @@ export function surfaceCompound(
   mesh: CollisionSnapshot,
   frame: Transform,
   cacheKey: string,
+  canonical = false,
 ) {
   ensure(
     mesh.indices.length <= 8192 * 3 && mesh.vertices.length <= 8192 * 9,
@@ -56,7 +57,9 @@ export function surfaceCompound(
     "Reviewed surface source exceeds 8,192 triangles or 24,576 vertices",
   );
   const inv = inverse(frame),
-    compact = compactCollisionMesh(mesh.vertices, mesh.indices);
+    compact = canonical
+      ? compactCanonicalSurface(mesh.vertices, mesh.indices)
+      : compactCollisionMesh(mesh.vertices, mesh.indices);
   const positions: Vec3[] = [];
   for (let i = 0; i < compact.vertices.length; i += 3)
     positions.push(
@@ -69,8 +72,8 @@ export function surfaceCompound(
   // cannot reuse another shape's decomposition.
   const signature =
     cacheKey +
-    ":" +
-    positions.map(key).join(";") +
+    (canonical ? ":canonical:" : ":world:") +
+    positions.map((p) => (canonical ? p.join(",") : key(p))).join(";") +
     ":" +
     Array.from(compact.indices).join(",");
   let local = cache.get(signature);
@@ -211,4 +214,61 @@ export function surfaceCompound(
   return local.map((piece) =>
     piece.map((p) => add(frame.position, mv(frame.basis, p))),
   );
+}
+
+/** Preserve the loaded prototype's local double-precision coordinates. */
+export function surfaceCompoundLocal(
+  mesh: { vertices: Float64Array; indices: Uint32Array },
+  cacheKey: string,
+) {
+  return surfaceCompound(
+    mesh as unknown as CollisionSnapshot,
+    identity(),
+    cacheKey,
+    true,
+  );
+}
+
+function compactCanonicalSurface(
+  vertices: ArrayLike<number>,
+  indices: Uint32Array,
+) {
+  const points: number[] = [],
+    remap: number[] = [],
+    unique = new Map<string, number>();
+  for (let i = 0; i < vertices.length; i += 3) {
+    const p = [vertices[i], vertices[i + 1], vertices[i + 2]],
+      key = p.join(",");
+    let id = unique.get(key);
+    if (id === undefined) {
+      id = points.length / 3;
+      unique.set(key, id);
+      points.push(...p);
+    }
+    remap.push(id);
+  }
+  const kept: number[] = [],
+    seen = new Set<string>();
+  for (let i = 0; i < indices.length; i += 3) {
+    const t = [remap[indices[i]], remap[indices[i + 1]], remap[indices[i + 2]]];
+    if (new Set(t).size < 3) continue;
+    const key = [...t].sort((a, b) => a - b).join(",");
+    if (seen.has(key)) continue;
+    const p = t.map(
+      (v) => new Vector3(points[v * 3], points[v * 3 + 1], points[v * 3 + 2]),
+    );
+    if (
+      new Vector3()
+        .subVectors(p[1], p[0])
+        .cross(new Vector3().subVectors(p[2], p[0]))
+        .lengthSq() === 0
+    )
+      continue;
+    seen.add(key);
+    kept.push(...t);
+  }
+  return {
+    vertices: Float64Array.from(points),
+    indices: Uint32Array.from(kept),
+  };
 }
