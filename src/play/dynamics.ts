@@ -239,6 +239,7 @@ type JointControl = {
     enabled: boolean;
     status: PlayMotorReport["status"];
     input?: number;
+    power?: number;
     stalledTicks?: number;
     blockedReason?: string;
     configured: string;
@@ -859,7 +860,10 @@ export class DynamicRig {
   clearInput() {
     if (this.vehicle) this.vehicle.throttle = 0;
     for (const control of this.joints.values())
-      if (control.motor?.input !== undefined) control.motor.input = 0;
+      if (control.motor?.input !== undefined) {
+        control.motor.input = 0;
+        control.motor.power = 1;
+      }
     this.cache = undefined;
   }
   setJointTarget(id: string, target: number, speed: number) {
@@ -915,7 +919,7 @@ export class DynamicRig {
     this.wake();
     this.cache = undefined;
   }
-  setMotor(id: string, enabled: boolean, input?: number) {
+  setMotor(id: string, enabled: boolean, input?: number, power?: number) {
     ensure(
       !this.rig.loopClosures?.some((c) => c.dependentJointIds.includes(id)),
       "INVALID_INPUT",
@@ -927,15 +931,21 @@ export class DynamicRig {
       "INVALID_INPUT",
       "This joint has no authored revolute or prismatic motor",
     );
-    validateMotorInput(enabled, input);
-    if (control.motor.enabled === enabled && control.motor.input === input)
+    validateMotorInput(enabled, input, power);
+    if (
+      control.motor.enabled === enabled &&
+      control.motor.input === input &&
+      (control.motor.power ?? 1) === (power ?? 1)
+    )
       return;
     control.motor.enabled = enabled;
     control.motor.input = input;
+    control.motor.power = power ?? 1;
     control.motor.stalledTicks = 0;
     control.motor.blockedReason = undefined;
     control.positionIntegral = 0;
-    control.motor.status = enabled ? "running" : "stopped";
+    control.motor.status =
+      enabled && control.motor.power > 0 ? "running" : "stopped";
     if (enabled)
       for (const other of this.transmissions.get(id)?.keys() ?? [id])
         this.joints.get(other)!.target = undefined;
@@ -1099,12 +1109,14 @@ export class DynamicRig {
           spec,
           motor.input,
           transmissionSpeedLimit(this.transmissions, id),
+          motor.power,
         );
         if (
-          (m.mode === "velocity" && m.target !== 0) ||
-          (m.mode === "position" &&
-            Math.abs(control.value - m.target) >
-              DYNAMIC_DEFAULTS.tolerance[spec.kind])
+          m.maxEffort.value > 0 &&
+          ((m.mode === "velocity" && m.target !== 0) ||
+            (m.mode === "position" &&
+              Math.abs(control.value - m.target) >
+                DYNAMIC_DEFAULTS.tolerance[spec.kind]))
         )
           keepAwake();
         if (m.mode === "position") {
@@ -1267,10 +1279,17 @@ export class DynamicRig {
       }
       const motor = control.motor;
       if (motor?.enabled && spec.motor) {
+        if (motor.power === 0) {
+          motor.status = "stopped";
+          motor.stalledTicks = 0;
+          motor.blockedReason = undefined;
+          continue;
+        }
         const m = effectiveMotor(
           spec,
           motor.input,
           transmissionSpeedLimit(this.transmissions, id),
+          motor.power,
         );
         if (m.mode === "position") {
           const [low, high] = this.jointLimits(id);
@@ -1570,11 +1589,13 @@ export class DynamicRig {
           spec,
           control.motor.input,
           transmissionSpeedLimit(this.transmissions, id),
+          control.motor.power,
         );
         motors[id] = {
           mode: m.mode,
           target: m.target,
           enabled: control.motor.enabled,
+          power: control.motor.power ?? 1,
           status: control.motor.status,
           units: revolute ? "degrees" : "LDU",
           targetUnits:

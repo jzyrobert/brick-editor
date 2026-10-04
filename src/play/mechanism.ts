@@ -339,6 +339,7 @@ export class PlayMechanism {
       status: PlayMotorReport["status"];
       blockedReason?: string;
       input?: number;
+      power?: number;
     }
   >();
   private targets = new Map<string, Omit<PlayJointTargetReport, "current">>();
@@ -1507,18 +1508,24 @@ export class PlayMechanism {
     }
   }
   /** Enable or stop one authored motor. Manual joint commands stop it too. */
-  setMotor(id: string, enabled: boolean, input?: number) {
+  setMotor(id: string, enabled: boolean, input?: number, power?: number) {
     const motor = this.motors.get(id);
     ensure(
       motor,
       "INVALID_INPUT",
       "This joint has no authored revolute or prismatic motor",
     );
-    validateMotorInput(enabled, input);
-    if (motor.enabled === enabled && motor.input === input) return;
+    validateMotorInput(enabled, input, power);
+    if (
+      motor.enabled === enabled &&
+      motor.input === input &&
+      (motor.power ?? 1) === (power ?? 1)
+    )
+      return;
     motor.enabled = enabled;
     motor.input = input;
-    motor.status = enabled ? "running" : "stopped";
+    motor.power = power ?? 1;
+    motor.status = enabled && motor.power > 0 ? "running" : "stopped";
     motor.blockedReason = undefined;
     if (enabled)
       for (const other of this.session.coupledJointIds(id))
@@ -1549,11 +1556,19 @@ export class PlayMechanism {
     for (const id of [...this.motors.keys()].sort()) {
       const motor = this.motors.get(id)!;
       if (!motor.enabled) continue;
+      if (motor.power === 0) {
+        // Rate-only Play cannot represent free coasting or reduced torque.
+        // Zero available effort therefore supplies no powered pose step.
+        motor.status = "stopped";
+        motor.blockedReason = undefined;
+        continue;
+      }
       const joint = motor.joint,
         spec = effectiveMotor(
           joint,
           motor.input,
           this.session.jointSpeedLimit(id),
+          motor.power,
         ),
         kind = joint.kind as "revolute" | "prismatic",
         state = this.session.snapshot(),
@@ -1651,7 +1666,10 @@ export class PlayMechanism {
   clearInput() {
     this.session.clearInput();
     for (const motor of this.motors.values())
-      if (motor.input !== undefined) motor.input = 0;
+      if (motor.input !== undefined) {
+        motor.input = 0;
+        motor.power = 1;
+      }
   }
   snapshot() {
     const state = this.session.snapshot();
@@ -1678,6 +1696,7 @@ export class PlayMechanism {
             motor.joint,
             motor.input,
             this.session.jointSpeedLimit(id),
+            motor.power,
           );
         return [
           id,
@@ -1685,6 +1704,7 @@ export class PlayMechanism {
             mode: spec.mode,
             target: spec.target,
             enabled: motor.enabled,
+            power: motor.power ?? 1,
             status: motor.status,
             units: revolute ? "degrees" : "LDU",
             targetUnits:

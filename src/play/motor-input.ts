@@ -7,7 +7,11 @@ export const KINEMATIC_MOTOR_RATE = Object.freeze({
   prismatic: 40,
 });
 
-export function validateMotorInput(enabled: boolean, input?: number) {
+export function validateMotorInput(
+  enabled: boolean,
+  input?: number,
+  power?: number,
+) {
   ensure(
     typeof enabled === "boolean",
     "INVALID_INPUT",
@@ -19,15 +23,31 @@ export function validateMotorInput(enabled: boolean, input?: number) {
     "INVALID_INPUT",
     "Live motor input requires an enabled motor and a value between -1 and 1.",
   );
+  ensure(
+    power === undefined || (Number.isFinite(power) && power >= 0 && power <= 1),
+    "INVALID_INPUT",
+    "Motor power must be a value between 0 and 1.",
+  );
 }
 
-/** Session-only velocity override; authored defaults and effort stay intact. */
+/** Session-only speed/direction and available effort. Source caps stay intact. */
 export function effectiveMotor(
   joint: JointSpec,
   input?: number,
   maxSpeed = Infinity,
+  power = 1,
 ) {
-  const spec = joint.motor!;
+  const authored = joint.motor!;
+  const spec =
+    power === 1
+      ? authored
+      : {
+          ...authored,
+          maxEffort: {
+            ...authored.maxEffort,
+            value: authored.maxEffort.value * power,
+          },
+        };
   if (input === undefined) return spec;
   const kind = joint.kind as "revolute" | "prismatic";
   const speed = Math.min(

@@ -187,6 +187,8 @@ export type PlayMotorRequest = {
   enabled: boolean;
   /** Session-only speed/direction, -1..1. Zero brakes; omit to use defaults. */
   input?: number;
+  /** Session-only fraction of the authored effort cap, 0..1; omit for 1. */
+  power?: number;
 };
 /**
  * Authored joint motors in Play. Kinematic rigs travel at a declared rate
@@ -204,6 +206,8 @@ export type PlayMotorReport = {
   blockedReason?: string;
   /** Present while using a live speed/direction override. */
   input?: number;
+  /** Available effort fraction. Kinematic Play simulates rate, not torque. */
+  power?: number;
 };
 export type PlayDynamicsReport = {
   engine: string;

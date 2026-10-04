@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import RAPIER from "@dimforge/rapier3d-compat";
 import { occurrences } from "../../src/core/document";
 import { importLDraw } from "../../src/ldraw/io";
 import { physicalMotorFixture } from "../../src/mechanisms/motor-fixture";
@@ -84,12 +85,13 @@ async function fixture(dynamic: boolean, positionPreset = false) {
     sources,
   );
   const driver = (copy: number) => rigs[copy].transmissions![0].jointA;
-  const set = (copy: number, input?: number, enabled = true) =>
+  const set = (copy: number, input?: number, enabled = true, power?: number) =>
     play.setMotor({
       rigId: ids[copy],
       jointId: driver(copy),
       enabled,
       ...(input !== undefined ? { input } : {}),
+      ...(power !== undefined ? { power } : {}),
     });
   const report = (copy: number) => play.snapshot().mechanisms![ids[copy]];
   const angle = (copy: number) =>
@@ -112,6 +114,102 @@ async function fixture(dynamic: boolean, positionPreset = false) {
 
 for (const dynamic of [false, true])
   describe(`${dynamic ? "native" : "kinematic"} mounted motor input`, () => {
+    it("limits available effort independently of requested speed, validates power atomically and supplies no drive at zero power", async () => {
+      const f = await fixture(dynamic);
+      const nativeEffort = vi.spyOn(
+        RAPIER.UnitImpulseJoint.prototype,
+        "setMotorMaxForce",
+      );
+      try {
+        f.set(0, 1, true, 0.25);
+        f.set(1, 1, true, 1);
+        f.play.stepTicks(1);
+        for (const [copy, power] of [
+          [0, 0.25],
+          [1, 1],
+        ] as const) {
+          expect(f.report(copy).motors![f.driver(copy)]).toMatchObject({
+            input: 1,
+            target: 90,
+            power,
+          });
+          expect(
+            effectiveMotor(
+              f.rigs[copy].joints.find((j) => j.id === f.driver(copy))!,
+              1,
+              Infinity,
+              power,
+            ).maxEffort.value,
+          ).toBe(50 * power);
+        }
+        if (dynamic) {
+          // The spy forwards to the real native setter; native response and all
+          // actual part contacts remain active for both identical assemblies.
+          expect(nativeEffort.mock.calls.map(([effort]) => effort)).toContain(
+            12.5,
+          );
+          expect(nativeEffort.mock.calls.map(([effort]) => effort)).toContain(
+            50,
+          );
+          expect(f.angle(0)).toBeGreaterThan(0);
+          expect(f.angle(0)).toBeLessThan(f.angle(1));
+        } else {
+          expect(f.angle(0)).toBe(f.angle(1));
+          expect(nativeEffort).not.toHaveBeenCalled();
+        }
+        for (const copy of [0, 1]) f.set(copy, 0, true, copy === 0 ? 0.25 : 1);
+        f.play.stepTicks(60);
+        expect(f.report(0).motors![f.driver(0)]).toMatchObject({
+          target: 0,
+          power: 0.25,
+          status: "holding",
+        });
+        const stopped = f.angle(0);
+        f.set(0, 1, true, 0);
+        nativeEffort.mockClear();
+        f.play.stepTicks(60);
+        // An unpowered native mechanism can recoil/coast; it supplies no
+        // commanded 90-degree travel. Rate-only Play stays exactly still.
+        expect(Math.abs(f.angle(0) - stopped)).toBeLessThan(
+          dynamic ? 1 : 1e-10,
+        );
+        expect(f.report(0).motors![f.driver(0)]).toMatchObject({
+          input: 1,
+          target: 90,
+          enabled: true,
+          power: 0,
+          status: "stopped",
+        });
+        if (dynamic)
+          expect(nativeEffort.mock.calls.map(([effort]) => effort)).toContain(
+            0,
+          );
+        const before = f.play.snapshot();
+        for (const power of [-0.01, 1.01, NaN, Infinity])
+          expect(() => f.set(0, 1, true, power)).toThrow(/power/i);
+        expect(f.play.snapshot()).toEqual(before);
+        f.play.clearInput();
+        f.play.stepTicks(1);
+        expect(f.report(0).motors![f.driver(0)]).toMatchObject({
+          input: 0,
+          target: 0,
+          power: 1,
+          status: "holding",
+        });
+        f.set(0, 0.25);
+        expect(f.report(0).motors![f.driver(0)]).toMatchObject({
+          power: 1,
+          target: 22.5,
+        });
+        f.play.stepTicks(60);
+        expect(f.angle(0)).toBeGreaterThan(stopped + 20);
+        f.unchanged();
+      } finally {
+        nativeEffort.mockRestore();
+        f.play.dispose();
+      }
+    }, 60000);
+
     it("scales speed, continuously reverses past 90 degrees and brakes independent motors without changing their source", async () => {
       const f = await fixture(dynamic);
       try {
@@ -187,7 +285,32 @@ for (const dynamic of [false, true])
 
     it("overrides a saved 90-degree position preset with unlimited live direction and restores it explicitly", async () => {
       const f = await fixture(dynamic, true);
+      const nativeEffort = vi.spyOn(
+        RAPIER.UnitImpulseJoint.prototype,
+        "setMotorMaxForce",
+      );
       try {
+        f.set(0, undefined, true, 0);
+        f.play.stepTicks(30);
+        expect(Math.abs(f.angle(0))).toBeLessThan(dynamic ? 1 : 1e-10);
+        expect(f.report(0).motors![f.driver(0)]).toMatchObject({
+          mode: "position",
+          target: 90,
+          power: 0,
+          status: "stopped",
+        });
+        f.set(0, undefined, true, 0.25);
+        nativeEffort.mockClear();
+        f.play.stepTicks(1);
+        expect(f.report(0).motors![f.driver(0)]).toMatchObject({
+          mode: "position",
+          target: 90,
+          power: 0.25,
+        });
+        if (dynamic)
+          expect(nativeEffort.mock.calls.map(([effort]) => effort)).toContain(
+            12.5,
+          );
         f.set(0, 1);
         f.play.stepTicks(150);
         expect(f.angle(0)).toBeGreaterThan(210);
@@ -213,6 +336,7 @@ for (const dynamic of [false, true])
         f.phase(0);
         f.unchanged();
       } finally {
+        nativeEffort.mockRestore();
         f.play.dispose();
       }
     }, 60000);

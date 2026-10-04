@@ -2373,7 +2373,7 @@ export class PlaySession {
       "INVALID_INPUT",
       "Motor request must be an object",
     );
-    keys(input, ["rigId", "jointId", "enabled", "input"]);
+    keys(input, ["rigId", "jointId", "enabled", "input", "power"]);
     ensure(
       typeof input.jointId === "string",
       "INVALID_INPUT",
@@ -2383,6 +2383,7 @@ export class PlaySession {
       input.jointId,
       input.enabled,
       input.input,
+      input.power,
     );
     return this.snapshot();
   }
