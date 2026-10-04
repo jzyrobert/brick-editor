@@ -36,6 +36,8 @@ const FAMILIES = [
   { rim: "4624", tyre: "3641", offset: 0, radius: 18.001 },
   { rim: "6014b", tyre: "56890", offset: -6, radius: 30.001 },
   { rim: "93593", tyre: "50951", offset: 0, radius: 19.001 },
+  // Same literal s/93593s01 hub and external tyre ring; different spokes.
+  { rim: "93595", tyre: "50951", offset: 0, radius: 19.001 },
 ] as const;
 // Literal pin placements in the pinned source, not chassis proximity.
 // 2441 carries both axles; 6157 carries the wider 93593 wheel assembly.
@@ -45,7 +47,7 @@ const HOLDERS: Record<
 > = {
   "4600": { axles: [0], seats: { "4624": 30, "6014b": 33 } },
   "2441": { axles: [-50, 50], seats: { "4624": 32 } },
-  "6157": { axles: [0], seats: { "93593": 40 } },
+  "6157": { axles: [0], seats: { "93593": 40, "93595": 40 } },
 };
 const key = (o: Occurrence) =>
   o.node.ref

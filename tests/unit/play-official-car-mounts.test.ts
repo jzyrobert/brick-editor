@@ -25,6 +25,7 @@ describe("reviewed official road-car source mounts", () => {
   for (const [number, holder, rim, tyre] of [
     ["6503", "2441", "4624", "3641"],
     ["31027", "6157", "93593", "50951"],
+    ["30572", "6157", "93595", "50951"],
   ]) {
     for (const yaw of [0, 37, 90]) {
       it(`${number} uses its real ${holder} mounts at ${yaw} degrees without changing the document`, () => {
@@ -48,7 +49,10 @@ describe("reviewed official road-car source mounts", () => {
         expect(checkAuthoredVehicleSource(ephemeral, rig)).toEqual({
           eligible: true,
         });
-        expect(rig.vehicle?.wheelbase).toBeCloseTo(100, 8);
+        expect(rig.vehicle?.wheelbase).toBeCloseTo(
+          number === "30572" ? 120 : 100,
+          8,
+        );
         expect(rig.vehicle?.driverSeat).toBeUndefined();
         expect(Object.keys(rest.transforms).sort()).toEqual(
           all.map((o) => o.id).sort(),
@@ -153,6 +157,24 @@ describe("reviewed official road-car source mounts", () => {
       scenery = all.find((o) => o.path.length === 1)!;
     expect(r.vehicles).toHaveLength(1);
     expect(r.vehicles[0].occurrenceIds).not.toContain(scenery.id);
+  });
+  it("binds the alternate spokes to the identical source hub and tyre envelope", async () => {
+    const sources = fullLibrarySources(["93593.dat", "93595.dat"]);
+    for (const rim of ["93593", "93595"]) {
+      expect(sources[rim + ".dat"]).toMatch(
+        /1 16 0 0 0 1 0 0 0 1 0 0 0 1 s[\\/]93593s01\.dat/,
+      );
+      const p = importLDraw(`1 16 0 0 0 1 0 0 0 1 0 0 0 1 ${rim}.dat`),
+        m = await meshOf(
+          p,
+          occurrences(p).map((o) => o.id),
+          sources,
+        );
+      for (let i = 0; i < m.vertices.length; i += 3)
+        expect(Math.hypot(m.vertices[i], m.vertices[i + 1])).toBeLessThan(
+          19.001,
+        );
+    }
   });
   it("measures the complete new tyre radius from source vertices", async () => {
     const p = importLDraw("1 16 0 0 0 1 0 0 0 1 0 0 0 1 50951.dat"),
