@@ -1341,3 +1341,40 @@ reduce the native work, and persistent native query colliders avoid rebuilding
 large shapes during kinematic sweeps. The initial rack performance sample used
 an interpenetrating fixture mount and is a blocked diagnostic, not an accepted
 rack or phone result. See [measurements, reproduction and budget advice](PLAY-CONTACT-COSTS.md).
+
+## Bounded contact and spur regressions (4 October 2026)
+
+The root worktree integrates contact checkpoint `8a5c171`, signed-plane checks
+and conservative far-plane certification (`f6912dc`, `a7297d8`), and the
+source-preserving oblique bearing admission fix (`1461efb`).
+
+- A 21-file focused unit run passes 135/137 checks, including every native spur
+  load, stall/recovery, multi-turn, back-drive, carrier reaction and oblique-axis
+  case. The two remaining failures were an independent target fixture moving
+  into its floor and a door replay exceeding its old five-second deadline.
+  Moving the fixture upward and allowing the measured 460-tick replay 15 seconds
+  makes both files pass all 12 checks in 8.45 seconds. Motion, source and ownership
+  assertions remain intact; the combined run took 141.33 seconds under VM load.
+- Ten platform cases include translated, tilted and vertical planes; four live
+  motor cases and both kinematic spur cases pass. The full 4,080-tick replay
+  reaches 4,500° / −1,500°, reverses to 765° / −255°, then drives the output to
+  270° / input −810°. Its isolated measured cost is 44 seconds; only this case
+  receives a 90-second deadline. Near-ground penetration and ceiling checks
+  remain active; a fast reverse tick uses 252 checks rather than over 200,000.
+- Production build passes. The first 16-case browser run passes 15 cases: loaded
+  spring/rope, linear load, cylindrical stops, four-bar/slider-crank, platforms,
+  native jeep seats and dynamic spur. Its kinematic spur failure was resolved by
+  the far-plane certificate. A rebuilt run passes all nine control/spur cases in
+  2.1 minutes across the seven desktop/phone control viewports. After the oblique
+  source fix, both rebuilt spur cases pass again in 52 seconds.
+- The read-only motion audit verifies the static blocker refuses a hinge update,
+  native frame contact stops the panel, and a separate clear rotor completes
+  720° within 600 ticks. Source/default spherical orientation remains explicit;
+  the raw legacy hull helper still fills a Technic hole, while reviewed runtime
+  bore proxies preserve it.
+
+All private browser servers stop afterward. These checks retain authored source,
+inventory, native persistence and posed export. They do not accept the unresolved
+rack/housing tangent path, phone hardware performance, or an arbitrary maximum
+mechanism. [Measured costs and hashes](PLAY-CONTACT-COSTS.md) distinguish the
+verified spur checkpoint from earlier blocked rack diagnostics.

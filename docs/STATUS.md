@@ -1036,3 +1036,21 @@ Node driver records hashes, actual coordinates, equal prescribed body masses,
 entry time and tick distributions for reproducible comparison. These are shared
 VM diagnostics, not physical-phone results. Corrected rack acceptance and larger
 mechanism performance remain to be measured. See [scope and findings](PLAY-CONTACT-COSTS.md).
+
+## Bounded contact and spur regressions (4 October 2026)
+
+The contact checkpoint checks static, foreign and non-mating internal geometry;
+sharing a rig no longer disables all dynamic contacts. Reviewed bore/tooth
+compounds, explicit local revolute bearing regions, shared query resources and
+aggregate work limits retain a refused pose rather than skip a blocker. Ground
+checks now handle translated/rotated planes and fast controls without exhausting
+work on distant ground. Oblique bearings keep their actual source boundary and
+the existing 256-vertex cap.
+
+Focused unit and production-browser checks verify loaded joints, platforms,
+native seats, full spur phase/reversal, oblique native axes and seven control
+viewports. Measured source-spur costs remain materially higher than coarse
+historical hulls. Corrected rack mounting has source-clearance proof, but native
+housing contact and larger-mechanism acceptance remain open. See
+[verification](VERIFICATION.md#bounded-contact-and-spur-regressions-4-october-2026)
+and [costs](PLAY-CONTACT-COSTS.md).

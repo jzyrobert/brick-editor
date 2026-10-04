@@ -141,6 +141,36 @@ The measured `mechanism.ts` hash is
 Later shape fixes require new measurements. These results neither accept the
 unresolved rack contact path nor establish a phone frame budget.
 
+## Integrated spur after oblique admission (4 October 2026)
+
+After `1461efb`, a fresh process repeats both modes with ground enabled for the
+kinematic slice and historical hull baseline `237c339` for the native slice:
+
+```sh
+FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=spur --mode=both --ground=true --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 --baseline=237c339 > .local/final-spur-cost.jsonl
+```
+
+Start/end hashes match. The measured `mechanical-solids.ts` hash is
+`1d5185542ad957472ab4a6d277e9b2db4d6e630089c217832ac49d82232effce`;
+the mechanism hash remains the one recorded above. Load is 1.89–1.97 at process
+entry/exit on the same VM. Each moving body is prescribed 1 kg; reported native
+masses differ from that by at most 0.00000024 kg.
+
+| Slice                                  | Mean ms/tick, two trials | p95 ms/tick, two trials | Entry, first / second |
+| -------------------------------------- | ------------------------ | ----------------------- | --------------------- |
+| Native source compounds                | 8.76 / 8.25              | 9.70 / 9.03             | 577 / 288 ms          |
+| Historical hull adapter                | 0.274 / 0.169            | 0.374 / 0.209           | 38 / 34 ms            |
+| Kinematic source compounds with ground | 7.00 / 6.73              | 7.74 / 7.08             | 384 / 329 ms          |
+
+Native compounds retain 18 colliders and 18 walking mirrors but now have 1,924
+children: avoiding unnecessary radial cuts preserves whole contained bearing
+parts. Native input/output reach 256.66° / −85.553° in both trials; historical
+hulls reach 247.59° / −82.529°. Kinematic coordinates reach 270° / −90° in both
+trials. The different geometry, inertia, contact policy and controller version
+still prevent an accuracy-equivalent comparison with coarse hulls. These samples
+do not show a speedup over the earlier experimental compounds, and do not accept
+the rack or a phone frame budget. Rendering, actor and vehicle work are excluded.
+
 ## Budget advice
 
 Counts must be global over every active rig and include mirror/query resources.

@@ -24,7 +24,7 @@ density acts on this hollow geometry; authored mass rescales the group but does
 not supply measured inertia.
 
 Policy-identical convex children share a flat compound collider. The pinned spur
-fixture now uses 18 native colliders and 18 walking mirrors, with about 1,957
+fixture now uses 18 native colliders and 18 walking mirrors, with 1,924
 convex children. A dedicated private query world keeps persistent same-world
 colliders; foreign walking handles never enter its collider set. Native hooks
 run through an owned Rapier event queue. Calling the pinned wrapper without an
@@ -44,6 +44,15 @@ the pinned pin arm stops at a non-mating frame brick and retries into clear spac
 Thin static/foreign blockers, native frame stops, mating persistence, malformed
 or translating mating refusal, compound resource refusal and query-pool disposal
 have focused unit coverage. The ordinary door fixture retains basic authoring.
+
+Translated and rotated ground planes use signed boundary support rather than the
+pinned engine's inverted compound/halfspace distance. A conservative enclosing
+box and the complete segment-travel bound certify distant ground; near planes
+retain exact support and refinement. Full accumulated-phase/reverse travel and
+oblique native axes pass without raising the 256-vertex cap. Parts already
+inside an authored revolute bearing cylinder retain their original hull instead
+of receiving unnecessary radial cuts. See [verification](VERIFICATION.md#bounded-contact-and-spur-regressions-4-october-2026)
+and [measured costs](PLAY-CONTACT-COSTS.md#integrated-spur-after-oblique-admission-4-october-2026).
 
 The corrected rack mounting and limits have separate pinned-triangle clearance
 proof. **Its native compound contact path still stalls at near-tangent guide
