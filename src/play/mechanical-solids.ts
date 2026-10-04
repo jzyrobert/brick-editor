@@ -15,6 +15,7 @@ import {
   worldMechanicalFeatures,
   matchMechanicalFeatures,
 } from "../mechanisms/mechanical-contacts";
+import { resolvePhysicalMotorBinding } from "../mechanisms/motor-binding";
 import type { MotionRig } from "../mechanisms/types";
 import { anchoredGroup } from "../mechanisms/dynamics-settings";
 import { unsupportedMechanicalPlayContact } from "../mechanisms/mechanical-play-support";
@@ -67,7 +68,14 @@ type Bearing = {
   pivot: Vec3;
   normals: Vec3[];
   extents: number[];
+  /** A motor aperture admits only its reviewed casing and inserted shaft. */
+  memberA?: string;
+  memberB?: string;
 };
+const bearingMember = (b: Bearing, groupId: string, memberId?: string) =>
+  b.a === groupId
+    ? !b.memberA || b.memberA === memberId
+    : b.b === groupId && (!b.memberB || b.memberB === memberId);
 const dot = (a: Vec3, b: Vec3) => a.reduce((v, n, k) => v + n * b[k], 0);
 function bearingNormals(axis?: Vec3): Vec3[] {
   if (!axis)
@@ -128,6 +136,29 @@ export class MechanicalContactPolicy {
           ],
         };
       });
+    if (_source)
+      for (const j of rig.joints.filter((j) => j.motor?.binding)) {
+        const socket = resolvePhysicalMotorBinding(
+          _source.project,
+          rig,
+          j,
+          j.motor!.binding!,
+        );
+        this.bearings.push({
+          id: `${j.id}:motor-socket`,
+          a: j.bodyA,
+          b: j.bodyB,
+          memberA: socket.motorOccurrenceId,
+          memberB: socket.shaftOccurrenceId,
+          pivot: socket.mating.pivotLdu,
+          normals: [...bearingNormals(socket.axis), socket.axis],
+          extents: [
+            socket.mating.radiusLdu,
+            socket.mating.radiusLdu,
+            socket.mating.halfLengthLdu,
+          ],
+        });
+      }
     const parent = new Map(rig.groups.map((g) => [g.id, g.id]));
     const root = (id: string): string =>
       parent.get(id) === id ? id : root(parent.get(id)!);
@@ -280,8 +311,10 @@ export class MechanicalContactPolicy {
         ?.get(b.groupId)
         ?.some(
           (bearing) =>
-            a.mating.has(bearing.id) ||
-            ("mating" in b && b.mating.has(bearing.id)),
+            bearingMember(bearing, a.groupId, a.memberId) &&
+            bearingMember(bearing, b.groupId, b.memberId) &&
+            (a.mating.has(bearing.id) ||
+              ("mating" in b && b.mating.has(bearing.id))),
         ) ?? false
     );
   }
@@ -654,8 +687,8 @@ export function mechanicalSolids(
           pieces = [extremes];
         }
       }
-      for (const bearing of geometryBearings.filter(
-        (b) => b.a === group.id || b.b === group.id,
+      for (const bearing of geometryBearings.filter((b) =>
+        bearingMember(b, group.id, id),
       )) {
         const all = pieces.flat();
         // Preserve the original hull when it already fits the declared round
@@ -844,7 +877,7 @@ export function mechanicalSolids(
             geometryBearings
               .filter(
                 (b) =>
-                  (b.a === group.id || b.b === group.id) &&
+                  bearingMember(b, group.id, id) &&
                   piece.every((p) => {
                     const offset = p.map((v, k) => v - b.pivot[k]) as Vec3;
                     return (

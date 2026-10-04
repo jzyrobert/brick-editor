@@ -1,3 +1,8 @@
+import {
+  MechanicalContactPolicy,
+  type MechanicalSolid,
+} from "../../src/play/mechanical-solids";
+import type { PlayMechanismSource } from "../../src/play/mechanism";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createHash } from "node:crypto";
 import { DoubleSide, Mesh, Raycaster, Vector3 } from "three";
@@ -157,4 +162,45 @@ describe("source-bound physical PF-M motor", () => {
           .eligible,
       ).toBe(false);
     });
+});
+
+describe("source-bound motor socket contacts", () => {
+  it("admits only the inserted shaft against its reviewed casing", () => {
+    const { project } = physicalMotorFixture(),
+      rig = project.motionRigs["technic-drive"],
+      policy = new MechanicalContactPolicy(rig, {
+        project,
+        rigId: rig.id,
+      } as PlayMechanismSource),
+      socket = policy.bearings.find((b) => b.id.endsWith(":motor-socket"))!;
+    expect(socket.pivot).toEqual([0, -46, 60]);
+    const shaft = {
+      groupId: socket.b,
+      memberId: socket.memberB,
+      mating: new Set([socket.id]),
+    } as MechanicalSolid;
+    expect(
+      policy.allowed(shaft, { groupId: socket.a, memberId: socket.memberA }),
+    ).toBe(true);
+    expect(
+      policy.allowed(shaft, { groupId: socket.a, memberId: "foreign-member" }),
+    ).toBe(false);
+    expect(
+      policy.allowed(shaft, {
+        groupId: "foreign-rig",
+        memberId: socket.memberA,
+      }),
+    ).toBe(false);
+    expect(
+      policy.allowed(
+        { ...shaft, memberId: "another-shaft" },
+        { groupId: socket.a, memberId: socket.memberA },
+      ),
+    ).toBe(false);
+    expect(
+      new MechanicalContactPolicy(rig).bearings.some((b) =>
+        b.id.endsWith(":motor-socket"),
+      ),
+    ).toBe(false);
+  });
 });
