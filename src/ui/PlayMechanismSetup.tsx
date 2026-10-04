@@ -1,3 +1,7 @@
+import {
+  checkPhysicalMotorBinding,
+  PHYSICAL_MOTOR_PROFILE,
+} from "../mechanisms/motor-binding";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import type { Editor } from "../core/commands";
 import { partSpec } from "../catalog/extended";
@@ -71,7 +75,27 @@ export function PlayMechanismSetup({
   const stale =
     !!review && review.request.expectedRevision !== project.revision;
   const rig = review?.proposal.rig;
-  const joint = rig?.joints.find((j) => j.id === driver);
+  const motorChoices = useMemo(() => {
+    if (!rig) return [];
+    const motors = all.filter(
+      (o) =>
+        o.namespace === "official" && o.node.ref === PHYSICAL_MOTOR_PROFILE.ref,
+    );
+    return rig.joints.flatMap((joint) =>
+      motors.flatMap((motor) => {
+        const binding = {
+          occurrenceId: motor.id,
+          profile: PHYSICAL_MOTOR_PROFILE.id,
+        };
+        return checkPhysicalMotorBinding(project, rig, joint, binding, all)
+          .eligible
+          ? [{ joint, binding }]
+          : [];
+      }),
+    );
+  }, [project, rig, all]);
+  const motorChoice = motorChoices.find((choice) => choice.joint.id === driver);
+  const joint = motorChoice?.joint;
   const assigned = new Set(rig?.groups.flatMap((g) => g.occurrenceIds));
   const unassigned =
     review?.request.occurrenceIds?.filter((id) => !assigned.has(id)) ?? [];
@@ -118,6 +142,7 @@ export function PlayMechanismSetup({
           motors: {
             [review!.proposal.drivers[joint.id]]: {
               mode: "velocity",
+              binding: motorChoice!.binding,
               target: speed,
               maxEffort: {
                 value: effort,
@@ -322,33 +347,33 @@ export function PlayMechanismSetup({
           )}
           {ready && (
             <>
-              <label>
-                Motor control
-                <select
-                  aria-label="Proposal motor"
-                  value={driver}
-                  onChange={(e) => setDriver(e.target.value)}
-                >
-                  <option value="">Manual controls only</option>
-                  {rig!.joints
-                    .filter(
-                      (j) => j.kind === "revolute" || j.kind === "prismatic",
-                    )
-                    .map((j) => (
+              {!!motorChoices.length && (
+                <label>
+                  Motor part
+                  <select
+                    aria-label="Proposal motor"
+                    value={driver}
+                    onChange={(e) => setDriver(e.target.value)}
+                  >
+                    <option value="">Manual controls only</option>
+                    {motorChoices.map(({ joint: j, binding }) => (
                       <option
-                        key={j.id}
+                        key={`${j.id}:${binding.occurrenceId}`}
                         value={j.id}
-                        data-occurrence-id={review.proposal.drivers[j.id]}
-                        title={
-                          labels.get(review.proposal.drivers[j.id])?.filename
-                        }
                       >
-                        {label(review.proposal.drivers[j.id])} ·{" "}
-                        {j.kind === "prismatic" ? "Slide" : "Rotate"}
+                        {label(binding.occurrenceId)} · Turn shaft
                       </option>
                     ))}
-                </select>
-              </label>
+                  </select>
+                </label>
+              )}
+              {!motorChoices.length && (
+                <p>
+                  Turn or slide the connected parts by hand. For powered
+                  controls, mount a Power Functions M motor and connect its
+                  output to the shaft.
+                </p>
+              )}
               {joint && (
                 <div className="play-motor-fields">
                   <label>

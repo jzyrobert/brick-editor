@@ -1,3 +1,4 @@
+import { requirePhysicalPlay } from "../mechanisms/physical-play";
 import {
   prepareMechanicalProposal,
   reviewedProposalProject,
@@ -289,6 +290,8 @@ export class BrowserPlay {
       // One occurrence expansion serves door derivation and every rig check.
       const all = project ? occurrences(project) : [];
       const lookup = new Map(all.map((o) => [o.id, o]));
+      if (project)
+        for (const rig of authored) requirePhysicalPlay(project, rig, all);
       let derived: DerivedDoors | undefined;
       if (project && request.autoDoors !== false) {
         derived = deriveDoorRigs(project, {
@@ -496,7 +499,10 @@ export class BrowserPlay {
                   ? [-90, 0]
                   : [0, 0];
       }
-      this.sessionRigs = { ...(project?.motionRigs ?? {}), ...doorRigs };
+      this.sessionRigs = {
+        ...Object.fromEntries(authored.map((rig) => [rig.id, rig])),
+        ...doorRigs,
+      };
       this.held = {};
       if (rigs.length || trains?.trains.length)
         this.restorePose = r.beginTransientPose();

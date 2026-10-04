@@ -1,3 +1,4 @@
+import { resolvePhysicalMotorBinding } from "./motor-binding";
 import { occurrences } from "../core/document";
 import { ensure, type Project } from "../core/types";
 import { validateRequest } from "../core/validate-request";
@@ -50,7 +51,23 @@ export async function prepareMechanicalProposal(
     "REVISION_CONFLICT",
     "Project changed while preparing the mechanism. Review it again.",
   );
-  return proposeMechanicalRig(project, input, lookup);
+  const proposal = proposeMechanicalRig(project, input, lookup);
+  for (const joint of proposal.rig?.joints ?? []) {
+    if (!joint.motor) continue;
+    ensure(
+      joint.motor.binding,
+      "INVALID_INPUT",
+      "Choose a real, mounted motor part before adding powered controls.",
+    );
+    resolvePhysicalMotorBinding(
+      project,
+      proposal.rig!,
+      joint,
+      joint.motor.binding,
+      [...lookup.values()],
+    );
+  }
+  return proposal;
 }
 
 /** A runnable draft must account for every selected part, without inferred repairs. */

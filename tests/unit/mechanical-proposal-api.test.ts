@@ -105,13 +105,6 @@ it("saves a reviewed source-bound proposal explicitly and undoes ownership witho
     expectedRevision: editor.revision,
     frameOccurrenceIds: [all[0].id],
     occurrenceIds: all.map((o) => o.id),
-    motors: {
-      [all[1].id]: {
-        mode: "velocity" as const,
-        target: 60,
-        maxEffort: { value: 10, unit: "N*m" as const },
-      },
-    },
   };
   const draft = await api.mechanisms.propose(input);
   expect(draft.drivers[draft.rig!.joints[0].id]).toBe(all[1].id);

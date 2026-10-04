@@ -1,3 +1,5 @@
+import { physicalPlayEligibility } from "../mechanisms/physical-play";
+import { occurrences } from "../core/document";
 import { PlayMechanismSetup, type MechanismReview } from "./PlayMechanismSetup";
 import type { Editor } from "../core/commands";
 import { PlaySeatEntry } from "./PlaySeatEntry";
@@ -79,10 +81,20 @@ export function PlayPanel({
   playHint?: string;
 }) {
   const state = useSyncExternalStore(play.subscribe, play.getState);
-  const rigs = {
-    ...authoredRigs,
-    ...(state.active ? play.getSessionRigs() : {}),
-  };
+  const rigReview = useMemo(() => {
+    if (!editor) return { usable: authoredRigs, unavailable: [] as string[] };
+    const project = editor.snapshot;
+    const all = occurrences(project);
+    const usable: Record<string, MotionRig> = {};
+    const unavailable: string[] = [];
+    for (const rig of Object.values(authoredRigs)) {
+      const result = physicalPlayEligibility(project, rig, all);
+      if (result.eligible) usable[rig.id] = rig;
+      else unavailable.push(`${rig.name}: ${result.reason}`);
+    }
+    return { usable, unavailable };
+  }, [authoredRigs, editor, editor?.snapshot]);
+  const rigs = state.active ? play.getSessionRigs() : rigReview.usable;
   const [message, setMessage] = useState("");
   const topRow = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -572,6 +584,16 @@ export function PlayPanel({
   const startHint = playHint && <p className="play-intro-hint">{playHint}</p>;
   const mechanismChoice = (
     <>
+      {!!rigReview.unavailable.length && (
+        <details>
+          <summary>
+            Connections need review ({rigReview.unavailable.length})
+          </summary>
+          {rigReview.unavailable.map((reason) => (
+            <p key={reason}>{reason}</p>
+          ))}
+        </details>
+      )}
       {Object.keys(rigs).length > 0 && (
         <label>
           Explore with mechanism
