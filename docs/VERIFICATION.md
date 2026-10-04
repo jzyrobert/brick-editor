@@ -1378,3 +1378,46 @@ inventory, native persistence and posed export. They do not accept the unresolve
 rack/housing tangent path, phone hardware performance, or an arbitrary maximum
 mechanism. [Measured costs and hashes](PLAY-CONTACT-COSTS.md) distinguish the
 verified spur checkpoint from earlier blocked rack diagnostics.
+
+## Combined drives and city resource smoke (4 October 2026)
+
+The public `scripts/benchmark-play-combined.ts` probe typechecks and passes its
+live-session assertions at the `21b90e2` contact source checkpoint. Two spur
+assemblies sharing one frame (26 parts, nine groups, two motors) advance in both
+modes, retain both gear phase relations and preserve source. A third assembly is
+refused in both modes by the 4,096-solid limit before native allocation. Mean
+fixed-tick costs are 40.68 ms kinematic and 26.25 ms native, including explorer
+and ground but excluding drawing. This is admission proof with a material
+performance limitation. [Reproduction and timings](PLAY-CONTACT-COSTS.md#two-drives-in-one-live-session-4-october-2026).
+
+A separate clean worktree at exact `21b90e2` builds production and runs the
+existing city stress driver against its private preview on port 4398:
+
+```sh
+BRICK_BENCH_URL=http://127.0.0.1:4398/ FORCE_COLOR=0 npx tsx scripts/stress-benchmark.ts --model city --parts 20000 --profiles desktop,mobile --play-frames 10 --no-recovery --label contact-city-21b90e2
+```
+
+The helper rounds 20,000 requested parts to 13 complete blocks / 19,760
+occurrences. Generated model SHA-256:
+`0443f70615d5edc2f641ef7a7660958b2d49b55ea98b777bd64b57b1373ee923`.
+Both desktop (1440×1000) and mobile (390×844, DPR 3, touch) pass strict readiness,
+enter/reenter Play walk, and report no geometry refusal or page error.
+
+| City profile | First render | JS heap before / load / Play | RSS load / Play | Play entry / reentry | Mean fixed tick |
+| ------------ | ------------ | ---------------------------- | --------------- | -------------------- | --------------- |
+| Desktop      | 5,447 ms     | 13 / 42 / 55 MB              | 521 / 678 MB    | 1,648 / 1,350 ms     | 0.51 ms         |
+| Mobile       | 4,798 ms     | 13 / 42 / 55 MB              | 512 / 622 MB    | 1,698 / 1,410 ms     | 0.31 ms         |
+
+Each profile reports 29 variants, 2,986 prototype triangles, 2,290,288 counted
+scene triangles / 8,348,600 full triangles, below its existing scene budget
+(60M desktop / 24M mobile), with `reducedQuality: false`. Play has three colliders,
+680,888 welded static triangles and 335,394 vertices. The expected collision
+budget warning discloses omitted studs/underside tubes on all 19,760 parts and
+session-only ground. Build succeeds; the private server stops afterward.
+
+This city has no authored moving mechanism. Its Chromium SwiftShader results
+prove profile/resource/entry smoke, separately from the combined-drive check.
+Desktop realistic/inside median frame intervals are 2,243 / 2,181 ms, so these
+results neither establish acceptable rendering performance nor measure phone
+FPS. Raw evidence remains private in `.local/perf/stress-contact-city-21b90e2.json`
+and source/bundle hashes in `.local/city-21b90e2-source-metadata.json`.

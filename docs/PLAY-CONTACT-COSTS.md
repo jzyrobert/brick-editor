@@ -171,6 +171,41 @@ still prevent an accuracy-equivalent comparison with coarse hulls. These samples
 do not show a speedup over the earlier experimental compounds, and do not accept
 the rack or a phone frame budget. Rendering, actor and vehicle work are excluded.
 
+## Two drives in one live session (4 October 2026)
+
+`scripts/benchmark-play-combined.ts` builds two canonical spur assemblies 400 LDU
+apart, merges their stationary parts into one anchored frame, and retains both
+independent motor/transmission paths. Run it from the repository root:
+
+```sh
+FORCE_COLOR=0 npx tsx scripts/benchmark-play-combined.ts > .local/combined-cost.jsonl
+```
+
+Unlike the isolated contact driver, this probe uses actual `PlaySession` entry
+and fixed ticks, including ground, explorer and native gravity. It checks actual
+motion, both 8:24 phase relations, unblocked state, source preservation and
+disposal. It prints hardware/load and five source hashes and requires those
+hashes to match at exit. Each moving group is prescribed 1 kg. The source hashes
+match the integrated spur checkpoint above; VM load is 0.71–0.78.
+
+| Two shared-frame drives | Entry    | Mean ms/tick | p95 ms/tick | World colliders |
+| ----------------------- | -------- | ------------ | ----------- | --------------- |
+| Kinematic               | 1,251 ms | 40.68        | 42.86       | 11              |
+| Native                  | 776 ms   | 26.25        | 29.07       | 38              |
+
+The 26-part, nine-group rig compiles in 1,023 ms. After 30 warm-up and 60 measured
+ticks, both kinematic shafts reach 135° / −45°; native shafts reach about
+123.21° / −41.07°. Undriven native arm joints fall under gravity. A third copy
+(39 parts, 13 groups) is refused in both modes with the unchanged explicit
+4,096-solid preparation limit; its source is also preserved.
+
+These results establish bounded admission and motion, not performance
+acceptance. Both two-drive physics costs exceed a 16.7 ms fixed-tick budget
+before drawing; the aggregate proxy cap alone cannot establish useful mobile
+capacity. This is one measured trial per mode, distinct from the two-trial
+isolated spur measurements. It does not accept rack guides, moving housings,
+arbitrary larger mechanisms or physical phone frame rate.
+
 ## Budget advice
 
 Counts must be global over every active rig and include mirror/query resources.

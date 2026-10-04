@@ -1054,3 +1054,13 @@ historical hulls. Corrected rack mounting has source-clearance proof, but native
 housing contact and larger-mechanism acceptance remain open. See
 [verification](VERIFICATION.md#bounded-contact-and-spur-regressions-4-october-2026)
 and [costs](PLAY-CONTACT-COSTS.md).
+
+## Combined mechanisms and city resource smoke (4 October 2026)
+
+Two independent spur drives on one anchored frame run in actual Play sessions
+with gear phase and source preserved; a third is refused by the shared proxy
+budget. Measured physics costs are 40.68 ms/tick kinematic and 26.25 ms native,
+before rendering, so cheaper contacts remain necessary for larger mechanisms.
+A separate 19,760-part city passes desktop/mobile profile, scene budget, heap and
+Play-entry smoke. The city contains no authored moving rig, and software WebGL
+timings do not establish phone performance. See [scope and reproduction](VERIFICATION.md#combined-drives-and-city-resource-smoke-4-october-2026).
