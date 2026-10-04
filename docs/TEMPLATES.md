@@ -1,6 +1,6 @@
 # Sample builds
 
-The template chooser in Project shows picture cards for sixteen sample builds and a blank canvas: three big scenes of thousands of parts written as [build scripts](AGENT-BUILDING.md) (market town, cathedral, harbour) first, then nine smaller detailed builds and four ready-to-play motion demonstrations. The architectural builds and two Technic demonstrations reference official LDraw parts; the crank and gripper demonstrations use clearly identified original custom pieces. Each shows off something in Play. **Explore the corner café** on the empty-canvas welcome card opens the café.
+The template chooser in Project shows picture cards for fourteen sample builds and a blank canvas: three big scenes of thousands of parts written as [build scripts](AGENT-BUILDING.md) (market town, cathedral, harbour) first, then nine smaller detailed builds and two ready-to-play Technic demonstrations. These reference actual official LDraw parts. Each shows off something in Play. **Explore the corner café** on the empty-canvas welcome card opens the café.
 
 | Sample            |  Parts | Designs | Outside the curated catalogue                                                                                                                                        | Play                                                                                                                                                                            |
 | ----------------- | -----: | ------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -29,29 +29,26 @@ fits the whole mechanism; drag to orbit and pinch or scroll to zoom. Forward and
 Reverse work while held, with braking on release. Each sample opens separately
 so the reviewed contact and native collider budgets remain bounded.
 
-| Sample         |            Pieces | What to try                                                                                                                                                                                                           |
-| -------------- | ----------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Motor & gears  | 13 official parts | Hold Forward to turn the red input axle and 8-tooth gear. The blue 24-tooth gear follows at one third the speed in the opposite direction. Choose the independent pin arm under Part control to swing the yellow arm. |
-| Rack drive     |  8 official parts | Hold Forward or Reverse: the red 24-tooth pinion moves the blue rack inside its reviewed housing. The rack stops at its authored travel limits. Linked outputs shows the coupled motion.                              |
-| Crank & slider |   4 custom pieces | Turn the red crank and watch the yellow connecting rod move the blue slider. The closed linkage keeps its connecting pins together; the slider is a passive output.                                                   |
-| Grab & lift    |   5 custom pieces | Starts in Dynamic Play. Tap Grab crate, select Motor 2 to lift, or Motor 1 to carry sideways, and hold Forward. Tap Release crate to drop the blue payload.                                                           |
+| Sample        |            Pieces | What to try                                                                                                                                                                                                              |
+| ------------- | ----------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Motor & gears | 15 official parts | The actual Power Functions M motor is mounted on studs and connected to the retained input axle. Hold Forward to turn the red 8-tooth gear; the blue 24-tooth gear follows at one third speed in the opposite direction. |
+| Rack guide    |  2 official parts | Move the blue rack manually inside its real outrigger housing using the joint control. The source-derived guide bounds keep the rack captured.                                                                           |
 
-The motor and rack samples retain the exact reviewed fixture placements and
-mechanical defaults, with colour identifying input and output. The linkage and
-gripper samples use original CC0 custom demonstration pieces. The native sample projects contain their
-authored rigs; normal LDraw exports preserve the source pieces but do not encode
-motors, loop closures or capture zones. Save a `.brickproj` to retain those.
+The motor uses the reviewed 58120 output socket, a six-stud axle and a common
+stud-connected base carrying both the motor and bearings. Its simulated effort
+is a game setting; internal electrics and a battery circuit are not modelled.
+The rack guide deliberately has no powered pinion: a powered rack demonstration
+still needs a reviewed physical motor and pinion mount. Synthetic crank and
+capture-zone demonstrations remain developer fixtures, outside normal Play.
 
-`src/catalog/motion-samples.ts` reuses the acceptance-tested fixture generators.
-`npm run templates` validates each authored rig, exports its source MPD into
-`fixtures/ldraw/templates/`, and renders actual 320 × 240 WebP chooser previews.
-Architectural occupancy checks remain separate: bearing, axle and gear members
-nest deliberately, and custom linkage pieces are not a stud-connected building.
-The generated MPDs also extend the offline dependency scan, so a fresh installed
-offline snapshot includes every official part these samples need. The official geometry and connector
-pack manifests are included too, allowing first-ever sample selection after
-an offline install without an online library warm-up. Initial Play hints hide
-while remote controls are open to keep small mechanisms visible.
+Native samples retain their source-derived rigs and motor binding; ordinary
+LDraw exports preserve the source geometry. Save a `.brickproj` to retain controls.
+`src/catalog/motion-samples.ts` reuses the source-reviewed factories. The generator
+validates the rigs, exports the MPDs and renders actual 320 × 240 chooser previews.
+Architectural occupancy checks remain separate because axles, bearings and gears
+nest deliberately. The generated MPDs extend the offline dependency scan, including
+the complete geometry and connector manifests for first selection offline.
+Initial Play hints hide while controls are open to keep the mechanism visible.
 
 ## How they are made
 

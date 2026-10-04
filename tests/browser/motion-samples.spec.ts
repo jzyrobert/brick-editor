@@ -20,21 +20,7 @@ const cases = [
     ids: ["rack-drive"],
     rig: "rack-drive",
     driver: "joint-0",
-    output: "joint-1",
-  },
-  {
-    name: "crank-slider",
-    ids: ["slider-crank"],
-    rig: "slider-crank",
-    driver: "drive",
-    output: "output",
-  },
-  {
-    name: "grab-lift",
-    ids: ["crane", "cargo"],
-    rig: "crane",
-    driver: "lift",
-    output: "carry",
+    output: "joint-0",
   },
 ] as const;
 async function documentState(page: Page) {
@@ -92,51 +78,40 @@ for (const phone of [false, true])
           page.getByText(MOTION_SAMPLES[c.name].hint, { exact: true }),
         ).toBeVisible();
         await enterPlay(page);
-        if (c.name === "grab-lift")
-          expect(
-            (await page.evaluate(() => window.brickEditor!.play.snapshot()))
-              .mechanisms!.crane.mode,
-          ).toBe("dynamic");
-        // Preserve the user-selected default mode, then make tick advancement
-        // deterministic so this witness measures input rather than VM speed.
         await page.evaluate(
-          async ({ ids, dynamic }) => {
+          async (ids) => {
             await window.brickEditor!.play.enter({
               rigIds: ids,
-              dynamicRigIds: dynamic ? ids : [],
+              dynamicRigIds: [],
               realtime: false,
               position: [300, -0.3, 300],
             });
           },
-          { ids: [...c.ids], dynamic: c.name === "grab-lift" },
+          [...c.ids],
         );
         await openRemoteControls(page);
         await expect(page.locator(".play-start-hint")).toHaveCount(0);
-        if (c.name === "grab-lift") {
-          await page
-            .getByRole("button", { name: "Grab crate", exact: true })
-            .click();
-          await page
-            .getByLabel("Part control", { exact: true })
-            .selectOption("lift");
-        }
         const rest = await page.evaluate(() =>
-            window.brickEditor!.play.snapshot(),
-          ),
-          forward = page.getByRole("button", {
-            name:
-              c.name === "grab-lift"
-                ? "Hold motor 2 forward"
-                : "Hold motor 1 forward",
+          window.brickEditor!.play.snapshot(),
+        );
+        if (c.name === "motor-gears") {
+          const forward = page.getByRole("button", {
+            name: "Hold motor 1 forward",
             exact: true,
           });
-        const bounds = (await forward.boundingBox())!;
-        expect(bounds.height).toBeGreaterThanOrEqual(44);
-        expect(bounds.width).toBeGreaterThanOrEqual(44);
-        await forward.focus();
-        await page.keyboard.down("Enter");
-        await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
-        await page.keyboard.up("Enter");
+          const bounds = (await forward.boundingBox())!;
+          expect(bounds.height).toBeGreaterThanOrEqual(44);
+          expect(bounds.width).toBeGreaterThanOrEqual(44);
+          await forward.focus();
+          await page.keyboard.down("Enter");
+          await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
+          await page.keyboard.up("Enter");
+        } else {
+          await page
+            .getByLabel("Explore joint joint-0", { exact: true })
+            .fill("-60");
+          await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
+        }
         const moved = await page.evaluate(() =>
             window.brickEditor!.play.snapshot(),
           ),
@@ -147,42 +122,13 @@ for (const phone of [false, true])
             m.pose.jointPositions[c.driver] - r.pose.jointPositions[c.driver],
           ),
         ).toBeGreaterThan(10);
-        expect(m.motors![c.driver].input).toBe(0);
-        if (c.name === "grab-lift") {
-          expect(m.grippers!.claw.held).toMatchObject({
-            rigId: "cargo",
-            groupId: "crate",
-          });
-          expect(
-            moved.mechanisms!.cargo.groupFrames.crate.position[1],
-          ).toBeLessThan(
-            rest.mechanisms!.cargo.groupFrames.crate.position[1] - 10,
-          );
-          await page
-            .getByRole("button", { name: "Release crate", exact: true })
-            .click();
-          expect(
-            (await page.evaluate(() => window.brickEditor!.play.snapshot()))
-              .mechanisms!.crane.grippers!.claw.held,
-          ).toBeUndefined();
-        } else
+        if (c.name === "motor-gears") {
+          expect(m.motors![c.driver].input).toBe(0);
           expect(
             Math.abs(
               m.pose.jointPositions[c.output] - r.pose.jointPositions[c.output],
             ),
           ).toBeGreaterThan(1);
-        if (c.name === "motor-gears") {
-          await page
-            .getByLabel("Part control", { exact: true })
-            .selectOption("pin-arm");
-          await page
-            .getByLabel("Explore joint pin-arm", { exact: true })
-            .fill("30");
-          await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
-          expect(
-            (await page.evaluate(() => window.brickEditor!.play.snapshot()))
-              .mechanisms![c.rig].pose.jointPositions["pin-arm"],
-          ).toBeGreaterThan(20);
         }
         expect(
           (await page.evaluate(() => window.brickEditor!.play.view()))
@@ -268,20 +214,14 @@ test("all motion samples open and move from a freshly installed offline snapshot
       const api = window.brickEditor!;
       await api.play.enter({
         rigIds: [...c.ids],
-        dynamicRigIds: c.name === "grab-lift" ? [...c.ids] : [],
+        dynamicRigIds: [],
         realtime: false,
         position: [300, -0.3, 300],
       });
-      if (c.name === "grab-lift")
-        await api.play.grab({
-          rigId: "crane",
-          gripperId: "claw",
-          target: { rigId: "cargo", groupId: "crate" },
-        });
       await api.play.setJointTarget({
         rigId: c.rig,
         jointId: c.driver,
-        target: 30,
+        target: c.name === "motor-gears" ? 30 : -60,
         speed: 60,
       });
       await api.play.stepTicks(180);

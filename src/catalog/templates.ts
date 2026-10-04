@@ -30,8 +30,6 @@ import { uid, type Vec3 } from "../core/types";
 export const TEMPLATE_BACKDROPS: Partial<Record<TemplateName, BackdropName>> = {
   "motor-gears": "studio",
   "rack-drive": "studio",
-  "crank-slider": "studio",
-  "grab-lift": "studio",
   house: "grass",
   castle: "grass",
   windmill: "grass",

@@ -3,22 +3,12 @@ export const MOTION_SAMPLES = {
   "motor-gears": {
     title: "Motor & gears",
     file: "motor-gears.mpd",
-    hint: "Open controls from Pause. Turn the gears or choose the pin arm.",
+    hint: "Use the mounted motor to turn the gears. Open controls from Pause.",
   },
   "rack-drive": {
-    title: "Rack drive",
+    title: "Rack guide",
     file: "rack-drive.mpd",
-    hint: "Open controls from Pause. Hold Forward or Reverse to slide the rack.",
-  },
-  "crank-slider": {
-    title: "Crank & slider",
-    file: "crank-slider.mpd",
-    hint: "Open controls from Pause. Turn the crank to move the custom blue slider.",
-  },
-  "grab-lift": {
-    title: "Grab & lift",
-    file: "grab-lift.mpd",
-    hint: "Open controls from Pause. Grab crate; Motor 2 lifts, Motor 1 carries.",
+    hint: "Open controls from Pause. Slide the blue rack inside its guide by hand.",
   },
 } as const;
 export type MotionSampleName = keyof typeof MOTION_SAMPLES;

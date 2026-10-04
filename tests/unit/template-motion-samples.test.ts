@@ -31,10 +31,8 @@ describe("ready-to-play motion samples", () => {
       expect(p.scene?.backdrop).toBe("studio");
       expect(occurrences(p)).toHaveLength(
         {
-          "motor-gears": 13,
-          "rack-drive": 8,
-          "crank-slider": 4,
-          "grab-lift": 5,
+          "motor-gears": 15,
+          "rack-drive": 2,
         }[name],
       );
       expect(
@@ -58,19 +56,22 @@ describe("ready-to-play motion samples", () => {
           p.motionRigs["technic-drive"].joints.filter(
             (j) => j.kind === "revolute",
           ),
-        ).toHaveLength(4);
+        ).toHaveLength(2);
       }
-      if (name === "rack-drive")
-        expect(p.motionRigs["rack-drive"].transmissions).toMatchObject([
-          { kind: "rack", pitchRadiusLdu: -30 },
+      if (name === "rack-drive") {
+        expect(p.motionRigs["rack-drive"].transmissions ?? []).toEqual([]);
+        expect(p.motionRigs["rack-drive"].joints).toMatchObject([
+          { kind: "prismatic" },
         ]);
-      if (name === "crank-slider")
-        expect(p.motionRigs["slider-crank"].loopClosures).toHaveLength(1);
-      if (name === "grab-lift") {
-        expect(p.motionRigs.crane.dynamics?.startDynamic).toBe(true);
-        expect(p.motionRigs.crane.grippers).toHaveLength(1);
-        expect(p.motionRigs.cargo.dynamics?.groups?.crate.anchored).toBe(false);
+        expect(p.motionRigs["rack-drive"].joints[0].motor).toBeUndefined();
       }
+      if (name === "motor-gears")
+        expect(
+          p.motionRigs["technic-drive"].joints[0].motor?.binding,
+        ).toMatchObject({
+          profile: "power-functions-motor-m-v1",
+          occurrenceId: occurrences(p)[10].id,
+        });
     });
   it("precaches the full official part closure used by Technic samples", () => {
     const files = templateLibraryFiles(),
@@ -93,13 +94,17 @@ describe("ready-to-play motion samples", () => {
     expect(files).toContain(
       `libraries/${connectorLock.connectorPackId}/manifest.json`,
     );
+    const curated = JSON.parse(
+      readFileSync("src/catalog/data.json", "utf8"),
+    ).catalog;
     for (const name of ["motor-gears", "rack-drive"] as const)
       for (const o of occurrences(template(name)))
-        for (const chunk of index.parts[o.node.ref]?.[0] ?? [])
-          expect(files).toContain(
-            "libraries/ldraw-full-2026-09-28/chunks/" +
-              index.chunks[chunk][0] +
-              ".bin",
-          );
+        if (!curated[o.node.ref])
+          for (const chunk of index.parts[o.node.ref]?.[0] ?? [])
+            expect(files).toContain(
+              "libraries/ldraw-full-2026-09-28/chunks/" +
+                index.chunks[chunk][0] +
+                ".bin",
+            );
   });
 });

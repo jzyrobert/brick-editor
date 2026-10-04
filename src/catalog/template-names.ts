@@ -19,8 +19,6 @@ export const SAMPLE_TEMPLATES = [
   "harbour",
   "motor-gears",
   "rack-drive",
-  "crank-slider",
-  "grab-lift",
 ] as const;
 /**
  * Older technical starts kept only as test fixtures for the automation API
@@ -62,9 +60,7 @@ export const TEMPLATE_CARDS: { name: SampleTemplateName; title: string }[] = [
   { name: "castle", title: "Small castle" },
   { name: "car", title: "Roadster car" },
   { name: "motor-gears", title: "Motor & gears" },
-  { name: "rack-drive", title: "Rack drive" },
-  { name: "crank-slider", title: "Crank & slider" },
-  { name: "grab-lift", title: "Grab & lift" },
+  { name: "rack-drive", title: "Rack guide" },
   { name: "blank", title: "Blank canvas" },
 ];
 /** The sample the welcome card opens. */
