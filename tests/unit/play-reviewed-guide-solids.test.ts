@@ -50,6 +50,17 @@ it("prepares the same hollow source-bound housing for fixed and mobile carriers 
     policy = prepared.policy;
   expect(outer.every((s) => policy.allowed(rs[0], s))).toBe(true);
   expect(policy.allowed(rs[0], core)).toBe(false);
+  const pinion = all.find((o) => o.node.ref === "3648b.dat")!,
+    hub = prepared.solids.find(
+      (s) => s.memberId === pinion.id && s.mating.has(rig.joints[0].id),
+    )!;
+  expect(hub).toBeDefined();
+  for (const support of all.filter((o) => o.node.ref === "3701.dat"))
+    expect(
+      policy.allowed(hub, { groupId: rig.groups[0].id, memberId: support.id }),
+    ).toBe(true);
+  expect(policy.allowed(hub, hs[0])).toBe(false);
+
   expect(
     policy.allowed(rs[0], { ...outer[0], memberId: "foreign-housing" }),
   ).toBe(false);

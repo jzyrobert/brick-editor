@@ -187,16 +187,16 @@ export class MechanicalContactPolicy {
       const feature = new Map(graph.features.map((f) => [f.key, f]));
       const endpointKey = (e: { occurrenceId: string; featureId: string }) =>
         JSON.stringify([e.occurrenceId, e.featureId]);
-      const gripsByShaft = new Map<
+      const keyedByShaft = new Map<
         string,
         Array<Extract<(typeof graph.contacts)[number], { kind: "keyed-slide" }>>
       >();
-      for (const grip of graph.contacts)
-        if (grip.kind === "keyed-slide" && grip.axialGrip) {
-          const key = endpointKey(grip.a),
-            entries = gripsByShaft.get(key) ?? [];
-          entries.push(grip);
-          gripsByShaft.set(key, entries);
+      for (const keyed of graph.contacts)
+        if (keyed.kind === "keyed-slide") {
+          const key = endpointKey(keyed.a),
+            entries = keyedByShaft.get(key) ?? [];
+          entries.push(keyed);
+          keyedByShaft.set(key, entries);
         }
       for (const bearing of this.bearings) {
         const a = groups.get(bearing.a)!,
@@ -249,15 +249,18 @@ export class MechanicalContactPolicy {
             bore = feature.get(endpointKey(c.b))!;
           if (bore.kind !== "round-hole") continue;
           const mouth = mechanicalInterval(bore, shaft, bore.faceSpan);
-          for (const grip of gripsByShaft.get(endpointKey(c.a)) ?? []) {
-            const collar = feature.get(endpointKey(grip.b))!;
-            if (collar.kind !== "keyed-hole" || !collar.stopRadius) continue;
-            const span = mechanicalInterval(collar, shaft);
+          // A captured gear's keyed hub can sit against a bore mouth just as
+          // an axle collar does. Admit only that source-matched hub region;
+          // teeth and unrelated carrier members retain their collisions.
+          for (const keyed of keyedByShaft.get(endpointKey(c.a)) ?? []) {
+            const hub = feature.get(endpointKey(keyed.b))!;
+            if (hub.kind !== "keyed-hole") continue;
+            const span = mechanicalInterval(hub, shaft);
             if (
               Math.abs(span[1] - mouth[0]) <= 0.5 ||
               Math.abs(span[0] - mouth[1]) <= 0.5
             )
-              pair(y, grip.b.occurrenceId);
+              pair(y, keyed.b.occurrenceId);
           }
         }
       }

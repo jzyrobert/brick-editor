@@ -9,6 +9,10 @@ import { compose } from "../../src/core/math";
 import { axisRotation } from "../../src/mechanisms/kinematic";
 import type { Transform } from "../../src/core/types";
 import { technicFixture } from "../../src/mechanisms/technic-fixture";
+import {
+  MechanicalContactPolicy,
+  mechanicalSolids,
+} from "../../src/play/mechanical-solids";
 import { DynamicRig } from "../../src/play/dynamics";
 import { playSources } from "../helpers/play-dynamic-source";
 
@@ -109,11 +113,75 @@ async function fixture(
     expect(body).toBeDefined();
     return body!;
   };
-  return { rig, world, step, input, output, outputBody, definition };
+  return {
+    rig,
+    world,
+    step,
+    input,
+    output,
+    outputBody,
+    definition,
+    source: sources[0],
+  };
 }
 // The longest replay integrates 3,240 native ticks with the reviewed tooth
 // compounds (about 6 ms/tick on the shared VM); retain every physical assertion.
 describe("physical spur coupling", { timeout: 30_000 }, () => {
+  it("admits only source-seated gear hubs at their actual bearing mouths", async () => {
+    const { source, definition, input, output } = await fixture(),
+      all = occurrences(source.project),
+      policy = new MechanicalContactPolicy(definition, source),
+      solids = mechanicalSolids(source, policy),
+      carrier = definition.joints[0].bodyA;
+    for (const [index, joint] of [
+      [3, input],
+      [7, output],
+    ] as const) {
+      const hub = solids.find(
+          (s) => s.memberId === all[index].id && s.mating.has(joint),
+        )!,
+        teeth = solids.find(
+          (s) => s.memberId === all[index].id && !s.mating.has(joint),
+        )!;
+      expect(hub).toBeDefined();
+      expect(teeth).toBeDefined();
+      for (const support of [0, 1])
+        expect(
+          policy.allowed(hub, { groupId: carrier, memberId: all[support].id }),
+        ).toBe(true);
+      expect(
+        policy.allowed(hub, { groupId: carrier, memberId: all[10].id }),
+      ).toBe(false);
+      expect(
+        policy.allowed(hub, {
+          groupId: carrier,
+          memberId: "unrelated-accessory",
+        }),
+      ).toBe(false);
+      expect(
+        policy.allowed(teeth, { groupId: carrier, memberId: all[0].id }),
+      ).toBe(false);
+      const shifted = structuredClone(source.project),
+        movedGear = shifted.models[shifted.rootModelId].nodes.find(
+          (n) => n.id === all[index].node.id,
+        )!;
+      movedGear.transform.position[2] += 1;
+      const unseated = new MechanicalContactPolicy(
+        shifted.motionRigs[definition.id],
+        {
+          ...source,
+          project: shifted,
+          lookup: undefined,
+        },
+      );
+      expect(
+        unseated.allowed(hub, { groupId: carrier, memberId: all[0].id }),
+      ).toBe(false);
+      expect(
+        unseated.allowed(hub, { groupId: carrier, memberId: all[1].id }),
+      ).toBe(false);
+    }
+  });
   it("reports a held motor input blocked by its output, then recovers and brakes", async () => {
     const { rig, step, input, outputBody } = await fixture();
     const blocked = outputBody();
