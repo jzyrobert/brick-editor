@@ -321,8 +321,8 @@ export class PlaySession {
           s.project.motionRigs[s.rigId].joints.some(
             (j) =>
               j.kind === "revolute" &&
-              j.anchorA.every((v) => v === 0) &&
-              j.anchorB.every((v) => v === 0) &&
+              j.anchorB[0] === 0 &&
+              j.anchorB[2] === 0 &&
               j.axisA?.[0] === 0 &&
               Math.abs(j.axisA[1]) === 1 &&
               j.axisA[2] === 0 &&

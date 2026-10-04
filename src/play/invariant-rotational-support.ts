@@ -1,5 +1,6 @@
 import RAPIER from "@dimforge/rapier3d-compat";
 import type { Transform } from "../core/types";
+import { add, mv } from "../core/math";
 import type { JointSpec, MechanismSnapshot } from "../mechanisms/types";
 import type { MechanicalSolid } from "./mechanical-solids";
 import { CHARACTER_PROFILE } from "./types";
@@ -30,6 +31,11 @@ const authoredYBasis = (f: Transform) =>
   f.basis[2] === -f.basis[6] &&
   ((Math.abs(f.basis[0]) === 1 && f.basis[2] === 0) ||
     (f.basis[0] === 0 && Math.abs(f.basis[2]) === 1));
+const exactRestPivot = (a: Transform, b: Transform, j: JointSpec) => {
+  const pa = add(a.position, mv(a.basis, j.anchorA)),
+    pb = add(b.position, mv(b.basis, j.anchorB));
+  return pa.every((v, k) => v === pb[k]);
+};
 const bindings = new WeakMap<
   MechanicalSolid,
   {
@@ -73,10 +79,23 @@ export function invariantYRotationEligible(
   after: MechanismSnapshot,
   restFrames: Record<string, Transform>,
 ) {
-  if (joints.length !== 1 || !(solid.shape instanceof RAPIER.ConvexPolyhedron))
-    return false;
-  const j = joints[0],
-    a = before.groupFrames[j.bodyA],
+  if (joints.length !== 1) return false;
+  const j = joints[0];
+  return (
+    j.anchorA.every((v) => v === 0) &&
+    j.anchorB.every((v) => v === 0) &&
+    literalYOrbitEligible(solid, j, before, after, restFrames)
+  );
+}
+function literalYOrbitEligible(
+  solid: MechanicalSolid,
+  j: JointSpec,
+  before: MechanismSnapshot,
+  after: MechanismSnapshot,
+  restFrames: Record<string, Transform>,
+) {
+  if (!(solid.shape instanceof RAPIER.ConvexPolyhedron)) return false;
+  const a = before.groupFrames[j.bodyA],
     b = after.groupFrames[j.bodyA],
     c = before.groupFrames[solid.groupId],
     d = after.groupFrames[solid.groupId];
@@ -85,8 +104,6 @@ export function invariantYRotationEligible(
   return (
     j.kind === "revolute" &&
     j.bodyB === solid.groupId &&
-    j.anchorA.every((v) => v === 0) &&
-    j.anchorB.every((v) => v === 0) &&
     j.axisA?.[0] === 0 &&
     Math.abs(j.axisA[1]) === 1 &&
     j.axisA[2] === 0 &&
@@ -97,6 +114,7 @@ export function invariantYRotationEligible(
     !!restB &&
     authoredYBasis(restA) &&
     authoredYBasis(restB) &&
+    exactRestPivot(restA, restB, j) &&
     !!a &&
     !!b &&
     !!c &&
@@ -109,6 +127,32 @@ export function invariantYRotationEligible(
     JSON.stringify(before.pose.vehicle) ===
       JSON.stringify(after.pose.vehicle) &&
     nativePointBinding(solid)
+  );
+}
+
+/** Independent leaf joints on the same authored root do not change this orbit.
+ * The root's anchor can be offset; the child's anchor must lie on its Y axis,
+ * and their authored world pivots must agree exactly. An incoming parent joint
+ * or a descendant of this leaf retains the generic sweep path. */
+export function invariantYLeafRotationEligible(
+  solid: MechanicalSolid,
+  joints: JointSpec[],
+  before: MechanismSnapshot,
+  after: MechanismSnapshot,
+  restFrames: Record<string, Transform>,
+) {
+  const incoming = joints.filter((j) => j.bodyB === solid.groupId);
+  if (incoming.length !== 1) return false;
+  const j = incoming[0];
+  return (
+    !joints.some(
+      (other) => other.bodyB === j.bodyA || other.bodyA === j.bodyB,
+    ) &&
+    j.anchorB[0] === 0 &&
+    j.anchorB[2] === 0 &&
+    j.anchorA.every(Number.isFinite) &&
+    j.anchorB.every(Number.isFinite) &&
+    literalYOrbitEligible(solid, j, before, after, restFrames)
   );
 }
 
@@ -148,5 +192,55 @@ export function invariantYRotationBounds(
     maximum + guard,
     outward(Math.max(p[2], native[2]) + radius + guard, true),
   ];
-  return { query, minimum, maximum, guard };
+  return { query, minimum, maximum, guard, radius };
+}
+
+/** Enclose the actual unwrapped scalar interval rather than a whole turn.
+ * Endpoint support plus r*|delta angle| bounds every intermediate point; native
+ * quaternion rounding and the serialized pivot are included separately. */
+export function invariantYRotationIntervalBounds(
+  points: Float32Array,
+  before: Transform,
+  after: Transform,
+  deltaDegrees: number,
+) {
+  const full = invariantYRotationBounds(points, before),
+    minimum = [Infinity, Infinity],
+    maximum = [-Infinity, -Infinity];
+  for (const frame of [before, after]) {
+    const p = [frame.position[0] * scale, -frame.position[2] * scale],
+      native = p.map(Math.fround),
+      b = frame.basis;
+    for (let i = 0; i < points.length; i += 3) {
+      const transformed = [
+        b[0] * points[i] - b[2] * points[i + 2],
+        -b[6] * points[i] + b[8] * points[i + 2],
+      ];
+      for (let k = 0; k < 2; k++) {
+        minimum[k] = Math.min(
+          minimum[k],
+          transformed[k] + Math.min(p[k], native[k]),
+        );
+        maximum[k] = Math.max(
+          maximum[k],
+          transformed[k] + Math.max(p[k], native[k]),
+        );
+      }
+    }
+  }
+  const margin =
+    full.radius *
+      (Math.min((Math.abs(deltaDegrees) * Math.PI) / 180, 2) +
+        8 * 2 ** -25 +
+        64 * Number.EPSILON) +
+    full.guard;
+  const query = [...full.query] as typeof full.query;
+  for (const [k, axis] of [0, 2].entries()) {
+    query[axis] = Math.max(query[axis], outward(minimum[k] - margin, false));
+    query[axis + 3] = Math.min(
+      query[axis + 3],
+      outward(maximum[k] + margin, true),
+    );
+  }
+  return { ...full, query };
 }

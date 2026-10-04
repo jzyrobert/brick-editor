@@ -3,6 +3,8 @@ import { beforeAll, expect, it } from "vitest";
 import {
   invariantYRotationBounds,
   invariantYRotationEligible,
+  invariantYLeafRotationEligible,
+  invariantYRotationIntervalBounds,
 } from "../../src/play/invariant-rotational-support";
 import { MechanicalQueryWorld } from "../../src/play/mechanical-query-world";
 import {
@@ -115,6 +117,12 @@ it("requires the literal one-joint stationary Y path and matching direct native 
   const scaled = structuredClone(restFrames);
   scaled.lamp.basis = [0, 0, 1.0000002, 0, 1, 0, -1.0000002, 0, 0];
   expect(invariantYRotationEligible(s, [joint], before, after, scaled)).toBe(
+    false,
+  );
+  const eccentric = structuredClone(restFrames);
+  eccentric.lamp = structuredClone(eccentric.lamp);
+  eccentric.lamp.position[0] += 0.000001;
+  expect(invariantYRotationEligible(s, [joint], before, after, eccentric)).toBe(
     false,
   );
   const moved = structuredClone(after);
@@ -253,4 +261,193 @@ it("binds the complete source to one actual immutable collider, preserving forei
     queries.dispose();
     world.free();
   }
+});
+
+it("certifies an independent anchored leaf with exact joint pivots and refuses incoming or descendant joints", () => {
+  const { before, after } = snapshots(),
+    s = solid(),
+    axial = {
+      ...joint,
+      anchorA: [0, 70, 0] as [number, number, number],
+      anchorB: [0, 70, 0] as [number, number, number],
+    },
+    joints = [axial, { ...axial, id: "other", bodyB: "otherLeaf" }];
+  expect(invariantYRotationEligible(s, joints, before, after, restFrames)).toBe(
+    false,
+  );
+  expect(
+    invariantYLeafRotationEligible(s, joints, before, after, restFrames),
+  ).toBe(true);
+  const offsetRest = {
+      tower: {
+        ...structuredClone(frame),
+        position: [0, -152, -770] as [number, number, number],
+      },
+      lamp: {
+        ...structuredClone(frame),
+        position: [-32, -152, -765] as [number, number, number],
+      },
+    },
+    offsetBefore = structuredClone(before),
+    offsetAfter = structuredClone(after),
+    offsetJoint = {
+      ...axial,
+      anchorA: [-32, 70, 5] as [number, number, number],
+    };
+  offsetBefore.groupFrames = structuredClone(offsetRest);
+  offsetAfter.groupFrames.tower = structuredClone(offsetRest.tower);
+  offsetAfter.groupFrames.lamp.position = [...offsetRest.lamp.position];
+  expect(
+    invariantYLeafRotationEligible(
+      s,
+      [offsetJoint],
+      offsetBefore,
+      offsetAfter,
+      offsetRest,
+    ),
+  ).toBe(true);
+  const wrongPivot = structuredClone(offsetRest);
+  wrongPivot.lamp.position[0] += 0.000001;
+  expect(
+    invariantYLeafRotationEligible(
+      s,
+      [offsetJoint],
+      offsetBefore,
+      offsetAfter,
+      wrongPivot,
+    ),
+  ).toBe(false);
+  expect(
+    invariantYLeafRotationEligible(
+      s,
+      [...joints, { ...joint, bodyA: "upstream", bodyB: "tower" }],
+      before,
+      after,
+      restFrames,
+    ),
+  ).toBe(false);
+  expect(
+    invariantYLeafRotationEligible(
+      s,
+      [...joints, { ...joint, bodyA: "lamp", bodyB: "descendant" }],
+      before,
+      after,
+      restFrames,
+    ),
+  ).toBe(false);
+  expect(
+    invariantYLeafRotationEligible(
+      s,
+      [{ ...axial, anchorB: [0, 71, 0] }],
+      before,
+      after,
+      restFrames,
+    ),
+  ).toBe(false);
+  expect(
+    invariantYLeafRotationEligible(
+      s,
+      [{ ...axial, anchorB: [1, 70, 0] }],
+      before,
+      after,
+      restFrames,
+    ),
+  ).toBe(false);
+});
+
+it("keeps a remote jamb outside one interval while preserving blockers and full-turn travel", () => {
+  const beam = Float32Array.from([
+      0.2, 0, -0.01, 1, 0, -0.01, 0.2, 0, 0.01, 1, 0, 0.01, 0.2, 0.2, -0.01, 1,
+      0.2, -0.01, 0.2, 0.2, 0.01, 1, 0.2, 0.01,
+    ]),
+    a: Transform = {
+      position: [0, -50, 0],
+      basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+    },
+    angle = (10 * Math.PI) / 180,
+    b: Transform = {
+      ...a,
+      basis: [
+        Math.cos(angle),
+        0,
+        Math.sin(angle),
+        0,
+        1,
+        0,
+        -Math.sin(angle),
+        0,
+        Math.cos(angle),
+      ],
+    },
+    interval = invariantYRotationIntervalBounds(beam, a, b, 10),
+    full = invariantYRotationBounds(beam, a),
+    floorAndJamb = source(
+      [
+        -10, 1, -10, 10, 1, -10, 10, 1, 10, -10, 1, 10, -0.5, 0.9, 0, -0.5, 1.3,
+        0, -0.5, 1.3, 0.01,
+      ],
+      [0, 2, 1, 0, 3, 2, 4, 5, 6],
+    ),
+    snapshot = new DrivingObstacleSnapshot([floorAndJamb]),
+    check = (box: typeof full) =>
+      snapshot.certifyInvariantYSlab(
+        box.query,
+        box.minimum,
+        box.maximum,
+        box.guard,
+        100,
+      );
+  expect(check(full)).toMatchObject({ safe: false, candidates: 3 });
+  expect(check(interval)).toMatchObject({ safe: true, candidates: 2 });
+  const blocker = new DrivingObstacleSnapshot([
+    source([0.7, 0.9, 0.07, 0.7, 1.3, 0.07, 0.7, 1.3, 0.08], [0, 1, 2]),
+  ]);
+  expect(
+    blocker.certifyInvariantYSlab(
+      interval.query,
+      interval.minimum,
+      interval.maximum,
+      interval.guard,
+      100,
+    ).safe,
+  ).toBe(false);
+  for (const delta of [10, -10, 170, 360, 720]) {
+    const rad = (delta * Math.PI) / 180,
+      end: Transform = {
+        ...a,
+        basis: [
+          Math.cos(rad),
+          0,
+          Math.sin(rad),
+          0,
+          1,
+          0,
+          -Math.sin(rad),
+          0,
+          Math.cos(rad),
+        ],
+      },
+      box = invariantYRotationIntervalBounds(beam, a, end, delta);
+    for (let tick = 0; tick <= 100; tick++) {
+      const s = Math.fround(-Math.sin((rad * tick) / 200)),
+        c = Math.fround(Math.cos((rad * tick) / 200));
+      for (let i = 0; i < beam.length; i += 3) {
+        const x = beam[i],
+          y = beam[i + 1],
+          z = beam[i + 2],
+          p = [
+            (1 - 2 * s * s) * x + 2 * s * c * z,
+            y + 1,
+            -2 * s * c * x + (1 - 2 * s * s) * z,
+          ];
+        p.forEach((v, k) => {
+          expect(v).toBeGreaterThanOrEqual(box.query[k]);
+          expect(v).toBeLessThanOrEqual(box.query[k + 3]);
+        });
+      }
+    }
+  }
+  expect(check(invariantYRotationIntervalBounds(beam, a, a, 360)).safe).toBe(
+    false,
+  );
 });

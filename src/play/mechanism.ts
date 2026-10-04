@@ -8,6 +8,8 @@ import { MechanicalQueryWorld } from "./mechanical-query-world";
 import {
   invariantYRotationBounds,
   invariantYRotationEligible,
+  invariantYLeafRotationEligible,
+  invariantYRotationIntervalBounds,
 } from "./invariant-rotational-support";
 import { Matrix4, Quaternion, Vector3 } from "three";
 import {
@@ -328,6 +330,7 @@ export class PlayMechanism {
   private jointKinds = new Map<string, string>();
   private jointSpecs: JointSpec[];
   private restFrames: Record<string, Transform>;
+  private hasClosedLoops: boolean;
   private motors = new Map<
     string,
     {
@@ -478,6 +481,7 @@ export class PlayMechanism {
     this.restFrames = Object.fromEntries(
       rig.groups.map((g) => [g.id, structuredClone(g.frame)]),
     );
+    this.hasClosedLoops = !!rig.loopClosures?.length;
     this.jointKinds = new Map(rig.joints.map((j) => [j.id, j.kind]));
     for (const joint of rig.joints)
       if (
@@ -957,35 +961,64 @@ export class PlayMechanism {
               return false;
             }
           } else {
-            // A complete source-triangle slab proof covers the entire angular
-            // orbit. It applies only to the registered, unchanged static mesh;
+            // A complete source-triangle slab proof covers the angular orbit
+            // or the actual leaf interval. It applies only to the unchanged static mesh;
             // owned mating solids and every unresolved foreign surface retain
             // the normal native contact and subdivision path below.
-            if (
-              this.queries.hasStaticSupport(collider) &&
+            const registered = this.queries.hasStaticSupport(collider);
+            const fullOrbit =
+              registered &&
               invariantYRotationEligible(
                 solid,
                 this.jointSpecs,
                 before,
                 after,
                 this.restFrames,
-              )
+              );
+            if (
+              fullOrbit ||
+              (registered &&
+                !this.hasClosedLoops &&
+                invariantYLeafRotationEligible(
+                  solid,
+                  this.jointSpecs,
+                  before,
+                  after,
+                  this.restFrames,
+                ))
             ) {
+              const joint = this.jointSpecs.find(
+                (j) => j.bodyB === solid.groupId,
+              )!;
+              const delta =
+                after.pose.jointPositions[joint.id] -
+                before.pose.jointPositions[joint.id];
               const key = JSON.stringify([
                 collider.handle,
                 a.position,
-                before.groupFrames[this.jointSpecs[0].bodyA],
+                before.groupFrames[joint.bodyA],
+                fullOrbit
+                  ? null
+                  : [
+                      a,
+                      b,
+                      before.pose.jointPositions[joint.id],
+                      after.pose.jointPositions[joint.id],
+                    ],
               ]);
               let proof = this.invariantSupport.get(solid);
               if (!proof || proof.key !== key) {
-                this.contactEnumeration += (2 * solid.points.length) / 3;
+                this.contactEnumeration +=
+                  ((fullOrbit ? 2 : 4) * solid.points.length) / 3;
                 ensure(
                   this.contactEnumeration <=
                     MECHANICAL_CONTACT_LIMITS.enumeration,
                   "LIMIT_EXCEEDED",
                   "This mechanism is too complex to check safely. Try fewer moving parts.",
                 );
-                const enclosure = invariantYRotationBounds(solid.points, a);
+                const enclosure = fullOrbit
+                  ? invariantYRotationBounds(solid.points, a)
+                  : invariantYRotationIntervalBounds(solid.points, a, b, delta);
                 const result = this.queries.certifyStaticYSupport(
                   collider,
                   enclosure.query,
