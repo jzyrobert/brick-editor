@@ -22,7 +22,9 @@ and rendered accessories are covered by focused tests. See
 ideal slider/pinion relation and corrected 24-tooth source mounting. Historical
 load/back-drive checks disabled same-rig contacts; integrated native housing
 contacts currently stall near rest and are not accepted. Further rack guides,
-direct session-only Play entry and other families remain open.
+physical Play acceptance and other families remain open. Direct reviewed session
+entry and explicit undoable Save are implemented; the scoped setup design review
+is finishing its hierarchy/label/content corrections.
 
 **Implemented controls:** session-only proportional motor input now drives,
 reverses and brakes reviewed motors without changing authored presets or effort

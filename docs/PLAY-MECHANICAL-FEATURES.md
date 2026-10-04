@@ -3,9 +3,11 @@
 The first mechanical feature pack separates connection freedom from generic
 adjacency. `mechanisms.propose()` produces a reviewable rig draft without editing
 the project, changing inventory or entering Play. Fixed frame anchors are
-explicit. The existing `rigs.upsert` command saves a reviewed draft, and existing
-mechanism/Play controls can then move its joints. Direct session-only Play entry
-from a proposal and a proposal authoring UI remain open.
+explicit. Play settings now offers explicit assembly/fixed-part review, session-only
+Try and separate undoable Save. Automation exposes `mechanisms.tryProposal` and
+`mechanisms.saveProposal` through the same bounded review. Whole-system controls
+operate the private session rig; the source stays unchanged until Save. The scoped
+setup design review is finishing its hierarchy/label/content corrections.
 
 ## Source review
 
@@ -160,6 +162,15 @@ arrangement. Its 720° / −125.66 LDU result establishes ideal coupling and sou
 isolation, not collision-clear guide travel. Corrected mounting and physical
 travel acceptance remain in progress.
 
+Until the physical contact path is accepted, the pinned aligned 18940/18942 guide
+on a prismatic mount refuses both Play modes before proxy/world allocation:
+“This rack guide cannot move safely in Play yet. You can still preview its movement
+in Build.” Error details include `contactStatus: "unsupported"` and
+`feature: "18940-guided-rack"`. Read-only proposals retain their ideal rig with
+the same warning; saving and mathematical Build preview remain available.
+This refusal is temporary and does not replace the forward/reverse, load,
+back-drive or mobile-carrier acceptance requirements.
+
 ## Bounds and verification
 
 Analysis accepts at most 2,048 selected occurrences, 8,192 features/stud points,
@@ -171,6 +182,6 @@ and offline caches; the analysis module is lazy-loaded. No new runtime asset or
 dependency is added.
 
 See [verification](VERIFICATION.md#reviewed-mechanical-proposals-3-october-2026)
-for the exact test and rendered scope. A broader automatic Technic authoring UI,
-further rack guides, collision policy, closed linkages and other actuators remain
+for the exact test and rendered scope. Broader automatic Technic authoring,
+further rack guides, completed contact acceptance, spatial linkages and other actuators remain
 in the [motion roadmap](PLAY-MOTION-ROADMAP.md).

@@ -112,6 +112,11 @@ world, ground and camera settings but must not specify its own rig IDs. The
 same moving geometry and collision budgets apply, so a mathematically valid
 proposal can still be refused by physical Play. Changes to the authored revision
 end the session; exit restores the editor view and does not save a rig.
+The pinned aligned 18940/18942 prismatic rack guide currently refuses both
+physical Play modes before proxy allocation. Error details report
+`contactStatus: "unsupported"` and `feature: "18940-guided-rack"`; its proposal
+and mathematical Build preview remain available. This temporary contact limit
+does not certify working rack travel.
 `mechanisms.saveProposal(proposalRequest)` repeats the review checks and executes
 `rigs.upsert` with the supplied `expectedRevision`. It never saves a transient
 pose. A stale draft, authored ownership conflict, unresolved connection or selected

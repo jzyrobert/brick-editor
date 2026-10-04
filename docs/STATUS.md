@@ -1,5 +1,29 @@
 # Implementation status
 
+## Mechanism entry and moving-render diagnostics — 4 October 2026
+
+Reviewed mechanical proposals can now enter a private Kinematic or Dynamic Play
+session without installing authored rigs. Explicit Save uses undoable
+`rigs.upsert`; Try→Exit retains the reviewed motor settings and original source
+revision. Import/restore during analysis invalidates the draft through the
+editor's monotonic revision. Source, native backup and inventory preservation
+are covered by focused unit/browser checks. The fresh scoped Impeccable review
+requires one setup hierarchy/label/content correction batch; its verdict remains
+pending. See [implementation evidence](reviews/MECHANICAL-PROPOSAL-ENTRY.md).
+
+The pinned aligned 18940/18942 rack guide now refuses Play before proxy/world
+allocation, with a plain explanation and structured unsupported-contact details.
+The proposal, authored source and mathematical Build preview remain available.
+This temporary refusal does not deliver working rack motion; source-faithful
+housing/rack contact, load, back-drive and mobile-carrier acceptance remain open.
+
+A reusable production-browser witness measures the two-spur overview's moving
+geometry, draw calls, collected heap, entry and tick costs on desktop and mobile
+profiles. All four slices preserve source and drive both 8:24 relations. Geometry
+and memory remain modest, while 35–78 ms sampled ticks exceed a 60 Hz budget
+under current shared-VM load. These are SwiftShader/emulated-device measurements.
+See [resource evidence](PLAY-CONTACT-COSTS.md#production-moving-render-resource-witness).
+
 Generated instruction trial plans, pictures, booklets and logs are kept locally.
 Only written findings, maintained tools and automated tests are versioned; see
 the [artifact policy](reports/instruction-generation/README.md#local-artifacts).
@@ -72,7 +96,7 @@ M0/M1 demonstrate the architecture and 200-part workflow, but the complete risk-
 - **M3 inventory:** verified composites/decomposition; historical invalid-combination data beyond curated coverage; inventory override undo under future structural regrouping; all optional Wanted List price/quantity fields; fixture packs for printed/left/right variants; human-authorized BrickLink destination upload test (**not performed**). No purchases, uploads, credentials or accounts were used.
 - **M4:** connector families beyond studs, side studs, jumpers and door hinges (clips and bars, brick hinges and hinge plates, Technic pins and axles, side anti-studs and brackets; LDCad shadow data only with its own licence review); texture rendering beyond the official `!TEXMAP` images (embedded `!DATA` images, gloss maps, texture mapping over part references) and offline packs; instruction callouts/arrows/exploded offsets, assembly drafts; remaining exploration acceptance, advanced rig authoring and larger collision fixtures.
 - **M5:** implemented items are listed under "Motors, dynamic physics and automatic doors" below. Moving-platform support and dynamic driver seats are now implemented with bounded transfer and exit checks (see the later checkpoint). Remaining: PL-03 evidence on real phone hardware and broader platform/seat compatibility.
-- **M6:** a first optional dynamic slice is implemented (rigid assemblies, motorised joints, suspension vehicles, pushing). Remaining: clutch/breaking behaviour, compound-rig and arbitrary-frame authoring UI, direct proposal review/entry UI and automatic non-door rig entry (reviewed read-only mechanical API drafts are implemented), advanced assembly planning, inventory-constrained generation and separately scoped collaboration.
+- **M6:** a first optional dynamic slice is implemented (rigid assemblies, motorised joints, suspension vehicles, pushing). Remaining: clutch/breaking behaviour, compound-rig and arbitrary-frame authoring UI, the scoped proposal setup finish review and broader automatic non-door rig entry (source-bound reviewed Try/Save is implemented), advanced assembly planning, inventory-constrained generation and separately scoped collaboration.
 
 The user explicitly reprioritized working Play ahead of the unfinished P0 gates. Basic exploration now includes Rapier capsule walking, gravity/jump/steps/slopes, safe fly transitions, first-person and sphere-swept third-person cameras, an original rigid-joint toy figure with Minecraft-style limb animation, desktop pointer-lock mouse look, fixed 60 Hz ticks with render interpolation and editor-state isolation. Hinge/vehicle previews and explicit undoable pose application now have browser evidence; broader PL compatibility remains unverified; no complete P0 release is claimed.
 

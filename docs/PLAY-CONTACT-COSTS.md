@@ -1,5 +1,56 @@
 # Mechanical contact cost probe (4 October 2026)
 
+## Production moving-render resource witness
+
+At `af71078`, `scripts/benchmark-play-moving.ts` measures two original CC0 spur
+assemblies in the production browser, using the actual whole-system controls and
+overview. Build this worktree, serve it on a private port, then run:
+
+```sh
+BRICK_BENCH_URL=http://127.0.0.1:4397/ FORCE_COLOR=0 npx tsx scripts/benchmark-play-moving.ts > .local/moving-browser-resources.jsonl
+```
+
+The witness uses 26 pinned official part occurrences, nine groups, two motors,
+20 moving members and 16,260 compiled moving collision triangles. Both 8:24
+relations advance without a blocked report. Source query and normal LDraw export
+remain exact after leaving each session. Every run has a fresh browser context;
+the script records source hashes at entry/exit, renderer budgets, all frame
+samples, poses, CPU and load. Chromium uses SwiftShader on the shared four-core
+ARM Neoverse-N1 VM. Load is 8.52–12.36 during these samples. The mobile profile is
+390×844 at DPR 3; desktop is 1440×1000 at DPR 1. These are emulated dimensions,
+not physical phone performance.
+
+Each session warms 30 fixed ticks and samples twelve one-tick rendered frames.
+Tick timing includes the production Play adapter; drawing submission is the
+renderer diagnostic. The interval includes the tick and waiting for a newly
+submitted frame. Play is manually stepped, so these intervals do not establish
+sustained realtime catch-up behavior or a hardware frame rate.
+
+| Profile / physics | Entry ms | Median tick ms | Median draw submission ms | Median tick + drawn-frame interval ms | Collected heap in Play MiB |
+| ----------------- | -------: | -------------: | ------------------------: | ------------------------------------: | -------------------------: |
+| Desktop kinematic |    3,835 |           58.2 |                       2.1 |                                  66.2 |                       38.8 |
+| Desktop Dynamic   |    3,237 |           52.8 |                       2.5 |                                  60.3 |                       39.2 |
+| Mobile kinematic  |    2,534 |           34.7 |                       1.5 |                                  41.9 |                       38.8 |
+| Mobile Dynamic    |    3,990 |           77.8 |                       3.7 |                                  87.7 |                       39.1 |
+
+All four slices submit **78 draw calls and 22,904 rendered triangles** per sampled
+frame. The renderer reports seven variants, 6,584 prototype triangles and 26
+materialized dynamic occurrence handles; that last count includes the anchored
+members of the active rig. Static batches are empty during this small mechanism
+view. The moving triangle and renderer resource caps are comfortably respected.
+Collected JavaScript heap is 12.1–12.3 MiB before import, 27.8 MiB after load and
+38.4–38.5 MiB after exit. These snapshots exclude GPU buffers and native/WASM
+memory and do not measure peak usage or establish absence of leaks over long
+replay. Lazy engine and geometry caches remain loaded after exit.
+
+The bottleneck remains physics rather than submitted geometry. These samples
+exceed a 60 Hz tick budget under current load; they are neither a speed comparison
+with the lower-load Node tables below nor accepted phone frame-budget evidence.
+Private output: `.local/moving-browser-resources.jsonl`; all four slices and the
+final unchanged-source-hash check pass. The owned preview and browser are stopped.
+
+## Earlier contact-only investigation
+
 Read-only investigation of the contact-agent implementation before integration.
 Measurements are from Node 22.14 on the shared four-core ARM Neoverse-N1 VM.
 Load fell from roughly 4 to 0.6–1.5 during the focused runs. They exclude drawing,

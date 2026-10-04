@@ -1,5 +1,38 @@
 # Verification — 27 September 2026
 
+## Proposal entry, rack refusal and moving-render resources — 4 October 2026
+
+The proposal-entry child verifies **19 focused unit cases** and **eight
+production-browser cases**, including both physics modes and all six required
+viewports. A production-provider race test confirms replacement with an incoming
+equal revision still increments the editor revision and refuses pending analysis
+before renderer access. Native `project.json`, inventory, normal export and
+queries stay exact during unsaved Try; posed export remains explicit and Save is
+undoable. See [scoped evidence](reviews/MECHANICAL-PROPOSAL-ENTRY.md).
+The fresh Impeccable reviewer requests three setup-flow fixes; final design
+acceptance is pending that batch and its verdict.
+
+The narrow source-bound rack refusal child passes **52 focused regressions**,
+including eleven new unsupported-contact/source/resource/lifecycle checks.
+Integration retains the existing single dynamic event queue and delays its
+allocation until source preflight passes. The parent focused four-file run passes
+**26 tests in 17.25 seconds** (`.local/proposal-rack-integration-units.log`).
+Desired rack geometry, forward/reverse, load, back-drive and mobile-carrier tests
+are retained and still unaccepted. No contact exclusion or geometry relaxation
+is introduced by the refusal.
+
+At `af71078`, the production build passes (Vite: 63 seconds). The read-only
+`scripts/benchmark-play-moving.ts` witness passes all four desktop/mobile and
+Kinematic/Dynamic slices plus its final identical-source-hash assertion.
+Both motors advance; renderer budgets, draw calls, moving collision triangles,
+collected JavaScript heap and twelve fixed-tick rendered-frame samples per slice
+are recorded. The 26-part scene draws 22,904 triangles in 78 calls; sampled ticks
+are 34.7–77.8 ms under shared-VM load 8.52–12.36. This fills the moving-render
+resource measurement gap and does not establish a phone or 60 Hz budget.
+See [full method and limits](PLAY-CONTACT-COSTS.md#production-moving-render-resource-witness).
+Private JSONL: `.local/moving-browser-resources.jsonl`; owned browser/4397 preview
+are stopped. Later runtime/UI changes require their own integration checks.
+
 The original production build, clean install and test suites passed. These results establish the implemented subset, not completion of the entire specification.
 
 Later feature checks are dated below; this opening table records the original release checks.
