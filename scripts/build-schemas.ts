@@ -1386,6 +1386,7 @@ const playMotorRequest = obj(
     jointId: id,
     enabled: { type: "boolean" },
     input: { type: "number", minimum: -1, maximum: 1 },
+    power: { type: "number", minimum: 0, maximum: 1 },
   },
   ["jointId", "enabled"],
 );
@@ -1419,6 +1420,7 @@ const playMotorReport = obj(
     simulation: { enum: ["kinematic-rate", "dynamic-motor"] },
     blockedReason: str,
     input: { type: "number", minimum: -1, maximum: 1 },
+    power: { type: "number", minimum: 0, maximum: 1 },
   },
   ["mode", "target", "enabled", "status", "units", "targetUnits", "simulation"],
 );
