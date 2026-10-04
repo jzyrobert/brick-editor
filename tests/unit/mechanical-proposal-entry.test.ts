@@ -72,3 +72,46 @@ it("cancels an asynchronous proposal entry before allocating a Play world", asyn
   expect(play.getState().active).toBe(false);
   expect(project.motionRigs).toEqual({});
 });
+
+it("refuses a restored same-revision project while preparing with the production cloned source getter", async () => {
+  const editor = new Editor(importLDraw(source));
+  const original = editor.snapshot;
+  const ids = occurrences(original).map((o) => o.id);
+  const renderer = vi.fn(() => undefined);
+  // App's project provider returns a defensive copy, not the snapshot identity.
+  const play = new BrowserPlay(
+    renderer,
+    () => editor.revision,
+    () => {},
+    () => editor.project,
+  );
+  const unsubscribe = editor.subscribe(() => play.sourceChanged());
+  const pending = play.enterProposal({
+    id: "draft",
+    name: "Hinge",
+    expectedRevision: original.revision,
+    frameOccurrenceIds: [ids[0]],
+    occurrenceIds: ids,
+  });
+  const rejection = expect(pending).rejects.toMatchObject({
+    code: "REVISION_CONFLICT",
+  });
+  expect(play.getState()).toMatchObject({ active: false, loading: false });
+  const restored = editor.project;
+  restored.id = "different-restored-build";
+  restored.title = "Restored build";
+  // The incoming file has exactly the old revision. Editor replacement must
+  // advance it even though no active/loading Play session exists to cancel.
+  expect(restored.revision).toBe(original.revision);
+  try {
+    editor.replace(restored);
+    expect(editor.revision).toBe(original.revision + 1);
+    await rejection;
+    expect(renderer).not.toHaveBeenCalled();
+    expect(play.getState()).toMatchObject({ active: false, loading: false });
+    expect(editor.project.motionRigs).toEqual({});
+    expect(editor.snapshot.id).toBe("different-restored-build");
+  } finally {
+    unsubscribe();
+  }
+});

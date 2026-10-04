@@ -72,3 +72,22 @@ Final verified source hashes:
 
 These are child-worktree verification hashes; integration with other parallel
 changes requires the parent to record its final combined hashes and verification.
+
+## Replacement-source race audit
+
+A focused followup passed all three `mechanical-proposal-entry` unit cases,
+including restoring a different project with an incoming revision equal to
+the proposal's source revision while connector preparation is awaiting. The
+production provider is `() => editor.project`, a defensive deep copy. Comparing
+its object identity to the earlier copy would refuse every entry.
+
+The application holds one module-level `const editor`; all import and restore
+paths use `Editor.replace`, which assigns
+`Math.max(currentRevision, incomingRevision) + 1`. During proposal analysis Play
+is not yet active/loading, so its source-change subscription need not change
+the entry epoch. The monotonic editor revision still refuses the replacement
+with `REVISION_CONFLICT`, before even requesting the renderer or allocating a
+Play world. The test uses the production cloned source provider and source-change
+subscription, and asserts the replacement remains authoritative with no saved
+rigs. No source-identity or UI change is needed. This additional accepted case
+brings the focused delivery set from 18 to 19 tests.
