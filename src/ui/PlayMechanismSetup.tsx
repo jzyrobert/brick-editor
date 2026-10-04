@@ -1,5 +1,7 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import type { Editor } from "../core/commands";
+import { partSpec } from "../catalog/extended";
+import { fullSource } from "../catalog/full-library";
 import { occurrences } from "../core/document";
 import { uid } from "../core/types";
 import type { PlayRequest } from "../play/types";
@@ -27,6 +29,7 @@ export function PlayMechanismSetup({
   playRequest,
   review,
   onReview,
+  onClose,
 }: {
   editor: Editor;
   play: BrowserPlay;
@@ -34,6 +37,7 @@ export function PlayMechanismSetup({
   playRequest: PlayRequest;
   review?: MechanismReview;
   onReview: (review: MechanismReview | undefined) => void;
+  onClose: () => void;
 }) {
   const project = useSyncExternalStore(
     editor.subscribe.bind(editor),
@@ -77,10 +81,35 @@ export function PlayMechanismSetup({
     !review!.proposal.unresolved.length &&
     !unassigned.length;
   const labels = useMemo(
-    () => new Map(all.map((o, i) => [o.id, `${o.node.ref} · ${i + 1}`])),
+    () =>
+      new Map(
+        all.map((o) => {
+          const specName = partSpec(o.node.ref)?.name;
+          const header = fullSource(o.node.ref)
+            ?.split("\n", 1)[0]
+            .trim()
+            .replace(/^0\s+/, "");
+          const sourceName =
+            header && !/^(FILE|Name:|Author:|!|~Moved to)/i.test(header)
+              ? header
+              : undefined;
+          const name =
+            specName && specName !== o.node.ref.replace(/\.dat$/i, "")
+              ? specName
+              : (sourceName ?? o.node.ref);
+          const path = JSON.parse(o.id) as string[];
+          return [
+            o.id,
+            {
+              primary: `${name} · Part ${path.join(" / ")}`,
+              filename: o.node.ref,
+            },
+          ];
+        }),
+      ),
     [all],
   );
-  const label = (id: string) => labels.get(id) ?? id;
+  const label = (id: string) => labels.get(id)?.primary ?? id;
   const configured = (): MechanicalProposalRequest => ({
     ...review!.request,
     motors: {},
@@ -112,6 +141,15 @@ export function PlayMechanismSetup({
   };
   return (
     <section className="play-mechanism-setup" aria-label="Set up a mechanism">
+      <button
+        className="wide"
+        onClick={() => {
+          if (busy) play.exit();
+          onClose();
+        }}
+      >
+        {busy ? "Cancel setup" : "Back to Play settings"}
+      </button>
       <h3>Set up a mechanism</h3>
       <p>
         Choose the parts that stay fixed. Review the connections before trying
@@ -165,12 +203,16 @@ export function PlayMechanismSetup({
             ) : (
               selected
                 .filter((o) =>
-                  label(o.id).toLowerCase().includes(search.toLowerCase()),
+                  `${label(o.id)} ${o.node.ref}`
+                    .toLowerCase()
+                    .includes(search.toLowerCase()),
                 )
                 .map((o) => (
                   <label key={o.id}>
                     <input
                       type="checkbox"
+                      aria-label={label(o.id)}
+                      data-occurrence-id={o.id}
                       checked={anchors.includes(o.id)}
                       onChange={(e) =>
                         setAnchors((ids) =>
@@ -180,7 +222,10 @@ export function PlayMechanismSetup({
                         )
                       }
                     />
-                    {label(o.id)}
+                    <span className="play-part-identity">
+                      <span>{label(o.id)}</span>
+                      <small>{o.node.ref}</small>
+                    </span>
                   </label>
                 ))
             )}
@@ -290,7 +335,14 @@ export function PlayMechanismSetup({
                       (j) => j.kind === "revolute" || j.kind === "prismatic",
                     )
                     .map((j) => (
-                      <option key={j.id} value={j.id}>
+                      <option
+                        key={j.id}
+                        value={j.id}
+                        data-occurrence-id={review.proposal.drivers[j.id]}
+                        title={
+                          labels.get(review.proposal.drivers[j.id])?.filename
+                        }
+                      >
                         {label(review.proposal.drivers[j.id])} ·{" "}
                         {j.kind === "prismatic" ? "Slide" : "Rotate"}
                       </option>

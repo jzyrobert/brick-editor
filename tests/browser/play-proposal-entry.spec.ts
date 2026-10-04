@@ -169,13 +169,37 @@ for (const [width, height] of [
         return api.query();
       }, source);
       await openMenuTab(page, "Play", "Mechanisms");
+      await expect(
+        page.getByRole("button", { name: "Enter Play", exact: true }),
+      ).toBeVisible();
+      await page
+        .getByRole("button", { name: "Set up a mechanism", exact: true })
+        .click();
+      await expect(
+        page.getByRole("button", { name: "Enter Play", exact: true }),
+      ).toHaveCount(0);
+      await expect(
+        page.getByText("Preview authored hinges and planar vehicles.", {
+          exact: false,
+        }),
+      ).toHaveCount(0);
+      await expect(
+        page.getByText("Open the “Door & vehicle” template", { exact: false }),
+      ).toHaveCount(0);
       // <section> carries its accessible label without a redundant explicit role.
       const surface = page.locator(".play-mechanism-setup");
       await expect(surface).toBeVisible();
-      for (const label of ["3701.dat · 1", "3701.dat · 2", "3700.dat · 11"])
-        await surface
-          .getByRole("checkbox", { name: label, exact: true })
-          .check();
+      for (const i of [0, 1, 10]) {
+        const checkbox = surface.getByRole("checkbox").nth(i);
+        await expect(checkbox).toHaveAttribute(
+          "data-occurrence-id",
+          before.occurrences[i].id,
+        );
+        await expect(checkbox).toHaveAccessibleName(
+          /^Technic Brick .* · Part n\d+$/,
+        );
+        await checkbox.check();
+      }
       await surface
         .getByRole("button", { name: "Review connections", exact: true })
         .click();
@@ -186,7 +210,21 @@ for (const [width, height] of [
       ).toBeVisible();
       await surface
         .getByLabel("Proposal motor", { exact: true })
-        .selectOption({ label: "3705.dat · 3 · Rotate" });
+        .selectOption("joint-0");
+      const inputOption = surface
+        .getByLabel("Proposal motor", { exact: true })
+        .locator("option[value=joint-0]");
+      await expect(inputOption).toHaveText(
+        /^Technic Axle\s+4 · Part n\d+ · Rotate$/,
+      );
+      await expect(inputOption).toHaveAttribute(
+        "data-occurrence-id",
+        before.occurrences[2].id,
+      );
+      await expect(inputOption).toHaveAttribute("title", "3705.dat");
+      await expect(
+        page.getByRole("button", { name: "Enter Play", exact: true }),
+      ).toHaveCount(0);
       await surface
         .getByRole("button", { name: "Try in Play", exact: true })
         .scrollIntoViewIfNeeded();
@@ -251,6 +289,15 @@ for (const [width, height] of [
         expect(saved).toHaveLength(1);
         expect(saved[0].joints[0].motor?.target).toBe(60);
       }
+      await surface
+        .getByRole("button", { name: "Back to Play settings", exact: true })
+        .click();
+      await expect(
+        page.getByRole("button", { name: "Enter Play", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Set up a mechanism", exact: true }),
+      ).toBeVisible();
     } finally {
       await context.close();
     }

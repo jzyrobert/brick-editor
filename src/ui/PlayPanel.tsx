@@ -112,6 +112,7 @@ export function PlayPanel({
     };
   }, [state.active]);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(false);
   const [mechanismReview, setMechanismReview] = useState<MechanismReview>();
   const [rigId, setRigId] = useState("");
   const [mechanismMode, setMechanismMode] = useState<
@@ -720,23 +721,25 @@ export function PlayPanel({
   if (!state.active)
     return (
       <>
-        <div className="play-entry">
-          <div>
-            <strong>Ready to explore?</strong>
-            <p>Walk around at minifigure scale.</p>
+        {!setupOpen && (
+          <div className="play-entry">
+            <div>
+              <strong>Ready to explore?</strong>
+              <p>Walk around at minifigure scale.</p>
+            </div>
+            <div className="play-entry-actions">
+              {enterPlay}
+              <button
+                className="play-entry-settings"
+                aria-label="Play settings"
+                aria-expanded={settingsOpen}
+                onClick={() => setSettingsOpen((open) => !open)}
+              >
+                <Icon name="inspector" size={20} />
+              </button>
+            </div>
           </div>
-          <div className="play-entry-actions">
-            {enterPlay}
-            <button
-              className="play-entry-settings"
-              aria-label="Play settings"
-              aria-expanded={settingsOpen}
-              onClick={() => setSettingsOpen((open) => !open)}
-            >
-              <Icon name="inspector" size={20} />
-            </button>
-          </div>
-        </div>
+        )}
         {settingsOpen && (
           <ModeMenu
             menu="Play"
@@ -746,13 +749,19 @@ export function PlayPanel({
               hint: startHint,
               mechanisms: (
                 <>
-                  {mechanismChoice}
-                  {editor && (
+                  {!setupOpen && mechanismChoice}
+                  {editor && !setupOpen && (
+                    <button className="wide" onClick={() => setSetupOpen(true)}>
+                      Set up a mechanism
+                    </button>
+                  )}
+                  {editor && setupOpen && (
                     <PlayMechanismSetup
                       editor={editor}
                       play={play}
                       review={mechanismReview}
                       onReview={setMechanismReview}
+                      onClose={() => setSetupOpen(false)}
                       selection={selection}
                       playRequest={{
                         ground,
@@ -764,7 +773,7 @@ export function PlayPanel({
                       }}
                     />
                   )}
-                  {children}
+                  {!setupOpen && children}
                 </>
               ),
               world: worldSettings,

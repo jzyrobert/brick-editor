@@ -1483,3 +1483,13 @@
   color: var(--secondary);
   font-size: var(--text-body);
 }
+
+.play-part-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.play-part-identity small {
+  color: var(--secondary);
+}

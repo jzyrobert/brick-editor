@@ -91,3 +91,36 @@ Play world. The test uses the production cloned source provider and source-chang
 subscription, and asserts the replacement remains authoritative with no saved
 rigs. No source-identity or UI change is needed. This additional accepted case
 brings the focused delivery set from 18 to 19 tests.
+
+## Reviewer correction batch
+
+The fresh finish reviewer requested three changes: one mechanism entry action
+during setup, readable part identification, and removal of unrelated onboarding.
+One UI batch addresses those findings only. An explicit **Set up a mechanism**
+action opens the workflow; ordinary **Enter Play** is suppressed until **Back to
+Play settings** closes it. The ordinary explorer entry remains unchanged outside
+setup. Legacy authored-hinge, vehicle, template and Build-authoring onboarding
+is absent inside the workflow; actual connection limits and recovery guidance
+remain in its review details and errors.
+
+Fixed-part rows and motor choices show existing catalogue descriptions with
+stable occurrence paths (for example, `Technic Axle 4 · Part n4`). Official parts
+whose complete-catalogue title is not loaded use their already-loaded pinned
+source title. Filenames remain secondary row text or option detail/fallback.
+The original opaque occurrence ID is retained on each choice. No additional
+catalogue download, dependency, native/runtime code or palette change was added.
+
+One production build passed in 49.92 seconds. The final eight-case browser run
+passed in 2.8 minutes, covering both physics modes and all six requested viewports.
+New assertions verify Enter's suppression/restoration, removal of unrelated
+onboarding, readable fixed/motor names, original occurrence IDs and secondary
+filename detail. Source-preserving Try/Save/undo and native/inventory checks
+continue to pass. An initial test expectation incorrectly named the pinned
+`3705.dat` axle as length eight; only that expectation was corrected to the
+actual length-four source title before the clean final run. The bundle remained
+unchanged. All 12 review/playing images were recaptured and opened in one
+confirmation batch; port 4404 stopped afterward. The unchanged native payload
+marker remains confined to the lazy `session-DsovPLM4.js` asset.
+
+The recaptured packet is for the same reviewer's verdict on **only the three
+listed fixes**. It is not a new whole-surface approval or a new polish cycle.

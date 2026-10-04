@@ -95,7 +95,7 @@ solve them with bounded continuation; Dynamic creates real closing native joints
 Unreachable poses and cold ambiguous toggles are refused. See
 [closed-linkage scope](PLAY-LINKAGES.md).
 
-Play → Settings → Mechanisms offers a reviewed setup flow. Choose the assembly
+Play → Settings → Mechanisms → Set up a mechanism offers a reviewed setup flow. Choose the assembly
 (all visible parts or the explicit Build selection) and its fixed parts, then
 inspect the groups, joints, linked outputs and uncertain connections. A selected
 motor has a speed bounded to ±360 degrees/s or LDU/s and an effort of 0.01–1,000
