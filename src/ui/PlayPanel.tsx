@@ -792,6 +792,7 @@ export function PlayPanel({
     (rig) =>
       !!mechanisms[rig.id] &&
       (independentRigIds.has(rig.id) ||
+        Object.keys(mechanisms[rig.id].grippers ?? {}).length > 0 ||
         (rig.vehicle &&
           mechanisms[rig.id].vehicleCollision?.supported !== false)),
   );
