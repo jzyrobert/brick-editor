@@ -1161,3 +1161,16 @@ load-specific. Four production-browser cases preserve source/inventory and posed
 transforms on desktop and phone in both modes. This verifies a bench linkage,
 without claiming calibrated vehicle steering or tire integration. See
 [verification](VERIFICATION.md#twin-loop-steering-acceptance-4-october-2026).
+
+## Corrected housing and native support investigation (4 October 2026)
+
+A new private 900-region construction preserves every positive authored interval
+and restores genuine brace slopes. Its full forward/reverse bearing diagnostic
+reaches both targets, and independent section, exact hull and Float32 lattice
+checks repair identified construction faults. Native hull exports themselves
+recompute QuickHull; direct ray tests verify thin support retained by explicit
+faces despite a flattened export. Collapsed planar/line support must also be
+retained, with native primitive viability checked separately. Full source/native
+coverage, loaded response, mobile carriers and both production modes remain
+unaccepted. This supersedes earlier candidate diagnostics, without removing the
+rack Play refusal. See [verification](VERIFICATION.md#corrected-housing-and-native-support-diagnostics--4-october-2026).

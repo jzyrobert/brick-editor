@@ -1,5 +1,23 @@
 # Verification — 27 September 2026
 
+## Corrected housing and native support diagnostics — 4 October 2026
+
+The parent freezes the new 900-region positive-interval housing construction and
+independently repeats 200 fresh-source section samples plus 101 material/void
+controls. It also checks all 8,060 source vertices against the centered shared
+Float32 lattice: exact local recovery and shared-vertex disagreement both have
+zero failures; maximum part-local displacement is 5.954900129e-6 LDU.
+
+Independent exact binary-rational faces and native ray clipping for two thin
+regions show that explicit native faces retain interior support which automatic
+QuickHull loses. Exported native hull data recomputes QuickHull and therefore
+cannot establish internal shape preservation. Primitive Triangle/Segment checks
+retain two lower-dimensional regions and verify both local contact and offset
+clearance. These are private diagnostics. Full source coverage, native compound
+support, loaded motion and production rack acceptance remain open; the Play
+refusal and desired acceptance tests stay unchanged. See
+[method, measurements and scope](reviews/RACK-CONTACT-ORIGIN-AND-FACTORING.md#positive-interval-construction-and-native-export-caveat).
+
 ## Proposal entry, rack refusal and moving-render resources — 4 October 2026
 
 The proposal-entry child verifies **19 focused unit cases** and **eight

@@ -215,3 +215,58 @@ small area/volume error cannot establish a small boundary-displacement envelope.
 The next construction must preserve every positive interval using shared source
 cut ancestry before coverage approval. No production gate is removed on the
 strength of these sampled checks or the bearing trial.
+
+## Positive-interval construction and native export caveat
+
+The next private construction removes positive width/height cutoffs, rounded cut
+keys and near-end event exclusions. Shared authored affine cuts produce 63,081
+source cells, 2,473 identical-halfspace coalesced cells and **900 convex regions**.
+The independent review confirms the previously omitted strip witness lies in
+this mathematical union and measures both genuine brace slopes against literal
+source faces. These checks repair identified omissions; whole-source coverage
+and the finite boundary envelope are still under review.
+
+The parent's fresh-footprint audit of this frozen candidate passes all 101
+controls and 200 sampled slices. Maximum sampled outside area is 0.002136830
+LDU², pair overlap 5.1883e-7 LDU², and summed-area difference 0.001882054 LDU².
+Its reference retains the explicit boundary-family selection and diagnostic
+seam-weld assumptions above. Candidate SHA-256:
+`68be3f1c17e2b30cb82d09f9ea8a8ae94c1cd64f22cf2bfea1c0fb0b02472414`.
+Private parent evidence: `.local/housing-full-audit-8440312/`.
+
+Quantizing source vertices once onto a shared Float32 lattice avoids different
+rounding at adjacent child boundaries. A child origin chosen at the geometric
+midpoint, clamped into the Sterbenz exact-subtraction interval, recovers all
+**8,060 vertices across 900 regions** exactly; shared vertices have
+zero disagreement. The maximum part-local lattice displacement is
+5.954900129e-6 LDU. This bound excludes source reconstruction, hull topology and
+later body/world transformation rounding.
+
+Native hull export is not a direct read of internal convex topology. The installed
+Rapier bindings recompute a hull for convex `vertices`/`indices` and
+`convexMeshData`; see the
+[upstream implementation](https://raw.githubusercontent.com/dimforge/rapier.js/master/src/geometry/shape.rs).
+For two thin regions (790 and 793), exported data has only four coplanar vertices
+even when explicit faces retain native interior support. The parent's independent
+binary-rational reconstruction finds eight and eleven supporting facets,
+respectively. Direct native rays through their centroids distinguish explicit
+faces from automatic QuickHull: the latter misses the left support by roughly
+3.2e-6 m. Explicit-face ray error is zero for both directions in region 790 and
+at most 6.13e-8 m in region 793, against exact rational ray clipping. These four
+queries are a targeted diagnostic, not a certificate for all native regions.
+Boundary `containsPoint` and cached native mass volume are also insufficient
+alone for deciding whether a very thin region has been preserved.
+
+The full projected Float32 review finds 871 rank-three regions, 26 planar regions
+and three line regions. Exact global binary-rational ownership tests find 46
+lower-dimensional vertices outside every rank-three projected convex hull. The collapsed support cannot be
+deleted as redundant. A targeted parent native Triangle/Segment experiment
+retains the exact vectors for regions 884 and 880, reports the expected zero
+volume, contains their centroids, responds to a 1e-7 m sphere contact and refuses
+that contact at a 1e-4 m offset. This verifies primitive viability only; the full
+projected compound and native motion still require verification. No source
+region is deleted based on a zero mass-volume report. The earlier corrected
+shared-lattice private bearing trial reaches forward **149.99999316°/−78.53984594 LDU** and reverse
+**−15.27886278°/+8.000000715 LDU**. Source/native coverage, loaded back-drive,
+carrier response and both production Play modes remain unaccepted; the temporary
+rack refusal stays in place.
