@@ -536,23 +536,28 @@ export class PlayMechanism {
       const groupSolids = this.contactSolids.some((s) => s.groupId === group.id)
         ? this.contactSolids.filter((s) => s.groupId === group.id)
         : this.stationarySolids.filter((s) => s.groupId === group.id);
-      const shape = reviewed
-        ? new RAPIER.Compound(
-            groupSolids.flatMap((s) =>
-              s.shape instanceof RAPIER.Compound ? s.shape.shapes : [s.shape],
-            ),
-            groupSolids.flatMap((s) =>
-              s.shape instanceof RAPIER.Compound
-                ? s.shape.positions
-                : [{ x: 0, y: 0, z: 0 }],
-            ),
-            groupSolids.flatMap((s) =>
-              s.shape instanceof RAPIER.Compound
-                ? s.shape.rotations
-                : [{ x: 0, y: 0, z: 0, w: 1 }],
-            ),
-          )
-        : new RAPIER.TriMesh(vertices, mesh.indices);
+      // A fixed reviewed housing can share its group with ordinary bearings.
+      // Their exact stationary triangle meshes cannot be children of a native
+      // compound. Keep that fixed group's existing source-surface walking
+      // proxy; moving reviewed groups use their flat convex volume children.
+      const shape =
+        reviewed && !groupSolids.some((s) => s.shape instanceof RAPIER.TriMesh)
+          ? new RAPIER.Compound(
+              groupSolids.flatMap((s) =>
+                s.shape instanceof RAPIER.Compound ? s.shape.shapes : [s.shape],
+              ),
+              groupSolids.flatMap((s) =>
+                s.shape instanceof RAPIER.Compound
+                  ? s.shape.positions
+                  : [{ x: 0, y: 0, z: 0 }],
+              ),
+              groupSolids.flatMap((s) =>
+                s.shape instanceof RAPIER.Compound
+                  ? s.shape.rotations
+                  : [{ x: 0, y: 0, z: 0, w: 1 }],
+              ),
+            )
+          : new RAPIER.TriMesh(vertices, mesh.indices);
       const collider = world.createCollider(new RAPIER.ColliderDesc(shape));
       this.proxies.push({
         id: group.id,
