@@ -1050,10 +1050,17 @@ export class KinematicSession {
       const v = this.rig.vehicle,
         p = this.pose.vehicle;
       if (v && p) {
+        const chassis = this.rig.groups.find((g) => g.id === v.chassisGroup)!;
         const distance = this.throttle * v.maxSpeed * DT,
           steer = (this.steering * v.maxSteerDegrees * Math.PI) / 180,
           turn = (distance / v.wheelbase) * Math.tan(steer),
-          mid = (p.headingDegrees * Math.PI) / 180 + turn / 2;
+          // Vehicle headings remain deltas from rest; travel follows the
+          // actual chassis forward direction even when the model was rotated.
+          restHeading = -Math.atan2(
+            chassis.frame.basis[2],
+            chassis.frame.basis[8],
+          ),
+          mid = restHeading + (p.headingDegrees * Math.PI) / 180 + turn / 2;
         p.position[0] += Math.sin(mid) * distance;
         p.position[2] -= Math.cos(mid) * distance;
         p.headingDegrees += (turn * 180) / Math.PI;

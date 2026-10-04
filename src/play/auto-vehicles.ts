@@ -33,9 +33,20 @@ export const AUTO_VEHICLE_LIMITS = Object.freeze({
  * Radii enclose all compiled source radial vertices, checked in unit tests.
  * Original licensed files and their headers remain in the pinned packs. */
 const FAMILIES = [
-  { rim: "4624", tyre: "3641", offset: 0, seat: 30, radius: 18.001 },
-  { rim: "6014b", tyre: "56890", offset: -6, seat: 33, radius: 30.001 },
+  { rim: "4624", tyre: "3641", offset: 0, radius: 18.001 },
+  { rim: "6014b", tyre: "56890", offset: -6, radius: 30.001 },
+  { rim: "93593", tyre: "50951", offset: 0, radius: 19.001 },
 ] as const;
+// Literal pin placements in the pinned source, not chassis proximity.
+// 2441 carries both axles; 6157 carries the wider 93593 wheel assembly.
+const HOLDERS: Record<
+  string,
+  { axles: number[]; seats: Record<string, number> }
+> = {
+  "4600": { axles: [0], seats: { "4624": 30, "6014b": 33 } },
+  "2441": { axles: [-50, 50], seats: { "4624": 32 } },
+  "6157": { axles: [0], seats: { "93593": 40 } },
+};
 const key = (o: Occurrence) =>
   o.node.ref
     .toLowerCase()
@@ -45,9 +56,9 @@ const key = (o: Occurrence) =>
 const dot = (a: Vec3, b: Vec3) => a.reduce((sum, v, k) => sum + v * b[k], 0);
 const distance = (a: Vec3, b: Vec3) => Math.hypot(...a.map((v, k) => v - b[k]));
 const unit = (v: Vec3) => v.map((n) => n / Math.hypot(...v)) as Vec3;
-const worldX = (transform: Transform, local: Vec3) => {
+const horizontal = (transform: Transform, local: Vec3) => {
   const axis = unit(mv(transform.basis, local));
-  return Math.abs(axis[1]) <= 1e-4 && Math.abs(axis[2]) <= 1e-4;
+  return Math.abs(axis[1]) <= 1e-4;
 };
 const validBox = (b: Bounds | null): b is Bounds =>
   !!b &&
@@ -61,6 +72,7 @@ type Wheel = {
   center: Vec3;
   radius: number;
   side: -1 | 1;
+  axle: string;
 };
 export type AutoVehicle = {
   rigId: string;
@@ -88,7 +100,6 @@ function mountedWheels(
   all: Occurrence[],
   reserved: ReadonlySet<string>,
   bounds: (o: Occurrence) => Bounds | null,
-  authored = false,
 ) {
   const wheels: Wheel[] = [],
     skipped: AutoVehicleSkip[] = [],
@@ -102,7 +113,7 @@ function mountedWheels(
       (o) => FAMILIES.some((f) => f.rim === key(o)) && !reserved.has(o.id),
     ),
     tyres = official.filter((o) => FAMILIES.some((f) => f.tyre === key(o))),
-    holders = official.filter((o) => key(o) === "4600");
+    holders = official.filter((o) => Object.hasOwn(HOLDERS, key(o)));
   if (!rims.length) return { wheels, skipped };
   if (
     rims.length + tyres.length > AUTO_VEHICLE_LIMITS.wheelParts ||
@@ -128,7 +139,11 @@ function mountedWheels(
         (t) =>
           key(t) === family.tyre &&
           distance(t.transform.position, expected) <= 0.5 &&
-          dot(axis, unit(mv(t.transform.basis, [0, 0, 1]))) >= 0.9999,
+          // The reviewed zero-offset tyres are symmetric across their hub
+          // plane; official models may reverse their axial orientation.
+          (family.offset === 0
+            ? Math.abs(dot(axis, unit(mv(t.transform.basis, [0, 0, 1]))))
+            : dot(axis, unit(mv(t.transform.basis, [0, 0, 1])))) >= 0.9999,
       );
     const ids = [rim.id, ...matches.map((t) => t.id)];
     if (matches.length !== 1) {
@@ -148,24 +163,19 @@ function mountedWheels(
       });
       continue;
     }
-    if (
-      authored ? Math.abs(axis[1]) > 1e-4 : !worldX(rim.transform, [0, 0, 1])
-    ) {
+    if (!horizontal(rim.transform, [0, 0, 1])) {
       skipped.push({
         occurrenceIds: ids,
-        reason:
-          "Automatic driving currently needs horizontal world-X wheel axles",
+        reason: "Driving needs a horizontal wheel axle",
       });
       continue;
     }
-    const seats: Array<{ holder: Occurrence; side: -1 | 1 }> = [];
+    const seats: Array<{ holder: Occurrence; side: -1 | 1; axle: string }> = [];
     for (const holder of holders) {
-      if (
-        authored
-          ? Math.abs(unit(mv(holder.transform.basis, [1, 0, 0]))[1]) > 1e-4
-          : !worldX(holder.transform, [1, 0, 0])
-      )
-        continue;
+      if (!horizontal(holder.transform, [1, 0, 0])) continue;
+      const mount = HOLDERS[key(holder)],
+        seat = mount.seats[family.rim];
+      if (seat === undefined) continue;
       if (
         Math.abs(dot(axis, unit(mv(holder.transform.basis, [1, 0, 0])))) <
         0.9999
@@ -173,9 +183,10 @@ function mountedWheels(
         continue;
       const inv = inverse(holder.transform),
         p = add(inv.position, mv(inv.basis, rim.transform.position));
-      for (const side of [-1, 1] as const)
-        if (distance(p, [side * family.seat, 5, 0]) <= 0.5)
-          seats.push({ holder, side });
+      for (const z of mount.axles)
+        for (const side of [-1, 1] as const)
+          if (distance(p, [side * seat, 5, z]) <= 0.5)
+            seats.push({ holder, side, axle: `${holder.id}:${z}` });
     }
     if (seats.length !== 1 || reserved.has(seats[0].holder.id)) {
       skipped.push({
@@ -187,7 +198,7 @@ function mountedWheels(
       });
       continue;
     }
-    const box = bounds(authored ? { ...tyre, transform: identity() } : tyre);
+    const box = bounds({ ...tyre, transform: identity() });
     if (!validBox(box)) {
       skipped.push({
         occurrenceIds: ids,
@@ -197,10 +208,7 @@ function mountedWheels(
     }
     const radius = Math.max(
       family.radius,
-      ...(authored ? [0, 1] : [1, 2]).flatMap((k) => [
-        box.max[k] - (authored ? 0 : tyre.transform.position[k]),
-        (authored ? 0 : tyre.transform.position[k]) - box.min[k],
-      ]),
+      ...[0, 1].flatMap((k) => [box.max[k], -box.min[k]]),
     );
     if (radius < 4 || radius > 100) {
       skipped.push({
@@ -220,12 +228,12 @@ function mountedWheels(
   // One tyre and one wheel-pin seat can belong to only one rotating group.
   const used = new Map<string, number>();
   for (const w of wheels)
-    for (const id of [w.tyre.id, `${w.holder.id}:${w.side}`])
+    for (const id of [w.tyre.id, `${w.axle}:${w.side}`])
       used.set(id, (used.get(id) ?? 0) + 1);
   return {
     wheels: wheels.filter((w) => {
       const unique =
-        used.get(w.tyre.id) === 1 && used.get(`${w.holder.id}:${w.side}`) === 1;
+        used.get(w.tyre.id) === 1 && used.get(`${w.axle}:${w.side}`) === 1;
       if (!unique)
         skipped.push({
           occurrenceIds: [w.rim.id, w.tyre.id],
@@ -250,11 +258,11 @@ function wheelbase(wheels: Wheel[]) {
     )
   )
     return "The wheel axles are not parallel";
-  const holders = [...new Set(wheels.map((w) => w.holder.id))];
-  if (wheels.length !== 4 || holders.length !== 2)
+  const axles = [...new Set(wheels.map((w) => w.axle))];
+  if (wheels.length !== 4 || axles.length !== 2)
     return "Automatic driving needs exactly two axles with a wheel on both ends";
-  for (const id of holders) {
-    const pair = wheels.filter((w) => w.holder.id === id);
+  for (const id of axles) {
+    const pair = wheels.filter((w) => w.axle === id);
     if (pair.length !== 2 || pair[0].side === pair[1].side)
       return "Both ends of each axle need a mounted wheel";
     if (
@@ -267,10 +275,10 @@ function wheelbase(wheels: Wheel[]) {
     )
       return "The wheels on an axle do not share a horizontal centerline";
   }
-  const axles = holders
+  const axleFrames = axles
     .map((id) => {
       const pair = wheels
-        .filter((w) => w.holder.id === id)
+        .filter((w) => w.axle === id)
         .map((w) => ({ center: coordinates(w.center) }));
       return {
         x: (pair[0].center[0] + pair[1].center[0]) / 2,
@@ -280,14 +288,14 @@ function wheelbase(wheels: Wheel[]) {
       };
     })
     .sort((a, b) => a.z - b.z);
-  const length = Math.abs(axles[1].z - axles[0].z);
+  const length = Math.abs(axleFrames[1].z - axleFrames[0].z);
   if (
     length < 40 ||
     length > 400 ||
-    axles.some((a) => a.track < 40 || a.track > 160) ||
-    Math.abs(axles[0].x - axles[1].x) > 0.5 ||
-    Math.abs(axles[0].y - axles[1].y) > 0.5 ||
-    Math.abs(axles[0].track - axles[1].track) > 0.5
+    axleFrames.some((a) => a.track < 40 || a.track > 160) ||
+    Math.abs(axleFrames[0].x - axleFrames[1].x) > 0.5 ||
+    Math.abs(axleFrames[0].y - axleFrames[1].y) > 0.5 ||
+    Math.abs(axleFrames[0].track - axleFrames[1].track) > 0.5
   )
     return "The two axles do not form a stable parallel wheelbase";
   const r = wheels.map((w) => w.radius);
@@ -309,35 +317,52 @@ function sourceStudGraph(candidates: Occurrence[]) {
   let connectorCount = 0,
     work = 0;
   for (const o of candidates) {
-    // The four 4600 source studs are reviewed here; its whole connector pack
-    // remains unverified. Wheel pins are checked by the seat geometry above.
+    // These literal 4600/6157/2441 stud subsets are source-reviewed; their
+    // whole connector packs remain unverified. Pins use the seat checks above.
     // 3788 has central stug-2x2 at Y=8 and a four-cell underside at Y=16
     // (INVERTNEXT box5 ±16). Only these source-backed stud interfaces are used.
     const local =
-      key(o) === "4600"
+      key(o) === "4600" || key(o) === "6157"
         ? [-10, 10].flatMap((x) =>
             [-10, 10].map((z) => ({
               kind: "stud" as const,
-              p: [x, 0, z] as Vec3,
+              p: [x, key(o) === "6157" ? 8 : 0, z] as Vec3,
               axis: [0, -1, 0] as Vec3,
             })),
           )
-        : key(o) === "3788"
-          ? [-10, 10].flatMap((x) =>
-              [-10, 10].flatMap((z) => [
-                {
+        : key(o) === "2441"
+          ? [
+              ...[-50, 50].flatMap((z) =>
+                [-10, 10].map((x) => ({
+                  kind: "stud" as const,
+                  p: [x, 0, z] as Vec3,
+                  axis: [0, -1, 0] as Vec3,
+                })),
+              ),
+              ...[-20, 0, 20].flatMap((z) =>
+                [-30, -10, 10, 30].map((x) => ({
                   kind: "stud" as const,
                   p: [x, 8, z] as Vec3,
                   axis: [0, -1, 0] as Vec3,
-                },
-                {
-                  kind: "antistud" as const,
-                  p: [x, 16, z] as Vec3,
-                  axis: [0, 1, 0] as Vec3,
-                },
-              ]),
-            )
-          : null;
+                })),
+              ),
+            ]
+          : key(o) === "3788"
+            ? [-10, 10].flatMap((x) =>
+                [-10, 10].flatMap((z) => [
+                  {
+                    kind: "stud" as const,
+                    p: [x, 8, z] as Vec3,
+                    axis: [0, -1, 0] as Vec3,
+                  },
+                  {
+                    kind: "antistud" as const,
+                    p: [x, 16, z] as Vec3,
+                    axis: [0, 1, 0] as Vec3,
+                  },
+                ]),
+              )
+            : null;
     const list: WorldConnector[] = local
       ? local.map((c) => ({
           ...c,
@@ -421,7 +446,6 @@ export function authoredVehicleWheelSupport(
       members,
       new Set(),
       options.bounds ?? occurrenceBounds(project),
-      true,
     );
   const chassis = rig.groups.find((g) => g.id === rig.vehicle!.chassisGroup);
   if (
@@ -527,7 +551,10 @@ export function authoredVehicleWheelSupport(
     connected.add(id);
     for (const next of graph.edges.get(id) ?? []) stack.push(next);
   }
-  if (connected.size <= 2 || holderIds.some((id) => !connected.has(id)))
+  if (
+    (holderIds.length > 1 && connected.size <= holderIds.length) ||
+    holderIds.some((id) => !connected.has(id))
+  )
     return {
       supported: false,
       reason: "The real wheel holders need a stud-connected chassis",
@@ -573,12 +600,12 @@ export function deriveVehicleRigs(
       if (!validBox(b)) return false;
       return holders.some(
         (h) =>
-          b.min[0] >= h.transform.position[0] - 140 &&
-          b.max[0] <= h.transform.position[0] + 140 &&
+          b.min[0] >= h.transform.position[0] - 260 &&
+          b.max[0] <= h.transform.position[0] + 260 &&
           b.min[1] >= h.transform.position[1] - 320 &&
           b.max[1] <= h.transform.position[1] + 40 &&
-          b.min[2] >= h.transform.position[2] - 200 &&
-          b.max[2] <= h.transform.position[2] + 200,
+          b.min[2] >= h.transform.position[2] - 260 &&
+          b.max[2] <= h.transform.position[2] + 260,
       );
     },
     candidates = all.filter(
@@ -625,7 +652,10 @@ export function deriveVehicleRigs(
       refuse(length);
       continue;
     }
-    if (component.size <= 2) {
+    if (
+      new Set(wheels.map((w) => w.holder.id)).size > 1 &&
+      component.size <= 2
+    ) {
       refuse("The wheel holders need a connected real brick chassis");
       continue;
     }
@@ -645,10 +675,17 @@ export function deriveVehicleRigs(
           component.has(o.id) ||
           (!wheelIds.has(o.id) &&
             o.path.length > 1 &&
-            parents.has(JSON.stringify(o.path.slice(0, -1)))),
+            o.path.some(
+              (_, k) =>
+                k > 0 && parents.has(JSON.stringify(o.path.slice(0, k))),
+            )),
       ),
       members = [...chassis, ...wheels.flatMap((w) => [w.rim, w.tyre])];
-    if (chassis.some((o) => key(o) === "4600" && !component.has(o.id))) {
+    if (
+      chassis.some(
+        (o) => Object.hasOwn(HOLDERS, key(o)) && !component.has(o.id),
+      )
+    ) {
       refuse("A shared chassis submodel contains another wheel assembly");
       continue;
     }
@@ -682,6 +719,21 @@ export function deriveVehicleRigs(
       continue;
     }
     const rigId = AUTO_VEHICLE_PREFIX + holder.id,
+      axis = unit(mv(holder.transform.basis, [1, 0, 0])),
+      // Exact rigid yaw frame: authored LDraw rounded member bases stay intact.
+      yawAxis = unit([axis[0], 0, axis[2]]),
+      forward: Vec3 = [-yawAxis[2], 0, yawAxis[0]],
+      basis: Transform["basis"] = [
+        yawAxis[0],
+        0,
+        forward[0],
+        0,
+        1,
+        0,
+        yawAxis[2],
+        0,
+        forward[2],
+      ],
       origin = wheels
         .reduce((p, w) => add(p, w.center), [0, 0, 0] as Vec3)
         .map((v) => v / 4) as Vec3,
@@ -692,15 +744,17 @@ export function deriveVehicleRigs(
       ): RigidGroup => ({
         id,
         occurrenceIds: parts.map((o) => o.id),
-        frame: { ...identity(), position: [...position] },
+        frame: { basis: [...basis], position: [...position] },
         restTransforms: Object.fromEntries(
           parts.map((o) => [o.id, structuredClone(o.transform)]),
         ),
       }),
       ordered = [...wheels].sort(
-        (a, b) => a.center[2] - b.center[2] || a.center[0] - b.center[0],
+        (a, b) =>
+          dot(a.center, forward) - dot(b.center, forward) ||
+          dot(a.center, yawAxis) - dot(b.center, yawAxis),
       ),
-      front = Math.min(...wheels.map((w) => w.center[2])),
+      front = Math.min(...wheels.map((w) => dot(w.center, forward))),
       rig: MotionRig = {
         schemaVersion: 1,
         id: rigId,
@@ -722,7 +776,7 @@ export function deriveVehicleRigs(
             groupId: `wheel-${i + 1}`,
             axis: [1, 0, 0],
             radius: w.radius,
-            steering: Math.abs(w.center[2] - front) <= 0.5,
+            steering: Math.abs(dot(w.center, forward) - front) <= 0.5,
           })),
         },
       };

@@ -127,7 +127,8 @@ describe("source-backed road vehicles", () => {
       expect(checkAuthoredVehicleSource(p, authored, rotated)).toEqual({
         eligible: true,
       });
-      expect(derive(p, { all: rotated }).vehicles).toHaveLength(0);
+      // Automatic yaw is exercised on a genuinely rotated imported source
+      // below; overriding only occurrence transforms would stale its rest.
     }
   });
   it("encloses the radial vertices of the actual pinned tyres", async () => {
