@@ -187,7 +187,7 @@ function mountedWheels(
       });
       continue;
     }
-    const box = bounds(tyre);
+    const box = bounds(authored ? { ...tyre, transform: identity() } : tyre);
     if (!validBox(box)) {
       skipped.push({
         occurrenceIds: ids,
@@ -197,9 +197,9 @@ function mountedWheels(
     }
     const radius = Math.max(
       family.radius,
-      ...[1, 2].flatMap((k) => [
-        box.max[k] - tyre.transform.position[k],
-        tyre.transform.position[k] - box.min[k],
+      ...(authored ? [0, 1] : [1, 2]).flatMap((k) => [
+        box.max[k] - (authored ? 0 : tyre.transform.position[k]),
+        (authored ? 0 : tyre.transform.position[k]) - box.min[k],
       ]),
     );
     if (radius < 4 || radius > 100) {
@@ -296,6 +296,104 @@ function wheelbase(wheels: Wheel[]) {
   return length;
 }
 
+/** Complete bounded source stud graph, shared by inferred and authored cars. */
+function sourceStudGraph(candidates: Occurrence[]) {
+  if (candidates.length > AUTO_VEHICLE_LIMITS.candidates)
+    return {
+      edges: null,
+      reason: "Too many source parts to check vehicle connections",
+    };
+  const index = new Map<string, WorldConnector[]>(),
+    females: WorldConnector[] = [],
+    edges = new Map<string, Set<string>>();
+  let connectorCount = 0,
+    work = 0;
+  for (const o of candidates) {
+    // The four 4600 source studs are reviewed here; its whole connector pack
+    // remains unverified. Wheel pins are checked by the seat geometry above.
+    // 3788 has central stug-2x2 at Y=8 and a four-cell underside at Y=16
+    // (INVERTNEXT box5 ±16). Only these source-backed stud interfaces are used.
+    const local =
+      key(o) === "4600"
+        ? [-10, 10].flatMap((x) =>
+            [-10, 10].map((z) => ({
+              kind: "stud" as const,
+              p: [x, 0, z] as Vec3,
+              axis: [0, -1, 0] as Vec3,
+            })),
+          )
+        : key(o) === "3788"
+          ? [-10, 10].flatMap((x) =>
+              [-10, 10].flatMap((z) => [
+                {
+                  kind: "stud" as const,
+                  p: [x, 8, z] as Vec3,
+                  axis: [0, -1, 0] as Vec3,
+                },
+                {
+                  kind: "antistud" as const,
+                  p: [x, 16, z] as Vec3,
+                  axis: [0, 1, 0] as Vec3,
+                },
+              ]),
+            )
+          : null;
+    const list: WorldConnector[] = local
+      ? local.map((c) => ({
+          ...c,
+          occurrenceId: o.id,
+          p: add(o.transform.position, mv(o.transform.basis, c.p)),
+          axis: mv(o.transform.basis, c.axis),
+        }))
+      : (worldConnectors(o) ?? []).filter(
+          (c) => c.kind === "stud" || c.kind === "antistud",
+        );
+    connectorCount += list.length;
+    if (connectorCount > AUTO_VEHICLE_LIMITS.connectors) {
+      return {
+        edges: null,
+        reason: "Vehicle stud connections exceed the bounded detection budget",
+      };
+    }
+    if (!list.length) continue;
+    edges.set(o.id, new Set());
+    for (const c of list)
+      if (c.kind === "stud") {
+        const cell = c.p.map(Math.round).join(","),
+          bucket = index.get(cell) ?? [];
+        bucket.push(c);
+        index.set(cell, bucket);
+      } else females.push(c);
+  }
+  for (const c of females) {
+    const mates: WorldConnector[] = [],
+      [x, y, z] = c.p.map(Math.round);
+    for (let dx = -1; dx <= 1; dx++)
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dz = -1; dz <= 1; dz++) {
+          work++;
+          const bucket = index.get(`${x + dx},${y + dy},${z + dz}`) ?? [];
+          work += bucket.length;
+          if (work > AUTO_VEHICLE_LIMITS.connectionWork) {
+            return {
+              edges: null,
+              reason:
+                "Vehicle stud connections exceed the bounded detection budget",
+            };
+          }
+          for (const s of bucket)
+            if (distance(c.p, s.p) <= 0.5 && dot(c.axis, s.axis) <= -0.99)
+              mates.push(s);
+        }
+    for (const mate of mates)
+      if (mate.occurrenceId !== c.occurrenceId) {
+        edges.get(c.occurrenceId)!.add(mate.occurrenceId);
+        edges.get(mate.occurrenceId)!.add(c.occurrenceId);
+      }
+  }
+  return { edges };
+}
+
 /** Lightweight source check for declared vehicle wheel groups. It never
  * grants a cylinder/custom-part exception and does not alter the authored rig.
  * Trains are checked by their separate reviewed rail-part detector. */
@@ -309,9 +407,16 @@ export function authoredVehicleWheelSupport(
 ) {
   if (!rig.vehicle)
     return { supported: false, reason: "This rig has no vehicle wheelbase" };
+  if (rig.groups.length !== 5 || rig.joints.length)
+    return {
+      supported: false,
+      reason:
+        "The wheel driving exception covers only a chassis and four wheel groups",
+    };
   const all = options.all ?? occurrences(project),
     ids = new Set(rig.groups.flatMap((g) => g.occurrenceIds)),
     members = all.filter((o) => ids.has(o.id)),
+    lookup = new Map(members.map((o) => [o.id, o])),
     found = mountedWheels(
       members,
       new Set(),
@@ -321,16 +426,16 @@ export function authoredVehicleWheelSupport(
   const chassis = rig.groups.find((g) => g.id === rig.vehicle!.chassisGroup);
   if (
     !chassis ||
-    chassis.occurrenceIds.some(
-      (id) =>
-        !members.some(
-          (o) =>
-            o.id === id &&
-            o.namespace === "official" &&
-            o.node.kind === "part" &&
-            nearlyPhysical(o.transform),
-        ),
-    )
+    members.length > AUTO_VEHICLE_LIMITS.partsPerVehicle ||
+    chassis.occurrenceIds.some((id) => {
+      const o = lookup.get(id);
+      return (
+        !o ||
+        o.namespace !== "official" ||
+        o.node.kind !== "part" ||
+        !nearlyPhysical(o.transform)
+      );
+    })
   )
     return {
       supported: false,
@@ -360,8 +465,32 @@ export function authoredVehicleWheelSupport(
       reason:
         "Declared wheel groups need exactly their matching source rims and tyres",
     };
+  if (
+    !Number.isFinite(rig.vehicle.wheelbase) ||
+    Math.abs(rig.vehicle.wheelbase - result) > 0.5
+  )
+    return {
+      supported: false,
+      reason: "Declared wheelbase does not match the real axle spacing",
+    };
   for (const spec of rig.vehicle.wheels) {
     const group = rig.groups.find((g) => g.id === spec.groupId)!;
+    const wheel = wheels.find(
+      (w) =>
+        group.occurrenceIds.includes(w.rim.id) &&
+        group.occurrenceIds.includes(w.tyre.id),
+    );
+    if (
+      !wheel ||
+      !Number.isFinite(spec.radius) ||
+      !group.frame.position.every(Number.isFinite) ||
+      distance(group.frame.position, wheel.center) > 0.5 ||
+      Math.abs(spec.radius - wheel.radius) > 0.5
+    )
+      return {
+        supported: false,
+        reason: "Declared wheel pivot or radius does not match its source tyre",
+      };
     if (
       group.occurrenceIds.length !== 2 ||
       !wheels.some(
@@ -385,6 +514,24 @@ export function authoredVehicleWheelSupport(
         reason: "A declared wheel group does not match a real mounted wheel",
       };
   }
+  const graph = sourceStudGraph(
+    members.filter((o) => chassis.occurrenceIds.includes(o.id)),
+  );
+  if (!graph.edges) return { supported: false, reason: graph.reason };
+  const holderIds = [...new Set(wheels.map((w) => w.holder.id))],
+    connected = new Set<string>(),
+    stack = [holderIds[0]];
+  while (stack.length) {
+    const id = stack.pop()!;
+    if (connected.has(id)) continue;
+    connected.add(id);
+    for (const next of graph.edges.get(id) ?? []) stack.push(next);
+  }
+  if (connected.size <= 2 || holderIds.some((id) => !connected.has(id)))
+    return {
+      supported: false,
+      reason: "The real wheel holders need a stud-connected chassis",
+    };
   return { supported: true };
 }
 
@@ -448,96 +595,15 @@ export function deriveVehicleRigs(
     });
     return result;
   }
-  const index = new Map<string, WorldConnector[]>(),
-    females: WorldConnector[] = [],
-    edges = new Map<string, Set<string>>();
-  let connectorCount = 0,
-    work = 0;
-  for (const o of candidates) {
-    // The four 4600 source studs are reviewed here; its whole connector pack
-    // remains unverified. Wheel pins are checked by the seat geometry above.
-    // 3788 has central stug-2x2 at Y=8 and a four-cell underside at Y=16
-    // (INVERTNEXT box5 ±16). Only these source-backed stud interfaces are used.
-    const local =
-      key(o) === "4600"
-        ? [-10, 10].flatMap((x) =>
-            [-10, 10].map((z) => ({
-              kind: "stud" as const,
-              p: [x, 0, z] as Vec3,
-              axis: [0, -1, 0] as Vec3,
-            })),
-          )
-        : key(o) === "3788"
-          ? [-10, 10].flatMap((x) =>
-              [-10, 10].flatMap((z) => [
-                {
-                  kind: "stud" as const,
-                  p: [x, 8, z] as Vec3,
-                  axis: [0, -1, 0] as Vec3,
-                },
-                {
-                  kind: "antistud" as const,
-                  p: [x, 16, z] as Vec3,
-                  axis: [0, 1, 0] as Vec3,
-                },
-              ]),
-            )
-          : null;
-    const list: WorldConnector[] = local
-      ? local.map((c) => ({
-          ...c,
-          occurrenceId: o.id,
-          p: add(o.transform.position, mv(o.transform.basis, c.p)),
-          axis: mv(o.transform.basis, c.axis),
-        }))
-      : (worldConnectors(o) ?? []).filter(
-          (c) => c.kind === "stud" || c.kind === "antistud",
-        );
-    connectorCount += list.length;
-    if (connectorCount > AUTO_VEHICLE_LIMITS.connectors) {
-      result.skipped.push({
-        occurrenceIds: holders.map((o) => o.id),
-        reason: "Vehicle stud connections exceed the bounded detection budget",
-      });
-      return result;
-    }
-    if (!list.length) continue;
-    edges.set(o.id, new Set());
-    for (const c of list)
-      if (c.kind === "stud") {
-        const cell = c.p.map(Math.round).join(","),
-          bucket = index.get(cell) ?? [];
-        bucket.push(c);
-        index.set(cell, bucket);
-      } else females.push(c);
+  const graph = sourceStudGraph(candidates);
+  if (!graph.edges) {
+    result.skipped.push({
+      occurrenceIds: holders.map((o) => o.id),
+      reason: graph.reason,
+    });
+    return result;
   }
-  for (const c of females) {
-    const mates: WorldConnector[] = [],
-      [x, y, z] = c.p.map(Math.round);
-    for (let dx = -1; dx <= 1; dx++)
-      for (let dy = -1; dy <= 1; dy++)
-        for (let dz = -1; dz <= 1; dz++) {
-          work++;
-          const bucket = index.get(`${x + dx},${y + dy},${z + dz}`) ?? [];
-          work += bucket.length;
-          if (work > AUTO_VEHICLE_LIMITS.connectionWork) {
-            result.skipped.push({
-              occurrenceIds: holders.map((o) => o.id),
-              reason:
-                "Vehicle stud connections exceed the bounded detection budget",
-            });
-            return result;
-          }
-          for (const s of bucket)
-            if (distance(c.p, s.p) <= 0.5 && dot(c.axis, s.axis) <= -0.99)
-              mates.push(s);
-        }
-    for (const mate of mates)
-      if (mate.occurrenceId !== c.occurrenceId) {
-        edges.get(c.occurrenceId)!.add(mate.occurrenceId);
-        edges.get(mate.occurrenceId)!.add(c.occurrenceId);
-      }
-  }
+  const edges = graph.edges;
   const seen = new Set<string>();
   for (const holder of holders.sort((a, b) => a.id.localeCompare(b.id))) {
     if (seen.has(holder.id)) continue;

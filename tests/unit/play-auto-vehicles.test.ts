@@ -263,6 +263,41 @@ describe("source-backed road vehicles", () => {
       /Too many wheel parts/,
     );
   });
+  it("checks authored wheel pivots, source radii, axle spacing and holder connections", () => {
+    for (const factory of [carProject, jeepProject]) {
+      const p = factory(),
+        original = Object.values(p.motionRigs)[0];
+      const extra = structuredClone(original);
+      extra.groups.push({
+        ...structuredClone(extra.groups[0]),
+        id: "unreviewed-arm",
+      });
+      expect(checkAuthoredVehicleSource(p, extra).eligible).toBe(false);
+
+      for (const mutate of [
+        (r: typeof original) => {
+          r.groups.find(
+            (g) => g.id === r.vehicle!.wheels[0].groupId,
+          )!.frame.position[0] += 2;
+        },
+        (r: typeof original) => {
+          r.vehicle!.wheels[0].radius += 2;
+        },
+        (r: typeof original) => {
+          r.vehicle!.wheelbase += 2;
+        },
+      ]) {
+        const r = structuredClone(original);
+        mutate(r);
+        expect(checkAuthoredVehicleSource(p, r).eligible).toBe(false);
+      }
+      const all = structuredClone(occurrences(p));
+      for (const o of all)
+        if (!["4600", "4624", "3641", "6014b", "56890"].includes(ref(o)))
+          o.transform.position[1] -= 80;
+      expect(checkAuthoredVehicleSource(p, original, all).eligible).toBe(false);
+    }
+  });
   it("does not grant authored drive permission to cylinders or unmatched wheel groups", () => {
     const p = carProject(),
       rig = structuredClone(Object.values(p.motionRigs)[0]),
