@@ -14,6 +14,7 @@ import {
 } from "../core/types";
 import { add, inverse, mv } from "../core/math";
 import { KinematicSession } from "../mechanisms/kinematic";
+import { unsupportedMechanicalPlayContact } from "../mechanisms/mechanical-play-support";
 import {
   MechanicalContactPolicy,
   mechanicalSolids,
@@ -146,6 +147,17 @@ export function validatePlayMechanismSource(
       "Moving collider budget is 200,000 triangles",
     );
   }
+  const unsupported = unsupportedMechanicalPlayContact(
+    source.project,
+    rig,
+    source.lookup,
+  );
+  ensure(
+    !unsupported,
+    "INVALID_INPUT",
+    unsupported?.reason ?? "Unsupported mechanical contact",
+    unsupported,
+  );
 }
 /** Validate all moving geometry before allocating any Rapier resources. */
 export function validatePlayMechanismSources(

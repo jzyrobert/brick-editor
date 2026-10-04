@@ -10,6 +10,7 @@ import { axisRotation, KinematicSession } from "../mechanisms/kinematic";
 import type { JointSpec, MotionRig, RigDynamics } from "../mechanisms/types";
 import {
   validatePlayMechanismSource,
+  validatePlayMechanismSources,
   type PlayMechanismSource,
 } from "./mechanism";
 import { anchoredGroup } from "../mechanisms/dynamics-settings";
@@ -1638,7 +1639,7 @@ export class PlayDynamicsWorld {
   readonly world: RAPIER.World;
   private rigs = new Map<string, DynamicRig>();
   private player: RAPIER.RigidBody;
-  private events = new RAPIER.EventQueue(false);
+  private events: RAPIER.EventQueue;
   private playerCollider: RAPIER.Collider;
   private kinematic = new Map<
     string,
@@ -1653,8 +1654,10 @@ export class PlayDynamicsWorld {
     revision: number,
     preparedContacts?: Map<string, PreparedMechanicalSource>,
   ) {
+    validatePlayMechanismSources(sources, revision);
     preparedContacts ??= prepareMechanicalSources(sources);
     this.world = new RAPIER.World({ x: 0, y: -DYNAMIC_DEFAULTS.gravity, z: 0 });
+    this.events = new RAPIER.EventQueue(false);
     this.world.timestep = DT;
     try {
       if (staticMesh?.indices.length) {

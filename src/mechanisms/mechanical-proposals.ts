@@ -8,6 +8,7 @@ import {
 } from "../core/types";
 import { KinematicSession, validateRig } from "./kinematic";
 import type { JointSpec, MotionRig, RigidGroup } from "./types";
+import { unsupportedMechanicalPlayContact } from "./mechanical-play-support";
 import {
   mechanicalContactGraph,
   mechanicalInterval,
@@ -636,6 +637,8 @@ export function proposeMechanicalRig(
   if (rig.joints.length) {
     validateRig(project, rig, true, lookup);
     result.rig = rig;
+    const unsupported = unsupportedMechanicalPlayContact(project, rig, lookup);
+    if (unsupported) result.warnings.push(unsupported.reason);
   }
   return result;
 }

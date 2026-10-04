@@ -7,6 +7,7 @@ import { ensure, type Transform, type Vec3 } from "../core/types";
 import { worldMechanicalFeatures } from "../mechanisms/mechanical-contacts";
 import type { MotionRig } from "../mechanisms/types";
 import { anchoredGroup } from "../mechanisms/dynamics-settings";
+import { unsupportedMechanicalPlayContact } from "../mechanisms/mechanical-play-support";
 import type { PlayMechanismSource } from "./mechanism";
 import { METRES_PER_LDU as S, toPhysics } from "./physics-frame";
 import type { CollisionSnapshot } from "./types";
@@ -670,6 +671,17 @@ export function prepareMechanicalSources(sources: PlayMechanismSource[]) {
       vertices <= MECHANICAL_CONTACT_LIMITS.sourceVertices,
       "LIMIT_EXCEEDED",
       "Combined mechanical source vertex budget exhausted",
+    );
+    const unsupported = unsupportedMechanicalPlayContact(
+      source.project,
+      source.project.motionRigs[source.rigId],
+      source.lookup,
+    );
+    ensure(
+      !unsupported,
+      "INVALID_INPUT",
+      unsupported?.reason ?? "Unsupported mechanical contact",
+      unsupported,
     );
     const policy = new MechanicalContactPolicy(
         source.project.motionRigs[source.rigId],
