@@ -1,6 +1,6 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 import { execFileSync } from "node:child_process";
-import { refusePointerLock } from "./helpers/pointer";
+import { checkPhysicalRefusal } from "./helpers/physical-play-policy";
 
 test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 
@@ -28,82 +28,15 @@ encodeNative(project).then(bytes=>process.stdout.write(JSON.stringify(Array.from
   ),
 );
 
-for (const dynamic of [false, true]) {
-  test(`canonical member capture enters an oblique embedded same-name ${dynamic ? "Dynamic" : "Kinematic"} rig without changing source`, async ({
+for (const dynamic of [false, true])
+  test(`an oblique project part named like an official gear cannot borrow physical motor power (${dynamic ? "Dynamic" : "Kinematic"})`, async ({
     page,
   }) => {
-    const errors: string[] = [];
-    page.on("pageerror", (e) => errors.push(e.message));
-    await refusePointerLock(page);
-    await page.goto("/?automation=1");
-    await page.waitForFunction(() => !!window.brickEditor);
-    const result = await page.evaluate(
-      async ({ bytes, dynamic }) => {
-        const api = window.brickEditor!;
-        await api.project.import({ format: "native", bytes });
-        await api.ready({ strict: true });
-        const before = await api.query(),
-          source = await api.project.export({ format: "ldraw" }),
-          rigs = await api.mechanisms.list();
-        const inventory = await api.inventory.preview({
-          expectedRevision: before.revision,
-          scope: { kind: "all" },
-          format: "bricklink-wanted-xml",
-          acceptUnknownColors: true,
-          acceptDerivedMappings: true,
-          errorPolicy: "export-resolved",
-        });
-        await api.play.enter({
-          rigIds: ["door"],
-          ...(dynamic ? { dynamicRigIds: ["door"] } : {}),
-          position: [700, -20, 700],
-          realtime: false,
-          autoDoors: false,
-          trains: false,
-        });
-        const rest = await api.play.snapshot();
-        await api.play.stepTicks(90);
-        const moved = await api.play.snapshot();
-        await api.play.exit();
-        const after = await api.query(),
-          afterSource = await api.project.export({ format: "ldraw" }),
-          afterInventory = await api.inventory.preview({
-            expectedRevision: after.revision,
-            scope: { kind: "all" },
-            format: "bricklink-wanted-xml",
-            acceptUnknownColors: true,
-            acceptDerivedMappings: true,
-            errorPolicy: "export-resolved",
-          });
-        return {
-          before,
-          after,
-          source: Array.from(source.bytes),
-          afterSource: Array.from(afterSource.bytes),
-          rigs,
-          afterRigs: await api.mechanisms.list(),
-          inventory,
-          afterInventory,
-          rest,
-          moved,
-        };
-      },
-      { bytes: fixture, dynamic },
+    test.setTimeout(120000);
+    await checkPhysicalRefusal(
+      page,
+      { bytes: fixture, rigId: "door" },
+      /supported motor part/,
+      dynamic,
     );
-    expect(result.after).toEqual(result.before);
-    expect(result.afterSource).toEqual(result.source);
-    expect(result.afterRigs).toEqual(result.rigs);
-    expect(result.afterInventory).toEqual(result.inventory);
-    const rest = result.rest.mechanisms!.door,
-      moved = result.moved.mechanisms!.door;
-    expect(moved.pose.jointPositions.hinge).toBeGreaterThan(
-      rest.pose.jointPositions.hinge + 5,
-    );
-    expect(moved.mode).toBe(dynamic ? "dynamic" : "kinematic");
-    expect(errors).toEqual([]);
-    expect(
-      result.before.occurrences.find((o) => o.node.ref === "3648b.dat")
-        ?.namespace,
-    ).toBe("project");
   });
-}
