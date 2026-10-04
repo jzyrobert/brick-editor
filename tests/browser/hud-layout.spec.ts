@@ -419,6 +419,37 @@ for (const viewport of [
     // At rest the train is one chip (status and Go); the rest is a drawer.
     await expect(page.locator(".play-train-drawer")).toHaveCount(0);
     await check("train stopped");
+    // The sample hint gives way to Drag to look after six seconds. Exercise
+    // that real timed state before its own six-second lifetime can expire.
+    await page.getByRole("button", { name: "Start the train" }).tap();
+    // Capture opacity and both rectangles in one browser frame: a slow host
+    // must not turn the assertion into a check after the hint has disappeared.
+    const hintGeometry = await (
+      await page.waitForFunction(
+        () => {
+          const hint = document.querySelector(".play-look-hint"),
+            train = document.querySelector(".play-train");
+          if (!hint || !train || Number(getComputedStyle(hint).opacity) <= 0.5)
+            return false;
+          const h = hint.getBoundingClientRect(),
+            t = train.getBoundingClientRect();
+          return {
+            x: Math.min(h.right, t.right) - Math.max(h.left, t.left),
+            y: Math.min(h.bottom, t.bottom) - Math.max(h.top, t.top),
+          };
+        },
+        undefined,
+        { timeout: 15000 },
+      )
+    ).jsonValue();
+    if (!hintGeometry)
+      throw new Error("The visible look hint was not captured.");
+    expect(
+      Math.min(hintGeometry.x, hintGeometry.y),
+      "train running with the visible timed look hint",
+    ).toBeLessThanOrEqual(1);
+    await check("train running with the timed look hint");
+    await page.getByRole("button", { name: "Stop the train" }).tap();
     const chip = page.locator("button.play-train-chip");
     await chip.tap();
     await expect(chip).toHaveAttribute("aria-expanded", "true");

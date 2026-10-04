@@ -563,6 +563,10 @@
   .play-look-hint {
     top: 30%;
   }
+  /* Keep the delayed look hint below the closed train chip on short screens. */
+  .play-overlay.has-train .play-look-hint {
+    top: calc(var(--play-top) + 116px);
+  }
 }
 /* The build's own Play hint ("Push the crates!"): a short line above the
    crosshair that fades after a few seconds. */
