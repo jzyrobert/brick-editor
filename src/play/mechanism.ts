@@ -1,3 +1,5 @@
+import { PLAY_MEMBER_GEOMETRY_LIMITS } from "./member-geometry";
+import { occurrences } from "../core/document";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import type { PlayVehicleCollisionReport } from "./types";
 import type { VehicleCheck } from "./vehicle-world";
@@ -72,6 +74,8 @@ export type PlayMechanismSource = {
   groups: Record<string, CollisionSnapshot>;
   /** Optional per-occurrence surfaces for local mechanical collision solids. */
   members?: Record<string, CollisionSnapshot>;
+  /** Source-bound canonical surfaces, separate from world-space member meshes. */
+  memberLocals?: Record<string, import("./types").PlayMemberLocalGeometry>;
   /** Optional shared occurrence index of `project` (avoids re-expansion per rig). */
   lookup?: ReadonlyMap<string, Occurrence>;
 };
@@ -147,6 +151,82 @@ export function validatePlayMechanismSource(
       "Moving collider budget is 200,000 triangles",
     );
   }
+  if (source.memberLocals !== undefined) {
+    ensure(
+      source.memberLocals &&
+        typeof source.memberLocals === "object" &&
+        !Array.isArray(source.memberLocals),
+      "INVALID_INPUT",
+      "Canonical moving geometry must include every source member",
+    );
+    const lookup =
+      source.lookup ??
+      new Map(occurrences(source.project).map((o) => [o.id, o]));
+    const ids = rig.groups.flatMap((g) => g.occurrenceIds),
+      memberIds = new Set(ids);
+    ensure(
+      source.members &&
+        Object.keys(source.memberLocals).length === ids.length &&
+        Object.keys(source.memberLocals).every((id) => memberIds.has(id)),
+      "INVALID_INPUT",
+      "Canonical moving geometry must include every source member",
+    );
+    let localVertices = 0,
+      localTriangles = 0;
+    for (const id of ids) {
+      const local = source.memberLocals[id],
+        occurrence = lookup.get(id);
+      ensure(
+        local &&
+          occurrence &&
+          local.revision === revision &&
+          local.occurrenceId === id &&
+          local.namespace === occurrence.namespace &&
+          occurrence.namespace !== "missing" &&
+          Array.isArray(local.frame?.position) &&
+          local.frame.position.length === 3 &&
+          Array.isArray(local.frame?.basis) &&
+          local.frame.basis.length === 9 &&
+          local.frame.position.every(
+            (n, k) => n === occurrence.transform.position[k],
+          ) &&
+          local.frame.basis.every(
+            (n, k) => n === occurrence.transform.basis[k],
+          ) &&
+          !local.unsupported &&
+          local.vertices instanceof Float64Array &&
+          local.indices instanceof Uint32Array &&
+          local.vertices.length > 0 &&
+          local.vertices.length % 3 === 0 &&
+          local.indices.length > 0 &&
+          local.indices.length % 3 === 0 &&
+          local.vertices.every(Number.isFinite) &&
+          local.indices.every((n) => n < local.vertices.length / 3) &&
+          local.vertices.length === source.members![id].vertices.length &&
+          local.indices.length === source.members![id].indices.length &&
+          Array.isArray(local.bounds?.min) &&
+          local.bounds.min.length === 3 &&
+          Array.isArray(local.bounds?.max) &&
+          local.bounds.max.length === 3 &&
+          local.bounds.min.every(Number.isFinite) &&
+          local.bounds.max.every(Number.isFinite) &&
+          local.vertices.every(
+            (n, k) =>
+              n >= local.bounds.min[k % 3] && n <= local.bounds.max[k % 3],
+          ),
+        "INVALID_INPUT",
+        "Canonical moving geometry must match every authored source member and revision",
+      );
+      localVertices += local.vertices.length / 3;
+      localTriangles += local.indices.length / 3;
+      ensure(
+        localVertices <= PLAY_MEMBER_GEOMETRY_LIMITS.vertices &&
+          localTriangles <= PLAY_MEMBER_GEOMETRY_LIMITS.triangles,
+        "LIMIT_EXCEEDED",
+        "Canonical moving geometry exceeds the existing mechanical source budget",
+      );
+    }
+  }
   const unsupported = unsupportedMechanicalPlayContact(
     source.project,
     rig,
@@ -172,7 +252,9 @@ export function validatePlayMechanismSources(
   const rigs = new Set<string>(),
     members = new Set<string>();
   let groups = 0,
-    triangles = 0;
+    triangles = 0,
+    localVertices = 0,
+    localTriangles = 0;
   for (const source of sources) {
     ensure(
       source && typeof source === "object" && !rigs.has(source.rigId),
@@ -181,6 +263,17 @@ export function validatePlayMechanismSources(
     );
     rigs.add(source.rigId);
     validatePlayMechanismSource(source, revision);
+    for (const local of Object.values(source.memberLocals ?? {})) {
+      localVertices += local.vertices.length / 3;
+      localTriangles += local.indices.length / 3;
+      ensure(
+        localVertices <= PLAY_MEMBER_GEOMETRY_LIMITS.vertices &&
+          localTriangles <= PLAY_MEMBER_GEOMETRY_LIMITS.triangles,
+        "LIMIT_EXCEEDED",
+        "Combined canonical moving geometry exceeds the existing mechanical source budget",
+      );
+    }
+
     for (const group of source.project.motionRigs[source.rigId].groups) {
       groups++;
       triangles += source.groups[group.id].indices.length / 3;

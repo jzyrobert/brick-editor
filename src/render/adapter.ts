@@ -1,3 +1,4 @@
+import { PlayMemberGeometryCapture } from "./play-member-geometry";
 import { validateRequest } from "../core/validate-request";
 import { normalizeBfcSource } from "./bfc-source";
 import {
@@ -3852,6 +3853,27 @@ export class SceneAdapter {
       this.collisionProxies.set(ref, proxy);
     }
     return proxy ?? undefined;
+  }
+  private memberGeometry = new PlayMemberGeometryCapture();
+  /** Capture canonical surfaces without rounding an occurrence's world placement. */
+  async playMemberGeometry(ids: readonly string[]) {
+    ensure(
+      !this.transformDragging,
+      "INVALID_INPUT",
+      "Finish or cancel the transform gesture before entering Play",
+    );
+    await this.ready();
+    ensure(
+      this.project,
+      "INVALID_INPUT",
+      "Open a project before entering Play",
+    );
+    return this.memberGeometry.capture(
+      ids,
+      new Map(this.projectOccurrences().map((o) => [o.id, o])),
+      this.handles,
+      this.revision,
+    );
   }
   async playGeometry(selection?: { include?: string[]; exclude?: string[] }) {
     ensure(

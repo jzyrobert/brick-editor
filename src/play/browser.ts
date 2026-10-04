@@ -367,6 +367,23 @@ export class BrowserPlay {
           });
           ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
         }
+      const canonicalIds = rigs
+        .filter(
+          (rig) =>
+            dynamicRigIds.includes(rig.id) ||
+            rig.groups.every((g) => g.occurrenceIds.length <= 512),
+        )
+        .flatMap((rig) => rig.groups.flatMap((g) => g.occurrenceIds));
+      const canonicalMembers =
+        canonicalIds.length && r.playMemberGeometry
+          ? await r.playMemberGeometry(canonicalIds)
+          : undefined;
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      ensure(
+        geometry.revision === this.revision(),
+        "REVISION_CONFLICT",
+        "Project changed while preparing Play",
+      );
       const mechanismSources: PlayMechanismSource[] = [];
       let triangles = 0;
       for (const rig of rigs) {
@@ -413,6 +430,15 @@ export class BrowserPlay {
           rigId: rig.id,
           groups,
           lookup,
+          ...(Object.keys(members).length ===
+            rig.groups.flatMap((g) => g.occurrenceIds).length &&
+          canonicalMembers
+            ? {
+                memberLocals: Object.fromEntries(
+                  Object.keys(members).map((id) => [id, canonicalMembers[id]]),
+                ),
+              }
+            : {}),
           ...(Object.keys(members).length ===
           rig.groups.flatMap((g) => g.occurrenceIds).length
             ? { members }

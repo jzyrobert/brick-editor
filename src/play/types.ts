@@ -1,5 +1,5 @@
 import type { MechanismSnapshot } from "../mechanisms/types";
-import type { Vec3, Basis } from "../core/types";
+import type { Vec3, Basis, Transform, Occurrence } from "../core/types";
 import type { PlayTrainsReport } from "./trains";
 /** Public coordinates are LDraw LDU: up is -Y. Angles are radians. */
 export type PlayLocomotion = "walk" | "fly-noclip";
@@ -16,6 +16,20 @@ export type CollisionSnapshot = {
   bounds: { min: Vec3; max: Vec3 };
   warnings?: string[];
   unsupported?: boolean;
+};
+/** Canonical geometry captured from the actual occurrence's compiled prototype.
+ * Internal session buffers are read-only and may be shared by identical prototypes.
+ * `frame` is the authored part-local → world LDraw transform, never a live pose. */
+export type PlayMemberLocalGeometry = {
+  readonly revision: number;
+  readonly occurrenceId: string;
+  readonly namespace: Occurrence["namespace"];
+  readonly frame: Transform;
+  readonly vertices: Float64Array;
+  readonly indices: Uint32Array;
+  readonly bounds: { min: Vec3; max: Vec3 };
+  readonly unsupported?: boolean;
+  readonly warnings?: string[];
 };
 export const PLAY_CAMERA_DEFAULTS = Object.freeze({
   /** The figure's printed eyes (CHARACTER_PROFILE.eyeHeight). */
