@@ -19,6 +19,8 @@ import {
 } from "../../src/catalog/template-names";
 import { curatedHas } from "../../src/catalog/full-library";
 import { occurrences } from "../../src/core/document";
+import { compose, inverse } from "../../src/core/math";
+import { partsList } from "../../src/inventory/parts-list";
 import { modelHealth } from "../../src/core/health";
 import { KinematicSession, validateRig } from "../../src/mechanisms/kinematic";
 import { deriveDoorRigs } from "../../src/play/auto-doors";
@@ -476,6 +478,10 @@ describe("sample builds", () => {
         project.motionRigs,
         { min: [-340, -200, -340], max: [340, 0, 340] },
       );
+      const original = JSON.stringify(project),
+        inventory = partsList(project, occurrences(project)),
+        crateMesh = sources.find((s) => s.rigId === "crate-3")!.groups.body,
+        rest = project.motionRigs["crate-3"].groups[0].frame;
       const create = (dynamic: boolean, position: Vec3, yaw = 0) =>
         PlaySession.create(
           geometry,
@@ -495,18 +501,51 @@ describe("sample builds", () => {
           const crate = () =>
             session.snapshot().mechanisms!["crate-3"].groupFrames.body.position;
           const before = crate();
+          const lowestSourceY = () => {
+            const frame =
+                session.snapshot().mechanisms!["crate-3"].groupFrames.body,
+              delta = compose(frame, inverse(rest));
+            let lowest = -Infinity;
+            for (let k = 0; k < crateMesh.vertices.length; k += 3)
+              lowest = Math.max(
+                lowest,
+                delta.position[1] +
+                  delta.basis[3] * crateMesh.vertices[k] +
+                  delta.basis[4] * crateMesh.vertices[k + 1] +
+                  delta.basis[5] * crateMesh.vertices[k + 2],
+              );
+            return lowest;
+          };
           // Push it a little way across the plaza (not off its edge).
           session.setInput({ moveZ: 1 });
-          session.stepTicks(40);
+          for (let tick = 0; tick < 40; tick++) {
+            session.stepTicks(1);
+            if (dynamic) {
+              // The frame origin is the centre of the crate's base. Rocking
+              // raises it while a corner stays supported, so check the actual
+              // source envelope against the tile top at Y=-8 instead.
+              expect(lowestSourceY()).toBeGreaterThan(-11);
+              expect(lowestSourceY()).toBeLessThan(-7.5);
+            }
+          }
           const after = crate();
           if (dynamic) {
             expect(session.snapshot().mechanisms!["crate-3"].mode).toBe(
               "dynamic",
             );
             expect(after[2]).toBeLessThan(before[2] - 20);
-            // It slides on the tiles rather than sinking or flying off.
-            expect(Math.abs(after[1] - before[1])).toBeLessThan(3);
+            // After the explorer stops pushing and moves clear, the crate
+            // settles on the same plaza without persistent flight or jitter.
+            session.setInput({ moveZ: 0 });
+            session.teleport({ position: [-240, -8.3, -70] });
+            session.stepTicks(180);
+            expect(lowestSourceY()).toBeCloseTo(-8, 1);
+            const settled =
+              session.snapshot().mechanisms!["crate-3"].dynamics!.bodies.body;
+            expect(Math.hypot(...settled.linearVelocity)).toBeLessThan(0.01);
+            expect(settled.angularSpeed).toBeLessThan(0.01);
           } else expect(after).toEqual(before);
+          expect(JSON.stringify(project)).toBe(original);
         } finally {
           session.dispose();
         }
@@ -518,9 +557,11 @@ describe("sample builds", () => {
         session.stepTicks(90);
         const swing = session.snapshot().mechanisms!.swing;
         expect(Math.abs(swing.pose.jointPositions.pivot)).toBeGreaterThan(3);
+        expect(JSON.stringify(project)).toBe(original);
       } finally {
         session.dispose();
       }
+      expect(partsList(project, occurrences(project))).toEqual(inventory);
     },
   );
 });
