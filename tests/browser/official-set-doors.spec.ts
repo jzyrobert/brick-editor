@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { openMode } from "./helpers/mode";
+import { playSourceState } from "./helpers/play-source-state";
 
 // Doors in an official set opened from the LDraw OMR (docs/PLAY-PHYSICS.md,
 // "Doors in official models"). The network is mocked: `api/omr/21318-1.mpd`
@@ -9,7 +10,7 @@ import { openMode } from "./helpers/mode";
 test.describe.configure({ timeout: 180000 });
 const MODEL = readFileSync("fixtures/ldraw/omr-doors.mpd", "utf8");
 
-test("an official set's doors, panes and shutters open in Play", async ({
+test("an official set's source-seated doors and shutters open while unproven leaves stay static", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -40,6 +41,8 @@ test("an official set's doors, panes and shutters open in Play", async ({
     { timeout: 60000 },
   );
   await openMode(page, "Play");
+  await page.evaluate(() => window.brickEditor!.ready({ strict: true }));
+  const sourceBefore = await playSourceState(page);
   const entered = await page.evaluate(async () => {
     const a = window.brickEditor!;
     await a.ready({ strict: true });
@@ -50,20 +53,11 @@ test("an official set's doors, panes and shutters open in Play", async ({
     });
   });
   const doors = entered.autoDoors!.doors;
-  // Both houses (square and turned with rounded decimals): the ajar door,
-  // two panes and a shutter each, plus the embedded copy of a door.
+  // Both houses (square and turned with rounded decimals) retain their
+  // seated ajar door and source-reviewed shutter bearing. The nearby panes
+  // lack seated sockets, and the embedded copy has no verified source identity.
   expect(doors.map((d) => d.part).sort()).toEqual(
-    [
-      "3582",
-      "3582",
-      "3854",
-      "3854",
-      "3854",
-      "3854",
-      "60623",
-      "60623",
-      "60623",
-    ].sort(),
+    ["3582", "3582", "60623", "60623"].sort(),
   );
   expect(doors.every((d) => d.swing !== "blocked")).toBe(true);
   expect(entered.autoDoors!.skipped).toEqual([
@@ -71,6 +65,17 @@ test("an official set's doors, panes and shutters open in Play", async ({
       part: "60616a",
       reason: "Mirrored doors cannot hinge",
     }),
+    expect.objectContaining({
+      part: "60623",
+      reason:
+        "Embedded door geometry is not verified against the official source",
+    }),
+    ...Array.from({ length: 4 }, () =>
+      expect.objectContaining({
+        part: "3854",
+        reason: "No official holder sockets seat both source hinge pins",
+      }),
+    ),
   ]);
   // Swing a shutter open on its holder.
   const shutter = doors.find((d) => d.part === "3582")!;
@@ -99,5 +104,6 @@ test("an official set's doors, panes and shutters open in Play", async ({
   expect(opened.before).toBe(0);
   expect(opened.after).toBe(opened.target);
   await page.evaluate(() => window.brickEditor!.play.exit());
+  expect(await playSourceState(page)).toEqual(sourceBefore);
   expect(errors).toEqual([]);
 });
