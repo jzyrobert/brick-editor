@@ -1337,3 +1337,38 @@ through an authored frame. An oblique native/walking-mirror containment
 regression verifies the placement; final focused integration passes 47 cases,
 with a fresh production build and both relevant online/offline browser checks.
 See [verification](VERIFICATION.md#centered-collision-children-in-rotated-builds--4-october-2026).
+
+## Independent motor controls and official car mounts (4 October 2026)
+
+Play controls now offer tap/click Forward, Reverse and Brake, a primary Power
+slider and independent motor tabs. Selecting another motor leaves the first
+running; Brake all stops every enabled motor in the current mechanism. Live
+input remains session-only and accumulates beyond an authored 90° preset.
+The API accepts optional 0–1 power, which scales native effort within the
+authored cap. The interface uses the same fraction for rate and power. Zero
+power stops powered drive; native bodies can coast. Pause, focus loss and
+closing controls brake live drive. Advanced preset settings remain folded.
+
+The Controls button opens from the active Play HUD when a usable mechanism
+is available. The whole rig fits into the canvas left clear by the sheet;
+walking controls give way to orbit/zoom while it is open. The original CC0
+Twin motor table adds two physically mounted PF-M cases, five retained shafts
+and three reviewed gear meshes on one connected frame. Its 35 source parts
+and 2,737 moving convex children remain within existing budgets. Every motion
+template now loads its complete-library index before source admission, including
+a fresh first opening and cold offline import.
+
+Automatic cars add real 2441 integrated bases and 6157 wheel-pin plates,
+93593/93595 rims with 50951 tyres, and horizontal rotated chassis. Detection
+still requires exact reviewed seats and a stable connected four-wheel layout.
+One shared temporary ground plane follows compiled source support without
+moving imported parts; actual source floors and foreign obstacles retain
+collision response. Rounded original LDraw placements can export a rigid Play
+pose without normalizing their saved coordinates. Unsupported wheel layouts
+and unmounted passengers remain outside this scope.
+
+Focused runtime and production-browser evidence is recorded in
+[verification](VERIFICATION.md#independent-motor-controls-and-official-car-mounts-4-october-2026),
+with source-level samples and limits in [templates](TEMPLATES.md),
+[the twin sample review](reviews/TWIN-DRIVE-SAMPLE.md) and
+[temporary ground review](reviews/VEHICLE-SESSION-GROUND.md).

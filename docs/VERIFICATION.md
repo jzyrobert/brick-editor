@@ -2016,3 +2016,45 @@ It is a steering linkage acceptance scene, without Ackermann or tire calibration
 The runtime kernels are unchanged by this fixture. The pure seat-point extraction
 has seven separate existing seated-profile, browser-seat and native-seat unit
 checks passing in 7.45 s, and its offline lazy-entry witness above passes.
+
+## Independent motor controls and official car mounts (4 October 2026)
+
+The isolated worktree is `brick-editor-real-mechanics`, branch
+`codex/technic-controls-examples`. These checks use actual pinned geometry,
+ordinary source admission and the app-rendered interface. No motor binding,
+wheel seat, collision allowance or resource cap is bypassed.
+
+- 33 focused unit checks in five files pass with one worker (444.64 s on the
+  shared VM): canonical motion-template sources and chooser entries, complete
+  offline closure, both independent sample drives, real PF-M effort scaling,
+  continuous turn/reversal, braking, preset restoration and source isolation.
+  Quarter power caps native effort at 12.5 against the authored 50; zero removes
+  powered effort. Dynamic zero-power recoil is bounded rather than assumed
+  perfectly frozen. The two-stage sample obstruction allows six simulated
+  seconds to settle and recovers after the foreign blocker is removed.
+- Four production Twin motor table cases pass at 1440×1000 and 360×600, in
+  Kinematic and Dynamic modes. Both motors run independently at different
+  fractions and directions; their signed transmission ratios, selection
+  memory, Brake all and close/overview restoration are checked. Source query,
+  native/LDraw export and full inventory remain exact.
+- Source-mounted official-car unit checks cover 2441/4600/6157 holders,
+  4624/3641, 6014b/56890 and 93593/93595/50951 families; arbitrary horizontal
+  yaw and source-relative driving; disconnected/tilted/unsupported refusal;
+  real obstacle response and inventory/source preservation. The shared-ground
+  owner reports 27 focused walking/native/vehicle checks passing in 54.87 s,
+  including real floors and foreign walls above the derived temporary plane.
+- Root confirmation passes 11 shared-ground and rounded-export checks in two
+  files (32.30 s). The full production build passes (Vite 40.18 s), pinned
+  library validation passes, and the generator reproduces the Twin preview.
+  The Impeccable origin scan reports 15 app-rendered previews with zero missing
+  provenance records.
+- Actual full public 31027 Blue Racer and 30572 Race Car imports pass four
+  production cases on desktop and phone in 59.1 s. The rotated Race Car drives
+  and exports all 68 parts; Blue Racer exports 59 car parts while its eight
+  original cone parts stay static. Source metadata and default ground remain
+  enabled. The separate 6503 car excerpt drives, while the full original with
+  its separately rooted minifigure is an honest obstruction limitation.
+
+Raw logs and captures remain private under `.local/` and `test-results/physical/`
+in the isolated worktrees. Software-WebGL checks do not establish physical-phone
+frame time, tire calibration or actual LEGO motor torque.
