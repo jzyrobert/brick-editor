@@ -7,12 +7,18 @@ import {
 } from "./mechanical-contacts";
 
 export const GUIDED_RACK_PLAY_REFUSAL =
-  "This rack guide cannot move safely in Play yet. You can still preview its movement in Build.";
+  "This rack guide needs matching reviewed geometry before Play can start. Reload its original parts and try again.";
 
-/** A contact limitation of the pinned Play engine, not an authored-rig error.
- * Keep the proposal and KinematicSession available for mathematical preview.
- * Only the reviewed, aligned 18940/18942 guide on a prismatic tree edge is
- * recognized here; unrelated housings and arbitrary sliders are not rejected.
+export const GUIDED_RACK_PROXY_WARNING =
+  "This rack guide uses reviewed simulation geometry in Play. Physical LEGO fit and loads are not certified.";
+
+/** Identify an aligned guide contact that requires source-bound Play geometry.
+ * Callers must check both captured member bindings before admitting this contact;
+ * matching part references alone never grants Play support. The unsupported
+ * descriptor explains an absent binding, not a blanket refusal of bound guides.
+ * Proposals and mathematical preview do not allocate or bind Play geometry.
+ * Only the reviewed 18940/18942 guide on a prismatic tree edge is recognized;
+ * unrelated housings and arbitrary sliders are not rejected.
  */
 export function unsupportedMechanicalPlayContact(
   project: Project,

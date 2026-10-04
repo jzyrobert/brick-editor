@@ -10,6 +10,7 @@ import { rackFixture } from "../../src/mechanisms/rack-fixture";
 import { mechanismFixture } from "../../src/mechanisms/fixtures";
 import {
   GUIDED_RACK_PLAY_REFUSAL,
+  GUIDED_RACK_PROXY_WARNING,
   unsupportedMechanicalPlayContact,
 } from "../../src/mechanisms/mechanical-play-support";
 import { KinematicSession } from "../../src/mechanisms/kinematic";
@@ -21,6 +22,10 @@ import {
   type PlayMechanismSource,
 } from "../../src/play/mechanism";
 import { prepareMechanicalSources } from "../../src/play/mechanical-solids";
+import {
+  loadReviewedMechanicalProxies,
+  reviewedMechanicalMember,
+} from "../../src/play/reviewed-mechanical-proxies";
 import { PlaySession } from "../../src/play/session";
 import { exportLDraw } from "../../src/ldraw/io";
 import { posedLDraw } from "../../src/mechanisms/posed-export";
@@ -58,9 +63,9 @@ const error = (fn: () => unknown) => {
 const definition = (source: PlayMechanismSource) =>
   source.project.motionRigs[source.rigId];
 
-describe("source-bound unsupported rack contacts", () => {
+describe("source-bound reviewed rack contact admission", () => {
   it.each([false, true])(
-    "refuses both Play constructors before allocating proxies (native %s)",
+    "refuses unbound Play constructors before allocating proxies (native %s)",
     (native) => {
       const source = fixture().sources[0],
         before = JSON.stringify(source.project),
@@ -98,7 +103,7 @@ describe("source-bound unsupported rack contacts", () => {
     },
   );
 
-  it("also refuses a mobile carrier and an unmotorized guided slider", () => {
+  it("also requires binding for a mobile carrier and an unmotorized guided slider", () => {
     const source = fixture().sources[0],
       rig = definition(source);
     rig.dynamics = { groups: { frame: { anchored: false } } };
@@ -111,7 +116,7 @@ describe("source-bound unsupported rack contacts", () => {
     expect(JSON.stringify(source.project)).toBe(before);
   });
 
-  it("checks dynamic-world entry before allocation even with a supplied preparation map", () => {
+  it("checks unbound dynamic-world entry before allocation even with a supplied preparation map", () => {
     const source = fixture().sources[0],
       before = JSON.stringify(source.project),
       walking = new RAPIER.World({ x: 0, y: 0, z: 0 });
@@ -133,6 +138,43 @@ describe("source-bound unsupported rack contacts", () => {
     expect(walking.bodies.len()).toBe(0);
     expect(JSON.stringify(source.project)).toBe(before);
   });
+
+  it("admits only the captured source identities with both reviewed guide and rack bindings", async () => {
+    const source = fixture().sources[0],
+      before = JSON.stringify(source.project),
+      contact = unsupportedMechanicalPlayContact(
+        source.project,
+        definition(source),
+        source.lookup,
+      )!;
+    expect(
+      reviewedMechanicalMember(source, contact.guideOccurrenceId),
+    ).toBeUndefined();
+    expect(
+      reviewedMechanicalMember(source, contact.rackOccurrenceId),
+    ).toBeUndefined();
+    await loadReviewedMechanicalProxies([source]);
+    expect(
+      reviewedMechanicalMember(source, contact.guideOccurrenceId)?.childCount,
+    ).toBe(927);
+    expect(
+      reviewedMechanicalMember(source, contact.rackOccurrenceId)?.childCount,
+    ).toBe(1245);
+    expect(() =>
+      validatePlayMechanismSource(source, source.project.revision),
+    ).not.toThrow();
+    const prepared = prepareMechanicalSources([source]).get(source.rigId)!;
+    expect(prepared).toBeDefined();
+    expect(
+      [...prepared.solids, ...prepared.stationary]
+        .filter((s) => s.memberId === contact.guideOccurrenceId)
+        .reduce((n, s) => n + s.childCount, 0),
+    ).toBe(927);
+    expect(() =>
+      validatePlayMechanismSource({ ...source }, source.project.revision),
+    ).toThrow(GUIDED_RACK_PLAY_REFUSAL);
+    expect(JSON.stringify(source.project)).toBe(before);
+  }, 15000);
 
   it("keeps source revision and complete-geometry errors ahead of the contact refusal", () => {
     const source = fixture().sources[0];
@@ -238,7 +280,8 @@ describe("source-bound unsupported rack contacts", () => {
     const { project, proposal } = rackFixture(),
       before = JSON.stringify(project),
       original = exportLDraw(project);
-    expect(proposal.warnings).toContain(GUIDED_RACK_PLAY_REFUSAL);
+    expect(proposal.warnings).toContain(GUIDED_RACK_PROXY_WARNING);
+    expect(proposal.warnings).not.toContain(GUIDED_RACK_PLAY_REFUSAL);
     const session = new KinematicSession(project, "rack-drive"),
       forward = session.setJointPosition("joint-0", 150);
     expect(forward.pose.jointPositions["joint-1"]).toBeCloseTo(
@@ -265,7 +308,7 @@ describe("source-bound unsupported rack contacts", () => {
     expect(JSON.stringify(draftSource)).toBe(draftBefore);
   });
 
-  it("rejects entry without poisoning another live session or its disposal", async () => {
+  it("rejects changed canonical geometry without poisoning another live session or its disposal", async () => {
     const project = mechanismFixture(),
       ordinary = await playSources(project, ["door"]),
       active = await PlaySession.create(
@@ -277,6 +320,20 @@ describe("source-bound unsupported rack contacts", () => {
     const { geometry, sources } = fixture(),
       before = JSON.stringify(sources[0].project),
       tick = active.snapshot().tick;
+    const contact = unsupportedMechanicalPlayContact(
+        sources[0].project,
+        definition(sources[0]),
+        sources[0].lookup,
+      )!,
+      local = sources[0].memberLocals![contact.rackOccurrenceId],
+      vertices = local.vertices.slice(),
+      interior = vertices.findIndex(
+        (n, i) =>
+          n > local.bounds.min[i % 3] + 1 && n < local.bounds.max[i % 3] - 1,
+      );
+    expect(interior).toBeGreaterThanOrEqual(0);
+    vertices[interior] += 0.001;
+    sources[0].memberLocals![contact.rackOccurrenceId] = { ...local, vertices };
     for (const dynamic of [false, true])
       await expect(
         PlaySession.create(
@@ -287,7 +344,7 @@ describe("source-bound unsupported rack contacts", () => {
           },
           sources,
         ),
-      ).rejects.toThrow(GUIDED_RACK_PLAY_REFUSAL);
+      ).rejects.toThrow(/matching reviewed geometry/);
     active.stepTicks(3);
     expect(active.snapshot().tick).toBe(tick + 3);
     expect(active.snapshot().sourceRevision).toBe(project.revision);
