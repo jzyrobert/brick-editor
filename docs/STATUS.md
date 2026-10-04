@@ -1,5 +1,23 @@
 # Implementation status
 
+## Physical admission follow-up — 4 October 2026
+
+The first publication CI caught two implementation gaps: multi-part gravity
+objects were refused despite real stud connections, and source-seated gear hubs
+were missing from the bearing-mouth contact pairs. Gravity admission now checks
+actual stud connectivity inside each compound group; disconnected members remain
+refused. Bearing review admits the actual supporting bore/hub pair inside its
+local hub envelope, preserving gear teeth, unseated hubs and foreign colliders.
+
+The playground now starts with its six connected crate/barrel bodies. Its three
+decorative joints, architectural lamps/sails and the castle drawbridge remain
+static until real hardware interfaces are reviewed. Legacy definitions and all
+source placements round-trip unchanged. CLI and browser fixtures now use actual
+mounted motors, seated doors, stable wheelbases and the two-part manual rack.
+The vehicle obstacle test starts at the real driver stand and retains its stop,
+reverse, capture and source-preservation checks. Publication status and scoped
+results are recorded in [verification](VERIFICATION.md).
+
 ## Physical Play admission and responsive sliders — 4 October 2026
 
 Ordinary Play now checks source-connected hinges, retained shafts and guided

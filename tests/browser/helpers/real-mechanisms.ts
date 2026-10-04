@@ -3,10 +3,12 @@ import type { MotionRig } from "../../../src/mechanisms/types";
 
 /** Original repository-owned arrangements of actual source door/car/motor parts.
  * Fixtures go through ordinary native import and source-connection review. */
-export function realMechanismsFixture(): {
+export function realMechanismsFixture(vehicleZ = -320): {
   bytes: number[];
   rigs: Record<string, MotionRig>;
 } {
+  if (!Number.isFinite(vehicleZ))
+    throw new Error("Vehicle offset must be finite");
   return JSON.parse(
     execFileSync(
       process.execPath,
@@ -20,9 +22,9 @@ import {importLDraw} from './src/ldraw/io';
 import {deriveDoorRigs} from './src/play/auto-doors';
 import {encodeNative} from './src/persistence/native';
 const project=carProject();
-for(const n of project.models[project.rootModelId].nodes) n.transform.position[2]-=320;
+for(const n of project.models[project.rootModelId].nodes) n.transform.position[2]+=${vehicleZ};
 const vehicle=project.motionRigs.car;delete project.motionRigs.car;vehicle.id='vehicle';
-for(const g of vehicle.groups){g.frame.position[2]-=320;for(const t of Object.values(g.restTransforms))t.position[2]-=320;}
+for(const g of vehicle.groups){g.frame.position[2]+=${vehicleZ};for(const t of Object.values(g.restTransforms))t.position[2]+=${vehicleZ};}
 project.motionRigs.vehicle=vehicle;
 const door=importLDraw('1 15 0 -152 0 -1 0 0 0 1 0 0 0 -1 60596.dat\\n1 4 32 -152 -5 -1 0 0 0 1 0 0 0 -1 60616a.dat\\n');
 for(const [i,node] of door.models[door.rootModelId].nodes.entries()){node.id='real-door-'+i;delete node.sourceRecordId;project.models[project.rootModelId].nodes.push(node);}

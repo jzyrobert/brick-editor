@@ -43,11 +43,23 @@ export async function checkPhysicalRefusal(
   await refusePointerLock(page);
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
+  await page.evaluate(async (bytes) => {
+    await window.brickEditor!.project.import({ format: "native", bytes });
+    await window.brickEditor!.ready({ strict: true });
+  }, fixture.bytes);
+  await checkLoadedPhysicalRefusal(page, fixture.rigId, reason, dynamic);
+}
+
+/** Review an already imported sample without changing its source or stored rigs. */
+export async function checkLoadedPhysicalRefusal(
+  page: Page,
+  rigId: string,
+  reason: RegExp,
+  dynamic = false,
+) {
   const result = await page.evaluate(
-    async ({ fixture, dynamic }) => {
+    async ({ rigId, dynamic }) => {
       const api = window.brickEditor!;
-      await api.project.import({ format: "native", bytes: fixture.bytes });
-      await api.ready({ strict: true });
       const document = async () => {
         const query = await api.query();
         return {
@@ -72,8 +84,8 @@ export async function checkPhysicalRefusal(
       const before = await document();
       const rejection = await api.play
         .enter({
-          rigIds: [fixture.rigId],
-          ...(dynamic ? { dynamicRigIds: [fixture.rigId] } : {}),
+          rigIds: [rigId],
+          ...(dynamic ? { dynamicRigIds: [rigId] } : {}),
           autoDoors: false,
           trains: false,
           realtime: false,
@@ -106,7 +118,7 @@ export async function checkPhysicalRefusal(
         staticSnapshot,
       };
     },
-    { fixture, dynamic },
+    { rigId, dynamic },
   );
   expect(result.rejection).not.toBeNull();
   expect(result.rejection!.message).toMatch(reason);

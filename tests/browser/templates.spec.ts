@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { openMenuTab, openMode, showAllTemplates } from "./helpers/mode";
+import { checkLoadedPhysicalRefusal } from "./helpers/physical-play-policy";
 import { refusePointerLock } from "./helpers/pointer";
 
 /** A few-hundred-part build takes several seconds to compile and draw with
@@ -177,7 +178,7 @@ for (const viewport of [
     }
   });
 
-test("the jeep drives from its driver seat and the windmill's sails turn", async ({
+test("the jeep drives from its driver seat and unpowered windmill sails stay static", async ({
   page,
 }) => {
   await refusePointerLock(page);
@@ -227,21 +228,11 @@ test("the jeep drives from its driver seat and the windmill's sails turn", async
 
   await openTemplate(page, "windmill");
   await openMode(page, "Play");
-  const sails = await page.evaluate(async () => {
-    const a = window.brickEditor!;
-    await a.play.enter({
-      rigIds: ["windmill"],
-      position: [0, -8.3, -200],
-      realtime: false,
-      cameraMode: "third-person",
-    });
-    const s = await a.play.stepTicks(60);
-    return s.mechanisms!.windmill;
-  });
-  expect(sails.pose.jointPositions.axle).toBeGreaterThan(25);
-  expect(sails.motors!.axle.status).toBe("running");
-  await page.screenshot({ path: `${shots}windmill-play.png` });
-  await page.evaluate(() => window.brickEditor!.play.exit());
+  await checkLoadedPhysicalRefusal(
+    page,
+    "windmill",
+    /Attach a supported motor part.*powered controls/,
+  );
 });
 
 test("the roadster drives in Play and the house door opens", async ({

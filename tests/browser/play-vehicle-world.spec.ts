@@ -28,7 +28,7 @@ for (const width of [360, 1440])
       const initial = await page.evaluate(() =>
         window.brickEditor!.play.enter({
           rigIds: ["door", "vehicle"],
-          position: [80, -0.3, -200],
+          position: [-90, -0.3, -160],
           realtime: false,
         }),
       );
@@ -113,4 +113,4 @@ for (const width of [360, 1440])
     }
   });
 
-const realFixture = realMechanismsFixture();
+const realFixture = realMechanismsFixture(-200);

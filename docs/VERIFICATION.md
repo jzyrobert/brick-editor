@@ -1,5 +1,43 @@
 # Verification — 27 September 2026
 
+## Physical admission CI follow-up — 4 October 2026
+
+Initial main run [37213302926](https://github.com/jzyrobert/brick-editor/actions/runs/37213302926)
+failed and did not publish: 1,552 of 1,556 unit/integration tests passed; build,
+formatting, Photo and performance jobs passed. Its failures exposed connected
+compound gravity admission, omitted source-seated gear hubs and ordinary Play
+tests still assuming fictional motors/joints. Those fixtures are now replaced
+with actual source hardware or explicitly checked for static, lossless refusal.
+
+Focused follow-up acceptance:
+
+- **29 checks in four source/contact specs** pass in 125.80 s. The original
+  oblique/opposite-axis full-rotation, free-carrier momentum and 3,657/3,917
+  rack hull assertions remain unchanged. New witnesses distinguish seated hub
+  mouths from teeth, unseated hubs and foreign members. Actual motor rotation
+  and closed socket back checks remain intact.
+- **13 physical-admission checks** pass, including connected compound gravity,
+  disconnected-weld and fake-vehicle refusal. The integrated unit rerun passes
+  25 checks; its oblique case timed out under concurrent VM load and passes
+  alone in 25.03 s with the unchanged 30 s test limit.
+- Five focused playground structural/native checks pass in 28.07 s. Its
+  production browser push case passes in 1.1 min: exactly six default Dynamic
+  rigs, over 20 LDU of push, actual lowest source-point support within 3 LDU,
+  at most 0.5 LDU penetration, settled velocities and exact source/inventory.
+- Both actual two-part rack production browser cases pass in 53.3 s, covering
+  manual travel to −60 and reversal to zero, rendered movement, displaced posed
+  export and exact native contents, LDraw and inventory in both physics modes.
+- Five retained production browser checks pass: actual door-over-tile clearance,
+  desktop/360 px vehicle stop/reverse/capture, Jeep driving and explicit
+  windmill/lighthouse missing-motor refusal with exact source preservation.
+  The last two refusal rechecks pass in 1.4 min.
+- The real mounted-motor CLI integration passes, including output ratio and
+  unchanged source. Dynamic settling retains its 1°/2° per second limits;
+  intermediate native movement is tested before completion.
+
+Full CI remains the publication gate; the prior deployed version remains live
+until the complete follow-up run succeeds.
+
 ## Physical-source Play correction — 4 October 2026
 
 Ordinary Play now admits controls only for reviewed actual connections. Motors
