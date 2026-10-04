@@ -20,9 +20,9 @@ import {importLDraw} from './src/ldraw/io';
 import {deriveDoorRigs} from './src/play/auto-doors';
 import {encodeNative} from './src/persistence/native';
 const project=carProject();
-for(const n of project.models[project.rootModelId].nodes) n.transform.position[2]-=200;
+for(const n of project.models[project.rootModelId].nodes) n.transform.position[2]-=320;
 const vehicle=project.motionRigs.car;delete project.motionRigs.car;vehicle.id='vehicle';
-for(const g of vehicle.groups){g.frame.position[2]-=200;for(const t of Object.values(g.restTransforms))t.position[2]-=200;}
+for(const g of vehicle.groups){g.frame.position[2]-=320;for(const t of Object.values(g.restTransforms))t.position[2]-=320;}
 project.motionRigs.vehicle=vehicle;
 const door=importLDraw('1 15 0 -152 0 -1 0 0 0 1 0 0 0 -1 60596.dat\\n1 4 32 -152 -5 -1 0 0 0 1 0 0 0 -1 60616a.dat\\n');
 for(const [i,node] of door.models[door.rootModelId].nodes.entries()){node.id='real-door-'+i;delete node.sourceRecordId;project.models[project.rootModelId].nodes.push(node);}
@@ -58,7 +58,7 @@ import {encodeNative} from './src/persistence/native';
 registerFullLibraryFromDisk();
 const {project,text,proposal}=physicalMotorFixture();
 if(proposal.unresolved.length)throw Error(JSON.stringify(proposal.unresolved));
-if(${withCrate}){const brick=importLDraw('1 14 -120 0 0 1 0 0 0 1 0 0 0 1 3010.dat');const node=brick.models[brick.rootModelId].nodes[0];node.id='physical-crate';delete node.sourceRecordId;project.models[project.rootModelId].nodes.push(node);const o=occurrences(project).find(o=>o.node.id===node.id);project.motionRigs.crate={schemaVersion:1,id:'crate',name:'Loose brick',mode:'kinematic',groups:[{id:'crate',occurrenceIds:[o.id],frame:o.transform,restTransforms:{[o.id]:o.transform}}],joints:[]};}
+if(${withCrate}){const brick=importLDraw('1 14 -120 -24 80 1 0 0 0 1 0 0 0 1 3010.dat');const node=brick.models[brick.rootModelId].nodes[0];node.id='physical-crate';delete node.sourceRecordId;project.models[project.rootModelId].nodes.push(node);const o=occurrences(project).find(o=>o.node.id===node.id);project.motionRigs.crate={schemaVersion:1,id:'crate',name:'Loose brick',mode:'kinematic',dynamics:{groups:{crate:{anchored:false,massKg:1}}},groups:[{id:'crate',occurrenceIds:[o.id],frame:o.transform,restTransforms:{[o.id]:o.transform}}],joints:[]};}
 encodeNative(project).then(bytes=>process.stdout.write(JSON.stringify({text,bytes:Array.from(bytes),rig:proposal.rig})));
 `,
       ],
