@@ -214,6 +214,12 @@
       "limbAnimation": "minecraft-style swing, idle sway, head follow, jump/fall/fly poses",
       "authoringIsolation": true,
       "poseApplication": true,
+      "readyToPlaySamples": [
+        "motor-gears",
+        "rack-drive",
+        "crank-slider",
+        "grab-lift"
+      ],
       "mechanicalProposals": {
         "api": "mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})",
         "pack": "reviewed-mechanics-1; 17 source-bound official part profiles",
@@ -266,7 +272,8 @@
         "mechanicalContacts": {
           "status": "Verified bounded spur and source-bound 18940/18942 rack drives; fixed and rotating mobile assemblies complete travel/reverse with loads and contact response; measured larger-mechanism ticks exceed a 60 Hz budget and physical-phone throughput remains unverified",
           "policy": "Internal contacts remain enabled except rigid welds, declared ideal gear meshes, explicit local revolute bearings, and exact paired reviewed rack floor/cap classes while the entire carrier-relative rack envelope stays aligned; core/end stops, foreign parts and actor contacts retain response",
-          "proxies": "Reviewed 3700/3701/3702 bores and 3647/3648b source-surface compounds; 18940 housing and 18942 rack use complete source-bound lazy native packets with supplied facets and retained lower-rank support; unbound or changed source refuses before native allocation; smooth 60616a doors retain actual body, pin and handle surfaces in five conservative convex covers",
+          "proxies": "Reviewed 3700/3701/3702 bores and 3647/3648b source-surface compounds; 18940 housing and 18942 rack use complete source-bound lazy native packets with supplied facets and retained lower-rank support; unbound or changed source refuses before native allocation; smooth 60616a doors retain actual body, pin and handle surfaces in five conservative convex covers; 3582 shutters retain their actual hinge-spine end relief in three source covers",
+          "shutterAcceptance": "Source-cover opening classification retains only verified travel within existing aggregate contact and sweep caps; both original nested shutters open -60 degrees; real holder and foreign obstacles retain response; exact-rest closing near tangential holder contact can exhaust refinement and remains limited",
           "limits": {
             "convexChildrenAcrossActiveSources": 4096,
             "sourceVerticesAcrossActiveSources": 600000,

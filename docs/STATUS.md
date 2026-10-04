@@ -1,5 +1,25 @@
 # Implementation status
 
+## Ready-to-play motion showcases — 4 October 2026
+
+Four new selectable samples demonstrate the delivered mechanics: **Motor & gears**,
+**Rack drive**, **Crank & slider**, and **Grab & lift**. Find them under
+**Project → New → Show all templates**. They include authored rigs, short Play
+hints, actual rendered previews and generated source MPDs. The last two use
+original custom demonstration pieces; native saves retain their mechanisms.
+Initial hints hide while remote controls are open. Cold offline sample selection
+now precaches both required official geometry and connector manifests.
+
+The first main CI run passed its build, 1,501 unit/integration tests, formatting,
+library validation and nine browser shards. Two browser regressions prompted
+focused follow-up: the playground now measures real source-to-floor support
+instead of a tilting frame origin; source covers and bounded opening classification
+offer the usable shutter swing without changing the original study placement.
+Real holder and foreign-wall collision response remains. Exact-rest shutter
+closing near tangency can still exhaust refinement and is recorded as open work.
+See [verification](VERIFICATION.md#play-showcases-and-publication-checks--4-october-2026)
+and [shutter scope](reviews/SHUTTER-SOURCE-CONTACTS.md).
+
 ## Physics and motion acceptance — 4 October 2026
 
 The bounded motion roadmap is implemented in `codex/physics-motion-investigation`:

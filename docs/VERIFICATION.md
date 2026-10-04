@@ -1,5 +1,41 @@
 # Verification — 27 September 2026
 
+## Play showcases and publication checks — 4 October 2026
+
+The first main run at `8da12e9` passed build, formatting, library validation,
+**211 files / 1,501 tests** (444.28 s) and nine of eleven browser shards.
+[That run](https://github.com/jzyrobert/brick-editor/actions/runs/37201578764)
+identified two reproducible failures: the official-study shutter offered a
+blocked direction, and the playground browser asserted a tilting crate's frame
+height instead of source floor support. Their focused repairs preserve source,
+inventory, real responding obstacles and the existing contact/resource caps.
+
+- Playground correction: actual pinned source bottom and plaza footprint are
+  checked throughout all 40 push ticks, preserving the original >20 LDU push and
+  3 LDU support allowance. The original 16.157 LDU origin rise accompanies valid
+  source clearance; settling, near-zero velocities and exact source/inventory
+  pass. Private production browser passes in 33.6 s.
+- Shutter correction: all actual source vertices/face centroids and native end
+  rays retain the source relief. Both original nested shutters choose the free
+  negative side and reach −60°; a reversed installation opens positively. Real
+  holder obstruction and a foreign 0.1 LDU wall block; removal permits retry.
+  Exact-rest closing near tangent contact can exhaust refinement and remains
+  limited, as [documented](reviews/SHUTTER-SOURCE-CONTACTS.md).
+- Four new sample generators retain their native rigs, inventory and exact
+  generated MPDs. Their actual rendered 320×240 WebP previews are committed.
+  Ten production browser cases pass in 2.3 min: selectable cards, held controls
+  and linked movement on desktop/360×600 phone, six-size chooser layout, and
+  first-ever selection/movement of all four after a fresh offline install.
+- The samples' isolated motion/backdrop checks and unchanged architectural
+  suite pass **24 tests**. The combined release's source-shutter, smooth-door,
+  official-study, motion-sample and backdrop checks pass **27 tests / five
+  files** in 15.98 s.
+- Combined schemas/TypeScript/Vite build passes (36.11 s Vite), full formatting
+  and `git diff --check` pass. Private port 4397 confirms **all 12 release
+  browser cases pass in 2.8 min**, including both original CI failures, every
+  new sample on desktop/phone, six chooser sizes and cold installed-offline
+  operation. The owned preview is stopped.
+
 ## Final physics and motion acceptance — 4 October 2026
 
 Final runtime in `/home/ubuntu/brick-editor-physics-motion`, branch

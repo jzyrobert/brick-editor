@@ -65,6 +65,8 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Play
 
+- [x] Add selectable Motor & gears, Rack drive, Crank & slider and Grab & lift showcases with ready-to-play rigs, generated previews, phone controls and fresh offline sample loading ([samples](docs/TEMPLATES.md#ready-to-play-motion-samples)).
+- [ ] Exact-rest closing of 3582 shutters near tangential holder contact can exhaust the existing refinement budget; source-cover opening and real obstacle response are verified ([scope](docs/reviews/SHUTTER-SOURCE-CONTACTS.md)).
 - [x] Introduce 17 source-bound mechanical profiles, typed contacts and read-only `mechanisms.propose()` drafts for retained shafts, pin arms and ordinary finger hinges with rigid accessories ([scope](docs/PLAY-MECHANICAL-FEATURES.md)). Reviewed spur meshes now become ideal coupled shaft relations.
 - [ ] Extend mechanical profiles and proposals: further rack guides, joint/retainer families and aliases, placement integration. Stud verification does not establish these features ([motion investigation](docs/PLAY-MOTION-ROADMAP.md)).
 - [x] Reviewed proposal entry: source-bound session Try, separate undoable Save and explicit assembly/motor review; the scoped Impeccable reviewer scores its three setup hierarchy/labels/content fixes resolved ([evidence](docs/reviews/MECHANICAL-PROPOSAL-ENTRY.md)).

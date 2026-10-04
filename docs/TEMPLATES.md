@@ -38,8 +38,7 @@ so the reviewed contact and native collider budgets remain bounded.
 
 The motor and rack samples retain the exact reviewed fixture placements and
 mechanical defaults, with colour identifying input and output. The linkage and
-gripper samples are original CC0 demonstration geometry, **not official LEGO
-parts** or shopping recommendations. The native sample projects contain their
+gripper samples use original CC0 custom demonstration pieces. The native sample projects contain their
 authored rigs; normal LDraw exports preserve the source pieces but do not encode
 motors, loop closures or capture zones. Save a `.brickproj` to retain those.
 
