@@ -1,4 +1,8 @@
 import { expect, it } from "vitest";
+import RAPIER from "@dimforge/rapier3d-compat";
+import { Quaternion, Vector3 } from "three";
+import { PlayMechanism } from "../../src/play/mechanism";
+import type { Vec3 } from "../../src/core/types";
 import { movingPlatformFixture } from "../../src/mechanisms/platform-fixture";
 import { playSources } from "../helpers/play-dynamic-source";
 import { PlaySession } from "../../src/play/session";
@@ -191,3 +195,64 @@ it("leaves a turning support while walking, then safely re-enters Walk from Fly"
     play.dispose();
   }
 });
+
+for (const plane of [
+  {
+    name: "translated ground",
+    origin: [0, 0.3, 0] as Vec3,
+    angle: 0,
+    axis: [0, -1, 0] as Vec3,
+    forbidden: -6,
+  },
+  {
+    name: "tilted ground",
+    origin: [0, -2.65, 0] as Vec3,
+    angle: Math.PI / 4,
+    axis: [0, -1, 0] as Vec3,
+    forbidden: -4,
+  },
+  {
+    name: "vertical plane",
+    origin: [3.5, 0, 0] as Vec3,
+    angle: Math.PI / 2,
+    axis: [1, 0, 0] as Vec3,
+    forbidden: 30,
+  },
+])
+  it(`certifies source-bound clearance above ${plane.name} and refuses travel into its solid halfspace`, async () => {
+    await RAPIER.init();
+    const project = movingPlatformFixture("lift"),
+      joint = project.motionRigs.platform.joints[0];
+    joint.limits = [-100, 200];
+    joint.axisA = plane.axis;
+    joint.axisB = [...plane.axis];
+    const original = JSON.stringify(project);
+    const prepared = await playSources(project, ["platform"]);
+    const world = new RAPIER.World({ x: 0, y: 0, z: 0 });
+    const orientation = new Quaternion().setFromAxisAngle(
+      new Vector3(0, 0, 1),
+      plane.angle,
+    );
+    world.createCollider(
+      new RAPIER.ColliderDesc(new RAPIER.HalfSpace({ x: 0, y: 1, z: 0 }))
+        .setTranslation(...plane.origin)
+        .setRotation(orientation),
+    );
+    const mechanism = new PlayMechanism(world, prepared.sources[0], () => ({
+      position: [1000, -100, 1000],
+      walk: false,
+    }));
+    try {
+      const clear = mechanism.setJointPosition("motion", 20);
+      expect(clear.blocked).toBe(false);
+      expect(clear.pose.jointPositions.motion).toBe(20);
+      const blocked = mechanism.setJointPosition("motion", plane.forbidden);
+      expect(blocked.blocked).toBe(true);
+      expect(blocked.blockedReason).toMatch(/included ground/);
+      expect(blocked.pose).toEqual(clear.pose);
+      expect(JSON.stringify(project)).toBe(original);
+    } finally {
+      mechanism.dispose();
+      world.free();
+    }
+  });

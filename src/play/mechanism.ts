@@ -704,6 +704,71 @@ export class PlayMechanism {
                 return false;
               }
             }
+          } else if (collider.shape instanceof RAPIER.HalfSpace) {
+            // The pinned mechanical/HalfSpace contact query reports an inverted
+            // signed distance above a plane. Certify its actual support gap
+            // from every convex/compound boundary point instead. The existing
+            // segment travel bound still encloses intermediate rotation.
+            const shape = collider.shape;
+            const normal = new Vector3(
+              shape.normal.x,
+              shape.normal.y,
+              shape.normal.z,
+            );
+            const orientation = collider.rotation();
+            normal.applyQuaternion(
+              new Quaternion(
+                orientation.x,
+                orientation.y,
+                orientation.z,
+                orientation.w,
+              ),
+            );
+            ensure(
+              normal.lengthSq() > 1e-20,
+              "INVALID_INPUT",
+              "Ground collision needs a finite nonzero plane normal",
+            );
+            normal.normalize();
+            const origin = collider.translation();
+            const plane = new Vector3(origin.x, origin.y, origin.z);
+            const distance = (frame: Transform) => {
+              const local = normal
+                .clone()
+                .applyQuaternion(rotation(frame).invert());
+              const t = physics(frame.position);
+              const offset = normal.dot(new Vector3(t.x, t.y, t.z).sub(plane));
+              let closest = Infinity;
+              for (let n = 0; n < solid.points.length; n += 3) {
+                ensure(
+                  ++this.contactChecks <= MECHANICAL_CONTACT_LIMITS.pairChecks,
+                  "LIMIT_EXCEEDED",
+                  "This mechanism is too complex to check safely. Try fewer moving parts.",
+                  {
+                    limit: "pairChecks",
+                    maximum: MECHANICAL_CONTACT_LIMITS.pairChecks,
+                  },
+                );
+                closest = Math.min(
+                  closest,
+                  offset +
+                    local.x * solid.points[n] +
+                    local.y * solid.points[n + 1] +
+                    local.z * solid.points[n + 2],
+                );
+              }
+              ensure(
+                Number.isFinite(closest),
+                "INVALID_INPUT",
+                "Ground collision needs finite mechanical boundary points",
+              );
+              return closest;
+            };
+            if (blocked(distance(a), distance(b), travel)) {
+              this.worldFailure =
+                "Motion stopped before intersecting included ground. Move clear and retry.";
+              return false;
+            }
           } else {
             ensure(
               this.contactChecks + 2 <= MECHANICAL_CONTACT_LIMITS.pairChecks,
