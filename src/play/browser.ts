@@ -1,3 +1,4 @@
+import { deriveVehicleRigs } from "./auto-vehicles";
 import { requirePhysicalPlay } from "../mechanisms/physical-play";
 import {
   prepareMechanicalProposal,
@@ -311,7 +312,7 @@ export class BrowserPlay {
         if (!derived.doors.length && !derived.skipped.length)
           derived = undefined;
       }
-      const sourceProject =
+      let sourceProject =
         project && derived
           ? {
               ...project,
@@ -351,6 +352,35 @@ export class BrowserPlay {
           bounds: occurrenceBounds(project),
         });
         if (!trains.graph.pieces.length) trains = undefined;
+      }
+      const vehicles = project
+        ? deriveVehicleRigs(project, {
+            all,
+            included: worldProfile
+              ? new Set(worldProfile.includedOccurrenceIds)
+              : undefined,
+            reserved: new Set([
+              ...ids,
+              ...(trains?.occurrenceIds ?? []),
+              ...Object.values(project.motionRigs ?? {}).flatMap((rig) =>
+                rig.groups.flatMap((group) => group.occurrenceIds),
+              ),
+            ]),
+            maxRigs: 32 - rigs.length,
+            maxGroups:
+              128 - rigs.reduce((sum, rig) => sum + rig.groups.length, 0),
+            bounds: occurrenceBounds(project),
+          })
+        : undefined;
+      if (vehicles?.vehicles.length) {
+        rigs.push(...Object.values(vehicles.rigs));
+        ids.push(
+          ...vehicles.vehicles.flatMap((vehicle) => vehicle.occurrenceIds),
+        );
+        sourceProject = {
+          ...sourceProject!,
+          motionRigs: { ...sourceProject!.motionRigs, ...vehicles.rigs },
+        };
       }
       const [{ PlaySession }, geometry] = await Promise.all([
         import("./session"),
@@ -461,7 +491,10 @@ export class BrowserPlay {
       const figureGeometry = await figure;
       ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
       const sessionRequest: PlayRequest = { ...request };
-      if (derived && Object.keys(derived.rigs).length) {
+      if (
+        (derived && Object.keys(derived.rigs).length) ||
+        vehicles?.vehicles.length
+      ) {
         delete sessionRequest.rigId;
         sessionRequest.rigIds = rigs.map((rig) => rig.id);
       }
@@ -502,6 +535,7 @@ export class BrowserPlay {
       this.sessionRigs = {
         ...Object.fromEntries(authored.map((rig) => [rig.id, rig])),
         ...doorRigs,
+        ...vehicles?.rigs,
       };
       this.held = {};
       if (rigs.length || trains?.trains.length)

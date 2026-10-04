@@ -1,3 +1,4 @@
+import { checkAuthoredVehicleSource } from "../play/auto-vehicles";
 import { occurrences } from "../core/document";
 import { add, mv } from "../core/math";
 import {
@@ -41,7 +42,7 @@ export function physicalPlayEligibility(
   )
     return { eligible: true };
   // Vehicles have a separate wheelbase heuristic and need no motor part.
-  if (rig.vehicle) return { eligible: true };
+  if (rig.vehicle) return checkAuthoredVehicleSource(project, rig, all);
   for (const joint of rig.joints) {
     if (!joint.motor) continue;
     if (!joint.motor.binding)
