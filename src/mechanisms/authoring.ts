@@ -512,10 +512,11 @@ export function rigAuthoringRequest(
   ensure(rig, "INVALID_INPUT", "Unknown motion rig");
   validateRig(project, rig);
   ensure(
-    !rig.forceLinks?.length &&
+    !rig.grippers?.length &&
+      !rig.forceLinks?.length &&
       !rig.joints.some((j) => j.angularResistance !== undefined),
     "INVALID_INPUT",
-    "This editor cannot load force links or angular resistance without losing authored data; use Physics settings or edit the full rig definition.",
+    "This editor cannot load grippers, force links or angular resistance without losing authored data; use Physics settings or edit the full rig definition.",
   );
   const identity = {
     id: rig.id,

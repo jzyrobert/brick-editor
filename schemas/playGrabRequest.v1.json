@@ -1,0 +1,43 @@
+{
+  "$id": "playGrabRequest",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "rigId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "gripperId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "rigId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "rigId",
+        "groupId"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "rigId",
+    "gripperId",
+    "target"
+  ],
+  "additionalProperties": false
+}

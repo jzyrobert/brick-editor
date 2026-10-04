@@ -1,7 +1,7 @@
 import type { CameraSpec, Transform, Vec3 } from "../core/types";
 import { add, inverse, mv } from "../core/math";
 import type { MechanismSnapshot, MotionRig } from "../mechanisms/types";
-import type { CollisionSnapshot } from "./types";
+import type { PlayMechanismReport, CollisionSnapshot } from "./types";
 
 export type ViewRect = { x: number; y: number; width: number; height: number };
 export type MechanismViewGeometry = Record<string, Vec3[]>;
@@ -30,6 +30,31 @@ export function mechanismViewGeometry(
   );
 }
 
+/** Extend a selected mechanism only with the loose groups it currently holds.
+ * Cached source corners and live frames remain bounded by native body admission.
+ * Release removes the payload automatically; unrelated loose groups stay out. */
+export function mechanismHeldView(
+  rigId: string,
+  geometries: Record<string, MechanismViewGeometry>,
+  reports: Record<string, PlayMechanismReport>,
+) {
+  const report = reports[rigId],
+    geometry: MechanismViewGeometry = {},
+    groupFrames: Record<string, Transform> = {};
+  const include = (id: string, groupId: string) => {
+    const corners = geometries[id]?.[groupId],
+      frame = reports[id]?.groupFrames[groupId];
+    if (!corners || !frame) return;
+    const key = JSON.stringify([id, groupId]);
+    geometry[key] = corners;
+    groupFrames[key] = frame;
+  };
+  for (const groupId of Object.keys(geometries[rigId] ?? {}))
+    include(rigId, groupId);
+  for (const grip of Object.values(report.grippers ?? {}))
+    if (grip.held) include(grip.held.rigId, grip.held.groupId);
+  return { geometry, groupFrames };
+}
 /** Orbit the complete live rig, including fixed frame and passive outputs.
  * Fit every conservative group corner to the clear frustum at the current pose.
  * The offset centres the rig in the unobscured rectangle. */

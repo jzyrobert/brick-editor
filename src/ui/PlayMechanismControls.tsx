@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { PlayGripperControls } from "./PlayGripperControls";
 import { Icon } from "./icons";
 import type { PlayMechanismReport } from "../play/types";
 import type { BrowserPlay } from "../play/browser";
@@ -257,6 +258,14 @@ export function PlayMechanismControls({
               ))}
             </select>
           </label>
+        )}
+        {dynamic && report.grippers && (
+          <PlayGripperControls
+            play={play}
+            rigId={rig.id}
+            reports={report.grippers}
+            onError={onError}
+          />
         )}
         {joint && (
           <div className="play-joint-control" key={joint.id}>

@@ -7,6 +7,8 @@ export declare const playRequest: Validator;
 export declare const playInput: Validator;
 export declare const playJointTarget: Validator;
 export declare const playMotorRequest: Validator;
+export declare const playGrabRequest: Validator;
+export declare const playGripRequest: Validator;
 export declare const playTrainThrottle: Validator;
 export declare const playTrainSelect: Validator;
 export declare const playTrainRide: Validator;

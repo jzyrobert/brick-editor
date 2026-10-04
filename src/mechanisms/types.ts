@@ -53,6 +53,15 @@ export type VehicleSpec = {
   maxSteerDegrees: number;
   maxSpeed: number;
 };
+/** Explicit grasp point for reversible native Play attachments. No automatic
+ * shape/insertion recognition or persistence of held payloads is implied. */
+export type GripperSpec = {
+  id: string;
+  groupId: string;
+  anchor: Vec3;
+  captureRadiusLdu: number;
+  maxPayloadMassKg: number;
+};
 /**
  * Optional settings used only when Play simulates this rig dynamically. The
  * authored rig stays kinematic data; Play chooses the simulation per session.
@@ -94,6 +103,8 @@ export type MotionRig = {
   loopClosures?: PlanarLoopClosure[];
   /** Physical springs/ropes between local attachment points, Dynamic only. */
   forceLinks?: ForceLink[];
+  /** Authored capture zones; held state and native fixed joints are session-only. */
+  grippers?: GripperSpec[];
   vehicle?: VehicleSpec;
   dynamics?: RigDynamics;
 };

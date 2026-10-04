@@ -206,6 +206,46 @@
           "const": "1.0"
         },
         "method": {
+          "const": "play.grab"
+        },
+        "input": {
+          "$ref": "playGrabRequest"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
+          "const": "play.release"
+        },
+        "input": {
+          "$ref": "playGripRequest"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "play.setTrainThrottle"
         },
         "input": {

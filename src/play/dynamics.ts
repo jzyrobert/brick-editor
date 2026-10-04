@@ -1,4 +1,5 @@
 import { Quaternion, Vector3 } from "three";
+import { NativeGrippers, type NativeGripRig } from "./grippers";
 import type { SeatedPlacement } from "./seated-profile";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { effectiveMotor, validateMotorInput } from "./motor-input";
@@ -511,6 +512,24 @@ export class DynamicRig {
     }
     if (this.rig.vehicle) this.createVehicle();
     this.syncMirrors();
+  }
+  /** Native-session attachment candidates. Authored constraints stay untouched. */
+  gripSource(): NativeGripRig {
+    const constrained = new Set([
+      ...this.rig.joints.flatMap((j) => [j.bodyA, j.bodyB]),
+      ...(this.rig.loopClosures ?? []).flatMap((j) => [j.bodyA, j.bodyB]),
+      ...(this.rig.forceLinks ?? []).flatMap((j) => [j.bodyA, j.bodyB]),
+    ]);
+    return {
+      rigId: this.rigId,
+      definitions: this.rig.grippers ?? [],
+      groups: [...this.bodies.values()].map((g) => ({
+        groupId: g.groupId,
+        body: g.body,
+        rest: g.rest,
+        loose: !g.anchored && !constrained.has(g.groupId) && !this.rig.vehicle,
+      })),
+    };
   }
   private createJoint(spec: JointSpec) {
     const a = this.bodies.get(spec.bodyA)!,
@@ -1638,6 +1657,7 @@ function mv3(a: Transform["basis"], b: Transform["basis"]): Transform["basis"] {
 export class PlayDynamicsWorld {
   readonly world: RAPIER.World;
   private rigs = new Map<string, DynamicRig>();
+  readonly grippers: NativeGrippers;
   private player: RAPIER.RigidBody;
   private events: RAPIER.EventQueue;
   private playerCollider: RAPIER.Collider;
@@ -1707,6 +1727,10 @@ export class PlayDynamicsWorld {
           for (const [handle, body] of rig.mirrorBodies())
             this.mirrorBodies.set(handle, body);
         });
+      this.grippers = new NativeGrippers(
+        this.world,
+        [...this.rigs.values()].map((rig) => rig.gripSource()),
+      );
     } catch (error) {
       for (const rig of this.rigs.values()) rig.dispose();
       this.events.free();
@@ -1795,6 +1819,7 @@ export class PlayDynamicsWorld {
       filterIntersectionPair: () => true,
     });
     for (const id of this.rigIds()) this.rigs.get(id)!.afterStep();
+    this.grippers.invalidate();
   }
   supportFrame(handle: number) {
     for (const rig of this.rigs.values()) {
@@ -1837,6 +1862,7 @@ export class PlayDynamicsWorld {
     return this.mirrorBodies.has(handle);
   }
   dispose() {
+    this.grippers.dispose();
     for (const rig of this.rigs.values()) rig.dispose();
     this.rigs.clear();
     this.kinematic.clear();

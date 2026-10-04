@@ -71,6 +71,8 @@ import {
   type PlayInput,
   type PlayJointTargetRequest,
   type PlayMotorRequest,
+  type PlayGrabRequest,
+  type PlayGripRequest,
   type PlayAutoDoorSwing,
   type PlayLocomotion,
   type PlayRequest,
@@ -2335,6 +2337,38 @@ export class PlaySession {
     );
     return this.snapshot();
   }
+  grab(input: PlayGrabRequest) {
+    this.alive();
+    ensure(
+      input && typeof input === "object" && !Array.isArray(input),
+      "INVALID_INPUT",
+      "Grab request must be an object",
+    );
+    keys(input, ["rigId", "gripperId", "target"]);
+    ensure(
+      input.target &&
+        typeof input.target === "object" &&
+        !Array.isArray(input.target),
+      "INVALID_INPUT",
+      "Grab requires a target group",
+    );
+    keys(input.target, ["rigId", "groupId"]);
+    ensure(this.dynamics, "INVALID_INPUT", "Grabbing requires Dynamic Play");
+    this.dynamics.grippers.grab(input);
+    return this.snapshot();
+  }
+  release(input: PlayGripRequest) {
+    this.alive();
+    ensure(
+      input && typeof input === "object" && !Array.isArray(input),
+      "INVALID_INPUT",
+      "Release request must be an object",
+    );
+    keys(input, ["rigId", "gripperId"]);
+    ensure(this.dynamics, "INVALID_INPUT", "Releasing requires Dynamic Play");
+    this.dynamics.grippers.release(input);
+    return this.snapshot();
+  }
   setMechanismJoint(id: string, value: number, rigId?: string) {
     this.alive();
     this.mechanismTarget(rigId).setJointPosition(id, value);
@@ -2633,9 +2667,16 @@ export class PlaySession {
         ...[...this.mechanisms].map(
           ([id, mechanism]) => [id, mechanism.snapshot()] as const,
         ),
-        ...(this.dynamics?.rigIds() ?? []).map(
-          (id) => [id, this.dynamics!.rig(id)!.snapshot()] as const,
-        ),
+        ...(this.dynamics?.rigIds() ?? []).map((id) => {
+          const grippers = this.dynamics!.grippers.report(id);
+          return [
+            id,
+            {
+              ...this.dynamics!.rig(id)!.snapshot(),
+              ...(Object.keys(grippers).length ? { grippers } : {}),
+            },
+          ] as const;
+        }),
       ].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
     );
     const rigCount = Object.keys(mechanisms).length;

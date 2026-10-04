@@ -12,6 +12,7 @@ import type { SceneAdapter } from "../render/adapter";
 import type { Project } from "../core/types";
 import {
   mechanismViewGeometry,
+  mechanismHeldView,
   mechanismOverviewCamera,
   mechanismUsableRect,
   type MechanismViewGeometry,
@@ -30,6 +31,8 @@ import type {
   PlaySpawnRequest,
   PlaySeatRequest,
   PlayMotorRequest,
+  PlayGrabRequest,
+  PlayGripRequest,
   PlayPosedModel,
   AvatarPose,
 } from "./types";
@@ -1075,6 +1078,28 @@ export class BrowserPlay {
     this.emit();
     return report;
   }
+  grab(request: PlayGrabRequest) {
+    this.assertMutable();
+    const session = this.current();
+    ensure(!this.state.paused, "INVALID_INPUT", "Resume Play to grab a part");
+    const report = session.grab(request);
+    this.draw();
+    this.emit();
+    return report;
+  }
+  release(request: PlayGripRequest) {
+    this.assertMutable();
+    const session = this.current();
+    ensure(
+      !this.state.paused,
+      "INVALID_INPUT",
+      "Resume Play to release a part",
+    );
+    const report = session.release(request);
+    this.draw();
+    this.emit();
+    return report;
+  }
   /**
    * Static posed LDraw snapshot of every active mechanism (including derived
    * doors and dynamic bodies). Rest-pose export and the project are untouched.
@@ -1104,7 +1129,16 @@ export class BrowserPlay {
         ...(report.trains?.trains.map((t) => t.id) ?? []),
       ].sort(),
       posedOccurrenceIds: posed.posedOccurrenceIds,
-      warnings: posed.warnings,
+      warnings: [
+        ...posed.warnings,
+        ...(mechanisms.some((mechanism) =>
+          Object.values(mechanism.grippers ?? {}).some((grip) => grip.held),
+        )
+          ? [
+              "Held parts export at their current pose; temporary Play attachment joints are not included.",
+            ]
+          : []),
+      ],
     };
   }
   setMechanismJoint(id: string, value: number, rigId?: string) {
@@ -1182,9 +1216,14 @@ export class BrowserPlay {
     const width = captureAspect
       ? height * captureAspect
       : Math.max(1, canvas.clientWidth);
+    const heldView = mechanismHeldView(
+      this.overview.rigId,
+      this.mechanismViews,
+      s.mechanisms!,
+    );
     return mechanismOverviewCamera(
-      this.mechanismViews[this.overview.rigId],
-      rig,
+      heldView.geometry,
+      heldView,
       { width, height },
       mechanismUsableRect(
         width,

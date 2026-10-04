@@ -1,0 +1,22 @@
+{
+  "$id": "playGripRequest",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "rigId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "gripperId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    }
+  },
+  "required": [
+    "rigId",
+    "gripperId"
+  ],
+  "additionalProperties": false
+}

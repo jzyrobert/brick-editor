@@ -1165,6 +1165,107 @@
           ],
           "additionalProperties": false
         },
+        "grippers": {
+          "type": "object",
+          "maxProperties": 10000,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "groupId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "anchorWorldLdu": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3
+              },
+              "state": {
+                "enum": [
+                  "empty",
+                  "ready",
+                  "holding"
+                ]
+              },
+              "candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "rigId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1024
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1024
+                    },
+                    "massKg": {
+                      "type": "number"
+                    },
+                    "distanceLdu": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "rigId",
+                    "groupId",
+                    "massKg",
+                    "distanceLdu"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 64
+              },
+              "held": {
+                "type": "object",
+                "properties": {
+                  "rigId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "groupId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "massKg": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "rigId",
+                  "groupId",
+                  "massKg"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "groupId",
+              "anchorWorldLdu",
+              "state",
+              "candidates"
+            ],
+            "additionalProperties": false
+          },
+          "propertyNames": {
+            "not": {
+              "enum": [
+                "__proto__",
+                "constructor",
+                "prototype"
+              ]
+            }
+          }
+        },
         "groupFrames": {
           "type": "object",
           "maxProperties": 10000,
@@ -1704,6 +1805,107 @@
               "bodies"
             ],
             "additionalProperties": false
+          },
+          "grippers": {
+            "type": "object",
+            "maxProperties": 10000,
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "anchorWorldLdu": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 3,
+                  "minItems": 3
+                },
+                "state": {
+                  "enum": [
+                    "empty",
+                    "ready",
+                    "holding"
+                  ]
+                },
+                "candidates": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "rigId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      "groupId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      "massKg": {
+                        "type": "number"
+                      },
+                      "distanceLdu": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "rigId",
+                      "groupId",
+                      "massKg",
+                      "distanceLdu"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 64
+                },
+                "held": {
+                  "type": "object",
+                  "properties": {
+                    "rigId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1024
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1024
+                    },
+                    "massKg": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "rigId",
+                    "groupId",
+                    "massKg"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "groupId",
+                "anchorWorldLdu",
+                "state",
+                "candidates"
+              ],
+              "additionalProperties": false
+            },
+            "propertyNames": {
+              "not": {
+                "enum": [
+                  "__proto__",
+                  "constructor",
+                  "prototype"
+                ]
+              }
+            }
           },
           "groupFrames": {
             "type": "object",

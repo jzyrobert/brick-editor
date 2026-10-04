@@ -20,6 +20,8 @@ import type {
   PlayLocomotion,
   PlayTeleportRequest,
   PlayMotorRequest,
+  PlayGrabRequest,
+  PlayGripRequest,
 } from "../play/types";
 import { type Editor } from "../core/commands";
 import { type CameraSpec, type Command, ensure, uid } from "../core/types";
@@ -324,6 +326,18 @@ export function createAPI(
       setMotor: async (input: PlayMotorRequest) => {
         validateRequest("playMotorRequest", input);
         return player().setMotor(input);
+      },
+      grab: async (input: PlayGrabRequest) => {
+        validateRequest("playGrabRequest", input);
+        const report = player().grab(input);
+        validate("playSnapshot", report);
+        return report;
+      },
+      release: async (input: PlayGripRequest) => {
+        validateRequest("playGripRequest", input);
+        const report = player().release(input);
+        validate("playSnapshot", report);
+        return report;
       },
       /** Train throttle −1..1 of full speed; 0 coasts to a stop. */
       setTrainThrottle: async (input: {

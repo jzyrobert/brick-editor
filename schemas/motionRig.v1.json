@@ -556,6 +556,53 @@
       },
       "maxItems": 100
     },
+    "grippers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "groupId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "anchor": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": -2048,
+              "maximum": 2048
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "captureRadiusLdu": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 32
+          },
+          "maxPayloadMassKg": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 1000
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "anchor",
+          "captureRadiusLdu",
+          "maxPayloadMassKg"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 8
+    },
     "loopClosures": {
       "type": "array",
       "items": {

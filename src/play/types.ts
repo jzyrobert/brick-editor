@@ -230,6 +230,22 @@ export type PlayMechanismReport = MechanismSnapshot & {
   vehicleCollision?: PlayVehicleCollisionReport;
   motors?: Record<string, PlayMotorReport>;
   dynamics?: PlayDynamicsReport;
+  grippers?: Record<string, PlayGripperReport>;
+};
+/** Native-session actions never write held state into the authored project. */
+export type PlayGripTarget = { rigId: string; groupId: string };
+export type PlayGripRequest = { rigId: string; gripperId: string };
+export type PlayGrabRequest = PlayGripRequest & { target: PlayGripTarget };
+export type PlayGripCandidate = PlayGripTarget & {
+  massKg: number;
+  distanceLdu: number;
+};
+export type PlayGripperReport = {
+  groupId: string;
+  anchorWorldLdu: Vec3;
+  state: "empty" | "ready" | "holding";
+  candidates: PlayGripCandidate[];
+  held?: PlayGripTarget & { massKg: number };
 };
 /** Static posed snapshot; the authored project is never changed. */
 export type PlayPosedModel = {

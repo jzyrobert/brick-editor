@@ -125,6 +125,16 @@ it("rejects overlapping captures and entry/exit mutations, but rolls back a fail
   expect(() => h.play.exit()).toThrow("capture");
   expect(() => h.play.setInput({ moveZ: 1 })).toThrow("capture");
   expect(() =>
+    h.play.grab({
+      rigId: "door",
+      gripperId: "claw",
+      target: { rigId: "vehicle", groupId: "body" },
+    }),
+  ).toThrow("capture");
+  expect(() => h.play.release({ rigId: "door", gripperId: "claw" })).toThrow(
+    "capture",
+  );
+  expect(() =>
     h.play.setMechanismVehicleInput({ throttle: 1, steering: 0 }, "vehicle"),
   ).toThrow("capture");
   expect(() => h.play.teleport({ position: [0, -0.3, 100] })).toThrow(
@@ -149,6 +159,16 @@ it("source replacement and disposal invalidate a captured session without restor
   h.project.revision++;
   h.play.sourceChanged();
   expect(h.play.getState().active).toBe(false);
+  expect(() =>
+    h.play.grab({
+      rigId: "door",
+      gripperId: "claw",
+      target: { rigId: "vehicle", groupId: "body" },
+    }),
+  ).toThrow("Enter Play first");
+  expect(() => h.play.release({ rigId: "door", gripperId: "claw" })).toThrow(
+    "Enter Play first",
+  );
   await h.play.enter({ rigId: "door" });
   const before = h.play.snapshot();
   restore();

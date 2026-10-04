@@ -517,6 +517,19 @@ const motionRig = obj(
       minItems: 1,
     },
     joints: arr(joint, 100),
+    grippers: arr(
+      obj({
+        id,
+        groupId: id,
+        anchor: {
+          ...vec,
+          items: { type: "number", minimum: -2048, maximum: 2048 },
+        },
+        captureRadiusLdu: { type: "number", exclusiveMinimum: 0, maximum: 32 },
+        maxPayloadMassKg: { type: "number", minimum: 0.01, maximum: 1000 },
+      }),
+      8,
+    ),
     loopClosures: arr(
       obj(
         {
@@ -1369,6 +1382,25 @@ const playMotorRequest = obj(
   },
   ["jointId", "enabled"],
 );
+const playGripTarget = obj({ rigId: id, groupId: id });
+const playGripRequest = obj({ rigId: id, gripperId: id });
+const playGrabRequest = obj({
+  ...playGripRequest.properties,
+  target: playGripTarget,
+});
+const playGripperReport = obj(
+  {
+    groupId: id,
+    anchorWorldLdu: vec,
+    state: { enum: ["empty", "ready", "holding"] },
+    candidates: arr(
+      obj({ ...playGripTarget.properties, massKg: num, distanceLdu: num }),
+      64,
+    ),
+    held: obj({ ...playGripTarget.properties, massKg: num }),
+  },
+  ["groupId", "anchorWorldLdu", "state", "candidates"],
+);
 const playMotorReport = obj(
   {
     mode: { enum: ["position", "velocity"] },
@@ -1609,6 +1641,7 @@ playSnapshot.properties.mechanism = obj(
     pose: mechanismPose,
     motors: dictionary(playMotorReport),
     dynamics: playDynamicsReport,
+    grippers: dictionary(playGripperReport),
     groupFrames: dictionary(transform),
     transforms: dictionary(transform),
     warnings: arr(str),
@@ -1669,6 +1702,8 @@ const api = {
     "play.setInput": { $ref: "playInput" },
     "play.setJointTarget": { $ref: "playJointTarget" },
     "play.setMotor": { $ref: "playMotorRequest" },
+    "play.grab": { $ref: "playGrabRequest" },
+    "play.release": { $ref: "playGripRequest" },
     "play.setTrainThrottle": { $ref: "playTrainThrottle" },
     "play.stopTrain": { $ref: "playTrainSelect" },
     "play.setPoints": { $ref: "playPoints" },
@@ -1875,6 +1910,8 @@ const schemas = {
   playInput,
   playJointTarget,
   playMotorRequest,
+  playGrabRequest,
+  playGripRequest,
   playTrainThrottle,
   playTrainSelect,
   playTrainRide,

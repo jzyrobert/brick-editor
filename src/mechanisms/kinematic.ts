@@ -108,6 +108,7 @@ export function validateRig(
     "transmissions",
     "loopClosures",
     "forceLinks",
+    "grippers",
     "vehicle",
     "dynamics",
   ]);
@@ -495,6 +496,50 @@ export function validateRig(
       "At most sixteen loop dependent coordinates are supported.",
     );
     validateClosurePose(rig, {});
+  }
+  if (rig.grippers !== undefined) {
+    ensure(
+      Array.isArray(rig.grippers) && rig.grippers.length <= 8,
+      "LIMIT_EXCEEDED",
+      "At most eight grippers are supported per rig.",
+    );
+    const gripIds = new Set<string>(),
+      gripGroups = new Set<string>();
+    for (const grip of rig.grippers) {
+      fields(grip, [
+        "id",
+        "groupId",
+        "anchor",
+        "captureRadiusLdu",
+        "maxPayloadMassKg",
+      ]);
+      ensure(
+        safeId(grip.id) &&
+          !gripIds.has(grip.id) &&
+          ids.has(grip.groupId) &&
+          !(
+            Array.isArray(rig.vehicle?.wheels) &&
+            rig.vehicle!.wheels.some((wheel) => wheel.groupId === grip.groupId)
+          ) &&
+          !gripGroups.has(grip.groupId) &&
+          vector(grip.anchor) &&
+          grip.anchor.every((value) => Math.abs(value) <= 2048),
+        "INVALID_INPUT",
+        "Grippers require unique IDs, distinct existing groups and local anchors within 2048 LDU.",
+      );
+      ensure(
+        finite(grip.captureRadiusLdu) &&
+          grip.captureRadiusLdu > 0 &&
+          grip.captureRadiusLdu <= 32 &&
+          finite(grip.maxPayloadMassKg) &&
+          grip.maxPayloadMassKg >= 0.01 &&
+          grip.maxPayloadMassKg <= 1000,
+        "INVALID_INPUT",
+        "Gripper capture radius must be 0–32 LDU and payload limit 0.01–1000 kg.",
+      );
+      gripIds.add(grip.id);
+      gripGroups.add(grip.groupId);
+    }
   }
   if (rig.forceLinks !== undefined) {
     ensure(
@@ -1095,6 +1140,11 @@ export class KinematicSession {
         ...(this.rig.joints.some((j) => j.kind === "cylindrical")
           ? [
               "Cylindrical bearings retain their rest position and spin in kinematic preview; free axial/spin motion requires Dynamic Play.",
+            ]
+          : []),
+        ...(this.rig.grippers?.length
+          ? [
+              "Grippers retain their authored capture zones in preview; grabbing and releasing loose groups require Dynamic Play.",
             ]
           : []),
         ...(this.rig.forceLinks?.length
