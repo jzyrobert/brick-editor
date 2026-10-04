@@ -239,17 +239,18 @@ for (const [width, height] of [
         const viewport = layout.canvas,
           sheet = layout.sheet,
           left = Math.max(0, sheet.x - viewport.x - 12),
-          above = Math.max(0, sheet.y - viewport.y - 12),
-          beside = left * viewport.height > viewport.width * above,
+          clearTop = Math.max(
+            viewport.y,
+            layout.header.bottom,
+            layout.hud.bottom + 12,
+          ),
+          above = Math.max(0, sheet.y - 12 - clearTop),
+          beside = left * (viewport.bottom - clearTop) > viewport.width * above,
           clear = {
             x: viewport.x,
-            y: Math.max(
-              viewport.y,
-              layout.header.bottom,
-              layout.hud.bottom + 12,
-            ),
+            y: clearTop,
             right: beside ? viewport.x + left : viewport.right,
-            bottom: beside ? viewport.bottom : viewport.y + above,
+            bottom: beside ? viewport.bottom : clearTop + above,
           };
         const spec = witness.view.camera,
           camera = new PerspectiveCamera(
