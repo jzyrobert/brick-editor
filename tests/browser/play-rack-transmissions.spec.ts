@@ -53,7 +53,7 @@ for (const dynamic of [false, true])
     }, text);
     expect(loaded.p.unresolved).toEqual([]);
     expect(loaded.p.rig!.transmissions).toMatchObject([
-      { kind: "rack", pitchRadiusLdu: -10 },
+      { kind: "rack", pitchRadiusLdu: -30 },
     ]);
     const result = await page.evaluate(async (dynamic) => {
       const api = window.brickEditor!;
@@ -81,7 +81,7 @@ for (const dynamic of [false, true])
       await api.play.setJointTarget({
         rigId: "rack-drive",
         jointId: "joint-0",
-        target: 720,
+        target: 150,
         speed: 180,
       });
       await api.play.stepTicks(900);
@@ -90,7 +90,7 @@ for (const dynamic of [false, true])
       await api.play.setJointTarget({
         rigId: "rack-drive",
         jointId: "joint-1",
-        target: 100,
+        target: 8,
         speed: 40,
       });
       await api.play.stepTicks(900);
@@ -112,15 +112,19 @@ for (const dynamic of [false, true])
     }, dynamic);
     const moved = result.moved.mechanisms!["rack-drive"],
       reversed = result.reversed.mechanisms!["rack-drive"];
-    expect(moved.pose.jointPositions["joint-0"]).toBeCloseTo(720, 0);
-    expect(moved.pose.jointPositions["joint-1"]).toBeCloseTo(-40 * Math.PI, 0);
+    expect(moved.pose.jointPositions["joint-0"]).toBeCloseTo(150, 0);
+    expect(moved.pose.jointPositions["joint-1"]).toBeCloseTo(-25 * Math.PI, 0);
     expect(moved.jointTargets["joint-0"].status).toBe("complete");
-    expect(reversed.pose.jointPositions["joint-1"]).toBeCloseTo(100, 0);
+    expect(reversed.pose.jointPositions["joint-1"]).toBeCloseTo(8, 0);
+    expect(reversed.pose.jointPositions["joint-0"]).toBeCloseTo(
+      -48 / Math.PI,
+      0,
+    );
     expect(reversed.jointTargets["joint-1"].status).toBe("complete");
     expect(result.movedImage).not.toEqual(result.restImage);
     expect(
       moved.transforms[loaded.before.occurrences[7].id].position[0],
-    ).toBeCloseTo(-40 * Math.PI, 0);
+    ).toBeCloseTo(-40 - 25 * Math.PI, 0);
     expect(result.posed.posedOccurrenceIds).toHaveLength(8);
     expect(result.posed.text).not.toBe(loaded.source);
     expect(result.after.occurrences).toEqual(loaded.before.occurrences);
