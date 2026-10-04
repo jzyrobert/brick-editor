@@ -14,13 +14,20 @@ import { ensure, type Transform, type Vec3 } from "../core/types";
 import {
   worldMechanicalFeatures,
   matchMechanicalFeatures,
+  mechanicalContactGraph,
+  mechanicalInterval,
 } from "../mechanisms/mechanical-contacts";
 import { resolvePhysicalMotorBinding } from "../mechanisms/motor-binding";
 import type { MotionRig } from "../mechanisms/types";
 import { anchoredGroup } from "../mechanisms/dynamics-settings";
 import { unsupportedMechanicalPlayContact } from "../mechanisms/mechanical-play-support";
 import type { PlayMechanismSource } from "./mechanism";
-import { METRES_PER_LDU as S, toPhysics, frameRotation } from "./physics-frame";
+import {
+  METRES_PER_LDU as S,
+  toPhysics,
+  fromPhysics,
+  frameRotation,
+} from "./physics-frame";
 import type { CollisionSnapshot } from "./types";
 import { surfaceCompound, surfaceCompoundLocal } from "./surface-compound";
 import { reviewedMechanicalMember } from "./reviewed-mechanical-proxies";
@@ -71,11 +78,31 @@ type Bearing = {
   /** A motor aperture admits only its reviewed casing and inserted shaft. */
   memberA?: string;
   memberB?: string;
+  /** Actual source contact pairs, ordered by carrier/bodyA and bodyB. */
+  pairs?: Array<[string, string]>;
 };
-const bearingMember = (b: Bearing, groupId: string, memberId?: string) =>
-  b.a === groupId
-    ? !b.memberA || b.memberA === memberId
-    : b.b === groupId && (!b.memberB || b.memberB === memberId);
+const bearingMember = (b: Bearing, groupId: string, memberId?: string) => {
+  const side = b.a === groupId ? 0 : b.b === groupId ? 1 : undefined;
+  if (side === undefined) return false;
+  if (b.pairs) return b.pairs.some((p) => p[side] === memberId);
+  return (
+    !(side === 0 ? b.memberA : b.memberB) ||
+    (side === 0 ? b.memberA : b.memberB) === memberId
+  );
+};
+const bearingPair = (
+  b: Bearing,
+  a: MechanicalSolid,
+  other: { groupId: string; memberId?: string },
+) =>
+  bearingMember(b, a.groupId, a.memberId) &&
+  bearingMember(b, other.groupId, other.memberId) &&
+  (!b.pairs ||
+    b.pairs.some((p) =>
+      a.groupId === b.a
+        ? p[0] === a.memberId && p[1] === other.memberId
+        : p[1] === a.memberId && p[0] === other.memberId,
+    ));
 const dot = (a: Vec3, b: Vec3) => a.reduce((v, n, k) => v + n * b[k], 0);
 function bearingNormals(axis?: Vec3): Vec3[] {
   if (!axis)
@@ -105,6 +132,15 @@ export class MechanicalContactPolicy {
   private fixedRoots = new Map<string, string>();
   private meshes = new Map<string, Set<string>>();
   private bearingsByPair = new Map<string, Map<string, Bearing[]>>();
+  private contactFrames: Array<Record<string, Transform>> = [];
+  private motorApproaches: Array<{
+    carrierGroup: string;
+    shaftGroup: string;
+    motorId: string;
+    shaftId: string;
+    motorLocal: Transform;
+    radiusLdu: number;
+  }> = [];
   private guides: Array<{
     carrierId: string;
     rackId: string;
@@ -118,6 +154,9 @@ export class MechanicalContactPolicy {
   }> = [];
   constructor(rig: MotionRig, _source?: PlayMechanismSource) {
     const groups = new Map(rig.groups.map((g) => [g.id, g]));
+    this.contactFrames = [
+      Object.fromEntries(rig.groups.map((g) => [g.id, g.frame])),
+    ];
     this.bearings = [...rig.joints, ...(rig.loopClosures ?? [])]
       .filter((j) => j.kind === "revolute" && j.mating)
       .map((j) => {
@@ -136,6 +175,93 @@ export class MechanicalContactPolicy {
           ],
         };
       });
+    if (_source) {
+      const lookup =
+        _source.lookup ??
+        new Map(occurrences(_source.project).map((o) => [o.id, o]));
+      const members = new Set(rig.groups.flatMap((g) => g.occurrenceIds));
+      const graph = mechanicalContactGraph(
+        _source.project,
+        [...lookup.values()].filter((o) => members.has(o.id)),
+      );
+      const feature = new Map(graph.features.map((f) => [f.key, f]));
+      const endpointKey = (e: { occurrenceId: string; featureId: string }) =>
+        JSON.stringify([e.occurrenceId, e.featureId]);
+      const gripsByShaft = new Map<
+        string,
+        Array<Extract<(typeof graph.contacts)[number], { kind: "keyed-slide" }>>
+      >();
+      for (const grip of graph.contacts)
+        if (grip.kind === "keyed-slide" && grip.axialGrip) {
+          const key = endpointKey(grip.a),
+            entries = gripsByShaft.get(key) ?? [];
+          entries.push(grip);
+          gripsByShaft.set(key, entries);
+        }
+      for (const bearing of this.bearings) {
+        const a = groups.get(bearing.a)!,
+          b = groups.get(bearing.b)!;
+        // Synthetic engineering fixtures have no reviewed interface profiles.
+        // Real source interfaces never turn a group into a collision exemption.
+        if (
+          !graph.features.some(
+            (f) =>
+              a.occurrenceIds.includes(f.occurrenceId) ||
+              b.occurrenceIds.includes(f.occurrenceId),
+          )
+        )
+          continue;
+        bearing.pairs = [];
+        const pair = (x: string, y: string) => {
+          if (a.occurrenceIds.includes(x) && b.occurrenceIds.includes(y))
+            bearing.pairs!.push([x, y]);
+          else if (a.occurrenceIds.includes(y) && b.occurrenceIds.includes(x))
+            bearing.pairs!.push([y, x]);
+        };
+        for (const c of graph.contacts) {
+          if (
+            c.kind !== "bearing" &&
+            c.kind !== "pin-bearing" &&
+            c.kind !== "finger-hinge"
+          )
+            continue;
+          const x = c.a.occurrenceId,
+            y = c.b.occurrenceId;
+          if (
+            !(
+              (a.occurrenceIds.includes(x) && b.occurrenceIds.includes(y)) ||
+              (a.occurrenceIds.includes(y) && b.occurrenceIds.includes(x))
+            )
+          )
+            continue;
+          const offset = c.pivot.map((v, k) => v - bearing.pivot[k]) as Vec3;
+          if (
+            Math.abs(dot(c.axis, bearing.normals[2])) < 0.99999 ||
+            Math.hypot(
+              dot(offset, bearing.normals[0]),
+              dot(offset, bearing.normals[1]),
+            ) > 0.5
+          )
+            continue;
+          pair(x, y);
+          if (c.kind !== "bearing") continue;
+          const shaft = feature.get(endpointKey(c.a))!,
+            bore = feature.get(endpointKey(c.b))!;
+          if (bore.kind !== "round-hole") continue;
+          const mouth = mechanicalInterval(bore, shaft, bore.faceSpan);
+          for (const grip of gripsByShaft.get(endpointKey(c.a)) ?? []) {
+            const collar = feature.get(endpointKey(grip.b))!;
+            if (collar.kind !== "keyed-hole" || !collar.stopRadius) continue;
+            const span = mechanicalInterval(collar, shaft);
+            if (
+              Math.abs(span[1] - mouth[0]) <= 0.5 ||
+              Math.abs(span[0] - mouth[1]) <= 0.5
+            )
+              pair(y, grip.b.occurrenceId);
+          }
+        }
+      }
+    }
     if (_source)
       for (const j of rig.joints.filter((j) => j.motor?.binding)) {
         const socket = resolvePhysicalMotorBinding(
@@ -144,18 +270,46 @@ export class MechanicalContactPolicy {
           j,
           j.motor!.binding!,
         );
+        const local = _source.memberLocals?.[socket.motorOccurrenceId],
+          motor = (
+            _source.lookup ??
+            new Map(occurrences(_source.project).map((o) => [o.id, o]))
+          ).get(socket.motorOccurrenceId)!;
+        // Independently captured official 58120 geometry has no triangle on
+        // the exterior side of its local Z0 entrance. Certify the exact shaft
+        // fragment there, rather than trusting a false signed mesh contact.
+        if (
+          local &&
+          local.bounds.min[2] >= 0 &&
+          local.vertices.every((v, index) => index % 3 !== 2 || v >= 0)
+        )
+          this.motorApproaches.push({
+            carrierGroup: j.bodyA,
+            shaftGroup: j.bodyB,
+            motorId: socket.motorOccurrenceId,
+            shaftId: socket.shaftOccurrenceId,
+            motorLocal: compose(
+              inverse(groups.get(j.bodyA)!.frame),
+              orthonormalized(motor.transform),
+            ),
+            radiusLdu: socket.mating.radiusLdu,
+          });
         this.bearings.push({
           id: `${j.id}:motor-socket`,
           a: j.bodyA,
           b: j.bodyB,
           memberA: socket.motorOccurrenceId,
           memberB: socket.shaftOccurrenceId,
-          pivot: socket.mating.pivotLdu,
+          pivot: add(
+            socket.mating.pivotLdu,
+            socket.axis.map((n) => -0.05 * n) as Vec3,
+          ),
           normals: [...bearingNormals(socket.axis), socket.axis],
           extents: [
             socket.mating.radiusLdu,
             socket.mating.radiusLdu,
-            socket.mating.halfLengthLdu,
+            // Extend only the entrance by 0.1 LDU; the source back remains closed.
+            socket.mating.halfLengthLdu + 0.05,
           ],
         });
       }
@@ -250,6 +404,7 @@ export class MechanicalContactPolicy {
     frames: Record<string, Transform>,
     next?: Record<string, Transform>,
   ) {
+    this.contactFrames = [frames, ...(next ? [next] : [])];
     for (const guide of this.guides)
       guide.aligned = [frames, ...(next ? [next] : [])].every(
         (p) =>
@@ -283,6 +438,46 @@ export class MechanicalContactPolicy {
     )
       return true;
     if (
+      this.motorApproaches.some((approach) => {
+        const shaft =
+          a.memberId === approach.shaftId && b.memberId === approach.motorId
+            ? a
+            : b.memberId === approach.shaftId &&
+                a.memberId === approach.motorId &&
+                "points" in b
+              ? b
+              : undefined;
+        if (
+          !shaft ||
+          shaft.groupId !== approach.shaftGroup ||
+          (shaft === a ? b.groupId : a.groupId) !== approach.carrierGroup
+        )
+          return false;
+        return this.contactFrames.every((frames) => {
+          const motorInv = inverse(
+            compose(frames[approach.carrierGroup], approach.motorLocal),
+          );
+          for (let i = 0; i < shaft.points.length; i += 3) {
+            const p = position(
+              motorInv,
+              position(
+                frames[approach.shaftGroup],
+                fromPhysics({
+                  x: shaft.points[i],
+                  y: shaft.points[i + 1],
+                  z: shaft.points[i + 2],
+                }),
+              ),
+            );
+            if (p[2] > -0.001 || Math.hypot(p[0], p[1]) > approach.radiusLdu)
+              return false;
+          }
+          return true;
+        });
+      })
+    )
+      return true;
+    if (
       (a.reviewedPlaneClass === 1 ||
         a.reviewedPlaneClass === -1 ||
         b.reviewedPlaneClass === 1 ||
@@ -311,8 +506,7 @@ export class MechanicalContactPolicy {
         ?.get(b.groupId)
         ?.some(
           (bearing) =>
-            bearingMember(bearing, a.groupId, a.memberId) &&
-            bearingMember(bearing, b.groupId, b.memberId) &&
+            bearingPair(bearing, a, b) &&
             (a.mating.has(bearing.id) ||
               ("mating" in b && b.mating.has(bearing.id))),
         ) ?? false

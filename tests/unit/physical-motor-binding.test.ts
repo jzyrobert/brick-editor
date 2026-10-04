@@ -5,7 +5,7 @@ import {
 import type { PlayMechanismSource } from "../../src/play/mechanism";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createHash } from "node:crypto";
-import { DoubleSide, Mesh, Raycaster, Vector3 } from "three";
+import { Box3, DoubleSide, Mesh, Raycaster, Vector3 } from "three";
 import {
   fullLibrarySources,
   registerFullLibraryFromDisk,
@@ -50,24 +50,27 @@ describe("source-bound physical PF-M motor", () => {
     expect(MECHANICAL_PARTS["58120.dat"].studs).toHaveLength(12);
   });
   it("independently ray-checks the actual hub's open keyed entrance and closed back", async () => {
-    const g = await compileOfficialPart("47157.dat");
-    g.updateMatrixWorld(true);
-    g.traverse((o) => {
-      if (o instanceof Mesh)
-        for (const m of Array.isArray(o.material) ? o.material : [o.material])
-          m.side = DoubleSide;
-    });
-    const hits = new Raycaster(
-      new Vector3(0, 0, -1),
-      new Vector3(0, 0, 1),
-    ).intersectObject(g, true);
-    expect(hits.length).toBeGreaterThan(0);
-    expect(hits[0].point.z).toBeCloseTo(20, 4);
-    const flank = new Raycaster(
-      new Vector3(7, 0, -1),
-      new Vector3(0, 0, 1),
-    ).intersectObject(g, true);
-    expect(flank[0].point.z).toBeCloseTo(0, 4);
+    for (const ref of ["47157.dat", "58120.dat"]) {
+      const g = await compileOfficialPart(ref);
+      g.updateMatrixWorld(true);
+      g.traverse((o) => {
+        if (o instanceof Mesh)
+          for (const m of Array.isArray(o.material) ? o.material : [o.material])
+            m.side = DoubleSide;
+      });
+      const hits = new Raycaster(
+        new Vector3(0, 0, -1),
+        new Vector3(0, 0, 1),
+      ).intersectObject(g, true);
+      expect(hits.length).toBeGreaterThan(0);
+      expect(hits[0].point.z).toBeCloseTo(20, 4);
+      const flank = new Raycaster(
+        new Vector3(7, 0, -1),
+        new Vector3(0, 0, 1),
+      ).intersectObject(g, true);
+      expect(flank[0].point.z).toBeCloseTo(0, 4);
+      expect(new Box3().setFromObject(g).min.z).toBe(0);
+    }
   });
   it("admits one actual inserted axle and a physically stud-connected motor/bearing carrier", () => {
     const f = fixture(),
@@ -173,7 +176,7 @@ describe("source-bound motor socket contacts", () => {
         rigId: rig.id,
       } as PlayMechanismSource),
       socket = policy.bearings.find((b) => b.id.endsWith(":motor-socket"))!;
-    expect(socket.pivot).toEqual([0, -46, 60]);
+    expect(socket.pivot).toEqual([0, -46, 59.95]);
     const shaft = {
       groupId: socket.b,
       memberId: socket.memberB,
