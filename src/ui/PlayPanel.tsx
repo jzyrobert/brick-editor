@@ -1,3 +1,5 @@
+import { PlayMechanismSetup, type MechanismReview } from "./PlayMechanismSetup";
+import type { Editor } from "../core/commands";
 import { PlaySeatEntry } from "./PlaySeatEntry";
 import { PlayWorldSettings } from "./PlayWorldSettings";
 import type { Layer } from "../core/types";
@@ -59,7 +61,9 @@ export function PlayPanel({
   bookmark,
   exit,
   children,
-  rigs = {},
+  rigs: authoredRigs = {},
+  editor,
+  selection = [],
   layers = {},
   playHint,
 }: {
@@ -68,11 +72,17 @@ export function PlayPanel({
   exit: () => void;
   children?: React.ReactNode;
   rigs?: Record<string, MotionRig>;
+  editor?: Editor;
+  selection?: string[];
   layers?: Record<string, Layer>;
   /** The build's one-line Play hint (project.scene.playHint). */
   playHint?: string;
 }) {
   const state = useSyncExternalStore(play.subscribe, play.getState);
+  const rigs = {
+    ...authoredRigs,
+    ...(state.active ? play.getSessionRigs() : {}),
+  };
   const [message, setMessage] = useState("");
   const topRow = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -102,6 +112,7 @@ export function PlayPanel({
     };
   }, [state.active]);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [mechanismReview, setMechanismReview] = useState<MechanismReview>();
   const [rigId, setRigId] = useState("");
   const [mechanismMode, setMechanismMode] = useState<
     "all" | "single" | "static"
@@ -442,6 +453,9 @@ export function PlayPanel({
     state.report?.occupancy,
     state.report?.trains?.riding,
   ]);
+  useEffect(() => {
+    if (state.active && state.mechanismOverview) setRemoteOpen(true);
+  }, [state.active, state.mechanismOverview]);
   useEffect(() => () => leavePlayScreen(), []);
   useEffect(() => {
     if (!rotateAsk || typeof matchMedia !== "function") return;
@@ -733,6 +747,23 @@ export function PlayPanel({
               mechanisms: (
                 <>
                   {mechanismChoice}
+                  {editor && (
+                    <PlayMechanismSetup
+                      editor={editor}
+                      play={play}
+                      review={mechanismReview}
+                      onReview={setMechanismReview}
+                      selection={selection}
+                      playRequest={{
+                        ground,
+                        worldProfile: {
+                          excludedLayerIds: excludedLayerIds.filter(
+                            (id) => !!layers[id],
+                          ),
+                        },
+                      }}
+                    />
+                  )}
                   {children}
                 </>
               ),

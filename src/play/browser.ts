@@ -1,3 +1,8 @@
+import {
+  prepareMechanicalProposal,
+  reviewedProposalProject,
+} from "../mechanisms/proposal-entry";
+import type { MechanicalProposalRequest } from "../mechanisms/mechanical-proposals";
 import { seatPoint } from "./seated-profile";
 import {
   resolvePlayWorldProfile,
@@ -168,7 +173,51 @@ export class BrowserPlay {
     );
     return this.session;
   }
+  getSessionRigs = () => this.sessionRigs;
+  async enterProposal(
+    input: MechanicalProposalRequest,
+    request: PlayRequest = {},
+    physics: "kinematic" | "dynamic" = "kinematic",
+  ) {
+    this.assertMutable();
+    const entryEpoch = this.epoch;
+    const source = this.project?.();
+    ensure(source, "INVALID_INPUT", "Mechanism review requires a project.");
+    const proposal = await prepareMechanicalProposal(
+      source,
+      input,
+      () => this.revision() === source.revision,
+    );
+    ensure(
+      entryEpoch === this.epoch,
+      "INVALID_INPUT",
+      "Mechanism entry cancelled.",
+    );
+    const copy = reviewedProposalProject(source, input, proposal);
+    ensure(
+      physics === "kinematic" || physics === "dynamic",
+      "INVALID_INPUT",
+      "Choose Kinematic or Dynamic physics.",
+    );
+    ensure(
+      !request.rigId && !request.rigIds && !request.dynamicRigIds,
+      "INVALID_INPUT",
+      "The reviewed proposal selects its own rig.",
+    );
+    return this.enterPrepared(
+      {
+        ...request,
+        rigId: proposal.rig!.id,
+        ...(physics === "dynamic" ? { dynamicRigIds: [proposal.rig!.id] } : {}),
+        cameraMode: "third-person",
+      },
+      copy,
+    );
+  }
   async enter(request: PlayRequest = {}) {
+    return this.enterPrepared(request);
+  }
+  private async enterPrepared(request: PlayRequest, sessionProject?: Project) {
     this.assertMutable();
     // The wheel/pinch zoom distance carries over to later entries in this
     // browser tab (sessionStorage), unless the request sets its own.
@@ -192,7 +241,7 @@ export class BrowserPlay {
     );
     try {
       const r = this.renderer();
-      const project = this.project?.();
+      const project = sessionProject ?? this.project?.();
       const requestedProfile = validatePlayWorldProfile(request.worldProfile);
       ensure(
         project || requestedProfile.excludedLayerIds.length === 0,

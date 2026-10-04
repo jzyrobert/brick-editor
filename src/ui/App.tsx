@@ -5489,6 +5489,8 @@ function Workspace() {
           )}
           {mode === "Play" && play.current && (
             <PlayPanel
+              editor={editor}
+              selection={selection}
               play={play.current}
               layers={project.layers}
               rigs={project.motionRigs}

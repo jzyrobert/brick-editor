@@ -95,6 +95,31 @@ solve them with bounded continuation; Dynamic creates real closing native joints
 Unreachable poses and cold ambiguous toggles are refused. See
 [closed-linkage scope](PLAY-LINKAGES.md).
 
+Play → Settings → Mechanisms offers a reviewed setup flow. Choose the assembly
+(all visible parts or the explicit Build selection) and its fixed parts, then
+inspect the groups, joints, linked outputs and uncertain connections. A selected
+motor has a speed bounded to ±360 degrees/s or LDU/s and an effort of 0.01–1,000
+N·m or N. Only one motor is configured by this flow. **Try in Play** starts an
+unsaved mechanism with whole-system controls; **Save mechanism to build** is a
+separate undoable command at the authored rest pose. Hidden parts are excluded
+from this UI analysis. Every selected part must have a reviewed group, and
+unresolved connections block both actions instead of being silently omitted.
+
+`mechanisms.tryProposal(proposalRequest, playRequest?, physics?)` rebuilds the
+source-bound proposal and enters Play on a private project copy. `physics` is
+`"kinematic"` (default) or `"dynamic"`; `playRequest` accepts the ordinary Play
+world, ground and camera settings but must not specify its own rig IDs. The
+same moving geometry and collision budgets apply, so a mathematically valid
+proposal can still be refused by physical Play. Changes to the authored revision
+end the session; exit restores the editor view and does not save a rig.
+`mechanisms.saveProposal(proposalRequest)` repeats the review checks and executes
+`rigs.upsert` with the supplied `expectedRevision`. It never saves a transient
+pose. A stale draft, authored ownership conflict, unresolved connection or selected
+part without a group is refused. The returned proposal's `drivers` maps joint IDs
+to supported motor input occurrence IDs; linked joints are not extra independent
+motors. Query, native backup, normal LDraw export and inventory stay unchanged until
+explicit saving or a separately requested posed export.
+
 `mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})`
 returns a read-only mechanical draft with `sourceRevision`, optional `rig`, typed
 `graph`, `relations`, `unresolved` and `warnings`. Choose explicit fixed frame

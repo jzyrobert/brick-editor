@@ -47,6 +47,8 @@ export type RackRelationProposal = {
 };
 export type MechanicalProposal = {
   sourceRevision: number;
+  /** Supported motor input occurrence for each proposed joint. */
+  drivers: Record<string, string>;
   rig?: MotionRig;
   /** Reviewed relations also installed as ideal transmissions on the draft. */
   relations: Array<SpurRelationProposal | RackRelationProposal>;
@@ -115,6 +117,7 @@ export function proposeMechanicalRig(
   const graph = mechanicalContactGraph(project, all);
   const result: MechanicalProposal = {
     sourceRevision: project.revision,
+    drivers: {},
     graph,
     relations: [],
     unresolved: [],
@@ -253,6 +256,7 @@ export function proposeMechanicalRig(
       joint.motor = structuredClone(motor);
       usedMotors.add(driver);
     }
+    result.drivers[id] = driver;
     rig.joints.push(joint);
     for (const member of b.occurrenceIds) jointFor.set(member, id);
     return joint;

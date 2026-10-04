@@ -228,7 +228,7 @@
           "rack-mesh"
         ],
         "proposals": "Explicit fixed anchors; retained shafts and captured keyed accessories; separate pin/arm articulations; complementary finger hinges with rigid stud accessories; reviewed 18942 bottom-beam / 18940 housing sliders with source stop, guide and tooth-end engagement limits",
-        "isolation": "Read-only draft; explicit rigs.upsert saves; no automatic Play entry or project mutation",
+        "isolation": "Read-only analysis; explicit Try creates an unsaved session; separate Save is undoable; no authored placement, inventory or export changes during Play",
         "transmissions": "Reviewed external spur and guided rack meshes become ideal coupled relations in the draft",
         "limits": {
           "occurrences": 2048,
@@ -237,7 +237,10 @@
           "pairChecks": 200000,
           "contacts": 8192
         },
-        "physicalFitCertified": false
+        "physicalFitCertified": false,
+        "sessionEntry": "mechanisms.tryProposal(proposalRequest, playRequest?, physics?): source-bound private Play project; Kinematic or Dynamic; every selected part assigned; unresolved contacts and authored ownership refused",
+        "explicitSave": "mechanisms.saveProposal(proposalRequest): repeat source-bound review, then undoable rigs.upsert at authored rest pose",
+        "reviewInterface": "Play settings \u2192 Mechanisms: explicit visible assembly or Build selection, fixed parts, groups/joints/relations/ambiguities, one independent motor with bounded speed and effort, Try in Play, separate Save; session controls fit and orbit the whole mechanism"
       },
       "dynamicMechanisms": {
         "optIn": "play.enter dynamicRigIds (UI: Play > Mechanism physics > Dynamic)",
@@ -627,9 +630,9 @@
     "api": ["buildScript.validate", "buildScript.compile", "buildScript.apply"],
     "cli": "brick-cli build --script build.json --output build.mpd [--render view.png --views iso,front] [--target-parts N]",
     "partBudget": "--target-parts N / targetParts: guidance, never an error (every component copy counts); the report's target gives parts, difference and percent, costliestOps what made the most; limits.maxParts is the one hard cap (over-budget error, no model written or applied)",
-    "oneShot": "npm run oneshot -- --target-parts N --brief \"…\" --model M [--efforts …] [--runner codex|claude]: MineBench-style runs through codex exec or claude -p with no tools; the reply is a brick.build call (JavaScript making the build script, after MineBench's voxel.exec); the curated part list in the prompt (--parts-list), parts search (--search) and up to 3 draft compiles per attempt returning the count and errors (--check) as reply protocols; invalid, overlapping or wrong-colour replies get a repair prompt with the size against the target and the errors; the distance from the target is recorded as a score; searches, checks, finds and part knowledge are recorded",
+    "oneShot": "npm run oneshot -- --target-parts N --brief \"\u2026\" --model M [--efforts \u2026] [--runner codex|claude]: MineBench-style runs through codex exec or claude -p with no tools; the reply is a brick.build call (JavaScript making the build script, after MineBench's voxel.exec); the curated part list in the prompt (--parts-list), parts search (--search) and up to 3 draft compiles per attempt returning the count and errors (--check) as reply protocols; invalid, overlapping or wrong-colour replies get a repair prompt with the size against the target and the errors; the distance from the target is recorded as a score; searches, checks, finds and part knowledge are recorded",
     "brickBuild": "brick-cli build --script build.js (or a JSON file holding {tool: 'brick.build', input: {code}}): code calling one helper per op run once in a Node vm sandbox (10 s, 50,000 ops, 200 KB) in a child process; problems name the code line of their op; --expanded writes the build script; Node only, never in the browser",
-    "workspaces": "npm run workspace -- --target-parts N[,N…] --brief \"…\": clean agent directory with the templated prompt and a ./brick-cli that reports every build against the target",
+    "workspaces": "npm run workspace -- --target-parts N[,N\u2026] --brief \"\u2026\": clean agent directory with the templated prompt and a ./brick-cli that reports every build against the target",
     "ops": [
       "box",
       "wall",

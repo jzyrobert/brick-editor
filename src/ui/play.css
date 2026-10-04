@@ -1423,3 +1423,45 @@
 .play-overlay.has-train .play-start-hint {
   top: 44%;
 }
+
+/* Mechanism review shares the entry sheet; the canvas stays visible. */
+.play-mechanism-setup {
+  min-width: 0;
+}
+.play-frame-parts {
+  max-height: 180px;
+  overflow: auto;
+  margin: 12px 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+}
+.play-frame-parts label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+.play-frame-parts input {
+  flex: none;
+}
+.play-mechanism-setup summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.play-mechanism-setup li {
+  overflow-wrap: anywhere;
+}
+.play-mechanism-setup select,
+.play-mechanism-setup input:not([type="checkbox"]) {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+.play-motor-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}

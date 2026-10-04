@@ -93,3 +93,61 @@ it("refuses an edit made while lazy mechanical analysis is pending", async () =>
   await expect(pending).rejects.toMatchObject({ code: "REVISION_CONFLICT" });
   expect(editor.project.motionRigs).toEqual({});
 });
+
+it("saves a reviewed source-bound proposal explicitly and undoes ownership without moving parts", async () => {
+  const editor = new Editor(importLDraw(source)),
+    api = createAPI(editor, () => undefined);
+  const all = occurrences(editor.project),
+    text = exportLDraw(editor.project);
+  const input = {
+    id: "reviewed",
+    name: "Reviewed hinge",
+    expectedRevision: editor.revision,
+    frameOccurrenceIds: [all[0].id],
+    occurrenceIds: all.map((o) => o.id),
+    motors: {
+      [all[1].id]: {
+        mode: "velocity" as const,
+        target: 60,
+        maxEffort: { value: 10, unit: "N*m" as const },
+      },
+    },
+  };
+  const draft = await api.mechanisms.propose(input);
+  expect(draft.drivers[draft.rig!.joints[0].id]).toBe(all[1].id);
+  await api.mechanisms.saveProposal(input);
+  expect(editor.project.motionRigs.reviewed).toEqual(draft.rig);
+  expect(exportLDraw(editor.project)).toBe(text);
+  expect(occurrences(editor.project)).toEqual(all);
+  await expect(api.mechanisms.saveProposal(input)).rejects.toMatchObject({
+    code: "REVISION_CONFLICT",
+  });
+  editor.dispatch({
+    schemaVersion: 1,
+    commandId: "undo-save",
+    expectedRevision: editor.revision,
+    type: "history.undo",
+    payload: {},
+  });
+  expect(editor.project.motionRigs).toEqual({});
+  expect(exportLDraw(editor.project)).toBe(text);
+});
+
+it("refuses saving unassigned parts instead of silently leaving a proposed assembly incomplete", async () => {
+  const editor = new Editor(
+      importLDraw(source + "\n1 7 200 0 0 1 0 0 0 1 0 0 0 1 3001.dat"),
+    ),
+    api = createAPI(editor, () => undefined);
+  const input = {
+    id: "reviewed",
+    name: "Incomplete hinge",
+    expectedRevision: editor.revision,
+    frameOccurrenceIds: [occurrences(editor.project)[0].id],
+  };
+  const before = JSON.stringify(editor.project);
+  await expect(api.mechanisms.saveProposal(input)).rejects.toThrow(
+    "no reviewed group",
+  );
+  expect(JSON.stringify(editor.project)).toBe(before);
+  expect(editor.canUndo).toBe(false);
+});
