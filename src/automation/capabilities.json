@@ -260,9 +260,22 @@
           "hullPoints": 256
         },
         "reproducibility": "Identical reports for identical inputs in the pinned engine/browser; not promised across platforms",
+        "mechanicalContacts": {
+          "status": "Implemented checkpoint; ground-plane, oblique-shape and rack/housing regression acceptance in progress",
+          "policy": "Internal contacts remain enabled except rigid welds, declared ideal gear meshes and explicit local revolute bearing regions; translating bearing allowances refused",
+          "proxies": "Reviewed 3700/3701/3702 bores and 3647/3648b/18942 source-surface compounds; unreviewed moving 18940 housing refused",
+          "limits": {
+            "convexChildrenAcrossActiveSources": 4096,
+            "sourceVerticesAcrossActiveSources": 600000,
+            "boundaryVerticesPerConvexSolid": 256,
+            "queryCollidersAcrossKinematicRigs": 512,
+            "contactWorkPerCommand": 200000,
+            "sweepSegmentsPerCommand": 1024
+          },
+          "rackAcceptance": "Corrected source mount and travel have geometric checks; native rack/housing tangent contact still stalls"
+        },
         "notSimulated": [
           "worm, bevel and differential transmissions",
-          "internal collisions between groups of one rig",
           "spherical joint orientation controls",
           "clutch strength",
           "breaking"
