@@ -2,7 +2,6 @@ import RAPIER from "@dimforge/rapier3d-compat";
 import { beforeAll, expect, it } from "vitest";
 import { identity, compose } from "../../src/core/math";
 import { occurrences } from "../../src/core/document";
-import { importLDraw } from "../../src/ldraw/io";
 import { axisRotation } from "../../src/mechanisms/kinematic";
 import { technicFixture } from "../../src/mechanisms/technic-fixture";
 import { DynamicRig } from "../../src/play/dynamics";
@@ -15,7 +14,7 @@ import {
   fullLibrarySources,
   registerFullLibraryFromDisk,
 } from "../../scripts/full-library-node";
-import { meshOf, playSources } from "../helpers/play-dynamic-source";
+import { playSources } from "../helpers/play-dynamic-source";
 registerFullLibraryFromDisk();
 beforeAll(async () => {
   await RAPIER.init();
@@ -43,26 +42,7 @@ it("admits canonical reviewed gears through an oblique frame without rebuilding 
   const official = fullLibrarySources(all.map((o) => o.node.ref)),
     { sources } = await playSources(project, [definition.id], official),
     source = sources[0];
-  const locals: Record<string, any> = {};
-  for (const o of all) {
-    const canonical = importLDraw(
-        `1 7 0 0 0 1 0 0 0 1 0 0 0 1 ${o.node.ref}\n`,
-      ),
-      geometry = await meshOf(
-        canonical,
-        [occurrences(canonical)[0].id],
-        official,
-      );
-    locals[o.id] = {
-      ...geometry,
-      vertices: Float64Array.from(geometry.vertices),
-      revision: project.revision,
-      occurrenceId: o.id,
-      namespace: o.namespace,
-      frame: structuredClone(o.transform),
-    };
-  }
-  const bound = Object.assign(source, { memberLocals: locals }),
+  const bound = source,
     policy = new MechanicalContactPolicy(definition, bound),
     solids = mechanicalSolids(bound, policy);
   expect(solids.reduce((n, s) => n + s.childCount, 0)).toBeLessThanOrEqual(

@@ -350,20 +350,7 @@ export function mechanicalSolids(
         "INVALID_INPUT",
         "This moving rack housing needs a reviewed hollow collision proxy. Anchor its frame and try again.",
       );
-      const memberLocal = id
-        ? (
-            source as PlayMechanismSource & {
-              memberLocals?: Record<
-                string,
-                {
-                  vertices: Float64Array;
-                  indices: Uint32Array;
-                  frame: Transform;
-                }
-              >;
-            }
-          ).memberLocals?.[id]
-        : undefined;
+      const memberLocal = id ? source.memberLocals?.[id] : undefined;
       const canonical =
         occurrence &&
         memberLocal &&
