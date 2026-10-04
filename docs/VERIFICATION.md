@@ -1096,6 +1096,11 @@ spur checkpoint `e0139e5`. Tests resolve actual official geometry from the pinne
 local pack without network access. The original eight-part acceptance source
 references a reviewed 18940 housing, 18942 rack and retained 8-tooth shaft.
 
+Historical scope: this checkpoint suppressed same-rig contacts. The subsequent
+contact audit found actual rack/housing intersections in the original mounting,
+so the recorded 720° / −125.66 LDU result does not certify collision-clear guide
+travel. Revised mounting and physical contact acceptance are still in progress.
+
 - Focused Vitest command below passes **59 tests in seven files**. New rack
   coverage includes reproducible fixture source; one reviewed guide and one
   motor; wrong web orientation/offset, withdrawal, pitch distance and rest-phase

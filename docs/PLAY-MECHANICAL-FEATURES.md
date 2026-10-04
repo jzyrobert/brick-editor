@@ -151,6 +151,12 @@ geometry. Generate/check with `npx tsx scripts/build-rack-fixture.ts [--check]`.
 This ideal constraint has no tooth collision, backlash, clutch or automatic
 disengagement; limits keep the reviewed engagement present.
 
+The initial travel acceptance ran with same-rig contacts suppressed. The later
+contact audit found intersections between the rack and housing in that source
+arrangement. Its 720° / −125.66 LDU result establishes ideal coupling and source
+isolation, not collision-clear guide travel. Corrected mounting and physical
+travel acceptance remain in progress.
+
 ## Bounds and verification
 
 Analysis accepts at most 2,048 selected occurrences, 8,192 features/stud points,

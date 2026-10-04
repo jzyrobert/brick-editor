@@ -904,6 +904,11 @@ mixed assembly convergence. Existing relation/body/member/triangle bounds apply.
 Further guides and the remaining motion phases stay open. See
 [verification](VERIFICATION.md#guided-rack-transmission-3-october-2026).
 
+The later contact audit found rack/housing intersections in this original
+arrangement. Its internal contacts were suppressed in the initial acceptance;
+the recorded travel verifies ideal coupling, not collision-clear guide motion.
+Corrected mounting and clearance-supported travel are being verified separately.
+
 ## Closed planar linkages (3 October 2026)
 
 Authored rigs can now add explicit planar revolute closure edges without changing
