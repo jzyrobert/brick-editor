@@ -300,7 +300,7 @@ export class PlaySession {
         v[i + 1] = -v[i + 1] * S;
         v[i + 2] = -v[i + 2] * S;
       }
-      this.world.createCollider(
+      const staticCollider = this.world.createCollider(
         RAPIER.ColliderDesc.trimesh(v, compact.indices),
       );
       drivingStatic = {
@@ -311,6 +311,31 @@ export class PlaySession {
         vertices: v,
         indices: compact.indices,
       };
+      const sources = Array.isArray(mechanismSource)
+        ? mechanismSource
+        : mechanismSource
+          ? [mechanismSource]
+          : [];
+      if (
+        sources.some((s) =>
+          s.project.motionRigs[s.rigId].joints.some(
+            (j) =>
+              j.kind === "revolute" &&
+              j.anchorA.every((v) => v === 0) &&
+              j.anchorB.every((v) => v === 0) &&
+              j.axisA?.[0] === 0 &&
+              Math.abs(j.axisA[1]) === 1 &&
+              j.axisA[2] === 0 &&
+              j.axisB?.[0] === 0 &&
+              Math.abs(j.axisB[1]) === 1 &&
+              j.axisB[2] === 0,
+          ),
+        )
+      )
+        this.contactQueries.registerStaticSupport(
+          staticCollider,
+          drivingStatic,
+        );
     }
     if (request.ground !== false)
       this.warnings.push(

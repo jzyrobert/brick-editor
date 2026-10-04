@@ -196,6 +196,48 @@ export class DrivingObstacleSnapshot {
     };
     if (total) this.root = build(0, total);
   }
+  /** Complete broadphase for an invariant axial support slab. Every triangle
+   * in the conservative swept box must lie outside the slab. This is a finite
+   * support certificate, not a native closest-contact normal heuristic. */
+  certifyInvariantYSlab(
+    query: Bound,
+    minimum: number,
+    maximum: number,
+    guard: number,
+    workLimit: number,
+  ) {
+    let work = 0,
+      candidates = 0,
+      safe = true;
+    const spend = () => {
+      ensure(
+        ++work <= workLimit,
+        "LIMIT_EXCEEDED",
+        "Invariant support query exceeds the contact work budget",
+      );
+    };
+    const visit = (branch: Branch) => {
+      spend();
+      if (!overlaps(query, branch.bounds)) return;
+      if (branch.left && branch.right) {
+        visit(branch.left);
+        visit(branch.right);
+        return;
+      }
+      for (let i = branch.start; i < branch.end; i++) {
+        spend();
+        const n = this.order[i],
+          bounds = Array.from(this.bounds.slice(n * 6, n * 6 + 6)) as Bound;
+        if (!overlaps(query, bounds)) continue;
+        candidates++;
+        // Bounds were constructed from all three exact stored source vertices.
+        if (!(bounds[4] <= minimum + guard || bounds[1] >= maximum - guard))
+          safe = false;
+      }
+    };
+    if (this.root) visit(this.root);
+    return { safe, work, candidates };
+  }
   /**
    * Broadphase + one merged narrowphase. The BVH gathers every triangle the
    * swept proxies could reach, skipping pure support: a triangle whose top is

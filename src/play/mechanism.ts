@@ -5,6 +5,10 @@ import type { PlayVehicleCollisionReport } from "./types";
 import type { VehicleCheck } from "./vehicle-world";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { MechanicalQueryWorld } from "./mechanical-query-world";
+import {
+  invariantYRotationBounds,
+  invariantYRotationEligible,
+} from "./invariant-rotational-support";
 import { Matrix4, Quaternion, Vector3 } from "three";
 import {
   ensure,
@@ -312,6 +316,10 @@ export class PlayMechanism {
   private stationarySolids: MechanicalSolid[];
   private contactChecks = 0;
   private contactEnumeration = 0;
+  private invariantSupport = new Map<
+    MechanicalSolid,
+    { key: string; safe: boolean }
+  >();
   private queries: MechanicalQueryWorld;
   private ownsQueries: boolean;
   private worldFailure?: string;
@@ -319,6 +327,7 @@ export class PlayMechanism {
   private session: KinematicSession;
   private jointKinds = new Map<string, string>();
   private jointSpecs: JointSpec[];
+  private restFrames: Record<string, Transform>;
   private motors = new Map<
     string,
     {
@@ -466,6 +475,9 @@ export class PlayMechanism {
       prepared?.stationary ??
       mechanicalStationarySolids(source, this.contactSolids);
     this.jointSpecs = structuredClone(rig.joints);
+    this.restFrames = Object.fromEntries(
+      rig.groups.map((g) => [g.id, structuredClone(g.frame)]),
+    );
     this.jointKinds = new Map(rig.joints.map((j) => [j.id, j.kind]));
     for (const joint of rig.joints)
       if (
@@ -945,6 +957,50 @@ export class PlayMechanism {
               return false;
             }
           } else {
+            // A complete source-triangle slab proof covers the entire angular
+            // orbit. It applies only to the registered, unchanged static mesh;
+            // owned mating solids and every unresolved foreign surface retain
+            // the normal native contact and subdivision path below.
+            if (
+              this.queries.hasStaticSupport(collider) &&
+              invariantYRotationEligible(
+                solid,
+                this.jointSpecs,
+                before,
+                after,
+                this.restFrames,
+              )
+            ) {
+              const key = JSON.stringify([
+                collider.handle,
+                a.position,
+                before.groupFrames[this.jointSpecs[0].bodyA],
+              ]);
+              let proof = this.invariantSupport.get(solid);
+              if (!proof || proof.key !== key) {
+                this.contactEnumeration += (2 * solid.points.length) / 3;
+                ensure(
+                  this.contactEnumeration <=
+                    MECHANICAL_CONTACT_LIMITS.enumeration,
+                  "LIMIT_EXCEEDED",
+                  "This mechanism is too complex to check safely. Try fewer moving parts.",
+                );
+                const enclosure = invariantYRotationBounds(solid.points, a);
+                const result = this.queries.certifyStaticYSupport(
+                  collider,
+                  enclosure.query,
+                  enclosure.minimum,
+                  enclosure.maximum,
+                  enclosure.guard,
+                  MECHANICAL_CONTACT_LIMITS.enumeration -
+                    this.contactEnumeration,
+                )!;
+                this.contactEnumeration += result.work;
+                proof = { key, safe: result.safe };
+                this.invariantSupport.set(solid, proof);
+              }
+              if (proof.safe) continue;
+            }
             ensure(
               this.contactChecks + 2 <= MECHANICAL_CONTACT_LIMITS.pairChecks,
               "LIMIT_EXCEEDED",
@@ -1209,6 +1265,7 @@ export class PlayMechanism {
     let last = before;
     this.contactChecks = 0;
     this.contactEnumeration = 0;
+    this.invariantSupport.clear();
     this.blocked = false;
     this.reason = undefined;
     let visited = 0;
