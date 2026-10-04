@@ -245,7 +245,7 @@
       "dynamicMechanisms": {
         "optIn": "play.enter dynamicRigIds (UI: Play > Mechanism physics > Dynamic)",
         "engine": "@dimforge/rapier3d-compat@0.21.0 (bundled, Apache-2.0)",
-        "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces",
+        "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces; prismatic bodies on anchored carriers directly retain their constrained world orientation under obstruction, while mobile carriers retain native relative rotation; centered compound children compose position and orientation through the authored frame",
         "joints": [
           "fixed",
           "revolute",

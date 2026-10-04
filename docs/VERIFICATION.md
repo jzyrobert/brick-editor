@@ -1,5 +1,34 @@
 # Verification — 27 September 2026
 
+## Centered collision children in rotated builds — 4 October 2026
+
+Native compound children now compose both position and orientation through the
+authored group frame. A new 37° oblique test checks actual containment in the
+physics and walking-mirror worlds, including refusal at the old unrotated center.
+The combined parent regression run passes **47 cases across six files in 44.56
+seconds**. The fresh build passes, including TypeScript (Vite: 36.63 seconds),
+and the rendered Dynamic lift/offline Technic reload checks pass in **39.9
+seconds**. Rapier remains only in lazy `session-vZSJO0zJ.js` (4,483,783 bytes).
+Generated files remain unchanged; port 4397 is stopped. See
+[constraint and pose scope](reviews/ANCHORED-SLIDER-CONSTRAINT.md).
+
+## Anchored slider obstruction and retry — 4 October 2026
+
+The parent integrates the fixed-carrier prismatic rotational-lock repair and
+passes **46 focused cases across six files in 36.56 seconds**: new straight and
+37° oblique obstruction/retry, responding foreign contacts, mobile-carrier
+rotation, existing dynamics, moving platforms, grippers and both native and
+kinematic loop constraints. TypeScript and full formatting pass. No authored
+pose, mass, effort or contact allowance is changed by this repair.
+
+The production build passes (Vite: 43.65 seconds). Two relevant production-browser
+checks pass in 54.7 seconds: rendered Dynamic lift carrying/release and installed
+offline Technic reload/control. WASM occurs only in lazy
+`session-D4A4P-ir.js` (4,483,767 bytes), not the initial app asset. Generated files
+remain unchanged; owned port 4397 is stopped. See
+[constraint scope](reviews/ANCHORED-SLIDER-CONSTRAINT.md). Corrected rack geometry
+and back-drive acceptance remain separate and open.
+
 ## Corrected housing and native support diagnostics — 4 October 2026
 
 The parent freezes the new 900-region positive-interval housing construction and

@@ -1174,3 +1174,20 @@ retained, with native primitive viability checked separately. Full source/native
 coverage, loaded response, mobile carriers and both production modes remain
 unaccepted. This supersedes earlier candidate diagnostics, without removing the
 rack Play refusal. See [verification](VERIFICATION.md#corrected-housing-and-native-support-diagnostics--4-october-2026).
+
+## Keep fixed sliders aligned through obstruction (4 October 2026)
+
+Prismatic bodies attached to anchored carriers now directly retain their already
+constrained world orientation under load. Native relative joints still allow
+moving carriers to turn. Straight/oblique obstruction and retry, responding
+foreign blockers and mobile rotation pass focused checks, with existing
+platform, gripper and loop behavior retained. The rendered Dynamic lift and
+offline Technic scene pass production checks. See
+[verification](VERIFICATION.md#anchored-slider-obstruction-and-retry--4-october-2026).
+This repairs slider stability; corrected rack proxy/contact acceptance stays open.
+
+Centered collision pieces now rotate their positions and orientations together
+through an authored frame. An oblique native/walking-mirror containment
+regression verifies the placement; final focused integration passes 47 cases,
+with a fresh production build and both relevant online/offline browser checks.
+See [verification](VERIFICATION.md#centered-collision-children-in-rotated-builds--4-october-2026).

@@ -270,3 +270,99 @@ shared-lattice private bearing trial reaches forward **149.99999316°/−78.5398
 **−15.27886278°/+8.000000715 LDU**. Source/native coverage, loaded back-drive,
 carrier response and both production Play modes remain unaccepted; the temporary
 rack refusal stays in place.
+
+## Complete projected native admission and motion checkpoint
+
+The full private native realization retains every source region: **871 explicit
+convex hulls, 53 triangles and three segments**, for **927 native children**.
+Per-cell exact-identical projected vertices are deduplicated before remapping
+convex face indices; no coordinate is displaced or source support discarded.
+The independent parent reconstruction admits all children; every rank-three
+centroid is contained and every rank-three region reports positive native volume.
+Their summed native volume is 1.398891642874 m³; the complete compound reports
+1.398891568184 m³. This is admission and centroid evidence, not complete native
+support or source-volume certification. Frozen exact-facet file SHA-256:
+`eeccb8d61c7ae2e7e4be5a3b2cf8de7c242a8591497469dce8ee4ff43b8d31e5`.
+Parent evidence: `.local/housing-native-exact-98a2d00/`.
+
+The child's 102 native material/void controls pass, including the formerly
+omitted strip witness. With full 1,245-child rack and 1,485-child driver proxies,
+anchored total is 3,657; adding the mobile frame's 260 bearing children gives
+**3,917**, within the unchanged 4,096 cap. Dynamic forward/reverse each complete
+after 900 ticks at **149.99999823°/−78.53982210 LDU** and
+**−15.27886356°/+8.000000715 LDU**. The +1 LDU guide-plane negative restores four
+responding cheek callbacks and excludes zero, records 1,003.176 N contact and
+corrects the first-step Z offset to 0.2582 LDU. The same source-bound geometry in
+the private Kinematic query path completes both targets after 180 ticks each:
+**150°/−78.53981634 LDU**, then **−15.27887454°/+8 LDU**. Source JSON stays exact.
+
+A correctly refreshed mobile native compound returns force to its carrier and
+preserves total X momentum: initial 0.999999999988 N·s, after 30 ticks
+0.999998717731 N·s, carrier velocity +0.002373042 m/s. This short impulse witness
+does not verify full powered mobile travel or rotated production shape placement.
+Load diagnostics slow the motor under a heavy rack. Before the separate slider
+repair, the original translation-locked stall/release criterion fails due to
+rotational drift.
+Extra iterations alone do not repair it. A scoped redundant rotation lock for
+an anchored prismatic carrier passes the private release criterion and requires
+separate regression/integration checks. Back-drive magnitude remains under
+investigation with refreshed native mass/inertia; relation alone is not full
+acceptance. No production gate is removed by these results.
+
+The full powered mobile diagnostic subsequently uses actual relative quaternion
+and transverse guide alignment. It completes forward/reverse after 900 ticks
+each at **149.998606°/−78.538933 LDU** and
+**−15.728136°/+8.234209 LDU**, within the existing 0.5 LDU tolerance. Its free
+carrier turns substantially (`q=[−0.05915,−0.05034,0.16344,0.98349]`); this does
+not reuse the anchored helper's absolute-orientation check. Source remains exact.
+Rotated production child positions still require integration verification.
+
+An independent exact finite certificate verifies all 900 matched pointsets and
+8,060 projected vertices, all 6,008 complete rank-three supporting facets,
+all 26 planar canonical polygons and their 53 fan triangles, and all three
+segment endpoints. Convex combinations of matched vertices prove the two
+**solid unions** have Hausdorff distance at most
+**0.000005954900141 LDU** in the fixed part frame, including rank collapse.
+This uses an upward bound on exact squared binary-rational displacements from
+source coordinates scaled by 1/50. It excludes boundary Hausdorff distance,
+original source-volume correctness, native implementation/query behavior and
+rounded world transforms. Private exact check/proof:
+`.local/housing-volume-certifier/{native-realization-certificate.json,
+NATIVE-REALIZATION-PROOF.md}`.
+
+The canonical-driver private oblique mobile proof also completes both targets:
+**150.005256°/−78.544495 LDU**, then **−16.020470°/+8.382545 LDU**. It composes
+unchanged canonical driver/rack/housing geometry through the authored 37° pose;
+its actual child count is **3,909** (eight fewer posed bearing fragments).
+Native coupled angular impulse error is at most 1.90154e-7 kg·m²/s. Current
+world-Float32 gear-skin preparation still refuses two regions in this oblique
+fixture. Source-bound canonical geometry capture/integration is required; the
+successful private canonical replacement does not approve that production path.
+
+A controlled friction-zero, same-mass 1 N·s rack impulse back-drives the pinion
+**−13.475581°** with **+7.055887 LDU** rack travel, satisfying the original
+magnitude criterion without changing the angle threshold or disabling core
+contacts. Default friction strongly opposes the small impulse; force events
+identify rack/housing contacts, while post-step cached compound manifolds do not
+reveal the active earlier constraints. This verifies ideal coupling in the
+explicit frictionless setting. Responding source regions/normals still require
+classification before assigning the default resistance to legitimate guide fit.
+
+The source review now certifies every point of all **3,212 actual compiled source
+triangles** maps into the candidate solid union within **0.0012 LDU**, using exact
+rational clipping and constructive convex-combination witnesses. Every positive
+rational projected area is retained. This is surface-to-solid coverage; it cannot
+by itself prove material-interior coverage or unfilled cavities. Private reviewed
+aggregate: `source-facet-coverage-certificate.json` and
+`SOURCE-FACET-COVERAGE-PROOF.md` in the housing-review checkout.
+
+Separate finite void evidence certifies disjointness of all 900 candidate hulls
+from **20 reviewed negative primitive cores**, across all **18,000 pairs**:
+18 connector/beam bore intervals, blind half-slot 402 and blind half-cone 406.
+Each support plane is eroded by at most 0.001200000000000033 LDU; geometry is
+unchanged. All pair tests separate or prove exact bounded-polytope emptiness.
+This preserves those finite void cores; rectangular windows, other curved
+pockets and source semantic union masks remain independent obligations.
+Private result SHA-256:
+`3994d441d4a7fb490dbae08901d32e7a073a8f874515dce69f171b516c5bf691`.
+These certificates do not remove the production rack gate.
