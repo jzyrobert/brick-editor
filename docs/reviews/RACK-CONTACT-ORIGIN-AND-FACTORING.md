@@ -55,3 +55,16 @@ Native admission and native volume remain distinct issues:
 - Subdividing only the four failed cells in Z into 64/32/64/32 layers admits **1,043 centered native convex hulls**, preserving their regions. Mathematical volume remains 0.781246041028 m³; summed native reported volume is 0.781227145615 m³ (error -1.88954e-5 m³, approximately -0.002419%). The maximum measured displacement introduced by child-position and local-vertex Float32 conversion is **6.10e-6 LDU**. This bound excludes later body/world rotation and translation rounding. The compiled source also uses Float32; no universal exact-decimal representation is claimed.
 
 Both alternatives still fail the native physical comparison with the complete original housing and unchanged 90°/s authored velocity motor after 180 ticks: 855 explicit prisms give **0.810314° / -0.213630 LDU**, and 1,043 centered hulls give **1.162368° / -0.396464 LDU**. Neither is production support. No global child budget is raised, no nonnested material is discarded, and no guide-wide mating exclusion is added. A complete reviewed hollow housing and successful physical acceptance are still required for a mobile carrier.
+
+The [oriented housing material review](RACK-SOURCE-REVIEW.md#oriented-housing-material-review-roof-ribs-and-blind-slot)
+now resolves the roof/rib and crossbrace section branches from the pinned
+primitive directions. Roof-side portions within Y `[-11,-6]`, absolute Z
+`[10,14]`, are internal unions at the five reviewed rib-side X planes. The
+crossbrace's X `123` recess wall is internal over its intervening Y interval;
+the omitted X `131` recess-wall segment joins the outer connector beam.
+Neither branch is a contour crack to close. Two certified roof-material
+controls have winding approximately 0.47, so an uncalibrated threshold would
+erase real material. The review also gives explicit positive/negative faceted
+blind-slot controls. It does not establish a completed housing compound,
+finite whole-housing coverage, native admission, contact acceptance or a
+successful mobile-carrier budget.

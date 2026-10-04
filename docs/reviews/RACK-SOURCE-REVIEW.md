@@ -312,3 +312,173 @@ paired candidate's count is not evidence that a complete faithful partition fits
 A candidate must preserve windows, pockets, through holes, the blind-slot throat,
 its cap and curved stop, then undergo independent section coverage and native
 contact acceptance before becoming supported geometry.
+
+## Oriented housing material review: roof, ribs and blind slot
+
+An independent source-only review on 2026-10-04 resolves the two large graph
+branches without using a winding threshold or joining nearby vertices. It reads
+the literal pinned `18940.dat` and its 51-file closure, expands primitive matrices
+and `BFC INVERTNEXT`, and retains source file/line ancestry for every face. The
+literal part hash matches the provenance table above. Expansion gives 1,812
+source polygons and 3,212 triangles, agreeing with the renderer audit. Line
+numbers below refer to the unchanged literal `18940.dat`, including blank lines.
+The derived interpretation attributes Philippe Hurbain's CC BY 4.0 source and
+the credited authors of its pinned primitives; no library file was altered.
+
+For an outward-oriented face with normal `n` and a point `p` on it, the local
+material side is `n·(q-p)<0`. This is a **local** statement within the face's
+authored footprint. It is not an instruction to intersect every source plane:
+the source includes internal faces from adjoining partial primitives. Material
+joins must first be recognized from their adjoining positive regions and the
+negative features they bound.
+
+### Roof/rib union and the apparent 1.875-LDU gap
+
+The two `box2-5.dat` placements on lines 120–121, mirrored on 308–309, supply
+roof upper faces at Y `-6` and outer-depth faces at absolute Z `14`. Their X
+spans are **`[-90,97]` and `[-107,-93]`**, respectively. They are partial
+surface primitives, not complete independent solid boxes. Together with the
+inner roof, cheeks and ribs, they establish positive material in Y `[-11,-6]`
+over these X spans for absolute Z `(10,14)`. The middle rib spans X `[-93,-90]`.
+At the right end, line 199 supplies the Y `-6` face over X `[100,113]` in the same
+depth interval; line 143 closes that end region at depth 14. The third rib spans
+X `[97,100]`.
+
+The three rib upper facets, lines 93–95 and 281–283, have outward +Y normals
+and the plane `Y=-1.1(u-10)`, where `u=abs(Z)`. Their material lies below that
+Y plane. Their side faces on X `-107,-93,-90,97,100` extend into the adjoining
+roof material. Accordingly, **clip** those side faces at Y `-6` for `10<u<14`:
+the portions with `-11<Y<-6` are internal union faces; the portions above `-6`
+remain exterior rib faces. Keep the X `-110` cheek exterior. Do not remove the
+entire rib side or extend this mask into depths above 14, where the exposed roof
+upper boundary changes to Y `-11`.
+
+At section Z `11.5`, the retained diagnostic graph's X `-107` branch consists
+of triangle 182 over Y `[-6,-6.75]` and triangle 183 over `[-6.75,-7.875]`.
+Both intervals are internal. At Z `13.5`, the corresponding intervals are
+`[-6,-7.75]` and `[-7.75,-10.375]`, also internal. Their 1.875-LDU and
+4.375-LDU branch lengths are geometry from the source triangulation, not cracks
+to be welded or contour edges to be closed.
+
+The following independently chosen controls demonstrate why threshold 0.5 would
+be wrong. Both points of every row are material by the roof/rib union; the
+reported winding merely diagnoses the nonmanifold surface representation.
+
+|    Z |       Y | Material point left of X `-107` / winding | Material point right of X `-107` / winding |
+| ---: | ------: | ----------------------------------------- | ------------------------------------------ |
+| 11.5 | -7.3125 | `(-107.01,-7.3125,11.5)` / 1.457697       | `(-106.99,-7.3125,11.5)` / 0.469743        |
+| 13.5 |  -6.875 | `(-107.01,-6.875,13.5)` / 1.457231        | `(-106.99,-6.875,13.5)` / 0.467151         |
+| 13.5 | -9.0625 | `(-107.01,-9.0625,13.5)` / 1.477809       | `(-106.99,-9.0625,13.5)` / 0.488222        |
+
+Additional controls on both sides of all five masked X planes, at these three
+section coordinates, establish the same material interpretation. Conversely,
+`(-107.1,-5,11.5)` is rib material and `(-106.9,-5,11.5)` is void: above Y `-6`
+the rib side must remain. Controls at rib upper facets use Y `T(u)-0.05` as
+material and `T(u)+0.05` as void at X `-108.5`, for depths `11.5,13.5,16,19`.
+This preserves the real rib slope and distinguishes its upper void.
+
+### Crossbrace union and the apparent 2.91991-LDU gap
+
+The long X `123` face on lines 188/376 points toward +X, so its material lies
+to the left; it is the inner wall of the two right recesses. The X `131` faces
+on lines 200–201 and 388–389 point toward **-X**, so their material lies to the
+right in the outer connector beam. They are opposing recess walls. Their gap
+over Y approximately `[-16.55595,-13.63605]` is the intervening positive
+crossbrace's internal join to the beam, not a missing exterior wall.
+
+For `2<u<10`, clip the long X `123` face at Y `-16.5559` and `-13.636`:
+discard its intervening portion as internal material, retaining its portions
+within the two recesses. The brace occupies X `[123,131]` over this Y interval
+and joins positive material on both sides. Do not invent a cap at X `131` or
+close the brace interval into another hole. The slight endpoint discrepancies
+between literal end facets and transformed rectangles remain the separately
+recorded coordinate-precision issue.
+
+At depths `3,6,9`, X `122.9,127,130.9,131.1` with Y `-15` are all material.
+X `127`, Y `-25` at those depths is void. In particular, the winding at
+`(130.9,-15,6)` is 0.945511 and at `(131.1,-15,6)` is 0.948407; these two
+positive controls corroborate the source-oriented join. Treating the latter
+point as exterior would reverse the recess-wall semantics.
+
+For `10<u<14`, the inner recess wall changes to X `134.5-1.25u`, with material
+to its left. The crossbrace's outer wall changes to X `141-1.2u`, also with
+material to its left. The intervening brace remains positive; the long inner
+recess wall is internal within the brace's Y interval. Above depth 14, the brace
+continues through the authored polygon on lines 167/355 and its two slightly
+sloping Y sides on 195–196/383–384. Preserve their literal source edge equations;
+they include the previously recorded roughly 0.000397-LDU endpoint discrepancy.
+
+### Faceted blind slot: positive wall and negative throat
+
+Lines 402–409 describe one blind negative feature, not separate positive
+cylinder/cone solids. The inverted radius-10 half-cylinder runs along Y from
+`-49` to `-11` on the X≥110 half. Its facet normals point into the slot; material
+lies outside its pinned polygonal wall. In the positive-Z quadrant the outer
+XZ wall vertices, relative to `(110,0)`, are `(10,0)`, `(9.239,3.827)`,
+`(7.071,7.071)`, `(3.827,9.239)`, `(0,10)`; negative Z mirrors them. These
+segments, rather than a circular radius test, define X as a piecewise affine
+function of Z.
+
+At Y `-11`, `2-4ring4.dat` scales its inner radius 4 to 8 and outer radius 5 to
+10; the annular shoulder is positive material. The inverted `2-4con7.dat` maps
+its radius-8 ring to Y `-11` and radius-7 ring to Y `-9`. Material lies outside
+its eight pinned planar quadrilateral facets. Retain their supplied vertices
+and triangulation; an ideal cone equation would change the faceting. The
+radius-7 disc at Y `-9` has outward normal -Y: it closes the negative slot, with
+material on its +Y side.
+
+At Y `-25` and Z `0,5,8`, wall X values are `120`, `118.455071516646`,
+`115.680928044280`, respectively. Points 0.05 LDU to their +X side are material;
+points 0.05 LDU to their -X side are void. Additional controls are:
+
+| Feature               | Material         | Void             |
+| --------------------- | ---------------- | ---------------- |
+| Blind cap             | `(115,-8.95,0)`  | `(115,-9.05,0)`  |
+| Shoulder and throat   | `(119,-10.95,0)` | `(117,-10.95,0)` |
+| Cone at its halfway Y | `(117.55,-10,0)` | `(117.45,-10,0)` |
+
+The wall, shoulder, cone and cap controls have material winding `1.03..1.09`
+and void winding `0.03..0.09`. Their classification was chosen from primitive
+orientation and feature bounds before computing winding. They preserve the
+curved stop and its tapered throat rather than filling or opening the slot.
+
+### Coverage of tapered boundary interpretation and remaining work
+
+All 72 mixed-normal source triangles are accounted for by the six structural
+taper families and the two blind-slot families. The material-side directions
+are now reviewed:
+
+| Boundary                     | Local material side, within authored footprint |
+| ---------------------------- | ---------------------------------------------- |
+| Roof underside               | `Y >= 5-2u`                                    |
+| Right outer end/brace        | `X <= 141-1.2u`                                |
+| Left lip top                 | `Y <= -30-(u-3)/17`                            |
+| Upper ribs                   | `Y <= -1.1(u-10)`                              |
+| Left lower chamfer           | `Y >= -36-u`                                   |
+| Right inner recess wall      | `X <= 134.5-1.25u`                             |
+| Blind-slot cylinder and cone | Outside each source faceted negative wall      |
+
+These directions are local boundary interpretation, with internal union masks
+applied where described above. They are not a complete housing partition or a
+certificate obtained by intersecting all seven rows.
+
+The private evidence is in
+`/home/ubuntu/brick-editor-housing-review/.local/material-review.{py,json,log}`.
+It contains the 1,812-face source expansion with reviewed face ancestry and 79
+explicit material/void controls, including 30 positive controls on both sides
+of the roof/rib internal planes. No threshold was used to choose those controls.
+The private JSON SHA-256 is
+`bda0815c8285b62a1c42fbc6e63153a15b2ee38956def7859bd7c911dd4d11d2`;
+the source-expansion script SHA-256 is
+`091aff0fbba0d508fab9f420c0d7b1597ee9e973c33f70442950994339249138`.
+The source-edge graphs supplied by the previous review remain in
+`/home/ubuntu/brick-editor-rack/.local/housing-contours-source-edges.json`.
+
+The roof and brace branches are resolved at the feature level. The small
+primitive/fill-face endpoint discrepancies, independent finite section coverage
+of a complete candidate, native child admission and the total child count remain
+to be established. Under the current 4,096-child limit, the measured mobile
+assembly with 1,043 rack children, 1,485 gear/shaft/bush children and 260 bearing
+children leaves **1,308 housing children**, not 1,500. No housing candidate has
+yet demonstrated faithful coverage within that capacity. None of this source
+review establishes loaded dynamic rack acceptance.
