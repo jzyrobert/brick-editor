@@ -81,7 +81,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 - [x] Carry walking actors on kinematic/dynamic platforms and seat drivers on dynamic vehicle chassis, with swept transfer, point-velocity detachment and ordered supported exits.
 - [ ] Runtime grab/release attachments, train-car walking, clutch strength and breaking assemblies.
 - [ ] Sliding, roller and lift doors (garage and roller doors in official sets are excluded today).
-- [ ] Compound-rig and arbitrary-frame authoring UI; auto-rig proposals beyond door leaves; advanced assembly planning.
+- [ ] Compound-rig and arbitrary-frame authoring UI; direct mechanical proposal review/entry UI and automatic non-door rig entry (read-only API drafts exist); advanced assembly planning.
 - [ ] Trains: coupling and uncoupling, walking about on a moving train, sloped track and ramps, crossings, flexible track, 4.5V/12V points, turntables, signals and level crossings that react, wheel spin and connecting rods, trains colliding with the rest of the build.
 - [ ] Movement and camera: corner assist round door jambs; a line-of-sight camera for tight interiors.
 - [ ] Figure: a choice of figures (heads, torso prints, hats) from the complete library; bent-knee seating for low cabins.

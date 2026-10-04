@@ -64,5 +64,6 @@ This establishes these planar examples and bounded failure behavior. It does not
 establish arbitrary spatial loop solving, automatic linkage recognition,
 branch selection from a cold singular pose, general internal contact safety,
 a compound-rig authoring interface or physical-phone performance. Authored [springs, ropes and ball resistance](PLAY-ACTUATORS.md) are
-a separate verified extension. Ball orientation limits, cylindrical joints and
-other actuators remain open. See [verification](VERIFICATION.md#closed-planar-linkages-3-october-2026).
+a separate verified extension. Authored [cylindrical bearings](PLAY-ACTUATORS.md#cylindrical-bearings)
+also support native axial travel, free spin and optional axial stops. Ball
+orientation limits and other actuators remain open. See [verification](VERIFICATION.md#closed-planar-linkages-3-october-2026).

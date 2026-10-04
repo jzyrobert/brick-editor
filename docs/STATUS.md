@@ -71,8 +71,8 @@ M0/M1 demonstrate the architecture and 200-part workflow, but the complete risk-
 - **M3 reliability:** automatic portable-library installation and audited colour-configuration redistribution; broader stateful-metadata export coverage; comprehensive asset/texture/native migrations; broader storage recovery coverage; user lighting/clipping controls and broader graphics-driver recovery coverage; incremental renderer change sets and broader instancing performance measurements; larger security corpus and physical-device budgets.
 - **M3 inventory:** verified composites/decomposition; historical invalid-combination data beyond curated coverage; inventory override undo under future structural regrouping; all optional Wanted List price/quantity fields; fixture packs for printed/left/right variants; human-authorized BrickLink destination upload test (**not performed**). No purchases, uploads, credentials or accounts were used.
 - **M4:** connector families beyond studs, side studs, jumpers and door hinges (clips and bars, brick hinges and hinge plates, Technic pins and axles, side anti-studs and brackets; LDCad shadow data only with its own licence review); texture rendering beyond the official `!TEXMAP` images (embedded `!DATA` images, gloss maps, texture mapping over part references) and offline packs; instruction callouts/arrows/exploded offsets, assembly drafts; remaining exploration acceptance, advanced rig authoring and larger collision fixtures.
-- **M5:** implemented items are listed under "Motors, dynamic physics and automatic doors" below. Remaining: PL-03 evidence on real phone hardware; riding moving platforms; seated driving of dynamic vehicles.
-- **M6:** a first optional dynamic slice is implemented (rigid assemblies, motorised joints, suspension vehicles, pushing). Remaining: clutch/breaking behaviour, compound-rig and arbitrary-frame authoring UI, auto-rig proposals beyond official door leaves, advanced assembly planning, inventory-constrained generation and separately scoped collaboration.
+- **M5:** implemented items are listed under "Motors, dynamic physics and automatic doors" below. Moving-platform support and dynamic driver seats are now implemented with bounded transfer and exit checks (see the later checkpoint). Remaining: PL-03 evidence on real phone hardware and broader platform/seat compatibility.
+- **M6:** a first optional dynamic slice is implemented (rigid assemblies, motorised joints, suspension vehicles, pushing). Remaining: clutch/breaking behaviour, compound-rig and arbitrary-frame authoring UI, direct proposal review/entry UI and automatic non-door rig entry (reviewed read-only mechanical API drafts are implemented), advanced assembly planning, inventory-constrained generation and separately scoped collaboration.
 
 The user explicitly reprioritized working Play ahead of the unfinished P0 gates. Basic exploration now includes Rapier capsule walking, gravity/jump/steps/slopes, safe fly transitions, first-person and sphere-swept third-person cameras, an original rigid-joint toy figure with Minecraft-style limb animation, desktop pointer-lock mouse look, fixed 60 Hz ticks with render interpolation and editor-state isolation. Hinge/vehicle previews and explicit undoable pose application now have browser evidence; broader PL compatibility remains unverified; no complete P0 release is claimed.
 
@@ -1091,3 +1091,14 @@ large housing/rack forces after a common world translation, without Play hooks
 or compounds. Flags, partitioning and child recentering do not restore the full
 rig. The candidate housing volume also fails source coverage and remains private.
 Both rack Play modes remain unaccepted. See [source review and reproduction](reviews/RACK-SOURCE-REVIEW.md#reproducible-translation-sensitive-contact-probe).
+
+## Offline Technic mechanism witness — 4 October 2026
+
+An explicit offline install now has a targeted production-browser witness for
+the pinned 13-part 8:24 drive and pin arm. After network disconnection and a fresh
+reload/import, Dynamic Play drives the geared accessories through the held
+control and positions the independent arm. Complete query, LDraw export and
+inventory remain exact after exit. All fixture dependency chunks are cached,
+and the WASM-bearing lazy Play asset is served by the service worker. Extracting
+the pure seat-point calculation also removes the native engine from the initial
+app asset. See [verification](VERIFICATION.md#offline-technic-mechanism-witness--4-october-2026).

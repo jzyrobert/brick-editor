@@ -1505,3 +1505,46 @@ containment tests including all 32 teeth/gaps, and zero mismatches in 16,804
 source occupancy samples. Complete native motion still stalls. The private
 housing approximation fails source controls, so its failed motion trials cannot
 establish source-correct housing behavior. See [the bounded evidence and limits](reviews/RACK-SOURCE-REVIEW.md#private-thick-section-candidate-review).
+
+## Offline Technic mechanism witness — 4 October 2026
+
+`tests/browser/offline-mechanisms.spec.ts` exercises the original 13-part CC0
+8:24 shaft/gear and pin-arm arrangement using actual pinned official geometry.
+It renders the source online, explicitly installs the offline snapshot, verifies
+all 13 required complete-library chunks are cached, disconnects Chromium's
+network, reloads, and re-imports the source into fresh page memory. Dynamic Play
+then initializes from the cached WASM-bearing asset. The test requires that
+asset to remain unloaded until Play entry and to arrive through the service
+worker while offline.
+
+Held keyboard control advances the sole motor beyond 90°, the output retains
+its signed 3:1 phase, all eight shaft/gear/bush accessories move, release brakes,
+and the independent pin arm reaches 45°. Exiting preserves the complete query,
+LDraw export bytes and inventory preview. The source still contains 13 physical
+occurrences. The unchanged preview resolves four purchasing units; the witness
+does not claim mappings for every Technic occurrence. No page errors are accepted.
+
+The isolated production build passed (Vite 57.42 s), and the focused browser
+witness passed in 57.6 s on SwiftShader at 1440×1000. This is offline behavior and
+source-preservation evidence, not a physical-phone or frame-rate measurement.
+A focused evidence replay passed in 35.6 s: input 179.7579°, output −59.9180°,
+arm 45.0000°. All 83 observed page responses (49 unique URLs) came through the
+service worker, including one lazy session-asset response. Source parts are
+loaded directly from their verified Cache Storage entries, so those cache hits
+do not appear as page network responses. The private preview used port 4402 and
+was stopped afterward. Final type-check and formatting checks passed.
+
+The preceding baseline also passed offline, but exposed an eager dependency:
+Rapier's embedded WASM was in the main 9,503,376-byte asset. Moving the pure seat
+point calculation out of the native collision module keeps that dependency
+behind Play entry. The resulting main asset is 5,157,900 bytes without WASM;
+`session-DWgQd3lE.js` is the lazy 4,477,946-byte WASM-bearing asset. All emitted
+assets are already covered by the opt-in snapshot; no new caching policy,
+runtime assets or dependencies were introduced. Bundle filenames are this
+checkpoint's observations, not a public API.
+
+The verified source-only extraction has SHA-256 hashes:
+
+- `src/play/seated-profile.ts`: `17d41242ecfbe66e67506a47067c810a5a636ac07a323ee63b9463c0a5b81933`
+- `src/play/vehicle-seat.ts`: `9a5e3b07becae8811ef8c2b7e20dbb5ac1d0dad7c321af7fbf9d9a20fbe4ff4d`
+- `src/play/browser.ts`: `31d4c1fdfece4821bc20a0e5ff3e49591519b2c35553fca702a24a321997f5c8`
