@@ -36,6 +36,10 @@ export type MechanicalFeature = AxisFeature &
         normal: Vec3;
         mate: string;
         minimumEngagementLdu: number;
+        /** Positive source stop, measured from guide center along its axis.
+         * Only guides use these fields; inferred travel keeps the margin. */
+        positiveStopOffsetLdu?: number;
+        stopClearanceLdu?: number;
       }
     | { kind: "finger-hinge"; fingers: 2 | 3; leafDirection: Vec3 }
   );
@@ -214,7 +218,7 @@ export const MECHANICAL_PARTS: Readonly<Record<string, MechanicalPartProfile>> =
       sourceSha256:
         "3c913080b5efe9412212ee2b6c9745bb9e2af386458c1dd03c008487150796f4",
       review:
-        "Outrigger housing: X sliding channel, paired Y walls -13/-27 and Z cheeks ±10..20 over X -60..100. Reviewed ideal guide for the 18942 web, with at least 40 LDU engaged; external pin holes not reviewed.",
+        "Outrigger housing: X bottom-beam channel centered Y -20, paired Y walls -13/-27 and Z cheeks ±10..20 over X -60..100. Rack end first crosses right housing at global X > -29 for rack Y -20; keep 1 LDU before this stop. Minimum 40 LDU engaged; external pin holes not reviewed.",
       features: [
         {
           id: "rack-channel",
@@ -223,8 +227,10 @@ export const MECHANICAL_PARTS: Readonly<Record<string, MechanicalPartProfile>> =
           axis: [1, 0, 0],
           span: [-80, 80],
           normal: [0, -1, 0],
-          mate: "18942-web",
+          mate: "18942-bottom-beam",
           minimumEngagementLdu: 40,
+          positiveStopOffsetLdu: -49,
+          stopClearanceLdu: 1,
         },
       ],
     },
@@ -232,16 +238,16 @@ export const MECHANICAL_PARTS: Readonly<Record<string, MechanicalPartProfile>> =
       sourceSha256:
         "520a0f2b01ecb61112cebba1d75d972503930b4add5bf3b8492562087745e686",
       review:
-        "Outrigger rack: web X -121..139, Y -19..-9, Z ±10; toothr placements X -112..136, Y -22.5, facing -Y, 8-LDU spacing. Ideal nominal module 2.5 rolling pitch at Y -25; keyed/end holes not reviewed.",
+        "Outrigger rack: bottom beam centered Y 0, Z ±10, bearing span X ±130; narrow web X -121..139, Y -19..-9, Z ±2. Fits housing with bottom-beam center Y -20, not web center. Toothr placements X -112..136, Y -22.5, facing -Y, 8-LDU spacing; ideal module 2.5 pitch Y -25. Keyed/end holes not reviewed.",
       features: [
         {
-          id: "rack-web",
+          id: "rack-bottom-beam",
           kind: "rack-slide",
-          center: [9, -14, 0],
+          center: [0, 0, 0],
           axis: [1, 0, 0],
           span: [-130, 130],
           normal: [0, -1, 0],
-          mate: "18942-web",
+          mate: "18942-bottom-beam",
           minimumEngagementLdu: 40,
         },
         {

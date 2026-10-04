@@ -190,17 +190,31 @@ export function matchMechanicalFeatures(
     )
       return {
         reason:
-          "Rack web and housing channel need the reviewed alignment and orientation.",
+          "Rack bottom beam and housing channel need the reviewed alignment and orientation.",
       };
     const span = interval(b, a),
       engaged = overlap(a.span, span),
       minimum = Math.max(a.minimumEngagementLdu, b.minimumEngagementLdu);
     if (engaged < minimum)
-      return { reason: "Rack web has insufficient engagement in its housing." };
+      return {
+        reason: "Rack bottom beam has insufficient engagement in its housing.",
+      };
+    const offset = dot(subtract(b.center, a.center), a.axis),
+      upperStop =
+        a.positiveStopOffsetLdu === undefined
+          ? Infinity
+          : a.positiveStopOffsetLdu - (a.stopClearanceLdu ?? 0) - offset;
+    if (upperStop < -1e-6)
+      return {
+        reason: "Rack placement exceeds the reviewed housing end clearance.",
+      };
     return {
       ...axialBase(a, b),
       kind: "rack-guide",
-      limits: [a.span[0] - span[1] + minimum, a.span[1] - span[0] - minimum],
+      limits: [
+        a.span[0] - span[1] + minimum,
+        Math.min(a.span[1] - span[0] - minimum, upperStop),
+      ],
     };
   }
   if (a.kind === "spur-gear" && b.kind === "rack") {

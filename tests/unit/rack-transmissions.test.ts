@@ -42,28 +42,28 @@ describe("reviewed guided rack", () => {
     ]);
     expect(proposal.rig!.joints[1]).toMatchObject({
       kind: "prismatic",
-      limits: [-128, 112],
+      limits: [-88, 10],
     });
     expect(proposal.relations).toMatchObject([
-      { kind: "rack", pitchRadiusLdu: -10 },
+      { kind: "rack", pitchRadiusLdu: -30 },
     ]);
     expect(proposal.rig!.joints.filter((j) => j.motor)).toHaveLength(1);
   });
-  it("keeps accumulated shaft turns, reflected travel limits and native source unchanged", async () => {
+  it("keeps pinion motion, reflected travel limits and native source unchanged", async () => {
     const { project, proposal } = rackFixture(),
       rig = proposal.rig!,
       session = new KinematicSession(project, rig.id);
     const source = JSON.stringify(project);
-    const pose = session.setJointPosition("joint-0", 720);
-    expect(pose.pose.jointPositions["joint-1"]).toBeCloseTo(-40 * Math.PI, 9);
+    const pose = session.setJointPosition("joint-0", 150);
+    expect(pose.pose.jointPositions["joint-1"]).toBeCloseTo(-25 * Math.PI, 9);
     expect(
-      session.setJointPosition("joint-1", 100).pose.jointPositions["joint-0"],
-    ).toBeCloseTo(-1800 / Math.PI, 9);
+      session.setJointPosition("joint-1", 8).pose.jointPositions["joint-0"],
+    ).toBeCloseTo(-48 / Math.PI, 9);
     const before = session.snapshot();
-    expect(() => session.setJointPosition("joint-0", 740)).toThrow(/limits/);
+    expect(() => session.setJointPosition("joint-0", 180)).toThrow(/limits/);
     expect(session.snapshot()).toEqual(before);
     expect(() =>
-      session.setPose({ jointPositions: { "joint-0": 720, "joint-1": 0 } }),
+      session.setPose({ jointPositions: { "joint-0": 150, "joint-1": 0 } }),
     ).toThrow(/ratio/);
     expect(JSON.stringify(project)).toBe(source);
     const restored = await decodeNative(await encodeNative(project));
@@ -90,11 +90,18 @@ describe("reviewed guided rack", () => {
     const p = draft(project);
     expect(p.unresolved).toEqual([]);
     expect(p.rig!.transmissions).toMatchObject([
-      { kind: "rack", pitchRadiusLdu: -10 },
+      { kind: "rack", pitchRadiusLdu: -30 },
     ]);
     validateRig(project, p.rig!, true);
   });
-  it.each(["sideways", "reversed", "pitch-distance", "phase", "withdrawn"])(
+  it.each([
+    "sideways",
+    "reversed",
+    "pitch-distance",
+    "phase",
+    "withdrawn",
+    "stop",
+  ])(
     "refuses %s engagement instead of creating a fictitious guide",
     (failure) => {
       const { project } = rackFixture(),
@@ -103,6 +110,7 @@ describe("reviewed guided rack", () => {
       if (failure === "reversed")
         nodes[7].transform.basis = axisRotation([1, 0, 0], 180);
       if (failure === "withdrawn") nodes[7].transform.position[0] += 260;
+      if (failure === "stop") nodes[7].transform.position[0] += 12;
       if (failure === "pitch-distance")
         for (const i of [1, 2, 3, 4, 5, 6]) nodes[i].transform.position[1] -= 4;
       if (failure === "phase")
@@ -120,7 +128,7 @@ describe("reviewed guided rack", () => {
     rig.joints[1].axisA = [1, 0, 0];
     rig.joints[1].limits = undefined;
     expect(() => transmissionMap(rig)).toThrow(/limited/);
-    rig.joints[1].limits = [-128, 112];
+    rig.joints[1].limits = [-88, 10];
     rig.joints[1].motor = {
       mode: "velocity",
       target: 1,

@@ -6,7 +6,7 @@ import { axisRotation } from "./kinematic";
 import { proposeMechanicalRig } from "./mechanical-proposals";
 
 /** Original CC0 rack acceptance arrangement. Library geometry is referenced,
- * never copied: a retained 8-tooth pinion drives the reviewed outrigger rack. */
+ * never copied: a retained 24-tooth pinion drives the reviewed outrigger rack. */
 export function rackFixture() {
   const pose = (position: Vec3): Transform => ({ ...identity(), position });
   const row = (ref: string, t: Transform) => {
@@ -17,16 +17,16 @@ export function rackFixture() {
     [
       "0 Original CC0-1.0 guided Technic rack acceptance arrangement",
       row("18940.dat", identity()),
-      row("3701.dat", pose([24, -51, -20])),
-      row("3701.dat", pose([24, -51, 20])),
+      row("3701.dat", pose([24, -85, -20])),
+      row("3701.dat", pose([24, -85, 20])),
       row("3705.dat", {
-        position: [4, -41, 0],
+        position: [4, -75, 0],
         basis: axisRotation([0, 1, 0], -90),
       }),
-      row("3647.dat", pose([4, -41, 0])),
-      row("4265a.dat", pose([4, -41, -35])),
-      row("4265a.dat", pose([4, -41, 35])),
-      row("18942.dat", pose([0, -6, 0])),
+      row("3648b.dat", pose([4, -75, 0])),
+      row("4265a.dat", pose([4, -75, -35])),
+      row("4265a.dat", pose([4, -75, 35])),
+      row("18942.dat", pose([-40, -20, 0])),
     ].join("\n"),
   );
   const all = occurrences(project);
