@@ -1,3 +1,5 @@
+import { playSourceState } from "./helpers/play-source-state";
+import { realMechanismsFixture } from "./helpers/real-mechanisms";
 import { test, expect, type Page } from "@playwright/test";
 import { openMenuTab, openMode, openTool } from "./helpers/mode";
 import {
@@ -291,11 +293,12 @@ for (const viewport of [
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("./?automation=1");
     await page.waitForFunction(() => !!window.brickEditor);
-    await page.evaluate(async () => {
+    await page.evaluate(async (realFixtureBytes: number[]) => {
       const a = window.brickEditor!;
-      await a.project.import({ format: "template", template: "mechanisms" });
+      await a.project.import({ format: "native", bytes: realFixtureBytes });
       await a.ready();
-    });
+    }, realFixture.bytes);
+    const source = await playSourceState(page);
     const button = (name: string) =>
       page.getByRole("button", { name, exact: true });
     const check = async (state: string, list = PLAY_SLOTS) => {
@@ -356,11 +359,11 @@ for (const viewport of [
         report = await api.play.snapshot(),
         frame = report.mechanisms!.vehicle.groupFrames.chassis;
       return api.play.teleport({
-        position: [frame.position[0], -0.3, frame.position[2] + 60],
+        position: [frame.position[0] - 90, -0.3, frame.position[2] + 40],
         policy: "safe",
       });
     });
-    await page.getByRole("button", { name: "Drive vehicle" }).click();
+    await page.getByRole("button", { name: "Drive from here" }).click();
     await expect(
       page.getByRole("button", { name: "Stop driving" }),
     ).toBeVisible();
@@ -371,6 +374,7 @@ for (const viewport of [
         .outputPath(`play-hud-${viewport.width}x${viewport.height}.png`),
     });
     await page.evaluate(() => window.brickEditor!.play.exit());
+    expect(await playSourceState(page)).toEqual(source);
     expect(errors).toEqual([]);
     await context.close();
   });
@@ -637,3 +641,5 @@ for (const { name, viewport, insets } of [
     expect(errors).toEqual([]);
     await context.close();
   });
+
+const realFixture = realMechanismsFixture();

@@ -1,3 +1,5 @@
+import { playSourceState } from "./helpers/play-source-state";
+import { realMechanismsFixture } from "./helpers/real-mechanisms";
 import { expect, test } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 for (const width of [360, 1440])
@@ -16,15 +18,13 @@ for (const width of [360, 1440])
     try {
       await page.goto("/?automation=1");
       await page.waitForFunction(() => !!window.brickEditor);
-      await page.evaluate(async () => {
+      await page.evaluate(async (realFixtureBytes: number[]) => {
         const a = window.brickEditor!;
-        await a.project.import({ format: "template", template: "mechanisms" });
+        await a.project.import({ format: "native", bytes: realFixtureBytes });
         await a.ready();
-      });
+      }, realFixture.bytes);
       await openMode(page, "Play");
-      const source = await page.evaluate(() =>
-        window.brickEditor!.project.export({ format: "ldraw" }),
-      );
+      const source = await playSourceState(page);
       const initial = await page.evaluate(() =>
         window.brickEditor!.play.enter({
           rigIds: ["door", "vehicle"],
@@ -37,7 +37,8 @@ for (const width of [360, 1440])
         status: "ready",
       });
       const control = page.getByRole("button", {
-        name: /^Drive vehicle/,
+        name: "Drive from here",
+        exact: true,
       });
       if (width === 360) await control.tap();
       else await control.click();
@@ -100,11 +101,7 @@ for (const width of [360, 1440])
         "ready",
       );
       await page.evaluate(() => window.brickEditor!.play.exit());
-      expect(
-        await page.evaluate(() =>
-          window.brickEditor!.project.export({ format: "ldraw" }),
-        ),
-      ).toEqual(source);
+      expect(await playSourceState(page)).toEqual(source);
       expect(errors).toEqual([]);
       expect(
         await page.evaluate(
@@ -115,3 +112,5 @@ for (const width of [360, 1440])
       await context.close();
     }
   });
+
+const realFixture = realMechanismsFixture();

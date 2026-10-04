@@ -1,3 +1,4 @@
+import { playSourceState } from "./helpers/play-source-state";
 import { expect, test } from "@playwright/test";
 import { unzipSync, strFromU8 } from "fflate";
 import { openMode, openTool } from "./helpers/mode";
@@ -5,7 +6,7 @@ import { refusePointerLock } from "./helpers/pointer";
 import { exitPlay, fromPauseMenu } from "./helpers/play";
 
 for (const width of [360, 1080, 1440])
-  test(`open-bench entry driving and exit at ${width}px`, async ({
+  test(`roadster seat entry driving and exit at ${width}px`, async ({
     browser,
     baseURL,
   }) => {
@@ -27,16 +28,17 @@ for (const width of [360, 1080, 1440])
       await page.evaluate(async () => {
         await window.brickEditor!.project.import({
           format: "template",
-          template: "seated-vehicle",
+          template: "car",
         });
         await window.brickEditor!.ready();
       });
-      const authored = await page.evaluate(() => window.brickEditor!.query());
+      const authored = await playSourceState(page);
       await openMode(page, "Play");
       await page.evaluate(() =>
         window.brickEditor!.play.enter({
-          rigId: "vehicle",
-          position: [80, -0.3, -188],
+          rigId: "car",
+          position: [-90, -0.3, 40],
+          yaw: Math.PI / 2,
           realtime: false,
         }),
       );
@@ -67,11 +69,11 @@ for (const width of [360, 1080, 1440])
       expect(exitCard.y).toBeGreaterThanOrEqual(topBar.y + topBar.height + 4);
 
       expect(seated.occupancy).toMatchObject({
-        rigId: "vehicle",
+        rigId: "car",
         seatId: "driver",
         // The minifig sits with its hips on the cushion; the eye is at its print.
-        pelvisWorldLdu: [0, -46.5, -188],
-        effectiveEyeWorldLdu: [0, -104.5, -188],
+        pelvisWorldLdu: [0, -66, 40],
+        effectiveEyeWorldLdu: [0, -124, 40],
       });
       expect(seated.positionAnchor).toBe("seated-avatar-root");
       expect(seated.avatarVisible).toBe(false);
@@ -196,9 +198,7 @@ for (const width of [360, 1080, 1440])
       expect(outside.occupancy).toBeUndefined();
       expect(outside.positionAnchor).toBe("standing-feet");
       await exitPlay(page);
-      expect(await page.evaluate(() => window.brickEditor!.query())).toEqual(
-        authored,
-      );
+      expect(await playSourceState(page)).toEqual(authored);
       expect(errors).toEqual([]);
       expect(
         await page.evaluate(
@@ -343,7 +343,7 @@ test("blocked seat exits retain the driver and become usable after reversing cle
   await page.waitForFunction(() => !!window.brickEditor);
   await page.evaluate(async () => {
     const a = window.brickEditor!;
-    await a.project.import({ format: "template", template: "seated-vehicle" });
+    await a.project.import({ format: "template", template: "car" });
     const q = await a.query();
     await a.dispatch({
       schemaVersion: 1,
@@ -351,11 +351,11 @@ test("blocked seat exits retain the driver and become usable after reversing cle
       expectedRevision: q.revision,
       type: "parts.add",
       payload: {
-        parts: [-80, 80].map((x) => ({
+        parts: [-90, 90].map((x) => ({
           ref: "3005.dat",
           colorCode: "14",
           transform: {
-            position: [x, 0, -238],
+            position: [x, 0, -40],
             basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
           },
         })),
@@ -363,11 +363,13 @@ test("blocked seat exits retain the driver and become usable after reversing cle
     });
     await a.ready();
   });
+  const authored = await playSourceState(page);
   await openMode(page, "Play");
   await page.evaluate(() =>
     window.brickEditor!.play.enter({
-      rigId: "vehicle",
-      position: [80, -0.3, -188],
+      rigId: "car",
+      position: [-90, -0.3, 40],
+      yaw: Math.PI / 2,
       realtime: false,
     }),
   );
@@ -407,4 +409,6 @@ test("blocked seat exits retain the driver and become usable after reversing cle
   expect(
     (await page.evaluate(() => window.brickEditor!.play.snapshot())).occupancy,
   ).toBeUndefined();
+  await exitPlay(page);
+  expect(await playSourceState(page)).toEqual(authored);
 });
