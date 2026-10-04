@@ -24,6 +24,7 @@ import type { CollisionSnapshot } from "./types";
 import { surfaceCompound, surfaceCompoundLocal } from "./surface-compound";
 import { reviewedMechanicalMember } from "./reviewed-mechanical-proxies";
 import { prepareReviewedConvexRegions } from "./reviewed-convex-packet";
+import { doorLeafSolids } from "./door-leaf-solids";
 import {
   reviewedGuideAlignment,
   reviewedHousingGuideClass,
@@ -526,6 +527,9 @@ export function mechanicalSolids(
     "Mechanical source vertex budget exhausted",
   );
   const out: MechanicalSolid[] = [],
+    // Body, axial pin and handle covers keep separate support bounds. Combining them
+    // into one query compound recreates the whole-door support envelope.
+    separateDoorSlabs = new Set<MechanicalSolid>(),
     work = { value: 0 };
   for (const group of rig.groups) {
     if (
@@ -572,13 +576,21 @@ export function mechanicalSolids(
             };
           })
         : policy.bearings;
+      let doorPieces: Vec3[][] | undefined;
       let pieces = canonical
         ? (boreSolids(memberLocal as unknown as CollisionSnapshot, {
             ...occurrence,
             transform: identity(),
           }) ?? surfaceCompoundLocal(memberLocal, occurrence.node.ref))
         : occurrence
-          ? (boreSolids(mesh, occurrence) ?? rackSolids(mesh, occurrence))
+          ? (boreSolids(mesh, occurrence) ??
+            rackSolids(mesh, occurrence) ??
+            (doorPieces = doorLeafSolids(
+              mesh,
+              occurrence,
+              work,
+              MECHANICAL_CONTACT_LIMITS,
+            )))
           : undefined;
       if (!pieces) {
         const points: Vec3[] = [],
@@ -784,13 +796,19 @@ export function mechanicalSolids(
           "INVALID_INPUT",
           "A mechanical compound solid could not be prepared",
         );
-        if (relative) {
+        if (relative || doorPieces) {
           const raw = desc.shape.intoRaw();
           ensure(
             raw,
             "INVALID_INPUT",
             "This part cannot be checked safely. Try a simpler mechanism.",
-            { memberId: id, feature, stage: "canonicalNativeAdmission" },
+            {
+              memberId: id,
+              feature,
+              stage: relative
+                ? "canonicalNativeAdmission"
+                : "doorNativeAdmission",
+            },
           );
           raw.free();
         }
@@ -840,6 +858,7 @@ export function mechanicalSolids(
           ),
           ...(feature === "spur-gear" || feature === "rack" ? { feature } : {}),
         });
+        if (doorPieces) separateDoorSlabs.add(out[out.length - 1]);
         ensure(
           out.length <= MECHANICAL_CONTACT_LIMITS.solids,
           "LIMIT_EXCEEDED",
@@ -849,8 +868,9 @@ export function mechanicalSolids(
     }
   }
   const classes = new Map<string, MechanicalSolid[]>();
-  for (const solid of out) {
+  for (const [index, solid] of out.entries()) {
     const k = JSON.stringify([
+      separateDoorSlabs.has(solid) ? index : null,
       solid.groupId,
       solid.memberId,
       solid.feature,

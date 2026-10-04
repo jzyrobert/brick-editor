@@ -14,6 +14,7 @@ import {
 import { checkBuild } from "../../src/catalog/builds/check";
 import { curatedHas } from "../../src/catalog/full-library";
 import { occurrences } from "../../src/core/document";
+import { partsList } from "../../src/inventory/parts-list";
 import { modelHealth } from "../../src/core/health";
 import { deriveDoorRigs } from "../../src/play/auto-doors";
 import { deriveTrains, occurrenceBounds } from "../../src/play/trains";
@@ -234,7 +235,9 @@ describe("build-script samples", () => {
     "cathedral: in at the west door and up the stairs to the organ gallery",
     { timeout: 300000 },
     async () => {
-      const project = template("cathedral");
+      const project = template("cathedral"),
+        before = JSON.stringify(project),
+        inventory = partsList(project, occurrences(project));
       const { session } = await playIn(
         project,
         { min: [-260, -400, -960], max: [260, 10, -200] },
@@ -253,6 +256,8 @@ describe("build-script samples", () => {
         expect(up[2]).toBeLessThan(-600);
         // On the gallery (level 31: y -248).
         expect(up[1]).toBeLessThan(-240);
+        expect(JSON.stringify(project)).toBe(before);
+        expect(partsList(project, occurrences(project))).toEqual(inventory);
       } finally {
         session.dispose();
       }
