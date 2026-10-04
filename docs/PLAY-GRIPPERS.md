@@ -1,5 +1,10 @@
 # Reversible gripper attachments
 
+> **Engineering scope:** these mathematical/native fixtures remain available for
+> engine verification and lossless project storage. Ordinary Play requires real,
+> reviewed part connections and currently refuses these unbound mechanisms.
+> See [physical Play admission](PLAY-PHYSICS.md#physical-parts-in-ordinary-play).
+
 An authored gripper can attach a nearby loose rigid group during Dynamic Play,
 carry it through the existing native joint system, and release it back to ordinary
 physics. A grasp creates one temporary fixed joint at the bodies' **current**

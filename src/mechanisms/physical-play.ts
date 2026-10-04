@@ -78,6 +78,7 @@ export function physicalPlayEligibility(
       return false;
     const originals = new Map(rig.groups.map((g) => [g.id, g]));
     const matched = new Map<string, string>();
+    const signs = new Map<string, number>();
     for (const joint of rig.joints) {
       const a = mapped.get(joint.bodyA)!,
         b = mapped.get(joint.bodyB)!;
@@ -89,7 +90,9 @@ export function physicalPlayEligibility(
         mv(originals.get(joint.bodyA)!.frame.basis, joint.axisA),
       );
       const otherAxis = unit(mv(a.frame.basis, candidate.axisA));
-      if (dot(axis, otherAxis) < 0.999) return false;
+      if (Math.abs(dot(axis, otherAxis)) < 0.999) return false;
+      const sign = dot(axis, otherAxis) < 0 ? -1 : 1;
+      signs.set(joint.id, sign);
       const p = anchor(originals.get(joint.bodyA)!, joint),
         q = anchor(a, candidate);
       const delta = p.map((x, i) => x - q[i]) as Vec3;
@@ -98,16 +101,22 @@ export function physicalPlayEligibility(
         return false;
       if (
         joint.mating &&
-        (!candidate.mating ||
+        (distance(p, q) > 0.5 ||
+          !candidate.mating ||
           joint.mating.radiusLdu > candidate.mating.radiusLdu + 0.01 ||
           joint.mating.halfLengthLdu > candidate.mating.halfLengthLdu + 0.01)
       )
         return false;
-      if (
+      const limits =
         candidate.limits &&
+        (sign > 0
+          ? candidate.limits
+          : [-candidate.limits[1], -candidate.limits[0]]);
+      if (
+        limits &&
         (!joint.limits ||
-          joint.limits[0] < candidate.limits[0] - 0.01 ||
-          joint.limits[1] > candidate.limits[1] + 0.01)
+          joint.limits[0] < limits[0] - 0.01 ||
+          joint.limits[1] > limits[1] + 0.01)
       )
         return false;
       matched.set(joint.id, candidate.id);
@@ -121,7 +130,15 @@ export function physicalPlayEligibility(
         t.kind,
         map ? map.get(t.jointA) : t.jointA,
         map ? map.get(t.jointB) : t.jointB,
-        t.kind === "spur" ? [t.teethA, t.teethB, t.axisSign] : t.pitchRadiusLdu,
+        t.kind === "spur"
+          ? [
+              t.teethA,
+              t.teethB,
+              t.axisSign *
+                (map ? signs.get(t.jointA)! * signs.get(t.jointB)! : 1),
+            ]
+          : t.pitchRadiusLdu *
+            (map ? signs.get(t.jointA)! * signs.get(t.jointB)! : 1),
       ]);
     const relations = (rig.transmissions ?? []).map((t) =>
       relation(t, matched),

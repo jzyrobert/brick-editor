@@ -1,3 +1,8 @@
+// These tests isolate browser capture/seat coordination using tiny mesh stubs.
+// Source admission itself is verified independently in physical-play.test.ts.
+vi.mock("../../src/mechanisms/physical-play", () => ({
+  requirePhysicalPlay: vi.fn(),
+}));
 import { movingSource } from "../helpers/play-moving-source";
 import { afterEach, expect, it, vi } from "vitest";
 import { Group, PerspectiveCamera, Vector3 } from "three";

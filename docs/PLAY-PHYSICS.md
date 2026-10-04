@@ -2,6 +2,29 @@
 
 This slice closes the remaining M5 items (joint motors and rotating axles, validated mechanism inputs in automation, posed-export controls, and hinged doors without manual rigging) and adds the first M6 slice: optional dynamic rigid assemblies, constrained joints with motors and dynamic vehicles with suspension (spec 19.3–19.5, M5/M6). Everything here is session state. Play never writes to the authored project; the only persisted additions are optional rig physics settings, which are saved through an explicit, undoable rig command.
 
+## Physical parts in ordinary Play
+
+Play admits manual mechanisms only when their source parts reproduce a reviewed
+hinge, retained shaft or guided rack connection. A powered joint additionally
+names a real motor occurrence through `motor.binding`. The initial supported
+motor is the official Power Functions M motor (`58120.dat`): its case must be
+stud-mounted to the bearing carrier and its keyed output must engage one actual
+axle without crossing the socket's closed back. See the
+[source review](reviews/POWER-FUNCTIONS-MOTOR-M-REVIEW.md).
+
+Mathematical rig data remains losslessly loadable and exportable. It does not
+make unsupported attachments controllable. Normal Play refuses virtual
+proximity grippers, unreviewed closed linkages, springs/ropes and generic ball or
+cylindrical joints until their actual part connections have reviewed profiles.
+Their engine fixtures and numerical tests remain engineering benches. Individual
+loose source solids may still fall and collide. Cars with a supported stable
+wheelbase and trains remain drivable without a motor part.
+
+Remote hand sliders set a target rather than jumping directly across the whole
+sweep. Rapid changes coalesce to the latest target each animation frame; doors
+approach it through checked steps at the existing rate. An obstruction still
+stops the motion, and paused/closed controls cancel pending input.
+
 ## Engine and dependency decision
 
 The spec proposes Rapier as the optional physics engine (spec 3.1). Play already bundled `@dimforge/rapier3d-compat@0.21.0` (Apache-2.0, lazy-loaded with the Play chunk) for the walking capsule. The dynamic slice uses the same pinned package: rigid bodies, impulse joints with motors, convex hulls and its ray-cast vehicle controller. No new dependency was added, so the dependency notices and lockfile are unchanged. The dynamic world is separate from the walking world. Exactly one dynamic step runs per fixed 60 Hz tick, independent of the extra query refreshes the walking world uses.
@@ -15,7 +38,7 @@ before using the existing controls. Reviewed spur meshes now produce coupled
 shaft relations in both kinematic and Dynamic Play. Reviewed guided racks also
 couple a pinion to a limited slider; direct session-only proposal entry remains open.
 
-Authored `motor` metadata on revolute and prismatic joints now runs in Play. Kinematic rigs have no forces, so a motor moves at a declared rate. Position motors travel to their target at 90 degrees/s or 40 LDU/s, reduced when necessary to respect a coupled shaft's speed bound. Velocity motors run at their target speed; continuously rotating axles retain accumulated turns so reduced outputs keep their phase. Each step uses the same swept actor-clearance check as other joint motion. A motor stops before touching the explorer, reports `blocked` and retries on later ticks. It reports `at-limit` at a limit and `holding` at its position target.
+A revolute joint with a verified physical motor binding runs in Play. Legacy anonymous motor metadata stays stored but cannot power a mechanism. Kinematic rigs have no forces, so a motor moves at a declared rate. Position motors travel to their target at 90 degrees/s or 40 LDU/s, reduced when necessary to respect a coupled shaft's speed bound. Velocity motors run at their target speed; continuously rotating axles retain accumulated turns so reduced outputs keep their phase. Each step uses the same swept actor-clearance check as other joint motion. A motor stops before touching the explorer, reports `blocked` and retries on later ticks. It reports `at-limit` at a limit and `holding` at its position target.
 
 Motors start running when Play starts. Remote controls fit and orbit the whole active mechanism while the explorer waits. Held **Reverse / Forward** buttons or the folded speed lever supply proportional session input; releasing brakes. **Brake** also stops live travel. Folded **Motor settings** offers **Stop motor / Run preset**, restoring the authored setting when requested. `play.setMotor({rigId,jointId,enabled,input?})` supplies the same controls: optional input from −1 to 1 requires an enabled motor; zero brakes and omitting input restores the preset. Rate, coupled speed and authored effort bounds remain in force. A manual joint command (slider, `setMechanismJoint`, joint target or the nearby action) stops the connected component's authored motor and replaces its earlier travel target. Reports carry effective mode/target, optional input, units, status and whether they are simulated at a kinematic rate or as a dynamic motor. Closing remote controls restores the explorer view.
 

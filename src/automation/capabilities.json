@@ -214,15 +214,10 @@
       "limbAnimation": "minecraft-style swing, idle sway, head follow, jump/fall/fly poses",
       "authoringIsolation": true,
       "poseApplication": true,
-      "readyToPlaySamples": [
-        "motor-gears",
-        "rack-drive",
-        "crank-slider",
-        "grab-lift"
-      ],
+      "readyToPlaySamples": ["motor-gears", "rack-drive"],
       "mechanicalProposals": {
         "api": "mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})",
-        "pack": "reviewed-mechanics-1; 17 source-bound official part profiles",
+        "pack": "reviewed-mechanics-1; 18 source-bound official part profiles",
         "contacts": [
           "stud-weld",
           "bearing",
@@ -246,7 +241,7 @@
         "physicalFitCertified": false,
         "sessionEntry": "mechanisms.tryProposal(proposalRequest, playRequest?, physics?): source-bound private Play project; Kinematic or Dynamic; every selected part assigned; unresolved contacts and authored ownership refused",
         "explicitSave": "mechanisms.saveProposal(proposalRequest): repeat source-bound review, then undoable rigs.upsert at authored rest pose",
-        "reviewInterface": "Play settings \u2192 Mechanisms: explicit visible assembly or Build selection, fixed parts, groups/joints/relations/ambiguities, one independent motor with bounded speed and effort, Try in Play, separate Save; session controls fit and orbit the whole mechanism"
+        "reviewInterface": "Explicit assembly/fixed-frame review; manual controls on supported real connections; motor choices only for a mounted, engaged Power Functions M motor; Try in Play, separate Save; whole-system orbit overview"
       },
       "dynamicMechanisms": {
         "optIn": "play.enter dynamicRigIds (UI: Play > Mechanism physics > Dynamic)",
@@ -347,7 +342,7 @@
             "colliderPairsPerGrab": 4096
           },
           "interface": "Contextual 44 px Grab/Release in the existing remote sheet; no actions for empty zones or Kinematic mode; overview includes selected rig and held foreign payload bounds only",
-          "scope": "Ideal authored attachment; no automatic jaw recognition, finger friction grasp, break strength or articulated payload recruitment"
+          "scope": "Engineering fixtures only: ordinary Play refuses proximity fixed attachments until actual jaws and grasp contacts are reviewed"
         }
       },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
@@ -402,7 +397,7 @@
         "kinematic": "Position motors travel at 90 degrees/s or 40 LDU/s; velocity motors run at their target; swept actor checks block and auto-retry",
         "dynamic": "Rapier joint motors with maxEffort",
         "control": "play.setMotor({rigId,jointId,enabled,input?}); optional input in [-1,1] requires enabled:true and overrides session velocity at bounded rate/effort; zero brakes, omitted input restores the authored preset; manual joint commands stop the component's motor",
-        "remoteControls": "One usable independent revolute/prismatic motor/joint control at a time; held reverse/forward and proportional speed with release-to-brake; passive transmission and loop coordinates are not editable; rack feedback carries mixed degree/LDU units",
+        "remoteControls": "Usable source-bound motor or manual joint controls; rapid hand sliders coalesce to one latest target per animation frame and travel through checked steps; paused or closed controls cancel pending input",
         "overview": "Remote controls fit every live group bound into the canvas area clear of the status bar and control sheet; orbit and closer zoom inspect the mechanism, Fit restores the whole system; walking controls are hidden; leaving restores the explorer view; successful seat/train/vehicle context changes switch to the active driving or riding view; refused transitions retain the overview; play.view() reads the rendered camera and overview rig ID"
       },
       "automaticDoors": {
@@ -422,6 +417,12 @@
         "limits": "0.5 LDU arc subdivisions, at most 128 per transfer; native capsule has 1 LDU safety padding",
         "blocking": "Kinematic carry refuses unsafe pose; dynamic blocked carry restores native contact and detaches without assigning body pose or velocity",
         "scope": "Standing/walking only; no rider mass, friction model, runtime grab/release or walking around train cars"
+      },
+      "physicalAdmission": {
+        "source": "Ordinary UI and automation Play admit only reviewed actual hinges, retained shafts and guided racks; unsupported authored engineering rigs remain losslessly stored and static",
+        "power": "JointSpec.motor.binding names source-reviewed 58120.dat with real stud-mounted case, connected bearing carrier and engaged keyed axle output",
+        "exceptions": "Gravity/collision for loose source solids, source-supported stable-wheelbase vehicles and trains need no motor",
+        "unsupported": "Proximity grippers, unbound motors, closed linkages, force links, generic spherical/cylindrical joints require real reviewed part profiles before ordinary Play"
       }
     },
     "sharing": {

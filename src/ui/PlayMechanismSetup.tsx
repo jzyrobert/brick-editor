@@ -52,12 +52,17 @@ export function PlayMechanismSetup({
   const [anchors, setAnchors] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [name, setName] = useState("My mechanism");
-  const [driver, setDriver] = useState(
-    () =>
-      Object.entries(review?.proposal.drivers ?? {}).find(
-        ([, id]) => review?.request.motors?.[id],
-      )?.[0] ?? "",
-  );
+  const [driver, setDriver] = useState(() => {
+    const entry = Object.entries(review?.proposal.drivers ?? {}).find(
+      ([, id]) => review?.request.motors?.[id]?.binding,
+    );
+    return entry
+      ? JSON.stringify([
+          entry[0],
+          review!.request.motors![entry[1]].binding!.occurrenceId,
+        ])
+      : "";
+  });
   const [speed, setSpeed] = useState(
     Object.values(review?.request.motors ?? {})[0]?.target ?? 60,
   );
@@ -94,7 +99,10 @@ export function PlayMechanismSetup({
       }),
     );
   }, [project, rig, all]);
-  const motorChoice = motorChoices.find((choice) => choice.joint.id === driver);
+  const motorChoice = motorChoices.find(
+    (choice) =>
+      JSON.stringify([choice.joint.id, choice.binding.occurrenceId]) === driver,
+  );
   const joint = motorChoice?.joint;
   const assigned = new Set(rig?.groups.flatMap((g) => g.occurrenceIds));
   const unassigned =
@@ -359,7 +367,7 @@ export function PlayMechanismSetup({
                     {motorChoices.map(({ joint: j, binding }) => (
                       <option
                         key={`${j.id}:${binding.occurrenceId}`}
-                        value={j.id}
+                        value={JSON.stringify([j.id, binding.occurrenceId])}
                       >
                         {label(binding.occurrenceId)} · Turn shaft
                       </option>

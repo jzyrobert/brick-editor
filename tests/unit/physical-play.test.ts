@@ -104,3 +104,19 @@ it("permits a reviewed real finger hinge and refuses a powered proposal without 
     ),
   ).rejects.toThrow(/real, mounted motor/);
 });
+
+it("admits reversed axis conventions with the matching physical gear relation", () => {
+  const { project, rig } = scene();
+  const joint = rig.joints[0];
+  joint.axisA = joint.axisA!.map((x) => -x) as typeof joint.axisA;
+  joint.axisB = joint.axisB!.map((x) => -x) as typeof joint.axisB;
+  const relation = rig.transmissions![0];
+  if (relation.kind === "spur")
+    relation.axisSign = relation.axisSign === 1 ? -1 : 1;
+  expect(physicalPlayEligibility(project, rig)).toEqual({ eligible: true });
+});
+it("refuses shifting a bearing contact exemption along an otherwise valid shaft line", () => {
+  const { project, rig } = scene();
+  rig.joints[1].anchorA[2] += 10;
+  expect(physicalPlayEligibility(project, rig).eligible).toBe(false);
+});

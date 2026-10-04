@@ -7,7 +7,7 @@ explicit. Play settings now offers explicit assembly/fixed-part review, session-
 Try and separate undoable Save. Automation exposes `mechanisms.tryProposal` and
 `mechanisms.saveProposal` through the same bounded review. Whole-system controls
 operate the private session rig; the source stays unchanged until Save. The scoped
-setup design review is finishing its hierarchy/label/content corrections.
+setup only offers powered controls for a physically mounted, engaged supported motor. Without one, reviewed joints have hand controls.
 
 ## Source review
 
@@ -27,6 +27,7 @@ is used. Existing catalogue connector coverage is not upgraded by this pack.
 | 18940, 18942     | Matched outrigger housing channel and sliding web; bounded engagement, travel axis and rack pitch plane |
 | 3743             | Rack travel axis, tooth-facing normal and pitch plane; mesh pitch 8 LDU                                 |
 | 4275b, 4276b     | Complementary three/two-finger pivots and axes; explicitly reviewed top studs                           |
+| 58120            | Real PF-M case mounting anti-studs, peripheral pinholes and separately bound keyed rotor output         |
 
 These are ideal simulation interfaces, not measured snap-fit, pin-friction or
 clutch-power guarantees. Gear pitch radii are 10 and 30 LDU for the reviewed

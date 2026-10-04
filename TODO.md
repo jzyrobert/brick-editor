@@ -65,6 +65,11 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Play
 
+- [ ] Review actual linear-actuator, ball/cylindrical, spring/rope and closed Technic linkage part connections before admitting their engineering rigs to ordinary Play.
+- [ ] Real jaw/contact grasping with attached LEGO/Technic jaws; proximity fixed-joint grippers are engineering fixtures only.
+- [ ] Physically mounted powered rack assembly: verify the guide housing mounting pins and offset carrier before adding motor control.
+- [ ] Additional real motor profiles and output coupling families beyond the source-reviewed Power Functions M motor.
+
 - [x] Add selectable Motor & gears, Rack drive, Crank & slider and Grab & lift showcases with ready-to-play rigs, generated previews, phone controls and fresh offline sample loading ([samples](docs/TEMPLATES.md#ready-to-play-motion-samples)).
 - [ ] Exact-rest closing of 3582 shutters near tangential holder contact can exhaust the existing refinement budget; source-cover opening and real obstacle response are verified ([scope](docs/reviews/SHUTTER-SOURCE-CONTACTS.md)).
 - [x] Introduce 17 source-bound mechanical profiles, typed contacts and read-only `mechanisms.propose()` drafts for retained shafts, pin arms and ordinary finger hinges with rigid accessories ([scope](docs/PLAY-MECHANICAL-FEATURES.md)). Reviewed spur meshes now become ideal coupled shaft relations.

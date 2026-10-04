@@ -1,5 +1,10 @@
 # Closed planar linkages
 
+> **Engineering scope:** these mathematical/native fixtures remain available for
+> engine verification and lossless project storage. Ordinary Play requires real,
+> reviewed part connections and currently refuses these unbound mechanisms.
+> See [physical Play admission](PLAY-PHYSICS.md#physical-parts-in-ordinary-play).
+
 Authored rigs can retain their acyclic mount tree and add explicit
 `loopClosures`. A closure joins two bodies in that tree with a revolute bearing;
 it is not traversed as a parent edge. The first verified arrangements are the

@@ -1,5 +1,10 @@
 # Authored springs, ropes and movable bearings
 
+> **Engineering scope:** these mathematical/native fixtures remain available for
+> engine verification and lossless project storage. Ordinary Play requires real,
+> reviewed part connections and currently refuses these unbound mechanisms.
+> See [physical Play admission](PLAY-PHYSICS.md#physical-parts-in-ordinary-play).
+
 Dynamic Play accepts optional `rig.forceLinks`, independently of the mount tree.
 Each link declares unique `id`, two distinct bodies, and group-local `anchorA`
 and `anchorB`. Up to 32 links can connect a rig's existing rigid bodies. They do
