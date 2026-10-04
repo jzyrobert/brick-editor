@@ -79,9 +79,15 @@ export type PlayMechanismSource = {
   /** Optional shared occurrence index of `project` (avoids re-expansion per rig). */
   lookup?: ReadonlyMap<string, Occurrence>;
 };
+export type PlaySourceValidationOptions = {
+  /** Internal async entry checks structure first, then repeats required contact
+   * validation after binding reviewed data and before native allocation. */
+  deferReviewedContacts?: boolean;
+};
 export function validatePlayMechanismSource(
   source: PlayMechanismSource,
   revision: number,
+  options: PlaySourceValidationOptions = {},
 ) {
   ensure(
     source?.project &&
@@ -227,22 +233,25 @@ export function validatePlayMechanismSource(
       );
     }
   }
-  const unsupported = unsupportedMechanicalPlayContact(
-    source.project,
-    rig,
-    source.lookup,
-  );
-  ensure(
-    !unsupported,
-    "INVALID_INPUT",
-    unsupported?.reason ?? "Unsupported mechanical contact",
-    unsupported,
-  );
+  if (!options.deferReviewedContacts) {
+    const unsupported = unsupportedMechanicalPlayContact(
+      source.project,
+      rig,
+      source.lookup,
+    );
+    ensure(
+      !unsupported,
+      "INVALID_INPUT",
+      unsupported?.reason ?? "Unsupported mechanical contact",
+      unsupported,
+    );
+  }
 }
 /** Validate all moving geometry before allocating any Rapier resources. */
 export function validatePlayMechanismSources(
   sources: PlayMechanismSource[],
   revision: number,
+  options: PlaySourceValidationOptions = {},
 ) {
   ensure(
     sources.length <= 32,
@@ -262,7 +271,7 @@ export function validatePlayMechanismSources(
       "Play rig IDs must be distinct",
     );
     rigs.add(source.rigId);
-    validatePlayMechanismSource(source, revision);
+    validatePlayMechanismSource(source, revision, options);
     for (const local of Object.values(source.memberLocals ?? {})) {
       localVertices += local.vertices.length / 3;
       localTriangles += local.indices.length / 3;

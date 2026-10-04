@@ -1,5 +1,6 @@
 import { MechanicalQueryWorld } from "./mechanical-query-world";
 import { prepareMechanicalSources } from "./mechanical-solids";
+import { loadReviewedMechanicalProxies } from "./reviewed-mechanical-proxies";
 import { add, mv } from "../core/math";
 import type { DriverSeatSpec } from "../mechanisms/types";
 import {
@@ -798,7 +799,9 @@ export class PlaySession {
       "INVALID_INPUT",
       "Requested Play rigs require matching geometry from the same source revision",
     );
-    validatePlayMechanismSources(sources, snapshot.revision);
+    validatePlayMechanismSources(sources, snapshot.revision, {
+      deferReviewedContacts: true,
+    });
     if (request.dynamicRigIds !== undefined) {
       ensure(
         Array.isArray(request.dynamicRigIds) &&
@@ -817,6 +820,11 @@ export class PlaySession {
         snapshot.revision,
       );
     }
+    // Bind lazy source-reviewed proxies before native initialization or any
+    // world/event allocation. The synchronous constructor consumes this exact
+    // source identity; missing or changed canonical geometry cannot fall back.
+    await loadReviewedMechanicalProxies(sources);
+    validatePlayMechanismSources(sources, snapshot.revision);
     await (initialization ??= RAPIER.init());
     if (autoDoors)
       ensure(
