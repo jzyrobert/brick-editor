@@ -167,3 +167,51 @@ The coalesced candidate SHA-256 is
 Native admission evidence remains in the diagnostic checkout's
 `.local/housing-native-admission.{json,log}`. These are investigation artifacts,
 not committed runtime assets or passing clean-checkout rack acceptance tests.
+
+## Local guide-bearing response and corrected reference
+
+Further convex coalescing reaches **1,099 housing regions**. Native QuickHull
+admits 1,079; explicit known-convex faces admit the other 20 microregions without
+deleting their material. The private full mechanism then stalls with all ordinary
+contacts: forward 900 ticks gives 4.30329°/−0.01714 LDU. Removing surface friction
+does not restore travel. The early response identifies a real rack tooth at
+Z `[8,10]` touching an outer housing cheek at Z `[10,20]`, with a sideways native
+blocking normal despite their interiors being disjoint at ideal guide alignment.
+
+A private local bearing-class trial retains responding core geometry and groups
+the housing's 97 negative-Z and 96 positive-Z cheek children separately. Only
+cheek/rack pairs whose material interiors meet at the common Z ±10 plane receive
+the allowance while cached prismatic transverse/orientation alignment is valid.
+Inner end stops and other/foreign pairs retain contacts. With unchanged geometry,
+mass and targets, forward reaches **149.9999916°/−78.53984594 LDU** and reverse
+**−15.27886356°/+7.99999774 LDU**, both complete after 900 ticks. Shifting the rack
+1 LDU off the guide plane disables the allowance: four pair callbacks restore
+contact, a 929.962 N event responds, and the first step corrects the offset to
+0.291786 LDU. These are private diagnostic results, not accepted production
+support; source geometry, loads, back-drive, carrier reaction and both Play modes
+still need verification. Logs: `.local/rack-native-bulk-{housing,z-bearing,
+z-negative}.log` in the diagnostic checkout.
+
+The independent source review also invalidates extrapolating every midpoint
+graph vertex's triangle diagonal throughout its whole band. The parent now
+intersects actual source-triangle footprints freshly at all 200 sampled depths,
+applying the reviewed roof/rib, crossbrace and tapered crossbrace internal-union
+masks. All 200 graphs close; maximum measured diagnostic weld displacement is
+0.000503540 LDU. Boundary-family selection and seam handling remain explicit
+conditional assumptions. Source triangle SHA-256:
+`703ff93710f733b9eb7601742ca5df8d09d0ebd26f9b0be89a85caf0ad152734`.
+Private reference: `.local/housing-fresh-footprints-2e26ea5/`.
+
+Literal face ancestry then restores the genuine brace slopes that near-coplanar
+grouping had flattened. A **1,007-region** authored-face candidate admits
+natively and passes all 101 controls. Its 200 fresh-footprint samples have maximum
+outside area 0.002136830 LDU², pair overlap 1.0247e-5 LDU² and summed-area difference
+0.001882054 LDU². This candidate is still rejected for complete coverage: the
+constructor retains positive width/height cutoffs, rounded cuts and near-end
+event exclusions. The review proves an actual omitted microstrip in the earlier
+vertical union at `(134.90186320484918,-48,5)`. Its width is only 2.53e-8 LDU,
+but the introduced internal boundary is 1 LDU from the actual source surface;
+small area/volume error cannot establish a small boundary-displacement envelope.
+The next construction must preserve every positive interval using shared source
+cut ancestry before coverage approval. No production gate is removed on the
+strength of these sampled checks or the bearing trial.
