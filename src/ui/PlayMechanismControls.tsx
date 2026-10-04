@@ -63,13 +63,74 @@ export function PlayMechanismControls({
   const joint = controls.find((j) => j.id === selected) ?? controls[0];
   const motor = joint && report.motors?.[joint.id];
   const dynamic = report.mode === "dynamic";
+  const controlKey = JSON.stringify([rig.id, joint?.id]);
+  const [manualDraft, setManualDraft] = useState<{
+    key: string;
+    value: number;
+  }>();
+  const pendingMove = useRef<
+    | {
+        rigId: string;
+        jointId: string;
+        target: number;
+        speed: number;
+      }
+    | undefined
+  >(undefined);
+  const moveFrame = useRef<number | undefined>(undefined);
+  const jointTarget = joint && report.jointTargets?.[joint.id];
+  const cancelQueuedMove = () => {
+    pendingMove.current = undefined;
+    if (moveFrame.current !== undefined)
+      cancelAnimationFrame(moveFrame.current);
+    moveFrame.current = undefined;
+  };
+  useEffect(() => {
+    // A late drag event must not move a previous rig after switching or pausing.
+    cancelQueuedMove();
+    setManualDraft(undefined);
+    return cancelQueuedMove;
+  }, [controlKey, paused]);
+  useEffect(() => {
+    if (
+      manualDraft?.key === controlKey &&
+      jointTarget?.target === manualDraft.value
+    )
+      setManualDraft(undefined);
+  }, [controlKey, manualDraft, jointTarget]);
   const attempt = (fn: () => unknown) => {
     try {
       fn();
       onError("");
+      return true;
     } catch (e) {
       onError(e instanceof Error ? e.message : String(e));
+      return false;
     }
+  };
+  const moveManual = (value: number) => {
+    if (!joint || !play.getState().active || play.getState().paused) return;
+    setManualDraft({ key: controlKey, value });
+    // Keep only the newest intended position in a frame. Motion proceeds in
+    // normal checked ticks; a large pointer jump never requests an instant arc.
+    pendingMove.current = {
+      rigId: rig.id,
+      jointId: joint.id,
+      target: value,
+      speed: joint.kind === "revolute" ? 90 : 40,
+    };
+    if (moveFrame.current !== undefined) return;
+    moveFrame.current = requestAnimationFrame(() => {
+      moveFrame.current = undefined;
+      const request = pendingMove.current;
+      pendingMove.current = undefined;
+      if (!request || !play.getState().active || play.getState().paused) {
+        setManualDraft(undefined);
+        return;
+      }
+      if (!attempt(() => play.setJointTarget(request)))
+        setManualDraft(undefined);
+    });
   };
   useEffect(() => {
     const hud = panel.current
@@ -208,7 +269,10 @@ export function PlayMechanismControls({
           className="play-key play-mechanism-close"
           aria-label={`Close ${title.toLowerCase()}`}
           title="Close"
-          onClick={onClose}
+          onClick={() => {
+            cancelQueuedMove();
+            onClose();
+          }}
         >
           <Icon name="close" />
         </button>
@@ -225,6 +289,7 @@ export function PlayMechanismControls({
               aria-label="Remote mechanism"
               value={rig.id}
               onChange={(e) => {
+                cancelQueuedMove();
                 play.clearInput();
                 onRigChange?.(e.target.value);
               }}
@@ -247,6 +312,7 @@ export function PlayMechanismControls({
               aria-label="Part control"
               value={joint?.id}
               onChange={(e) => {
+                cancelQueuedMove();
                 play.clearInput();
                 setSelected(e.target.value);
               }}
@@ -361,23 +427,14 @@ export function PlayMechanismControls({
                     joint.limits?.[1] ??
                     (joint.kind === "revolute" ? base + 180 : 40)
                   }
-                  value={Math.round(position)}
-                  onChange={(e) =>
-                    attempt(() =>
-                      dynamic
-                        ? play.setJointTarget({
-                            rigId: rig.id,
-                            jointId: joint.id,
-                            target: Number(e.target.value),
-                            speed: joint.kind === "revolute" ? 90 : 40,
-                          })
-                        : play.setMechanismJoint(
-                            joint.id,
-                            Number(e.target.value),
-                            rig.id,
-                          ),
-                    )
-                  }
+                  value={Math.round(
+                    manualDraft?.key === controlKey
+                      ? manualDraft.value
+                      : jointTarget?.status === "moving"
+                        ? jointTarget.target
+                        : position,
+                  )}
+                  onChange={(e) => moveManual(Number(e.target.value))}
                 />
               </label>
             )}
