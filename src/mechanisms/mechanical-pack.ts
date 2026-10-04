@@ -137,6 +137,35 @@ const hingeStuds: Connector[] = [-10, 10].map((x) => ({
  * Features describe ideal joints. They do not certify snap fit or clutch torque. */
 export const MECHANICAL_PARTS: Readonly<Record<string, MechanicalPartProfile>> =
   {
+    "58120.dat": {
+      sourceSha256:
+        "d5b603cbff5e6a00038c0970c4155ab12567c55f599a201c1f00e75fa9ed047f",
+      review:
+        "PF-M 59143 case: four source pegholes on front Z=0..20 (core2..18), at X/Y±20; twelve underside anti-studs Y30, X±10, Z10..110. Central47157 rotating keyed hub is reviewed separately in motor-binding; the case is not keyed to its output shaft. Internal motor gears are not modelled by LDraw.",
+      features: (
+        [
+          [20, 0, 10],
+          [-20, 0, 10],
+          [0, 20, 10],
+          [0, -20, 10],
+        ] as Vec3[]
+      ).map((center, i) => ({
+        id: `mount-${i}`,
+        kind: "round-hole",
+        center,
+        axis: [0, 0, 1],
+        span: [-8, 8],
+        faceSpan: [-10, 10],
+        radius: 6,
+      })),
+      studs: [10, 30, 50, 70, 90, 110].flatMap((z) =>
+        [-10, 10].map((x) => ({
+          kind: "antistud" as const,
+          p: [x, 30, z] as Vec3,
+          axis: [0, 1, 0] as Vec3,
+        })),
+      ),
+    },
     "3700.dat": {
       sourceSha256:
         "6cb6522c580754cf970dad0fae688bb78cb3253a7237038dad83965fe47cfec6",
