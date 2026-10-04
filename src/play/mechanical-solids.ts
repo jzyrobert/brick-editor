@@ -381,6 +381,22 @@ export function mechanicalSolids(
         (b) => b.a === group.id || b.b === group.id,
       )) {
         const all = pieces.flat();
+        // Preserve the original hull when it already fits the declared round
+        // cylinder. Inscribed radial cuts add unnecessary boundary vertices
+        // to round collars after an oblique Float32 source transform.
+        if (
+          all.every((p) => {
+            const offset = p.map((v, k) => v - bearing.pivot[k]) as Vec3;
+            return (
+              Math.hypot(
+                dot(offset, bearing.normals[0]),
+                dot(offset, bearing.normals[1]),
+              ) <= bearing.extents[0] &&
+              Math.abs(dot(offset, bearing.normals[2])) <= bearing.extents[2]
+            );
+          })
+        )
+          continue;
         if (
           bearing.normals.some(
             (normal, n) =>
@@ -400,8 +416,17 @@ export function mechanicalSolids(
         pieces = pieces.flatMap((piece) => {
           let inner = [piece];
           const outer: Vec3[][] = [];
+          const radialInside = piece.every((p) => {
+            const offset = p.map((v, k) => v - bearing.pivot[k]) as Vec3;
+            return (
+              Math.hypot(
+                dot(offset, bearing.normals[0]),
+                dot(offset, bearing.normals[1]),
+              ) <= bearing.extents[0]
+            );
+          });
           const planes: Array<[Vec3, number]> = Array.from(
-            { length: 16 },
+            { length: radialInside ? 0 : 16 },
             (_, n) => {
               const angle = ((n + 0.5) * Math.PI) / 8;
               return [
