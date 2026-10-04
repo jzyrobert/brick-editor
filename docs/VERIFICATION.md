@@ -22,6 +22,12 @@ Local acceptance before publication:
   solids and real wheelbase detection. Separate source witnesses include full
   360° kinematic/native motor rotation, the measured Rapier entrance-seam false
   contact, and crossed/foreign/closed-back rejection.
+- **19 source-door checks** pass for real seated doors, narrowly reviewed classic
+  shutters, incorrect axial/radial seating, copied filenames, nearby bricks and
+  ambiguous holders. A separate 12-check authored-admission run accepts a real
+  door and refuses a nearby-brick hinge. The strict official-study and unchanged
+  desktop/phone Door room browser checks pass **three cases** with exact source
+  and inventory retention.
 - Five House/Café desktop/phone rapid-slider and thin-wall checks pass; animated
   targets and one latest input per animation frame preserve existing collision
   caps. Seven sample chooser/desktop/phone/fresh offline checks pass.
@@ -31,13 +37,43 @@ Local acceptance before publication:
   restore pass in the production browser. Proposal controls are checked across
   all six required desktop/phone viewports, including 44 px targets and whole
   mechanism framing. Cold restore covers both Kinematic and Dynamic modes.
+  The final desktop/360 px proposal confirmation passes two cases in 42.4 s;
+  their setup and live-control screenshots were inspected, alongside sample
+  controls. Extra settings remain folded and active mechanisms stay visible.
 - The broad pre-integration unit run passed 1,506 tests and found seven isolated
   coordinator tests using synthetic source fixtures. Their focused nine-test
   rerun passes with the admission boundary mocked only in those coordinator
   tests; production BrowserPlay has no bypass. Full CI remains the publication
   gate.
+- **31 retained functional browser cases** pass across scoped dependency
+  checkpoints, covering all seven control viewports, two independent mounted
+  motors, source-backed door/car interaction, pause/capture/import lifecycles,
+  loose-body physics and both 8:24 transmission modes. The final three door
+  rechecks use the strict source-seating build. The real frame sill retains its
+  teleport refusal; the actor walks through the actual opening for the close
+  obstruction/retry witness. No product entry bypass or contact budget change
+  is introduced ([fixture review](reviews/PHYSICAL-PLAY-BROWSER-FIXTURES.md)).
+- Final production build passes (Vite 1m 20s under shared load). **13 final
+  browser cases pass in 6.5 minutes**, covering samples, six-size chooser, cold
+  offline motor/rack in both modes and all five responsive-slider witnesses.
 - Library validation and full formatting pass. Pinned geometry packs are
   unchanged; schemas, validators, template MPDs and previews use their generators.
+
+The retained real door/car cost witness passes both unchanged Dynamic tick
+budgets: 2.001 ms on desktop (<4 ms) and 5.699 ms in the phone profile with 4×
+CPU throttling (<10 ms). The 300-tick measurement uses the actual source car
+and seated door, replacing the older synthetic fixture. Measured mean tick
+costs are:
+
+| Mode           | Desktop (ms) | Phone profile, 4× CPU throttle (ms) |
+| -------------- | -----------: | ----------------------------------: |
+| Static         |        0.192 |                               0.818 |
+| Kinematic car  |        7.009 |                              30.091 |
+| Dynamic car    |        2.001 |                               5.699 |
+| Automatic door |        3.694 |                              12.927 |
+
+Kinematic source sweep costs remain follow-up work; these are shared-VM
+software measurements, not physical-phone frame-rate claims.
 
 Private production previews use isolated ports and are stopped after tests.
 Browser evidence uses Chromium/SwiftShader and does not measure phone GPU rates.

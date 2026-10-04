@@ -1,3 +1,4 @@
+import { realMechanismsFixture } from "./helpers/real-mechanisms";
 import { expect, test } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 
@@ -6,13 +7,13 @@ test("door and vehicle keep independent live poses in one frozen Play world", as
 }) => {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
-  await page.evaluate(async () => {
+  await page.evaluate(async (realFixtureBytes: number[]) => {
     await window.brickEditor!.project.import({
-      format: "template",
-      template: "mechanisms",
+      format: "native",
+      bytes: realFixtureBytes,
     });
     await window.brickEditor!.ready();
-  });
+  }, realFixture.bytes);
   await openMode(page, "Play");
   const before = await page.evaluate(() =>
     window.brickEditor!.project.export({ format: "ldraw" }),
@@ -27,9 +28,9 @@ test("door and vehicle keep independent live poses in one frozen Play world", as
   expect(Object.keys(initial.mechanisms!)).toEqual(["door", "vehicle"]);
   await page.getByRole("button", { name: "Open joint" }).click();
   await page.evaluate(() =>
-    window.brickEditor!.play.teleport({ position: [80, -0.3, -200] }),
+    window.brickEditor!.play.teleport({ position: [-90, -0.3, -280] }),
   );
-  await page.getByRole("button", { name: "Drive vehicle" }).click();
+  await page.getByRole("button", { name: "Drive from here" }).click();
   await page.keyboard.down("w");
   await page.evaluate(() => window.brickEditor!.play.stepTicks(12));
   await page.keyboard.up("w");
@@ -82,9 +83,9 @@ test("multi-rig API refuses ambiguous entry, duplicate selections and unknown ID
 }) => {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
-  const result = await page.evaluate(async () => {
+  const result = await page.evaluate(async (realFixtureBytes: number[]) => {
     const a = window.brickEditor!;
-    await a.project.import({ format: "template", template: "mechanisms" });
+    await a.project.import({ format: "native", bytes: realFixtureBytes });
     await a.ready();
     const rejected = [];
     for (const request of [
@@ -99,7 +100,7 @@ test("multi-rig API refuses ambiguous entry, duplicate selections and unknown ID
         ),
       );
     return rejected;
-  });
+  }, realFixture.bytes);
   expect(result).toEqual([true, true, true]);
 });
 
@@ -108,13 +109,13 @@ test("capture refuses concurrent multi-rig mutation before it changes the report
 }) => {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
-  const result = await page.evaluate(async () => {
+  const result = await page.evaluate(async (realFixtureBytes: number[]) => {
     const a = window.brickEditor!;
-    await a.project.import({ format: "template", template: "mechanisms" });
+    await a.project.import({ format: "native", bytes: realFixtureBytes });
     await a.ready();
     const before = await a.play.enter({
       rigIds: ["door", "vehicle"],
-      position: [80, -0.3, -200],
+      position: [-90, -0.3, -280],
     });
     const pending = a.render.image({
       revision: before.sourceRevision,
@@ -148,7 +149,7 @@ test("capture refuses concurrent multi-rig mutation before it changes the report
     const after = await a.play.snapshot();
     await a.play.exit();
     return { before, during, rejected, manifest: image.manifest, after };
-  });
+  }, realFixture.bytes);
   expect(result.rejected).toEqual([true, true, true, true]);
   expect(result.during.mechanisms).toEqual(result.before.mechanisms);
   expect(result.during.position).toEqual(result.before.position);
@@ -190,3 +191,5 @@ test("an explicit pause during capture wins over automatic resume", async ({
     page.getByRole("button", { name: "Pause", exact: true }),
   ).toBeVisible();
 });
+
+const realFixture = realMechanismsFixture();

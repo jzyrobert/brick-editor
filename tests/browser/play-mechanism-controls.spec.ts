@@ -1,12 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { readFileSync } from "node:fs";
+import { realMotorFixture } from "./helpers/real-mechanisms";
 import { openMode } from "./helpers/mode";
 import { closeRemoteControls, openRemoteControls } from "./helpers/play";
 import { refusePointerLock } from "./helpers/pointer";
-const source = readFileSync(
-  new URL("../../fixtures/ldraw/technic-motion.mpd", import.meta.url),
-  "utf8",
-);
+const fixture = realMotorFixture();
 const sizes = [
   [1440, 1000, false],
   [1080, 1800, false],
@@ -33,38 +30,12 @@ for (const [width, height, dynamic] of sizes)
     try {
       await page.goto(`${baseURL}/?automation=1`);
       await page.waitForFunction(() => !!window.brickEditor);
-      const loaded = await page.evaluate(async (source) => {
+      const loaded = await page.evaluate(async ({ bytes, rig }) => {
         const api = window.brickEditor!;
-        await api.project.import({
-          format: "ldraw",
-          name: "technic-motion.mpd",
-          text: source,
-        });
+        await api.project.import({ format: "native", bytes });
         await api.ready({ strict: true });
-        const q = await api.query();
-        const proposal = await api.mechanisms.propose({
-          id: "technic-drive",
-          name: "Technic drive",
-          expectedRevision: q.revision,
-          frameOccurrenceIds: [0, 1, 10].map((i) => q.occurrences[i].id),
-          motors: {
-            [q.occurrences[2].id]: {
-              mode: "velocity",
-              target: 90,
-              maxEffort: { value: 50, unit: "N*m" },
-            },
-          },
-        });
-        await api.dispatch({
-          schemaVersion: 1,
-          commandId: "save-controls-drive",
-          expectedRevision: q.revision,
-          type: "rigs.upsert",
-          payload: { rig: proposal.rig! },
-        });
-        await api.ready({ strict: true });
-        return { rig: proposal.rig!, query: await api.query() };
-      }, source);
+        return { rig, query: await api.query() };
+      }, fixture);
       const input = loaded.rig.transmissions![0].jointA,
         output = loaded.rig.transmissions![0].jointB;
       await openMode(page, "Play");
@@ -91,9 +62,8 @@ for (const [width, height, dynamic] of sizes)
         (await page.evaluate(() => window.brickEditor!.play.view()))
           .mechanismOverview,
       ).toBe("technic-drive");
-      await expect(
-        page.getByLabel("Part control").locator("option"),
-      ).toHaveCount(3); // One driver, two bearings; passive gear is feedback.
+      // One source-backed driver needs no redundant part picker; the gear is feedback.
+      await expect(page.getByLabel("Part control")).toHaveCount(0);
       const forward = page.getByRole("button", {
         name: "Hold motor 1 forward",
         exact: true,

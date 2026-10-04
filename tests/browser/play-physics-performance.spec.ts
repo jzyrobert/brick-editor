@@ -1,9 +1,10 @@
+import { realMechanismsFixture } from "./helpers/real-mechanisms";
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 // Measures fixed-tick cost and realtime frame time of Play with no rigs,
-// kinematic rigs and dynamic rigs (physics playground), and with automatic
+// source-backed door and real-car heuristic rigs, and with automatic
 // doors (door room), on the desktop profile and on a phone context (mobile
 // resource profile, 4x CPU throttling). Numbers go to .local/perf/.
 const out = fileURLToPath(new URL("../../.local/perf/", import.meta.url));
@@ -12,14 +13,14 @@ type Mode = "static" | "kinematic" | "dynamic" | "doors";
 async function measure(page: Page, mode: Mode) {
   return page.evaluate(async (mode) => {
     const api = window.brickEditor!;
-    const rigs = ["crate", "door", "spinner", "vehicle"];
+    const rigs = ["door", "vehicle"];
     const request =
       mode === "doors"
         ? { position: [10, -0.3, 150] as [number, number, number] }
         : {
             position: [300, -0.3, 300] as [number, number, number],
             autoDoors: false,
-            ...(mode === "static" ? {} : { rigIds: rigs }),
+            ...(mode === "static" ? { rigIds: [] } : { rigIds: rigs }),
             ...(mode === "dynamic" ? { dynamicRigIds: rigs } : {}),
           };
     const entry = performance.now();
@@ -104,13 +105,10 @@ for (const device of ["desktop", "phone"] as const)
     });
     expect(profile).toBe(phone ? "mobile" : "desktop");
     const results = [];
-    await page.evaluate(async () => {
-      await window.brickEditor!.project.import({
-        format: "template",
-        template: "physics",
-      });
-      await window.brickEditor!.ready();
-    });
+    await page.evaluate(async (bytes) => {
+      await window.brickEditor!.project.import({ format: "native", bytes });
+      await window.brickEditor!.ready({ strict: true });
+    }, realFixture.bytes);
     for (const mode of ["static", "kinematic", "dynamic"] as const)
       results.push(await measure(page, mode));
     await page.evaluate(async () => {
@@ -135,3 +133,5 @@ for (const device of ["desktop", "phone"] as const)
     expect(dynamic.tickMeanMs).toBeLessThan(phone ? 10 : 4);
     await context.close();
   });
+
+const realFixture = realMechanismsFixture();

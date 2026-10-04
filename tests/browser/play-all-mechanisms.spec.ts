@@ -1,3 +1,4 @@
+import { realMechanismsFixture } from "./helpers/real-mechanisms";
 import { test, expect } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
@@ -25,13 +26,13 @@ for (const width of [360, 1080, 1440]) {
     try {
       await page.goto(`${baseURL}/?automation=1`);
       await page.waitForFunction(() => !!window.brickEditor);
-      await page.evaluate(async () => {
+      await page.evaluate(async (realFixtureBytes: number[]) => {
         await window.brickEditor!.project.import({
-          format: "template",
-          template: "mechanisms",
+          format: "native",
+          bytes: realFixtureBytes,
         });
         await window.brickEditor!.ready();
-      });
+      }, realFixture.bytes);
       const before = await page.evaluate(() => window.brickEditor!.query());
       await openMode(page, "Play");
       await expect(
@@ -59,6 +60,7 @@ for (const width of [360, 1080, 1440]) {
       const action = page.getByRole("button", { name: "Open joint" });
       await expect(action).toBeEnabled();
       await action.click();
+      await page.evaluate(() => window.brickEditor!.play.stepTicks(60));
       await expect
         .poll(() =>
           page.evaluate(
@@ -67,7 +69,7 @@ for (const width of [360, 1080, 1440]) {
                 .jointPositions.hinge,
           ),
         )
-        .toBeGreaterThan(90);
+        .toBeGreaterThanOrEqual(90);
       await openRemoteControls(page);
       await expect(page.locator(".play-interaction")).toHaveCount(0);
       const remote = page.locator(".play-mechanism"),
@@ -103,7 +105,7 @@ for (const width of [360, 1080, 1440]) {
             { x: box.x + box.width / 2, y: box.y + box.height / 2, id: 10 },
           ],
         });
-        await page.waitForTimeout(300);
+        await page.evaluate(() => window.brickEditor!.play.stepTicks(12));
         await cdp.send("Input.dispatchTouchEvent", {
           type: "touchEnd",
           touchPoints: [],
@@ -112,7 +114,7 @@ for (const width of [360, 1080, 1440]) {
       } else {
         await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
         await page.mouse.down();
-        await page.waitForTimeout(300);
+        await page.evaluate(() => window.brickEditor!.play.stepTicks(12));
         await page.mouse.up();
       }
       const driven = await page.evaluate(() =>
@@ -121,9 +123,7 @@ for (const width of [360, 1080, 1440]) {
       expect(driven.mechanisms!.vehicle.pose.vehicle!.position[2]).toBeLessThan(
         start[2] - 10,
       );
-      expect(driven.mechanisms!.door.pose.jointPositions.hinge).toBeGreaterThan(
-        90,
-      );
+      expect(driven.mechanisms!.door.pose.jointPositions.hinge).toBe(90);
       await page.waitForTimeout(150);
       expect(
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))
@@ -137,11 +137,11 @@ for (const width of [360, 1080, 1440]) {
           report = await api.play.snapshot(),
           frame = report.mechanisms!.vehicle.groupFrames.chassis;
         return api.play.teleport({
-          position: [frame.position[0], -0.3, frame.position[2] + 60],
+          position: [frame.position[0] - 90, -0.3, frame.position[2] + 40],
           policy: "safe",
         });
       });
-      await page.getByRole("button", { name: "Drive vehicle" }).click();
+      await page.getByRole("button", { name: "Drive from here" }).click();
       await expect(
         page.getByRole("button", { name: "Stop driving" }),
       ).toBeVisible();
@@ -178,3 +178,5 @@ for (const width of [360, 1080, 1440]) {
     }
   });
 }
+
+const realFixture = realMechanismsFixture();

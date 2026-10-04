@@ -1,3 +1,4 @@
+import { realMechanismsFixture } from "./helpers/real-mechanisms";
 import { expect, test } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
@@ -21,13 +22,13 @@ for (const viewport of [
     try {
       await page.goto("/?automation=1");
       await page.waitForFunction(() => !!window.brickEditor);
-      await page.evaluate(async () => {
+      await page.evaluate(async (realFixtureBytes: number[]) => {
         await window.brickEditor!.project.import({
-          format: "template",
-          template: "mechanisms",
+          format: "native",
+          bytes: realFixtureBytes,
         });
         await window.brickEditor!.ready();
-      });
+      }, realFixture.bytes);
       await openMode(page, "Play");
       const before = await page.evaluate(() =>
         window.brickEditor!.project.export({ format: "ldraw" }),
@@ -49,7 +50,7 @@ for (const viewport of [
       await page.evaluate(() => window.brickEditor!.play.stepTicks(10));
       expect((await snapshot()).mechanism!.pose.jointPositions.hinge).toBe(15);
       await expect(
-        page.getByText("Opening · 15.0° / 110.0°", { exact: true }),
+        page.getByText("Opening · 15.0° / 90.0°", { exact: true }),
       ).toBeVisible();
       const partial = await page.locator("canvas").first().screenshot();
       // Reverse intended opening before its midpoint: no pose jump on action.
@@ -66,7 +67,7 @@ for (const viewport of [
       );
       await open.click();
       await page.evaluate(() => window.brickEditor!.play.stepTicks(74));
-      expect((await snapshot()).mechanism!.pose.jointPositions.hinge).toBe(110);
+      expect((await snapshot()).mechanism!.pose.jointPositions.hinge).toBe(90);
       await page.getByRole("button", { name: "Close joint" }).click();
       await page.evaluate(() => window.brickEditor!.play.stepTicks(74));
       expect((await snapshot()).mechanism!.pose.jointPositions.hinge).toBe(0);
@@ -88,11 +89,11 @@ for (const viewport of [
       await page.evaluate(() =>
         window.brickEditor!.play.enter({
           rigId: "vehicle",
-          position: [80, -0.3, -200],
+          position: [-90, -0.3, -280],
           realtime: false,
         }),
       );
-      await page.getByRole("button", { name: "Drive vehicle" }).click();
+      await page.getByRole("button", { name: "Drive from here" }).click();
       await expect(
         page.getByRole("button", { name: "Stop driving" }),
       ).toBeVisible();
@@ -223,11 +224,11 @@ test("animated target pauses, survives frozen capture, and retries a blocked clo
 }) => {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
-  await page.evaluate(async () => {
+  await page.evaluate(async (realFixtureBytes: number[]) => {
     const a = window.brickEditor!;
-    await a.project.import({ format: "template", template: "mechanisms" });
+    await a.project.import({ format: "native", bytes: realFixtureBytes });
     await a.ready();
-  });
+  }, realFixture.bytes);
   await openMode(page, "Play");
   const result = await page.evaluate(async () => {
     const a = window.brickEditor!;
@@ -238,7 +239,7 @@ test("animated target pauses, survives frozen capture, and retries a blocked clo
       realtime: true,
     });
     await a.play.pause(true);
-    await a.play.setJointTarget({ jointId: "hinge", target: 110, speed: 90 });
+    await a.play.setJointTarget({ jointId: "hinge", target: 90, speed: 90 });
     await a.play.stepTicks(10); // Explicit automation ticks remain allowed while paused.
     const before = await a.play.snapshot();
     await new Promise((resolve) => setTimeout(resolve, 180));
@@ -263,8 +264,14 @@ test("animated target pauses, survives frozen capture, and retries a blocked clo
     const after = await a.play.snapshot();
     await a.play.stepTicks(1);
     const advanced = await a.play.snapshot();
-    await a.play.setMechanismJoint("hinge", 90);
-    await a.play.teleport({ position: [20, -0.3, 0] });
+    await a.play.setJointTarget({ jointId: "hinge", target: 90, speed: 90 });
+    await a.play.stepTicks(60);
+    // Walk over the real frame sill; a ground-height teleport into it is unsafe.
+    await a.play.teleport({ position: [0, -0.3, 45] });
+    await a.play.setInput({ moveZ: 1 });
+    await a.play.stepTicks(19);
+    await a.play.setInput({});
+    const inside = await a.play.snapshot();
     await a.play.setJointTarget({ jointId: "hinge", target: 0, speed: 90 });
     await a.play.stepTicks(60);
     const blocked = await a.play.snapshot();
@@ -275,6 +282,7 @@ test("animated target pauses, survives frozen capture, and retries a blocked clo
       after,
       advanced,
       rejected,
+      inside,
       blocked,
       manifest: image.manifest,
     };
@@ -287,6 +295,7 @@ test("animated target pauses, survives frozen capture, and retries a blocked clo
       .mechanism,
   ).toEqual(result.before.mechanism);
   expect(result.advanced.mechanism!.pose.jointPositions.hinge).toBe(16.5);
+  expect(Math.abs(result.inside.position[2])).toBeLessThan(3);
   expect(result.blocked.mechanism!.jointTargets.hinge.status).toBe("blocked");
   expect(result.blocked.mechanism!.pose.jointPositions.hinge).toBeGreaterThan(
     0,
@@ -298,6 +307,7 @@ test("animated target pauses, survives frozen capture, and retries a blocked clo
     await a.play.pause(false);
   });
   await page.getByRole("button", { name: "Retry closing" }).click();
+  await page.evaluate(() => window.brickEditor!.play.stepTicks(60));
   await expect
     .poll(() =>
       page.evaluate(
@@ -314,3 +324,5 @@ test("animated target pauses, survives frozen capture, and retries a blocked clo
     ),
   ).toEqual(result.authored);
 });
+
+const realFixture = realMechanismsFixture();

@@ -1,3 +1,4 @@
+import { realMechanismsFixture } from "./helpers/real-mechanisms";
 import { expect, test } from "@playwright/test";
 import { openMode } from "./helpers/mode";
 import { enterPlay, openRemoteControls } from "./helpers/play";
@@ -6,9 +7,9 @@ test("Play uses posed door colliders, refuses actor-crossing motion and restores
 }) => {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
-  const result = await page.evaluate(async () => {
+  const result = await page.evaluate(async (realFixtureBytes: number[]) => {
     const a = window.brickEditor!;
-    await a.project.import({ format: "template", template: "mechanisms" });
+    await a.project.import({ format: "native", bytes: realFixtureBytes });
     const before = await a.query();
     await a.ready({ minRevision: before.revision, strict: true });
     const documentBefore = await a.project.export({ format: "ldraw" });
@@ -35,8 +36,12 @@ test("Play uses posed door colliders, refuses actor-crossing motion and restores
     const stopped = await a.play.snapshot();
     await a.play.teleport({ position: [20, -0.3, 45] });
     const closed = await capture();
-    const opened = await a.play.setMechanismJoint("hinge", 90);
+    await a.play.setInput({});
+    await a.play.setJointTarget({ jointId: "hinge", target: 90, speed: 90 });
+    const opened = await a.play.stepTicks(60);
     const open = await capture();
+    // Cross through the actual doorway centre, clear of the open leaf knob.
+    await a.play.teleport({ position: [0, -0.3, 45] });
     await a.play.setInput({ moveZ: 1 });
     // 45 LDU at the walking speed (145 LDU/s): into the doorway.
     await a.play.stepTicks(19);
@@ -68,7 +73,7 @@ test("Play uses posed door colliders, refuses actor-crossing motion and restores
       open: open.bytes,
       manifest: open.manifest,
     };
-  });
+  }, realFixture.bytes);
   expect(result.stopped.position[2]).toBeGreaterThan(9);
   expect(result.opened.mechanism!.blocked).toBe(false);
   expect(Math.abs(result.inside.position[2])).toBeLessThan(3);
@@ -86,12 +91,18 @@ test("Play uses posed door colliders, refuses actor-crossing motion and restores
     ).play.mechanism.pose.jointPositions.hinge,
   ).toBe(90);
   expect(result.driven.mechanism!.pose.vehicle!.position[2]).toBeCloseTo(
-    -100,
+    -realFixture.rigs.vehicle.vehicle!.maxSpeed,
     4,
   );
   expect(
     result.driven.mechanism!.pose.vehicle!.wheelAngles["left-front"],
-  ).toBeCloseTo(((100 / 12) * 180) / Math.PI, 4);
+  ).toBeCloseTo(
+    ((realFixture.rigs.vehicle.vehicle!.maxSpeed /
+      realFixture.rigs.vehicle.vehicle!.wheels[0].radius) *
+      180) /
+      Math.PI,
+    4,
+  );
   expect(result.driven.mechanism!.tick).toBe(result.driven.tick);
   expect(result.paused.mechanism!.pose).toEqual(result.driven.mechanism!.pose);
   expect(result.documentAfter).toEqual(result.documentBefore);
@@ -111,11 +122,13 @@ test("1080×1800 touch UI selects an authored door rig and controls its live col
   const page = await context.newPage();
   await page.goto(`${baseURL}/?automation=1`);
   await page.waitForFunction(() => !!window.brickEditor);
-  await page.evaluate(() =>
-    window.brickEditor!.project.import({
-      format: "template",
-      template: "mechanisms",
-    }),
+  await page.evaluate(
+    (realFixtureBytes: number[]) =>
+      window.brickEditor!.project.import({
+        format: "native",
+        bytes: realFixtureBytes,
+      }),
+    realFixture.bytes,
   );
   const revision = await page.evaluate(
     async () => (await window.brickEditor!.query()).revision,
@@ -123,12 +136,21 @@ test("1080×1800 touch UI selects an authored door rig and controls its live col
   await openMode(page, "Play");
   await page.getByLabel("Explore with mechanism").selectOption("door");
   await enterPlay(page);
+  await page.evaluate(() =>
+    window.brickEditor!.play.teleport({ position: [20, -0.3, 45] }),
+  );
   await openRemoteControls(page);
   const slider = await page.getByLabel("Explore joint hinge").boundingBox();
   await page.touchscreen.tap(
     slider!.x + slider!.width / 2,
     slider!.y + slider!.height / 2,
   );
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
+    );
+    await window.brickEditor!.play.stepTicks(60);
+  });
   await expect
     .poll(() =>
       page.evaluate(
@@ -147,3 +169,5 @@ test("1080×1800 touch UI selects an authored door rig and controls its live col
   ).toBe(true);
   await context.close();
 });
+
+const realFixture = realMechanismsFixture();

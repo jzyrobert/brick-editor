@@ -1,3 +1,4 @@
+import { realMotorFixture } from "./helpers/real-mechanisms";
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -15,97 +16,21 @@ const desktop = { width: 1440, height: 1000 };
 async function load(page: Page, template: "door-room" | "physics") {
   await page.goto("/?automation=1");
   await page.waitForFunction(() => !!window.brickEditor);
-  await page.evaluate(async (template) => {
-    await window.brickEditor!.project.import({ format: "template", template });
-    await window.brickEditor!.ready();
-  }, template);
+  await page.evaluate(
+    async ({ template, bytes }) => {
+      await window.brickEditor!.project.import(
+        template === "physics"
+          ? { format: "native", bytes }
+          : { format: "template", template },
+      );
+      await window.brickEditor!.ready();
+    },
+    { template, bytes: physical.bytes },
+  );
 }
+const physical = realMotorFixture(true);
 const snapshot = (page: Page) =>
   page.evaluate(() => window.brickEditor!.play.snapshot());
-
-test("a rendered dynamic shaft reaches and holds accumulated turn targets", async ({
-  page,
-}) => {
-  test.setTimeout(120000);
-  await refusePointerLock(page);
-  await load(page, "physics");
-  const source = await page.evaluate(async () =>
-    new TextDecoder().decode(
-      (await window.brickEditor!.project.export({ format: "ldraw" })).bytes,
-    ),
-  );
-  await page.evaluate(() =>
-    window.brickEditor!.play.enter({
-      rigIds: ["spinner"],
-      dynamicRigIds: ["spinner"],
-      position: [160, -0.3, 200],
-      cameraMode: "first-person",
-      realtime: false,
-    }),
-  );
-  const images: number[][] = [];
-  for (const target of [720, -720, 765]) {
-    const result = await page.evaluate(async (target) => {
-      const play = window.brickEditor!.play;
-      await play.setJointTarget({
-        rigId: "spinner",
-        jointId: "axle",
-        target,
-        speed: 180,
-      });
-      await play.stepTicks(900);
-      return play.snapshot();
-    }, target);
-    expect(result.mechanisms!.spinner.pose.jointPositions.axle).toBeCloseTo(
-      target,
-      0,
-    );
-    expect(result.mechanisms!.spinner.jointTargets.axle.status).toBe(
-      "complete",
-    );
-    const capture = await page.evaluate(async () => {
-      const api = window.brickEditor!;
-      const play = await api.play.snapshot();
-      const image = await api.render.image({
-        revision: play.sourceRevision,
-        width: 256,
-        height: 256,
-        format: "png",
-        visibility: { mode: "all" },
-        background: { type: "solid", color: "#ffffff" },
-        quality: "fast",
-        strict: true,
-      });
-      return {
-        bytes: Array.from(new Uint8Array(await image.blob.arrayBuffer())),
-        manifest: image.manifest,
-      };
-    });
-    expect(
-      (capture.manifest as unknown as { play: typeof result }).play.mechanisms!
-        .spinner.pose.jointPositions.axle,
-    ).toBeCloseTo(target, 0);
-    images.push(capture.bytes);
-  }
-  expect(images[2]).not.toEqual(images[0]);
-  const held = await page.evaluate(async () => {
-    await window.brickEditor!.play.stepTicks(120);
-    return window.brickEditor!.play.snapshot();
-  });
-  expect(held.mechanisms!.spinner.pose.jointPositions.axle).toBeCloseTo(765, 0);
-  const posed = await page.evaluate(() =>
-    window.brickEditor!.play.exportPosedModel(),
-  );
-  expect(posed.text).not.toEqual(source);
-  await page.evaluate(() => window.brickEditor!.play.exit());
-  expect(
-    await page.evaluate(async () =>
-      new TextDecoder().decode(
-        (await window.brickEditor!.project.export({ format: "ldraw" })).bytes,
-      ),
-    ),
-  ).toEqual(source);
-});
 
 for (const viewport of [desktop, phone])
   test(`official LDraw door opens with ${viewport === phone ? "a tap" : "E"} at ${viewport.width}px`, async ({
@@ -215,6 +140,20 @@ for (const viewport of [desktop, phone])
     page.on("pageerror", (e) => errors.push(e.message));
     try {
       await load(page, "physics");
+      const preserved = await page.evaluate(async () => ({
+        query: await window.brickEditor!.query(),
+        source: Array.from(
+          (await window.brickEditor!.project.export({ format: "ldraw" })).bytes,
+        ),
+        inventory: await window.brickEditor!.inventory.preview({
+          expectedRevision: (await window.brickEditor!.query()).revision,
+          scope: { kind: "all" },
+          format: "bricklink-wanted-xml",
+          acceptDerivedMappings: true,
+          acceptUnknownColors: true,
+          errorPolicy: "export-resolved",
+        }),
+      }));
       await openMode(page, "Play");
       const drawer = page.locator("summary", { hasText: "Mechanism physics" });
       await expect(drawer).toBeVisible();
@@ -228,7 +167,7 @@ for (const viewport of [desktop, phone])
       });
       await page.evaluate(() => window.brickEditor!.play.pause(true));
       const entered = await snapshot(page);
-      for (const id of ["crate", "door", "spinner", "vehicle"])
+      for (const id of ["crate", "technic-drive"])
         expect(entered.mechanisms![id].mode).toBe("dynamic");
       await page.evaluate(async () => {
         const play = window.brickEditor!.play;
@@ -246,9 +185,10 @@ for (const viewport of [desktop, phone])
       // Motor toggle lives in the existing remote-controls drawer.
       await page.evaluate(() => window.brickEditor!.play.pause(false));
       await openRemoteControls(page);
-      await page
-        .getByRole("combobox", { name: "Remote mechanism" })
-        .selectOption("spinner");
+      // The loose brick has no controls, so the sole mounted motor needs no picker.
+      await expect(
+        page.getByRole("combobox", { name: "Remote mechanism" }),
+      ).toHaveCount(0);
       const stop = page.getByRole("button", { name: /Stop motor/ });
       await page.getByText("Motor settings", { exact: true }).click();
       await expect(stop).toBeVisible();
@@ -260,9 +200,28 @@ for (const viewport of [desktop, phone])
         page.getByRole("button", { name: "Run preset" }),
       ).toBeVisible();
       expect(
-        (await snapshot(page)).mechanisms!.spinner.motors!.axle.enabled,
+        (await snapshot(page)).mechanisms!["technic-drive"].motors![
+          physical.rig.transmissions![0].jointA
+        ].enabled,
       ).toBe(false);
       await page.evaluate(() => window.brickEditor!.play.exit());
+      expect(
+        await page.evaluate(async () => ({
+          query: await window.brickEditor!.query(),
+          source: Array.from(
+            (await window.brickEditor!.project.export({ format: "ldraw" }))
+              .bytes,
+          ),
+          inventory: await window.brickEditor!.inventory.preview({
+            expectedRevision: (await window.brickEditor!.query()).revision,
+            scope: { kind: "all" },
+            format: "bricklink-wanted-xml",
+            acceptDerivedMappings: true,
+            acceptUnknownColors: true,
+            errorPolicy: "export-resolved",
+          }),
+        })),
+      ).toEqual(preserved);
       expect(errors).toEqual([]);
     } finally {
       await context.close();

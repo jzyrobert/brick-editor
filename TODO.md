@@ -20,6 +20,8 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Rendering and performance
 
+- [ ] Reduce source-backed Kinematic car/door sweep costs: measured 30.091/12.927 ms mean ticks in the 4×-throttled phone profile; Dynamic car ticks remain within the unchanged 10 ms budget ([verification](docs/VERIFICATION.md#physical-source-play-correction--4-october-2026)). Measure physical phones separately.
+
 - [ ] Low-resolution (`8/`) stud primitives as a phone geometry option, or distance LOD: exposed studs are now most of what plain builds draw (needs its own quality setting and cache key).
 - [ ] A phone pixel-ratio cap of 1.5, as Minebench uses.
 - [ ] Incremental occlusion on edits (a full pass is ≈ 0.4–1 s at 150,000 parts).
