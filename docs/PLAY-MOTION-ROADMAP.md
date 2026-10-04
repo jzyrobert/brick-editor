@@ -393,7 +393,9 @@ include transform-transfer and render-interpolation measurements first.
 ### G. Contextual Play controls and mechanism overview
 
 Additional user direction, 3 October 2026: use the impeccable design skill as
-functionality grows, preserving the established navy HUD/chalk sheet system.
+functionality grows. The later request to fetch the new UI on main supersedes
+the initial navy HUD/chalk sheet direction: the controls now preserve the cream
+workshop, site header and Gallery/model tools introduced upstream at `b0ac932`.
 Link Technic motors and useful articulated parts to simple in-game controls.
 Offer touch sticks/levers and equivalent keyboard/pointer input; avoid adding
 permanent panels or controls that currently cannot do anything. Only show a

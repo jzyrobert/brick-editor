@@ -1307,6 +1307,10 @@ controllers, cylindrical bearings and moving support/dynamic seats:
   jump, plus actual pinned jeep seated entry/drive/exit at desktop and 360 px.
 - Combined private-port Chromium run: 18 passed in 2.7 min, on port 4397, with
   the rebuilt root worktree. The server was stopped by Playwright afterward.
+- Existing seat, orbit, keyboard-focus and all-mechanism regressions also pass:
+  12 cases in 2.6 min on the same private port. These include blocked seat exit
+  recovery, atomic seat metadata review, simultaneous driving/turning and
+  ordinary explorer orbit after the native-seat/support integration.
 - Foundation checks before platform integration: 18 unit files/130 passed in
   32.57 s. Six post-integration files/29 passed in 8.65 s, including lifecycle
   refusal atomicity, loaded motors, bearings, support and dynamic seats.
