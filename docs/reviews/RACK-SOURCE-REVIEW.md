@@ -222,3 +222,28 @@ correctly. Coverage, successful point queries and the deep geometric manifold do
 not explain that behavior. Source-derived mass/inertia, loaded motion, foreign
 blockers, end stops, backdrive, mobile carriers and contact budget behavior remain
 separate requirements before this candidate can be claimed as supported.
+
+## Reproducible translation-sensitive contact probe
+
+Run `npx tsx scripts/audit-rack-contact-translation.ts`. The public diagnostic
+compiles the unchanged 3,212-triangle pinned housing and uses the eight
+source-derived boundary vertices of rack region 1126. It needs no private
+candidate JSON. Two fresh zero-gravity native worlds retain the same mesh,
+convex prism, mass, prismatic anchors and velocity motor, with contacts enabled
+and CCD disabled. The second world translates both bodies by 3.2 metres in Y.
+Neither world uses Play hooks or a compound collider.
+
+On the pinned engine, the origin case's maximum force over five ticks is
+`0.000228 N`, with deepest geometric distance approximately `-0.000000745 LDU`.
+The translated case reaches `795.52 N` and approximately `-9.499983 LDU`.
+Both runs report identical geometry hashes. Native Float32 storage changes the
+initial relative Y from `0.4000000059604645 m` to `0.39999985694885254 m`.
+Thus this isolated response is sensitive to the common world translation of
+the nominally touching guide surfaces. This does not establish a safe clearance
+allowance or explain every contact in the complete rig.
+
+The diagnostic reports force events separately from geometric manifold distance,
+solver contact count and impulse; cached manifold depth alone remains insufficient
+solver evidence. It characterizes the current engine and source geometry rather
+than asserting that the defect should persist. No runtime contact exclusion,
+origin shift, CCD change or proxy approximation is enabled by this probe.

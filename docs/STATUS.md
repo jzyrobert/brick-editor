@@ -1081,3 +1081,13 @@ the narrow phone while all 72 group corners remain clear of controls. Six camera
 unit cases and eleven production-browser cases verify motion, independent
 drivers, zoom/Fit, input release and source/inventory preservation. The upstream
 workshop/header design remains intact. See [verification](VERIFICATION.md#clear-and-closer-whole-mechanism-overview-4-october-2026).
+
+## Rack volume and translated contact diagnosis (4 October 2026)
+
+An independently reviewed private thick rack candidate preserves its extracted
+section areas and openings and passes native point-containment controls. It
+still fails motion acceptance. A public isolated contact diagnostic reproduces
+large housing/rack forces after a common world translation, without Play hooks
+or compounds. Flags, partitioning and child recentering do not restore the full
+rig. The candidate housing volume also fails source coverage and remains private.
+Both rack Play modes remain unaccepted. See [source review and reproduction](reviews/RACK-SOURCE-REVIEW.md#reproducible-translation-sensitive-contact-probe).

@@ -1479,3 +1479,23 @@ Both private previews stop; ports 4397/4398 are free. Source hashes, prior/new
 projection measurements and JSON/PNG witnesses remain private in the platform
 worktree's `.local/combined-controls-tight-*.json` and
 `test-results/combined-controls/`. No runtime asset or dependency is added.
+
+## Rack translation contact characterization (4 October 2026)
+
+`npx tsx scripts/audit-rack-contact-translation.ts` runs from the committed pinned
+library without private candidate assets. Two fresh native worlds use identical
+3,212-triangle housing geometry and one source-derived convex rack region, with
+enabled joint contacts, one-kilogram moving mass, zero gravity and no CCD.
+After five ticks, maximum force is 0.000228 N at the origin and 795.52 N after
+translating both bodies by 3.2 m in Y. Geometry hashes match between trials;
+reported initial relative Y differs by approximately 1.49e-7 m after native
+Float32 storage. Force events and post-step geometric/solver reports are separate.
+TypeScript, diagnostic execution and formatting pass. This is a reproduction
+of the unresolved contact behavior, not acceptance of the complete rack.
+
+Independent review of the private 1,245-prism rack candidate establishes
+area-preserving extracted sections within stated tolerances, 29 native
+containment tests including all 32 teeth/gaps, and zero mismatches in 16,804
+source occupancy samples. Complete native motion still stalls. The private
+housing approximation fails source controls, so its failed motion trials cannot
+establish source-correct housing behavior. See [the bounded evidence and limits](reviews/RACK-SOURCE-REVIEW.md#private-thick-section-candidate-review).

@@ -272,7 +272,7 @@
             "contactWorkPerCommand": 200000,
             "sweepSegmentsPerCommand": 1024
           },
-          "rackAcceptance": "Corrected source mount and travel have geometric checks; current kinematic and native rack contact paths still stall; source-derived thick rack sections are under review"
+          "rackAcceptance": "Corrected source mount and travel have geometric checks; a private thick rack passes finite section coverage and native containment checks but motion still stalls; a public isolated probe reproduces translation-sensitive housing contact; both Play modes remain unaccepted"
         },
         "notSimulated": [
           "worm, bevel and differential transmissions",
