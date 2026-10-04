@@ -24,7 +24,10 @@ import type { CollisionSnapshot } from "./types";
 import { surfaceCompound, surfaceCompoundLocal } from "./surface-compound";
 import { reviewedMechanicalMember } from "./reviewed-mechanical-proxies";
 import { prepareReviewedConvexRegions } from "./reviewed-convex-packet";
-import { reviewedGuideAlignment } from "./reviewed-guide-alignment";
+import {
+  reviewedGuideAlignment,
+  reviewedHousingGuideClass,
+} from "./reviewed-guide-alignment";
 
 export const MECHANICAL_CONTACT_LIMITS = Object.freeze({
   solids: 4096,
@@ -52,7 +55,7 @@ export type MechanicalSolid = {
   /** Explicit bearing regions that wholly contain this solid at rest. */
   mating: Set<string>;
   feature?: "spur-gear" | "rack" | "rack-guide";
-  reviewedPlaneClass?: -1 | 0 | 1;
+  reviewedPlaneClass?: -1 | 0 | 1 | 2;
 };
 type Bearing = {
   id: string;
@@ -234,7 +237,7 @@ export class MechanicalContactPolicy {
           groupId: string;
           memberId?: string;
           feature?: "rack-guide";
-          reviewedPlaneClass?: -1 | 0 | 1;
+          reviewedPlaneClass?: -1 | 0 | 1 | 2;
         },
   ) {
     const fixedRoot = this.fixedRoots.get(a.groupId);
@@ -247,7 +250,9 @@ export class MechanicalContactPolicy {
       (a.reviewedPlaneClass === 1 ||
         a.reviewedPlaneClass === -1 ||
         b.reviewedPlaneClass === 1 ||
-        b.reviewedPlaneClass === -1) &&
+        b.reviewedPlaneClass === -1 ||
+        a.reviewedPlaneClass === 2 ||
+        b.reviewedPlaneClass === 2) &&
       this.guides.some(
         (g) =>
           g.aligned &&
@@ -452,14 +457,22 @@ function reviewedMemberSolids(
     q = frameRotation(relative).normalize(),
     t = toPhysics(relative.position);
   const out: MechanicalSolid[] = [];
-  for (const planeClass of [-1, 0, 1] as const) {
+  const classification = new Map(
+    packet.regions.map((r) => [
+      r.id,
+      packet.source.ref === "18940.dat"
+        ? reviewedHousingGuideClass(r)
+        : r.planeClass,
+    ]),
+  );
+  for (const planeClass of [-1, 0, 1, 2] as const) {
     const children = prepared.children.filter(
-      (c) => c.planeClass === planeClass,
+      (c) => classification.get(c.sourceRegionId) === planeClass,
     );
     if (!children.length) continue;
     const local: Vec3[] = [];
     for (const region of packet.regions.filter(
-      (r) => r.planeClass === planeClass,
+      (r) => classification.get(r.id) === planeClass,
     ))
       for (let i = 0; i < region.vertices.length; i += 3) {
         const p = new Vector3(

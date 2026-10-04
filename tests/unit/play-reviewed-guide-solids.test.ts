@@ -34,7 +34,12 @@ it("prepares the same hollow source-bound housing for fixed and mobile carriers 
   const prepared = prepareMechanicalSources(sources).get(rig.id)!,
     hs = prepared.stationary.filter((s) => s.memberId === housing.id),
     rs = prepared.solids.filter((s) => s.memberId === rack.id);
-  expect(hs.map((s) => s.reviewedPlaneClass)).toEqual([-1, 0, 1]);
+  expect(hs.map((s) => [s.reviewedPlaneClass, s.childCount])).toEqual([
+    [-1, 96],
+    [0, 310],
+    [1, 96],
+    [2, 425],
+  ]);
   expect(hs.reduce((n, s) => n + s.childCount, 0)).toBe(927);
   expect(rs.reduce((n, s) => n + s.childCount, 0)).toBe(1245);
   expect(prepared.solids.reduce((n, s) => n + s.childCount, 0) + 927).toBe(

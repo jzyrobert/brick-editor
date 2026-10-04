@@ -48,6 +48,15 @@ it("keeps reviewed cap allowance carrier-relative and restores contacts for endp
       identity().basis,
     ).allowed,
   ).toBe(false);
+  for (const y of [-1, 1])
+    expect(
+      reviewedGuideAlignment(
+        movedCarrier,
+        compose(movedRack, { ...identity(), position: [0, y, 0] }),
+        geometry.bounds,
+        identity().basis,
+      ).allowed,
+    ).toBe(false);
   // Small relative angle satisfies the rotation threshold but its long rack
   // endpoint exceeds the cap corridor. A centre-only test misses this.
   const tipped = compose(movedRack, {
