@@ -7,16 +7,16 @@
  * hanging from a frame, a small ramp, trees, flowers, a bench and a fence.
  * Fronts face −Z.
  *
- * Every moving thing is its own motion rig. The crates and barrels are
+ * The crates and barrels are
  * single-group rigs marked loose (`anchored: false`), so dynamic Play gives
  * them gravity and the explorer can push them; they stand on smooth tiles, so
- * they slide instead of catching on studs. The see-saw plank, the roundabout
- * and the swing seat turn on revolute joints about their posts. All rigs ask
- * Play to start with Dynamic physics (`dynamics.startDynamic`), and the
- * project carries a short Play hint. Kinematic Play still works: joints move
- * with the contextual action and the loose objects stay put.
+ * they slide instead of catching on studs. These six gravity rigs ask Play to
+ * start with Dynamic physics (`dynamics.startDynamic`). The decorative see-saw,
+ * roundabout and swing have no source hinge bearings: their stored engineering
+ * joints remain unavailable in ordinary Play and do not request Dynamic mode.
  *
- * Budget: 9 dynamic rigs and 12 bodies, within Play's 14-rig, 64-body limits.
+ * Budget: 6 active gravity rigs and 6 bodies, within Play's 14-rig, 64-body limits.
+ * The project also preserves three unavailable engineering rigs at rest.
  */
 import type { Basis, Project, Vec3 } from "../../core/types";
 import { importLDraw } from "../../ldraw/io";
@@ -39,7 +39,7 @@ const GRASS = 2,
   BRIGHT_LEAF = 10;
 
 /** The play hint shown as Play starts. */
-export const PLAYGROUND_HINT = "Push the crates and barrels, then swing!";
+export const PLAYGROUND_HINT = "Push the crates and barrels.";
 
 /** Pivots (LDraw world coordinates). */
 export const SEESAW_PIVOT: Vec3 = [120, -48, -180];
@@ -257,7 +257,12 @@ export function playgroundProject(): Project {
         ...(limits ? { limits } : {}),
       },
     ],
-    dynamics: dynamics({ moving: { anchored: false, massKg } }),
+    // These mathematical fixture joints have no physical source bearing.
+    // Ordinary Play refuses them; retain their authored rest poses unchanged.
+    dynamics: {
+      groups: { moving: { anchored: false, massKg } },
+      startDynamic: false,
+    },
   });
   rigs.seesaw = hinge(
     "seesaw",

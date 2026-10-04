@@ -326,11 +326,11 @@ test("the playground park starts Play with dynamic physics, and walking pushes a
     "Mechanism physics · Dynamic",
   );
   await expect(page.locator(".play-intro-hint")).toHaveText(
-    "Push the crates and barrels, then swing!",
+    "Push the crates and barrels.",
   );
   await page.getByRole("button", { name: "Enter Play" }).click();
   await expect(page.locator(".play-start-hint")).toHaveText(
-    "Push the crates and barrels, then swing!",
+    "Push the crates and barrels.",
   );
   await expect
     .poll(() =>
@@ -341,6 +341,20 @@ test("the playground park starts Play with dynamic physics, and walking pushes a
       ),
     )
     .toBe("dynamic");
+  expect(
+    await page.evaluate(async () =>
+      Object.keys(
+        (await window.brickEditor!.play.snapshot()).mechanisms!,
+      ).sort(),
+    ),
+  ).toEqual([
+    "barrel-1",
+    "barrel-2",
+    "crate-1",
+    "crate-2",
+    "crate-3",
+    "crate-4",
+  ]);
   await page.evaluate(() => window.brickEditor!.play.exit());
 
   // A deterministic push: walk into crate 3 (x -260..-220, z -160..-120).
@@ -361,7 +375,9 @@ test("the playground park starts Play with dynamic physics, and walking pushes a
       };
     };
     const original = await authored();
-    const rigIds = (await a.mechanisms.list()).map((rig) => rig.id);
+    const rigIds = (await a.mechanisms.list())
+      .filter((rig) => !rig.joints.length)
+      .map((rig) => rig.id);
     await a.play.enter({
       rigIds,
       dynamicRigIds: rigIds,
@@ -411,6 +427,7 @@ test("the playground park starts Play with dynamic physics, and walking pushes a
       before: start.mechanisms!["crate-3"].groupFrames.body.position,
       after: end.mechanisms!["crate-3"].groupFrames.body.position,
       mode: end.mechanisms!["crate-3"].mode,
+      rigIds: Object.keys(end.mechanisms!).sort(),
       tickDelta:
         end.mechanisms!["crate-3"].tick - start.mechanisms!["crate-3"].tick,
       supports,
@@ -432,6 +449,14 @@ test("the playground park starts Play with dynamic physics, and walking pushes a
     }),
   });
   expect(push.mode).toBe("dynamic");
+  expect(push.rigIds).toEqual([
+    "barrel-1",
+    "barrel-2",
+    "crate-1",
+    "crate-2",
+    "crate-3",
+    "crate-4",
+  ]);
   expect(push.after[2]).toBeLessThan(push.before[2] - 20);
   expect(push.tickDelta).toBe(40);
   for (const support of [...push.supports, push.settledSupport]) {

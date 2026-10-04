@@ -19,10 +19,12 @@ import {
 } from "../../src/catalog/template-names";
 import { curatedHas } from "../../src/catalog/full-library";
 import { occurrences } from "../../src/core/document";
+import { connectionGraph, connectedGroups } from "../../src/core/connectivity";
 import { compose, inverse } from "../../src/core/math";
 import { partsList } from "../../src/inventory/parts-list";
 import { modelHealth } from "../../src/core/health";
 import { KinematicSession, validateRig } from "../../src/mechanisms/kinematic";
+import { physicalPlayEligibility } from "../../src/mechanisms/physical-play";
 import { deriveDoorRigs } from "../../src/play/auto-doors";
 import { PlaySession } from "../../src/play/session";
 import { validate } from "../../src/core/validate";
@@ -426,7 +428,7 @@ describe("sample builds", () => {
     },
   );
 
-  it("playground: every moving thing is a rig, loose objects are checked as loose", () => {
+  it("playground: source-connected loose objects move while unmounted engineering joints stay unavailable", () => {
     const project = template("playground");
     expect(project.title).toBe("Playground park");
     expect(project.scene).toEqual({
@@ -457,7 +459,20 @@ describe("sample builds", () => {
     for (const rig of rigs) {
       validateRig(project, rig);
       validate("motionRig", rig);
-      expect(rig.dynamics?.startDynamic).toBe(true);
+      expect(rig.dynamics?.startDynamic).toBe(rig.joints.length === 0);
+      expect(physicalPlayEligibility(project, rig).eligible).toBe(
+        rig.joints.length === 0,
+      );
+      if (!rig.joints.length) {
+        const owned = new Set(rig.groups[0].occurrenceIds);
+        const graph = connectionGraph(
+          project,
+          occurrences(project).filter((o) => owned.has(o.id)),
+        );
+        expect(graph.uncovered).toEqual([]);
+        expect(graph.hingeContacts).toBe(0);
+        expect(connectedGroups(graph)).toEqual([[...owned]]);
+      }
     }
     const health = modelHealth(project).checks.find(
       (c) => c.id === "connectivity",
@@ -470,16 +485,21 @@ describe("sample builds", () => {
   });
 
   it(
-    "playground: in dynamic Play the explorer pushes a crate and the swing swings",
+    "playground: dynamic Play pushes a source-connected crate and keeps decorative mechanisms static",
     { timeout: 180000 },
     async () => {
       const project = template("playground");
-      const ids = Object.keys(project.motionRigs);
-      const { geometry, sources } = await officialSources(
-        project,
-        project.motionRigs,
-        { min: [-340, -200, -340], max: [340, 0, 340] },
+      const rigs = Object.fromEntries(
+        Object.entries(project.motionRigs).filter(
+          ([, rig]) => physicalPlayEligibility(project, rig).eligible,
+        ),
       );
+      const ids = Object.keys(rigs);
+      expect(ids).toHaveLength(6);
+      const { geometry, sources } = await officialSources(project, rigs, {
+        min: [-340, -200, -340],
+        max: [340, 0, 340],
+      });
       const original = JSON.stringify(project),
         inventory = partsList(project, occurrences(project)),
         crateMesh = sources.find((s) => s.rigId === "crate-3")!.groups.body,
@@ -500,6 +520,9 @@ describe("sample builds", () => {
         const session = await create(dynamic, [-240, -8.3, -70]);
         try {
           session.stepTicks(30);
+          expect(Object.keys(session.snapshot().mechanisms!).sort()).toEqual(
+            [...ids].sort(),
+          );
           const crate = () =>
             session.snapshot().mechanisms!["crate-3"].groupFrames.body.position;
           const before = crate();
@@ -551,17 +574,6 @@ describe("sample builds", () => {
         } finally {
           session.dispose();
         }
-      }
-      // Walk into the swing seat (x -220..-140, z 160..180, 40-48 up).
-      const session = await create(true, [-180, -0.3, 60], Math.PI);
-      try {
-        session.setInput({ moveZ: 1, yaw: Math.PI });
-        session.stepTicks(90);
-        const swing = session.snapshot().mechanisms!.swing;
-        expect(Math.abs(swing.pose.jointPositions.pivot)).toBeGreaterThan(3);
-        expect(JSON.stringify(project)).toBe(original);
-      } finally {
-        session.dispose();
       }
       expect(partsList(project, occurrences(project))).toEqual(inventory);
     },
