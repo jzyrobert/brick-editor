@@ -110,6 +110,17 @@ for (const phone of [false, true])
           await page
             .getByLabel("Explore joint joint-0", { exact: true })
             .fill("-60");
+          // Sliders submit the latest intent once per rendered frame. Wait for
+          // that public target before advancing the deterministic simulation.
+          await expect
+            .poll(() =>
+              page.evaluate(async (rigId) => {
+                const snapshot = await window.brickEditor!.play.snapshot();
+                return snapshot.mechanisms![rigId].jointTargets?.["joint-0"]
+                  ?.target;
+              }, c.rig),
+            )
+            .toBe(-60);
           await page.evaluate(() => window.brickEditor!.play.stepTicks(120));
         }
         const moved = await page.evaluate(() =>

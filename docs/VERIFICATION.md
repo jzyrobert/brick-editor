@@ -35,8 +35,15 @@ Focused follow-up acceptance:
   unchanged source. Dynamic settling retains its 1°/2° per second limits;
   intermediate native movement is tested before completion.
 
-Full CI remains the publication gate; the prior deployed version remains live
-until the complete follow-up run succeeds.
+Integrated follow-up [37215733610](https://github.com/jzyrobert/brick-editor/actions/runs/37215733610)
+passes all **1,558 unit/CLI tests**, formatting, library validation, build, both
+Photo shards, performance and seven of eight main browser shards. The remaining
+failure was a desktop sample test advancing deterministic ticks before the
+slider's queued animation frame submitted its target. It now waits for the
+public joint-target snapshot, preserving the same movement assertions; both
+desktop and phone rack cases pass in 48.8 s. No runtime or budget change was
+needed. Full CI remains the publication gate; the prior deployed version remains
+live until the complete follow-up run succeeds.
 
 ## Physical-source Play correction — 4 October 2026
 
