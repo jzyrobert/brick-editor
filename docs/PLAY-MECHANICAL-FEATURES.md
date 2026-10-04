@@ -121,9 +121,9 @@ drive; connected limits, atomic pose acceptance and one authored motor per
 component apply across mixed spur/rack chains. Numeric component ratios carry
 the destination coordinate's units per source coordinate's unit.
 
-Reviewed proposals require the source-bound 18942 sliding web aligned with one
-18940 housing in the chosen frame. The ideal channel keeps at least 40 LDU of
-web engaged; this is a simulation requirement, not a certified physical retention
+Reviewed proposals require the source-bound 18942 sliding bottom beam aligned
+with one 18940 housing in the chosen frame. The ideal channel keeps at least
+40 LDU of beam engaged; this is a simulation requirement, not a certified physical retention
 rating. The source's paired housing walls and cheeks define the guide frame.
 Travel is shortened further to leave a full 8-LDU tooth spacing between the
 pinion center and either end of the reviewed tooth interval. Wrong guide
@@ -144,10 +144,13 @@ bounded force-based velocity feedback. Eight passes and 100 total relations per
 rig apply; all coupled coordinates stay within 3,600 degrees/s or LDU/s, with
 reflected speed bounds limiting the faster member.
 
-The original eight-part [rack source](../fixtures/ldraw/rack-motion.mpd) and
-[generator](../src/mechanisms/rack-fixture.ts) exercise 720° pinion travel to
-−125.66 LDU, reversal from the slider, source/native/posed isolation and pinned
-geometry. Generate/check with `npx tsx scripts/build-rack-fixture.ts [--check]`.
+The corrected eight-part [rack source](../fixtures/ldraw/rack-motion.mpd) and
+[generator](../src/mechanisms/rack-fixture.ts) use a 24-tooth pinion, signed radius
+−30 LDU/radian and slider travel [−88, +10] LDU. Its proposed acceptance moves
+150° to −78.54 LDU and reverses to +8 LDU. Pinned source-triangle tests cover
+the full travel and pinion sweep, including negative controls for the former
+overlap and housing stop. Native and rendered contact acceptance remain in
+progress. Generate/check with `npx tsx scripts/build-rack-fixture.ts [--check]`.
 This ideal constraint has no tooth collision, backlash, clutch or automatic
 disengagement; limits keep the reviewed engagement present.
 

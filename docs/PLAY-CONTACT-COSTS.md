@@ -13,8 +13,8 @@ After the contact implementation is integrated, from the repository root:
 
 ```sh
 export PATH=/tmp/brick-node/node-v22.14.0-linux-arm64/bin:$PATH
-FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=spur --mode=dynamic --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 --baseline=fbeb02f > .local/spur-contact-cost.jsonl
-FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=rack --mode=dynamic --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 --baseline=fbeb02f > .local/rack-contact-cost.jsonl
+FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=spur --mode=dynamic --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 --baseline=237c339 > .local/spur-contact-cost.jsonl
+FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=rack --mode=dynamic --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 --baseline=237c339 > .local/rack-contact-cost.jsonl
 FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=spur --mode=kinematic --rounds=2 --warmup=1 --ticks=60 > .local/spur-kinematic-cost.jsonl
 ```
 
@@ -28,6 +28,12 @@ masses, motor states and coordinates. Run a fresh process to repeat cold entry;
 subsequent entries in one process can reuse decomposition caches. The historical
 adapter's helpers come from the current tree, so this is a hull implementation
 comparison, not reconstruction of a complete old release.
+
+These commands use `237c339`, a hull checkpoint retained in this branch's
+history. The experimental tables below used the agent checkpoint `fbeb02f`;
+record the chosen baseline and new hashes with each repeat. A short current/
+historical smoke run verifies that the retained baseline loads and reports equal
+prescribed masses; it does not supply new performance evidence.
 
 `--disable-ccd=true` sets `maxCcdSubsteps=0` solely for a diagnostic run. It can
 permit tunneling and is not a proposed production optimization. Body-level
