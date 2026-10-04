@@ -1,5 +1,37 @@
 # Implementation status
 
+## Source-bound guided rack checkpoint — 4 October 2026
+
+The corrected 24-tooth 18940/18942 assembly now works in Kinematic and Dynamic
+Play through the production source-bound packet path. Fixed and 37° rotated
+mobile fixtures reach 150°/−25π LDU, reverse the slider to 8 LDU, reflect default
+mass/friction loads, recover from obstruction and return carrier reaction.
+The passive back-drive witness explicitly authors frictionless surfaces.
+All 900 housing regions/927 native children and 1,245 rack regions remain;
+finite source/precision review and public offline reconstruction are published.
+A paired floor-halfspace/cap allowance checks the entire current/next rack
+Y/Z envelope and orientation; core stops and foreign parts keep response.
+Missing or changed source refuses before native allocation. Fixed walking
+proxies keep ordinary triangle meshes outside unsupported native compounds.
+
+Thirteen production browser checks pass: both rack modes, linked rack/slider
+controls, and whole-system overview at every required desktop/phone viewport.
+The fresh offline native-project reload passes both rack modes with service-worker
+packet/WASM delivery and exact query/source/inventory preservation. Nine actual
+session negatives pass for thin blockers/retry, physical stops beyond widened
+limits, authored misalignment refusal and restored native hook response.
+See [current verification](VERIFICATION.md#reviewed-guided-rack-checkpoint--4-october-2026).
+
+The broad regression run passes 1,476 of 1,480 tests. The old CLI 90-tick completion
+assertion predates settled completion; its follow-up now preserves the original
+90-tick motion check and verifies true completion at 120 ticks without changing
+1°/2°·s⁻¹ limits. The crate follow-up checks actual source-bottom clearance throughout
+pushing and settling instead of its tilted frame origin; it passes with the
+original 3 LDU clearance allowance. Lighthouse lamp rotation and cathedral doorway
+entry remain under investigation. The broader regression checkpoint remains open;
+these sample checks are separate from scoped rack/browser acceptance above.
+Physical-phone throughput and cheaper larger contacts remain open.
+
 ## Canonical mechanical geometry — 4 October 2026
 
 Play now captures complete moving-member surfaces in part-local coordinates
@@ -13,7 +45,8 @@ The parent integration passes 46 focused cases, the production build and three
 browser cases: both physics modes on an oblique custom same-name part and fresh
 offline Technic entry. Native packet preparation and its exact compiler now
 retain supplied facets and lower-dimensional support, but generated housing/rack
-data and physical rack acceptance are still separate. See
+data and physical rack acceptance were still separate at that checkpoint; the
+subsequent reviewed-rack checkpoint above records their integration. See
 [capture scope](reviews/PLAY-MEMBER-LOCAL-CAPTURE.md) and
 [native proxy scope](reviews/CANONICAL-MECHANICAL-PROXIES.md).
 
@@ -33,11 +66,13 @@ replacement. These checks remain separate from the scoped design verdicts. See
 [implementation evidence](reviews/MECHANICAL-PROPOSAL-ENTRY.md) and the
 [design handoff](reviews/MECHANISM-ENTRY-GRIP-DESIGN.md).
 
-The pinned aligned 18940/18942 rack guide now refuses Play before proxy/world
-allocation, with a plain explanation and structured unsupported-contact details.
-The proposal, authored source and mathematical Build preview remain available.
-This temporary refusal does not deliver working rack motion; source-faithful
-housing/rack contact, load, back-drive and mobile-carrier acceptance remain open.
+The subsequent source-bound rack implementation admits the reviewed 18940/18942
+pair in both modes after exact geometry preflight. Its bounded floor/cap bearing
+classes preserve all source-region supports and restore contacts on misalignment;
+full travel, loads, obstruction recovery, back-drive and mobile carrier checks
+now pass. Further rack families and physical-phone throughput remain open. See
+[mechanical scope](PLAY-MECHANICAL-FEATURES.md) and
+[finite contact review](reviews/REVIEWED-GUIDE-FLOOR-CONTACTS.md).
 
 A reusable production-browser witness measures the two-spur overview's moving
 geometry, draw calls, collected heap, entry and tick costs on desktop and mobile

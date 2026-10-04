@@ -10,13 +10,16 @@ be refused before moving when it would require over 1,024 segments.
 Sharing a rig does not disable contacts. Rigid welds, authored ideal tooth meshes,
 and explicit local `mating` bearing cylinders are the allowances. Bearing regions
 are split without shrinking their original convex boundary and apply only to
-revolute joints or revolute loop closures. Translating bearing allowances are
-refused because a rest-tagged shaft could otherwise ignore a distant frame stop.
+revolute joints or revolute loop closures. Generic translating `mating` metadata remains refused: a rest-tagged shaft
+could otherwise ignore a distant frame stop. The separately reviewed 18940/18942
+guide has exact paired floor-halfspace/cap volume classes, checked against the
+whole current and next carrier-relative rack envelope; it grants no arbitrary
+prismatic bearing exemption.
 The simple joint editor refuses advanced mating metadata rather than discarding it.
 
 The reviewed 3700/3701/3702 proxies preserve their through bores with sixteen-sided
 openings and 0.1 LDU ideal bearing clearance. Studs, underside details and flared
-bore mouths remain approximations. Reviewed 3647/3648b gears and 18942 rack use
+bore mouths remain approximations. Reviewed 3647/3648b gears use
 source surfaces merged only when their coplanar convex union preserves area, then
 extruded 0.02 LDU inward. Important gear openings and concave tooth spaces survive.
 This is a simulation proxy, not a certified fit or a measured weight. Default
@@ -54,14 +57,28 @@ inside an authored revolute bearing cylinder retain their original hull instead
 of receiving unnecessary radial cuts. See [verification](VERIFICATION.md#bounded-contact-and-spur-regressions-4-october-2026)
 and [measured costs](PLAY-CONTACT-COSTS.md#integrated-spur-after-oblique-admission-4-october-2026).
 
-The corrected rack mounting and limits have separate pinned-triangle clearance
-proof. **Its kinematic and native compound contact paths still stall at
-near-tangent guide surfaces, so physical rack acceptance is open.** A
-[pinned section review](reviews/RACK-SOURCE-REVIEW.md) identifies thick rack
-bands and actual hole/pocket contours for the replacement proxy. A moving 18940
-rack housing is refused before allocation until its hollow proxy is reviewed;
-anchoring the frame retains its exact surfaces. Earlier same-rig-disabled rack
-travel proves ideal coupling only. Internal-edge flag experiments and source
-volume decomposition are diagnostic work, not verified runtime behavior. Phone
-hardware performance has not been measured; VM measurements belong in the
-benchmark record after the final proxy geometry is accepted.
+The corrected 24-tooth rack mounting and limits have pinned-triangle clearance
+checks. Reviewed 18940/18942 native packets now retain 900 housing regions/927
+children and 1,245 rack regions, including source openings, supplied supporting
+facets and lower-rank support. Both fixed and mobile carriers use the same hollow
+geometry. Exact canonical renderer surfaces bind the lazy packets before any
+native world/event allocation; changed sources cannot use filename-only support.
+
+The guide-floor tangency correction partitions 414 existing floor-halfspace
+regions into a distinct paired bearing class without changing native geometry
+or asset hashes. True authored slopes within that halfspace remain. Together
+with the original outer Z-cap classes, allowance requires the entire rack to
+remain within the reviewed Y/Z corridor (0.05 LDU allowance) and relative basis
+error 0.002 at both sweep endpoints. Core stops, foreign assemblies and walking
+actors retain response. Default density, friction, effort and the 4,096-child cap
+stay unchanged. Fixed/mobile fixtures use 3,657/3,917 children.
+
+Native checks cover actual forward/reverse targets, default-friction load and
+obstruction recovery, explicitly authored frictionless passive back-drive and
+straight/rotated carrier reaction. Rendered checks cover both modes, exact source
+and inventory preservation, linked control feedback and required phone layouts.
+The finite source/precision review is a bounded simulation review rather than a
+universal source-solid/topology theorem. See [mechanical scope](PLAY-MECHANICAL-FEATURES.md),
+[floor review](reviews/REVIEWED-GUIDE-FLOOR-CONTACTS.md), and
+[public regeneration](reviews/REVIEWED-PLAY-PROXY-REBUILD.md). Physical-phone
+throughput remains unmeasured; cheaper larger-mechanism contact work remains open.

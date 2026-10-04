@@ -1,5 +1,75 @@
 # Verification — 27 September 2026
 
+## Reviewed guided rack checkpoint — 4 October 2026
+
+Production binding now admits only the actual source-bound reviewed 18940/18942
+surfaces. All 900 housing regions retain 927 native children; all 1,245 rack regions
+remain. Public regeneration independently passes its permanent integration check
+in 9.76 s. The finite source floor review classifies 414 regions/425 children without
+an epsilon or asset mutation; all lower-dimensional support stays. Source
+projection exceptions are explicitly bounded, not presented as an exact molded
+solid/topology theorem. See [rebuild](reviews/REVIEWED-PLAY-PROXY-REBUILD.md),
+[floor review](reviews/REVIEWED-GUIDE-FLOOR-CONTACTS.md) and
+[packet scope](reviews/REVIEWED-NATIVE-PROXY-PACKETS.md).
+
+The focused 157-case initial run passed 155 cases and failed two added reaction
+assertions measured after reversal had returned towards rest. Measuring carrier
+reaction during forward travel corrects those assertions: both isolated mobile
+cases pass in 50.61 s without changing motor/travel tolerances. The subsequent
+full suite also passes every rack test. Full default-friction/default-density
+forward/reverse, reflected load, obstruction recovery, straight/37° mobile
+carrier reaction and per-pass angular-momentum checks pass. The 1 N·s passive
+back-drive test explicitly authors friction 0; it makes no claim about travel
+against default guide friction. 132 independent material/void controls preserve
+source openings and every rack tooth/gap. Changed canonical geometry refuses
+both modes before any native world/event allocation.
+
+The fresh build passes schemas, TypeScript and Vite (40.53 s). 13 production browser
+cases pass in 3.6 min on private 4397: both modes reach input 150°/rack −25π and
+reverse slider +8 LDU, captures change, posed export moves all 8 parts, and normal
+source/inventory remain exact. Linked rack and slider-crank controls, passive
+feedback, release braking and whole-mechanism fit/orbit/restoration pass across
+1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411, including Dynamic phone.
+The production source entry covers the fixed-bearing composite rejection repair.
+The owned preview has stopped.
+
+A separate 9-case actual PlaySession safety run passes in 48.83 s: both modes stop
+at a foreign 0.1 LDU wall and retry after removal; wider authored travel exposes
+the actual housing stop and reverses back to 8; Y/Z misalignment refuses; a
+native body displacement restores all floor/cap classes through the owned queue
+hook. Source and every bound packet stay exact. See
+[negative evidence](reviews/REVIEWED-GUIDE-CONTACT-SAFETY.md).
+
+The new installed-offline rack companion passes in 55.8 s after restoring a saved
+native project in a fresh JavaScript realm. Both modes run exactly 900 ticks per
+leg. All 14 needed library chunks, lazy reviewed-rack-data and embedded-WASM
+session assets come from service-worker caches; page/CSP errors are zero and the
+full query/source/inventory match. The existing offline 8:24/pin-arm witness also
+passes on the same final runtime. Offline build passes in 37.00 s; private 4413 is
+stopped. The packets remain same-origin/lazy; no runtime dependency was added.
+
+Broad verification: `npm test -- --maxWorkers=2` runs 208 files/1,480 tests in 732.89 s;
+205 files/1,476 tests pass. Four failures are isolated for follow-up: the CLI's
+90-tick door completion assertion precedes the new settling contract; lighthouse
+lamp travel, cathedral entry and playground crate support reproduce independently.
+Do not read the scoped rack/browser pass as a claim that the entire suite passed.
+
+The isolated CLI follow-up passes in 49.00 s (45.47 s test): at 90 ticks the door is
+89.601831° and 3.979926°/s, correctly still moving; at 120 ticks it is 90.175448°
+and 0.050893°/s, complete under unchanged 1°/2°·s⁻¹ settling limits. Origin main
+marked its 90-tick door complete while still 3.118948°/s. The test retains the
+original motor/vehicle budget and kinematic 135° expectation and adds the bounded
+settled witness. No CLI, API, runtime, contact or timeout change was needed.
+
+The isolated playground follow-up passes in 26.40 s (22.62 s test). The original
+4.230 LDU frame-origin displacement comes from crate tilt; transformed source
+bottom clearance stays within the original 3 LDU allowance throughout all 40 push
+ticks (maximum 1.543 LDU). After the actor stops and moves clear, the crate settles
+within 0.05 LDU of the support with zero linear/angular velocity. Push distance,
+Kinematic immobility, swing travel and exact source/inventory preservation remain
+checked. No runtime, source, budget or tolerance change was needed. See
+[physical support evidence](reviews/PLAYGROUND-CONTACT-REGRESSION.md).
+
 ## Canonical capture and native preparation integration — 4 October 2026
 
 The parent integrates occurrence-bound canonical capture, the oblique native

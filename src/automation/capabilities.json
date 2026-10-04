@@ -245,7 +245,7 @@
       "dynamicMechanisms": {
         "optIn": "play.enter dynamicRigIds (UI: Play > Mechanism physics > Dynamic)",
         "engine": "@dimforge/rapier3d-compat@0.21.0 (bundled, Apache-2.0)",
-        "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces; prismatic bodies on anchored carriers directly retain their constrained world orientation under obstruction, while mobile carriers retain native relative rotation; centered compound children compose position and orientation through the authored frame",
+        "bodies": "One rigid body per authored group; compound convex proxies per member occurrence; anchored groups keep exact triangle surfaces or source-bound reviewed hollow compounds; prismatic bodies on anchored carriers directly retain their constrained world orientation under obstruction, while mobile carriers retain native relative rotation; centered compound children compose position and orientation through the authored frame",
         "joints": [
           "fixed",
           "revolute",
@@ -264,9 +264,9 @@
         },
         "reproducibility": "Identical reports for identical inputs in the pinned engine/browser; not promised across platforms",
         "mechanicalContacts": {
-          "status": "Verified ground-plane, oblique-shape and spur checkpoint; two shared-frame drives advance within the proxy cap; production-browser moving-render resource witness passes, but measured ticks exceed a 60 Hz physics budget; rack/housing acceptance and cheaper larger contacts remain open",
-          "policy": "Internal contacts remain enabled except rigid welds, declared ideal gear meshes and explicit local revolute bearing regions; translating bearing allowances refused",
-          "proxies": "Reviewed 3700/3701/3702 bores and 3647/3648b/18942 source-surface compounds; unreviewed moving 18940 housing refused",
+          "status": "Verified bounded spur and source-bound 18940/18942 rack drives; fixed and rotating mobile assemblies complete travel/reverse with loads and contact response; measured larger-mechanism ticks exceed a 60 Hz budget and physical-phone throughput remains unverified",
+          "policy": "Internal contacts remain enabled except rigid welds, declared ideal gear meshes, explicit local revolute bearings, and exact paired reviewed rack floor/cap classes while the entire carrier-relative rack envelope stays aligned; core/end stops, foreign parts and actor contacts retain response",
+          "proxies": "Reviewed 3700/3701/3702 bores and 3647/3648b source-surface compounds; 18940 housing and 18942 rack use complete source-bound lazy native packets with supplied facets and retained lower-rank support; unbound or changed source refuses before native allocation",
           "limits": {
             "convexChildrenAcrossActiveSources": 4096,
             "sourceVerticesAcrossActiveSources": 600000,
@@ -275,7 +275,7 @@
             "contactWorkPerCommand": 200000,
             "sweepSegmentsPerCommand": 1024
           },
-          "rackAcceptance": "Corrected source mount and travel have geometric checks; private source-preserving native housing/rack proxies reach both targets, including full-density/default-friction and rotated mobile diagnostics; production data and contact acceptance remain pending; pinned aligned 18940/18942 prismatic guides refuse Play before proxies with contactStatus unsupported and feature 18940-guided-rack; mathematical Build preview and source-bound proposals remain available"
+          "rackAcceptance": "Pinned 24-tooth mount, signed -30 LDU/radian and travel [-88,+10] LDU; forward input150 degrees and reverse slider8 LDU in both modes; native reflected load, stall/retry, authored-frictionless backdrive, angular-momentum and straight/37-degree rotating-carrier checks; source/rest/inventory unchanged; bounded proxy/source precision scope documented; other rack families remain open"
         },
         "notSimulated": [
           "worm, bevel and differential transmissions",

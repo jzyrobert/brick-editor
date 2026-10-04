@@ -148,28 +148,38 @@ reflected speed bounds limiting the faster member.
 
 The corrected eight-part [rack source](../fixtures/ldraw/rack-motion.mpd) and
 [generator](../src/mechanisms/rack-fixture.ts) use a 24-tooth pinion, signed radius
-−30 LDU/radian and slider travel [−88, +10] LDU. Its proposed acceptance moves
-150° to −78.54 LDU and reverses to +8 LDU. Pinned source-triangle tests cover
-the full travel and pinion sweep, including negative controls for the former
-overlap and housing stop. Native and rendered contact acceptance remain in
-progress. Generate/check with `npx tsx scripts/build-rack-fixture.ts [--check]`.
-This ideal constraint has no tooth collision, backlash, clutch or automatic
-disengagement; limits keep the reviewed engagement present.
+−30 LDU/radian and slider travel [−88, +10] LDU. Its acceptance moves
+150° to −78.54 LDU and reverses the slider to +8 LDU. Pinned-source swept
+clearance checks cover that range and the corrected pinion mounting. The earlier
+source/travel arrangement is retained only as historical diagnostic evidence;
+it does not establish the current contact behavior. Generate/check the current
+fixture with `npx tsx scripts/build-rack-fixture.ts [--check]`.
 
-The initial travel acceptance ran with same-rig contacts suppressed. The later
-contact audit found intersections between the rack and housing in that source
-arrangement. Its 720° / −125.66 LDU result establishes ideal coupling and source
-isolation, not collision-clear guide travel. Corrected mounting and physical
-travel acceptance remain in progress.
+Play binds lazy reviewed packets to the actual renderer's canonical part-local
+surfaces before native world/event allocation. Both packet identities, source
+revision and occurrence frames must match. A filename, altered embedded part,
+missing geometry or supplied preparation map cannot bypass validation. Unbound
+aligned guides explain the missing source match with `contactStatus:
+"unsupported"` and `feature: "18940-guided-rack"`; bound guides enter both modes.
+Proposals expose the available ideal rig with a short simplified-collision notice.
 
-Until the physical contact path is accepted, the pinned aligned 18940/18942 guide
-on a prismatic mount refuses both Play modes before proxy/world allocation:
-“This rack guide cannot move safely in Play yet. You can still preview its movement
-in Build.” Error details include `contactStatus: "unsupported"` and
-`feature: "18940-guided-rack"`. Read-only proposals retain their ideal rig with
-the same warning; saving and mathematical Build preview remain available.
-This refusal is temporary and does not replace the forward/reverse, load,
-back-drive or mobile-carrier acceptance requirements.
+The 900 housing regions retain 927 native children and usable openings; the rack
+retains 1,245 regions. Fixed and mobile assemblies use 3,657 and 3,917 children
+respectively, within the existing 4,096 session cap. All facets and lower-rank
+supports remain. Only the exact paired housing's outer caps and reviewed floor-halfspace
+regions receive a bearing allowance, gated by its whole carrier-relative rack
+Y/Z envelope and orientation at current and next poses. Core/end stops, other
+parts and walking actors keep response. Native velocity motors connected to a
+rack use effort-limited force damping so reflected sliding loads can recover
+from obstruction. Density, default friction, effort and motion tolerances stay
+unchanged. See [packet scope](reviews/REVIEWED-NATIVE-PROXY-PACKETS.md),
+[finite floor review](reviews/REVIEWED-GUIDE-FLOOR-CONTACTS.md), and the
+[public offline constructor](reviews/REVIEWED-PLAY-PROXY-REBUILD.md).
+
+This bounded simulation approximates pinned LDraw geometry. The finite material,
+void, source-facet and precision review is documented; it does not certify every
+possible molded-part topology or real LEGO fit/load. Phone throughput remains
+unmeasured on physical hardware. Larger guide families need separate review.
 
 ## Bounds and verification
 
@@ -178,10 +188,10 @@ Analysis accepts at most 2,048 selected occurrences, 8,192 features/stud points,
 plus rejections. Exhaustion fails the whole analysis, so partial searches cannot
 appear uniquely matched. Existing rig and Play budgets still apply to use of the
 result. Geometry and connector assets use existing same-origin verified loaders
-and offline caches; the analysis module is lazy-loaded. No new runtime asset or
-dependency is added.
+and offline caches; the analysis module is lazy-loaded. The two reviewed proxy packets share a lazy same-origin chunk included in the
+opt-in offline snapshot. No new runtime dependency is added.
 
 See [verification](VERIFICATION.md#reviewed-mechanical-proposals-3-october-2026)
 for the exact test and rendered scope. Broader automatic Technic authoring,
-further rack guides, completed contact acceptance, spatial linkages and other actuators remain
+further rack guides, cheaper large-mechanism contact work, spatial linkages and other actuators remain
 in the [motion roadmap](PLAY-MOTION-ROADMAP.md).
