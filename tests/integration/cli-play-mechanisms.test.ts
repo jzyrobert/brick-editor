@@ -3,8 +3,13 @@ import { mkdtemp, readFile, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { main } from "../../scripts/brick-cli";
-import { encodeNative } from "../../src/persistence/native";
-import { template } from "../../src/catalog/templates";
+import { decodeNative, encodeNative } from "../../src/persistence/native";
+import { occurrences } from "../../src/core/document";
+import { exportLDraw } from "../../src/ldraw/io";
+import { identity } from "../../src/core/math";
+import { physicalMotorFixture } from "../../src/mechanisms/motor-fixture";
+import { registerFullLibraryFromDisk } from "../../scripts/full-library-node";
+import { realMechanismsFixture } from "../browser/helpers/real-mechanisms";
 
 it("CLI play opens official doors, reproduces tick runs and writes a posed snapshot", async () => {
   const dir = await mkdtemp(join(tmpdir(), "brick-cli-doors-"));
@@ -89,7 +94,44 @@ it("CLI play simulates dynamic rigs with motors and vehicle input from a native 
     output = join(dir, "physics.png"),
     report = join(dir, "physics.json");
   try {
-    await writeFile(input, await encodeNative(template("physics")));
+    registerFullLibraryFromDisk();
+    const project = await decodeNative(
+      new Uint8Array(realMechanismsFixture().bytes),
+    );
+    const motor = physicalMotorFixture({
+      ...identity(),
+      position: [400, 0, 0],
+    });
+    expect(motor.proposal.unresolved).toEqual([]);
+    const originalIds = occurrences(motor.project).map((o) => o.id);
+    const rig = structuredClone(motor.proposal.rig!);
+    const nodes = motor.project.models[motor.project.rootModelId].nodes;
+    for (const node of nodes) {
+      node.id = `cli-motor-${node.id}`;
+      delete node.sourceRecordId;
+    }
+    const renamed = occurrences(motor.project).map((o) => o.id);
+    const ids = new Map(originalIds.map((id, i) => [id, renamed[i]]));
+    // Rewrite occurrence values AND rest-transform keys after copying root parts.
+    const remap = (value: unknown): unknown => {
+      if (typeof value === "string") return ids.get(value) ?? value;
+      if (Array.isArray(value)) return value.map(remap);
+      if (value && typeof value === "object")
+        return Object.fromEntries(
+          Object.entries(value).map(([key, v]) => [
+            ids.get(key) ?? key,
+            remap(v),
+          ]),
+        );
+      return value;
+    };
+    project.models[project.rootModelId].nodes.push(...nodes);
+    project.motionRigs[rig.id] = remap(rig) as typeof rig;
+    const relation = rig.transmissions![0],
+      inputJoint = relation.jointA,
+      doorBody = project.motionRigs.door.joints[0].bodyB;
+    const authored = await encodeNative(project);
+    await writeFile(input, authored);
     const args = (dynamic: boolean, ticks = 90) => [
       "play",
       "--input",
@@ -106,9 +148,11 @@ it("CLI play simulates dynamic rigs with motors and vehicle input from a native 
       "--vehicle",
       '{"rigId":"vehicle","throttle":1,"steering":0}',
       "--motors",
-      '[{"rigId":"spinner","jointId":"axle","enabled":true}]',
+      JSON.stringify([{ rigId: rig.id, jointId: inputJoint, enabled: true }]),
       "--joint-targets",
       '[{"rigId":"door","jointId":"hinge","target":90,"speed":90}]',
+      "--posed-output",
+      join(dir, "physics-posed.ldr"),
       "--ticks",
       String(ticks),
       "--width",
@@ -117,37 +161,52 @@ it("CLI play simulates dynamic rigs with motors and vehicle input from a native 
       "64",
     ];
     await main(args(true));
+    expect(new Uint8Array(await readFile(input))).toEqual(authored);
+    expect(await readFile(join(dir, "physics-posed.ldr"), "utf8")).not.toEqual(
+      exportLDraw(project),
+    );
     const dynamic = JSON.parse(await readFile(report, "utf8")).playRun.final;
     expect(Object.keys(dynamic.mechanisms).sort()).toEqual([
-      "crate",
       "door",
-      "spinner",
+      "technic-drive",
       "vehicle",
     ]);
     expect(dynamic.mechanisms.vehicle.mode).toBe("dynamic");
     expect(dynamic.mechanisms.vehicle.pose.vehicle.position[2]).toBeLessThan(
       -60,
     );
-    expect(dynamic.mechanisms.spinner.motors.axle.simulation).toBe(
+    expect(dynamic.mechanisms[rig.id].motors[inputJoint].simulation).toBe(
       "dynamic-motor",
     );
-    // Completion requires a settled body, not just crossing the angle tolerance.
-    // Keep the original 90-tick run: the door is close but still rotating.
+    expect(
+      dynamic.mechanisms[rig.id].pose.jointPositions[inputJoint],
+    ).toBeGreaterThan(90);
+    expect(
+      dynamic.mechanisms[rig.id].pose.jointPositions[relation.jointB],
+    ).toBeCloseTo(
+      -dynamic.mechanisms[rig.id].pose.jointPositions[inputJoint] / 3,
+      0,
+    );
+    // Keep the 90-tick intermediate report. This actual source door has different
+    // mass/inertia from the old block fixture and is still rotating toward rest.
+    // The separate settling hold retains the 1-degree/2-degrees/s contract.
     expect(dynamic.tick).toBe(90);
     const movingDoor = dynamic.mechanisms.door;
-    expect(
-      Math.abs(movingDoor.pose.jointPositions.hinge - 90),
-    ).toBeLessThanOrEqual(1);
-    expect(movingDoor.dynamics.bodies.door.angularSpeed).toBeGreaterThan(2);
+    expect(Math.abs(movingDoor.pose.jointPositions.hinge)).toBeGreaterThan(45);
+    expect(movingDoor.dynamics.bodies[doorBody].angularSpeed).toBeGreaterThan(
+      2,
+    );
     expect(movingDoor.jointTargets.hinge.status).toBe("moving");
     expect(movingDoor.blocked).toBe(false);
     await main(args(false));
     const kinematic = JSON.parse(await readFile(report, "utf8")).playRun.final;
     expect(kinematic.mechanisms.vehicle.mode).toBe("kinematic");
-    expect(kinematic.mechanisms.spinner.pose.jointPositions.axle).toBeCloseTo(
-      135,
-      6,
-    );
+    expect(
+      kinematic.mechanisms[rig.id].pose.jointPositions[inputJoint],
+    ).toBeCloseTo(135, 6);
+    expect(
+      kinematic.mechanisms[rig.id].pose.jointPositions[relation.jointB],
+    ).toBeCloseTo(-45, 6);
     // Independently verify the CLI's final report after a bounded settling hold,
     // retaining the native 1-degree position and 2-degrees/s speed thresholds.
     await main(args(true, 120));
@@ -157,11 +216,15 @@ it("CLI play simulates dynamic rigs with motors and vehicle input from a native 
     expect(
       Math.abs(settledDoor.pose.jointPositions.hinge - 90),
     ).toBeLessThanOrEqual(1);
-    expect(settledDoor.dynamics.bodies.door.angularSpeed).toBeLessThanOrEqual(
-      2,
-    );
+    expect(
+      settledDoor.dynamics.bodies[doorBody].angularSpeed,
+    ).toBeLessThanOrEqual(2);
     expect(settledDoor.jointTargets.hinge.status).toBe("complete");
     expect(settledDoor.blocked).toBe(false);
+    expect(new Uint8Array(await readFile(input))).toEqual(authored);
+    expect(
+      exportLDraw(await decodeNative(new Uint8Array(await readFile(input)))),
+    ).toEqual(exportLDraw(project));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
