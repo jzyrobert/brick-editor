@@ -241,6 +241,30 @@ coordinates match the prior spur checkpoint; both native trials also retain
 excluded. The higher VM load prevents treating native timings as a regression
 or improvement measurement.
 
+## Corrected rack surface checkpoint (4 October 2026)
+
+The corrected 24-tooth source mount is measured separately from the earlier
+interpenetrating fixture. This is a blocked diagnostic before the thick-volume
+replacement, with the indexed policy hash above:
+
+```sh
+FORCE_COLOR=0 npx tsx scripts/benchmark-play-contacts.ts --fixture=rack --mode=kinematic --ground=true --rounds=2 --warmup=30 --ticks=150 --mass-kg=1 > .local/corrected-rack-kin-cost.jsonl
+```
+
+Both trials retain input/slider at 0° / 0 LDU and report the world/assembly
+obstruction reason. Retrying the blocked tick costs 55.29 / 58.27 ms mean,
+100.99 / 98.25 ms p95; entry costs 1,470 / 731 ms. There are six policy classes,
+3,761 child solids, eight stationary members and four walking colliders including
+ground. Source hashes match at entry/exit; VM load is 4.96–5.72. Rendering and
+actor work are excluded. These timings do not accept the rack in either Play
+mode or establish its eventual volume-proxy cost.
+
+The independent [source review](reviews/RACK-SOURCE-REVIEW.md) records constant
+rack extrusion bands, all 32 teeth and functional hole/pocket contours, with
+28 selected rack and 22 selected housing solid/void checks. These are local
+source controls, not full proxy-coverage or native-motion proof. Both kinematic
+and native collision acceptance remain required after the proxy replacement.
+
 ## Budget advice
 
 Counts must be global over every active rig and include mirror/query resources.

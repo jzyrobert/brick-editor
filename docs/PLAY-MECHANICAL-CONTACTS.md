@@ -55,8 +55,12 @@ of receiving unnecessary radial cuts. See [verification](VERIFICATION.md#bounded
 and [measured costs](PLAY-CONTACT-COSTS.md#integrated-spur-after-oblique-admission-4-october-2026).
 
 The corrected rack mounting and limits have separate pinned-triangle clearance
-proof. **Its native compound contact path still stalls at near-tangent guide
-surfaces, so physical rack acceptance is open.** A moving 18940 rack housing is refused before allocation until its hollow proxy is reviewed; anchoring the frame retains its exact surfaces. Earlier same-rig-disabled rack
+proof. **Its kinematic and native compound contact paths still stall at
+near-tangent guide surfaces, so physical rack acceptance is open.** A
+[pinned section review](reviews/RACK-SOURCE-REVIEW.md) identifies thick rack
+bands and actual hole/pocket contours for the replacement proxy. A moving 18940
+rack housing is refused before allocation until its hollow proxy is reviewed;
+anchoring the frame retains its exact surfaces. Earlier same-rig-disabled rack
 travel proves ideal coupling only. Internal-edge flag experiments and source
 volume decomposition are diagnostic work, not verified runtime behavior. Phone
 hardware performance has not been measured; VM measurements belong in the
