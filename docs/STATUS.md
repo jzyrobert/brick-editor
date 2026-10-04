@@ -27,8 +27,10 @@ assertion predates settled completion; its follow-up now preserves the original
 90-tick motion check and verifies true completion at 120 ticks without changing
 1°/2°·s⁻¹ limits. The crate follow-up checks actual source-bottom clearance throughout
 pushing and settling instead of its tilted frame origin; it passes with the
-original 3 LDU clearance allowance. Lighthouse lamp rotation and cathedral doorway
-entry remain under investigation. The broader regression checkpoint remains open;
+original 3 LDU clearance allowance. Lighthouse lamp rotation and its beach-to-top walkthrough now pass after a
+bounded source-triangle support certificate. Its production browser witness also
+passes with changed pixels and exact source preservation. Cathedral doorway
+entry remains under investigation. The broader regression checkpoint remains open;
 these sample checks are separate from scoped rack/browser acceptance above.
 Physical-phone throughput and cheaper larger contacts remain open.
 

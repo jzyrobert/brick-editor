@@ -70,6 +70,17 @@ Kinematic immobility, swing travel and exact source/inventory preservation remai
 checked. No runtime, source, budget or tolerance change was needed. See
 [physical support evidence](reviews/PLAYGROUND-CONTACT-REGRESSION.md).
 
+The lighthouse follow-up restores the original lamp-turn/beach-to-top regression
+without changing source, targets, tolerances or contact budgets (50.68 s in the
+isolated worktree). Main integration passes 29 support/contact/BVH checks in
+16.33 s and a schemas/TypeScript/Vite build (35.74 s Vite). Its new production
+browser witness passes in 27.4 s: the actual rendered model reaches 30° after
+30 ticks, the capture changes, posed export changes, and normal source and
+occurrences remain exact. The private 4397 preview is stopped. Complete finite
+source-triangle support applies only to the registered unchanged aggregate
+collider and eligible literal Y-axis motion; wall, moved/changed collider,
+unsupported compound and near-scaled/oblique frame checks retain fallback.
+
 ## Canonical capture and native preparation integration — 4 October 2026
 
 The parent integrates occurrence-bound canonical capture, the oblique native
