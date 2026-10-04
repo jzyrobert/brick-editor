@@ -1,6 +1,6 @@
 # Sample builds
 
-The template chooser in Project shows picture cards for twelve sample builds and a blank canvas: three big scenes of thousands of parts written as [build scripts](AGENT-BUILDING.md) (market town, cathedral, harbour) first, then nine smaller detailed builds. Each sample is an original build made from official LDraw parts, and each shows off something in Play. **Explore the corner café** on the empty-canvas welcome card opens the café.
+The template chooser in Project shows picture cards for sixteen sample builds and a blank canvas: three big scenes of thousands of parts written as [build scripts](AGENT-BUILDING.md) (market town, cathedral, harbour) first, then nine smaller detailed builds and four ready-to-play motion demonstrations. The architectural builds and two Technic demonstrations reference official LDraw parts; the crank and gripper demonstrations use clearly identified original custom pieces. Each shows off something in Play. **Explore the corner café** on the empty-canvas welcome card opens the café.
 
 | Sample            |  Parts | Designs | Outside the curated catalogue                                                                                                                                        | Play                                                                                                                                                                            |
 | ----------------- | -----: | ------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -20,6 +20,39 @@ The template chooser in Project shows picture cards for twelve sample builds and
 The older technical starts (studio `room`, `wall`, `200`, exploration room `explore`, door and vehicle `mechanisms`, open-bench `seated-vehicle`, `door-room` and physics playground `physics`) are no longer offered in the chooser. They stay available to automation (`project.import({format:'template', template})`) and the CLI as test fixtures; the unit and browser suites use them.
 
 Each sample opens on a backdrop that suits it ([rendering](RENDERING.md#backdrops)): the market town, jeep, roadster and café on the toy street map, the cathedral, house, castle, windmill farm, playground and railway station on the meadow, the harbour and lighthouse on the beach (`TEMPLATE_BACKDROPS` in `src/catalog/templates.ts`, saved in `project.scene`). The chooser cards stay on white.
+
+## Ready-to-play motion samples
+
+Open **Project → New → Show all templates** and choose a motion sample. Enter
+**Play**, open **Pause**, then choose the mechanism's **controls**. The overview
+fits the whole mechanism; drag to orbit and pinch or scroll to zoom. Forward and
+Reverse work while held, with braking on release. Each sample opens separately
+so the reviewed contact and native collider budgets remain bounded.
+
+| Sample         |            Pieces | What to try                                                                                                                                                                                                           |
+| -------------- | ----------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Motor & gears  | 13 official parts | Hold Forward to turn the red input axle and 8-tooth gear. The blue 24-tooth gear follows at one third the speed in the opposite direction. Choose the independent pin arm under Part control to swing the yellow arm. |
+| Rack drive     |  8 official parts | Hold Forward or Reverse: the red 24-tooth pinion moves the blue rack inside its reviewed housing. The rack stops at its authored travel limits. Linked outputs shows the coupled motion.                              |
+| Crank & slider |   4 custom pieces | Turn the red crank and watch the yellow connecting rod move the blue slider. The closed linkage keeps its connecting pins together; the slider is a passive output.                                                   |
+| Grab & lift    |   5 custom pieces | Starts in Dynamic Play. Tap Grab crate, select Motor 2 to lift, or Motor 1 to carry sideways, and hold Forward. Tap Release crate to drop the blue payload.                                                           |
+
+The motor and rack samples retain the exact reviewed fixture placements and
+mechanical defaults, with colour identifying input and output. The linkage and
+gripper samples are original CC0 demonstration geometry, **not official LEGO
+parts** or shopping recommendations. The native sample projects contain their
+authored rigs; normal LDraw exports preserve the source pieces but do not encode
+motors, loop closures or capture zones. Save a `.brickproj` to retain those.
+
+`src/catalog/motion-samples.ts` reuses the acceptance-tested fixture generators.
+`npm run templates` validates each authored rig, exports its source MPD into
+`fixtures/ldraw/templates/`, and renders actual 320 × 240 WebP chooser previews.
+Architectural occupancy checks remain separate: bearing, axle and gear members
+nest deliberately, and custom linkage pieces are not a stud-connected building.
+The generated MPDs also extend the offline dependency scan, so a fresh installed
+offline snapshot includes every official part these samples need. The official geometry and connector
+pack manifests are included too, allowing first-ever sample selection after
+an offline install without an online library warm-up. Initial Play hints hide
+while remote controls are open to keep small mechanisms visible.
 
 ## How they are made
 
@@ -57,7 +90,7 @@ Each build is generated by code in `src/catalog/builds/` (`cafe.ts`, `windmill.t
 
 ## Checks
 
-`src/catalog/builds/check.ts` compares every pair of parts by their derived occupancy boxes (for parts outside the curated pack, the same derivation is run on the complete library's geometry), checks grid placement and counts verified connections. Every sample reports no overlapping bodies, every part on the stud grid, and all parts with verified connectors in one stud-connected group (café 334 with 4 hinge pins, windmill 313 with 6, lighthouse 264 with 2, jeep 61, house 263 with 2, castle 223, car 44, playground 94, railway station 371; the rest are decor, glass, animals, trees and parts without verified connector data).
+`src/catalog/builds/check.ts` compares every pair of parts by their derived occupancy boxes (for parts outside the curated pack, the same derivation is run on the complete library's geometry), checks grid placement and counts verified connections. Every architectural sample reports no overlapping bodies, every part on the stud grid, and all parts with verified connectors in one stud-connected group (café 334 with 4 hinge pins, windmill 313 with 6, lighthouse 264 with 2, jeep 61, house 263 with 2, castle 223, car 44, playground 94, railway station 371; the rest are decor, glass, animals, trees and parts without verified connector data).
 
 The overlap check exempts parts that nest by design: glass in its frame, a door leaf on its frame's pins, a door frame's hinge collars (they sit in the part above like studs), a flag's clips round its pole, and the cars' wheel assemblies (a rim on its wheel pin, a tyre on its rim, both under the mudguard's arch, whose round clearance is finer than the occupancy cells). Track pieces interlock at their joined ends and train wheels run inside the rail heads, so neither counts; track curves and rail vehicles are off the stud grid by design.
 
@@ -67,7 +100,7 @@ Loose objects are free-standing by design: a connected group whose parts all bel
 
 ## Offline
 
-The build-script samples' LDraw files (1.1 MB of text, 0.1 MB compressed) are bundle assets and are precached like the rest of the app. The house, castle and roadster need only the curated pack. The other samples use a few parts from the complete library: the offline snapshot (service worker) precaches the pack index, the 61 chunks those parts need and their 29 derived-connector shards (5.0 MB in all, 2.4 MB of it the index; the three build-script samples added 31 chunks and 15 shards), so every sample opens offline once the app is installed for offline use.
+The build-script samples' LDraw files (1.1 MB of text, 0.1 MB compressed) are bundle assets and are precached like the rest of the app. The house, castle and roadster need only the curated pack. The other samples use a few parts from the complete library: the offline snapshot (service worker) precaches the pack index, the chunks those parts need and their derived-connector shards, computed from all generated template sources (including the Technic samples), so every sample opens offline once the app is installed for offline use.
 
 ## Play fit
 

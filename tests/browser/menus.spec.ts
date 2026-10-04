@@ -1,3 +1,4 @@
+import { TEMPLATE_CARDS } from "../../src/catalog/template-names";
 import { test, expect, type Page } from "@playwright/test";
 import {
   openMenuTab,
@@ -165,7 +166,7 @@ test("menus remember their tab, keep templates short and return to the Inspector
   const cards = page.locator(".mode-card .template-card");
   await expect(cards).toHaveCount(4);
   await showAllTemplates(page);
-  await expect(cards).toHaveCount(13);
+  await expect(cards).toHaveCount(TEMPLATE_CARDS.length);
   // Back in Project, the last tab is still open.
   await openMenuTab(page, "Project", "Settings");
   await openMode(page, "Build");

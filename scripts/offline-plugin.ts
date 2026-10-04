@@ -58,6 +58,7 @@ export function templateLibraryFiles(root = "public") {
   const connectorDir = join(libraries, connectorLock.connectorPackId);
   const shards: string[] = [];
   if (existsSync(join(connectorDir, "manifest.json"))) {
+    shards.push(`libraries/${connectorLock.connectorPackId}/manifest.json`);
     const m = JSON.parse(
       readFileSync(join(connectorDir, "manifest.json"), "utf8"),
     ) as { shards: [string, number, number][] };
@@ -71,6 +72,7 @@ export function templateLibraryFiles(root = "public") {
       );
   }
   return [
+    base + "manifest.json",
     base + manifest.index.path,
     ...[...chunks]
       .sort((a, b) => a - b)

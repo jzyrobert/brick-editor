@@ -1162,7 +1162,7 @@ export function PlayPanel({
             {bindings.camera || "—"} camera · {bindings.interact || "—"}{" "}
             interact
           </div>
-          {playHint && !hintDone && (
+          {playHint && !hintDone && !remoteOpen && (
             <div className="play-start-hint" role="status">
               {playHint}
             </div>

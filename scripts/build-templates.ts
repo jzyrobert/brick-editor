@@ -21,6 +21,12 @@ import { cafeSource } from "../src/catalog/builds/cafe";
 import { playgroundSource } from "../src/catalog/builds/playground";
 import { trainSource } from "../src/catalog/builds/train";
 import { checkBuild } from "../src/catalog/builds/check";
+import { exportLDraw } from "../src/ldraw/io";
+import { validateRig } from "../src/mechanisms/kinematic";
+import {
+  MOTION_SAMPLES,
+  type MotionSampleName,
+} from "../src/catalog/motion-samples";
 import { template } from "../src/catalog/templates";
 import {
   TEMPLATE_CARDS,
@@ -86,6 +92,10 @@ const CAMERAS: Partial<Record<TemplateName, CameraSpec>> = {
   train: cam([1500, -1500, -2300], [200, -40, 500], 40),
   town: cam([1800, -1650, -2600], [60, -300, 0], 40),
   cathedral: cam([2600, -2300, -3900], [120, -700, -150], 40),
+  "motor-gears": cam([260, -220, -350], [70, -80, 0], 38),
+  "rack-drive": cam([240, -400, -430], [-35, -210, 0], 38),
+  "crank-slider": cam([170, -210, -280], [45, -110, 0], 38),
+  "grab-lift": cam([170, -240, -300], [-5, -105, 10], 38),
   harbour: cam([1900, -1700, -2700], [60, -280, -80], 40),
 };
 
@@ -129,6 +139,20 @@ for (const name of Object.keys(SCRIPT_TEMPLATES) as ScriptTemplateName[]) {
       connectivity.detail,
   );
   if (r.overlaps.length || r.offGrid.length || r.groups > 1) failed = true;
+}
+// Mechanism members deliberately nest and sit off the stud grid. Validate the
+// authored mounting graph instead of applying architectural occupancy rules.
+for (const name of Object.keys(MOTION_SAMPLES) as MotionSampleName[]) {
+  const project = template(name);
+  for (const rig of Object.values(project.motionRigs))
+    validateRig(project, rig);
+  writeFileSync(
+    "fixtures/ldraw/templates/" + MOTION_SAMPLES[name].file,
+    exportLDraw(project),
+  );
+  console.log(
+    `${name}: ${occurrences(project).length} pieces; authored rigs valid`,
+  );
 }
 if (failed) throw new Error("A template build failed its checks");
 

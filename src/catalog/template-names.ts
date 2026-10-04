@@ -1,7 +1,7 @@
 /**
  * Sample builds offered in the template chooser (and the blank canvas). Each
- * is generated from official LDraw parts by src/catalog/builds/ (see
- * docs/TEMPLATES.md).
+ * is generated from original scenes or reviewed motion demonstrations in
+ * src/catalog/builds/ and src/mechanisms/ (see docs/TEMPLATES.md).
  */
 export const SAMPLE_TEMPLATES = [
   "blank",
@@ -17,6 +17,10 @@ export const SAMPLE_TEMPLATES = [
   "town",
   "cathedral",
   "harbour",
+  "motor-gears",
+  "rack-drive",
+  "crank-slider",
+  "grab-lift",
 ] as const;
 /**
  * Older technical starts kept only as test fixtures for the automation API
@@ -57,6 +61,10 @@ export const TEMPLATE_CARDS: { name: SampleTemplateName; title: string }[] = [
   { name: "house", title: "House with garden" },
   { name: "castle", title: "Small castle" },
   { name: "car", title: "Roadster car" },
+  { name: "motor-gears", title: "Motor & gears" },
+  { name: "rack-drive", title: "Rack drive" },
+  { name: "crank-slider", title: "Crank & slider" },
+  { name: "grab-lift", title: "Grab & lift" },
   { name: "blank", title: "Blank canvas" },
 ];
 /** The sample the welcome card opens. */

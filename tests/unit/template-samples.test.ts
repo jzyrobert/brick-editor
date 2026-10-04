@@ -111,6 +111,10 @@ describe("sample builds", () => {
         "town",
         "cathedral",
         "harbour",
+        "motor-gears",
+        "rack-drive",
+        "crank-slider",
+        "grab-lift",
       ].sort(),
     );
     expect(SHOWCASE_TEMPLATE).toBe("cafe");

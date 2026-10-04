@@ -1,3 +1,4 @@
+import { isMotionSample, motionSample } from "./motion-samples";
 import {
   mechanismFixture,
   openBenchFixture,
@@ -27,6 +28,10 @@ import { identity, rotationY } from "../core/math";
 import { uid, type Vec3 } from "../core/types";
 /** Each sample opens on a backdrop that suits it (saved in project.scene). */
 export const TEMPLATE_BACKDROPS: Partial<Record<TemplateName, BackdropName>> = {
+  "motor-gears": "studio",
+  "rack-drive": "studio",
+  "crank-slider": "studio",
+  "grab-lift": "studio",
   house: "grass",
   castle: "grass",
   windmill: "grass",
@@ -47,6 +52,7 @@ export function template(name: TemplateName) {
   return project;
 }
 function templateProject(name: TemplateName) {
+  if (isMotionSample(name)) return motionSample(name);
   if (isScriptTemplate(name)) return scriptTemplateProject(name);
   if (name === "house") {
     const project = importLDraw(houseSource(), "house-with-garden.mpd");
