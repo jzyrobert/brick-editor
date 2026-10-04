@@ -1064,3 +1064,10 @@ before rendering, so cheaper contacts remain necessary for larger mechanisms.
 A separate 19,760-part city passes desktop/mobile profile, scene budget, heap and
 Play-entry smoke. The city contains no authored moving rig, and software WebGL
 timings do not establish phone performance. See [scope and reproduction](VERIFICATION.md#combined-drives-and-city-resource-smoke-4-october-2026).
+
+Indexed contact relationships remove repeated group-key allocation and full
+bearing scans during motion checks. Focused checks preserve source geometry,
+obstructions, gear phase and native hook exclusions. Two-drive kinematic samples
+drop to 18.43 / 23.21 ms per tick under higher VM load; native samples remain
+26.45 / 26.71 ms. Larger-build performance and rack guide acceptance remain open.
+See [verification](VERIFICATION.md#indexed-mechanical-contact-policy-4-october-2026).

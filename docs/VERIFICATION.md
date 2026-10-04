@@ -1421,3 +1421,21 @@ Desktop realistic/inside median frame intervals are 2,243 / 2,181 ms, so these
 results neither establish acceptable rendering performance nor measure phone
 FPS. Raw evidence remains private in `.local/perf/stress-contact-city-21b90e2.json`
 and source/bundle hashes in `.local/city-21b90e2-source-metadata.json`.
+
+## Indexed mechanical contact policy (4 October 2026)
+
+Group-pair indexes remove repeated sorting/JSON encoding and bearing scans from
+each sweep/native-hook lookup. Geometry, actual mating predicates and limits
+remain unchanged. TypeScript and formatting pass. Four focused unit files pass
+37/38 checks; the one native bore/180-tick case times out at 5.306 seconds while
+other work runs on the shared VM. Rerunning that case alone passes in 3.30 seconds
+with its original five-second deadline. The other contact obstructions, native
+spur load/reaction/replay, kinematic accumulated turns and multirig checks pass.
+
+Two fresh combined-drive trials retain identical poses, phase, collider counts,
+source and third-copy refusal. Kinematic means are 18.43 / 23.21 ms per fixed
+tick, native 26.45 / 26.71 ms. A repeated isolated spur probe retains 1,924 source
+children, 7,011 native hook calls / 5,754 exclusions, and the prior actual
+coordinates. VM load is higher than the earlier measurements, so the evidence
+supports lower sampled kinematic cost without a controlled speedup or
+native-performance claim. See [hashes and measurements](PLAY-CONTACT-COSTS.md#indexed-contact-relationships-4-october-2026).

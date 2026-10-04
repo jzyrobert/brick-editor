@@ -206,6 +206,41 @@ capacity. This is one measured trial per mode, distinct from the two-trial
 isolated spur measurements. It does not accept rack guides, moving housings,
 arbitrary larger mechanisms or physical phone frame rate.
 
+## Indexed contact relationships (4 October 2026)
+
+A Node CPU profile of the combined probe attributes about 2,031 ms of 3,571 ms
+in kinematic stepping to contact-policy lookup. The original lookup repeatedly
+sorts and JSON-encodes group pairs and scans every bearing. The integrated policy
+now indexes fixed roots, symmetric transmission adjacency and bearings by group
+pair at entry. Feature checks and local mating membership remain unchanged;
+proxy geometry, exclusions and all work/resource limits are retained.
+
+The resulting `mechanical-solids.ts` SHA-256 is
+`be2707fd3307916f363b67e9b50f9898d5b45451b5c35865a7122a72bfcda144`.
+Two sequential fresh processes use the same combined probe, warm-up, samples,
+mass and source assertions:
+
+| Two-drive slice | Mean ms/tick, two trials | p95 ms/tick, two trials | Entry, first / second |
+| --------------- | ------------------------ | ----------------------- | --------------------- |
+| Kinematic       | 18.43 / 23.21            | 34.89 / 38.36           | 1,473 / 2,619 ms      |
+| Native          | 26.45 / 26.71            | 28.66 / 35.77           | 910 / 1,140 ms        |
+
+Coordinates, phase, source hashes, collider counts and the third-copy refusal
+are unchanged. Shared VM load is 3.69–5.14, higher than the earlier 0.71–0.78
+sample. These measurements show lower kinematic cost in this sample; they do
+not establish a controlled speedup ratio, native solver improvement or a 60 Hz
+two-drive budget.
+
+The isolated contact driver is repeated with ground and historical hull baseline
+using the command above. Load is 5.45–5.65. Native compounds average
+11.68 / 9.75 ms (p95 18.74 / 15.85), kinematic compounds 5.29 / 4.18 ms
+(p95 9.46 / 5.00), and historical hulls 0.525 / 0.251 ms
+(p95 2.60 / 0.385). Geometry, native masses, 1,924 children and actual shaft
+coordinates match the prior spur checkpoint; both native trials also retain
+7,011 hook calls / 5,754 exclusions. Entry/exit hashes agree. Rendering is
+excluded. The higher VM load prevents treating native timings as a regression
+or improvement measurement.
+
 ## Budget advice
 
 Counts must be global over every active rig and include mirror/query resources.

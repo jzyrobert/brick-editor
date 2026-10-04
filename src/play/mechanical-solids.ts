@@ -66,7 +66,6 @@ function bearingNormals(axis?: Vec3): Vec3[] {
     n = p.map((v) => v / length) as Vec3;
   return [n, cross(axis, n)];
 }
-const key = (a: string, b: string) => JSON.stringify([a, b].sort());
 const position = (frame: Transform, p: Vec3) =>
   add(frame.position, mv(frame.basis, p));
 
@@ -74,8 +73,9 @@ const position = (frame: Transform, p: Vec3) =>
  * ideal tooth meshes. Sharing a rig never supplies an exclusion. */
 export class MechanicalContactPolicy {
   readonly bearings: Bearing[];
-  private fixed = new Set<string>();
-  private meshes = new Set<string>();
+  private fixedRoots = new Map<string, string>();
+  private meshes = new Map<string, Set<string>>();
+  private bearingsByPair = new Map<string, Map<string, Bearing[]>>();
   constructor(rig: MotionRig, _source?: PlayMechanismSource) {
     const groups = new Map(rig.groups.map((g) => [g.id, g]));
     this.bearings = [...rig.joints, ...(rig.loopClosures ?? [])]
@@ -101,14 +101,32 @@ export class MechanicalContactPolicy {
       parent.get(id) === id ? id : root(parent.get(id)!);
     for (const j of rig.joints)
       if (j.kind === "fixed") parent.set(root(j.bodyB), root(j.bodyA));
-    for (const a of rig.groups)
-      for (const b of rig.groups)
-        if (root(a.id) === root(b.id)) this.fixed.add(key(a.id, b.id));
+    for (const group of rig.groups)
+      this.fixedRoots.set(group.id, root(group.id));
     for (const t of rig.transmissions ?? []) {
       const a = rig.joints.find((j) => j.id === t.jointA)!;
       const b = rig.joints.find((j) => j.id === t.jointB)!;
-      this.meshes.add(key(a.bodyB, b.bodyB));
+      for (const [from, to] of [
+        [a.bodyB, b.bodyB],
+        [b.bodyB, a.bodyB],
+      ]) {
+        const adjacent = this.meshes.get(from) ?? new Set<string>();
+        adjacent.add(to);
+        this.meshes.set(from, adjacent);
+      }
     }
+    for (const bearing of this.bearings)
+      for (const [from, to] of [
+        [bearing.a, bearing.b],
+        [bearing.b, bearing.a],
+      ]) {
+        const adjacent =
+          this.bearingsByPair.get(from) ?? new Map<string, Bearing[]>();
+        const list = adjacent.get(to) ?? [];
+        list.push(bearing);
+        adjacent.set(to, list);
+        this.bearingsByPair.set(from, adjacent);
+      }
   }
   allowed(
     a: MechanicalSolid,
@@ -116,21 +134,29 @@ export class MechanicalContactPolicy {
       | MechanicalSolid
       | { groupId: string; memberId?: string; feature?: "rack-guide" },
   ) {
-    if (a.groupId === b.groupId || this.fixed.has(key(a.groupId, b.groupId)))
+    const fixedRoot = this.fixedRoots.get(a.groupId);
+    if (
+      a.groupId === b.groupId ||
+      (fixedRoot !== undefined && fixedRoot === this.fixedRoots.get(b.groupId))
+    )
       return true;
     if (
       "feature" in b &&
-      this.meshes.has(key(a.groupId, b.groupId)) &&
+      this.meshes.get(a.groupId)?.has(b.groupId) &&
       a.feature &&
       b.feature &&
       (a.feature === "spur-gear" || b.feature === "spur-gear")
     )
       return true;
-    return this.bearings.some(
-      (bearing) =>
-        key(bearing.a, bearing.b) === key(a.groupId, b.groupId) &&
-        (a.mating.has(bearing.id) ||
-          ("mating" in b && b.mating.has(bearing.id))),
+    return (
+      this.bearingsByPair
+        .get(a.groupId)
+        ?.get(b.groupId)
+        ?.some(
+          (bearing) =>
+            a.mating.has(bearing.id) ||
+            ("mating" in b && b.mating.has(bearing.id)),
+        ) ?? false
     );
   }
 }
