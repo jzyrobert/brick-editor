@@ -247,3 +247,58 @@ solver contact count and impulse; cached manifold depth alone remains insufficie
 solver evidence. It characterizes the current engine and source geometry rather
 than asserting that the defect should persist. No runtime contact exclusion,
 origin shift, CCD change or proxy approximation is enabled by this probe.
+
+## Housing tapered-volume decomposition analysis
+
+A later independent source audit counts 3,212 housing triangles: 1,618 horizontal,
+1,522 parallel to Z, and 72 with both meaningful XY and Z normal components
+(normalized threshold `1e-4`), with no degenerate triangles. The source has 21
+absolute vertex Z levels, including zero, or 40 signed intervals between levels.
+Main structural absolute levels are `0,2,3,5,6,7,8,10,13,14,18,20`.
+The additional levels, rounded to the pinned primitive precision, are
+`2.6789,3.0616,3.8270,4.9497,5.6568,6.4673,7.0710,7.3912,9.2390`.
+They come from the right blind-slot wall and conical throat, localized around
+X `[110,120]`, Y `[-49,-9]`; they need not be propagated as global cuts through
+the rest of the housing.
+
+With `u=abs(Z)`, six main taper families account for 40 mixed-normal triangles:
+
+| Source boundary         | Affine plane and extent                                               | Triangles, both sides |
+| ----------------------- | --------------------------------------------------------------------- | --------------------: |
+| Roof underside          | `Y=5-2u`, `u=[5,8]`; footprint changes at 7                           |                     8 |
+| Right outer wall        | `X=129-1.2(u-10)`, `u=[10,20]`; lower edge and crossbrace             |                     8 |
+| Left lip top            | `Y=-30-(u-3)/17`, X `[-129,-110]`, `u=[3,20]`                         |                     4 |
+| Three upper ribs        | `Y=-1.1(u-10)`, X `[-110,-107]`, `[-93,-90]`, `[97,100]`, `u=[10,20]` |                    12 |
+| Left lower chamfer      | `Y=-46-(u-10)`, X `[-129,-90]`, `u=[10,13]`                           |                     4 |
+| Right inner recess wall | `X=122-1.25(u-10)`, Y `[-46,-9]`, `u=[10,14]`                         |                     4 |
+
+The blind-slot faceted radius-10 wall contributes another 16 mixed-normal
+triangles, and its radius-8-to-7 conical throat contributes 16. These are planar
+facets of the pinned source; treating the whole stop as one constant XY extrusion
+fills or omits functional regions.
+
+All 40 signed-band midpoint intersection graphs were extracted with T-junction
+splitting. They are diagnostic graphs rather than cleaned volume contours.
+For absolute Z `[2,10]`, internal crossbrace branches remain at XY
+`(123,-16.5559)` and `(123,-13.636)`. Bands `[10,14]` contain internal roof
+branches, and `[14,20]` expose a roughly `0.000397 LDU` source-coordinate gap near
+`(108.3153,-16.5557)`. These cannot be converted into positive regions merely by
+assuming every traced path is a hole. Source material semantics and bounded
+handling of coordinate precision are still needed.
+
+A private axial-face-paired housing candidate containing 1,017 prisms was also
+reviewed. It fails four of 22 calibrated source controls: it fills the left open
+lower end `(-121,-47.5,6.5)` and the blind slot `(115,-25,0)`, while omitting the
+crossbrace `(127,-15,6)` and curved stop wall `(119.5,-25,5)`. Sixteen prism
+centroids lie in source voids. Among 27,424 grid and source-face-offset checks,
+1,143 occupancy mismatches occur: 734 overfilled void points and 409 omitted
+material points. This diagnostic candidate is not source-faithful.
+
+A finite decomposition using feature-local tapered bands and the reviewed
+negative openings is possible in principle because the pinned source boundaries
+are planar. No complete accepted positive-volume housing has yet been counted,
+and the proposed 4,096-total-source-piece budget remains **unproved**. The rejected
+paired candidate's count is not evidence that a complete faithful partition fits.
+A candidate must preserve windows, pockets, through holes, the blind-slot throat,
+its cap and curved stop, then undergo independent section coverage and native
+contact acceptance before becoming supported geometry.
