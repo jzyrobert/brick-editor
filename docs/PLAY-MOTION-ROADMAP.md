@@ -23,8 +23,8 @@ ideal slider/pinion relation and corrected 24-tooth source mounting. Historical
 load/back-drive checks disabled same-rig contacts; integrated native housing
 contacts currently stall near rest and are not accepted. Further rack guides,
 physical Play acceptance and other families remain open. Direct reviewed session
-entry and explicit undoable Save are implemented; the scoped setup design review
-is finishing its hierarchy/label/content corrections.
+entry and explicit undoable Save are implemented; the scoped setup reviewer
+scored its three hierarchy/label/content corrections resolved.
 
 **Implemented controls:** session-only proportional motor input now drives,
 reverses and brakes reviewed motors without changing authored presets or effort
@@ -378,6 +378,13 @@ inherit point velocity deliberately. Integrate dynamic seats with the actual
 chassis frame, safe entry/exit and collision exclusions. Add reversible grab/release
 attachments for cranes and grippers. A simple lift or rotating platform can be
 implemented alongside the early Technic scene and gives an immediate Play benefit.
+
+**Implemented grab slice:** explicit authored capture zones attach nearby loose
+Dynamic groups with native fixed joints at their current relative frames. Contacts,
+payload load and obstacle reaction remain physical; release retains pose/velocity.
+Contextual Grab/Release controls and whole-system framing include held foreign
+payloads. This is an ideal attachment, not automatic jaw/finger grasp simulation.
+See [scope and verification](PLAY-GRIPPERS.md).
 
 ### F. Keep large builds cheap
 

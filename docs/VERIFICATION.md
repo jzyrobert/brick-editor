@@ -9,8 +9,9 @@ equal revision still increments the editor revision and refuses pending analysis
 before renderer access. Native `project.json`, inventory, normal export and
 queries stay exact during unsaved Try; posed export remains explicit and Save is
 undoable. See [scoped evidence](reviews/MECHANICAL-PROPOSAL-ENTRY.md).
-The fresh Impeccable reviewer requests three setup-flow fixes; final design
-acceptance is pending that batch and its verdict.
+The fresh Impeccable reviewer scored the three setup-flow corrections resolved
+after the same twelve recaptures and eight production cases passed. That verdict
+covers its fix list, not the whole interface or rack-contact acceptance.
 
 The narrow source-bound rack refusal child passes **52 focused regressions**,
 including eleven new unsupported-contact/source/resource/lifecycle checks.
@@ -32,6 +33,42 @@ resource measurement gap and does not establish a phone or 60 Hz budget.
 See [full method and limits](PLAY-CONTACT-COSTS.md#production-moving-render-resource-witness).
 Private JSONL: `.local/moving-browser-resources.jsonl`; owned browser/4397 preview
 are stopped. Later runtime/UI changes require their own integration checks.
+
+## Authored grab/release and held-system overview — 4 October 2026
+
+The native gripper child passes **35 focused unit cases** and **six production
+browser cases in 1.8 minutes**, covering every required viewport. Current pose
+and velocity stay unchanged at attach/release; actual payload load and obstacles
+transmit through native joints while contacts remain enabled. Ownership, cycle,
+overlap, pause/capture/revision and sixteen-attachment admission checks preserve
+state on refusal. Persistence, posed application/undo and destructive basic-edit
+or clipboard paths retain or explicitly refuse the new definitions.
+
+Each browser case lifts/carries/releases an original CC0 crate, compares source
+and inventory exactly and restores all five exported occurrence transforms.
+Independent projections keep 32 selected-and-held corners clear of the controls,
+for 192 checked corners across six sizes. The immutable packet at
+`/home/ubuntu/brick-editor-grippers/.local/grip-review-3e7467d` contains six hashed
+captures, fit records and logs; its detector confirms 44 px actions and clear
+bounds. Child build, types and full formatting pass, and port 4403 is stopped.
+A fresh reviewer reports `ship` for this scoped control/overview extension.
+
+At runtime commit `f86b8c6`, the parent combined production build passes, including
+schema regeneration and TypeScript (Vite: **46.98 seconds**). The Rapier WASM
+marker remains confined to lazy `session-Dg0UUR_U.js`, absent from the main
+application chunk. Full formatting passes and regeneration produces no diff.
+The parent focused run passes **44 tests across seven files in 33.63 seconds**.
+
+The parent production-browser run passes **21 cases in 5.8 minutes**: eight
+proposal-entry cases, two grip integration cases, six grip viewport cases, one
+offline case and four combined-control cases. Coverage includes all six required
+viewports, gripper-only controls and replacing a held authored rig with an
+unsaved proposal. The latter checks old-action refusal, source preservation and
+the new overview's bounds. Logs are `.local/mechanisms-combined-{build,units,
+browser,format}.log`; the owned 4397 preview is stopped. These focused suites
+exclude the still-unaccepted rack motion tests and do not imply a full-suite
+pass. See [behavior and limits](PLAY-GRIPPERS.md) and the
+[scoped design handoff](reviews/MECHANISM-ENTRY-GRIP-DESIGN.md).
 
 The original production build, clean install and test suites passed. These results establish the implemented subset, not completion of the entire specification.
 

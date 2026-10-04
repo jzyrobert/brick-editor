@@ -125,6 +125,22 @@ to supported motor input occurrence IDs; linked joints are not extra independent
 motors. Query, native backup, normal LDraw export and inventory stay unchanged until
 explicit saving or a separately requested posed export.
 
+Dynamic rigs can declare bounded `grippers` with `id`, `groupId`, local `anchor`,
+`captureRadiusLdu` and `maxPayloadMassKg`. Use
+`play.grab({rigId,gripperId,target:{rigId,groupId}})` and
+`play.release({rigId,gripperId})`; both return the current snapshot. A temporary
+native fixed joint preserves the bodies' current relative pose and immediate
+velocities, then transmits actual load and collision reaction. The payload must
+be a nearby active loose unanchored Dynamic group without authored constraints,
+vehicle role, its own gripper or an existing owner. Contacts stay enabled.
+Snapshots expose `mechanisms[rigId].grippers`, including the live anchor,
+candidate proximity hints and held target/mass. Grab rechecks distance, mass and
+deep overlap before allocating a joint. The shared limits are eight grippers per
+rig, sixteen held groups and 4,096 collider-pair checks per grab. Pause, capture,
+stale revisions and inactive sessions refuse mutations. Exit/re-entry clears
+attachments; native persistence saves definitions only. See
+[gripper scope](PLAY-GRIPPERS.md) for authoring limits, units and verified behavior.
+
 `mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})`
 returns a read-only mechanical draft with `sourceRevision`, optional `rig`, typed
 `graph`, `relations`, `unresolved` and `warnings`. Choose explicit fixed frame

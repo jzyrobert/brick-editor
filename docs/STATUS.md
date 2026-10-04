@@ -7,9 +7,14 @@ session without installing authored rigs. Explicit Save uses undoable
 `rigs.upsert`; Try→Exit retains the reviewed motor settings and original source
 revision. Import/restore during analysis invalidates the draft through the
 editor's monotonic revision. Source, native backup and inventory preservation
-are covered by focused unit/browser checks. The fresh scoped Impeccable review
-requires one setup hierarchy/label/content correction batch; its verdict remains
-pending. See [implementation evidence](reviews/MECHANICAL-PROPOSAL-ENTRY.md).
+are covered by focused unit/browser checks. The fresh scoped Impeccable reviewer
+scored the three setup hierarchy/label/content corrections resolved. A separate
+fresh reviewer reports `ship` for the grab controls at their scoped feature level.
+The combined production build, 44 focused unit tests and 21 browser cases pass,
+including all six required viewports, offline entry and gripper/proposal
+replacement. These checks remain separate from the scoped design verdicts. See
+[implementation evidence](reviews/MECHANICAL-PROPOSAL-ENTRY.md) and the
+[design handoff](reviews/MECHANISM-ENTRY-GRIP-DESIGN.md).
 
 The pinned aligned 18940/18942 rack guide now refuses Play before proxy/world
 allocation, with a plain explanation and structured unsupported-contact details.
@@ -23,6 +28,25 @@ profiles. All four slices preserve source and drive both 8:24 relations. Geometr
 and memory remain modest, while 35–78 ms sampled ticks exceed a 60 Hz budget
 under current shared-VM load. These are SwiftShader/emulated-device measurements.
 See [resource evidence](PLAY-CONTACT-COSTS.md#production-moving-render-resource-witness).
+
+## Authored grippers and held-payload overview — 4 October 2026
+
+Optional authored capture zones now attach nearby loose Dynamic groups through
+temporary native fixed joints at their current relative frames. Grab/release
+preserves immediate poses and velocities; native impulses carry actual payload
+load and obstacle reaction through the mechanism. All contacts remain enabled.
+Ownership, mass, distance, overlap and attachment caps bound admission; pause,
+capture, revision change and exit preserve the session/source lifecycle.
+
+Contextual 44 px Grab/Release shares the existing remote sheet. The automatic
+overview includes the held foreign group's bounds/frame, excludes unrelated
+loose objects and removes the added bounds on release. Empty zones and Kinematic
+mode show no grip actions. Native persistence retains capture definitions only;
+posed export contains current occurrence transforms and warns that temporary
+attachment joints are absent. The basic editor and clipboard reject destructive
+remapping. This is an ideal authored attachment, not automatic jaw recognition
+or frictional finger grasping. See [scope](PLAY-GRIPPERS.md) and
+[child verification](VERIFICATION.md#authored-grabrelease-and-held-system-overview--4-october-2026).
 
 Generated instruction trial plans, pictures, booklets and logs are kept locally.
 Only written findings, maintained tools and automated tests are versioned; see
@@ -96,7 +120,7 @@ M0/M1 demonstrate the architecture and 200-part workflow, but the complete risk-
 - **M3 inventory:** verified composites/decomposition; historical invalid-combination data beyond curated coverage; inventory override undo under future structural regrouping; all optional Wanted List price/quantity fields; fixture packs for printed/left/right variants; human-authorized BrickLink destination upload test (**not performed**). No purchases, uploads, credentials or accounts were used.
 - **M4:** connector families beyond studs, side studs, jumpers and door hinges (clips and bars, brick hinges and hinge plates, Technic pins and axles, side anti-studs and brackets; LDCad shadow data only with its own licence review); texture rendering beyond the official `!TEXMAP` images (embedded `!DATA` images, gloss maps, texture mapping over part references) and offline packs; instruction callouts/arrows/exploded offsets, assembly drafts; remaining exploration acceptance, advanced rig authoring and larger collision fixtures.
 - **M5:** implemented items are listed under "Motors, dynamic physics and automatic doors" below. Moving-platform support and dynamic driver seats are now implemented with bounded transfer and exit checks (see the later checkpoint). Remaining: PL-03 evidence on real phone hardware and broader platform/seat compatibility.
-- **M6:** a first optional dynamic slice is implemented (rigid assemblies, motorised joints, suspension vehicles, pushing). Remaining: clutch/breaking behaviour, compound-rig and arbitrary-frame authoring UI, the scoped proposal setup finish review and broader automatic non-door rig entry (source-bound reviewed Try/Save is implemented), advanced assembly planning, inventory-constrained generation and separately scoped collaboration.
+- **M6:** a first optional dynamic slice is implemented (rigid assemblies, motorised joints, suspension vehicles, pushing). Remaining: clutch/breaking behaviour, compound-rig and arbitrary-frame authoring UI, broader automatic non-door rig entry beyond the implemented source-bound reviewed Try/Save flow, advanced assembly planning, inventory-constrained generation and separately scoped collaboration.
 
 The user explicitly reprioritized working Play ahead of the unfinished P0 gates. Basic exploration now includes Rapier capsule walking, gravity/jump/steps/slopes, safe fly transitions, first-person and sphere-swept third-person cameras, an original rigid-joint toy figure with Minecraft-style limb animation, desktop pointer-lock mouse look, fixed 60 Hz ticks with render interpolation and editor-state isolation. Hinge/vehicle previews and explicit undoable pose application now have browser evidence; broader PL compatibility remains unverified; no complete P0 release is claimed.
 

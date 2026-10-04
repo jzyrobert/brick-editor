@@ -325,7 +325,22 @@
           "reports": "Read-only dynamics.bearings translationLdu and unwrapped angleDegrees; actual group frames and posed placements",
           "limits": "No scalar motors/targets; kinematic preview retains rest with an explicit warning; current planar closure solver excludes cylindrical edges"
         },
-        "seatedDriving": "Explicit open-bench seats attach two zero-mass body boxes to the native chassis; actual tilt/suspension frame drives avatar and eyes; supported current-frame ordered exits"
+        "seatedDriving": "Explicit open-bench seats attach two zero-mass body boxes to the native chassis; actual tilt/suspension frame drives avatar and eyes; supported current-frame ordered exits",
+        "grippers": {
+          "authoring": "Optional grippers with id, groupId, local anchor, captureRadiusLdu and maxPayloadMassKg; complete rig definition required; basic editor and clipboard refuse destructive remapping",
+          "actions": "play.grab({rigId,gripperId,target:{rigId,groupId}}) and play.release({rigId,gripperId}); native fixed attachment at current relative pose, no pose or velocity copy; source and inventory unchanged",
+          "eligibility": "Active Dynamic loose unanchored group without authored joints, closures, force links, vehicle role, own gripper or existing owner; actual action rechecks distance, mass and deep overlap; candidate reports are bounded proximity hints",
+          "contacts": "All contacts remain enabled including the held pair; physical payload load and obstruction reflect through the carrier; release keeps current pose and velocity",
+          "limits": {
+            "grippersPerRig": 8,
+            "liveAttachments": 16,
+            "captureRadiusLdu": 32,
+            "maximumPayloadMassKg": 1000,
+            "colliderPairsPerGrab": 4096
+          },
+          "interface": "Contextual 44 px Grab/Release in the existing remote sheet; no actions for empty zones or Kinematic mode; overview includes selected rig and held foreign payload bounds only",
+          "scope": "Ideal authored attachment; no automatic jaw recognition, finger friction grasp, break strength or articulated payload recruitment"
+        }
       },
       "collision": "Actual transformed triangle surfaces; capsule controller; optional session ground",
       "profile": "ldraw-minifig-v1",
