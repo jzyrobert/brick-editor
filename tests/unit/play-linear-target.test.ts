@@ -5,7 +5,7 @@ import { DynamicRig } from "../../src/play/dynamics";
 import { playSources } from "../helpers/play-dynamic-source";
 import { axisRotation } from "../../src/mechanisms/kinematic";
 import type { Transform, Vec3 } from "../../src/core/types";
-import { compose } from "../../src/core/math";
+import { add, compose, inverse, mv } from "../../src/core/math";
 
 beforeAll(async () => {
   await RAPIER.init();
@@ -29,6 +29,19 @@ async function fixture(
 ) {
   const { project, rig: definition } = loopFixture();
   definition.groups = definition.groups.slice(0, 2);
+  // Scalar load tests use a clear support behind the beam. Its real authored
+  // attachment spans the gap, and the obstacle test still creates a solid stop.
+  const [frame, load] = definition.groups;
+  frame.frame.position[2] = load.frame.position[2] - 40;
+  const frameId = frame.occurrenceIds[0];
+  frame.restTransforms[frameId] = structuredClone(frame.frame);
+  project.models[project.rootModelId].nodes[0].transform = structuredClone(
+    frame.frame,
+  );
+  const mount = mv(
+    inverse(frame.frame).basis,
+    load.frame.position.map((v, k) => v - frame.frame.position[k]) as Vec3,
+  );
   delete definition.loopClosures;
   definition.dynamics = {
     groups: { frame: { anchored: true }, input: { massKg: 1 } },
@@ -39,7 +52,7 @@ async function fixture(
       kind: "prismatic",
       bodyA: "frame",
       bodyB: "input",
-      anchorA: [0, 0, 0],
+      anchorA: mount,
       anchorB: [0, 0, 0],
       axisA: [0, 1, 0],
       axisB: [0, 1, 0],
@@ -58,7 +71,7 @@ async function fixture(
         kind: "spring",
         bodyA: "frame",
         bodyB: "input",
-        anchorA: [0, -20, 0],
+        anchorA: add(mount, [0, -20, 0]),
         anchorB: [0, 0, 0],
         restLengthLdu: 20,
         stiffnessNewtonsPerMetre: 100,
@@ -92,7 +105,7 @@ async function fixture(
   const step = (ticks: number) => {
     for (let n = 0; n < ticks; n++) {
       rig.beforeStep();
-      world.step();
+      rig.stepPhysics();
       rig.afterStep();
     }
     return rig.snapshot();

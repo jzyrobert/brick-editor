@@ -41,8 +41,16 @@ for (const kind of ["four-bar", "slider-crank"] as const)
             kind: "revolute" as const,
             bodyA,
             bodyB,
-            anchorA,
-            anchorB,
+            anchorA: [
+              anchorA[0],
+              anchorA[1],
+              -groups[names.indexOf(bodyA)].frame.position[2],
+            ] as [number, number, number],
+            anchorB: [
+              anchorB[0],
+              anchorB[1],
+              -groups[names.indexOf(bodyB)].frame.position[2],
+            ] as [number, number, number],
             axisA: [0, 0, 1] as [number, number, number],
             axisB: [0, 0, 1] as [number, number, number],
           });
@@ -69,8 +77,16 @@ for (const kind of ["four-bar", "slider-crank"] as const)
                     kind: "prismatic" as const,
                     bodyA: "frame",
                     bodyB: "output",
-                    anchorA: [80, 0, 0] as [number, number, number],
-                    anchorB: [0, 0, 0] as [number, number, number],
+                    anchorA: [80, 0, -groups[0].frame.position[2]] as [
+                      number,
+                      number,
+                      number,
+                    ],
+                    anchorB: [0, 0, -groups[3].frame.position[2]] as [
+                      number,
+                      number,
+                      number,
+                    ],
                     axisA: [1, 0, 0] as [number, number, number],
                     axisB: [1, 0, 0] as [number, number, number],
                     limits: [-70, 20] as [number, number],

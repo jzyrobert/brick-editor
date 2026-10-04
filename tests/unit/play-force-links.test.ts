@@ -7,7 +7,8 @@ import { DynamicRig } from "../../src/play/dynamics";
 import { playSources } from "../helpers/play-dynamic-source";
 import { decodeNative, encodeNative } from "../../src/persistence/native";
 import { rigAuthoringRequest } from "../../src/mechanisms/authoring";
-import { add, mv } from "../../src/core/math";
+import { add, inverse, mv } from "../../src/core/math";
+import type { Vec3 } from "../../src/core/types";
 
 beforeAll(async () => {
   await RAPIER.init();
@@ -38,9 +39,25 @@ async function fixture(
 ) {
   const { project, rig: definition } = loopFixture();
   definition.groups = definition.groups.slice(0, 2);
+  // Keep the authored support clear of the loaded beam throughout travel.
+  // The attachment spans this gap; it does not remove physical contacts.
+  const [frame, load] = definition.groups;
+  frame.frame.position[2] = load.frame.position[2] - 40;
+  const frameId = frame.occurrenceIds[0];
+  frame.restTransforms[frameId] = structuredClone(frame.frame);
+  project.models[project.rootModelId].nodes[0].transform = structuredClone(
+    frame.frame,
+  );
+  const mount = mv(
+    inverse(frame.frame).basis,
+    load.frame.position.map((v, k) => v - frame.frame.position[k]) as Vec3,
+  );
+  const installedLink = link
+    ? { ...structuredClone(link), anchorA: add(mount, link.anchorA) }
+    : undefined;
   definition.joints = [];
   delete definition.loopClosures;
-  definition.forceLinks = link ? [link] : [];
+  definition.forceLinks = installedLink ? [installedLink] : [];
   definition.dynamics = {
     groups: {
       frame: { anchored: true },
@@ -54,7 +71,7 @@ async function fixture(
         kind: "spherical",
         bodyA: "frame",
         bodyB: "input",
-        anchorA: [0, 0, 0],
+        anchorA: mount,
         anchorB: [0, 0, 0],
         ...(resistance ? { angularResistance: resistance } : {}),
       },
@@ -66,7 +83,7 @@ async function fixture(
         kind: "prismatic",
         bodyA: "frame",
         bodyB: "input",
-        anchorA: [0, 0, 0],
+        anchorA: mount,
         anchorB: [0, 0, 0],
         axisA: [0, 1, 0],
         axisB: [0, 1, 0],
@@ -90,25 +107,25 @@ async function fixture(
   const step = (ticks: number) => {
     for (let n = 0; n < ticks; n++) {
       rig.beforeStep();
-      world.step();
+      rig.stepPhysics();
       rig.afterStep();
     }
     return rig.snapshot();
   };
   const length = () => {
     const frames = rig.snapshot().groupFrames;
-    if (!link) return 0;
+    if (!installedLink) return 0;
     const a = add(
-        frames[link.bodyA].position,
-        mv(frames[link.bodyA].basis, link.anchorA),
+        frames[installedLink.bodyA].position,
+        mv(frames[installedLink.bodyA].basis, installedLink.anchorA),
       ),
       b = add(
-        frames[link.bodyB].position,
-        mv(frames[link.bodyB].basis, link.anchorB),
+        frames[installedLink.bodyB].position,
+        mv(frames[installedLink.bodyB].basis, installedLink.anchorB),
       );
     return Math.hypot(...a.map((v, k) => v - b[k]));
   };
-  return { project, definition, source, world, rig, body, step, length };
+  return { project, definition, source, world, rig, body, step, length, mount };
 }
 describe("authored force links and ball resistance", () => {
   it("holds a kilogram on a spring at its physical loaded extension and damps motion", async () => {
@@ -205,7 +222,7 @@ describe("authored force links and ball resistance", () => {
         kind: "prismatic",
         bodyA: "frame",
         bodyB: "input",
-        anchorA: [0, 0, 0],
+        anchorA: f.mount,
         anchorB: [0, 0, 0],
         axisA: [0, 1, 0],
         axisB: [0, 1, 0],

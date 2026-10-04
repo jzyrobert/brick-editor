@@ -197,17 +197,21 @@ it("foreign moving door stops against the actual seated body while own vehicle m
   const kept = new Set(frame.nodes.map((n) => n.id));
   frame.records = frame.records.filter((r) => !r.nodeId || kept.has(r.nodeId));
   // The opened leaf stands just clear of the seated minifig's hands (29 LDU
-  // out from its pelvis).
+  // out from its pelvis). Its lower edge clears the chassis and cushion, so
+  // closing it tests the seated body rather than an existing body intersection.
   for (const group of rig.groups) {
     group.frame.position[0] -= 34;
+    group.frame.position[1] -= 40;
     group.frame.position[2] -= 200;
     for (const [id, rest] of Object.entries(group.restTransforms)) {
       rest.position[0] -= 34;
+      rest.position[1] -= 40;
       rest.position[2] -= 200;
       const node = project.models[project.rootModelId].nodes.find(
         (n) => n.id === JSON.parse(id)[0],
       )!;
       node.transform.position[0] -= 34;
+      node.transform.position[1] -= 40;
       node.transform.position[2] -= 200;
     }
   }
@@ -225,6 +229,10 @@ it("foreign moving door stops against the actual seated body while own vehicle m
     expect(
       play.setMechanismJoint("hinge", 90, "door").mechanisms!.door.blocked,
     ).toBe(false);
+    expect(
+      play.setMechanismJoint("hinge", 0, "door").mechanisms!.door.blocked,
+    ).toBe(false);
+    play.setMechanismJoint("hinge", 90, "door");
     play.enterVehicle({
       rigId: "vehicle",
       seatId: car.mechanism.project.motionRigs.vehicle.vehicle!.driverSeat!.id,

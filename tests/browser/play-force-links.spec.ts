@@ -7,6 +7,13 @@ const text = readFileSync(
 )
   .split("\n")
   .filter((line) => !/^1 .* link[23]\.dat$/.test(line))
+  .map((line) => {
+    if (!/^1 .* link[01]\.dat$/.test(line)) return line;
+    const fields = line.split(" ");
+    // Source-authored layers keep all same-rig collision checks active.
+    fields[4] = line.endsWith("link0.dat") ? "-40" : "0";
+    return fields.join(" ");
+  })
   .join("\n");
 for (const kind of ["spring", "rope"] as const)
   test(`rendered native ${kind} holds its load and survives native/posed export`, async ({
@@ -32,11 +39,18 @@ for (const kind of ["spring", "rope"] as const)
             frame: structuredClone(o.transform),
             restTransforms: { [o.id]: structuredClone(o.transform) },
           }));
+        const mount = groups[1].frame.position.map(
+          (v, k) => v - groups[0].frame.position[k],
+        ) as [number, number, number];
         const base = {
           id: "link",
           bodyA: "frame",
           bodyB: "load",
-          anchorA: [0, -20, 0] as [number, number, number],
+          anchorA: [mount[0], mount[1] - 20, mount[2]] as [
+            number,
+            number,
+            number,
+          ],
           anchorB: [0, 0, 0] as [number, number, number],
         };
         const link =

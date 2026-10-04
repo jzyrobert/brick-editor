@@ -64,6 +64,9 @@ it("validates targets atomically, supports negative prismatic units, and preserv
   const source = await movingSource("door"),
     joint = source.mechanism.project.motionRigs.door.joints[0];
   joint.kind = "prismatic";
+  // Negative travel runs away from the doorway, rather than down into its floor.
+  joint.axisA = [0, 0, 1];
+  joint.axisB = [0, 0, 1];
   joint.limits = [-20.25, 0];
   const s = await PlaySession.create(
     source.geometry,

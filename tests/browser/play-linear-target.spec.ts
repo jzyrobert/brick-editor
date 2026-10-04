@@ -7,6 +7,13 @@ const text = readFileSync(
 )
   .split("\n")
   .filter((line) => !/^1 .* link[23]\.dat$/.test(line))
+  .map((line) => {
+    if (!/^1 .* link[01]\.dat$/.test(line)) return line;
+    const fields = line.split(" ");
+    // Source-authored layers keep all same-rig collision checks active.
+    fields[4] = line.endsWith("link0.dat") ? "-40" : "0";
+    return fields.join(" ");
+  })
   .join("\n");
 test("rendered linear target holds a spring load at the requested slow rate and reverses", async ({
   page,
@@ -30,6 +37,9 @@ test("rendered linear target holds a spring load at the requested slow rate and 
         frame: structuredClone(o.transform),
         restTransforms: { [o.id]: structuredClone(o.transform) },
       }));
+    const mount = groups[1].frame.position.map(
+      (v, k) => v - groups[0].frame.position[k],
+    ) as [number, number, number];
     await api.dispatch({
       schemaVersion: 1,
       commandId: "linear",
@@ -48,7 +58,7 @@ test("rendered linear target holds a spring load at the requested slow rate and 
               kind: "prismatic",
               bodyA: "frame",
               bodyB: "load",
-              anchorA: [0, 0, 0],
+              anchorA: mount,
               anchorB: [0, 0, 0],
               axisA: [0, 1, 0],
               axisB: [0, 1, 0],
@@ -66,7 +76,7 @@ test("rendered linear target holds a spring load at the requested slow rate and 
               kind: "spring",
               bodyA: "frame",
               bodyB: "load",
-              anchorA: [0, -20, 0],
+              anchorA: [mount[0], mount[1] - 20, mount[2]],
               anchorB: [0, 0, 0],
               restLengthLdu: 20,
               stiffnessNewtonsPerMetre: 100,

@@ -35,11 +35,22 @@ test("rendered cylindrical bearing spins under gravity, holds axial stops and su
         frame: structuredClone(o.transform),
         restTransforms: { [o.id]: structuredClone(o.transform) },
       }));
+    const delta = groups[1].frame.position.map(
+      (v, k) => v - groups[0].frame.position[k],
+    );
+    const basis = groups[0].frame.basis;
+    const mountAnchor: [number, number, number] = [0, 1, 2].map((column) =>
+      delta.reduce((sum, v, row) => sum + v * basis[row * 3 + column], 0),
+    ) as [number, number, number];
     const base = {
       id: "link",
       bodyA: "frame",
       bodyB: "load",
-      anchorA: [0, 0, 30] as [number, number, number],
+      anchorA: mountAnchor.map((v, k) => v + (k === 2 ? 30 : 0)) as [
+        number,
+        number,
+        number,
+      ],
       anchorB: [0, 0, 0] as [number, number, number],
     };
     const link = {
@@ -67,7 +78,7 @@ test("rendered cylindrical bearing spins under gravity, holds axial stops and su
               kind: "cylindrical",
               bodyA: "frame",
               bodyB: "load",
-              anchorA: [0, 0, 0],
+              anchorA: mountAnchor,
               anchorB: [0, 0, 0],
               axisA: [0, 0, 1],
               axisB: [0, 0, 1],

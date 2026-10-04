@@ -1,7 +1,7 @@
 /**
  * Read-only probes for docs/PLAY-MOTION-ROADMAP.md (3 October 2026).
  * Run from the repo root: npx tsx scripts/audit-play-motion.ts
- * These characterize current limitations, not future acceptance requirements.
+ * These report repaired contracts and remaining limitations at this checkpoint.
  * Uses committed CC0 fixture geometry and the pinned official pack; no network.
  */
 import assert from "node:assert/strict";
@@ -75,7 +75,7 @@ const facts = {
   ),
 };
 
-// A loop is rejected even though every individual joint has valid rest data.
+// Mount-forest cycles stay rejected; authored loopClosures are a separate graph.
 const cycleProject = physicsFixture();
 const cycleRig = cycleProject.motionRigs.door;
 const hinge = cycleRig.joints[0];
@@ -99,6 +99,7 @@ assert.match(cycleError, /cycle/i);
 const ballProject = physicsFixture();
 const ball = ballProject.motionRigs.door.joints[0];
 ball.kind = "spherical";
+delete ball.mating;
 delete ball.axisA;
 delete ball.axisB;
 delete ball.limits;
@@ -156,7 +157,7 @@ delete project.motionRigs.door.joints[0].limits;
 const { sources } = await playSources(project, ["door"]);
 const source = sources[0];
 
-// An existing kinematic joint can pass straight through static geometry.
+// General joint motion now refuses the complete move across static geometry.
 const walkingWorld = new RAPIER.World({ x: 0, y: 0, z: 0 });
 let kinematicOverlap: boolean;
 try {
@@ -173,8 +174,8 @@ try {
   }));
   try {
     const moved = mechanism.setJointPosition("hinge", 90);
-    assert.equal(moved.pose.jointPositions.hinge, 90);
-    assert.equal(moved.blocked, false);
+    assert.equal(moved.pose.jointPositions.hinge, 0);
+    assert.equal(moved.blocked, true);
     let overlap = false;
     walkingWorld.colliders.forEach((collider) => {
       if (collider.handle !== obstacle.handle)
@@ -185,7 +186,7 @@ try {
         );
     });
     kinematicOverlap = overlap;
-    assert(kinematicOverlap);
+    assert.equal(kinematicOverlap, false);
   } finally {
     mechanism.dispose();
   }
@@ -193,11 +194,11 @@ try {
   walkingWorld.free();
 }
 
-// Current dynamic filtering also allows a door to turn into its own frame.
+// Native contacts keep the door from completing a target through its own frame.
 const dynamicWorld = new RAPIER.World({ x: 0, y: 0, z: 0 });
 dynamicWorld.timestep = 1 / 60;
 const mirrorWorld = new RAPIER.World({ x: 0, y: 0, z: 0 });
-let dynamicOwnOverlap: boolean;
+let dynamicFrameDistanceLdu = Infinity;
 let dynamicAngle: number;
 try {
   const rig = new DynamicRig(
@@ -211,25 +212,35 @@ try {
     rig.setJointTarget("hinge", 180, 180);
     for (let tick = 0; tick < 240; tick++) {
       rig.beforeStep();
-      dynamicWorld.step();
+      rig.stepPhysics();
       rig.afterStep();
     }
     dynamicAngle = rig.snapshot().pose.jointPositions.hinge;
-    assert(Math.abs(dynamicAngle - 180) < 1);
-    let frame: RAPIER.Collider | undefined;
-    let leaf: RAPIER.Collider | undefined;
+    assert(Math.abs(dynamicAngle) < 179);
+    assert.equal(rig.snapshot().jointTargets.hinge.status, "blocked");
+    const frames: RAPIER.Collider[] = [],
+      leaves: RAPIER.Collider[] = [];
     dynamicWorld.colliders.forEach((c) => {
-      if (c.parent()?.isFixed()) frame = c;
-      else leaf = c;
+      if (c.parent()?.isFixed()) frames.push(c);
+      else leaves.push(c);
     });
-    assert(frame && leaf);
-    dynamicOwnOverlap = frame.intersectsShape(
-      leaf.shape,
-      leaf.translation(),
-      leaf.rotation(),
-    );
-    assert(dynamicOwnOverlap);
-    assert.equal(frame.collisionGroups() & (leaf.collisionGroups() >>> 16), 0);
+    assert(frames.length && leaves.length);
+    for (const frame of frames)
+      for (const leaf of leaves) {
+        if (!rig.contactAllowed(frame.handle, leaf.handle)) continue;
+        const contact = frame.contactCollider(leaf, S);
+        if (contact)
+          dynamicFrameDistanceLdu = Math.min(
+            dynamicFrameDistanceLdu,
+            contact.distance / S,
+          );
+        assert.notEqual(
+          frame.collisionGroups() & (leaf.collisionGroups() >>> 16),
+          0,
+        );
+      }
+    assert(Number.isFinite(dynamicFrameDistanceLdu));
+    assert(dynamicFrameDistanceLdu > -0.5);
   } finally {
     rig.dispose();
   }
@@ -243,21 +254,25 @@ try {
 const turnsWorld = new RAPIER.World({ x: 0, y: 0, z: 0 });
 turnsWorld.timestep = 1 / 60;
 const turnsMirror = new RAPIER.World({ x: 0, y: 0, z: 0 });
+// A free rotor has its own clear source geometry: a doorway has a real stop.
+const turnsProject = physicsFixture(true);
+delete turnsProject.motionRigs.door.joints[0].limits;
+const { sources: turnsSources } = await playSources(turnsProject, ["door"]);
 let multiTurnCurrent: number;
 let multiTurnStatus: string;
 try {
   const rig = new DynamicRig(
     turnsWorld,
     turnsMirror,
-    source,
+    turnsSources[0],
     0,
-    project.revision,
+    turnsProject.revision,
   );
   try {
     rig.setJointTarget("hinge", 720, 180);
     for (let tick = 0; tick < 600; tick++) {
       rig.beforeStep();
-      turnsWorld.step();
+      rig.stepPhysics();
       rig.afterStep();
     }
     const result = rig.snapshot();
@@ -325,7 +340,9 @@ console.log(
         hullFillsTechnicHole: hullFillsHole,
         kinematicJointOverlapsStaticObstacle: kinematicOverlap,
         dynamicDoorDegrees: Number(dynamicAngle.toFixed(3)),
-        dynamicDoorOverlapsOwnFrame: dynamicOwnOverlap,
+        dynamicDoorFrameContactDistanceLdu: Number(
+          dynamicFrameDistanceLdu.toFixed(4),
+        ),
         multiTurnTarget: {
           target: 720,
           ticks: 600,

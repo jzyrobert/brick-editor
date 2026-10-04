@@ -30,6 +30,18 @@ afterEach(() =>
 async function fixture(pose?: Transform, bounded = true) {
   const { project, rig: definition } = loopFixture("four-bar", pose);
   definition.groups = definition.groups.slice(0, 2);
+  // Keep the constraint probe clear throughout both axial stops. Layered loop
+  // links are not a physical bearing housing, and may otherwise meet on travel.
+  const fixed = definition.groups[0],
+    moving = definition.groups[1];
+  fixed.frame.position = add(
+    moving.frame.position,
+    mv(fixed.frame.basis, [0, 0, -40]),
+  );
+  fixed.restTransforms[fixed.occurrenceIds[0]] = structuredClone(fixed.frame);
+  project.models[project.rootModelId].nodes[0].transform = structuredClone(
+    fixed.frame,
+  );
   delete definition.loopClosures;
   definition.dynamics = {
     groups: { frame: { anchored: true }, input: { massKg: 1 } },
@@ -40,7 +52,7 @@ async function fixture(pose?: Transform, bounded = true) {
       kind: "cylindrical",
       bodyA: "frame",
       bodyB: "input",
-      anchorA: [0, 0, 0],
+      anchorA: [0, 0, 40],
       anchorB: [0, 0, 0],
       axisA: [0, 0, 1],
       axisB: [0, 0, 1],
@@ -76,7 +88,7 @@ async function fixture(pose?: Transform, bounded = true) {
   const step = (ticks: number) => {
     for (let n = 0; n < ticks; n++) {
       rig.beforeStep();
-      world.step();
+      rig.stepPhysics();
       rig.afterStep();
     }
     return rig.snapshot();

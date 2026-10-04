@@ -83,7 +83,7 @@ it("refuses invalid moving geometry and stops excessive sweep work without abort
   play.setMechanismVehicleInput({ throttle: 1, steering: 0 });
   const bounded = play.stepTicks(1);
   expect(bounded.mechanism!.blocked).toBe(true);
-  expect(bounded.mechanism!.blockedReason).toContain("1,024");
+  expect(bounded.mechanism!.blockedReason).toMatch(/too many safety checks/i);
   expect(bounded.mechanism!.pose.vehicle!.position).toEqual([0, 0, 0]);
   expect(() => play.stepTicks(5)).not.toThrow();
   play.dispose();

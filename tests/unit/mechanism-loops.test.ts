@@ -124,8 +124,16 @@ describe("explicit closed planar linkages", () => {
         id: "cycle",
         bodyA: "output",
         bodyB: "frame",
-        anchorA: [0, 40, 0],
-        anchorB: [100, 0, 0],
+        anchorA: [
+          0,
+          40,
+          -r.groups.find((g) => g.id === "output")!.frame.position[2],
+        ],
+        anchorB: [
+          100,
+          0,
+          -r.groups.find((g) => g.id === "frame")!.frame.position[2],
+        ],
       });
     }, /cycle/);
   });
