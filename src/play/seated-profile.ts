@@ -1,6 +1,10 @@
 import { add, compose, mv, physical, rotationY } from "../core/math";
 import { ensure, type Transform, type Vec3 } from "../core/types";
 
+/** Seat and support points use the complete chassis frame, including tilt. */
+export const seatPoint = (frame: Transform, point: Vec3) =>
+  add(frame.position, mv(frame.basis, point));
+
 /** Declared gameplay collision profile, independent of decorative avatar mesh.
  * Pelvis-local LDU: -Y up, -Z forward. Changing artwork cannot alter clearance.
  * Open-bench, rigid straight-leg seating only; not a low-cabin/bent-knee profile. */

@@ -1,10 +1,11 @@
 import RAPIER from "@dimforge/rapier3d-compat";
-import { add, mv, compose, inverse } from "../core/math";
+import { add, compose, inverse } from "../core/math";
 import { ensure, type Vec3, type Transform } from "../core/types";
 import type { DriverSeatSpec, MechanismSnapshot } from "../mechanisms/types";
 import { CHARACTER_PROFILE as P } from "./types";
 import {
   seatedPlacement,
+  seatPoint,
   SEATED_BODY_PROFILE,
   type SeatedPlacement,
 } from "./seated-profile";
@@ -14,8 +15,7 @@ import type { PlayMechanismSource } from "./mechanism";
 import { toPhysics, fromPhysics, frameRotation } from "./physics-frame";
 import { certifyDrivingProfile } from "./vehicle-profile";
 const S = P.scaleMetresPerLdu;
-export const seatPoint = (frame: Transform, point: Vec3) =>
-  add(frame.position, mv(frame.basis, point));
+export { seatPoint } from "./seated-profile";
 export const seatYaw = (frame: Transform) =>
   Math.atan2(-frame.basis[2], frame.basis[8]);
 export const seatPlacement = (

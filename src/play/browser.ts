@@ -1,4 +1,4 @@
-import { seatPoint } from "./vehicle-seat";
+import { seatPoint } from "./seated-profile";
 import {
   resolvePlayWorldProfile,
   validatePlayWorldProfile,
