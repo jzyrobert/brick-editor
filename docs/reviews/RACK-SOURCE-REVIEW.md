@@ -1,0 +1,150 @@
+# Pinned rack and housing source review
+
+This review concerns the collision volume of `18942.dat` and the guide cavities
+of `18940.dat`. Coordinates are part-local LDraw units (LDU), before the fixture
+transforms. It does not establish native dynamic acceptance or license a contact
+pair exclusion. The rendered and exported LDraw source stays unchanged.
+
+## Provenance and method
+
+Both parts are official LDraw UPDATE 2015-02 parts by Philippe Hurbain (Philo),
+licensed CC BY 4.0. Their pinned primitive dependencies include later official
+updates; the complete pinned dependency closure, rather than an assumed historical
+primitive shape, is the reviewed geometry. Derived dimensions below attribute that
+source. The literal source SHA-256 hashes, including original line endings, are:
+
+| Part        | SHA-256                                                            |
+| ----------- | ------------------------------------------------------------------ |
+| `18942.dat` | `520a0f2b01ecb61112cebba1d75d972503930b4add5bf3b8492562087745e686` |
+| `18940.dat` | `3c913080b5efe9412212ee2b6c9745bb9e2af386458c1dd03c008487150796f4` |
+
+The review compiles that closure through the renderer's LDraw loader, intersects
+triangles with XY section planes, reads literal primitive transforms, and checks
+selected material/void points using generalized surface winding. The source has
+internal overlapping faces and small closure inconsistencies: winding values are
+close to zero or one rather than identically zero or one. Selected controls are
+local evidence, not a complete solid-containment proof.
+
+## Moving rack: constant extrusion bands
+
+Every rack vertex lies on one of six Z planes: `-10, -8, -2, 2, 8, 10`.
+Every nondegenerate triangle has either a horizontal normal or a normal parallel
+to XY; none has both meaningful XY and Z normal components (normalized threshold
+`1e-4`). Thus the source has constant XY sections within each absolute-Z band
+`[0,2]`, `[2,8]`, `[8,10]`; there is no continuous wall taper within these bands.
+
+A source-derived volume can triangulate each section's closed exterior and holes,
+merge adjoining triangles only when their convex union preserves area and holes,
+and extrude the corresponding thick band. Section extraction must split
+T-junctions, discard redundant collinear edge-intersection vertices, and distinguish
+internal source faces from exterior contours. In particular, the central section
+also contains open internal web/beam paths; these are not additional holes.
+
+The outer bounds are X `[-139,139]`, Y `[-29,9]`, Z `[-10,10]`. The lower beam
+runs approximately Y `[-9,9]`, with the source's faceted radius-9 end caps. The
+left end bends down around `(-130,-20)` and extends to Y `-29`. The thin web
+between beam and tooth root spans X `[-121,139]`, Y `[-19,-9]`, Z `[-2,2]`,
+including the source's rounded right beam junction. The root strip is Y
+`[-22.5,-19]`, with its left curved junction reaching X `-121.685`, Y `-23.4443`.
+These descriptions guide partitioning; the closed section contour is the authority
+for end shapes, rather than a union of bounding boxes.
+
+There are **32 teeth** with centers `c=-112,-104,...,136`. Each tooth is the
+convex XY trapezoid `[(c-3,-22.5),(c-1,-27.5),(c+1,-27.5),(c+3,-22.5)]`
+extruded over Z `[-10,10]`. Preserve the spaces between teeth. The final tooth at
+136 is an explicit separate reference in the source and is easy to miss.
+
+## Rack holes and pockets
+
+All seven circular pin holes run along Z, centered at XY
+`(-30,0),(-10,0),(10,0),(30,0),(-110,0),(110,0),(-130,-20)`.
+Their core is nominal radius 6 over Z `[-8,8]`, with radius-8 mouths over
+`[-10,-8]` and `[8,10]`. The actual pinned circular walls are 16-facet polygons;
+smooth circles do not reproduce these wall coordinates exactly.
+
+The four keyed Z-through holes are centered at `(-130,0),(-90,0),(90,0),(130,0)`.
+**They are open on one arm and connect to an adjacent recess through the entire
+Z depth.** `axlehol4.dat` combined with transformed `npeghol3.dat` or
+`npeghol4.dat` forms the complete negative contour. Subtracting a closed standard
+cross alone fills an actual passage. The connected positive-side contours have
+bounds X `[84,102.48]` and `[117.52,136]`, respectively, Y approximately
+`[-6.36391,6.36391]`; the negative-side contours mirror their orientation.
+These bounds are not rectangular masks: reentrant cross corners remain material.
+For the hole centered at 90, `(97,0,1)` and `(100,0,1)` are void, while
+`(93.5,3.5,1)` remains solid.
+
+Side pockets leave a central web Z `[-2,2]` and occupy each outer band
+`[-10,-2]` and `[2,10]`:
+
+- Large pockets near X +/-60 have straight spans X `[40,80]` / `[-80,-40]`,
+  Y approximately `[-6.364,6.364]`, with rounded negative end contours extending
+  to X `[37.52,82.48]` / `[-82.48,-37.52]`.
+- Narrow pockets centered at X `-20,0,20`, Y 0 extend X `center +/-2.48`,
+  Y approximately `+/-6.36391`.
+- The left vertical pocket centered at `(-130,-10)` extends X approximately
+  `[-136.36391,-123.63611]`, Y `[-12.48,-7.52]`.
+
+The source contours include the smoothed negative-pocket corners. Carving their
+bounds as boxes removes legitimate material; omitting them fills usable pockets.
+
+## Housing guide cavities and stops
+
+The six circular Z-axis holes are centered at
+`(-140,0),(-120,0),(120,0),(140,0),(140,-20),(140,-40)`.
+They have the same radius-6 core/radius-8 mouth Z intervals as the rack's circular
+holes. Neighboring negative-hole primitives supply adjoining recesses; they must
+not be interpreted as additional independent round bores.
+
+The long side window spans X `[-60,100]`, Y `[-26,-14]` for absolute Z `[10,18]`,
+with radius-6 halfcaps centered at `(-60,-20)` and `(100,-20)`. Its mouth spans
+Y `[-28,-12]` for absolute Z `[18,20]`, with radius-8 halfcaps. Primitive placement
+midlines at Y `-13` and `-27` are not the actual window walls.
+
+The left tooth groove includes the negative point `(-121,-42.5,6.5)` that a whole
+housing convex hull fills. Its upper lip exists in absolute Z `[3,6]`, changes
+shape at 6, and contains the notch X `[-126,-114]`, Y `[-39,-33]` in `[6,10]`.
+The outer boundary tapers with Z. The lower point `(-121,-47.5,6.5)` is also void;
+there is no full-depth rectangular floor at that point. End triangles drawn on
+Z +/-10 cannot be extruded across the central cavity indiscriminately.
+
+At the right end, a **blind half-round slot along Y** has center XZ `(110,0)`,
+nominal radius 10 on the X>=110 half for Y `[-49,-11]`. It steps to radius 8 at
+Y `-11`, tapers to radius 7 at Y `-9`, and closes with a radius-7 cap. This is not
+a through pin bore. Its faceted curved wall contributes the actual travel stop;
+substituting a rectangular open end changes the stop geometry.
+
+Two right side recesses occupy X `[123,131]`, Y `[-46,-16.5559]` and
+`[-13.636,-9]` in absolute Z `[2,10]`. Preserve the intervening crossbrace and
+the central Z `[-2,2]` rib. `(127,-25,6)` is void, `(127,-15,6)` and
+`(127,-25,1)` are material.
+
+Additional backside pockets occupy absolute Z `[14,20]`; their core cheek over
+`[10,14]` remains material. These include X `[-126,-110]`, Y `[-46,-34]`;
+X `[-107,-93]`, Y `[-46,-29]`; X `[-107,-93]`, Y `[-26.364,-13.636]`;
+and a pocket starting at X `[-90,-70]`, Y `[-26.364,-13.636]` that joins a rounded
+negative end contour. Larger recesses have XY polygons:
+
+- `[(-90,-46),(-90,-29),(109,-29),(117,-46)]`;
+- `[(117,-46),(109,-29),(109,-11),(117,-11)]`;
+- `[(117,-11),(100,-11),(113,-6),(117,-9)]`.
+
+For example, `(0,-40,17)` and `(-118,-40,17)` are void, while the same XY points
+at Z 12 are material. A three-plate housing proxy fills these pockets and window
+openings. Unlike the rack, the housing has continuously tapered walls; constant
+extrusion bands alone cannot reproduce its full source volume.
+
+## Evidence and limitations
+
+The private source harness checked 28 selected rack material/void controls, all
+passing: solid winding values `0.88..1.07`, void values `-0.066..0.070`.
+Controls include core and counterbore, keyed throat and reentrant corner, thin web
+and exterior, large/narrow/vertical pocket, end cap, tooth and tooth gap, and the
+32nd tooth. Housing selected controls distinguish window core/mouth, lip/notch,
+side recess/crossbrace, backside pocket/core cheek and blind-slot wall/cap.
+
+These findings support a bounded source-derived thick rack volume. They do not
+prove that a generated compound covers every source region, that convex unions
+preserve all passages, that mass/inertia are correct, or that native contact,
+foreign blockers, end stops, backdrive and mobile-carrier response pass. Those
+require separate proxy coverage tests and native acceptance. No LDraw pack,
+contact solver, collision exemption or Play interface was changed in this review.
