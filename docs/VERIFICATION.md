@@ -2037,6 +2037,15 @@ wheel seat, collision allowance or resource cap is bypassed.
   fractions and directions; their signed transmission ratios, selection
   memory, Brake all and close/overview restoration are checked. Source query,
   native/LDraw export and full inventory remain exact.
+- The final production interface regression batch passes all 33 cases in
+  9.3 minutes with one worker. It includes the seven required control viewports,
+  Reverse → Power 0 → Power 50% restoring reverse, cold offline Twin opening
+  in both modes, combined/linked motor controls, rapid House/Café sliders, real
+  thin-wall stop/retry and source-bound setup/review/Try at all required sizes.
+  Existing native documents, source exports and inventory remain unchanged.
+  Eleven fresh interface captures were inspected; the bounded Impeccable finish
+  reviewer scores its listed documentation fix resolved with `ship` at that
+  fix scope. The detector and visual rounds were not repeated for assertion fixes.
 - Source-mounted official-car unit checks cover 2441/4600/6157 holders,
   4624/3641, 6014b/56890 and 93593/93595/50951 families; arbitrary horizontal
   yaw and source-relative driving; disconnected/tilted/unsupported refusal;
