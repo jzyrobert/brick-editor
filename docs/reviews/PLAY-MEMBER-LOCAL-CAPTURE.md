@@ -51,7 +51,21 @@ of covered tests to 43; all six capture cases pass in 1.15 s. Type checking pass
 Tests cover placement independence, prototype sharing, local mirrored winding,
 missing/empty/malformed geometry, whole-request source limits, embedded override
 isolation, complete source binding and unchanged authored source/rest occurrences.
-Production browser/offline verification is recorded in the follow-up handoff.
+Production verification on the frozen runtime commit `3217786`: schema generation,
+type checking and the full production build pass (Vite 36.78 s). Three browser
+cases pass in 45.5 s using a private production-preview server on port 4406.
+Two 390 × 844 touch cases enter an obliquely placed embedded same-name
+`3648b.dat` custom rig in Kinematic and Dynamic Play, drive its hinge and retain
+query/rest occurrences, source export, authored rigs and inventory exactly.
+The installed-offline witness reloads a fresh page, resolves pinned Technic
+parts from verified caches and first enters Dynamic Play offline, then drives
+the existing gears and pin arm with unchanged source/native inventory. These are
+SwiftShader and emulated phone measurements, not real-device performance data.
+
+The emitted Rapier WASM marker appears only in lazy
+`session-CnE7-kCY.js`, absent the initial `index-mo7tzx1E.js` and the other index
+chunk. The preview server closes after the browser run. Focused formatting and
+`git diff --check` pass; no generated schema/validator changes result.
 
 The native consumer must still prepare canonical children in local coordinates
 and compose their placement through `inverse(group.frame) ∘ member.frame`.
