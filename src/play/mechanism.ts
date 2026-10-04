@@ -437,6 +437,114 @@ export class PlayMechanism {
   proxyCollider(groupId: string) {
     return this.proxies.find((proxy) => proxy.id === groupId)?.collider;
   }
+  /** Read-only entry classification using the same actual source covers and
+   * bounded world checks as motion. The holder stays a responding obstacle.
+   * Only the reviewed three-cover shutter uses this path; other leaves retain
+   * the existing inset entry classifier. No published pose or proxy moves. */
+  shutterSwingReach(id: string): [number, number] | undefined {
+    const joint = this.jointSpecs.find((j) => j.id === id);
+    if (
+      !joint ||
+      joint.kind !== "revolute" ||
+      !joint.axisB ||
+      this.hasClosedLoops
+    )
+      return undefined;
+    const covers = this.contactSolids.filter((s) => s.groupId === joint.bodyB);
+    if (
+      covers.length !== 3 ||
+      covers.some((s) => !s.shutterCover) ||
+      this.jointSpecs.some((j) => j.bodyA === joint.bodyB) ||
+      this.session.coupledJointIds(id).length !== 1
+    )
+      return undefined;
+    const preview = new KinematicSession(
+      this.source.project,
+      this.source.rigId,
+      this.source.lookup,
+    );
+    const rest = preview.snapshot();
+    if (rest.pose.jointPositions[id] !== 0) return undefined;
+    const axis = joint.axisB,
+      axisLength = Math.hypot(...axis);
+    let radius = 0;
+    for (const solid of covers)
+      for (let i = 0; i < solid.points.length; i += 3) {
+        const offset: Vec3 = [
+          solid.points[i] / S - joint.anchorB[0],
+          -solid.points[i + 1] / S - joint.anchorB[1],
+          -solid.points[i + 2] / S - joint.anchorB[2],
+        ];
+        radius = Math.max(
+          radius,
+          Math.hypot(
+            offset[1] * axis[2] - offset[2] * axis[1],
+            offset[2] * axis[0] - offset[0] * axis[2],
+            offset[0] * axis[1] - offset[1] * axis[0],
+          ) / axisLength,
+        );
+      }
+    const saved = {
+      checks: this.contactChecks,
+      enumeration: this.contactEnumeration,
+      failure: this.worldFailure,
+      refinement: this.worldNeedsRefinement,
+    };
+    this.contactChecks = 0;
+    this.contactEnumeration = 0;
+    this.invariantSupport.clear();
+    let visited = 0;
+    const advance = (
+      from: MechanismSnapshot,
+      to: MechanismSnapshot,
+    ): boolean => {
+      if (++visited > MECHANICAL_CONTACT_LIMITS.sweepSegments) return false;
+      this.worldNeedsRefinement = false;
+      if (this.checkWorld(from, to)) return true;
+      if (!this.worldNeedsRefinement) return false;
+      const middle = preview.setPose(this.interpolate(from.pose, to.pose, 0.5));
+      return advance(from, middle) && advance(middle, to);
+    };
+    const reach = (sign: number) => {
+      preview.setPose(rest.pose);
+      let last = rest,
+        free = 0;
+      // Keep source-surface travel within the normal 0.25 LDU sweep bound.
+      const steps = Math.max(
+        1,
+        Math.ceil(
+          (5 * Math.PI * radius) / 180 / MECHANICAL_CONTACT_LIMITS.sweepLdu,
+        ),
+      );
+      const limits = preview.jointLimits(id),
+        maximum = Math.min(90, sign > 0 ? limits[1] : -limits[0]);
+      for (let angle = 5; angle <= maximum; angle += 5) {
+        for (let n = 1; n <= steps; n++) {
+          const next = preview.setJointPosition(
+            id,
+            sign * (angle - 5 + (5 * n) / steps),
+          );
+          if (!advance(last, next)) return free >= 15 ? free : 0;
+          last = next;
+        }
+        free = angle;
+      }
+      return free;
+    };
+    try {
+      const positive = reach(1),
+        negative = reach(-1);
+      return [-negative, positive];
+    } finally {
+      this.contactChecks = saved.checks;
+      this.contactEnumeration = saved.enumeration;
+      this.worldFailure = saved.failure;
+      this.worldNeedsRefinement = saved.refinement;
+      this.invariantSupport.clear();
+      const frames = this.session.snapshot().groupFrames;
+      this.contactPolicy.updateGuideFrames(frames, frames);
+    }
+  }
   /** Narrow a joint's limits for this session only (derived door swing). */
   restrictJointLimits(id: string, limits: [number, number]) {
     this.session.restrictLimits(id, limits);
@@ -447,7 +555,7 @@ export class PlayMechanism {
   private reason: string | undefined;
   constructor(
     private world: RAPIER.World,
-    source: PlayMechanismSource,
+    private readonly source: PlayMechanismSource,
     private actor: () => {
       position: Vec3;
       walk: boolean;

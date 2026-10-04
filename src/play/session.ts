@@ -608,6 +608,7 @@ export class PlaySession {
                   door,
                   mesh,
                   mechanism.proxyCollider(leafGroup),
+                  mechanism.shutterSwingReach(door.jointId),
                 )
               : {
                   swing: "blocked" as const,
@@ -633,7 +634,22 @@ export class PlaySession {
     door: AutoDoor,
     mesh: CollisionSnapshot,
     own: RAPIER.Collider | undefined,
+    sourceReach?: [number, number],
   ): { swing: PlayAutoDoorSwing; limits: [number, number] } {
+    if (sourceReach) {
+      const [negative, positive] = sourceReach;
+      return {
+        limits: sourceReach,
+        swing:
+          negative && positive
+            ? "both"
+            : negative
+              ? "negative"
+              : positive
+                ? "positive"
+                : "blocked",
+      };
+    }
     const v = mesh.vertices;
     if (!v.length) return { swing: "blocked", limits: [0, 0] };
     const min = [Infinity, Infinity, Infinity],

@@ -57,6 +57,8 @@ export type MechanicalSolid = {
   mating: Set<string>;
   feature?: "spur-gear" | "rack" | "rack-guide";
   reviewedPlaneClass?: -1 | 0 | 1 | 2;
+  /** Actual official shutter surface split at its source hinge-spine ends. */
+  shutterCover?: true;
 };
 type Bearing = {
   id: string;
@@ -239,6 +241,8 @@ export class MechanicalContactPolicy {
           memberId?: string;
           feature?: "rack-guide";
           reviewedPlaneClass?: -1 | 0 | 1 | 2;
+          /** Actual official shutter surface split at its source hinge-spine ends. */
+          shutterCover?: true;
         },
   ) {
     const fixedRoot = this.fixedRoots.get(a.groupId);
@@ -858,7 +862,11 @@ export function mechanicalSolids(
           ),
           ...(feature === "spur-gear" || feature === "rack" ? { feature } : {}),
         });
-        if (doorPieces) separateDoorSlabs.add(out[out.length - 1]);
+        if (doorPieces) {
+          separateDoorSlabs.add(out[out.length - 1]);
+          if (occurrence?.node.ref === "3582.dat")
+            out[out.length - 1].shutterCover = true;
+        }
         ensure(
           out.length <= MECHANICAL_CONTACT_LIMITS.solids,
           "LIMIT_EXCEEDED",
