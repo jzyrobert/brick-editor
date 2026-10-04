@@ -466,7 +466,7 @@ export class DynamicRig {
             solid.shape instanceof RAPIER.Compound
               ? new RAPIER.Compound(
                   solid.shape.shapes,
-                  solid.shape.positions,
+                  solid.shape.positions.map((p) => rotate(q, p)),
                   solid.shape.rotations.map((r) => quatMul(q, r)),
                 )
               : new RAPIER.Compound([solid.shape], [{ x: 0, y: 0, z: 0 }], [q]);

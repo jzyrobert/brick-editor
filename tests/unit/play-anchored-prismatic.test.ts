@@ -2,9 +2,13 @@ import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { mechanismFixture } from "../../src/mechanisms/fixtures";
 import { axisRotation } from "../../src/mechanisms/kinematic";
-import { compose, identity } from "../../src/core/math";
+import { compose, identity, mv, add } from "../../src/core/math";
 import { occurrences } from "../../src/core/document";
 import { DynamicRig } from "../../src/play/dynamics";
+import {
+  MechanicalContactPolicy,
+  mechanicalSolids,
+} from "../../src/play/mechanical-solids";
 import { playSources } from "../helpers/play-dynamic-source";
 
 beforeAll(async () => {
@@ -17,7 +21,7 @@ afterEach(() =>
     .reverse()
     .forEach((f) => f()),
 );
-async function slider(mobile = false, oblique = false) {
+async function slider(mobile = false, oblique = false, centredProxy = false) {
   const project = mechanismFixture(),
     definition = project.motionRigs.door;
   const joint = definition.joints[0];
@@ -59,7 +63,21 @@ async function slider(mobile = false, oblique = false) {
   const world = new RAPIER.World({ x: 0, y: 0, z: 0 }),
     mirror = new RAPIER.World({ x: 0, y: 0, z: 0 });
   world.timestep = 1 / 60;
-  const rig = new DynamicRig(world, mirror, sources[0], 0, project.revision);
+  const policy = new MechanicalContactPolicy(definition, sources[0]);
+  const solids = mechanicalSolids(sources[0], policy);
+  if (centredProxy) {
+    const solid = solids.find((s) => s.groupId === "door")!;
+    solid.shape = new RAPIER.Compound(
+      [new RAPIER.Cuboid(0.015, 0.015, 0.015)],
+      [{ x: 0.3, y: 0, z: 0 }],
+      [{ x: 0, y: 0, z: 0, w: 1 }],
+    );
+  }
+  const rig = new DynamicRig(world, mirror, sources[0], 0, project.revision, {
+    policy,
+    solids,
+    stationary: [],
+  });
   cleanup.push(() => {
     rig.dispose();
     world.free();
@@ -79,7 +97,14 @@ async function slider(mobile = false, oblique = false) {
     expect(JSON.stringify(project)).toBe(sourceJSON);
     return rig.snapshot();
   };
-  return { rig, world, body, carrier, step };
+  const doorFrame = definition.groups.find((g) => g.id === "door")!.frame;
+  const point = add(doorFrame.position, mv(doorFrame.basis, [15, 0, 0]));
+  const expectedCentre = {
+    x: point[0] * 0.02,
+    y: -point[1] * 0.02,
+    z: -point[2] * 0.02,
+  };
+  return { rig, world, mirror, body, carrier, step, expectedCentre };
 }
 describe("native sliders on fixed carriers", () => {
   it.each([false, true])(
@@ -97,6 +122,21 @@ describe("native sliders on fixed carriers", () => {
       expect(body.rotation()).toEqual({ x: 0, y: 0, z: 0, w: 1 });
     },
   );
+  it("rotates centred compound children with the authored frame in both native worlds", async () => {
+    const { body, mirror, expectedCentre } = await slider(false, true, true);
+    expect(body.collider(0).containsPoint(expectedCentre)).toBe(true);
+    let matches = 0;
+    mirror.forEachCollider((c) => {
+      if (c.containsPoint(expectedCentre)) matches++;
+    });
+    expect(matches).toBe(1);
+    const centre = body.translation();
+    expect(
+      body
+        .collider(0)
+        .containsPoint({ x: centre.x + 0.3, y: centre.y, z: centre.z }),
+    ).toBe(false);
+  });
   it("keeps moving-carrier rotation available", async () => {
     const { body, carrier, step } = await slider(true);
     body.applyTorqueImpulse({ x: 0, y: 0, z: 1 }, true);
