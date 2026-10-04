@@ -121,6 +121,24 @@ export type DerivedDoors = {
   doors: AutoDoor[];
   skipped: AutoDoorSkip[];
 };
+/** Narrow classic shutter end bearing, reviewed from the pinned source files
+ * parts/3582.dat (Willy Tschager): R2 2-4cyli Y[4,44], 2-4disc caps Y4/44;
+ * parts/3581.dat (James Jessiman): R4 2-4cyli Y[0,4]/[44,48], centre Z=-12,
+ * inner 2-4disc faces Y4/44. Both are CC BY 4.0 in the complete-library pack
+ * locked by src/catalog/full-library-lock.json. These are contacting end
+ * bearing faces, not an inferred negative bore. The 2 LDU radial clearance
+ * bounds the existing 1.5 LDU seating allowance; axial faces must agree within
+ * the existing .001 LDU contact guard. Only this official leaf/holder pair
+ * uses the adapter; generated connector data and legacy derivation stay intact. */
+const CLASSIC_SHUTTER_PINS: [Vec3, Vec3] = [
+  [0, 4, 0],
+  [0, 44, 0],
+];
+const CLASSIC_SHUTTER_SOCKET = {
+  top: [0, 4, -12] as Vec3,
+  bottom: [0, 44, -12] as Vec3,
+  depth: 4,
+};
 /** Hinge sockets of a holder: the verified catalogue pack, else the complete
  * library's derived connector pack when its shard is loaded. */
 function socketsOf(holder: Occurrence) {
@@ -150,6 +168,9 @@ export function deriveDoorRigs(
     reserved: ReadonlySet<string>;
     maxRigs: number;
     maxGroups: number;
+    /** Normal Play requires a source pin/socket connection. The default keeps
+     * direct engineering fixtures compatible with the older proximity rule. */
+    requirePhysicalConnection?: boolean;
   },
 ): DerivedDoors {
   const skipped: AutoDoorSkip[] = [];
@@ -246,8 +267,13 @@ export function deriveDoorRigs(
     }>
   >();
   for (const door of [...doors].sort((a, b) => (a.id < b.id ? -1 : 1))) {
-    const hinge = doorHinge(leafPart.get(door.id)!)!,
-      part = partKey(leafPart.get(door.id)!);
+    const sourceHinge = doorHinge(leafPart.get(door.id)!)!,
+      part = partKey(leafPart.get(door.id)!),
+      classic =
+        options.requirePhysicalConnection && sourceHinge.part === "3582",
+      hinge = classic
+        ? { ...sourceHinge, pins: CLASSIC_SHUTTER_PINS }
+        : sourceHinge;
     if (options.reserved.has(door.id)) {
       skipped.push({
         occurrenceId: door.id,
@@ -269,6 +295,20 @@ export function deriveDoorRigs(
       });
       continue;
     }
+    if (
+      options.requirePhysicalConnection &&
+      (door.namespace !== "official" || !hinge.pins || hinge.pins.length !== 2)
+    ) {
+      skipped.push({
+        occurrenceId: door.id,
+        part,
+        reason:
+          door.namespace !== "official"
+            ? "Embedded door geometry is not verified against the official source"
+            : "This source leaf has no reviewed hinge pins",
+      });
+      continue;
+    }
     const frame = frameOf(door);
     const pivot = add(frame.position, mv(frame.basis, hinge.pivot));
     const axis = unit(mv(frame.basis, hinge.axis)),
@@ -278,19 +318,37 @@ export function deriveDoorRigs(
     const pins = hinge.pins?.map((p) =>
       add(door.transform.position, mv(door.transform.basis, p)),
     );
-    const seated = (holder: Occurrence) =>
-      !!pins &&
-      socketsOf(holder).some((socket) =>
-        [socket.top, socket.bottom].every((s) => {
-          const w = add(
-            holder.transform.position,
-            mv(holder.transform.basis, s),
-          );
-          return pins.some(
-            (p) => Math.hypot(...p.map((v, k) => v - w[k])) <= 1.5,
-          );
-        }),
-      );
+    const seated = (holder: Occurrence) => {
+      if (
+        !pins ||
+        (options.requirePhysicalConnection && holder.namespace !== "official")
+      )
+        return false;
+      const sockets = classic
+        ? partKey(holder.node.ref) === "3581"
+          ? [CLASSIC_SHUTTER_SOCKET]
+          : []
+        : socketsOf(holder);
+      return sockets.some((socket) => {
+        const ends = [socket.top, socket.bottom].map((s) =>
+          add(holder.transform.position, mv(holder.transform.basis, s)),
+        );
+        const matches = (a: Vec3, b: Vec3) => {
+          const delta = a.map((v, k) => v - b[k]) as Vec3;
+          if (
+            classic &&
+            Math.abs(delta.reduce((sum, v, k) => sum + v * axis[k], 0)) > 0.001
+          )
+            return false;
+          return Math.hypot(...delta) <= 1.5;
+        };
+        return options.requirePhysicalConnection
+          ? pins.length === 2 &&
+              ((matches(ends[0], pins[0]) && matches(ends[1], pins[1])) ||
+                (matches(ends[0], pins[1]) && matches(ends[1], pins[0])))
+          : ends.every((w) => pins.some((p) => matches(p, w)));
+      });
+    };
     // A seated holder's box contains its sockets, each within 1.5 LDU of a
     // pin, so no holder farther than this from the pivot can win.
     const reach = Math.max(
@@ -300,19 +358,33 @@ export function deriveDoorRigs(
       ),
     );
     let best: { id: string; d: number } | undefined;
+    let seatedHolders = 0;
     for (const holder of nearby(pivot, reach)) {
       const b = box(holder);
       if (!b || !nearlyPhysical(holder.transform)) continue;
-      const d = seated(holder) ? -1 : distanceToBox(pivot, b);
+      const matched = seated(holder);
+      if (options.requirePhysicalConnection && !matched) continue;
+      if (matched) seatedHolders++;
+      const d = matched ? -1 : distanceToBox(pivot, b);
       if (d > DOOR_ANCHOR_REACH) continue;
       if (!best || d < best.d || (d === best.d && holder.id < best.id))
         best = { id: holder.id, d };
+    }
+    if (options.requirePhysicalConnection && seatedHolders > 1) {
+      skipped.push({
+        occurrenceId: door.id,
+        part,
+        reason: "More than one source holder seats these hinge pins",
+      });
+      continue;
     }
     if (!best) {
       skipped.push({
         occurrenceId: door.id,
         part,
-        reason: `No frame or holding part within ${DOOR_ANCHOR_REACH} LDU of the hinge`,
+        reason: options.requirePhysicalConnection
+          ? "No official holder sockets seat both source hinge pins"
+          : `No frame or holding part within ${DOOR_ANCHOR_REACH} LDU of the hinge`,
       });
       continue;
     }
