@@ -15,6 +15,8 @@ export type MechanicalFeature = AxisFeature &
         radius: number;
         seatSpan: [number, number];
         friction: boolean;
+        /** Source collar envelope, distinct from the 6-LDU bearing shaft. */
+        stopRadius: number;
       }
     | { kind: "round-hole"; radius: number; faceSpan: [number, number] }
     | {
@@ -79,6 +81,7 @@ const pins = (friction: boolean): MechanicalFeature[] =>
     span: sign < 0 ? [-20, -2] : [2, 20],
     seatSpan: sign < 0 ? [-20, 0] : [0, 20],
     radius: 6,
+    stopRadius: 8,
     friction,
   }));
 const axle = (half: number): MechanicalFeature[] => [
