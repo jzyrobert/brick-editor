@@ -147,6 +147,16 @@ function DrivePad({
   );
 }
 
+/** A mechanism refusal in words a child can act on (the engine's reason
+ * stays under Details). */
+function plainRefusal(reason: string) {
+  if (/axle|PF-L|motor|pin seat/i.test(reason))
+    return "Push an axle into the motor’s output, and hold the motor in place with pins.";
+  if (/hinge|joint|pin/i.test(reason))
+    return "This hinge or joint isn’t held by real pins, so it can’t move.";
+  return "These parts aren’t joined in a way that can move.";
+}
+
 export function PlayPanel({
   play,
   bookmark,
@@ -788,7 +798,13 @@ export function PlayPanel({
             Why some parts won’t move ({rigReview.unavailable.length})
           </summary>
           {rigReview.unavailable.map((reason) => (
-            <p key={reason}>{reason}</p>
+            <div key={reason}>
+              <p>{plainRefusal(reason)}</p>
+              <details>
+                <summary>Details</summary>
+                <p>{reason}</p>
+              </details>
+            </div>
           ))}
         </details>
       )}
@@ -964,6 +980,10 @@ export function PlayPanel({
                     ? "Its moving parts aren’t connected, so they stay still. Fix them in Build."
                     : "Walk around at minifigure scale."}
               </p>
+              {allRefused && (
+                // Phones hide the line above; this one always shows.
+                <p className="play-entry-refused">Moving parts not connected</p>
+              )}
             </div>
             <div className="play-entry-actions">
               {enterPlay}

@@ -1986,3 +1986,16 @@ a {
     overflow: auto;
   }
 }
+/* A refused mechanism is said on the dock at every size (phones hide the
+   dock's second line). */
+.play-entry-refused {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 650;
+  color: #f6b59a;
+}
+@media (min-width: 761px) {
+  .play-entry-refused {
+    display: none;
+  }
+}

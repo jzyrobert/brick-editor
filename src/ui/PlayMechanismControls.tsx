@@ -312,7 +312,22 @@ export function PlayMechanismControls({
                 onClick={() => setSelected(j.id)}
               >
                 <strong>{label(j.id)}</strong>
-                <span>{motorStatusText(drive)}</span>
+                <span>
+                  {/^Running/.test(motorStatusText(drive)) && (
+                    <span
+                      className={
+                        "play-motor-spin" +
+                        (drive?.input !== undefined && drive.input < 0
+                          ? " is-reverse"
+                          : "")
+                      }
+                      aria-hidden="true"
+                    >
+                      <Icon name="rotate" size={14} />
+                    </span>
+                  )}
+                  {motorStatusText(drive)}
+                </span>
               </button>
             );
           })}

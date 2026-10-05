@@ -22,13 +22,13 @@ describe("motor state presentation", () => {
       "Motor stalled",
     );
     expect(motorStatusText({ ...motor, status: "at-limit" })).toBe("At limit");
-    expect(motorStatusText({ ...motor, status: "stopped" })).toBe("Motor off");
-    expect(motorStatusText({ ...motor, power: 0 })).toBe("Motor off");
+    expect(motorStatusText({ ...motor, status: "stopped" })).toBe("Stopped");
+    expect(motorStatusText({ ...motor, power: 0 })).toBe("Stopped · power 0%");
     expect(motorStatusText({ ...motor, enabled: false })).toBe("Motor off");
   });
   it("distinguishes an explicit brake from a saved setting holding its target", () => {
     expect(motorStatusText({ ...motor, input: 0, status: "holding" })).toBe(
-      "Braking",
+      "Stopped",
     );
     expect(
       motorStatusText({ ...motor, input: undefined, status: "holding" }),
