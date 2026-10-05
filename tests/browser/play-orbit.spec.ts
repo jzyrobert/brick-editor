@@ -88,8 +88,10 @@ test("the roadster seats the figure, drives, and lets it out", async ({
     page.getByRole("button", { name: "Get out", exact: true }),
   ).toBeVisible();
   const seated = await snapshot(page);
-  expect(seated.occupancy).toMatchObject({ rigId: "car", seatId: "driver" });
-  expect(seated.avatar.state).toBe("seated");
+  expect(seated.vehicleControl).toEqual({ rigId: "car" });
+  expect(seated.cameraMode).toBe("third-person");
+  expect(seated.avatarVisible).toBe(false);
+  expect(seated.positionAnchor).toBe("vehicle-reference");
   await page.evaluate(async () => {
     const play = window.brickEditor!.play;
     await play.setCameraMode("third-person");
@@ -108,7 +110,8 @@ test("the roadster seats the figure, drives, and lets it out", async ({
   expect(moved.mechanisms!.car.blockedReason).toBeUndefined();
   await page.getByRole("button", { name: "Get out", exact: true }).click();
   const out = await snapshot(page);
-  expect(out.occupancy).toBeUndefined();
+  expect(out.vehicleControl).toBeUndefined();
+  expect(out.avatarVisible).toBe(out.cameraMode === "third-person");
   expect(out.positionAnchor).toBe("standing-feet");
   await exitPlay(page);
 });
