@@ -611,6 +611,15 @@ const motionRig = obj(
           }),
           obj({
             id,
+            kind: { const: "worm" },
+            jointA: id,
+            jointB: id,
+            starts: { type: "integer", minimum: 1, maximum: 16 },
+            teeth: { type: "integer", minimum: 4, maximum: 256 },
+            direction: { enum: [-1, 1] },
+          }),
+          obj({
+            id,
             kind: { const: "rack" },
             jointA: id,
             jointB: id,

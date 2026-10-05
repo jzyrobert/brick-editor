@@ -10,6 +10,10 @@ import {
 import { deriveDoorRigs } from "../play/auto-doors";
 import { proposeMechanicalRig } from "./mechanical-proposals";
 import { checkPhysicalMotorBinding } from "./motor-binding";
+import { reviewedPfLargeRigEligible } from "./pf-large-motor-binding";
+import { arocsBallJointIds } from "../play/arocs-ball-contacts";
+import { sourceAssemblyEdges } from "../play/source-assembly";
+import type { PlayMechanismSource } from "../play/mechanism";
 import { mechanicalContactGraph } from "./mechanical-contacts";
 import type { JointSpec, MotionRig, RigidGroup } from "./types";
 
@@ -26,6 +30,7 @@ export function physicalPlayEligibility(
   project: Project,
   rig: MotionRig,
   all: Occurrence[] = occurrences(project),
+  source?: PlayMechanismSource,
 ): { eligible: boolean; reason?: string } {
   const refuse = (reason: string) => ({ eligible: false, reason });
   if (rig.grippers?.length)
@@ -96,6 +101,55 @@ export function physicalPlayEligibility(
       return refuse(
         check.reason ?? "The motor is not mounted and coupled to this shaft.",
       );
+  }
+  if (reviewedPfLargeRigEligible(project, rig, all)) return { eligible: true };
+  // The private source packet proves each actual ball/socket pair before native
+  // allocation. A compound body must separately prove its rigid attachments.
+  if (
+    source?.project === project &&
+    source.rigId === rig.id &&
+    project.motionRigs[rig.id] === rig &&
+    rig.joints.length > 0 &&
+    rig.joints.every((j) => j.kind === "spherical" && !j.motor) &&
+    !rig.transmissions?.length
+  ) {
+    try {
+      const checked = new Set(arocsBallJointIds(source));
+      if (rig.joints.every((j) => checked.has(j.id))) {
+        const parent = new Map([...owned].map((id) => [id, id]));
+        const root = (id: string): string => {
+          let result = id;
+          while (parent.get(result) !== result) result = parent.get(result)!;
+          while (id !== result) {
+            const next = parent.get(id)!;
+            parent.set(id, result);
+            id = next;
+          }
+          return result;
+        };
+        const groupFor = new Map(
+          rig.groups.flatMap((g) => g.occurrenceIds.map((id) => [id, g.id])),
+        );
+        for (const edge of sourceAssemblyEdges(project, selected))
+          if (
+            edge.kind === "fixed" &&
+            groupFor.get(edge.a) === groupFor.get(edge.b)
+          )
+            parent.set(root(edge.a), root(edge.b));
+        if (
+          rig.groups.every(
+            (g) =>
+              g.occurrenceIds.length > 0 &&
+              g.occurrenceIds.every(
+                (id) => root(id) === root(g.occurrenceIds[0]),
+              ),
+          )
+        )
+          return { eligible: true };
+      }
+    } catch {
+      // Stale packets, dependency shadows and review limits cannot grant entry.
+    }
   }
   const sameRig = (reviewed: MotionRig) => {
     const byMembers = new Map(reviewed.groups.map((g) => [members(g), g]));
@@ -168,8 +222,15 @@ export function physicalPlayEligibility(
               t.axisSign *
                 (map ? signs.get(t.jointA)! * signs.get(t.jointB)! : 1),
             ]
-          : t.pitchRadiusLdu *
-            (map ? signs.get(t.jointA)! * signs.get(t.jointB)! : 1),
+          : t.kind === "worm"
+            ? [
+                t.starts,
+                t.teeth,
+                t.direction *
+                  (map ? signs.get(t.jointA)! * signs.get(t.jointB)! : 1),
+              ]
+            : t.pitchRadiusLdu *
+              (map ? signs.get(t.jointA)! * signs.get(t.jointB)! : 1),
       ]);
     const relations = (rig.transmissions ?? []).map((t) =>
       relation(t, matched),
@@ -244,8 +305,9 @@ export function requirePhysicalPlay(
   project: Project,
   rig: MotionRig,
   all?: Occurrence[],
+  source?: PlayMechanismSource,
 ) {
-  const result = physicalPlayEligibility(project, rig, all);
+  const result = physicalPlayEligibility(project, rig, all, source);
   ensure(
     result.eligible,
     "INVALID_INPUT",

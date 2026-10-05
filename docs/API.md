@@ -188,6 +188,16 @@ await api.mechanisms.exit();
 
 `instructions.publish({planId,format,width,height})` returns an artifact for `pdf`, `png-zip` or `html-zip`. Its registered job supports cancellation. The captured steps must cover every occurrence exactly once; this is coverage validation, not proof of physical buildability. `camera.fit()` frames the full build before capture. `render.quality.get()` and `render.quality.set(name, controls)` manage viewport quality; image requests may supply `qualityControls` independently. `render.look.get()` and `render.look.set(name, controls)` choose the shading look — `standard` (default), `realistic` or `photo` — independently of quality; image requests take an optional `look`/`lookControls` and default to `standard`, and the capture manifest records the resolved `look`. `photo` path-traces stills (`lookControls.pathSamples`, `depthOfField`, `backdrop`); `render.look.photo()` and a photo capture's manifest `photo` report whether the path tracer or the raster fallback drew it, and why. `render.collection` accepts `lookControls` too. See [rendering looks](RENDERING.md).
 
+The native rig schema also preserves an explicit engineering worm relation:
+`{id,kind:"worm",jointA,jointB,starts,teeth,direction}`. Both joints are revolute,
+share a carrier and have orthogonal axes; `jointA` is the worm and `jointB` the
+wheel. Signed output turns per input turn are `direction * starts / teeth`
+(direction is ±1). Kinematic preview retains unwrapped phase and reflected
+limits; native angular equations return load reactions to both shafts and the
+carrier. This relation does not infer self-locking or grant ordinary Play
+admission. The real retained source assembly and local tooth/bearing contacts
+must also be bound. The generic proposal currently derives spur/rack families.
+
 ### Layer organization
 
 `layers.duplicate` accepts `{ layerId, includeHidden?, name?, maxAdditions? }` and returns fresh layer/occurrence IDs in the command result. Duplication reads a locked source without changing it and creates an unlocked copy; unsupported opaque metadata and motion rigs are rejected. `layers.folder` sets `{ layerId, parentFolderId: string | null }`. `folders.add`, `folders.rename`, `folders.move`, and `folders.remove` manage organizational folders; removal promotes children/members without deleting build geometry. See the generated command schema for exact fields and bounds. Folder membership persists in native projects.

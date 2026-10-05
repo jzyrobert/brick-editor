@@ -939,6 +939,55 @@
                 "maxLength": 1024
               },
               "kind": {
+                "const": "worm"
+              },
+              "jointA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "jointB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "starts": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 16
+              },
+              "teeth": {
+                "type": "integer",
+                "minimum": 4,
+                "maximum": 256
+              },
+              "direction": {
+                "enum": [
+                  -1,
+                  1
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "jointA",
+              "jointB",
+              "starts",
+              "teeth",
+              "direction"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "kind": {
                 "const": "rack"
               },
               "jointA": {

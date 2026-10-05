@@ -43,7 +43,10 @@ Fresh private production evidence passes all six desktop/phone sizes in 7.3
 minutes, including both 44px driving pads within the viewport, Get out clear of
 each pad, hidden driving/walking controls during motor control and successful
 current-location release. Those captures supersede the earlier driving screenshots
-with a single joystick. Independent review of the rebased UI remains pending.
+with a single joystick. The fresh independent reviewer returns SHIP at this UI scope; the surface
+brief records the updated pads, evidence and review limits. Four production
+interaction cases pass in 2.7 minutes and four twin-motor cases in 1.4 minutes,
+including two-finger driving and independent Dynamic/Kinematic motor controls.
 
 The separate pneumatic native kernel passes seven checks in 1.21 seconds:
 balanced cylinder reaction without direct pose/velocity setters, supply/exhaust
@@ -52,6 +55,13 @@ pump/refill, independent valves, external native blocker stall/removal, released
 body refusal and atomic overpressure refusal. Isothermal instantaneous-line flow
 and force caps are declared simulation assumptions, not measured LEGO properties.
 Source-bound cylinder/pump geometry and actual hose admission remain open.
+
+Explicit engineering worm transmission data now survives native save/restore
+and shares the existing bounded coupled-coordinate and angular-kernel paths.
+Six new tests and forty related spur/rack/source-admission cases pass in 9.04
+seconds. Signed orthogonal native dispatch is compared against independently
+calculated inertia/impulses; source stays unchanged. Actual retained-winch
+contact packets and ordinary session integration remain separately required.
 
 ## Physical admission CI follow-up — 4 October 2026
 

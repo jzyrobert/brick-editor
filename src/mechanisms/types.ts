@@ -102,7 +102,7 @@ export type MotionRig = {
   mode: "kinematic";
   groups: RigidGroup[];
   joints: JointSpec[];
-  /** Ideal spur/rack meshes, separate from their carrier mounting joints. */
+  /** Ideal mesh relations, separate from their actual carrier mounting joints. */
   transmissions?: Transmission[];
   /** Explicit planar revolute closure edges; tree joints remain acyclic. */
   loopClosures?: PlanarLoopClosure[];
@@ -136,7 +136,26 @@ export type RackTransmission = {
   teethB?: never;
   axisSign?: never;
 };
-export type Transmission = SpurTransmission | RackTransmission;
+export type WormTransmission = {
+  id: string;
+  kind: "worm";
+  /** Revolute worm input and wheel output, in unwrapped degrees. */
+  jointA: string;
+  jointB: string;
+  starts: number;
+  teeth: number;
+  /** Signed output turns per input turn are direction * starts / teeth.
+   * This ideal law does not infer self-locking, friction or part admission. */
+  direction: 1 | -1;
+  teethA?: never;
+  teethB?: never;
+  axisSign?: never;
+  pitchRadiusLdu?: never;
+};
+export type Transmission =
+  | SpurTransmission
+  | RackTransmission
+  | WormTransmission;
 export type KinematicPose = {
   jointPositions: Record<string, number>;
   vehicle?: {
