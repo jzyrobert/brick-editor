@@ -1,5 +1,32 @@
 # Verification — 27 September 2026
 
+## Technic worktree checkpoints — 5 October 2026
+
+The active, unpublished systems branch verifies motor status without continuous
+shaft-angle counters and third-person vehicle possession. Seven focused engine
+files pass 30 tests, including an actual source Roadster driven through the old
+explorer position in native physics, shared capture visibility, current-location
+exit and retained possession when no safe supported exit exists. The complete
+snapshot validator accepts the new vehicle-reference state. Source project data
+stays unchanged.
+
+Twelve production browser cases pass for nearby interaction, physical seats and
+independent twin motors on desktop and phone. The thirteenth case used the old
+UI action to enter a physical seat; it now calls the explicit seat API, and its
+blocked-exit/reverse recovery passes alone in 37.0 seconds. The production build
+passes (Vite 57.40 seconds). A fresh private production check passes six
+desktop/phone viewports (1440 × 1000, 1080 × 1800, 360 × 600, 411 × 685,
+390 × 844 and 686 × 411) in 2.0 minutes, with usable motor/exit touch targets,
+hidden walking sticks during remote motor control, third-person driving and
+safe exit. Full CI and publication remain pending.
+
+Five source-content tests retain exact fallback leaves/caps and world frames,
+reject ambiguous or displaced cap ancestry and conflicting metadata, and keep
+independent placements separate. A private audit reads both unmodified complete
+OMR models without unresolved content: five paths in 42042 and 29 paths/eight
+springs in 42043. This verifies source organization, not mechanical attachment,
+pneumatic forces, track motion or full-model native admission.
+
 ## Physical admission CI follow-up — 4 October 2026
 
 Initial main run [37213302926](https://github.com/jzyrobert/brick-editor/actions/runs/37213302926)

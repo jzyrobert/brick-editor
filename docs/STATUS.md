@@ -1,5 +1,23 @@
 # Implementation status
 
+## Technic systems work in progress — 5 October 2026
+
+The isolated Technic worktree now presents motor power, direction and operating
+status without continuous shaft-angle counters. Nearby vehicle entry possesses
+the whole certified vehicle in third person, hides the explorer and removes its
+native collider. Exit brakes and places the explorer beside the current vehicle
+only after checking ground and capsule clearance. Explicit physical seats remain
+available separately. These changes have focused engine and desktop/phone browser
+verification; they are not yet a published full-system release.
+
+Source-bound profiles now describe Power Functions L motor case/rotor ownership,
+real selector dog engagement, reviewed wheel stacks, worm/bevel meshes and
+differential seating. Typed authored flexible content retains every source leaf
+and distinguishes caps, paths and springs without counting generated skin pieces
+as independent hardware. These source proofs do not yet admit complete 5540,
+42042 or 42043 systems to ordinary Play. Runtime component partition, native load
+relations, suspension, ropes/tracks and pneumatic routing remain active work.
+
 ## Physical admission follow-up — 4 October 2026
 
 The first publication CI caught two implementation gaps: multi-part gravity

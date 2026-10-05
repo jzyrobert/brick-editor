@@ -68,6 +68,8 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Play
 
+- [ ] Complete the active 5540/42042/42043 systems work: source-owned moving case/rotor components, retained selector routing, native bevel/worm/differential load and backdrive, removable contact-supported accessories, suspension/steering, tracked drives, winch ropes and pneumatic cylinders/hoses. Reviewed profiles and source-content parsing are foundations; whole-model runtime acceptance and mobile verification remain open.
+
 - [ ] Add real, reviewed hinge/bearing hardware to architectural sample motion (windmill sails, lighthouse lamp, castle drawbridge and playground equipment), with mounted motor parts where powered. Current unverified rigs remain static in ordinary Play; preserve their stored engineering data until a source-backed redesign is ready.
 - [ ] Review actual linear-actuator, ball/cylindrical, spring/rope and closed Technic linkage part connections before admitting their engineering rigs to ordinary Play.
 - [ ] Real jaw/contact grasping with attached LEGO/Technic jaws; proximity fixed-joint grippers are engineering fixtures only.

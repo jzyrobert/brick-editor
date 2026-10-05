@@ -135,7 +135,7 @@ it("offers an action only in reach, or near with a reason why not", () => {
     ({
       kind: "vehicle",
       rigId: "car",
-      label: "Drive vehicle",
+      label: "Get in",
       name: "Car",
       available: false,
       distance: 500,

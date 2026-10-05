@@ -5,7 +5,6 @@ import {
   reviewedProposalProject,
 } from "../mechanisms/proposal-entry";
 import type { MechanicalProposalRequest } from "../mechanisms/mechanical-proposals";
-import { seatPoint } from "./seated-profile";
 import {
   resolvePlayWorldProfile,
   validatePlayWorldProfile,
@@ -59,6 +58,7 @@ import {
 } from "../catalog/full-library-loader";
 import { fullLibraryGeneration } from "../catalog/full-library";
 import { PLAY_CAMERA_LIMITS } from "./types";
+import { vehicleReachDistance } from "./vehicle-possession";
 
 const ZOOM_KEY = "brick-editor-play-zoom-v1";
 /** The follow distance last chosen by zoom in this tab, if valid. */
@@ -656,7 +656,8 @@ export class BrowserPlay {
     };
   }
   private nearby(report: PlaySnapshotReport) {
-    if (report.occupancy || report.trains?.riding) return undefined;
+    if (report.occupancy || report.vehicleControl || report.trains?.riding)
+      return undefined;
     const rigs = this.sessionRigs;
     // The nearest target the explorer can act on wins; points and doors
     // beside the track come before the train itself at equal reach.
@@ -683,33 +684,22 @@ export class BrowserPlay {
     )
       .flatMap((id) =>
         rigs[id]
-          ? [nearbyInteraction(rigs[id], report)].filter(
-              (target): target is PlayInteraction => !!target,
-            )
+          ? [
+              nearbyInteraction(
+                rigs[id],
+                report,
+                rigs[id].vehicle && this.mechanismViews[id]
+                  ? vehicleReachDistance(
+                      this.mechanismViews[id],
+                      (report.mechanisms?.[id] ?? report.mechanism)!
+                        .groupFrames,
+                      report.position,
+                    )
+                  : undefined,
+              ),
+            ].filter((target): target is PlayInteraction => !!target)
           : [],
       )
-      .map((target) => {
-        const seat = rigs[target.rigId]?.vehicle?.driverSeat;
-        if (target.kind !== "vehicle" || !seat) return target;
-        const mechanism = report.mechanisms?.[target.rigId] ?? report.mechanism;
-        const frame =
-          mechanism!.groupFrames[rigs[target.rigId].vehicle!.chassisGroup];
-        const access = seatPoint(frame, seat.accessPoint);
-        const distance = Math.hypot(
-          ...access.map((value, index) => value - report.position[index]),
-        );
-        const eligibility = this.current().seatInteractionHint({
-          rigId: target.rigId,
-          seatId: seat.id,
-        });
-        return {
-          ...target,
-          label: "Get in",
-          distance,
-          available: eligibility.eligible,
-          blockedReason: eligibility.reason,
-        };
-      })
       .sort(
         (a, b) =>
           Number(b.available) - Number(a.available) || a.distance - b.distance,
@@ -752,18 +742,6 @@ export class BrowserPlay {
       // Controls operate the assembly; explorer movement waits until leaving.
       session.setInput(input);
       session.setInput({});
-    } else if (this.state.vehicleControl) {
-      // Let the normal validator reject malformed input before changing the vehicle.
-      session.setInput(input);
-      session.setInput({ yaw: input.yaw, pitch: input.pitch });
-      session.setMechanismVehicleInput(
-        {
-          throttle: input.moveZ ?? 0,
-          // LDraw up is −Y: vehicle-right is −X at heading zero.
-          steering: -(input.moveX ?? 0),
-        },
-        this.state.vehicleControl,
-      );
     } else session.setInput(input);
     this.held = { ...input };
   }
@@ -1039,6 +1017,7 @@ export class BrowserPlay {
       "INVALID_INPUT",
       mechanism?.vehicleCollision?.reason ?? "Unknown supported active vehicle",
     );
+    this.current().controlVehicle(rigId);
     this.clearInput();
     this.overview = undefined;
     this.draw();
@@ -1048,7 +1027,15 @@ export class BrowserPlay {
     this.assertMutable();
     if (!this.state.vehicleControl) return;
     this.clearInput();
-    this.emit({ vehicleControl: undefined });
+    try {
+      this.current().releaseVehicle();
+      this.draw();
+      this.emit({ vehicleControl: undefined });
+    } catch (error) {
+      this.draw();
+      this.emit();
+      throw error;
+    }
   }
   interact() {
     this.assertMutable();
@@ -1078,12 +1065,7 @@ export class BrowserPlay {
       return;
     }
     if (target.kind === "vehicle") {
-      const seat =
-        report.mechanisms?.[target.rigId]?.mode === "dynamic"
-          ? undefined
-          : this.sessionRigs[target.rigId]?.vehicle?.driverSeat;
-      if (seat) this.enterVehicle({ rigId: target.rigId, seatId: seat.id });
-      else this.controlVehicle(target.rigId);
+      this.controlVehicle(target.rigId);
     } else
       this.setJointTarget({
         rigId: target.rigId,

@@ -363,10 +363,8 @@ for (const viewport of [
         policy: "safe",
       });
     });
-    await page.getByRole("button", { name: "Drive from here" }).click();
-    await expect(
-      page.getByRole("button", { name: "Stop driving" }),
-    ).toBeVisible();
+    await page.getByRole("button", { name: "Get in" }).click();
+    await expect(page.getByRole("button", { name: "Get out" })).toBeVisible();
     await check("controlling a vehicle");
     await page.screenshot({
       path: test

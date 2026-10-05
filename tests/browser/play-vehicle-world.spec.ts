@@ -37,7 +37,7 @@ for (const width of [360, 1440])
         status: "ready",
       });
       const control = page.getByRole("button", {
-        name: "Drive from here",
+        name: "Get in",
         exact: true,
       });
       if (width === 360) await control.tap();

@@ -93,13 +93,13 @@ for (const viewport of [
           realtime: false,
         }),
       );
-      await page.getByRole("button", { name: "Drive from here" }).click();
-      await expect(
-        page.getByRole("button", { name: "Stop driving" }),
-      ).toBeVisible();
+      await page.getByRole("button", { name: "Get in" }).click();
+      await expect(page.getByRole("button", { name: "Get out" })).toBeVisible();
       const start = await page.evaluate(() =>
         window.brickEditor!.play.snapshot(),
       );
+      expect(start.vehicleControl).toEqual({ rigId: "vehicle" });
+      expect(start.avatarVisible).toBe(false);
       await page.keyboard.down("w");
       await page.keyboard.down("a");
       await page.evaluate(() => window.brickEditor!.play.stepTicks(12));
@@ -123,8 +123,13 @@ for (const viewport of [
       expect(right.mechanism!.pose.vehicle!.headingDegrees).toBeLessThan(
         driven.mechanism!.pose.vehicle!.headingDegrees,
       );
-      expect(driven.position[0]).toBeCloseTo(start.position[0], 3);
-      expect(driven.position[2]).toBeCloseTo(start.position[2], 3);
+      expect(driven.position).toEqual(
+        driven.mechanism!.groupFrames.chassis.position,
+      );
+      expect(driven.vehicleControl).toEqual({ rigId: "vehicle" });
+      expect(driven.positionAnchor).toBe("vehicle-reference");
+      expect(driven.cameraMode).toBe("third-person");
+      expect(driven.avatarVisible).toBe(false);
       if (viewport.width !== 1440) {
         // Driving splits the stick: a throttle pad and a steering pad, one
         // thumb each.
@@ -208,8 +213,17 @@ for (const viewport of [
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))
           .mechanism!.pose.vehicle,
       ).toEqual(stopped.mechanism!.pose.vehicle);
-      await page.getByRole("button", { name: "Resume exploring" }).click();
-      await page.getByRole("button", { name: "Stop driving" }).click();
+      await page.getByRole("button", { name: "Resume driving" }).click();
+      await page.getByRole("button", { name: "Get out" }).click();
+      const exited = await snapshot();
+      expect(exited.vehicleControl).toBeUndefined();
+      expect(exited.positionAnchor).toBe("standing-feet");
+      expect(
+        Math.hypot(
+          exited.position[0] - right.position[0],
+          exited.position[2] - right.position[2],
+        ),
+      ).toBeLessThan(250);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,

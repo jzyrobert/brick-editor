@@ -1470,7 +1470,9 @@ const playSnapshot = obj({
   sourceRevision: integer,
   tick: integer,
   position: vec,
-  positionAnchor: { enum: ["standing-feet", "seated-avatar-root"] },
+  positionAnchor: {
+    enum: ["standing-feet", "seated-avatar-root", "vehicle-reference"],
+  },
   velocity: vec,
   yaw: {
     ...num,
@@ -1528,6 +1530,7 @@ playSnapshot.properties.avatar.properties.basis = {
   minItems: 9,
   maxItems: 9,
 };
+playSnapshot.properties.vehicleControl = obj({ rigId: id });
 playSnapshot.properties.occupancy = obj({
   rigId: id,
   seatId: id,

@@ -1907,6 +1907,14 @@ export class PlayDynamicsWorld {
     }
   }
   /** One fixed tick. `feet` is the explorer's standing position in LDU. */
+  setActorSolid(solid: boolean, feet?: Vec3) {
+    this.playerCollider.setEnabled(solid);
+    if (feet)
+      this.player.setTranslation(
+        toPhysics([feet[0], feet[1] - P.height / 2, feet[2]]),
+        false,
+      );
+  }
   step(feet: Vec3, actorSolid: boolean, supportHandle?: number) {
     this.playerCollider.setEnabled(actorSolid);
     const next = toPhysics([feet[0], feet[1] - P.height / 2, feet[2]]),

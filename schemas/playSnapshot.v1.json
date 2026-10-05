@@ -119,7 +119,8 @@
     "positionAnchor": {
       "enum": [
         "standing-feet",
-        "seated-avatar-root"
+        "seated-avatar-root",
+        "vehicle-reference"
       ]
     },
     "velocity": {
@@ -311,6 +312,20 @@
         "rightShoulder",
         "leftWrist",
         "rightWrist"
+      ],
+      "additionalProperties": false
+    },
+    "vehicleControl": {
+      "type": "object",
+      "properties": {
+        "rigId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "rigId"
       ],
       "additionalProperties": false
     },

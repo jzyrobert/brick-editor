@@ -5,6 +5,7 @@ import type { PlayMechanismReport } from "../play/types";
 import type { BrowserPlay } from "../play/browser";
 import type { MotionRig } from "../mechanisms/types";
 import { transmissionMap } from "../mechanisms/transmissions";
+import { motorStatusText } from "./play-motor-presentation";
 
 export function mechanismControlJoints(
   rig: MotionRig,
@@ -64,7 +65,8 @@ export function PlayMechanismControls({
   const motor = joint && report.motors?.[joint.id];
   const [powers, setPowers] = useState<Record<string, number>>({});
   const directions = useRef<Record<string, number>>({});
-  const power = powers[JSON.stringify([rig.id, joint?.id])] ?? 1;
+  const power =
+    powers[JSON.stringify([rig.id, joint?.id])] ?? motor?.power ?? 1;
   const dynamic = report.mode === "dynamic";
   const controlKey = JSON.stringify([rig.id, joint?.id]);
   const [manualDraft, setManualDraft] = useState<{
@@ -245,21 +247,7 @@ export function PlayMechanismControls({
       }
     },
   });
-  const motorState = !motor
-    ? ""
-    : !motor.enabled || motor.power === 0
-      ? "Motor off"
-      : motor.status === "blocked"
-        ? "Motor blocked"
-        : motor.status === "at-limit"
-          ? "At limit"
-          : motor.input !== undefined
-            ? motor.input === 0
-              ? "Braking"
-              : `${Math.round(Math.abs(motor.input) * 100)}% ${motor.input < 0 ? "reverse" : "forward"}`
-            : motor.enabled
-              ? "Running on its own"
-              : "Motor stopped";
+  const motorState = motorStatusText(motor);
   const runningOthers = controls.filter((j) => {
     const drive = report.motors?.[j.id];
     return (
@@ -338,7 +326,6 @@ export function PlayMechanismControls({
           >
             {controls.map((j) => {
               const drive = report.motors?.[j.id];
-              const input = drive?.input;
               return (
                 <button
                   key={j.id}
@@ -347,15 +334,7 @@ export function PlayMechanismControls({
                   onClick={() => setSelected(j.id)}
                 >
                   <strong>{label(j.id)}</strong>
-                  <span>
-                    {!drive?.enabled || drive.power === 0
-                      ? "Stopped"
-                      : input
-                        ? `${Math.round(Math.abs(input) * 100)}% ${input < 0 ? "reverse" : "forward"}`
-                        : input === undefined
-                          ? "Running"
-                          : "Braking"}
-                  </span>
+                  <span>{motorStatusText(drive)}</span>
                 </button>
               );
             })}
@@ -492,7 +471,6 @@ export function PlayMechanismControls({
                 <details className="play-motor-settings">
                   <summary>Motor settings</summary>
                   <p>
-                    Shaft position: {position.toFixed(1)} degrees.{" "}
                     {dynamic
                       ? "Power limits speed and available motor force."
                       : "Power limits turning speed. Dynamic mode also simulates motor force."}
@@ -548,21 +526,31 @@ export function PlayMechanismControls({
             {!!outputs.length && (
               <details className="play-output-details">
                 <summary>Linked outputs ({outputs.length})</summary>
-                {outputs.map(([id, ratio], i) => (
-                  <p key={id}>
-                    Output {i + 1}:{" "}
-                    {(report.pose.jointPositions[id] ?? 0).toFixed(1)}{" "}
-                    {rig.joints.find((j) => j.id === id)?.kind === "prismatic"
-                      ? "LDU"
-                      : "degrees"}
-                    <span>
-                      {" "}
-                      {rig.joints.find((j) => j.id === id)?.kind === joint.kind
-                        ? `${Math.abs(ratio).toFixed(2)}× speed · ${ratio < 0 ? "opposite direction" : "same direction"}`
-                        : `${Math.abs(ratio).toFixed(2)} ${joint.kind === "revolute" ? "LDU per degree" : "degrees per LDU"}`}
-                    </span>
-                  </p>
-                ))}
+                {outputs.map(([id, ratio], i) => {
+                  const output = rig.joints.find((j) => j.id === id);
+                  const bounded =
+                    output?.kind === "prismatic" || output?.limits;
+                  return (
+                    <p key={id}>
+                      Output {i + 1}:{" "}
+                      {bounded || !motor
+                        ? `${(report.pose.jointPositions[id] ?? 0).toFixed(1)} ${output?.kind === "prismatic" ? "LDU" : "degrees"}`
+                        : motorStatusText({
+                            ...motor,
+                            input:
+                              motor.input === undefined
+                                ? undefined
+                                : motor.input * Math.sign(ratio),
+                          })}
+                      <span>
+                        {" "}
+                        {output?.kind === joint.kind
+                          ? `${Math.abs(ratio).toFixed(2)}× speed · ${ratio < 0 ? "opposite direction" : "same direction"}`
+                          : `${Math.abs(ratio).toFixed(2)} ${joint.kind === "revolute" ? "LDU per degree" : "degrees per LDU"}`}
+                      </span>
+                    </p>
+                  );
+                })}
               </details>
             )}
           </div>

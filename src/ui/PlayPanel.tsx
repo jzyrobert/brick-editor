@@ -982,7 +982,11 @@ export function PlayPanel({
           text: "Driving · " + (rigs[occupied.rigId]?.name ?? "driver seat"),
         }
       : state.vehicleControl
-        ? { icon: "wheel", text: "Controlling vehicle · on foot" }
+        ? {
+            icon: "wheel",
+            text:
+              "Driving · " + (rigs[state.vehicleControl]?.name ?? "vehicle"),
+          }
         : report.trains?.riding
           ? {
               icon: "train",
@@ -1202,12 +1206,12 @@ export function PlayPanel({
             <Icon name="resume" />
             {remoteOpen
               ? "Resume controls"
-              : occupied
+              : inVehicle
                 ? "Resume driving"
                 : "Resume exploring"}
           </button>
           <div className="play-menu-grid">
-            {!occupied && !remoteOpen && (
+            {!inVehicle && !remoteOpen && (
               <button
                 className="play-tile"
                 aria-keyshortcuts={bindings.fly || undefined}
@@ -1218,7 +1222,7 @@ export function PlayPanel({
                 {keyHint(bindings.fly)}
               </button>
             )}
-            {!remoteOpen && (
+            {!remoteOpen && !state.vehicleControl && (
               <button
                 className="play-tile"
                 aria-keyshortcuts={bindings.camera || undefined}
@@ -1230,7 +1234,7 @@ export function PlayPanel({
               </button>
             )}
             {/* Seated, there is no walking position to recover. */}
-            {!remoteOpen && !occupied && (
+            {!remoteOpen && !inVehicle && (
               <button
                 className="play-tile"
                 onClick={() =>
@@ -1321,17 +1325,17 @@ export function PlayPanel({
               <>
                 {bindings.forward || "—"}/{bindings.left || "—"}/
                 {bindings.backward || "—"}/{bindings.right || "—"}{" "}
-                {occupied ? "drive" : "move"} ·{" "}
+                {inVehicle ? "drive" : "move"} ·{" "}
               </>
             )}
             {locked ? "mouse to look · Esc to release" : "drag to look"} ·{" "}
-            {!occupied && !riding && (
+            {!inVehicle && !riding && (
               <>
                 {bindings.jump || "—"} jump · {bindings.fly || "—"} fly ·{" "}
               </>
             )}
-            {bindings.camera || "—"} camera · {bindings.interact || "—"}{" "}
-            interact
+            {!state.vehicleControl && <>{bindings.camera || "—"} camera · </>}
+            {bindings.interact || "—"} interact
           </div>
           {playHint && !hintDone && !remoteOpen && (
             <div className="play-start-hint" role="status">
@@ -1523,9 +1527,7 @@ export function PlayPanel({
                 }}
               >
                 <Icon name={interactIcon} />
-                {state.vehicleControl
-                  ? "Stop driving"
-                  : state.interaction?.label}
+                {state.vehicleControl ? "Get out" : state.interaction?.label}
                 {keyHint(bindings.interact)}
               </button>
             </>

@@ -128,8 +128,18 @@ for (const phone of [false, true])
           -both.pose.jointPositions["joint-3"],
           0,
         );
-        await expect(red).toContainText("25% forward");
-        await expect(blue).toContainText("50% reverse");
+        await expect(red).toContainText("Running forward");
+        await expect(blue).toContainText("Running reverse");
+        await page.getByText("Motor settings", { exact: true }).click();
+        await expect(page.locator(".play-motor-settings")).not.toContainText(
+          "Shaft position",
+        );
+        await page.getByText("Linked outputs (1)", { exact: true }).click();
+        await expect(page.locator(".play-output-details")).not.toContainText(
+          "degrees",
+        );
+        await page.getByText("Linked outputs (1)", { exact: true }).click();
+        await page.getByText("Motor settings", { exact: true }).click();
         await expect(
           page.getByRole("button", { name: "Brake all", exact: true }),
         ).toBeVisible();

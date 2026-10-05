@@ -309,7 +309,9 @@ export type PlaySnapshotReport = {
   /** Running trains on official track (session-only; docs/PLAY-TRAINS.md). */
   trains?: PlayTrainsReport & { riding?: string };
   occupancy?: PlayOccupancy;
-  positionAnchor: "standing-feet" | "seated-avatar-root";
+  /** Vehicle possession has no invented driver seat or visible rider. */
+  vehicleControl?: { rigId: string };
+  positionAnchor: "standing-feet" | "seated-avatar-root" | "vehicle-reference";
   mechanism?: PlayMechanismReport;
   mechanisms?: Record<string, PlayMechanismReport>;
   worldProfile: ResolvedPlayWorldProfile;
