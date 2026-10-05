@@ -18,6 +18,12 @@ as independent hardware. These source proofs do not yet admit complete 5540,
 42042 or 42043 systems to ordinary Play. Runtime component partition, native load
 relations, suspension, ropes/tracks and pneumatic routing remain active work.
 
+The branch now includes a bounded native pneumatic kernel with actual chamber
+compression, closed-center valves, pressure-driven cylinder reactions and gas
+accounting. Seven focused checks include a real native obstacle stall/recovery.
+Source ports, hose seating, guided component collision and whole Arocs admission
+remain required before pneumatic controls become available in ordinary Play.
+
 ## Physical admission follow-up — 4 October 2026
 
 The first publication CI caught two implementation gaps: multi-part gravity

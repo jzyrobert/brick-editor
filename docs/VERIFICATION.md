@@ -30,12 +30,28 @@ this motor/vehicle-control scope, and the surface documenter records the result.
 Eight additional production interaction/twin-motor cases pass in 3.0 minutes,
 including Dynamic on both desktop and phone and the driving pause menu.
 
-Five source-content tests retain exact fallback leaves/caps and world frames,
+Six source-content tests retain exact fallback leaves/caps and world frames,
 reject ambiguous or displaced cap ancestry and conflicting metadata, and keep
 independent placements separate. A private audit reads both unmodified complete
 OMR models without unresolved content: five paths in 42042 and 29 paths/eight
 springs in 42043. This verifies source organization, not mechanical attachment,
 pneumatic forces, track motion or full-model native admission.
+
+The branch is rebased on main `4282b58`, retaining its split throttle/steering pads
+and current Play loading/menu designs. The production build passes (Vite 1m 26s).
+Fresh private production evidence passes all six desktop/phone sizes in 7.3
+minutes, including both 44px driving pads within the viewport, Get out clear of
+each pad, hidden driving/walking controls during motor control and successful
+current-location release. Those captures supersede the earlier driving screenshots
+with a single joystick. Independent review of the rebased UI remains pending.
+
+The separate pneumatic native kernel passes seven checks in 1.21 seconds:
+balanced cylinder reaction without direct pose/velocity setters, supply/exhaust
+reversal, neutral gas conservation under native backdrive, compression-powered
+pump/refill, independent valves, external native blocker stall/removal, released
+body refusal and atomic overpressure refusal. Isothermal instantaneous-line flow
+and force caps are declared simulation assumptions, not measured LEGO properties.
+Source-bound cylinder/pump geometry and actual hose admission remain open.
 
 ## Physical admission CI follow-up — 4 October 2026
 

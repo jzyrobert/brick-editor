@@ -33,6 +33,41 @@ explicitly set `dynamics.groups[bodyId].anchored:false` for a free linked body.
 A force link alone does not declare a rigid attachment or intentional bearing
 contact.
 
+## Pneumatic native kernel (unpublished systems branch)
+
+`NativePneumaticCircuit` is an engine primitive for source-bound integration that
+remains in progress. It reads actual native body/rod separation and applies equal
+and opposite impulses at their local attachment points. It creates no joint,
+travel stop or attachment and never sets body position or velocity. Released
+bodies, lost axial alignment, travel outside the declared guide and excessive
+pressure refuse the entire step before gas state or body impulses change.
+
+The declared ideal simulation model uses absolute pressure and conserved
+isothermal gas charge (`pressure × volume`). Open hoses and passages equalize
+instantaneously. Three-port valves have Extend, Retract and closed-center Neutral:
+one work port receives supply while the other exhausts; Neutral seals all three.
+Each cylinder has distinct base/cap volumes and effective areas. Rod motion
+changes those volumes, including under an external load. Finite gas supply can
+lose pressure as a cylinder extends. Neutral retains gas and can resist motion;
+it does not weld the rod or impose a position target.
+
+Pump pressure comes from actual native chamber compression. Ideal inlet and
+outlet check valves refill from atmosphere and deliver only against a lower
+supply pressure. Chamber pressure reacts against the pump's body and rod. There
+is no switch that directly injects commanded pressure into the supply. A separate
+read-only snapshot reports pressure, stroke and valve state without applying
+another impulse. Work is bounded to 128 gas nodes, 256 passages, 16 valves,
+16 cylinders and eight pumps; pressure/effort bounds are simulation limits.
+
+Seven focused native checks cover balanced reaction, valve reversal and exhaust,
+neutral gas retention under backdrive, native pump compression/refill, independent
+circuits, external-obstacle stall/recovery, released-body refusal and atomic
+excess-pressure refusal. These benches establish the kernel, not LEGO part
+connections or flow ratings. Ordinary Play still needs source-bound actual ports,
+seated hose ends, cylinder/pump component ownership and guided rod collision
+profiles before exposing pneumatic controls. Complete Arocs routing and operation
+remain open.
+
 ## Spherical angular resistance
 
 A spherical joint can declare
