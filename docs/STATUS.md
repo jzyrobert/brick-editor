@@ -26,9 +26,34 @@ preserving the2015 embedded hardware definitions and separate work chambers.
 Source/export preservation and altered, unseated, ambiguous and incomplete
 fitting refusals are covered by four focused checks. Its narrow flexible-end
 sealing model is explicit; it supplies gas topology, not rigid attachments.
-Guided body/rod component collision, real mounts, runtime circuit wiring and
-whole Arocs admission remain required before pneumatic controls become available
-in ordinary Play. See [the routing review](reviews/AROCS-PNEUMATIC-ROUTING.md).
+A source-bound V2 cylinder bench now uses the actual separate barrel/cap and
+rod/head actors, three collision classes and the real axial guide. Seven native
+checks cover finite-pressure forward/reverse travel, mobile reaction, foreign
+obstruction/recovery, actual valve routing and source/ownership refusals. The
+omitted internal seal and retained simulation stops are explicit assumptions;
+real mounting eyes remain open and source/export placements remain unchanged.
+Initially charged gas supplies the bench, with no pressure-refresh command.
+Actual pump/mount/valve-owner integration and whole Arocs admission remain open
+before ordinary pneumatic controls become available. See the
+[routing review](reviews/AROCS-PNEUMATIC-ROUTING.md) and
+[native cylinder scope](reviews/AROCS-PNEUMATIC-CYLINDER-NATIVE.md).
+
+The 5540 source review preserves 55 fixed attachment islands and nine hinges,
+including keyed bushes that can slide axially. All 50 separately owned removable,
+visual and flexible occurrences remain accounted for. The detector declines
+unsupported axle/hinge assemblies instead of welding their submodel contents.
+Eighty-four focused vehicle/source tests pass. Full native wheel operation remains
+open; even after exact source vertex indexing the complete attached geometry's
+237,866 triangles exceed the existing moving-source triangle cap. See the
+[wheel ownership review](reviews/5540-WHEEL-ATTACHMENT-BOUNDARIES.md).
+
+The crane winch packet keeps 29 independent owners, all 34,729 literal source
+triangles and four real rotor support IDs. Its unilateral cap reactions pass nine
+focused native checks and do not lock shaft axial travel. Source band splitting
+preserves every original oriented face and the joiner's divider. Keyed-contact
+operation, the full carrier and ordinary winch entry remain in progress; the
+band/key wrapper is an unfinished checkpoint. See the
+[winch review](reviews/RETAINED-CRANE-WINCH.md).
 
 The source hardware index now retains embedded declared part parents, separate
 flexible caps and every rendered leaf's exact owner. Three focused checks cover
