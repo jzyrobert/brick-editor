@@ -20,7 +20,12 @@ import {
 } from "./drivetrain-interfaces";
 import { wormRouting } from "./drivetrain-routing";
 
-type Binding = Readonly<{ refs: readonly string[] }>;
+export type RetainedWinchBinding = Readonly<{ refs: readonly string[] }>;
+type Binding = RetainedWinchBinding;
+const geometrySources = new WeakMap<
+  Binding,
+  Readonly<Record<string, string>>
+>();
 const bindings = new WeakMap<Binding, DrivetrainSourceBinding>();
 const witnesses = new WeakSet<RetainedWinch>();
 /** A narrowly reviewed assembly, not permission to weld a submodel or exempt
@@ -29,6 +34,9 @@ const witnesses = new WeakSet<RetainedWinch>();
 export type RetainedWinch = Readonly<{
   kind: "42042-retained-winch";
   carrierMembers: readonly string[];
+  /** Rotationally keyed source seats. Treating either pair as one rigid body
+   * also assumes ideal axial keyed grip; captures below retain the worm/gear,
+   * not both-sided shaft stops. These lists alone do not authorize a weld. */
   inputMembers: readonly string[];
   outputMembers: readonly string[];
   input: { occurrenceId: string; center: Vec3; axis: Vec3 };
@@ -61,6 +69,7 @@ export async function bindRetainedWinchSources(
   );
   const binding = Object.freeze({ refs });
   bindings.set(binding, drivetrain);
+  geometrySources.set(binding, Object.freeze({ ...resolved }));
   return binding;
 }
 const BEAM: Transform["basis"] = [0, -1, 0, 1, 0, 0, 0, 0, 1];
@@ -210,3 +219,11 @@ export function retainedWinch(
 }
 export const isRetainedWinch = (witness: RetainedWinch) =>
   witnesses.has(witness);
+
+/** Immutable source bytes from the same verified closure. Geometry constructors
+ * may read these; this does not authorize additional unreviewed profiles. */
+export function retainedWinchGeometrySources(binding: RetainedWinchBinding) {
+  const resolved = geometrySources.get(binding);
+  ensure(resolved, "INVALID_INPUT", "Use bound retained-winch sources.");
+  return resolved;
+}
