@@ -58,6 +58,24 @@ Before this, driving a seated figure round through due south (heading ±180°) f
 
 Tests include floor contact, thin walls, intermediate turning contact, mixed floor/wall meshes, foreign rigs, source-vertex envelope containment, out-of-domain values, deterministic two-vehicle contention, blocked release/retry, camera-relative steering and source immutability. Browser checks drive the actual demo vehicle into its doorway, reverse away, and verify the captured report. Authored seat entry/exit and dynamic chassis response are implemented below; low cabins and general articulated driving remain unfinished.
 
+### Source cars with hinges and steering arms (one body)
+
+Some reviewed source cars, such as the 5540 Formula 1 Racer, are not one rigid
+chassis: hinges, steering arms and bearings join their parts. When every such
+boundary is explained, the whole attached graph still drives as one chassis on
+ray-cast wheels. It is dynamic when the world's collision is complete and
+kinematic otherwise.
+
+- **Drawn articulation.** Steering arms are drawn turning about their reviewed
+  pivots, a rack pinned to both arms slides, and a geared steering column
+  turns. Hinges stay as built.
+- **Riding parts.** A resting cover, a steering wheel on the column, seated
+  stickers and hoses plugged in at both ends ride along. Each needs its own
+  evidence; other loose parts stay where they were built.
+- **Plain words.** Play explains all of this while you drive.
+
+See the [review](reviews/EFFICIENT-VEHICLE-AND-SYSTEMS-PHYSICS.md#phase-1-one-body-source-cars-in-ordinary-play).
+
 ## Authored driver seat
 
 The seat slice adds an explicit `vehicle.driverSeat` record with the `brick-figure-open-seat-v1` profile. Positions use chassis-local LDU, with negative Y up: `pelvisPosition` anchors the seated pelvis, `accessPoint` is the interaction target, `approachPosition` is a standing-feet location, and `exits` holds 1–4 ordered standing-feet locations with yaw in degrees. Each coordinate is bounded to ±10,000 LDU; yaw is bounded to ±360 degrees. These data bounds do not certify physical clearance.

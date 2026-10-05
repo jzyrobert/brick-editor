@@ -1,4 +1,5 @@
 import { deriveVehicleRigs } from "./auto-vehicles";
+import { compactArticulatedSource } from "./compact-vehicle";
 import {
   admitSourceRideAlong,
   librarySourceRecord,
@@ -585,11 +586,17 @@ export class BrowserPlay {
           });
           ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
         }
+      // One-body source cars collide as hulls of their world member meshes;
+      // they need no canonical local geometry.
+      const oneBody = new Set(
+        vehicles?.vehicles.filter((v) => v.articulation).map((v) => v.rigId),
+      );
       const canonicalIds = rigs
         .filter(
           (rig) =>
-            dynamicRigIds.includes(rig.id) ||
-            rig.groups.every((g) => g.occurrenceIds.length <= 512),
+            !oneBody.has(rig.id) &&
+            (dynamicRigIds.includes(rig.id) ||
+              rig.groups.every((g) => g.occurrenceIds.length <= 512)),
         )
         .flatMap((rig) => rig.groups.flatMap((g) => g.occurrenceIds));
       const canonicalMembers =
@@ -644,7 +651,9 @@ export class BrowserPlay {
             "REVISION_CONFLICT",
             "Project changed while preparing Play",
           );
-          triangles += mesh.indices.length / 3;
+          // A one-body car's chassis collides as hulls, counted below.
+          if (!oneBody.has(rig.id) || group.id !== "chassis")
+            triangles += mesh.indices.length / 3;
           ensure(
             triangles <= 200000,
             "LIMIT_EXCEEDED",
@@ -689,7 +698,8 @@ export class BrowserPlay {
             : {}),
           ...(Object.keys(members).length ===
             rig.groups.flatMap((g) => g.occurrenceIds).length &&
-          canonicalMembers
+          canonicalMembers &&
+          !oneBody.has(rig.id)
             ? {
                 memberLocals: Object.fromEntries(
                   Object.keys(members).map((id) => [id, canonicalMembers[id]]),
@@ -701,6 +711,18 @@ export class BrowserPlay {
             ? { members }
             : {}),
         });
+      }
+      for (const [i, source] of mechanismSources.entries()) {
+        if (!source.articulation) continue;
+        const compact = compactArticulatedSource(source);
+        mechanismSources[i] = compact;
+        triangles +=
+          compact.groups[compact.articulation!.chassisGroup].indices.length / 3;
+        ensure(
+          triangles <= 200000,
+          "LIMIT_EXCEEDED",
+          "Play supports at most 200,000 moving triangles across all rigs",
+        );
       }
       await Promise.all([
         loadMotorSourceComponents(mechanismSources),

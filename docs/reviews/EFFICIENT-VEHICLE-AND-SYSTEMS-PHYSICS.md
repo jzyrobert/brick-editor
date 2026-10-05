@@ -14,17 +14,135 @@ hulls and **661 ms** for island bodies with source triangle meshes. It has
 cannot occur inside it. Both island versions blow apart within a second (peak
 speeds near 17,000 LDU/s) even with every boundary held by a fixed joint.
 
-That is a measured prototype, **not ordinary Play admission**. The compact model
-holds the car's nine hinges, six steering pivots and every bearing at their
-build pose. The 31-part removable cowl, the pulley, 13 stickers and four hoses
-would need to ride along, and no source evidence for that exists yet. Those
-are the remaining gates; the [recommended path](#recommended-path) orders them.
+**Update, Phase 1 (same day): the 5540 now drives in ordinary Play this way.**
+The owner made two choices:
 
-The prototype is `src/play/compact-vehicle.ts` (marked EXPERIMENTAL; nothing in
-the app imports it). The benchmark is `scripts/compact-vehicle-bench.ts` with
-`tests/helpers/compact-vehicle-bench.ts`. Unit tests are
-`tests/unit/play-compact-vehicle.test.ts` and
-`tests/unit/play-systems-sketch.test.ts`.
+- The rest of the car is one body for efficiency, but steering and hinges are
+  animated.
+- The loose parts ride along, after the owner saw [which parts are not
+  attached](#which-parts-are-not-attached).
+
+The [Phase 1 section](#phase-1-one-body-source-cars-in-ordinary-play) describes
+what moves, what is drawn, what rides along and the Chromium measurements. The
+measurements below are the original exploration.
+
+The physics code is `src/play/compact-vehicle.ts`:
+
+- hull merging, member mass and the clearance check;
+- `compactArticulatedSource`, the chassis compound used by Play;
+- the experimental `CompactRaycastVehicle` used by the benchmark.
+
+Ordinary Play uses `source-vehicle-articulation.ts` (the drawing plan) and
+`source-vehicle-ride-along.ts` (the loose-part evidence). The benchmark is
+`scripts/compact-vehicle-bench.ts` with `tests/helpers/compact-vehicle-bench.ts`.
+The tests are:
+
+- `tests/unit/play-compact-vehicle.test.ts`
+- `tests/unit/play-source-vehicle-articulation.test.ts`
+- `tests/unit/play-systems-sketch.test.ts`
+- `tests/browser/play-source-vehicle.spec.ts`
+
+## Which parts are not attached
+
+The owner asked for a picture of what is not attached. Three recoloured renders
+of the private car were made (3/4 front, 3/4 back, top; not committed, since
+they show the private model). The 396 attached parts were drawn light grey and
+the 50 unattached parts in four colours:
+
+- **Orange, engine cover (31 parts).** The `017cowl` submodel rests on the body
+  like a lid. No seated clutch joins it to the car.
+- **Magenta, steering wheel (2 parts).** A 4185a belt wheel with its 2815
+  rubber ring, on the steering column's line beyond the end of its 8L axle.
+  Nothing holds it on along the axle.
+- **Green, stickers (13).** Decals with no connectors.
+- **Blue, exhaust hoses (4).** Flexible LDCad hoses plugged in at both ends.
+
+## Phase 1: one-body source cars in ordinary Play
+
+**What it is.** When the reviewed source graph of a car has boundaries the old
+rigid profile refused (`rigidWheelProfileCompatible: false`),
+`planSourceVehicleArticulation` tries to explain every boundary. It refuses with
+a plain reason otherwise. The rig is then the ordinary vehicle rig: one chassis
+group plus the wheel groups. The articulation is a session-only drawing plan
+attached to the derived vehicle.
+
+**Physics.**
+
+- **One body.** One dynamic chassis on the existing ray-cast wheels. One-body
+  cars become dynamic automatically when the world's collision is complete;
+  otherwise they drive kinematically as before.
+- **Collision.** One compound of occupancy ≥ 0.5 merged convex member hulls
+  (`compactArticulatedSource`, 163 hulls for the whole car).
+- **Mass.** Mass, centre of mass and inertia come from the members' own hulls,
+  not the merged hulls. The first benchmark's scraping came from merged-hull
+  mass: a filled hull is heavier and top-heavy, so it pitched. With member mass,
+  even a single whole-chassis hull drives 256 LDU with no scraping.
+- **Clearance at entry.** A hull's lowest point is always a member's own point.
+  Entry checks that the lowest chassis point clears the tyre contact plane by
+  more than the suspension travel: 16 LDU against 5 for the 5540.
+- **Collision budget.** The moving-collision budget counts the hull triangles
+  actually used. The drawn source triangles are not counted. No cap was raised.
+
+**Drawn articulation** (`articulateVehicleTransforms`, applied to the session
+snapshot, so kinematic and dynamic Play, rendering and posed export all agree):
+
+| Source boundary                                                  | Drawn as                                                                                                                                 |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `source-wheel-retained-pivot` to the chassis (4261 arm on 4262)  | Steering arm (4261, upper 4263 socket, 3706 axle, collars and 3749 linkage pin) turns about the reviewed upright pivot at X ±110, Z −200 |
+| Front wheel groups                                               | Swing about the real pivot rather than their own centre (a pure translation correction)                                                  |
+| Island pinned to both arms (3743 rack, 4263 sockets, 3460, 3023) | Slides sideways by the mean of its two pin displacements                                                                                 |
+| Keyed column with a captured 4143 14-tooth gear beside the rack  | Turns by slide ÷ 17.5 LDU (nominal module 2.5 LDU per tooth). Turning right turns it clockwise for the driver                            |
+| Nine hinges, rear axle bearings, keyed bushes                    | Held as built; Play says so                                                                                                              |
+
+Nothing drives the hinges in the source, so "animated hinges" have no input.
+They ride rigidly with the body and are listed as held.
+
+**Ride-along parts** (`admitSourceRideAlong`, owner decision). Each part needs
+its own evidence; anything else stays where it was built, with a plain reason:
+
+| Part               | Evidence                                                                                                | Behaviour                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Cover (31)         | Coplanar support faces with positive area (`sourceSupportPatch`) on still body parts, under the cover   | Moves with the chassis and keeps its collision |
+| Steering wheel (2) | 4185a centre within 0.1 LDU of the column axis, parallel within 1e−3                                    | Drawn turning with the column                  |
+| Stickers (13)      | Reviewed backing (`reviewedStickerBacking`) fully seated (`sourceBackingSeated`) on body or cover faces | Drawn on its brick                             |
+| Hoses (4)          | Reviewed hose geometry and both 752 caps seated on body studs (`sourceFlexibleHoseWitness`)             | Drawn riding along; its ends never move apart  |
+
+The Play menu shows the vehicle's notes in plain words while driving, for
+example:
+
+> This car moves as one piece on its wheels. The steering arms, steering link
+> and wheels are drawn turning; they are not simulated separately. Its 9 hinge
+> joints stay as built while you drive. Along for the ride: the loose cover (31
+> parts) rides on the body; the steering wheel turns with the steering; 13
+> stickers stay on their bricks; 4 hoses ride along between their ends. They
+> are not clipped on in the real model.
+
+The committed excerpts have no bodywork under the cover and no steering
+column. There, the cover and steering wheel correctly stay where they were
+built ("33 loose parts stay where they were built").
+
+**Measurements, Phase 1** (production build, `tests/browser/play-source-vehicle.spec.ts`,
+SwiftShader Chromium on the shared ARM VM, not phone hardware).
+"Phone" is 390 × 844 mobile emulation. Per-tick times include `stepTicks`
+snapshots.
+
+| Model                           | Viewport | Play entry | ms/tick driving | ms/tick turning |
+| ------------------------------- | -------- | ---------: | --------------: | --------------: |
+| Attached excerpt (84 parts)     | desktop  |  1.9–2.0 s |       1.47–1.66 |       2.01–2.14 |
+| Attached excerpt                | phone    |  1.9–2.5 s |       1.08–1.27 |       1.31–3.26 |
+| Whole 5540 (446 parts, private) | desktop  |  5.0–7.3 s |       3.06–4.12 |       2.73–4.71 |
+| Whole 5540 (private)            | phone    |      7.0 s |       5.72–6.16 |       4.17–4.40 |
+
+In Node on the same VM, the whole car's session ticks take 2.7–4.2 ms dynamic
+and 8.0 ms kinematic (box sweeps); it travels 257 LDU in 2 s and turns 16.5° in
+1.5 s. A chassis-relative posed export with full right lock shows both arms,
+the rack, the column and the steering wheel turned, with the cover and stickers
+in place (private render).
+
+**Not yet:** linked hinge animation (no source input), Ackermann geometry (both
+arms turn by the same angle, so the rack pins can drift up to about 5 LDU from
+their link at full lock), suspension the source does not have, Arocs wheel
+units, and phone hardware.
 
 ## What the existing code already does
 
@@ -140,6 +258,15 @@ its bridged underside scrapes. **Member-granular or occupancy ≥ 0.5 hulls keep
 the source clearance; per-island and whole-chassis hulls do not** and are
 rejected as an admission representation.
 
+**Correction (Phase 1):** the scraping came from mass, not shape. A
+convex hull's lowest point is always one of its members' points. The
+merged hulls carried the mass of all the space they fill, which made a
+heavier, top-heavy chassis that pitched. With mass taken from the member
+hulls (`--member-mass`), every row above, including the single 58-point
+hull, drives 256 LDU with zero scraping contacts on the mesh floor. Coarse
+hulls still fill cockpits and gaps for foreign contact, so Play uses
+occupancy ≥ 0.5.
+
 ### Committed carrier-graph excerpt (117 occurrences, 84 attached, 52 islands, 109,448 triangles)
 
 This is what the unit tests use (three trials; trimesh one).
@@ -196,7 +323,7 @@ do with an ordinary dynamic chassis.
 | Steering geometry                                            | **Approximation:** rays steer about the tyre centre, not the real 4263 kingpin; no steering linkage is driven.                                                                                                                                      |
 | Suspension                                                   | **Approximation:** the existing ray spring (rest 6 LDU, travel 5). The 5540 is unsprung; the chassis sags about 2.5–3.5 LDU at rest.                                                                                                                |
 | Mass                                                         | **Declared:** density 200 kg/m³ over hull volume, like other dynamic chassis.                                                                                                                                                                       |
-| Cowl (31), pulley/tyre (2), stickers (13), hoses (4)         | **Not handled.** They are not attached, so a driven chassis would leave them behind. This is an admission blocker.                                                                                                                                  |
+| Cowl (31), pulley/tyre (2), stickers (13), hoses (4)         | **Phase 1:** ride along on their own evidence (see the ride-along table); anything without evidence stays where it was built.                                                                                                                       |
 
 ## Risks
 
@@ -273,36 +400,20 @@ source interfaces.
 
 ## Recommended path
 
-1. **Owner decision: a rest-locked source driving profile.** Accept or reject
-   "drive the whole attached graph as one body, with listed hinges and
-   bearings held as built and shown as such in Play". Nothing below should
-   ship without that decision.
-2. **Phase 1, compact chassis (small, measured here).** Generalise
-   `DynamicRig`'s vehicle path to a reviewed source assembly:
+Steps 1 to 3 are done (see [Phase 1](#phase-1-one-body-source-cars-in-ordinary-play)).
 
-   - The chassis is one body with one compound of member hulls.
-   - Clustering at occupancy ≥ 0.5 is allowed only if the clearance check
-     passes.
-   - Rays come from the reviewed mounts; refusal reasons name each locked
-     boundary.
-   - Hull per unique part in a worker and cache it.
-   - Measure in Chromium (SwiftShader) and on a real phone before admission.
-
-   No 5540 sample is admitted until phase 2, because the cowl would be left
-   floating.
-
-3. **Phase 2, ride-along accessories.** Carry contact-supported removable parts
-   (the cowl, pulley) as a second compact body. It rests on the chassis
-   through the reviewed source support contacts (`source-support-contacts.ts`,
-   `5540-cowl-support.ldr`), or is refused. Host-bound stickers and two-ended
-   hoses become render-followers of their hosts. Then admit 5540 with tests
-   for driving, reversal, wall stop, cowl retention under acceleration, source,
-   export and inventory, at desktop and phone sizes.
-4. **Phase 3, selective articulation.** Promote only the freedoms a player
-   operates, each as its own small hull body on a joint. Examples: front
-   wheels steering visually about the real kingpin; hinged panels as hull
-   bodies with revolute joints. Contact exemption stays limited to
-   source-certified hinge pairs. The body count stays at single digits.
+1. ~~Owner decision on a rest-locked profile.~~ The owner chose one body with
+   animated steering and hinges, and ride-along loose parts.
+2. ~~Phase 1, compact chassis.~~ Shipped for one-body source cars. Still to do:
+   hull each unique part once in a worker and cache it (entry takes 5–7 s for
+   the whole car in SwiftShader), and measure on a real phone.
+3. ~~Phase 2, ride-along accessories.~~ Shipped as drawing plus the cover's
+   collision on the one body, each on its own evidence. A second body was not
+   needed.
+4. **Phase 3, selective articulation.** Give the player inputs for freedoms
+   the source really has, such as hinged panels as drawn groups with a control.
+   Add Ackermann steering if a source linkage defines it. Keep the body count
+   at one unless contact through a moving part matters.
 5. **Phase 4, Arocs and the systems.**
    - Arocs: apply the same profile with `arocsWheelUnits` (12 tyres, 8 units,
      4 stations). Per-ray station heights carry the reviewed 0.56 LDU
@@ -315,11 +426,10 @@ source interfaces.
 ## Reproduce
 
 ```sh
-npx vitest run tests/unit/play-compact-vehicle.test.ts tests/unit/play-systems-sketch.test.ts --maxWorkers=1
-npx tsx scripts/compact-vehicle-bench.ts                     # committed excerpt
-npx tsx scripts/compact-vehicle-bench.ts .local/5540-1.mpd --fill=0.35,0.5,0.7 --trials=3   # private whole car
-#   --only=a,b  --separate (one collider per hull)  --mesh-ground (mesh floor)
+npx vitest run tests/unit/play-compact-vehicle.test.ts tests/unit/play-source-vehicle-articulation.test.ts tests/unit/play-systems-sketch.test.ts --maxWorkers=1
+npx playwright test -c <private config> --project=main tests/browser/play-source-vehicle.spec.ts
+npx tsx scripts/compact-vehicle-bench.ts .local/5540-1.mpd --member-mass --fill=0.35,0.5   # private whole car
 ```
 
-The two focused suites pass (7 tests, about 8 s on the VM). The whole-car source
-stays in gitignored `.local/`.
+The whole-car unit test and browser cases skip unless the private
+`.local/5540-1.mpd` exists.

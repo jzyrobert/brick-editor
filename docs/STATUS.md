@@ -1,21 +1,35 @@
 # Implementation status
 
-## Efficient vehicle and systems physics (experimental) — 5 October 2026
+## The 5540 drives in ordinary Play as one body — 5 October 2026
 
-An experimental compact vehicle (`src/play/compact-vehicle.ts`, not used by the
-app) drives the whole 5540 source car as one rigid body. That body has one
-compound of convex member hulls and rides on four ray-cast wheels taken from the
-reviewed mounts. On the shared VM (Node WASM) it steps in 0.85–1.7 ms with no
-internal contact pairs. One body per fixed island needs 55 bodies and at least
-67 joints, steps in 10.8 ms with convex hulls or 661 ms with source triangles,
-and blows apart from false deep contacts. Coarser hulls (one per island, or one
-for the whole chassis) are cheaper but scrape the ground.
+Opening the Formula 1 Racer 5540 OMR model and entering Play now gives a
+drivable car.
 
-The compact car holds hinges and bearings as built and leaves the unattached
-cowl, stickers and hoses behind, so it is **not** admitted to ordinary Play.
-Synthetic sketches put a winch (drum plus soft rope) and a pivoting pneumatic
-cylinder loop at about 0.1 ms per tick each. See the
-[proposal](reviews/EFFICIENT-VEHICLE-AND-SYSTEMS-PHYSICS.md).
+- **One body.** Its 396 attached source parts move as ONE dynamic chassis on
+  the existing ray-cast wheels. Collision is one compound of 163 merged convex
+  member hulls; mass comes from the members' own hulls.
+- **Drawn steering.** The steering arms turn about their reviewed pivots, the
+  rack slides with them, and the steering column and wheel turn through the
+  column gear.
+- **Held hinges.** The nine hinges stay as built.
+- **Riding parts.** The engine cover rides on the body, and the stickers and
+  hoses ride along. Play says plainly that they are not clipped on in the real
+  model.
+
+Each riding part needs its own evidence (support faces, coaxial column,
+seated sticker backing, both hose caps on studs). Without evidence a part stays
+where it was built. The car is dynamic whenever the world's collision is
+complete, kinematic otherwise.
+
+Measured in SwiftShader Chromium on the shared VM (not phone hardware):
+
+- **Entry:** 5–7 s.
+- **Per tick:** 3–5 ms on desktop and 4–6 ms in 390 × 844 mobile emulation.
+- **Benchmark:** the one-body model steps in 0.15–1.7 ms, against 10.8 ms
+  (convex) and 661 ms (triangle) for one native body per fixed island, which
+  also blows apart.
+
+See the [review](reviews/EFFICIENT-VEHICLE-AND-SYSTEMS-PHYSICS.md).
 
 ## Air circuits in ordinary Play — 5 October 2026
 
