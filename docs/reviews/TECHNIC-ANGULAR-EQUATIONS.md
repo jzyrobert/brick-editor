@@ -28,6 +28,16 @@ Work is bounded at 300 ports, 100 equations, two or three distinct terms per equ
 
 ## Evidence and practical limits
 
+`DynamicRig` now converts its existing physically admitted spur rows into this
+kernel after creating the actual native bodies and joints. Rack rows retain
+their original positions inside all eight mixed iterations. This changes no
+source admission or collision representations. Twenty-two existing integrated
+spur/rack/kinematic tests pass, including multi-turn control, output backdrive,
+heavy-load response, obstruction/release and mobile-carrier momentum. A separate
+six-decimal source-rotation case verifies locally normalized native axes while
+retaining the original serialized group frames and source data. Extended
+worm/bevel/differential source assemblies still require their runtime admission.
+
 The source-based tests derive actual signed worm/bevel ratios from the attributed original excerpts and apply those signs in pinned native impulse responses. Independent kernel tests use spheres with analytically known inertia to assess physics without duplicating the solver's inverse-inertia calculation. They check output-to-input backdrive, dissipation at zero phase error, sustained-load stall/release, multi-turn measured motion, mobile orthogonal carrier reaction and total angular momentum, three-port differential response and free splitting, neutral isolation, bounded engagement impulses, mixed equation ordering, moving-carrier relative coordinates, and resource/unsupported-observation refusals. These isolated inertia benches do not claim actual complete-model mounting or collision acceptance.
 
 ```sh

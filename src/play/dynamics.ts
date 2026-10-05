@@ -1,4 +1,9 @@
 import { Quaternion, Vector3 } from "three";
+import {
+  AngularEquationSolver,
+  type AngularPort,
+  type AngularEquation,
+} from "../mechanisms/angular-equations";
 import { NativeGrippers, type NativeGripRig } from "./grippers";
 import type { SeatedPlacement } from "./seated-profile";
 import RAPIER from "@dimforge/rapier3d-compat";
@@ -314,6 +319,7 @@ export class DynamicRig {
   private bodies = new Map<string, Body>();
   private joints = new Map<string, JointControl>();
   private transmissions: TransmissionMap;
+  private angularEquations?: AngularEquationSolver;
   private rackTransmissionJoints = new Set<string>();
   private vehicle?: {
     controller: RAPIER.DynamicRayCastVehicleController;
@@ -572,6 +578,7 @@ export class DynamicRig {
         .createImpulseJoint(data, a.body, b.body, true)
         .setContactsEnabled(false);
     }
+    this.createAngularEquations();
     if (this.rig.vehicle) this.createVehicle();
     this.syncMirrors();
   }
@@ -1356,71 +1363,59 @@ export class DynamicRig {
     this.syncMirrors();
     this.cache = undefined;
   }
-  /** Sequential impulse constraint, separate from motor control. The Jacobian
-   * enforces qB - ratio*qA = 0 and returns equal/opposite angular impulses to
-   * both shafts and their carrier. Effective inertia transmits output loads
-   * back to the effort-limited native motor. No body pose or velocity is set.
-   * Baumgarte feedback corrects measured phase drift on following fixed ticks. */
+  /** Existing admitted spur rows use the same native kernel that supports
+   * signed bevel/worm/differential equations. This conversion changes no source
+   * admission: an equation does not authorize an unsupported part connection. */
+  private createAngularEquations() {
+    const ports = new Map<string, AngularPort>();
+    const equations: AngularEquation[] = [];
+    for (const t of this.rig.transmissions ?? []) {
+      if (t.kind !== "spur") continue;
+      for (const id of [t.jointA, t.jointB]) {
+        if (ports.has(id)) continue;
+        const control = this.joints.get(id)!;
+        // Native joint axes are unit directions. Rounded source group bases
+        // remain untouched; only the solver's derived direction is normalized.
+        const length = Math.hypot(
+          control.axis.x,
+          control.axis.y,
+          control.axis.z,
+        );
+        ports.set(id, {
+          id,
+          body: this.bodies.get(control.spec.bodyB)!.body,
+          carrier: this.bodies.get(control.spec.bodyA)!.body,
+          axisLocal: [
+            control.axis.x / length,
+            control.axis.y / length,
+            control.axis.z / length,
+          ],
+        });
+      }
+      const ratio = (-t.axisSign * t.teethA) / t.teethB;
+      equations.push({
+        id: t.id,
+        terms: [
+          { portId: t.jointA, coefficient: -ratio },
+          { portId: t.jointB, coefficient: 1 },
+        ],
+      });
+    }
+    if (equations.length)
+      this.angularEquations = new AngularEquationSolver(
+        [...ports.values()],
+        equations,
+      );
+  }
+  /** Preserve eight passes and the existing mixed spur/rack ordering. Every
+   * angular row reads native carrier-relative motion and returns bounded torque
+   * to both shafts and the carrier; no body pose or velocity is assigned. */
   private solveTransmissions() {
+    this.angularEquations?.beginStep(DT);
     for (let pass = 0; pass < 8; pass++)
       for (const t of this.rig.transmissions ?? []) {
-        if (t.kind === "rack") {
-          this.solveRackTransmission(t);
-          continue;
-        }
-        const ca = this.joints.get(t.jointA)!,
-          cb = this.joints.get(t.jointB)!;
-        const a = this.bodies.get(ca.spec.bodyB)!.body;
-        const b = this.bodies.get(cb.spec.bodyB)!.body;
-        const carrier = this.bodies.get(ca.spec.bodyA)!.body;
-        const axisA = rotate(carrier.rotation(), ca.axis);
-        const axisB = rotate(carrier.rotation(), cb.axis);
-        const ratio = (-t.axisSign * t.teethA) / t.teethB;
-        const ja = {
-          x: -ratio * axisA.x,
-          y: -ratio * axisA.y,
-          z: -ratio * axisA.z,
-        };
-        const jb = axisB;
-        const jc = { x: -ja.x - jb.x, y: -ja.y - jb.y, z: -ja.z - jb.z };
-        const dot = (v: RAPIER.Vector, w: RAPIER.Vector) =>
-          v.x * w.x + v.y * w.y + v.z * w.z;
-        const inverseInertia = (body: RAPIER.RigidBody, v: RAPIER.Vector) => {
-          const m = body.effectiveWorldInvInertia();
-          return dot(v, {
-            x: m.m11 * v.x + m.m12 * v.y + m.m13 * v.z,
-            y: m.m21 * v.x + m.m22 * v.y + m.m23 * v.z,
-            z: m.m31 * v.x + m.m32 * v.y + m.m33 * v.z,
-          });
-        };
-        const inverseMass =
-          inverseInertia(a, ja) +
-          inverseInertia(b, jb) +
-          inverseInertia(carrier, jc);
-        if (inverseMass <= 1e-12) continue;
-        const phaseError = ((cb.value - ratio * ca.value) * Math.PI) / 180;
-        const speedError =
-          dot(a.angvel(), ja) + dot(b.angvel(), jb) + dot(carrier.angvel(), jc);
-        const maxCorrection = (TRANSMISSION_MAX_SPEED * Math.PI) / 180;
-        const correction = Math.max(
-          -maxCorrection,
-          Math.min(maxCorrection, (0.8 * phaseError) / DT),
-        );
-        const impulse = -(speedError + correction) / inverseMass;
-        if (Math.abs(impulse) < 1e-10) continue;
-        for (const [body, jacobian] of [
-          [a, ja],
-          [b, jb],
-          [carrier, jc],
-        ] as const)
-          body.applyTorqueImpulse(
-            {
-              x: jacobian.x * impulse,
-              y: jacobian.y * impulse,
-              z: jacobian.z * impulse,
-            },
-            true,
-          );
+        if (t.kind === "rack") this.solveRackTransmission(t);
+        else this.angularEquations!.solveEquation(t.id);
       }
   }
   /** Ideal rolling constraint with linear rack impulses and angular pinion
