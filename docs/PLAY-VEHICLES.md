@@ -34,8 +34,9 @@ when it appears to sit in a car. Play does not invent a passenger weld, seat or
 collision exemption. Such a figure can correctly stop the car before movement.
 
 For a supported vehicle session, the optional temporary ground is lowered once
-from source Y=0 to enclose the complete included compiled geometry and certified
-vehicle envelopes. Walking, native bodies and vehicle checks share this immutable
+from source Y=0 to enclose the complete certified vehicle geometry and wheel
+support envelopes. Unrelated scenery and other nonvehicle groups do not choose
+the car’s supporting plane. Walking, native bodies and vehicle checks share this immutable
 plane. Nonvehicle sessions keep Y=0, and `ground:false` still adds no plane.
 Authored parts, wheel radii and contact tolerances stay unchanged; included real
 floors and foreign obstacles still respond. This supplies a session floor, not

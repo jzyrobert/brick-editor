@@ -2078,3 +2078,27 @@ wheel seat, collision allowance or resource cap is bypassed.
 Raw logs and captures remain private under `.local/` and `test-results/physical/`
 in the isolated worktrees. Software-WebGL checks do not establish physical-phone
 frame time, tire calibration or actual LEGO motor torque.
+
+### Full-CI follow-up (5 October 2026)
+
+The first main run passed the full unit/integration suite, library validation,
+build, six general browser shards, both Photo shards and the performance shard.
+Two remaining shards exposed three cases: the chooser's expected titles omitted
+Twin motor table on both sizes, and foreign below-origin scenery could lower the
+vehicle ground beneath an authored seat approach. The latter reproduced locally:
+two real 3005 bricks chose Y=24 beneath a Roadster supported at Y=0, so boarding
+failed the existing three-LDU supporting-surface guard. Publication was gated off.
+
+Floor selection now uses only complete, certified vehicle group geometry and
+wheel support envelopes. Foreign scenery keeps its actual collisions and does
+not select the temporary plane. Eight focused ground checks pass in 31.13 s,
+including Roadster boarding, blocked exits, reversing clear and exact source/
+export/inventory preservation. The official 6503/31027 native and Kinematic
+checks remain; a real floor and foreign wall are checked with temporary ground
+disabled as well. The chooser expectation includes the generated Twin card, and
+the blocked-exit browser case now verifies boarding before attempting its drive.
+
+The corrected production build passes (Vite 46.95 s), full formatting passes,
+and the three failed browser cases pass together in 2.3 minutes: blocked-seat
+boarding/exit/reverse recovery and the desktop/phone full chooser. No collision
+allowance, seat clearance, source placement or template layout is weakened.

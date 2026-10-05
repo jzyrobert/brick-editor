@@ -47,6 +47,7 @@ const CARDS = [
   "Small castle",
   "Roadster car",
   "Motor & gears",
+  "Twin motor table",
   "Rack guide",
   "Blank canvas",
 ];

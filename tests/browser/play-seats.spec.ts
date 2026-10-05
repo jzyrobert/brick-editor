@@ -374,6 +374,13 @@ test("blocked seat exits retain the driver and become usable after reversing cle
     }),
   );
   await page.getByRole("button", { name: "Get in", exact: true }).click();
+  await expect
+    .poll(
+      async () =>
+        (await page.evaluate(() => window.brickEditor!.play.snapshot()))
+          .occupancy?.seatId,
+    )
+    .toBe("driver");
   await page.evaluate(async () => {
     const a = window.brickEditor!;
     await a.play.setInput({ moveZ: 1 });

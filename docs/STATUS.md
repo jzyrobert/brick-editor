@@ -1363,7 +1363,8 @@ Automatic cars add real 2441 integrated bases and 6157 wheel-pin plates,
 still requires exact reviewed seats and a stable connected four-wheel layout.
 One shared temporary ground plane follows compiled source support without
 moving imported parts; actual source floors and foreign obstacles retain
-collision response. Rounded original LDraw placements can export a rigid Play
+collision response; unrelated scenery does not select the vehicle support plane.
+Rounded original LDraw placements can export a rigid Play
 pose without normalizing their saved coordinates. Unsupported wheel layouts
 and unmounted passengers remain outside this scope.
 
