@@ -1696,3 +1696,111 @@
     animation: none;
   }
 }
+
+/* ---- Player size (Play settings and the pause sheet) ---- */
+.play-size {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.play-size p {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+.play-size-intro,
+.play-size-note {
+  color: var(--secondary);
+}
+.play-size .play-size-presets button {
+  position: relative;
+  min-height: 48px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1.15;
+}
+.play-size .play-size-presets button:disabled {
+  opacity: 0.5;
+}
+/* The suggested size, marked in the accent (never pre-selected). */
+.play-size-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+.play-size-presets button[aria-pressed="true"] .play-size-badge {
+  color: #f6b59a;
+}
+.play-size-now {
+  font-weight: 600;
+}
+.play-size-suggestion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--r-card);
+  background: var(--sun-wash);
+}
+.play-size-suggestion button {
+  min-height: 44px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--r-key);
+  background: var(--accent);
+  color: var(--chalk);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.play-size .play-size-more {
+  margin: 0;
+}
+.play-size-more summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: var(--text-body);
+  font-weight: 650;
+}
+.play-size-slider {
+  display: grid;
+  gap: 4px;
+  font-size: var(--text-body);
+}
+.play-size-slider input {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.play-size-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-label);
+  color: var(--secondary);
+}
+.play-size-more .play-size-note {
+  margin-top: 8px;
+}
+.play-menu .play-size-drawer {
+  border-top: 1px solid var(--line);
+}
+.play-menu .play-size-drawer summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: var(--text-body);
+  font-weight: 650;
+}
+.play-menu .play-size-drawer[open] {
+  padding-bottom: 12px;
+}

@@ -200,6 +200,61 @@ Roller and garage doors (4218b, 4219b, 822x) slide in rails rather than swing, s
 
 Spec 19.5 requires rest-pose export by default and an explicitly requested static posed snapshot. `play.exportPosedModel()`, `mechanisms.exportPosedModel()` and the CLI `play --posed-output file.mpd` write every active mechanism's current placements, including automatic doors and dynamic bodies, into a private copy and export standard MPD text. Shared definitions are made unique in that copy only. The project, its rigs and the rest-pose export are unchanged. Re-importing yields plain parts at the posed placements. `mechanisms.applyPose()` remains the undoable way to edit the project.
 
+## Player size
+
+Builds are not all made for minifigures: micro-scale towns have houses a few
+bricks high, and big brick sculptures dwarf a minifigure. Play settings (the
+gear beside **Enter Play**, **Size** tab) and the pause sheet (**Player size**)
+offer **Tiny** (¼×), **Minifigure**, **Big** (3×) and **Giant** (8×), with every
+step from ¼× to 8× under **More sizes**. The size is kept for later entries of
+the same build in that browser tab and is never saved with the project
+(`src/play/player-scale.ts`).
+
+**What scales.** One factor multiplies the whole character profile: capsule
+radius and height, eye height, step-up height (with Rapier's own small autostep
+and ground snap), walk, run and fly speed, jump speed, the explorer's gravity
+and terminal fall speed, and the stride. Because speeds and gravity scale
+together, the explorer moves exactly like a minifigure in a world resized
+around it: a jump rises half the figure's height and lasts as long, and the
+limbs swing at the same rhythm (the gait is computed at minifigure size). The
+drawn figure, the first-person eye, the third-person follow distance and zoom
+range, the near plane and camera clearance, the figure's ride smoothing, the
+safe-spawn search, hand reach for doors and joints (96 LDU at minifigure size),
+points reach, the vehicle-exit gap and the kinematic capsule that pushes
+Dynamic bodies all follow it. Camera settings stay stated at minifigure size and
+are multiplied where they are used.
+
+**What does not.** The build and its collision are never rescaled. Mechanisms,
+trains, Dynamic bodies and their gravity keep the built scale, as do slopes
+(45°) and the world's LDU-to-metre scale. Driver seats and train cabs are made
+for a minifigure, so entering them is refused at any other size with a plain
+reason ("Seats fit a minifigure…"); remote vehicle control works at any size.
+Growing while walking needs room: the bigger capsule must be clear where the
+explorer stands or a short way around it, otherwise the change is refused and
+nothing moves. Shrinking always fits.
+
+**Stability and cost.** At ¼× the capsule is 3 LDU in radius and 26 LDU tall
+and moves at most 1 LDU per tick; at 8× it is 96 by 832 LDU and runs about 33
+LDU per tick, well under its radius, so the swept character controller cannot
+tunnel at either end. The collision budget (one million static triangles) is
+unchanged; a bigger capsule overlaps more triangles per query. In SwiftShader
+Chromium on the shared VM (load 10–15), running a square through the Market
+town measured a median of 1.9 ms per tick at 1×, 0.7 at 3×, 1.2 at 8× and 0.7
+at ¼×, with the slowest tenth of ticks at 6, 17, 38 and 1 ms; the Cathedral
+measured 0.3, 0.4, 1.4 and 0.3 ms (p90 0.6, 1.7, 15.6, 0.5). Realtime Play keeps
+its 10 ms per-frame tick budget, so a giant crossing dense geometry slows the
+simulation briefly rather than freezing the page; the settings say so.
+
+**Suggested size.** Before entry, Play looks at the build's parts once
+(`src/play/player-scale-evidence.ts`): official minifigure doors, gates and
+windows (the automatic-door table) or minifigure body parts mean minifigure
+scale; otherwise a build no taller than about two minifigures (40–208 LDU) that
+spreads at least 400 LDU and three times its height looks micro-scale and
+suggests Tiny; a build taller than about fifteen minifigures with no doors
+suggests a bigger explorer (about an eighth of its height, 2×–8×). The
+suggestion is marked **Suggested** with its reason in plain words, a dot on the
+settings button and a line on the dock; it is never applied by itself.
+
 ## Performance
 
 Measured by `tests/browser/play-physics-performance.spec.ts` on the Linux ARM64 VM with software WebGL (SwiftShader), with other agents sharing the machine. Tick costs are means over 300 fixed ticks with the actual source-backed car driving and the explorer walking. Frame times are realtime rAF intervals and are dominated by software rendering. See [verification](VERIFICATION.md) for the table. An idle-rig fast path, which skips pose sweeps and collider updates for kinematic rigs that cannot move this tick, offsets the per-tick cost of motors.

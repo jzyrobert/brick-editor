@@ -2157,13 +2157,22 @@ export class PlayDynamicsWorld {
     this.playerCollider.setEnabled(solid);
     if (feet)
       this.player.setTranslation(
-        toPhysics([feet[0], feet[1] - P.height / 2, feet[2]]),
+        toPhysics([feet[0], feet[1] - this.actorHeight / 2, feet[2]]),
         false,
       );
   }
+  /** The explorer's height in LDU (player size × minifigure). */
+  private actorHeight: number = P.height;
+  /** Resizes the explorer's pushing capsule to the player size. */
+  setActorShape(radius: number, height: number) {
+    this.actorHeight = height;
+    this.playerCollider.setShape(
+      new RAPIER.Capsule((height / 2 - radius) * S, (radius + 1) * S),
+    );
+  }
   step(feet: Vec3, actorSolid: boolean, supportHandle?: number) {
     this.playerCollider.setEnabled(actorSolid);
-    const next = toPhysics([feet[0], feet[1] - P.height / 2, feet[2]]),
+    const next = toPhysics([feet[0], feet[1] - this.actorHeight / 2, feet[2]]),
       now = this.player.translation();
     // Teleports and respawns relocate the actor instead of sweeping it
     // through every body in between.

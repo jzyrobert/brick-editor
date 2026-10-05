@@ -6,6 +6,9 @@ import { PlaySeatEntry } from "./PlaySeatEntry";
 import { PlayWorldSettings } from "./PlayWorldSettings";
 import type { Layer, Project } from "../core/types";
 import { PlaySettings } from "./PlaySettings";
+import { PlayPlayerSize } from "./PlayPlayerSize";
+import { buildScaleEvidence } from "../play/player-scale-evidence";
+import { playerScaleLabel, suggestPlayerScale } from "../play/player-scale";
 import {
   useEffect,
   useLayoutEffect,
@@ -271,6 +274,36 @@ export function PlayPanel({
   }, [authoredRigs, editor, editor?.snapshot, checkingMotors, motorReview]);
   const rigs = state.active ? play.getSessionRigs() : rigReview.usable;
   const [message, setMessage] = useState("");
+  // Player size: chosen per build (a new build starts at minifigure size)
+  // and kept for later entries in this tab; never saved with the project.
+  const [sizeChoice, setSizeChoice] = useState<{
+    projectId: string;
+    scale: number;
+  }>();
+  const playerScale =
+    reviewProject && sizeChoice?.projectId === reviewProject.id
+      ? sizeChoice.scale
+      : 1;
+  const sizeSuggestion = useMemo(() => {
+    if (!reviewProject || empty) return undefined;
+    try {
+      return suggestPlayerScale(buildScaleEvidence(reviewProject));
+    } catch {
+      return undefined;
+    }
+  }, [reviewProject, empty]);
+  const chooseSize = (scale: number) => {
+    if (state.active)
+      try {
+        // Growing can be refused where the bigger explorer doesn't fit.
+        play.setPlayerScale(scale);
+        setMessage("");
+      } catch (e) {
+        setMessage(e instanceof Error ? e.message : String(e));
+        return;
+      }
+    if (reviewProject) setSizeChoice({ projectId: reviewProject.id, scale });
+  };
   const topRow = useRef<HTMLDivElement>(null);
   const handledTouchExit = useRef(false);
   useLayoutEffect(() => {
@@ -911,6 +944,7 @@ export function PlayPanel({
               .enter({
                 realtime: true,
                 ground,
+                ...(playerScale !== 1 ? { playerScale } : {}),
                 worldProfile: {
                   excludedLayerIds: excludedLayerIds.filter(
                     (id) => !!layers[id],
@@ -952,6 +986,18 @@ export function PlayPanel({
       <p role="status">{message || state.error}</p>
     </>
   );
+  const sizeSettings = (
+    <PlayPlayerSize
+      value={playerScale}
+      suggestion={sizeSuggestion}
+      onChange={chooseSize}
+    />
+  );
+  // A size worth trying that is not chosen yet: the settings button says so.
+  const sizeTip =
+    sizeSuggestion && sizeSuggestion.scale !== playerScale
+      ? sizeSuggestion
+      : undefined;
   const keySettings = (
     <PlayKeySettings
       value={bindings}
@@ -978,8 +1024,18 @@ export function PlayPanel({
                   ? "Walk the empty ground, or open a model from the Gallery."
                   : allRefused
                     ? "Its moving parts aren’t connected, so they stay still. Fix them in Build."
-                    : "Walk around at minifigure scale."}
+                    : sizeTip
+                      ? `Try ${playerScaleLabel(sizeTip.scale)} size for this build (in settings).`
+                      : playerScale !== 1
+                        ? `Walk around at ${playerScaleLabel(playerScale)} size.`
+                        : "Walk around at minifigure scale."}
               </p>
+              {!empty && playerScale !== 1 && (
+                // Phones hide the line above; the chosen size always shows.
+                <p className="play-entry-size">
+                  {playerScaleLabel(playerScale)} size
+                </p>
+              )}
               {allRefused && (
                 // Phones hide the line above; this one always shows.
                 <p className="play-entry-refused">Moving parts not connected</p>
@@ -990,10 +1046,21 @@ export function PlayPanel({
               <button
                 className="play-entry-settings"
                 aria-label="Play settings"
+                aria-describedby={
+                  sizeTip && !empty ? "play-entry-size-tip" : undefined
+                }
                 aria-expanded={settingsOpen}
                 onClick={() => setSettingsOpen((open) => !open)}
               >
                 <Icon name="inspector" size={20} />
+                {sizeTip && !empty && (
+                  <>
+                    <span className="play-entry-dot" aria-hidden="true" />
+                    <span id="play-entry-size-tip" hidden>
+                      Try {playerScaleLabel(sizeTip.scale)} size for this build.
+                    </span>
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -1034,6 +1101,7 @@ export function PlayPanel({
                   {!setupOpen && children}
                 </>
               ),
+              size: sizeSettings,
               world: worldSettings,
               keys: keySettings,
             }}
@@ -1150,7 +1218,9 @@ export function PlayPanel({
   const showPrompt =
     !state.paused &&
     (!remoteOpen || inVehicle) &&
-    (inVehicle || riding || promptVisible(state.interaction));
+    (inVehicle ||
+      riding ||
+      promptVisible(state.interaction, report.playerScale));
 
   return (
     <div
@@ -1396,6 +1466,22 @@ export function PlayPanel({
           )}
           {oneBodyNotes.length > 0 && (
             <p className="play-menu-note">{oneBodyNotes.join(" ")}</p>
+          )}
+          {!remoteOpen && !inVehicle && (
+            <details className="play-size-drawer">
+              <summary>
+                Player size · {playerScaleLabel(report.playerScale)}
+              </summary>
+              <PlayPlayerSize
+                idPrefix="play-size-live"
+                value={report.playerScale}
+                suggestion={sizeSuggestion}
+                disabledReason={
+                  riding ? "Get off the train to change size." : undefined
+                }
+                onChange={chooseSize}
+              />
+            </details>
           )}
           {!remoteOpen && <PlaySettings play={play} report={report} />}
           <PlayKeySettings

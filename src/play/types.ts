@@ -81,6 +81,12 @@ export type PlayRequest = {
    * default true). Its rods move with Dynamic physics in a session-only rig.
    */
   pneumatics?: boolean;
+  /**
+   * Player size, 0.25–8 times a minifigure (default 1). Scales the explorer's
+   * figure, collider, eye, steps, jumps, speeds, reach and camera; the world
+   * is unchanged. Session-only (src/play/player-scale.ts).
+   */
+  playerScale?: number;
   locomotion?: PlayLocomotion;
   cameraMode?: PlayCameraMode;
   position?: Vec3;
@@ -135,6 +141,12 @@ export const CHARACTER_PROFILE = Object.freeze({
   strideLength: 85,
   scaleMetresPerLdu: 0.02,
 });
+/** CHARACTER_PROFILE at any player size (src/play/player-scale.ts). */
+export type CharacterProfile = Readonly<{
+  [K in keyof typeof CHARACTER_PROFILE]: K extends "id"
+    ? (typeof CHARACTER_PROFILE)[K]
+    : number;
+}>;
 /** Presentation pose of the figure (radians; positive limb angles swing
  * forward). Computed from fixed-tick motion state; see avatar-motion.ts. */
 export type AvatarPose = {
@@ -395,7 +407,10 @@ export type PlaySnapshotReport = {
   collisionReady: boolean;
   avatarReady: boolean;
   avatarVisible: boolean;
-  profile: typeof CHARACTER_PROFILE;
+  /** The explorer's profile at the current player size. */
+  profile: CharacterProfile;
+  /** Player size: times a minifigure (1 = minifigure scale). */
+  playerScale: number;
   units: "LDU";
   simulationHz: 60;
   warnings: string[];

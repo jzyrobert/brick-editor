@@ -9,8 +9,10 @@ export function vehicleReachDistance(
   geometry: MechanismViewGeometry,
   frames: Record<string, Transform>,
   feet: Vec3,
+  /** The explorer's height (player size × minifigure). */
+  height: number = CHARACTER_PROFILE.height,
 ) {
-  const body = [feet[0], feet[1] - CHARACTER_PROFILE.height / 2, feet[2]];
+  const body = [feet[0], feet[1] - height / 2, feet[2]];
   let nearest = Infinity;
   for (const [id, corners] of Object.entries(geometry)) {
     const min = [Infinity, Infinity, Infinity];
@@ -36,6 +38,8 @@ export function vehicleExitCandidates(
   geometry: MechanismViewGeometry,
   frames: Record<string, Transform>,
   chassis: Transform,
+  /** The explorer's collider radius (player size × minifigure). */
+  radius: number = CHARACTER_PROFILE.radius,
 ): Vec3[] {
   const local = inverse(chassis);
   const min = [Infinity, Infinity, Infinity];
@@ -51,7 +55,7 @@ export function vehicleExitCandidates(
     }
   const x = (min[0] + max[0]) / 2;
   const z = (min[2] + max[2]) / 2;
-  const gap = CHARACTER_PROFILE.radius + 4;
+  const gap = radius + 4;
   // Try both sides first, then front/rear and corners. Eight candidates bound
   // the work and keep an obstructed exit in the vehicle until it can succeed.
   return [

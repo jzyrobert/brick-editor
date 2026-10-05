@@ -31,6 +31,22 @@ Measured in SwiftShader Chromium on the shared VM (not phone hardware):
 
 See the [review](reviews/EFFICIENT-VEHICLE-AND-SYSTEMS-PHYSICS.md).
 
+## Player size in Play — 5 October 2026
+
+Builds that are not at minifigure scale can now be explored at their own scale.
+Play settings (**Size** tab) and the pause sheet offer **Tiny** (¼×),
+**Minifigure**, **Big** (3×) and **Giant** (8×), with every step from ¼× to 8×
+under **More sizes**. One factor scales the explorer's figure, capsule, eye,
+step-up, jump, speeds, its own gravity, stride, follow distance, near plane,
+reach and exit gap; the build, its collision and every mechanism keep their
+built scale. Growing where the bigger explorer does not fit is refused; seats
+and train cabs stay minifigure-only. A plain-words suggestion (minifigure doors
+or figures mean Minifigure; a low, wide build suggests Tiny; a very tall build
+without doors suggests a bigger explorer) is marked in the settings and on the
+dock, never applied by itself. Automation: `play.enter({playerScale})`,
+`play.setPlayerScale(scale)`, `snapshot().playerScale`. See
+[player size](PLAY-PHYSICS.md#player-size).
+
 ## Air circuits in ordinary Play — 5 October 2026
 
 Of the three open Technic systems (5540 vehicle, 42042 winch, 42043

@@ -1,5 +1,33 @@
 # Verification — 27 September 2026
 
+## Player size in Play — 5 October 2026
+
+`tests/unit/play-player-scale.test.ts` (13 checks) covers the scaling maths
+(every length, speed and the explorer's gravity scale linearly; eye/height,
+jump-apex/height, jump time and stride rhythm are unchanged), validation, the
+scaled near plane, the suggestion heuristic, and real `PlaySession` runs: at ¼×,
+1× and 4× the eye sits at 86 × scale, one second of walking covers 145 × scale
+LDU and a jump peaks at 0.45–0.6 of the figure's height; a ¼× explorer walks
+through a 40 LDU slot a minifigure cannot enter; a 3× explorer steps over a
+48 LDU wall that stops a minifigure; growing to 2× under a 150 LDU ceiling is
+refused with nothing changed while shrinking works; the third-person arm grows
+4× with a 4× explorer; train cabs report a plain Minifigure-only reason.
+
+`tests/browser/play-player-scale.spec.ts` (production bundle): a micro-scale
+LDraw test town (two-brick arch, two-brick wall, four-brick houses) — Tiny walks
+through the arch, Minifigure is stopped at it, 3× steps over the wall and
+Minifigure does not; the settings mark Tiny **Suggested**, every size button is
+at least 44 px, **Use Tiny** enters Play at ¼×, the pause sheet changes size
+live to Giant, and the dock keeps "Giant size" at 1440 × 1000 and 390 × 844; a
+Giant takes the roadster's controls from 300 LDU (a minifigure is offered
+nothing there), drives it with the throttle pad and steps out. Screens were
+checked at 1080 × 1800, 390 × 844, 360 × 600, 686 × 411 and 1440 × 1000 (dock,
+Size tab, pause sheet and third-person HUD). Tick costs for walking the Market
+town and Cathedral at ¼×–8× are in [PLAY-PHYSICS](PLAY-PHYSICS.md#player-size).
+`tsc -b`, `format:check` and the play, settings, menus, zoom, orbit, world,
+keys, acceptance and HUD specs were run; timeouts seen while the full Vitest
+suite ran alongside passed when rerun alone.
+
 ## Air circuits in ordinary Play — 5 October 2026
 
 Six focused engine checks (`tests/unit/play-pneumatic-air-pump.test.ts`) pass

@@ -303,6 +303,12 @@ export function createAPI(
       },
       configureCamera: async (settings: Partial<PlayCameraSettings>) =>
         player().configureCamera(settings),
+      /** Player size for this session: 0.25–8 times a minifigure. */
+      setPlayerScale: async (scale: number) => {
+        const report = player().setPlayerScale(scale);
+        validate("playSnapshot", report);
+        return report;
+      },
       /** Scroll/pinch zoom of the third-person camera (below 1 zooms in). */
       zoomCamera: async (factor: number) => {
         ensure(

@@ -212,6 +212,14 @@
       "pointerLockMouseLook": true,
       "renderInterpolation": true,
       "limbAnimation": "minecraft-style swing, idle sway, head follow, jump/fall/fly poses",
+      "playerScale": {
+        "range": [0.25, 8],
+        "api": "play.enter({playerScale}) or play.setPlayerScale(scale); snapshot.playerScale and scaled snapshot.profile",
+        "scales": "figure, capsule collider, eye height, step-up, jump, walk/run/fly speed, explorer gravity, third-person follow distance, camera near plane and clearance, hand/points reach, vehicle exit gap, dynamic pushing capsule",
+        "unchanged": "world geometry and collision, mechanism/train/dynamic-body physics, camera settings (stated at minifigure size)",
+        "refused": "driver seats and train cabs need Minifigure size; growing where the bigger collider does not fit",
+        "suggestion": "Play settings suggest a size from minifigure doors/figures and overall build height; never applied automatically"
+      },
       "authoringIsolation": true,
       "poseApplication": true,
       "readyToPlaySamples": [

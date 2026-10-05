@@ -59,6 +59,11 @@ import {
   type DynamicRigSource,
 } from "./dynamics";
 import RAPIER from "@dimforge/rapier3d-compat";
+import {
+  scaledCharacterProfile,
+  validatePlayerScale,
+  type CharacterProfile,
+} from "./player-scale";
 import { PlayPneumaticSystem } from "./pneumatic-play";
 import { compactArticulatedSource } from "./compact-vehicle";
 import {
@@ -90,7 +95,7 @@ import {
   type Vec3,
 } from "../core/types";
 import {
-  CHARACTER_PROFILE as P,
+  CHARACTER_PROFILE as BASE_PROFILE,
   PLAY_ZOOM_LIMITS,
   type CollisionSnapshot,
   type PlayCameraMode,
@@ -111,7 +116,7 @@ import {
   type PlaySpawn,
   type ResolvedPlayWorldProfile,
 } from "./types";
-const S = P.scaleMetresPerLdu,
+const S = BASE_PROFILE.scaleMetresPerLdu,
   DT = 1 / 60;
 const rot = { x: 0, y: 0, z: 0, w: 1 };
 const physics = ([x, y, z]: Vec3) => ({ x: x * S, y: -y * S, z: -z * S });
@@ -163,6 +168,13 @@ export type PlayPneumaticSource = {
   skipped: PneumaticPlaySkip[];
 };
 export class PlaySession {
+  /**
+   * Player size (session-only): the explorer's profile at `scale` times a
+   * minifigure (src/play/player-scale.ts). Camera settings stay expressed at
+   * minifigure size and are multiplied by it where they are used.
+   */
+  private scale = 1;
+  private P: CharacterProfile = BASE_PROFILE;
   private mechanisms = new Map<string, PlayMechanism>();
   /** One-body source vehicles: drawn steering, column and ride-along parts. */
   private articulations = new Map<
@@ -287,7 +299,7 @@ export class PlaySession {
    * report the exact feet.
    */
   private ride = {
-    camera: { y: 0, previous: 0, velocity: 0, lag: P.stepHeight * 1.5 },
+    camera: { y: 0, previous: 0, velocity: 0, lag: this.P.stepHeight * 1.5 },
     figure: { y: 0, previous: 0, velocity: 0, lag: 4 },
   };
   /** Why walking collision is unavailable, when it is. */
@@ -323,7 +335,11 @@ export class PlaySession {
     Object.freeze(this.worldProfile.includedOccurrenceIds);
     Object.freeze(this.worldProfile);
     this.cameraSettings = resolvePlayCameraSettings(request.cameraSettings);
-    this.arm = this.cameraSettings.followDistance;
+    this.scale = validatePlayerScale(request.playerScale ?? 1);
+    this.P = scaledCharacterProfile(this.scale);
+    this.ride.camera.lag = this.P.stepHeight * 1.5;
+    this.ride.figure.lag = 4 * this.scale;
+    this.arm = this.cameraSettings.followDistance * this.scale;
     const preparedContacts = prepareMechanicalSources(
       Array.isArray(mechanismSource)
         ? mechanismSource
@@ -424,13 +440,13 @@ export class PlaySession {
         ).setTranslation(0, groundHeight, 0),
       );
     this.capsule = new RAPIER.Capsule(
-      (P.height / 2 - P.radius) * S,
-      P.radius * S,
+      (this.P.height / 2 - this.P.radius) * S,
+      this.P.radius * S,
     );
     this.collider = this.world.createCollider(
       RAPIER.ColliderDesc.capsule(
-        (P.height / 2 - P.radius) * S,
-        P.radius * S,
+        (this.P.height / 2 - this.P.radius) * S,
+        this.P.radius * S,
       ).setSensor(true),
     );
     const dynamicIds = new Set(request.dynamicRigIds ?? []);
@@ -469,6 +485,8 @@ export class PlaySession {
           revision,
           preparedContacts,
         );
+        if (this.scale !== 1)
+          this.dynamics.setActorShape(this.P.radius, this.P.height);
       }
       for (const source of allSources.filter(
         (source) => !dynamicIds.has(source.rigId),
@@ -480,6 +498,8 @@ export class PlaySession {
             source,
             () => ({
               position: this.feet,
+              radius: this.P.radius,
+              height: this.P.height,
               walk: this.locomotion === "walk" && !this.controlledVehicle,
               ...(this.support ? { support: this.support } : {}),
               ...(this.occupied
@@ -662,10 +682,13 @@ export class PlaySession {
     // Rapier's own autostep handles plate-height ledges; taller risers up
     // to the profile's step height use stepUp() (large autostep heights
     // overshoot and launch the character).
-    this.controller.enableAutostep(8.5 * S, 4 * S, false);
-    this.controller.enableSnapToGround(3 * S);
-    this.controller.setMaxSlopeClimbAngle((P.maxSlopeDegrees * Math.PI) / 180);
-    this.controller.setMinSlopeSlideAngle((P.maxSlopeDegrees * Math.PI) / 180);
+    this.configureController();
+    this.controller.setMaxSlopeClimbAngle(
+      (this.P.maxSlopeDegrees * Math.PI) / 180,
+    );
+    this.controller.setMinSlopeSlideAngle(
+      (this.P.maxSlopeDegrees * Math.PI) / 180,
+    );
     this.world.step();
     // Without a requested position the explorer starts in front of the
     // build: LDraw models face −Z, so the spawn is beyond the world's −Z
@@ -677,7 +700,7 @@ export class PlaySession {
     const candidate = request.position ?? [
       (snapshot.bounds.min[0] + snapshot.bounds.max[0]) / 2,
       Math.min(0, snapshot.bounds.min[1]) - 2,
-      snapshot.bounds.min[2] - P.radius * 3,
+      snapshot.bounds.min[2] - this.P.radius * 3,
     ];
     const found = this.ready ? this.findSafe(candidate) : undefined;
     this.feet = found ?? candidate;
@@ -924,7 +947,10 @@ export class PlaySession {
       "worldProfile",
       "trains",
       "pneumatics",
+      "playerScale",
     ]);
+    if (request.playerScale !== undefined)
+      validatePlayerScale(request.playerScale);
     const requestedWorld = validatePlayWorldProfile(request.worldProfile);
     const resolvedWorld = validatePlayWorldProfile(
       snapshot.worldProfile
@@ -1124,7 +1150,7 @@ export class PlaySession {
     ensure(!this.disposed, "INVALID_INPUT", "Play session has ended.");
   }
   private center(p: Vec3) {
-    return physics([p[0], p[1] - P.height / 2, p[2]]);
+    return physics([p[0], p[1] - this.P.height / 2, p[2]]);
   }
   private syncCollider() {
     this.collider.setTranslation(this.center(this.feet));
@@ -1155,9 +1181,9 @@ export class PlaySession {
       [0, -48],
     ]) {
       const start: Vec3 = [
-        candidate[0] + dx,
-        candidate[1] - P.stepHeight - 1,
-        candidate[2] + dz,
+        candidate[0] + dx * this.scale,
+        candidate[1] - this.P.stepHeight - 1,
+        candidate[2] + dz * this.scale,
       ];
       if (!this.clear(start)) continue;
       const hit = this.world.castShape(
@@ -1178,7 +1204,7 @@ export class PlaySession {
       );
       if (
         hit &&
-        hit.normal1.y >= Math.cos((P.maxSlopeDegrees * Math.PI) / 180)
+        hit.normal1.y >= Math.cos((this.P.maxSlopeDegrees * Math.PI) / 180)
       ) {
         const p: Vec3 = [
           start[0],
@@ -1251,6 +1277,7 @@ export class PlaySession {
       control.geometry,
       state.groupFrames,
       frame,
+      this.P.radius,
     )) {
       try {
         const position = this.seatStandingPoint(candidate, true);
@@ -1332,14 +1359,18 @@ export class PlaySession {
   }
   private seatStandingPoint(position: Vec3, dynamic: boolean) {
     if (!dynamic) return position;
-    const start: Vec3 = [position[0], position[1] - P.stepHeight, position[2]];
+    const start: Vec3 = [
+      position[0],
+      position[1] - this.P.stepHeight,
+      position[2],
+    ];
     const hit = this.world.castShape(
       this.center(start),
       rot,
       { x: 0, y: -S, z: 0 },
       this.capsule,
       0,
-      P.stepHeight * 2,
+      this.P.stepHeight * 2,
       true,
       undefined,
       undefined,
@@ -1348,7 +1379,8 @@ export class PlaySession {
       (c) => !c.isSensor(),
     );
     ensure(
-      hit && hit.normal1.y >= Math.cos((P.maxSlopeDegrees * Math.PI) / 180),
+      hit &&
+        hit.normal1.y >= Math.cos((this.P.maxSlopeDegrees * Math.PI) / 180),
       "INVALID_INPUT",
       "Driver seat approach or exit needs nearby walkable support",
     );
@@ -1366,6 +1398,11 @@ export class PlaySession {
       this.locomotion === "walk" && this.ready,
       "INVALID_INPUT",
       "Driver seat entry requires Walk with complete collision",
+    );
+    ensure(
+      this.scale === 1,
+      "INVALID_INPUT",
+      "Seats fit a minifigure. Set Player size to Minifigure to sit here.",
     );
     const info = this.seatSources.get(request.rigId);
     ensure(
@@ -1392,7 +1429,7 @@ export class PlaySession {
     );
     const eye: Vec3 = [
         this.feet[0],
-        this.feet[1] - this.cameraSettings.eyeHeight,
+        this.feet[1] - this.eyeHeight(),
         this.feet[2],
       ],
       delta = access.map((v, i) => v - eye[i]) as Vec3;
@@ -1458,6 +1495,7 @@ export class PlaySession {
       this.feet,
       this.locomotion,
       this.cameraSettings.eyeHeight,
+      this.scale,
       this.occupied?.request,
       this.snapshot().mechanisms,
     ]);
@@ -1952,7 +1990,7 @@ export class PlaySession {
       this.collider,
     );
     const found =
-      hit && hit.normal1.y >= Math.cos((P.maxSlopeDegrees * Math.PI) / 180)
+      hit && hit.normal1.y >= Math.cos((this.P.maxSlopeDegrees * Math.PI) / 180)
         ? this.supportFrame(hit.collider.handle)
         : undefined;
     if (!found) {
@@ -2045,9 +2083,9 @@ export class PlaySession {
     const speed =
       this.locomotion === "walk"
         ? i.run
-          ? P.runSpeed
-          : P.walkSpeed
-        : P.flySpeed * (i.run ? 1.7 : 1);
+          ? this.P.runSpeed
+          : this.P.walkSpeed
+        : this.P.flySpeed * (i.run ? 1.7 : 1);
     const cp = this.locomotion === "walk" ? 1 : Math.cos(this.pitch),
       sp = this.locomotion === "walk" ? 0 : Math.sin(this.pitch);
     // LDraw up is -Y: camera-right = forward × up = [-cos(yaw), 0, -sin(yaw)].
@@ -2074,12 +2112,15 @@ export class PlaySession {
           : [0, 0, 0];
         this.support = undefined;
         this.grounded = false;
-        this.velocity[1] = -P.jumpSpeed + this.inheritedVelocity[1];
+        this.velocity[1] = -this.P.jumpSpeed + this.inheritedVelocity[1];
         this.inheritedVelocity[1] = 0;
       }
       delta[0] += this.inheritedVelocity[0] * DT;
       delta[2] += this.inheritedVelocity[2] * DT;
-      this.velocity[1] = Math.min(500, this.velocity[1] + P.gravity * DT);
+      this.velocity[1] = Math.min(
+        500 * this.scale,
+        this.velocity[1] + this.P.gravity * DT,
+      );
       // While standing, the controller is asked only for horizontal travel;
       // snap-to-ground keeps the feet on the floor. Adding gravity's small
       // downward step to every grounded sweep aimed it into the floor, where
@@ -2131,15 +2172,17 @@ export class PlaySession {
     this.refreshSupport();
     if (this.grounded) this.inheritedVelocity = [0, 0, 0];
     this.motion = advanceMotion(this.motion, {
-      dx: delta[0],
-      dz: delta[2],
-      vy: this.velocity[1],
+      // The gait is judged at minifigure size: a giant's longer strides
+      // swing its limbs at the same rhythm as a minifigure's.
+      dx: delta[0] / this.scale,
+      dz: delta[2] / this.scale,
+      vy: this.velocity[1] / this.scale,
       grounded: this.grounded,
       flying: this.locomotion === "fly-noclip",
       nearGround:
         this.locomotion === "fly-noclip" &&
         Math.hypot(delta[0], delta[2]) > 0.01 &&
-        this.surfaceBelow(6),
+        this.surfaceBelow(6 * this.scale),
       lookYaw: this.yaw,
       dt: DT,
       orbit: this.cameraMode === "third-person",
@@ -2188,28 +2231,31 @@ export class PlaySession {
   private stepUp(horizontal: Vec3, progress: number): Vec3 | undefined {
     const start = this.feet,
       length = Math.hypot(horizontal[0], horizontal[2]);
-    const up = this.cast(start, [0, -1, 0], P.stepHeight + 0.5);
-    const headroom = up ? up.time_of_impact - 0.2 : P.stepHeight + 0.5;
+    const up = this.cast(start, [0, -1, 0], this.P.stepHeight + 0.5);
+    const headroom = up ? up.time_of_impact - 0.2 : this.P.stepHeight + 0.5;
     if (headroom < 1) return;
     const raised: Vec3 = [start[0], start[1] - headroom, start[2]];
     // Look one radius (plus this tick's travel) ahead for the step's top.
-    const reach = (P.radius + length) / length;
+    const reach = (this.P.radius + length) / length;
     const ahead = this.cast(raised, horizontal, reach);
     const fraction = ahead
       ? Math.max(0, ahead.time_of_impact - 0.1 / length)
       : reach;
-    if (length * fraction < P.radius * 0.75) return;
+    if (length * fraction < this.P.radius * 0.75) return;
     const probe: Vec3 = [
       raised[0] + horizontal[0] * fraction,
       raised[1],
       raised[2] + horizontal[2] * fraction,
     ];
     const down = this.cast(probe, [0, 1, 0], headroom + 1);
-    if (!down || down.normal1.y < Math.cos((P.maxSlopeDegrees * Math.PI) / 180))
+    if (
+      !down ||
+      down.normal1.y < Math.cos((this.P.maxSlopeDegrees * Math.PI) / 180)
+    )
       return;
     const top = probe[1] + down.time_of_impact - 0.2;
     // Only a real riser: the top must be above the feet and within reach.
-    if (start[1] - top < 1 || start[1] - top > P.stepHeight + 0.5) return;
+    if (start[1] - top < 1 || start[1] - top > this.P.stepHeight + 0.5) return;
     const lifted: Vec3 = [start[0], top, start[2]];
     if (!this.clear(lifted)) return;
     // Continue this tick's travel from the lifted height where it is clear.
@@ -2248,7 +2294,7 @@ export class PlaySession {
       const before = Math.abs(track.y - this.feet[1]);
       // Snap only on a discontinuity: more than a step beyond the lag a track
       // may keep (climbing brick-high stairs briskly reaches the camera's).
-      if (before > track.lag + P.stepHeight + 4) {
+      if (before > track.lag + this.P.stepHeight + 4) {
         track.y = this.feet[1];
         track.velocity = 0;
         continue;
@@ -2371,7 +2417,7 @@ export class PlaySession {
       phase: motion.phase,
       swing: motion.amount,
       ...head,
-      bob: flyBob(motion),
+      bob: flyBob(motion) * this.scale,
       ...limbAngles(motion),
     };
   }
@@ -2406,7 +2452,82 @@ export class PlaySession {
     );
   }
   private cameraSafety() {
-    return playCameraSafety(this.cameraSettings, this.aspectRatio);
+    return playCameraSafety(this.cameraSettings, this.aspectRatio, this.scale);
+  }
+  /** The standing eye height in LDU (camera setting × player size). */
+  private eyeHeight() {
+    return this.cameraSettings.eyeHeight * this.scale;
+  }
+  /** The third-person follow distance in LDU (setting × player size). */
+  private followDistance() {
+    return this.cameraSettings.followDistance * this.scale;
+  }
+  /** Rapier's own small-step and ground-snap heights follow player size. */
+  private configureController() {
+    // Rapier's own autostep handles plate-height ledges; taller risers up
+    // to the profile's step height use stepUp() (large autostep heights
+    // overshoot and launch the character).
+    this.controller.enableAutostep(
+      8.5 * this.scale * S,
+      4 * this.scale * S,
+      false,
+    );
+    this.controller.enableSnapToGround(3 * this.scale * S);
+  }
+  /** Resizes the explorer's collider (walking and dynamic pushing). */
+  private applyScale(scale: number) {
+    this.scale = scale;
+    this.P = scaledCharacterProfile(scale);
+    this.capsule = new RAPIER.Capsule(
+      (this.P.height / 2 - this.P.radius) * S,
+      this.P.radius * S,
+    );
+    this.collider.setShape(this.capsule);
+    this.configureController();
+    this.dynamics?.setActorShape(this.P.radius, this.P.height);
+    this.ride.camera.lag = this.P.stepHeight * 1.5;
+    this.ride.figure.lag = 4 * scale;
+  }
+  /**
+   * Changes the player size for the rest of this session (on foot only).
+   * Shrinking always fits. Growing while walking needs room: the bigger
+   * collider must be clear where the explorer stands or a short way
+   * around it, else the size is refused and nothing changes.
+   */
+  setPlayerScale(scale: number) {
+    this.alive();
+    this.requireOnFoot();
+    ensure(!this.riding, "INVALID_INPUT", "Get off the train first");
+    const next = validatePlayerScale(scale);
+    if (next === this.scale) return this.snapshot();
+    const previous = this.scale;
+    this.applyScale(next);
+    if (this.locomotion === "walk" && this.ready && next > previous) {
+      const found = this.clear(this.feet)
+        ? this.feet
+        : this.findSafe(this.feet);
+      if (!found) {
+        this.applyScale(previous);
+        this.syncCollider();
+        ensure(
+          false,
+          "INVALID_INPUT",
+          "There isn't room to grow here. Walk somewhere more open, or switch to Fly, and try again.",
+        );
+      }
+      this.feet = [...found!];
+      this.safe = [...found!];
+    }
+    this.previous = [...this.feet];
+    this.velocity = [0, 0, 0];
+    this.inheritedVelocity = [0, 0, 0];
+    this.syncCollider();
+    this.world.step();
+    if (this.locomotion === "walk") this.refreshSupport(true);
+    this.settle();
+    this.arm = this.followDistance();
+    this.updateArm(true);
+    return this.snapshot();
   }
   configureCamera(input: Partial<PlayCameraSettings>) {
     this.alive();
@@ -2481,7 +2602,8 @@ export class PlaySession {
       (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
     );
     ensure(
-      hit && hit.normal1.y >= Math.cos((P.maxSlopeDegrees * Math.PI) / 180),
+      hit &&
+        hit.normal1.y >= Math.cos((this.P.maxSlopeDegrees * Math.PI) / 180),
       "INVALID_INPUT",
       "Spawn needs a walkable supporting surface within 3 LDU below its feet",
     );
@@ -2511,7 +2633,7 @@ export class PlaySession {
     const hit = this.world.castShape(
       physics(target),
       rot,
-      physics(look.map((v) => -v * this.cameraSettings.followDistance) as Vec3),
+      physics(look.map((v) => -v * this.followDistance()) as Vec3),
       new RAPIER.Ball(this.cameraSafety().collisionRadius * S),
       0.1 * S,
       1,
@@ -2523,8 +2645,8 @@ export class PlaySession {
       (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
     );
     return hit
-      ? Math.max(0, this.cameraSettings.followDistance * hit.time_of_impact - 1)
-      : this.cameraSettings.followDistance;
+      ? Math.max(0, this.followDistance() * hit.time_of_impact - 1)
+      : this.followDistance();
   }
   private followRig(feet: Vec3 = this.feet) {
     // Seated chase framing is a presentation offset only. It keeps its target
@@ -2532,7 +2654,7 @@ export class PlaySession {
     // remains active. The first-person eye and stored look intent are unchanged.
     const target: Vec3 = this.occupied
       ? seatPoint(this.occupied.placement.pelvisFrame, [0, -30, -10])
-      : [feet[0], feet[1] - P.height * 0.7, feet[2]];
+      : [feet[0], feet[1] - this.P.height * 0.7, feet[2]];
     const yaw = this.yaw + (this.occupied ? 0.35 : 0);
     const pitch = this.occupied
       ? Math.max(-1.35, Math.min(1.1, this.pitch - 0.65))
@@ -2553,7 +2675,7 @@ export class PlaySession {
     const desired = this.desiredArm(target, look);
     // Geometry between the figure and the camera pulls it in at once; a
     // zoom (a new follow distance) and clearing geometry ease it both ways.
-    const blocked = desired < this.cameraSettings.followDistance;
+    const blocked = desired < this.followDistance();
     this.arm =
       immediate || (blocked && desired < this.arm)
         ? desired
@@ -2660,14 +2782,14 @@ export class PlaySession {
         ? follow.target
         : this.occupied
           ? [...this.occupied.placement.eye]
-          : [feet[0], feet[1] - this.cameraSettings.eyeHeight, feet[2]];
+          : [feet[0], feet[1] - this.eyeHeight(), feet[2]];
     let pos: Vec3 = [...target];
     if (this.cameraMode === "third-person") {
       // Unobstructed, the arm eases to the follow distance (smooth zoom);
       // geometry in the way always wins.
       const desired = this.desiredArm(target, look);
       const arm =
-        desired < this.cameraSettings.followDistance
+        desired < this.followDistance()
           ? Math.min(this.arm, desired)
           : this.arm;
       pos = target.map((v, k) => v - look[k] * arm) as Vec3;
@@ -2821,13 +2943,17 @@ export class PlaySession {
         proxy.radius * angle;
       if (distance < 1e-8) continue;
       const inflated = new RAPIER.Capsule(
-        (P.height / 2 - P.radius) * S,
-        (P.radius + distance + 0.05) * S,
+        (this.P.height / 2 - this.P.radius) * S,
+        (this.P.radius + distance + 0.05) * S,
       );
       if (
         proxy.collider.intersectsShape(
           inflated,
-          physics([this.feet[0], this.feet[1] - P.height / 2, this.feet[2]]),
+          physics([
+            this.feet[0],
+            this.feet[1] - this.P.height / 2,
+            this.feet[2],
+          ]),
           rot,
         )
       )
@@ -2935,6 +3061,11 @@ export class PlaySession {
       id ? "Unknown train " + id : "Specify trainId when several trains run",
     );
     this.requireOnFoot();
+    ensure(
+      this.scale === 1,
+      "INVALID_INPUT",
+      "Train cabs fit a minifigure. Set Player size to Minifigure to drive.",
+    );
     const yaw = this.trainYaw(id);
     const boarded = this.riding?.boarded ?? ([...this.feet] as Vec3);
     if (this.riding && this.riding.trainId !== id) this.releaseLever();
@@ -3006,8 +3137,8 @@ export class PlaySession {
     if (this.locomotion === "walk" && this.ready) {
       for (const p of beside) {
         // From a figure's height above the rails down to the ground.
-        const found = this.findSafe([p[0], p[1] - P.height, p[2]]);
-        if (found && lateral(found) >= cab.extent.halfWidth + P.radius) {
+        const found = this.findSafe([p[0], p[1] - this.P.height, p[2]]);
+        if (found && lateral(found) >= cab.extent.halfWidth + this.P.radius) {
           spot = found;
           break;
         }
@@ -3051,11 +3182,7 @@ export class PlaySession {
     if (this.cameraMode === "first-person") {
       // The cab: the eyes of the figure standing at the controls.
       return {
-        target: [
-          this.feet[0],
-          this.feet[1] - this.cameraSettings.eyeHeight,
-          this.feet[2],
-        ],
+        target: [this.feet[0], this.feet[1] - this.eyeHeight(), this.feet[2]],
         look,
         arm: 0,
       };
@@ -3170,8 +3297,9 @@ export class PlaySession {
         !this.controlledVehicle &&
         !this.occupied &&
         this.cameraMode === "third-person" &&
-        (!!this.riding || this.currentArm() > 24),
-      profile: P,
+        (!!this.riding || this.currentArm() > 24 * this.scale),
+      profile: this.P,
+      playerScale: this.scale,
       units: "LDU",
       simulationHz: 60,
       warnings: [...this.warnings],

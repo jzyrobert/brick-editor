@@ -1095,7 +1095,10 @@ a {
 }
 .workshop-app .play-intro .menu-tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-flow: column;
+  /* Three or four tabs (Keyboard is for mouse and keyboard only); a
+     one-word tab keeps its word whole. */
+  grid-auto-columns: minmax(min-content, 1fr);
   gap: 4px;
 }
 .workshop-app .play-intro .menu-tabs button {
@@ -1106,6 +1109,32 @@ a {
 }
 .workshop-app .play-entry-settings[aria-expanded="true"] {
   background: #344157;
+}
+/* A player size worth trying: a dot on the settings button. */
+.play-entry-settings {
+  position: relative;
+}
+.play-entry-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--hud);
+}
+/* The chosen size is said on the dock at every width. */
+.play-entry-size {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 650;
+  color: #f6b59a;
+}
+@media (min-width: 761px) {
+  .play-entry-size {
+    display: none;
+  }
 }
 @media (max-width: 1100px) {
   .workshop-app.sheet-open .status-bar,
@@ -1540,7 +1569,7 @@ a {
     font-size: 16px;
     white-space: normal;
   }
-  .play-entry > div:first-child > p:not(.play-entry-refused) {
+  .play-entry > div:first-child > p:not(.play-entry-refused, .play-entry-size) {
     display: none;
   }
   .play-entry-actions {

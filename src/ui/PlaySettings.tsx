@@ -63,8 +63,8 @@ export function PlaySettings({
       <details>
         <summary>Camera settings</summary>
         <p className="muted">
-          Camera changes apply only to this Play session. The character collider
-          keeps its 72 LDU height.
+          Camera changes apply only to this Play session. Lengths are at
+          minifigure size and grow or shrink with Player size.
         </p>
         {keys.map((key) => {
           const limits = PLAY_CAMERA_LIMITS[key];

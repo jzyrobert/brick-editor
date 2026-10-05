@@ -224,6 +224,11 @@
       ],
       "additionalProperties": false
     },
+    "playerScale": {
+      "type": "number",
+      "minimum": 0.25,
+      "maximum": 8
+    },
     "units": {
       "const": "LDU"
     },
@@ -2615,6 +2620,7 @@
     "avatarReady",
     "avatarVisible",
     "profile",
+    "playerScale",
     "units",
     "simulationHz",
     "warnings",

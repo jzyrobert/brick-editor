@@ -83,6 +83,28 @@
           "const": "1.0"
         },
         "method": {
+          "const": "play.setPlayerScale"
+        },
+        "input": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 8
+        }
+      },
+      "required": [
+        "apiVersion",
+        "method",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "const": "1.0"
+        },
+        "method": {
           "const": "play.chooseSpawn"
         },
         "input": {
