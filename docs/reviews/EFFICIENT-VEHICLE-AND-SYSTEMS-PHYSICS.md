@@ -144,6 +144,58 @@ arms turn by the same angle, so the rack pins can drift up to about 5 LDU from
 their link at full lock), suspension the source does not have, Arocs wheel
 units, and phone hardware.
 
+## Driver's-seat heuristic (follow-up)
+
+The owner asked for a simple way to place a driver in detected cars that have
+no authored seat. `guessDriverSeat` (`src/play/driver-seat-guess.ts`) returns
+ranked candidates and says why it chose one, or gives a plain reason when none
+fits. It is a placement guess for the seated pose and camera, not a claim of
+authored seating; nothing is attached or moved.
+
+1. **Seat parts.** It looks for the Minifig Seat 2 × 2 (4079 and its obsolete
+   recolour). Each seat's hip point is 18 LDU above its origin, as the authored
+   Roadster and Jeep seats use. The seat is paired with the nearest
+   steering-wheel part 10–120 LDU in front of it, within 30 LDU sideways, at a
+   plausible height. Recognised wheels:
+
+   - 3829c01 and its recolours, 3828, 30663, 16091, 67811, 41850;
+   - 30640c01/c02, 2819, 2741, 874;
+   - a ride-along 4185a steering wheel.
+
+   A forward-facing seat with a wheel ranks first.
+
+2. **Empty cockpit gap.** With no seat part, it searches behind the front axle
+   for a place where all of these hold:
+
+   - the declared seated-figure boxes (`SEATED_BODY_PROFILE`) fit, allowing a
+     3 LDU graze for part boxes;
+   - something flat supports the hips (at least 15 of 25 samples);
+   - parts rise beside the hips on both sides, so the figure is in the car, not
+     on its roof;
+   - there is headroom;
+   - the line of sight forward is clear (transparent parts and the steering
+     wheel excepted).
+
+   Occupancy uses part bounding boxes, so the search is conservative. A refusal
+   counts which check each place failed.
+
+| Sample                    | Result                                                                                                                                                         |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Roadster template         | 4079 seat with 3829c01 in front; the pelvis equals the authored seat exactly                                                                                   |
+| Jeep template             | The driver's 4079 (behind the 3829c01) exactly at the authored seat; the passenger seat ranks second                                                           |
+| 6503 Sprint Racer         | Empty cockpit gap behind its 3829c01, hips on the car base at (0, −13.3, 0)                                                                                    |
+| 31027 Blue Racer          | Empty cockpit gap at (2, −40.9, −30); no steering-wheel part recognised                                                                                        |
+| 30572 Race Car            | Refused: no place fits (18 had nothing flat to sit on, 156 were not between the sides, 21 were too narrow or low)                                              |
+| 5540, whole car (private) | Refused once the cover rides along. The cockpit is two studs (40 LDU) wide; the seated figure needs 58 LDU at the arms. A Model Team car has no minifig driver |
+| 5540 attached excerpt     | A gap on the bare chassis (no bodywork in the excerpt). It shows why the guess must run on the final rig, after ride-along                                     |
+
+The guess is not wired into seat entry or the driving camera yet. The next step
+is to turn a chosen guess into a `driverSeat` for derived cars (access point,
+approach and exits beside the car), so the existing seat checks verify it
+against real geometry. It takes 10–70 ms for the small cars but 0.9–2.6 s for
+the whole 5540 on the VM, so it needs a spatial index before it runs at Play
+entry. Tests: `tests/unit/play-driver-seat-guess.test.ts`.
+
 ## What the existing code already does
 
 Ordinary Play already uses this pattern for the simple imported cars (Roadster,
