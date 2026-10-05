@@ -54,6 +54,15 @@ describe("source-bound PF-L and selector interfaces", () => {
         ["99499.dat"],
       ),
     ).rejects.toThrow("geometry changed");
+    const shadowed = fixture("42042").project;
+    shadowed.models["4-4cyli.dat"] = {
+      ...structuredClone(shadowed.models[shadowed.rootModelId]),
+      id: "4-4cyli.dat",
+      name: "4-4cyli.dat",
+    };
+    await expect(
+      bindDrivetrainSources(sources, ["99499.dat"], { project: shadowed }),
+    ).rejects.toThrow("Project shadows reviewed source");
     const f = fixture("42042"),
       o = f.part("99499.dat");
     expect(

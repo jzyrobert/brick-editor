@@ -1,8 +1,10 @@
-import { directReferences } from "../catalog/full-pack";
-import { sha256 } from "../core/hash";
 import { add, mv, nearlyPhysical, orthonormalized } from "../core/math";
 import { ensure, type Occurrence, type Vec3 } from "../core/types";
 import { DRIVETRAIN_SOURCES } from "./drivetrain-sources";
+import {
+  verifyReviewedSourceClosures,
+  type ReviewedSourceOptions,
+} from "./reviewed-source-closure";
 
 export type DrivetrainRef = keyof typeof DRIVETRAIN_SOURCES;
 export type DrivetrainSourceBinding = Readonly<{
@@ -15,52 +17,16 @@ const bindings = new WeakMap<DrivetrainSourceBinding, ReadonlySet<string>>();
 export async function bindDrivetrainSources(
   sources: Readonly<Record<string, string>>,
   refs: readonly DrivetrainRef[],
+  options: ReviewedSourceOptions = {},
 ): Promise<DrivetrainSourceBinding> {
-  ensure(refs.length <= 32, "RESOURCE_LIMIT", "Too many drivetrain profiles.");
-  const hashes = new Map<string, Promise<string>>();
-  let bytes = 0;
-  const verified = new Set<DrivetrainRef>();
-  for (const root of new Set(refs)) {
-    ensure(
-      Object.hasOwn(DRIVETRAIN_SOURCES, root),
-      "INVALID_INPUT",
-      "Unreviewed drivetrain source.",
-    );
-    const seen = new Set<string>(),
-      pending = [root as string];
-    while (pending.length) {
-      const ref = pending.pop()!;
-      if (seen.has(ref)) continue;
-      seen.add(ref);
-      const text = sources[ref];
-      ensure(
-        typeof text === "string",
-        "INVALID_INPUT",
-        "Missing drivetrain source: " + ref,
-      );
-      if (!hashes.has(ref)) {
-        bytes += text.length;
-        ensure(
-          hashes.size < 1024 && bytes <= 8_000_000,
-          "RESOURCE_LIMIT",
-          "Drivetrain source verification budget exceeded.",
-        );
-        hashes.set(ref, sha256(text));
-      }
-      pending.push(...directReferences(text));
-    }
-    const rows = await Promise.all(
-      [...seen].sort().map(async (ref) => [ref, await hashes.get(ref)!]),
-    );
-    const expected = DRIVETRAIN_SOURCES[root];
-    ensure(
-      seen.size === expected.files &&
-        (await sha256(JSON.stringify(rows))) === expected.closureSha256,
-      "INVALID_INPUT",
-      "Reviewed drivetrain geometry changed: " + root,
-    );
-    verified.add(root);
-  }
+  const verified = new Set<DrivetrainRef>(
+    (await verifyReviewedSourceClosures(
+      sources,
+      DRIVETRAIN_SOURCES,
+      refs,
+      options,
+    )) as readonly DrivetrainRef[],
+  );
   const binding = Object.freeze({ refs: Object.freeze([...verified]) });
   bindings.set(binding, verified);
   return binding;
@@ -86,6 +52,18 @@ export type DrivetrainPartInterfaces = {
   pins: DrivetrainAxisInterface[];
   shaft?: DrivetrainAxisInterface;
   socket?: DrivetrainAxisInterface;
+  gear?: {
+    axis: DrivetrainAxisInterface;
+    teeth: number;
+    pitchRadiusLdu: number;
+    bore: "keyed" | "round";
+  };
+  worm?: { axis: DrivetrainAxisInterface; starts: 1; leadLdu: 8; hand: 1 };
+  differential?: {
+    axis: DrivetrainAxisInterface;
+    spiderSeat: DrivetrainAxisInterface;
+    sideSeats: readonly DrivetrainAxisInterface[];
+  };
   selector?: {
     axis: DrivetrainAxisInterface;
     dogSpan: [number, number];
@@ -210,6 +188,41 @@ export function drivetrainInterfaces(
       [1, 0, 0],
     );
   }
+  const gearProfiles: Partial<
+    Record<DrivetrainRef, [number, [number, number], "keyed" | "round"]>
+  > = {
+    "10928.dat": [8, [-10, 10], "keyed"],
+    "94925.dat": [16, [-10, 10], "keyed"],
+    "18946.dat": [16, [-10, 10], "round"],
+    "32270.dat": [12, [-10, 10], "keyed"],
+    "32269.dat": [20, [-10, 10], "keyed"],
+    "6589.dat": [12, [0, 7], "keyed"],
+    "87407.dat": [20, [-10, 10], "round"],
+  };
+  const gear = gearProfiles[ref];
+  if (gear)
+    result.gear = {
+      axis: feature("gear-axis", [0, 0, 0], [0, 0, 1], gear[1], [1, 0, 0]),
+      teeth: gear[0],
+      pitchRadiusLdu: gear[0] * 1.25,
+      bore: gear[2],
+    };
+  if (ref === "4716.dat")
+    result.worm = {
+      axis: feature("worm", [0, 0, 0], [0, 0, 1], [-20, 20], [1, 0, 0]),
+      starts: 1,
+      leadLdu: 8,
+      hand: 1,
+    };
+  if (ref === "62821.dat")
+    result.differential = {
+      axis: feature("carrier", [0, 0, 0], [0, 0, 1], [-30, 30]),
+      // Literal 4-4cylc at (0,-10,0), radius3 and height-10.
+      spiderSeat: feature("spider-pin", [0, -17, 0], [0, 1, 0], [-3, 7]),
+      sideSeats: [-1, 1].map((side) =>
+        feature(`side-${side}`, [0, 0, side * 17], [0, 0, -side], [0, 7]),
+      ),
+    };
   const freeze = (value: unknown): void => {
     if (!value || typeof value !== "object" || Object.isFrozen(value)) return;
     for (const child of Object.values(value)) freeze(child);
@@ -418,3 +431,6 @@ export function clutchSelectorState(
   };
 }
 export { dot as drivetrainDot, cross as drivetrainCross };
+
+export const isReviewedDrivetrainInterface = (part: DrivetrainPartInterfaces) =>
+  verifiedInterfaces.has(part);
