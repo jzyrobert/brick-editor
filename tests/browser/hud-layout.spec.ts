@@ -410,6 +410,36 @@ for (const viewport of [
       expect(await collisions(page, slots), state).toEqual([]);
     };
     await openMode(page, "Play");
+    // Observe before entry and the train tap: browser actions can resolve after
+    // the real six-second hint has disappeared on a busy software renderer.
+    await page.evaluate(() => {
+      const observed = window as typeof window & {
+        trainLookHintGeometry?: { x: number; y: number };
+      };
+      const capture = () => {
+        const hint = document.querySelector(".play-look-hint"),
+          train = document.querySelector(".play-train"),
+          running = train?.querySelector('[aria-label="Stop the train"]');
+        if (
+          hint &&
+          train &&
+          running &&
+          Number(getComputedStyle(hint).opacity) > 0.5
+        ) {
+          const h = hint.getBoundingClientRect(),
+            t = train.getBoundingClientRect();
+          if (h.width > 0 && h.height > 0 && t.width > 0 && t.height > 0) {
+            observed.trainLookHintGeometry = {
+              x: Math.min(h.right, t.right) - Math.max(h.left, t.left),
+              y: Math.min(h.bottom, t.bottom) - Math.max(h.top, t.top),
+            };
+            return;
+          }
+        }
+        requestAnimationFrame(capture);
+      };
+      requestAnimationFrame(capture);
+    });
     await page.getByRole("button", { name: "Enter Play", exact: true }).click();
     await expect(page.getByRole("button", { name: "Pause" })).toBeVisible({
       timeout: 60000,
@@ -422,22 +452,16 @@ for (const viewport of [
     // The sample hint gives way to Drag to look after six seconds. Exercise
     // that real timed state before its own six-second lifetime can expire.
     await page.getByRole("button", { name: "Start the train" }).tap();
-    // Capture opacity and both rectangles in one browser frame: a slow host
-    // must not turn the assertion into a check after the hint has disappeared.
+    // The saved rectangles came from one visible frame with Stop available,
+    // even if the protocol returns from the tap after that frame's hint expires.
     const hintGeometry = await (
       await page.waitForFunction(
-        () => {
-          const hint = document.querySelector(".play-look-hint"),
-            train = document.querySelector(".play-train");
-          if (!hint || !train || Number(getComputedStyle(hint).opacity) <= 0.5)
-            return false;
-          const h = hint.getBoundingClientRect(),
-            t = train.getBoundingClientRect();
-          return {
-            x: Math.min(h.right, t.right) - Math.max(h.left, t.left),
-            y: Math.min(h.bottom, t.bottom) - Math.max(h.top, t.top),
-          };
-        },
+        () =>
+          (
+            window as typeof window & {
+              trainLookHintGeometry?: { x: number; y: number };
+            }
+          ).trainLookHintGeometry,
         undefined,
         { timeout: 15000 },
       )
