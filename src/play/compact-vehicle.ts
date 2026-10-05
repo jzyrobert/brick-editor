@@ -3,6 +3,8 @@ import { Vector3 } from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry.js";
 import { ensure, type Vec3 } from "../core/types";
 import type { ReviewedAxleWheelAssembly } from "./reviewed-wheel-mounts";
+import type { PlayMechanismSource } from "./mechanism";
+import type { CollisionSnapshot } from "./types";
 import { DYNAMIC_DEFAULTS } from "./dynamics";
 import {
   METRES_PER_LDU as S,
@@ -327,6 +329,69 @@ export function clusterHulls(
   return out;
 }
 
+/**
+ * Mass properties of a chassis from its MEMBER hulls (density × each part's
+ * own hull), independent of how coarsely the collision hulls are merged. A
+ * merged hull fills gaps; giving it mass would make the chassis heavier and
+ * top-heavy, and it then pitched enough under acceleration to scrape (see the
+ * review). Inertia uses each member's bounding box about the common centre.
+ * Units: kg, metres, physics axes relative to `origin` (LDU).
+ */
+export type MassPart = Pick<HullMember, "volume" | "centroid" | "min" | "max">;
+export function memberMassProperties(
+  members: readonly MassPart[],
+  origin: Vec3,
+  density: number,
+) {
+  let mass = 0;
+  const com: Vec3 = [0, 0, 0];
+  const parts = members.map((m) => {
+    const kg = Math.max(1e-6, m.volume * S ** 3 * density),
+      c = toPhysics(m.centroid.map((v, k) => v - origin[k]) as Vec3),
+      size = m.max.map((v, k) => (v - m.min[k]) * S);
+    mass += kg;
+    com[0] += kg * c.x;
+    com[1] += kg * c.y;
+    com[2] += kg * c.z;
+    return { kg, c, size };
+  });
+  const centre = com.map((v) => v / mass) as Vec3;
+  const inertia: Vec3 = [0, 0, 0];
+  for (const { kg, c, size } of parts) {
+    const d = [c.x - centre[0], c.y - centre[1], c.z - centre[2]];
+    // Box about its own centre (axes: physics X = LDraw X, Y and Z flip sign only).
+    inertia[0] +=
+      (kg * (size[1] ** 2 + size[2] ** 2)) / 12 + kg * (d[1] ** 2 + d[2] ** 2);
+    inertia[1] +=
+      (kg * (size[0] ** 2 + size[2] ** 2)) / 12 + kg * (d[0] ** 2 + d[2] ** 2);
+    inertia[2] +=
+      (kg * (size[0] ** 2 + size[1] ** 2)) / 12 + kg * (d[0] ** 2 + d[1] ** 2);
+  }
+  return {
+    mass,
+    centerOfMass: { x: centre[0], y: centre[1], z: centre[2] },
+    principalInertia: { x: inertia[0], y: inertia[1], z: inertia[2] },
+  };
+}
+
+/**
+ * Ground clearance at entry: the lowest chassis point must sit higher above
+ * the tyres' contact plane than the ray suspension can travel, so the body
+ * cannot reach flat ground by compressing the springs. A convex hull's lowest
+ * point is always one of its members' own points, so merging does not lower
+ * it. Returns the clearance in LDU (LDraw Y is down).
+ */
+export function chassisGroundClearance(
+  hulls: readonly { points: readonly Vec3[] }[],
+  wheels: readonly { center: Vec3; radius: number }[],
+) {
+  const contact = Math.max(...wheels.map((w) => w.center[1] + w.radius));
+  let lowest = -Infinity;
+  for (const h of hulls)
+    for (const p of h.points) lowest = Math.max(lowest, p[1]);
+  return contact - lowest;
+}
+
 export type CompactWheelStation = {
   /** Source tyre occurrence id(s), joined with "+" for a coaxial stack. */
   id: string;
@@ -387,6 +452,9 @@ export type CompactVehicleOptions = {
   /** Collision membership bit for the chassis; rays skip it. */
   membership?: number;
   massKg?: number;
+  /** Take mass, centre of mass and inertia from these member hulls instead
+   * of the (possibly merged) collision hulls. */
+  memberMass?: readonly HullMember[];
   maxSpeedLdu?: number;
   maxSteerDegrees?: number;
 };
@@ -462,7 +530,7 @@ export class CompactRaycastVehicle {
       this.colliders.push(
         world.createCollider(
           desc
-            .setDensity(DYNAMIC_DEFAULTS.density)
+            .setDensity(options.memberMass ? 0 : DYNAMIC_DEFAULTS.density)
             .setFriction(DYNAMIC_DEFAULTS.friction)
             .setCollisionGroups(groups(this.own, 0xffff)),
           this.body,
@@ -473,6 +541,20 @@ export class CompactRaycastVehicle {
       const scale = options.massKg / this.body.mass();
       for (const c of this.colliders)
         c.setDensity(DYNAMIC_DEFAULTS.density * scale);
+    }
+    if (options.memberMass) {
+      const m = memberMassProperties(
+        options.memberMass,
+        this.origin,
+        DYNAMIC_DEFAULTS.density,
+      );
+      this.body.setAdditionalMassProperties(
+        m.mass,
+        m.centerOfMass,
+        m.principalInertia,
+        { x: 0, y: 0, z: 0, w: 1 },
+        true,
+      );
     }
     this.body.recomputeMassPropertiesFromColliders();
     const controller = world.createVehicleController(this.body);
@@ -591,4 +673,92 @@ export class CompactRaycastVehicle {
     this.world.removeVehicleController(this.controller);
     this.world.removeRigidBody(this.body);
   }
+}
+
+/** Triangles of convex hulls (world LDU), as one collision mesh. */
+export function hullMesh(hulls: readonly { points: readonly Vec3[] }[]) {
+  const vertices: number[] = [];
+  for (const h of hulls) {
+    const g = new ConvexGeometry(h.points.map((p) => new Vector3(...p)));
+    const position = g.getAttribute("position");
+    for (let i = 0; i < position.count; i++)
+      vertices.push(position.getX(i), position.getY(i), position.getZ(i));
+    g.dispose();
+  }
+  return {
+    vertices: Float32Array.from(vertices),
+    indices: Uint32Array.from({ length: vertices.length / 3 }, (_, i) => i),
+  };
+}
+
+/**
+ * Turn a one-body source vehicle's captured member geometry into its chassis
+ * collision: occupancy-merged convex hulls of every colliding member (drawn-only
+ * ride-along parts excluded), plus the members' own mass parts. The chassis
+ * group mesh becomes those hulls' triangles: the moving collision budget then
+ * counts what actually collides, not the drawn source triangles. Per-member
+ * meshes are dropped once used. Renderers still draw every source part.
+ */
+export function compactArticulatedSource<T extends PlayMechanismSource>(
+  source: T,
+): T {
+  const a = source.articulation;
+  if (!a || a.chassis || !source.members) return source;
+  const rig = source.project.motionRigs[source.rigId],
+    group = rig.groups.find((g) => g.id === a.chassisGroup);
+  ensure(group, "INVALID_INPUT", "This car has no chassis to move");
+  const drawnOnly = new Set(
+    a.rideAlong.filter((r) => r.visualOnly).flatMap((r) => r.occurrenceIds),
+  );
+  const members = group.occurrenceIds
+    .filter((id) => !drawnOnly.has(id))
+    .map((id) => {
+      const mesh = source.members![id];
+      ensure(
+        mesh && mesh.vertices.length >= 3 && !mesh.unsupported,
+        "INVALID_INPUT",
+        "This car needs every part's shape to move as one piece",
+      );
+      return hullMember(id, 0, mesh.vertices);
+    });
+  const hulls = clusterHulls(members, { minFill: 0.5, scope: "chassis" });
+  const mesh = hullMesh(hulls),
+    previous = source.groups[group.id],
+    b = { min: [0, 0, 0] as Vec3, max: [0, 0, 0] as Vec3 };
+  for (let k = 0; k < 3; k++) {
+    b.min[k] = Infinity;
+    b.max[k] = -Infinity;
+  }
+  for (let i = 0; i < mesh.vertices.length; i++) {
+    const k = i % 3;
+    b.min[k] = Math.min(b.min[k], mesh.vertices[i]);
+    b.max[k] = Math.max(b.max[k], mesh.vertices[i]);
+  }
+  const chassisMesh: CollisionSnapshot = {
+    revision: previous.revision,
+    vertices: mesh.vertices,
+    indices: mesh.indices,
+    bounds: b,
+  };
+  const { members: _members, memberLocals: _locals, ...rest } = source;
+  void _members;
+  void _locals;
+  return {
+    ...rest,
+    groups: { ...source.groups, [group.id]: chassisMesh },
+    articulation: {
+      ...a,
+      chassis: {
+        hulls: hulls.map((h) => h.points),
+        massParts: members.map((m) => ({
+          volume: m.volume,
+          centroid: m.centroid,
+          min: m.min,
+          max: m.max,
+        })),
+        members: members.length,
+        drawnOnly: drawnOnly.size,
+      },
+    },
+  } as T;
 }

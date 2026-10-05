@@ -102,6 +102,7 @@ for (const representation of reps)
         ...(minFill !== undefined ? { minFill } : {}),
         compound: !args.includes("--separate"),
         groundMesh: args.includes("--mesh-ground"),
+        memberMass: args.includes("--member-mass"),
       });
       console.log(JSON.stringify({ trial, minFill, ...result }));
     }

@@ -9,7 +9,7 @@ import {
 } from "./native-rest-sources";
 import { loadMotorSourceComponents } from "./motor-source-components";
 import { add, mv } from "../core/math";
-import type { DriverSeatSpec } from "../mechanisms/types";
+import type { DriverSeatSpec, MotionRig } from "../mechanisms/types";
 import {
   seatPoint,
   seatYaw,
@@ -53,12 +53,18 @@ import { alightPoints, trainCab, type TrainCab } from "./train-cab";
 import { frameRotation, basisFromRotation } from "./physics-frame";
 import { inverse } from "../core/math";
 import {
+  DYNAMIC_LIMITS,
   PlayDynamicsWorld,
   validateDynamicRigSources,
   type DynamicRigSource,
 } from "./dynamics";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { PlayPneumaticSystem } from "./pneumatic-play";
+import { compactArticulatedSource } from "./compact-vehicle";
+import {
+  articulateVehicleTransforms,
+  type SourceVehicleArticulation,
+} from "./source-vehicle-articulation";
 import type {
   PneumaticPlaySkip,
   PreparedPneumaticPlay,
@@ -158,6 +164,11 @@ export type PlayPneumaticSource = {
 };
 export class PlaySession {
   private mechanisms = new Map<string, PlayMechanism>();
+  /** One-body source vehicles: drawn steering, column and ride-along parts. */
+  private articulations = new Map<
+    string,
+    { rig: MotionRig; articulation: SourceVehicleArticulation }
+  >();
   private trains?: TrainWorld;
   private trainProxies = new Map<
     string,
@@ -325,6 +336,12 @@ export class PlaySession {
       : mechanismSource
         ? [mechanismSource]
         : [];
+    for (const source of allSources)
+      if (source.articulation)
+        this.articulations.set(source.rigId, {
+          rig: source.project.motionRigs[source.rigId],
+          articulation: source.articulation,
+        });
     const groundY =
       request.ground === false ? 0 : sessionGroundY(snapshot, allSources);
     this.groundY = groundY;
@@ -988,11 +1005,32 @@ export class PlaySession {
         "INVALID_INPUT",
         "Play rigIds must contain at most 32 distinct rig IDs",
       );
-    const sources = Array.isArray(mechanismSource)
-      ? mechanismSource
-      : mechanismSource
-        ? [mechanismSource]
-        : [];
+    // One-body source cars collide as prepared hulls, not their drawn triangles.
+    const sources = (
+      Array.isArray(mechanismSource)
+        ? mechanismSource
+        : mechanismSource
+          ? [mechanismSource]
+          : []
+    ).map(compactArticulatedSource);
+    mechanismSource = sources;
+    // A one-body source car is one dynamic chassis on ray wheels whenever the
+    // world's collision is complete; otherwise it drives kinematically.
+    const oneBody = sources
+      .filter((s) => s.articulation)
+      .map((s) => s.rigId)
+      .filter((id) => !request.dynamicRigIds?.includes(id));
+    if (
+      oneBody.length &&
+      !snapshot.unsupported &&
+      snapshot.indices.length <= 3_000_000 &&
+      (request.dynamicRigIds?.length ?? 0) + oneBody.length <=
+        DYNAMIC_LIMITS.rigs
+    )
+      request = {
+        ...request,
+        dynamicRigIds: [...(request.dynamicRigIds ?? []), ...oneBody],
+      };
     const requested =
       request.rigIds ??
       (request.rigId === undefined ? undefined : [request.rigId]);
@@ -3053,7 +3091,24 @@ export class PlaySession {
         ...(this.dynamics?.pneumaticIds() ?? []).map(
           (id) => [id, this.dynamics!.pneumatic(id)!.snapshot()] as const,
         ),
-      ].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+      ]
+        .map(([id, report]) => {
+          const drawn = this.articulations.get(id);
+          return [
+            id,
+            drawn
+              ? {
+                  ...articulateVehicleTransforms(
+                    report,
+                    drawn.rig,
+                    drawn.articulation,
+                  ),
+                  warnings: [...report.warnings, ...drawn.articulation.notes],
+                }
+              : report,
+          ] as const;
+        })
+        .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
     );
     const rigCount = Object.keys(mechanisms).length;
     return {

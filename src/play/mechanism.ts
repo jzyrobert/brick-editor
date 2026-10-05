@@ -97,6 +97,8 @@ export type PlayMechanismSource = {
   >;
   /** Optional shared occurrence index of `project` (avoids re-expansion per rig). */
   lookup?: ReadonlyMap<string, Occurrence>;
+  /** Session-only one-body source vehicle drawing plan (derived, never saved). */
+  articulation?: import("./source-vehicle-articulation").SourceVehicleArticulation;
 };
 export type PlaySourceValidationOptions = {
   /** Internal async entry checks structure first, then repeats required contact

@@ -115,6 +115,7 @@ export type BenchResult = {
   representation: Representation;
   compound?: boolean;
   groundMesh?: boolean;
+  memberMass?: boolean;
   bodies: number;
   colliders: number;
   joints: number;
@@ -227,6 +228,8 @@ export function benchRepresentation(
     compound?: boolean;
     /** A two-triangle mesh floor instead of the session half-space. */
     groundMesh?: boolean;
+    /** Mass from member hulls, not the merged collision hulls. */
+    memberMass?: boolean;
     hullMembers?: Map<string, HullMember>;
   } = {},
 ): BenchResult {
@@ -425,6 +428,7 @@ export function benchRepresentation(
       wheels: review.stations,
       forward: [0, 0, -1],
       compound: options.compound ?? true,
+      ...(options.memberMass ? { memberMass: members } : {}),
     });
     bodies.push(compact.body);
     for (const c of compact.colliders) {
@@ -492,6 +496,7 @@ export function benchRepresentation(
   const result: BenchResult = {
     representation,
     groundMesh: !!options.groundMesh,
+    memberMass: !!options.memberMass,
     compound: representation.startsWith("chassis-")
       ? (options.compound ?? true)
       : undefined,

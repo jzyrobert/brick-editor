@@ -1,4 +1,12 @@
 import { deriveVehicleRigs } from "./auto-vehicles";
+import {
+  admitSourceRideAlong,
+  librarySourceRecord,
+} from "./source-vehicle-ride-along";
+import {
+  bindFlexibleHoseSources,
+  FLEXIBLE_HOSE_SOURCES,
+} from "./source-flexible-hose";
 import { requirePhysicalPlay } from "../mechanisms/physical-play";
 import {
   prepareMechanicalProposal,
@@ -439,6 +447,45 @@ export class BrowserPlay {
             bounds: occurrenceBounds(project),
           })
         : undefined;
+      // One-body source cars: loose parts that ride along on evidence
+      // (cover resting on the body, steering wheel on its column, stickers,
+      // hoses plugged in at both ends). Everything else stays where built.
+      if (project && vehicles?.vehicles.some((v) => v.articulation)) {
+        await admitSourceRideAlong({
+          project,
+          derived: vehicles,
+          all,
+          bounds: occurrenceBounds(project),
+          surfaces: async (ids) => {
+            const out: Record<string, CollisionSnapshot> = {};
+            for (const id of ids) {
+              out[id] = await r.playGeometry({ include: [id] });
+              ensure(
+                epoch === this.epoch,
+                "INVALID_INPUT",
+                "Play entry cancelled",
+              );
+            }
+            return out;
+          },
+          hoseBinding: async () => {
+            try {
+              const roots = Object.keys(FLEXIBLE_HOSE_SOURCES);
+              await loadFullSources(roots);
+              return await bindFlexibleHoseSources(
+                librarySourceRecord(
+                  roots,
+                  (name) => curatedGeometrySource(name) ?? fullSource(name),
+                ),
+                project,
+              );
+            } catch {
+              return undefined;
+            }
+          },
+        });
+        ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      }
       if (vehicles?.vehicles.length) {
         rigs.push(...Object.values(vehicles.rigs));
         ids.push(
@@ -615,11 +662,15 @@ export class BrowserPlay {
             );
           }
         }
+        const articulation = vehicles?.vehicles.find(
+          (v) => v.rigId === rig.id,
+        )?.articulation;
         mechanismSources.push({
           project: sourceProject!,
           rigId: rig.id,
           groups,
           lookup,
+          ...(articulation ? { articulation } : {}),
           ...(motorCaptures
             ? {
                 motorComponents: Object.fromEntries(

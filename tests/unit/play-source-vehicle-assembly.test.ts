@@ -44,15 +44,21 @@ describe("detected source vehicle body ownership", () => {
     expect(witness(true)?.kind).toBe("articulated");
     expect(witness(true)?.axialLimitsLdu).toBeUndefined();
   });
-  it("retains all four real wheel carriers and nine hinges as actual bodies instead of flattening the source chassis", () => {
+  it("retains all four real wheel carriers and nine hinges in the review and drives the graph only as one drawn body", () => {
     const p = fixture(),
       all = occurrences(p),
       original = JSON.stringify(p),
       exported = exportLDraw(p),
       inventory = partsList(p, all),
       result = derive(p);
-    expect(result.rigs).toEqual({});
-    expect(result.vehicles).toEqual([]);
+    // The one-body profile (source-vehicle-articulation.ts) moves the whole
+    // attached graph as one chassis; the source review keeps every island.
+    expect(result.vehicles).toHaveLength(1);
+    const rig = Object.values(result.rigs)[0];
+    expect(rig.groups.map((g) => g.occurrenceIds.length)).toEqual([
+      52, 6, 6, 10, 10,
+    ]);
+    expect(result.vehicles[0].articulation?.knuckles).toHaveLength(2);
     const review = result.sourceAssemblies!;
     expect(review.assemblies).toHaveLength(1);
     const assembly = review.assemblies[0];
@@ -65,13 +71,7 @@ describe("detected source vehicle body ownership", () => {
       assembly.boundaries.filter((e) => /hinge/.test(e.evidence.profile)),
     ).toHaveLength(9);
     expect(assembly.rigidWheelProfileCompatible).toBe(false);
-    expect(
-      result.skipped.some((s) =>
-        s.reason.includes(
-          "axle and hinge assembly is not supported in Play yet",
-        ),
-      ),
-    ).toBe(true);
+    expect(result.skipped).toEqual([]);
     expect(review.occurrenceIds).toHaveLength(117);
     expect(new Set(review.fixedIslands.flat()).size).toBe(117);
     expect(assembly.fixedIslands.flat().sort()).toEqual(
@@ -126,7 +126,9 @@ describe("detected source vehicle body ownership", () => {
     expect(result.sourceAssemblies!.assemblies[0].occurrenceIds).not.toContain(
       custom.id,
     );
-    expect(result.vehicles).toEqual([]);
+    expect(result.vehicles.flatMap((v) => v.occurrenceIds)).not.toContain(
+      custom.id,
+    );
     expect(JSON.stringify(p)).toBe(original);
     expect(partsList(p, all)).toEqual(inventory);
   });

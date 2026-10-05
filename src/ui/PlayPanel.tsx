@@ -1078,6 +1078,22 @@ export function PlayPanel({
   const firstPerson =
     !state.mechanismOverview && report.cameraMode === "first-person";
   const inVehicle = !!(state.vehicleControl || occupied);
+  // A one-body source car explains, in plain words, what moves and what rides.
+  const vehicleWarnings =
+    (inVehicle ? nearbyReport?.warnings : undefined) ?? [];
+  const vehicleNotes = vehicleWarnings.slice(
+    Math.max(
+      0,
+      vehicleWarnings.findIndex((w) =>
+        w.startsWith("This car moves as one piece"),
+      ),
+    ),
+  );
+  const oneBodyNotes = vehicleWarnings.some((w) =>
+    w.startsWith("This car moves as one piece"),
+  )
+    ? vehicleNotes
+    : [];
   const status: { icon: IconName; text: string } = state.mechanismOverview
     ? { icon: "hand", text: "Controlling mechanism" }
     : occupied
@@ -1377,6 +1393,9 @@ export function PlayPanel({
                 ? "Seated driver: the throttle and steering pads, or the movement keys, drive the vehicle."
                 : "Use the throttle and steering pads, or the movement keys, to drive. Drag to orbit the vehicle. Get out returns you beside it."}
             </p>
+          )}
+          {oneBodyNotes.length > 0 && (
+            <p className="play-menu-note">{oneBodyNotes.join(" ")}</p>
           )}
           {!remoteOpen && <PlaySettings play={play} report={report} />}
           <PlayKeySettings
