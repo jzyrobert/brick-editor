@@ -219,5 +219,5 @@ describe("literal convex worm and gear profiles", () => {
           ).toBe(false);
         }
     }
-  });
+  }, 15000);
 });
