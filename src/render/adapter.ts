@@ -1,4 +1,10 @@
 import { PlayMemberGeometryCapture } from "./play-member-geometry";
+import {
+  bindMotorComponentSources,
+  partitionMotorSourcePrototype,
+  motorSourceComponentController,
+  type MotorSourceComponentPartition,
+} from "./source-component-geometry";
 import { validateRequest } from "../core/validate-request";
 import { normalizeBfcSource } from "./bfc-source";
 import {
@@ -4012,6 +4018,163 @@ export class SceneAdapter {
     return proxy ?? undefined;
   }
   private memberGeometry = new PlayMemberGeometryCapture();
+  private motorComponents?: {
+    project: Project;
+    revision: number;
+    partitions: Map<string, MotorSourceComponentPartition>;
+    controllers: Map<
+      string,
+      {
+        object: THREE.Group;
+        controller: ReturnType<typeof motorSourceComponentController>;
+      }
+    >;
+  };
+  /** Capture the actual motor case/output separately while retaining the one
+   * document occurrence. This grants no mounting, motor or physics admission. */
+  async playMotorComponentGeometry(requested: readonly string[]) {
+    ensure(
+      !this.transformDragging,
+      "INVALID_INPUT",
+      "Finish or cancel the transform gesture before entering Play",
+    );
+    await this.ready();
+    const project = this.project;
+    ensure(project, "INVALID_INPUT", "Open a project before entering Play");
+    const revision = this.revision;
+    const ids = [...new Set(requested)];
+    ensure(
+      ids.length <= 32,
+      "LIMIT_EXCEEDED",
+      "Too many motor components for the mechanical geometry budget",
+    );
+    const lookup = new Map(this.projectOccurrences().map((o) => [o.id, o]));
+    for (const id of ids)
+      ensure(
+        lookup.get(id)?.namespace === "official" &&
+          lookup.get(id)?.node.ref === "99499.dat" &&
+          this.handles.has(id),
+        "INVALID_INPUT",
+        "Choose complete loaded source motor geometry",
+      );
+    const sources: Record<string, string> = Object.create(null);
+    const pending = ids.length ? ["99499.dat"] : [];
+    let characters = 0;
+    while (pending.length) {
+      const ref = pending.pop()!;
+      if (Object.hasOwn(sources, ref)) continue;
+      const block = this.libraryBlocks.get(ref);
+      const text = block
+        ? block.slice(block.indexOf("\n") + 1)
+        : fullSource(ref);
+      ensure(
+        typeof text === "string",
+        "REFERENCE_MISSING",
+        "Motor source geometry is not fully loaded",
+      );
+      characters += text.length;
+      ensure(
+        Object.keys(sources).length < 1024 && characters <= 8_000_000,
+        "LIMIT_EXCEEDED",
+        "Motor source closure exceeds the review budget",
+      );
+      sources[ref] = text;
+      pending.push(...directReferences(text));
+    }
+    const partitions = new Map<string, MotorSourceComponentPartition>();
+    if (ids.length) {
+      const binding = await bindMotorComponentSources(sources, project);
+      for (const id of ids)
+        partitions.set(
+          id,
+          await partitionMotorSourcePrototype(
+            project,
+            lookup.get(id)!,
+            this.handles.get(id)!.prototype,
+            binding,
+          ),
+        );
+    }
+    ensure(
+      this.project === project && this.revision === revision,
+      "REVISION_CONFLICT",
+      "The build changed while its motor components were loading",
+    );
+    this.clearMotorComponents();
+    this.motorComponents = {
+      project,
+      revision,
+      partitions,
+      controllers: new Map(),
+    };
+    return Object.fromEntries(
+      [...partitions].map(([id, partition]) => [
+        id,
+        {
+          case: partition.components[0].geometry,
+          output: partition.components[1].geometry,
+        },
+      ]),
+    );
+  }
+  private clearMotorComponents() {
+    for (const entry of this.motorComponents?.controllers.values() ?? [])
+      entry.controller.reset();
+    this.motorComponents = undefined;
+  }
+  /** Parent carrier transforms are applied separately. These transient angles
+   * rotate only the independently reviewed output branch of each live motor. */
+  applyTransientMotorOutputs(angles: Readonly<Record<string, number>>) {
+    ensure(
+      !this.captureActive,
+      "CAPTURE_BUSY",
+      "Wait for capture before changing the motor pose",
+    );
+    const state = this.motorComponents;
+    ensure(
+      state &&
+        state.project === this.project &&
+        state.revision === this.revision,
+      "REVISION_CONFLICT",
+      "Prepare motor components from the current project first",
+    );
+    const ids = Object.keys(angles);
+    ensure(
+      ids.every(
+        (id) =>
+          state.partitions.has(id) &&
+          Number.isFinite(angles[id]) &&
+          Math.abs(angles[id]) <= 1e9,
+      ),
+      "INVALID_INPUT",
+      "Motor output angles need reviewed components and bounded finite values",
+    );
+    const dynamic = this.batches.dynamicIds;
+    if (ids.some((id) => !dynamic.has(id)))
+      this.setDynamic([...dynamic, ...ids]);
+    else
+      for (const id of ids) {
+        const handle = this.handles.get(id)!;
+        if (!handle.object) this.handles.materialize(handle);
+      }
+    for (const id of ids) {
+      const handle = this.handles.get(id)!;
+      let entry = state.controllers.get(id);
+      if (entry?.object !== handle.object) {
+        entry?.controller.reset();
+        entry = {
+          object: handle.object!,
+          controller: motorSourceComponentController(
+            handle,
+            state.partitions.get(id)!,
+          ),
+        };
+        state.controllers.set(id, entry);
+      }
+      entry.controller.setOutputAngle(angles[id]);
+    }
+    this.invalidate();
+  }
   /** Capture canonical surfaces without rounding an occurrence's world placement. */
   async playMemberGeometry(ids: readonly string[]) {
     ensure(
@@ -4498,6 +4661,7 @@ export class SceneAdapter {
       [...this.handles].map(([id, group]) => [id, group.matrix.clone()]),
     );
     return () => {
+      this.clearMotorComponents();
       for (const [id, matrix] of matrices) {
         const group = this.handles.get(id);
         if (group) {
@@ -6139,6 +6303,7 @@ export class SceneAdapter {
     };
   }
   dispose() {
+    this.clearMotorComponents();
     this.disposed = true;
     clearTimeout(this.motionTimer);
     this.contextWork.abort();
