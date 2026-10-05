@@ -19,6 +19,10 @@ import {
   type AngularEquation,
 } from "../mechanisms/angular-equations";
 import { NativeGrippers, type NativeGripRig } from "./grippers";
+import {
+  chassisGroundClearance,
+  memberMassProperties,
+} from "./compact-vehicle";
 import type { SeatedPlacement } from "./seated-profile";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { isArocsBallSolid } from "./arocs-ball-contacts";
@@ -156,6 +160,12 @@ export function validateDynamicRigSources(
         `Dynamic group ${group.id} needs complete geometry from the Play revision`,
       );
       if (anchoredGroup(rig, group.id)) continue;
+      // A one-body source car brings its prepared hull compound instead.
+      const compact = source.articulation?.chassis;
+      if (compact && source.articulation!.chassisGroup === group.id) {
+        members += compact.hulls.length;
+        continue;
+      }
       for (const id of group.occurrenceIds) {
         members++;
         const mesh = source.members?.[id];
@@ -401,8 +411,10 @@ export class DynamicRig {
     this.meshes = source.groups;
     this.contactPolicy =
       prepared?.policy ?? new MechanicalContactPolicy(this.rig, source);
+    // A one-body source vehicle builds its own chassis compound below.
     const solids =
-      prepared?.solids ?? mechanicalSolids(source, this.contactPolicy);
+      prepared?.solids ??
+      (source.articulation ? [] : mechanicalSolids(source, this.contactPolicy));
     const stationary =
       prepared?.stationary ?? mechanicalStationarySolids(source, solids);
     const friction = this.settings.friction ?? DYNAMIC_DEFAULTS.friction,
@@ -458,6 +470,18 @@ export class DynamicRig {
         mirrors: [],
         colliders: 0,
       };
+      if (source.articulation?.chassisGroup === group.id && !anchored) {
+        this.compactChassis(
+          source,
+          group,
+          body,
+          entry,
+          colliderGroups,
+          friction,
+        );
+        this.bodies.set(group.id, entry);
+        continue;
+      }
       if (anchored) {
         // Anchored groups never move: exact trimesh keeps door-frame openings.
         const fixedMembers = source.members
@@ -773,6 +797,105 @@ export class DynamicRig {
         : {}),
     });
   }
+  /**
+   * One chassis body for a one-body source vehicle: occupancy-merged convex
+   * hulls of its colliding members in ONE compound collider, with mass from the
+   * members' own hulls. Drawn-only ride-along parts (stickers, hoses, steering
+   * wheel) get no collision. See source-vehicle-articulation.ts.
+   */
+  private compactChassis(
+    source: DynamicRigSource,
+    group: MotionRig["groups"][number],
+    body: RAPIER.RigidBody,
+    entry: Body,
+    colliderGroups: number,
+    friction: number,
+  ) {
+    const chassis = source.articulation!.chassis;
+    ensure(
+      chassis,
+      "INVALID_INPUT",
+      "This car's shape was not prepared to move as one piece",
+    );
+    const wheels = this.rig.vehicle!.wheels.map((w) => ({
+      center: this.rig.groups.find((g) => g.id === w.groupId)!.frame.position,
+      radius: w.radius,
+    }));
+    const suspension = this.settings.suspension ?? DYNAMIC_DEFAULTS.suspension;
+    ensure(
+      chassisGroundClearance(
+        chassis.hulls.map((points) => ({ points })),
+        wheels,
+      ) >= suspension.travel,
+      "INVALID_INPUT",
+      "This car sits too low for its wheels to drive it as one piece",
+    );
+    const origin = group.frame.position,
+      shapes = chassis.hulls.map((points) => {
+        const local = new Float32Array(points.length * 3);
+        points.forEach((p, i) => {
+          const q = toPhysics([
+            p[0] - origin[0],
+            p[1] - origin[1],
+            p[2] - origin[2],
+          ]);
+          local.set([q.x, q.y, q.z], i * 3);
+        });
+        const desc = RAPIER.ColliderDesc.convexHull(local);
+        ensure(desc, "INVALID_INPUT", "A chassis hull is degenerate");
+        return desc.shape;
+      });
+    const compound = new RAPIER.Compound(
+      shapes,
+      shapes.map(() => ({ x: 0, y: 0, z: 0 })),
+      shapes.map(() => ({ x: 0, y: 0, z: 0, w: 1 })),
+    );
+    const collider = this.world.createCollider(
+      new RAPIER.ColliderDesc(compound)
+        .setDensity(0)
+        .setFriction(friction)
+        .setCollisionGroups(colliderGroups)
+        .setActiveHooks(RAPIER.ActiveHooks.FILTER_CONTACT_PAIRS),
+      body,
+    );
+    this.contactSolids.set(collider.handle, { groupId: group.id });
+    const start = body.translation();
+    entry.mirrors.push(
+      this.characterWorld.createCollider(
+        new RAPIER.ColliderDesc(compound).setTranslation(
+          start.x,
+          start.y,
+          start.z,
+        ),
+      ),
+    );
+    entry.colliders++;
+    const mass = memberMassProperties(
+      chassis.massParts,
+      origin,
+      DYNAMIC_DEFAULTS.density,
+    );
+    body.setAdditionalMassProperties(
+      mass.mass,
+      mass.centerOfMass,
+      mass.principalInertia,
+      { x: 0, y: 0, z: 0, w: 1 },
+      true,
+    );
+    this.compactReport = {
+      hulls: chassis.hulls.length,
+      members: chassis.members,
+      drawnOnly: chassis.drawnOnly,
+      massKg: mass.mass,
+    };
+  }
+  /** Measured shape of a one-body source chassis, for reports and tests. */
+  compactReport?: {
+    hulls: number;
+    members: number;
+    drawnOnly: number;
+    massKg: number;
+  };
   private createVehicle() {
     const v = this.rig.vehicle!,
       chassis = this.bodies.get(v.chassisGroup)!;

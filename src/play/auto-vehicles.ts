@@ -13,7 +13,12 @@ import type { MotionRig, RigidGroup } from "../mechanisms/types";
 import { validateRig } from "../mechanisms/kinematic";
 import { occurrenceBounds } from "./trains";
 import {
+  planSourceVehicleArticulation,
+  type SourceVehicleArticulation,
+} from "./source-vehicle-articulation";
+import {
   sourceVehicleAssemblyReview,
+  type SourceVehicleAssembly,
   type SourceVehicleAssemblyReview,
 } from "./source-vehicle-assembly";
 import {
@@ -104,6 +109,9 @@ export type AutoVehicle = {
   wheelOccurrenceIds: string[];
   wheelbase: number;
   rule: "source-wheel-pin-layout" | "source-retained-axle-layout";
+  /** One-body drawing plan for a source graph with hinges, steering arms and
+   * bearings (session-only; see source-vehicle-articulation.ts). */
+  articulation?: SourceVehicleArticulation;
 };
 export type AutoVehicleSkip = { occurrenceIds: string[]; reason: string };
 export type DerivedVehicles = {
@@ -674,6 +682,37 @@ export function authoredVehicleWheelSupport(
 
 /** Session-only, source-preserving vehicles. Detect after authored rigs, doors
  * and trains reserve their members. No project write or native allocation. */
+/** The one-body source profile explains every boundary, or says why not. */
+function compactPlan(
+  assembly: SourceVehicleAssembly,
+  wheels: Wheel[],
+  groupIds: string[],
+  lookup: ReadonlyMap<string, Occurrence>,
+) {
+  return planSourceVehicleArticulation(
+    assembly,
+    wheels.map((w, i) => ({
+      groupId: groupIds[i],
+      steering: !!w.steering,
+      members: wheelMembers(w).map((o) => o.id),
+      carrierId: w.holder.id,
+    })),
+    lookup,
+  );
+}
+let compactLookup: ReadonlyMap<string, Occurrence> = new Map();
+function compactReason(assembly: SourceVehicleAssembly, wheels: Wheel[]) {
+  const plan = compactPlan(
+    assembly,
+    wheels,
+    wheels.map((_, i) => `wheel-${i + 1}`),
+    compactLookup,
+  );
+  return "reason" in plan
+    ? `This vehicle’s axle and hinge assembly is not supported in Play yet: ${plan.reason}`
+    : undefined;
+}
+
 export function deriveVehicleRigs(
   project: Project,
   options: AutoVehicleOptions,
@@ -695,6 +734,7 @@ export function deriveVehicleRigs(
     ),
     boxes = options.bounds ?? occurrenceBounds(project),
     found = mountedWheels(all, options.reserved, boxes),
+    lookup = new Map(all.map((o) => [o.id, o])),
     result: DerivedVehicles = {
       rigs: {},
       vehicles: [],
@@ -726,6 +766,7 @@ export function deriveVehicleRigs(
   }
   // Traverse actual source ownership for these mounts rather than their MPD
   // ancestors. Unsupported multi-body assemblies remain wholly in the world.
+  compactLookup = lookup;
   for (const assembly of result.sourceAssemblies?.assemblies ?? []) {
     const carriers = new Set(assembly.carrierOccurrenceIds),
       wheels = found.wheels.filter(
@@ -738,7 +779,7 @@ export function deriveVehicleRigs(
           : assembly.reservedOccurrenceIds.length
             ? "This source vehicle is connected to another active mechanism"
             : !assembly.rigidWheelProfileCompatible
-              ? "This vehicle’s axle and hinge assembly is not supported in Play yet"
+              ? compactReason(assembly, wheels)
               : undefined;
     if (reason) {
       result.skipped.push({
@@ -879,7 +920,32 @@ export function deriveVehicleRigs(
       );
       continue;
     }
-    if (chassis.some((o) => !near(o) || !validBox(boxes(o)))) {
+    // A reviewed source graph owns its members by attachment evidence, so a
+    // long plate spanning two axles only has to stay inside the envelope of
+    // all its holders, not inside one holder's box.
+    const envelope = (o: Occurrence) => {
+      const b = boxes(o);
+      if (!validBox(b)) return false;
+      const lo = [0, 1, 2].map((k) =>
+          Math.min(...holders.map((h) => h.transform.position[k])),
+        ),
+        hi = [0, 1, 2].map((k) =>
+          Math.max(...holders.map((h) => h.transform.position[k])),
+        );
+      return (
+        b.min[0] >= lo[0] - 260 &&
+        b.max[0] <= hi[0] + 260 &&
+        b.min[1] >= lo[1] - 320 &&
+        b.max[1] <= hi[1] + 40 &&
+        b.min[2] >= lo[2] - 260 &&
+        b.max[2] <= hi[2] + 260
+      );
+    };
+    if (
+      chassis.some((o) =>
+        sourceChassis ? !envelope(o) : !near(o) || !validBox(boxes(o)),
+      )
+    ) {
       refuse("The chassis submodel extends beyond the bounded wheel assembly");
       continue;
     }
@@ -965,6 +1031,19 @@ export function deriveVehicleRigs(
       { ...project, motionRigs: { ...project.motionRigs, [rigId]: rig } },
       rig,
     );
+    const articulation =
+      sourceAssembly && !sourceAssembly.rigidWheelProfileCompatible
+        ? compactPlan(
+            sourceAssembly,
+            ordered,
+            ordered.map((_, i) => `wheel-${i + 1}`),
+            lookup,
+          )
+        : undefined;
+    if (articulation && "reason" in articulation) {
+      refuse(articulation.reason);
+      continue;
+    }
     result.rigs[rigId] = rig;
     result.vehicles.push({
       rigId,
@@ -974,6 +1053,7 @@ export function deriveVehicleRigs(
       rule: wheels.some((w) => w.mountMembers)
         ? "source-retained-axle-layout"
         : "source-wheel-pin-layout",
+      ...(articulation ? { articulation } : {}),
     });
   }
   const claimed = new Set(result.vehicles.flatMap((v) => v.occurrenceIds));

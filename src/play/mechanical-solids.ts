@@ -1414,8 +1414,11 @@ export function prepareMechanicalSources(sources: PlayMechanismSource[]) {
         source.project.motionRigs[source.rigId],
         source,
       ),
-      solids = mechanicalSolids(source, policy),
-      stationary = mechanicalStationarySolids(source, solids);
+      // A one-body source vehicle builds its own chassis compound.
+      solids = source.articulation ? [] : mechanicalSolids(source, policy),
+      stationary = source.articulation
+        ? []
+        : mechanicalStationarySolids(source, solids);
     // Ordinary fixed surfaces retain their source-triangle budget; reviewed
     // fixed compounds spend every native primitive from the shared cap.
     count +=
