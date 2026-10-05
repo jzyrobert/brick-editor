@@ -2,6 +2,8 @@
 
 Unless explicitly listed as third-party below, model arrangements are original synthetic fixtures created for this project and dedicated under CC0-1.0. Downloaded OMR models retain their own author and licence notices. Referenced official part geometry has its own retained CC BY 4.0 notices under `public/libraries` and `public/notices/LDRAW.txt`.
 
+- `play/official-cars/5540-wheel-mounts.ldr`: attributed 52-occurrence wheel/mount excerpt from N. W. Perry [Plastikean]'s CCAL 2.0 public OMR model [5540-1.mpd](https://library.ldraw.org/library/omr/5540-1.mpd), original SHA-256 `2f371753f4df8a60124a099e1af98986024a24102f39446d2401b97d42812715`. Actual source positions, bases, colours and official part references are flattened unchanged; the connecting chassis is deliberately omitted. This is a mount review fixture, not a drivable full-set reconstruction. The complete original remains gitignored. See [the source review](../docs/reviews/MODEL-TEAM-WHEEL-MOUNTS.md).
+
 - `ldraw/nested.mpd`: two instances of a shared room; inherited and fixed colour; root STEP; unknown metadata retention.
 - `ldraw/custom.mpd`: original triangles, fixed yellow decoration, ordinary and conditional lines, BFC CCW. Its front faces negative LDraw Z; it is visual-only geometry, not a purchase-ready catalogue part.
 - `ldraw/200-parts.mpd`: deterministic 20×10 grid of 3001 references, alternating red/white; expected 100 units per colour and 200 total.
