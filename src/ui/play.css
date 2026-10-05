@@ -390,6 +390,93 @@
   border-color: var(--sun);
 }
 
+/* ---- Driving: throttle under the left thumb, steering under the right ---- */
+.play-drive-pads {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.play-pad {
+  position: absolute;
+  bottom: var(--play-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(29, 34, 48, 0.26);
+  border: 2px solid var(--play-glass-line);
+  color: var(--chalk);
+  pointer-events: auto;
+  touch-action: none;
+  opacity: 0.85;
+  transition: opacity 0.15s ease-out;
+}
+.play-pad.is-held {
+  opacity: 1;
+  background: rgba(29, 34, 48, 0.36);
+}
+.play-pad-throttle {
+  --travel: 52px;
+  left: calc(var(--play-left) + 4px);
+  flex-direction: column;
+  width: 72px;
+  height: 176px;
+}
+.play-pad-steer {
+  --travel: 58px;
+  right: var(--play-right);
+  width: 188px;
+  height: 72px;
+}
+.play-pad-throttle .play-pad-knob {
+  transform: translateY(calc(var(--v, 0) * -1 * var(--travel)));
+}
+.play-pad-steer .play-pad-knob {
+  transform: translateX(calc(var(--v, 0) * var(--travel)));
+}
+.play-pad-end {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  opacity: 0.75;
+}
+/* The knob sits in the middle of the track and slides along it. */
+.play-pad-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -28px 0 0 -28px;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--hud);
+  border: 2px solid var(--play-glass-line);
+  box-shadow: var(--shadow-slab);
+  font-size: var(--text-label);
+  font-weight: 700;
+  pointer-events: none;
+}
+.play-pad.is-held .play-pad-knob {
+  border-color: var(--sun);
+}
+.play-overlay.has-mouse .play-pad {
+  opacity: 0.7;
+}
+
+/* Short landscape views: the throttle shortens to stay below the top bar. */
+@media (max-height: 420px) {
+  .play-pad-throttle {
+    --travel: 34px;
+    height: 140px;
+  }
+}
+
 /* ---- Action cluster at the right thumb ---- */
 .play-actions {
   position: absolute;
@@ -448,6 +535,10 @@
 .play-overlay.is-vehicle .play-interaction,
 .play-overlay.is-riding .play-interaction {
   bottom: var(--play-bottom);
+}
+/* Get out and Stop driving stand above the steering pad. */
+.play-overlay:has(.play-drive-pads) .play-interaction {
+  bottom: calc(var(--play-bottom) + 72px + 12px);
 }
 .play-prompt-row {
   display: flex;

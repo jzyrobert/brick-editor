@@ -96,7 +96,7 @@ for (const width of [360, 1080, 1440])
       if (width !== 1440) {
         const client = await context.newCDPSession(page);
         const stick = (await page
-          .getByRole("group", { name: "Movement joystick" })
+          .getByRole("group", { name: "Throttle: forward and back" })
           .boundingBox())!;
         const look = (await page
           .getByLabel("Drag to look around")
@@ -106,8 +106,8 @@ for (const width of [360, 1080, 1440])
           touchPoints: [
             {
               id: 1,
-              x: stick.x + stick.width * 0.3,
-              y: stick.y + stick.height * 0.2,
+              x: stick.x + stick.width / 2,
+              y: stick.y + stick.height * 0.15,
             },
             {
               id: 2,
@@ -121,8 +121,8 @@ for (const width of [360, 1080, 1440])
           touchPoints: [
             {
               id: 1,
-              x: stick.x + stick.width * 0.3,
-              y: stick.y + stick.height * 0.2,
+              x: stick.x + stick.width / 2,
+              y: stick.y + stick.height * 0.15,
             },
             {
               id: 2,
@@ -395,14 +395,18 @@ test("blocked seat exits retain the driver and become usable after reversing cle
       ?.seatId,
   ).toBe("driver");
   const actionBox = (await page.locator(".play-interaction").boundingBox())!;
-  const stickBox = (await page
-    .getByRole("group", { name: "Movement joystick" })
-    .boundingBox())!;
-  // The blocked-exit note and its action sit clear of the stick.
-  expect(
-    actionBox.x >= stickBox.x + stickBox.width ||
-      actionBox.y + actionBox.height <= stickBox.y,
-  ).toBe(true);
+  // The blocked-exit note and its action sit clear of both driving pads.
+  for (const name of [
+    "Throttle: forward and back",
+    "Steering: left and right",
+  ]) {
+    const pad = (await page.getByRole("group", { name }).boundingBox())!;
+    expect(
+      actionBox.x >= pad.x + pad.width ||
+        actionBox.x + actionBox.width <= pad.x ||
+        actionBox.y + actionBox.height <= pad.y,
+    ).toBe(true);
+  }
   await page.screenshot({
     path: test.info().outputPath("blocked-exit-360.png"),
   });

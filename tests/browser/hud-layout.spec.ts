@@ -267,6 +267,7 @@ const PLAY_SLOTS = [
   ".play-start-hint",
   ".play-mechanism",
   ".play-stick",
+  ".play-pad",
   ".play-actions",
   ".play-interaction",
   ".play-menu",

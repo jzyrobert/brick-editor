@@ -272,8 +272,12 @@ for (const [width, height, dynamic] of sizes)
       expect(statusBox.x + statusBox.width).toBeLessThanOrEqual(toolsBox.x - 7);
       expect(pauseBox.width).toBeGreaterThanOrEqual(44);
       expect(pauseBox.height).toBeGreaterThanOrEqual(44);
-      const headerBox = (await page.locator(".site-header").boundingBox())!;
-      expect(topBox.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height);
+      // Phones on their side hide the site header for Play; otherwise the
+      // Play bar starts below it.
+      const headerBox = await page.locator(".site-header").boundingBox();
+      expect(topBox.y).toBeGreaterThanOrEqual(
+        headerBox ? headerBox.y + headerBox.height : 0,
+      );
       expect(metrics.box.y + metrics.box.height).toBeLessThanOrEqual(height);
       for (const button of metrics.buttons) {
         expect(button.box.height).toBeGreaterThanOrEqual(44);

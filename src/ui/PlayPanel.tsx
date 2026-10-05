@@ -59,6 +59,72 @@ import {
 /** Full stick deflection, in CSS px from where the thumb landed. */
 const STICK_TRAVEL = 44;
 
+/**
+ * One axis of the driving controls: a track whose knob follows the thumb
+ * along it (from the track's middle) and springs back when released. The
+ * throttle runs up/down, the steering left/right; each keeps its own finger.
+ */
+function DrivePad({
+  axis,
+  label,
+  value,
+  onChange,
+}: {
+  axis: "throttle" | "steer";
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  const pointer = useRef<number | null>(null);
+  const read = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const v =
+      axis === "steer"
+        ? (e.clientX - (r.left + r.width / 2)) / (r.width / 2 - 28)
+        : -(e.clientY - (r.top + r.height / 2)) / (r.height / 2 - 28);
+    // A small dead zone keeps a resting thumb from creeping.
+    const clamped = Math.max(-1, Math.min(1, v));
+    return Math.abs(clamped) < 0.12 ? 0 : clamped;
+  };
+  const release = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (pointer.current !== e.pointerId) return;
+    pointer.current = null;
+    onChange(0);
+  };
+  return (
+    <div
+      className={`play-pad play-pad-${axis}` + (value ? " is-held" : "")}
+      role="group"
+      aria-label={label}
+      onPointerDown={(e) => {
+        if (pointer.current !== null) return;
+        pointer.current = e.pointerId;
+        e.currentTarget.setPointerCapture?.(e.pointerId);
+        onChange(read(e));
+      }}
+      onPointerMove={(e) => {
+        if (pointer.current === e.pointerId) onChange(read(e));
+      }}
+      onPointerUp={release}
+      onPointerCancel={release}
+      onLostPointerCapture={release}
+    >
+      <span className="play-pad-end" aria-hidden="true">
+        <Icon name={axis === "steer" ? "arrowLeft" : "arrowUp"} size={18} />
+      </span>
+      <span
+        className="play-pad-knob"
+        style={{ "--v": value } as React.CSSProperties}
+      >
+        {axis === "steer" ? "Steer" : value < 0 ? "Back" : "Go"}
+      </span>
+      <span className="play-pad-end" aria-hidden="true">
+        <Icon name={axis === "steer" ? "arrowRight" : "arrowDown"} size={18} />
+      </span>
+    </div>
+  );
+}
+
 export function PlayPanel({
   play,
   bookmark,
@@ -205,6 +271,13 @@ export function PlayPanel({
   const runRef = useRef(run);
   runRef.current = run;
   const [stick, setStick] = useState([0, 0]);
+  // Driving splits the stick: throttle (z) and steering (x) pads.
+  const [drive, setDrive] = useState({ x: 0, z: 0 });
+  const steerDrive = (axis: "x" | "z", value: number) => {
+    move.current = { ...move.current, [axis]: value };
+    setDrive((d) => ({ ...d, [axis]: value }));
+    input();
+  };
   const [floating, setFloating] = useState<{ x: number; y: number } | null>(
     null,
   );
@@ -1162,8 +1235,8 @@ export function PlayPanel({
           {inVehicle && (
             <p className="play-menu-note">
               {occupied
-                ? "Seated driver: the joystick or movement keys drive and steer."
-                : "The joystick or movement keys drive and steer. You stay on foot; included walls and other rigs can stop the vehicle."}
+                ? "Seated driver: the throttle and steering pads, or the movement keys, drive the vehicle."
+                : "The throttle and steering pads, or the movement keys, drive it. You stay on foot; included walls and other rigs can stop the vehicle."}
             </p>
           )}
           {!remoteOpen && <PlaySettings play={play} report={report} />}
@@ -1240,8 +1313,24 @@ export function PlayPanel({
               Drag to look
             </div>
           )}
+          {inVehicle && !riding && !remoteOpen && (
+            <div className="play-drive-pads">
+              <DrivePad
+                axis="throttle"
+                label="Throttle: forward and back"
+                value={drive.z}
+                onChange={(v) => steerDrive("z", v)}
+              />
+              <DrivePad
+                axis="steer"
+                label="Steering: left and right"
+                value={drive.x}
+                onChange={(v) => steerDrive("x", v)}
+              />
+            </div>
+          )}
           {/* Riding a train ignores walking input: no stick or actions. */}
-          {!riding && !remoteOpen && (
+          {!riding && !remoteOpen && !inVehicle && (
             <div
               className="play-stick-zone"
               onPointerDown={stickDown}

@@ -126,17 +126,27 @@ for (const viewport of [
       expect(driven.position[0]).toBeCloseTo(start.position[0], 3);
       expect(driven.position[2]).toBeCloseTo(start.position[2], 3);
       if (viewport.width !== 1440) {
-        const stick = (await page
-          .getByRole("group", { name: "Movement joystick" })
+        // Driving splits the stick: a throttle pad and a steering pad, one
+        // thumb each.
+        const throttle = (await page
+          .getByRole("group", { name: "Throttle: forward and back" })
           .boundingBox())!;
+        const steer = (await page
+          .getByRole("group", { name: "Steering: left and right" })
+          .boundingBox())!;
+        const forward = {
+          x: throttle.x + throttle.width / 2,
+          y: throttle.y + throttle.height * 0.12,
+        };
         const client = await context.newCDPSession(page);
         await client.send("Input.dispatchTouchEvent", {
           type: "touchStart",
           touchPoints: [
+            { id: 1, ...forward },
             {
-              id: 1,
-              x: stick.x + stick.width * 0.3,
-              y: stick.y + stick.height * 0.2,
+              id: 3,
+              x: steer.x + steer.width * 0.15,
+              y: steer.y + steer.height / 2,
             },
           ],
         });
@@ -157,10 +167,11 @@ for (const viewport of [
         await client.send("Input.dispatchTouchEvent", {
           type: "touchStart",
           touchPoints: [
+            { id: 2, ...forward },
             {
-              id: 2,
-              x: stick.x + stick.width * 0.7,
-              y: stick.y + stick.height * 0.2,
+              id: 4,
+              x: steer.x + steer.width * 0.85,
+              y: steer.y + steer.height / 2,
             },
           ],
         });
