@@ -1,7 +1,31 @@
+import {
+  requireArocsBallRestConstruction,
+  readPreparedArocsBallRest,
+  type PreparedArocsBallRest,
+} from "./arocs-ball-rest";
+import {
+  isArocsBallRestSolid,
+  arocsBallRestNativeCover,
+} from "./arocs-ball-rest-solids";
+import {
+  createArocsBallRestJoint,
+  attachArocsBallNativeRest,
+} from "./arocs-ball-native-bridge";
+import type { ArocsBallNativeCover } from "./arocs-ball-native-covers";
 import { Quaternion, Vector3 } from "three";
+import {
+  AngularEquationSolver,
+  type AngularPort,
+  type AngularEquation,
+} from "../mechanisms/angular-equations";
 import { NativeGrippers, type NativeGripRig } from "./grippers";
 import type { SeatedPlacement } from "./seated-profile";
 import RAPIER from "@dimforge/rapier3d-compat";
+import { isArocsBallSolid } from "./arocs-ball-contacts";
+import {
+  isMotorComponentSolid,
+  motorOutputOwnedMembers,
+} from "./motor-source-components";
 import { effectiveMotor, validateMotorInput } from "./motor-input";
 import { occurrences } from "../core/document";
 import { worldMechanicalFeatures } from "../mechanisms/mechanical-contacts";
@@ -25,6 +49,7 @@ import {
 } from "./mechanical-solids";
 import {
   transmissionMap,
+  transmissionRatio,
   transmissionSpeedLimit,
   TRANSMISSION_MAX_SPEED,
   type TransmissionMap,
@@ -280,6 +305,19 @@ const rotate = (
 
 /** One dynamically simulated authored rig. */
 export class DynamicRig {
+  private nativeRest: readonly PreparedArocsBallRest[] = [];
+  private restControllers = new Map<
+    string,
+    ReturnType<typeof attachArocsBallNativeRest>
+  >();
+  private restCovers: {
+    cover: ArocsBallNativeCover;
+    collider: RAPIER.Collider;
+  }[] = [];
+  private requireRestReady() {
+    for (const controller of this.restControllers.values())
+      controller.requireReady();
+  }
   private contactEvents?: RAPIER.EventQueue;
   /** The pinned wrapper only invokes hooks through its event-queue path. */
   stepPhysics() {
@@ -301,6 +339,13 @@ export class DynamicRig {
     filterIntersectionPair: () => true,
   };
   contactAllowed(a: number, b: number) {
+    let reviewedPair = false;
+    for (const controller of this.restControllers.values()) {
+      const allowed = controller.contactAllowed(a, b);
+      if (allowed === true) return false;
+      reviewedPair ||= allowed !== undefined;
+    }
+    if (reviewedPair) return true;
     const sa = this.contactSolids.get(a),
       sb = this.contactSolids.get(b);
     if (!sa || !sb) return true;
@@ -314,6 +359,7 @@ export class DynamicRig {
   private bodies = new Map<string, Body>();
   private joints = new Map<string, JointControl>();
   private transmissions: TransmissionMap;
+  private angularEquations?: AngularEquationSolver;
   private rackTransmissionJoints = new Set<string>();
   private vehicle?: {
     controller: RAPIER.DynamicRayCastVehicleController;
@@ -342,6 +388,7 @@ export class DynamicRig {
     prepared?: PreparedMechanicalSource,
   ) {
     validatePlayMechanismSource(source, revision);
+    this.nativeRest = requireArocsBallRestConstruction(source);
     this.rigId = source.rigId;
     this.rig = structuredClone(source.project.motionRigs[source.rigId]);
     this.transmissions = transmissionMap(this.rig);
@@ -386,7 +433,8 @@ export class DynamicRig {
           .setAngularDamping(0.1)
           .setCcdEnabled(!anchored),
       );
-      if (!anchored && articulated) body.setAdditionalSolverIterations(8);
+      if (!anchored && (articulated || this.nativeRest.length))
+        body.setAdditionalSolverIterations(8);
       // A slider on a fixed carrier has no world rotational degrees of
       // freedom. Realize those existing joint locks on the body too: solver
       // drift under a translation obstruction can otherwise rotate the guide.
@@ -412,24 +460,34 @@ export class DynamicRig {
       if (anchored) {
         // Anchored groups never move: exact trimesh keeps door-frame openings.
         const fixedMembers = source.members
-          ? group.occurrenceIds.map((id) => [id, source.members[id]] as const)
+          ? [
+              ...group.occurrenceIds.map(
+                (id) => [id, source.members[id]] as const,
+              ),
+              ...motorOutputOwnedMembers(source, group),
+            ]
           : [[undefined, source.groups[group.id]] as const];
         for (const [memberId, mesh] of fixedMembers) {
           const reviewed = stationary.filter(
             (s) =>
               s.groupId === group.id &&
               s.memberId === memberId &&
-              s.reviewedPlaneClass !== undefined,
+              (s.reviewedPlaneClass !== undefined ||
+                isArocsBallSolid(s) ||
+                isArocsBallRestSolid(s) ||
+                isMotorComponentSolid(s)),
           );
           if (reviewed.length) {
             const q = frameRotation(group.frame);
             for (const solid of reviewed) {
               const shape = solid.shape as RAPIER.Compound;
-              const native = new RAPIER.Compound(
-                shape.shapes,
-                shape.positions.map((p) => rotate(q, p)),
-                shape.rotations.map((r) => quatMul(q, r)),
-              );
+              const native =
+                arocsBallRestNativeCover(solid)?.shape ??
+                new RAPIER.Compound(
+                  shape.shapes,
+                  shape.positions.map((p) => rotate(q, p)),
+                  shape.rotations.map((r) => quatMul(q, r)),
+                );
               const collider = world.createCollider(
                 new RAPIER.ColliderDesc(native)
                   .setFriction(friction)
@@ -438,6 +496,9 @@ export class DynamicRig {
                 body,
               );
               this.contactSolids.set(collider.handle, solid);
+              const restCover = arocsBallRestNativeCover(solid);
+              if (restCover)
+                this.restCovers.push({ cover: restCover, collider });
               entry.mirrors.push(
                 characterWorld.createCollider(
                   new RAPIER.ColliderDesc(native).setTranslation(
@@ -511,13 +572,18 @@ export class DynamicRig {
           // Rapier requires a flat compound: rotate each existing child through
           // the authored rest frame rather than nesting a compound.
           const native =
-            solid.shape instanceof RAPIER.Compound
+            arocsBallRestNativeCover(solid)?.shape ??
+            (solid.shape instanceof RAPIER.Compound
               ? new RAPIER.Compound(
                   solid.shape.shapes,
                   solid.shape.positions.map((p) => rotate(q, p)),
                   solid.shape.rotations.map((r) => quatMul(q, r)),
                 )
-              : new RAPIER.Compound([solid.shape], [{ x: 0, y: 0, z: 0 }], [q]);
+              : new RAPIER.Compound(
+                  [solid.shape],
+                  [{ x: 0, y: 0, z: 0 }],
+                  [q],
+                ));
           const desc = new RAPIER.ColliderDesc(native);
           const mirror = new RAPIER.ColliderDesc(native);
           const collider = world.createCollider(
@@ -529,6 +595,8 @@ export class DynamicRig {
             body,
           );
           this.contactSolids.set(collider.handle, solid);
+          const restCover = arocsBallRestNativeCover(solid);
+          if (restCover) this.restCovers.push({ cover: restCover, collider });
           entry.mirrors.push(characterWorld.createCollider(mirror!));
           entry.colliders++;
         }
@@ -572,6 +640,7 @@ export class DynamicRig {
         .createImpulseJoint(data, a.body, b.body, true)
         .setContactsEnabled(false);
     }
+    this.createAngularEquations();
     if (this.rig.vehicle) this.createVehicle();
     this.syncMirrors();
   }
@@ -600,7 +669,9 @@ export class DynamicRig {
     const anchorA = toPhysics(
         world.map((v, k) => v - a.rest.position[k]) as Vec3,
       ),
-      anchorB = toPhysics(world.map((v, k) => v - b.rest.position[k]) as Vec3);
+      // Keep each authored source attachment point. Deriving B from A silently
+      // removed a real source rest gap before the native constraint could seat.
+      anchorB = toPhysics(mv(b.rest.basis, spec.anchorB));
     const axisWorld = spec.axisA ? mv(a.rest.basis, spec.axisA) : undefined;
     const axis = axisWorld
       ? toPhysicsDirection(axisWorld)
@@ -624,8 +695,30 @@ export class DynamicRig {
                     RAPIER.JointAxesMask.AngZ,
                 )
               : RAPIER.JointData.spherical(anchorA, anchorB);
-    const joint = this.world.createImpulseJoint(data, a.body, b.body, true);
-    joint.setContactsEnabled(true);
+    let joint: RAPIER.ImpulseJoint;
+    if (spec.restAssembly) {
+      const prepared = this.nativeRest.find((p) => p.jointId === spec.id)!;
+      const seal = readPreparedArocsBallRest(prepared),
+        attachment = {
+          ball: this.bodies.get(seal.ball.groupId)!.body,
+          socket: this.bodies.get(seal.socket.groupId)!.body,
+          covers: this.restCovers.filter(
+            (c) =>
+              c.collider.parent() ===
+                this.bodies.get(seal.ball.groupId)!.body ||
+              c.collider.parent() ===
+                this.bodies.get(seal.socket.groupId)!.body,
+          ),
+        };
+      joint = createArocsBallRestJoint(prepared, this.world, attachment);
+      this.restControllers.set(
+        spec.id,
+        attachArocsBallNativeRest(prepared, this.world, attachment, joint),
+      );
+    } else {
+      joint = this.world.createImpulseJoint(data, a.body, b.body, true);
+      joint.setContactsEnabled(true);
+    }
     if (spec.angularResistance) {
       // Rapier 0.21 wraps spherical data as Generic. Its exported spherical
       // wrapper accepts an existing handle and uses the public angular-axis
@@ -856,6 +949,7 @@ export class DynamicRig {
     return this.joints.has(id);
   }
   setVehicleInput(input: { throttle: number; steering: number }) {
+    this.requireRestReady();
     ensure(
       input &&
         typeof input === "object" &&
@@ -887,6 +981,7 @@ export class DynamicRig {
     this.cache = undefined;
   }
   setJointTarget(id: string, target: number, speed: number) {
+    this.requireRestReady();
     ensure(
       !this.rig.loopClosures?.some((c) => c.dependentJointIds.includes(id)),
       "INVALID_INPUT",
@@ -940,6 +1035,7 @@ export class DynamicRig {
     this.cache = undefined;
   }
   setMotor(id: string, enabled: boolean, input?: number, power?: number) {
+    this.requireRestReady();
     ensure(
       !this.rig.loopClosures?.some((c) => c.dependentJointIds.includes(id)),
       "INVALID_INPUT",
@@ -1088,6 +1184,8 @@ export class DynamicRig {
   }
   /** Motor/controller inputs for the next world step. */
   beforeStep() {
+    for (const controller of this.restControllers.values())
+      controller.beforeStep();
     let awakened = false;
     const keepAwake = () => {
       if (!awakened) {
@@ -1230,6 +1328,8 @@ export class DynamicRig {
   }
   /** Read joint scalars and statuses after the world step. */
   afterStep() {
+    for (const controller of this.restControllers.values())
+      controller.afterStep();
     this.tick++;
     for (const id of [...this.joints.keys()].sort()) {
       const control = this.joints.get(id)!,
@@ -1356,71 +1456,59 @@ export class DynamicRig {
     this.syncMirrors();
     this.cache = undefined;
   }
-  /** Sequential impulse constraint, separate from motor control. The Jacobian
-   * enforces qB - ratio*qA = 0 and returns equal/opposite angular impulses to
-   * both shafts and their carrier. Effective inertia transmits output loads
-   * back to the effort-limited native motor. No body pose or velocity is set.
-   * Baumgarte feedback corrects measured phase drift on following fixed ticks. */
+  /** Existing admitted spur rows use the same native kernel that supports
+   * signed bevel/worm/differential equations. This conversion changes no source
+   * admission: an equation does not authorize an unsupported part connection. */
+  private createAngularEquations() {
+    const ports = new Map<string, AngularPort>();
+    const equations: AngularEquation[] = [];
+    for (const t of this.rig.transmissions ?? []) {
+      if (t.kind === "rack") continue;
+      for (const id of [t.jointA, t.jointB]) {
+        if (ports.has(id)) continue;
+        const control = this.joints.get(id)!;
+        // Native joint axes are unit directions. Rounded source group bases
+        // remain untouched; only the solver's derived direction is normalized.
+        const length = Math.hypot(
+          control.axis.x,
+          control.axis.y,
+          control.axis.z,
+        );
+        ports.set(id, {
+          id,
+          body: this.bodies.get(control.spec.bodyB)!.body,
+          carrier: this.bodies.get(control.spec.bodyA)!.body,
+          axisLocal: [
+            control.axis.x / length,
+            control.axis.y / length,
+            control.axis.z / length,
+          ],
+        });
+      }
+      const ratio = transmissionRatio(t);
+      equations.push({
+        id: t.id,
+        terms: [
+          { portId: t.jointA, coefficient: -ratio },
+          { portId: t.jointB, coefficient: 1 },
+        ],
+      });
+    }
+    if (equations.length)
+      this.angularEquations = new AngularEquationSolver(
+        [...ports.values()],
+        equations,
+      );
+  }
+  /** Preserve eight passes and the existing mixed spur/rack ordering. Every
+   * angular row reads native carrier-relative motion and returns bounded torque
+   * to both shafts and the carrier; no body pose or velocity is assigned. */
   private solveTransmissions() {
+    this.angularEquations?.beginStep(DT);
     for (let pass = 0; pass < 8; pass++)
       for (const t of this.rig.transmissions ?? []) {
-        if (t.kind === "rack") {
-          this.solveRackTransmission(t);
-          continue;
-        }
-        const ca = this.joints.get(t.jointA)!,
-          cb = this.joints.get(t.jointB)!;
-        const a = this.bodies.get(ca.spec.bodyB)!.body;
-        const b = this.bodies.get(cb.spec.bodyB)!.body;
-        const carrier = this.bodies.get(ca.spec.bodyA)!.body;
-        const axisA = rotate(carrier.rotation(), ca.axis);
-        const axisB = rotate(carrier.rotation(), cb.axis);
-        const ratio = (-t.axisSign * t.teethA) / t.teethB;
-        const ja = {
-          x: -ratio * axisA.x,
-          y: -ratio * axisA.y,
-          z: -ratio * axisA.z,
-        };
-        const jb = axisB;
-        const jc = { x: -ja.x - jb.x, y: -ja.y - jb.y, z: -ja.z - jb.z };
-        const dot = (v: RAPIER.Vector, w: RAPIER.Vector) =>
-          v.x * w.x + v.y * w.y + v.z * w.z;
-        const inverseInertia = (body: RAPIER.RigidBody, v: RAPIER.Vector) => {
-          const m = body.effectiveWorldInvInertia();
-          return dot(v, {
-            x: m.m11 * v.x + m.m12 * v.y + m.m13 * v.z,
-            y: m.m21 * v.x + m.m22 * v.y + m.m23 * v.z,
-            z: m.m31 * v.x + m.m32 * v.y + m.m33 * v.z,
-          });
-        };
-        const inverseMass =
-          inverseInertia(a, ja) +
-          inverseInertia(b, jb) +
-          inverseInertia(carrier, jc);
-        if (inverseMass <= 1e-12) continue;
-        const phaseError = ((cb.value - ratio * ca.value) * Math.PI) / 180;
-        const speedError =
-          dot(a.angvel(), ja) + dot(b.angvel(), jb) + dot(carrier.angvel(), jc);
-        const maxCorrection = (TRANSMISSION_MAX_SPEED * Math.PI) / 180;
-        const correction = Math.max(
-          -maxCorrection,
-          Math.min(maxCorrection, (0.8 * phaseError) / DT),
-        );
-        const impulse = -(speedError + correction) / inverseMass;
-        if (Math.abs(impulse) < 1e-10) continue;
-        for (const [body, jacobian] of [
-          [a, ja],
-          [b, jb],
-          [carrier, jc],
-        ] as const)
-          body.applyTorqueImpulse(
-            {
-              x: jacobian.x * impulse,
-              y: jacobian.y * impulse,
-              z: jacobian.z * impulse,
-            },
-            true,
-          );
+        if (t.kind === "rack") this.solveRackTransmission(t);
+        else this.angularEquations!.solveEquation(t.id);
       }
   }
   /** Ideal rolling constraint with linear rack impulses and angular pinion
@@ -1664,6 +1752,13 @@ export class DynamicRig {
       engine: DYNAMIC_DEFAULTS.engine,
       gravity: DYNAMIC_DEFAULTS.gravity,
       bodies,
+      ...(this.restControllers.size
+        ? {
+            restAssemblies: Object.fromEntries(
+              [...this.restControllers].map(([id, c]) => [id, c.snapshot()]),
+            ),
+          }
+        : {}),
       ...(Object.keys(bearings).length ? { bearings } : {}),
     };
     let vehiclePose: PlayMechanismReport["pose"]["vehicle"];
@@ -1702,6 +1797,9 @@ export class DynamicRig {
     const stalled =
       Object.values(jointTargets).find((t) => t.status === "blocked") ??
       Object.values(motors).find((m) => m.status === "blocked");
+    const restBlocked = [...this.restControllers.values()]
+      .map((c) => c.snapshot())
+      .find((r) => r.state === "blocked");
     const report: PlayMechanismReport = {
       sourceRevision: this.revision,
       rigId: this.rigId,
@@ -1719,9 +1817,9 @@ export class DynamicRig {
       jointTargets,
       ...(Object.keys(motors).length ? { motors } : {}),
       dynamics,
-      blocked: !!stalled,
-      ...(stalled?.blockedReason
-        ? { blockedReason: stalled.blockedReason }
+      blocked: !!stalled || !!restBlocked,
+      ...(restBlocked?.reason || stalled?.blockedReason
+        ? { blockedReason: restBlocked?.reason ?? stalled?.blockedReason }
         : {}),
       warnings: [
         "Dynamic rigid-body simulation (Rapier): each authored group is one body with bounded convex compounds; anchored groups keep exact surfaces. Reviewed bores and gear openings are retained. Default proxy mass and inertia approximate the simulation geometry; thin source skins are hollow. Authored mass, motor effort and friction are simulation settings, not measured brick weight or clutch strength.",
@@ -1747,6 +1845,10 @@ export class DynamicRig {
     return structuredClone(report);
   }
   dispose() {
+    for (const controller of this.restControllers.values())
+      controller.dispose();
+    this.restControllers.clear();
+    this.restCovers = [];
     this.contactEvents?.free();
     for (const entry of this.bodies.values())
       for (const mirror of entry.mirrors)
@@ -1907,6 +2009,14 @@ export class PlayDynamicsWorld {
     }
   }
   /** One fixed tick. `feet` is the explorer's standing position in LDU. */
+  setActorSolid(solid: boolean, feet?: Vec3) {
+    this.playerCollider.setEnabled(solid);
+    if (feet)
+      this.player.setTranslation(
+        toPhysics([feet[0], feet[1] - P.height / 2, feet[2]]),
+        false,
+      );
+  }
   step(feet: Vec3, actorSolid: boolean, supportHandle?: number) {
     this.playerCollider.setEnabled(actorSolid);
     const next = toPhysics([feet[0], feet[1] - P.height / 2, feet[2]]),

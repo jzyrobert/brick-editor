@@ -258,6 +258,20 @@ describe("physical spur coupling", { timeout: 30_000 }, () => {
     expect(positions[input]).toBeGreaterThan(720);
     expect(Math.abs(positions[output] - positions[input] / 3)).toBeLessThan(1);
   });
+  it("keeps rounded source placements while deriving unit native constraint axes", async () => {
+    const pose: Transform = {
+      position: [80, -30, 100],
+      basis: [0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107],
+    };
+    const { step, input, output, definition } = await fixture(undefined, {
+      pose,
+    });
+    const sourceFrame = structuredClone(definition.groups[0].frame);
+    const positions = step(180).pose.jointPositions;
+    expect(positions[input]).toBeGreaterThan(90);
+    expect(Math.abs(positions[output] + positions[input] / 3)).toBeLessThan(1);
+    expect(definition.groups[0].frame).toEqual(sourceFrame);
+  });
   it("returns reaction to a free carrier without creating net torque when unpowered", async () => {
     const { rig, world, step, input, outputBody, definition } = await fixture(
       undefined,

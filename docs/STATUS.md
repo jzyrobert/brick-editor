@@ -1,5 +1,70 @@
 # Implementation status
 
+## Technic systems work in progress — 5 October 2026
+
+The isolated Technic worktree now presents motor power, direction and operating
+status without continuous shaft-angle counters. Nearby vehicle entry possesses
+the whole certified vehicle in third person, hides the explorer and removes its
+native collider. Exit brakes and places the explorer beside the current vehicle
+only after checking ground and capsule clearance. Explicit physical seats remain
+available separately. These changes have focused engine and desktop/phone browser
+verification; they are not yet a published full-system release.
+
+Source-bound profiles now describe Power Functions L motor case/rotor ownership,
+real selector dog engagement, reviewed wheel stacks, worm/bevel meshes and
+differential seating. Typed authored flexible content retains every source leaf
+and distinguishes caps, paths and springs without counting generated skin pieces
+as independent hardware. These source proofs do not yet admit complete 5540,
+42042 or 42043 systems to ordinary Play. Runtime component partition, native load
+relations, suspension, ropes/tracks and pneumatic routing remain active work.
+
+The branch now includes a bounded native pneumatic kernel with actual chamber
+compression, closed-center valves, pressure-driven cylinder reactions and gas
+accounting. Seven focused checks include a real native obstacle stall/recovery.
+The source-routing layer now binds all28 actual Arocs hoses and56 ports,
+preserving the2015 embedded hardware definitions and separate work chambers.
+Source/export preservation and altered, unseated, ambiguous and incomplete
+fitting refusals are covered by four focused checks. Its narrow flexible-end
+sealing model is explicit; it supplies gas topology, not rigid attachments.
+A source-bound V2 cylinder bench now uses the actual separate barrel/cap and
+rod/head actors, three collision classes and the real axial guide. Seven native
+checks cover finite-pressure forward/reverse travel, mobile reaction, foreign
+obstruction/recovery, actual valve routing and source/ownership refusals. The
+omitted internal seal and retained simulation stops are explicit assumptions;
+real mounting eyes remain open and source/export placements remain unchanged.
+Initially charged gas supplies the bench, with no pressure-refresh command.
+Actual pump/mount/valve-owner integration and whole Arocs admission remain open
+before ordinary pneumatic controls become available. See the
+[routing review](reviews/AROCS-PNEUMATIC-ROUTING.md) and
+[native cylinder scope](reviews/AROCS-PNEUMATIC-CYLINDER-NATIVE.md).
+
+The 5540 source review preserves 55 fixed attachment islands and nine hinges,
+including keyed bushes that can slide axially. All 50 separately owned removable,
+visual and flexible occurrences remain accounted for. The detector declines
+unsupported axle/hinge assemblies instead of welding their submodel contents.
+Eighty-four focused vehicle/source tests pass. Full native wheel operation remains
+open; even after exact source vertex indexing the complete attached geometry's
+237,866 triangles exceed the existing moving-source triangle cap. See the
+[wheel ownership review](reviews/5540-WHEEL-ATTACHMENT-BOUNDARIES.md).
+
+The crane winch packet keeps 29 independent owners, all 34,729 literal source
+triangles and four real rotor support IDs. Its unilateral cap reactions pass nine
+focused native checks and do not lock shaft axial travel. Source band splitting
+preserves every original oriented face and the joiner's divider. Keyed-contact
+operation, the full carrier and ordinary winch entry remain in progress; the
+band/key wrapper is an unfinished checkpoint. See the
+[winch review](reviews/RETAINED-CRANE-WINCH.md).
+
+The source hardware index now retains embedded declared part parents, separate
+flexible caps and every rendered leaf's exact owner. Three focused checks cover
+complete ancestry, repeated instances, undeclared hierarchy/raw surfaces and
+incomplete/duplicate/mismatched leaf views. A private unmodified-source audit
+accounts for all446 leaves of5540,13,550 of42042 and30,042 of42043, with no
+unresolved ownership. The Arocs index takes0.58s locally and distinguishes
+2,802 source placements,37 flexible hosts and74 cap components; these are
+source identities, not an official set inventory or joint/attachment certificate.
+Native budgets and complete-system admission are unchanged.
+
 ## Physical admission follow-up — 4 October 2026
 
 The first publication CI caught two implementation gaps: multi-part gravity
@@ -1380,3 +1445,36 @@ Focused runtime and production-browser evidence is recorded in
 with source-level samples and limits in [templates](TEMPLATES.md),
 [the twin sample review](reviews/TWIN-DRIVE-SAMPLE.md) and
 [temporary ground review](reviews/VEHICLE-SESSION-GROUND.md).
+
+### Native ball construction data (5 October 2026)
+
+The native rig schema now preserves an explicit source ball/socket seating
+request without replacing either original anchor. The declaration names distinct
+members on opposite bodies and bounds the construction gap to 2.05 LDU; unmarked
+joints retain strict coincidence. Kinematic preview keeps authored rest, refuses
+movement and refuses anchor rebasing. A declaration alone grants no ordinary
+Play control eligibility. The bounded native readiness implementation is
+recorded below; broader compound ownership and full Arocs suspension integration
+remain open.
+
+### Source motor entry and native seating (5 October 2026)
+
+The Large motor sample adds the actual 99499 Power Functions L case, two
+source-aligned mounting pins, a keyed red output axle and two retaining collars.
+Its casing and internal output have separate source-derived collision and draw
+components while preserving one motor inventory item. It starts in Dynamic
+mode. Play reviews its loaded source connections before offering entry controls;
+canonical geometry and native collision admission are checked again on entry.
+
+Direct Play entry prepares declared native ball/socket source packets before
+allocating physics and publishes seating, ready or blocked reports, including
+the actual gap and relative pivot speed. A copied, stale or transplanted packet
+cannot be replaced with a fresh packet to bypass the source checks. The actual
+native actors settle through constraints and source contact; saved anchors and
+source placements stay unchanged. This is bounded source construction support,
+not acceptance of the complete Arocs suspension or pneumatic system.
+
+The touch Get out action also works while another finger holds the throttle.
+Releasing control clears vehicle input and restores the explorer beside the
+vehicle's current location. Existing supported-surface and blocked-exit checks
+remain in force.

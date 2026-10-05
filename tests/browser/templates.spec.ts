@@ -47,6 +47,7 @@ const CARDS = [
   "Small castle",
   "Roadster car",
   "Motor & gears",
+  "Large motor",
   "Twin motor table",
   "Rack guide",
   "Blank canvas",
@@ -213,17 +214,17 @@ test("the jeep drives from its driver seat and unpowered windmill sails stay sta
     await a.play.setInput({});
     return { seated, moved };
   });
-  expect(drive.seated.occupancy).toMatchObject({
-    rigId: "jeep",
-    seatId: "driver",
-  });
+  expect(drive.seated.vehicleControl).toEqual({ rigId: "jeep" });
+  expect(drive.seated.cameraMode).toBe("third-person");
+  expect(drive.seated.avatarVisible).toBe(false);
+  expect(drive.seated.positionAnchor).toBe("vehicle-reference");
   expect(drive.moved.mechanisms!.jeep.pose.vehicle!.position[2]).toBeLessThan(
     -100,
   );
   await page.screenshot({ path: `${shots}jeep-driving.png` });
   await page.evaluate(async () => {
     const a = window.brickEditor!;
-    await a.play.exitVehicle();
+    await a.play.interact();
     await a.play.exit();
   });
 

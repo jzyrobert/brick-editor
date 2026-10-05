@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { unzipSync, strFromU8 } from "fflate";
 import { openMode, openTool } from "./helpers/mode";
 import { refusePointerLock } from "./helpers/pointer";
-import { exitPlay, fromPauseMenu } from "./helpers/play";
+import { exitPlay } from "./helpers/play";
 
 for (const width of [360, 1080, 1440])
   test(`roadster seat entry driving and exit at ${width}px`, async ({
@@ -47,17 +47,28 @@ for (const width of [360, 1080, 1440])
         exact: true,
       });
       await expect(enter).toBeEnabled();
-      await page.getByRole("button", { name: "Drive from here" }).click();
+      await enter.click();
       await expect(
-        page.getByText("Controlling vehicle · on foot", { exact: true }),
+        page.getByText("Driving · Roadster", { exact: true }),
       ).toBeVisible();
+      const possessed = await page.evaluate(() =>
+        window.brickEditor!.play.snapshot(),
+      );
+      expect(possessed.vehicleControl).toEqual({ rigId: "car" });
+      expect(possessed.cameraMode).toBe("third-person");
+      expect(possessed.avatarVisible).toBe(false);
       expect(
         (await page.evaluate(() => window.brickEditor!.play.snapshot()))
           .occupancy,
       ).toBeUndefined();
-      await page.getByRole("button", { name: "Stop driving" }).click();
-      if (width === 1440) await page.keyboard.press("e");
-      else await enter.tap();
+      await page.getByRole("button", { name: "Get out" }).click();
+      // The public driving action possesses the vehicle. Exercise the separate
+      // explicit seat API here to retain its physical transfer/capture coverage.
+      await page.evaluate(() => {
+        const a = window.brickEditor!;
+        a.play.teleport({ position: [-90, -0.3, 40], yaw: Math.PI / 2 });
+        return a.play.enterVehicle({ rigId: "car", seatId: "driver" });
+      });
       await expect(
         page.getByRole("button", { name: "Get out", exact: true }),
       ).toBeVisible();
@@ -83,7 +94,7 @@ for (const width of [360, 1080, 1440])
       await expect(
         page.getByRole("button", { name: "Fly through walls", exact: true }),
       ).toHaveCount(0);
-      await fromPauseMenu(page, "Third person");
+      expect(seated.cameraMode).toBe("third-person");
       const third = await page.evaluate(() =>
         window.brickEditor!.play.snapshot(),
       );
@@ -373,7 +384,11 @@ test("blocked seat exits retain the driver and become usable after reversing cle
       realtime: false,
     }),
   );
-  await page.getByRole("button", { name: "Get in", exact: true }).click();
+  // Exercise the explicit physical seat API: the nearby Get in action now
+  // possesses the complete vehicle without inventing a seat.
+  await page.evaluate(() =>
+    window.brickEditor!.play.enterVehicle({ rigId: "car", seatId: "driver" }),
+  );
   await expect
     .poll(
       async () =>

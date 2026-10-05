@@ -68,11 +68,13 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Play
 
+- [ ] Complete the active 5540/42042/42043 systems work: source-owned moving case/rotor components, retained selector routing, native bevel/worm/differential load and backdrive, removable contact-supported accessories, suspension/steering, tracked drives, winch ropes and pneumatic cylinders/hoses. Reviewed profiles, exact source hardware/flexible ownership, native pressure and source-bound pneumatic routing are foundations; whole-model runtime acceptance and mobile verification remain open.
+
 - [ ] Add real, reviewed hinge/bearing hardware to architectural sample motion (windmill sails, lighthouse lamp, castle drawbridge and playground equipment), with mounted motor parts where powered. Current unverified rigs remain static in ordinary Play; preserve their stored engineering data until a source-backed redesign is ready.
 - [ ] Review actual linear-actuator, ball/cylindrical, spring/rope and closed Technic linkage part connections before admitting their engineering rigs to ordinary Play.
 - [ ] Real jaw/contact grasping with attached LEGO/Technic jaws; proximity fixed-joint grippers are engineering fixtures only.
 - [ ] Physically mounted powered rack assembly: verify the guide housing mounting pins and offset carrier before adding motor control.
-- [ ] Additional real motor profiles and output coupling families beyond the source-reviewed Power Functions M motor.
+- [ ] Additional real motor profiles and output coupling families beyond the source-reviewed Power Functions M and L motors.
 - [ ] Further source-reviewed wheel families, tilted/suspended axle layouts and actual passenger attachment. A separately rooted minifigure is not welded to a detected car; full 6503 remains obstructed by its unmounted figure ([vehicle scope](docs/PLAY-VEHICLES.md)).
 
 - [x] Add source-connected Motor & gears, manual Rack guide and Twin motor table showcases with generated previews, desktop/phone controls and fresh offline sample loading ([samples](docs/TEMPLATES.md#ready-to-play-motion-samples)). Unsupported engineering crank/gripper examples stay outside ordinary Play.

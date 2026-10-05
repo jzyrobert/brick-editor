@@ -32,6 +32,7 @@ describe("ready-to-play motion samples", () => {
       expect(occurrences(p)).toHaveLength(
         {
           "twin-drive": 35,
+          "large-motor": 13,
           "motor-gears": 15,
           "rack-drive": 2,
         }[name],
@@ -65,6 +66,19 @@ describe("ready-to-play motion samples", () => {
           { kind: "prismatic" },
         ]);
         expect(p.motionRigs["rack-drive"].joints[0].motor).toBeUndefined();
+      }
+      if (name === "large-motor") {
+        const rig = p.motionRigs["pf-large-drive"];
+        expect(rig.dynamics?.startDynamic).toBe(true);
+        expect(rig.joints[0].motor?.binding?.profile).toBe(
+          "power-functions-motor-l-v1",
+        );
+        expect(
+          occurrences(p).filter((o) => o.node.ref === "99499.dat"),
+        ).toHaveLength(1);
+        expect(
+          occurrences(p).find((o) => o.node.ref === "3707.dat")?.colorCode,
+        ).toBe("4");
       }
       if (name === "twin-drive") {
         expect(p.motionRigs["twin-drive"].groups).toHaveLength(6);

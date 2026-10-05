@@ -228,8 +228,14 @@ it("vehicle keyboard/joystick left and right steer toward the corresponding proj
     ).project(camera);
     expect(Math.sign(steered.x - centre.x)).toBe(moveX);
     expect(Math.sign(pose.headingDegrees)).toBe(-moveX);
-    expect(driven.position[0]).toBeCloseTo(80);
-    expect(driven.position[2]).toBeCloseTo(-200);
+    expect(driven.cameraMode).toBe("third-person");
+    expect(driven.avatarVisible).toBe(false);
+    expect(driven.positionAnchor).toBe("vehicle-reference");
+    const chassis =
+      source.mechanism.project.motionRigs.vehicle.vehicle!.chassisGroup;
+    expect(driven.position).toEqual(
+      driven.mechanism!.groupFrames[chassis].position,
+    );
     h.play.dispose();
   }
 });

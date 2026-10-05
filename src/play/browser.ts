@@ -5,7 +5,6 @@ import {
   reviewedProposalProject,
 } from "../mechanisms/proposal-entry";
 import type { MechanicalProposalRequest } from "../mechanisms/mechanical-proposals";
-import { seatPoint } from "./seated-profile";
 import {
   resolvePlayWorldProfile,
   validatePlayWorldProfile,
@@ -59,6 +58,20 @@ import {
 } from "../catalog/full-library-loader";
 import { fullLibraryGeneration } from "../catalog/full-library";
 import { PLAY_CAMERA_LIMITS } from "./types";
+import { vehicleReachDistance } from "./vehicle-possession";
+import { PF_LARGE_MOTOR_PROFILE } from "../mechanisms/pf-large-motor-binding";
+import {
+  prepareLoadedMotorAssemblies,
+  loadMotorSourceComponents,
+  motorComponentGroupMeshes,
+  motorComponentPresentation,
+} from "./motor-source-components";
+import { loadArocsBallContacts } from "./arocs-ball-contacts";
+import {
+  hasNativeRestDeclaration,
+  prepareNativeRestSources,
+} from "./native-rest-sources";
+import { requireArocsBallRestConstruction } from "./arocs-ball-rest";
 
 const ZOOM_KEY = "brick-editor-play-zoom-v1";
 /** The follow distance last chosen by zoom in this tab, if valid. */
@@ -105,6 +118,7 @@ export class BrowserPlay {
    * project per frame would deep-copy the whole document every frame. */
   private sessionRigs: Project["motionRigs"] = {};
   private mechanismViews: Record<string, MechanismViewGeometry> = {};
+  private motorComponents: ReturnType<typeof motorComponentPresentation> = [];
   private overview?: {
     rigId: string;
     yaw: number;
@@ -168,6 +182,50 @@ export class BrowserPlay {
     const r = this.render();
     ensure(r, "WEBGL_UNAVAILABLE", "Play requires WebGL2");
     return r;
+  }
+  /** Review loaded physical motor mounts for the pre-entry chooser. Canonical
+   * component capture and native collision admission still happen on entry. */
+  async reviewMotorConnections(
+    project: Project,
+    rigs: readonly import("../mechanisms/types").MotionRig[],
+  ) {
+    const candidates = rigs.filter((rig) =>
+      rig.joints.some(
+        (joint) => joint.motor?.binding?.profile === PF_LARGE_MOTOR_PROFILE,
+      ),
+    );
+    if (!candidates.length) return {} as Record<string, string>;
+    await this.renderer().ready(project.revision, true);
+    ensure(
+      project.revision === this.revision(),
+      "REVISION_CONFLICT",
+      "The project changed during connection review.",
+    );
+    const all = occurrences(project);
+    const results = await Promise.allSettled(
+      candidates.map((rig) =>
+        prepareLoadedMotorAssemblies(project, [rig], all),
+      ),
+    );
+    ensure(
+      project.revision === this.revision(),
+      "REVISION_CONFLICT",
+      "The project changed during connection review.",
+    );
+    return Object.fromEntries(
+      results.flatMap((result, i) =>
+        result.status === "rejected"
+          ? [
+              [
+                candidates[i].id,
+                result.reason instanceof Error
+                  ? result.reason.message
+                  : "These motor connections could not be checked.",
+              ],
+            ]
+          : [],
+      ),
+    );
   }
   private current() {
     ensure(this.session, "INVALID_INPUT", "Enter Play first");
@@ -291,8 +349,6 @@ export class BrowserPlay {
       // One occurrence expansion serves door derivation and every rig check.
       const all = project ? occurrences(project) : [];
       const lookup = new Map(all.map((o) => [o.id, o]));
-      if (project)
-        for (const rig of authored) requirePhysicalPlay(project, rig, all);
       let derived: DerivedDoors | undefined;
       if (project && request.autoDoors !== false) {
         derived = deriveDoorRigs(project, {
@@ -413,6 +469,25 @@ export class BrowserPlay {
           ? await r.playMemberGeometry(canonicalIds)
           : undefined;
       ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      if (sourceProject)
+        await prepareLoadedMotorAssemblies(sourceProject, rigs, all);
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      const motorIds = rigs.flatMap((rig) =>
+        rig.joints.flatMap((joint) =>
+          joint.motor?.binding?.profile === PF_LARGE_MOTOR_PROFILE
+            ? [joint.motor.binding.occurrenceId]
+            : [],
+        ),
+      );
+      // Establish cleanup before any component capture, including failed entry.
+      if (motorIds.length) this.restorePose = r.beginTransientPose();
+      const motorCaptures = motorIds.length
+        ? await r.playMotorComponentGeometry(
+            motorIds,
+            () => epoch === this.epoch,
+          )
+        : undefined;
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
       ensure(
         geometry.revision === this.revision(),
         "REVISION_CONFLICT",
@@ -464,6 +539,22 @@ export class BrowserPlay {
           rigId: rig.id,
           groups,
           lookup,
+          ...(motorCaptures
+            ? {
+                motorComponents: Object.fromEntries(
+                  rig.joints.flatMap((joint) =>
+                    joint.motor?.binding?.profile === PF_LARGE_MOTOR_PROFILE
+                      ? [
+                          [
+                            joint.motor.binding.occurrenceId,
+                            motorCaptures[joint.motor.binding.occurrenceId],
+                          ],
+                        ]
+                      : [],
+                  ),
+                ),
+              }
+            : {}),
           ...(Object.keys(members).length ===
             rig.groups.flatMap((g) => g.occurrenceIds).length &&
           canonicalMembers
@@ -478,8 +569,30 @@ export class BrowserPlay {
             ? { members }
             : {}),
         });
-        this.mechanismViews[rig.id] = mechanismViewGeometry(rig, groups);
       }
+      await Promise.all([
+        loadMotorSourceComponents(mechanismSources),
+        loadArocsBallContacts(
+          mechanismSources.filter(
+            (source) => !hasNativeRestDeclaration(source),
+          ),
+        ),
+        prepareNativeRestSources(mechanismSources, dynamicRigIds),
+      ]);
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      for (const source of mechanismSources) {
+        const rig = source.project.motionRigs[source.rigId];
+        source.groups = motorComponentGroupMeshes(source);
+        this.mechanismViews[rig.id] = mechanismViewGeometry(rig, source.groups);
+        if (authored.some((r) => r.id === rig.id)) {
+          if (hasNativeRestDeclaration(source))
+            requireArocsBallRestConstruction(source);
+          else requirePhysicalPlay(source.project, rig, all, source);
+        }
+      }
+      this.motorComponents = mechanismSources.flatMap(
+        motorComponentPresentation,
+      );
       ensure(
         geometry.revision === this.revision(),
         "REVISION_CONFLICT",
@@ -540,7 +653,7 @@ export class BrowserPlay {
       };
       this.held = {};
       if (rigs.length || trains?.trains.length)
-        this.restorePose = r.beginTransientPose();
+        this.restorePose ??= r.beginTransientPose();
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
       if (figureGeometry instanceof Error)
@@ -595,6 +708,17 @@ export class BrowserPlay {
             this.session.trainTransforms(),
           )
         : undefined;
+    const motorOutputs = Object.fromEntries(
+      this.motorComponents.map((motor) => {
+        const mechanism = mechanisms.find((m) => m.rigId === motor.rigId);
+        return [
+          motor.parentOccurrenceId,
+          motor.restPhaseDegrees +
+            motor.axisSign *
+              (mechanism?.pose.jointPositions[motor.jointId] ?? 0),
+        ];
+      }),
+    );
     const interpolate = this.realtime && !this.state.paused;
     const camera = this.overviewCamera() ?? this.session.camera(interpolate);
     // The figure uses the same interpolation factor as the camera, so both
@@ -617,6 +741,7 @@ export class BrowserPlay {
           r.cameraChanges,
           camera,
           transforms,
+          motorOutputs,
           figureShown,
           report.cameraMode,
           figureShown ? view.position : undefined,
@@ -634,12 +759,16 @@ export class BrowserPlay {
       // Shadows depend on the scene, not the camera: a frame where only the
       // camera (or the figure, which casts no shadow) moved reuses the cached
       // shadow map of the Realistic/Photo looks. Moving parts re-render it.
-      const scene = JSON.stringify(transforms ?? null, (_, value) =>
-        typeof value === "number" ? Math.round(value * 1000) / 1000 : value,
+      const scene = JSON.stringify(
+        [transforms ?? null, motorOutputs],
+        (_, value) =>
+          typeof value === "number" ? Math.round(value * 1000) / 1000 : value,
       );
       const sceneChanged = scene !== this.lastScene;
       this.lastScene = scene;
       if (transforms && sceneChanged) r.applyTransientPose(transforms);
+      if (this.motorComponents.length && sceneChanged)
+        r.applyTransientMotorOutputs(motorOutputs);
       r.playCamera(camera);
       // camera() is read-only, so one snapshot serves the avatar, pose and UI.
       this.avatar?.update(
@@ -656,7 +785,8 @@ export class BrowserPlay {
     };
   }
   private nearby(report: PlaySnapshotReport) {
-    if (report.occupancy || report.trains?.riding) return undefined;
+    if (report.occupancy || report.vehicleControl || report.trains?.riding)
+      return undefined;
     const rigs = this.sessionRigs;
     // The nearest target the explorer can act on wins; points and doors
     // beside the track come before the train itself at equal reach.
@@ -683,33 +813,22 @@ export class BrowserPlay {
     )
       .flatMap((id) =>
         rigs[id]
-          ? [nearbyInteraction(rigs[id], report)].filter(
-              (target): target is PlayInteraction => !!target,
-            )
+          ? [
+              nearbyInteraction(
+                rigs[id],
+                report,
+                rigs[id].vehicle && this.mechanismViews[id]
+                  ? vehicleReachDistance(
+                      this.mechanismViews[id],
+                      (report.mechanisms?.[id] ?? report.mechanism)!
+                        .groupFrames,
+                      report.position,
+                    )
+                  : undefined,
+              ),
+            ].filter((target): target is PlayInteraction => !!target)
           : [],
       )
-      .map((target) => {
-        const seat = rigs[target.rigId]?.vehicle?.driverSeat;
-        if (target.kind !== "vehicle" || !seat) return target;
-        const mechanism = report.mechanisms?.[target.rigId] ?? report.mechanism;
-        const frame =
-          mechanism!.groupFrames[rigs[target.rigId].vehicle!.chassisGroup];
-        const access = seatPoint(frame, seat.accessPoint);
-        const distance = Math.hypot(
-          ...access.map((value, index) => value - report.position[index]),
-        );
-        const eligibility = this.current().seatInteractionHint({
-          rigId: target.rigId,
-          seatId: seat.id,
-        });
-        return {
-          ...target,
-          label: "Get in",
-          distance,
-          available: eligibility.eligible,
-          blockedReason: eligibility.reason,
-        };
-      })
       .sort(
         (a, b) =>
           Number(b.available) - Number(a.available) || a.distance - b.distance,
@@ -752,18 +871,6 @@ export class BrowserPlay {
       // Controls operate the assembly; explorer movement waits until leaving.
       session.setInput(input);
       session.setInput({});
-    } else if (this.state.vehicleControl) {
-      // Let the normal validator reject malformed input before changing the vehicle.
-      session.setInput(input);
-      session.setInput({ yaw: input.yaw, pitch: input.pitch });
-      session.setMechanismVehicleInput(
-        {
-          throttle: input.moveZ ?? 0,
-          // LDraw up is −Y: vehicle-right is −X at heading zero.
-          steering: -(input.moveX ?? 0),
-        },
-        this.state.vehicleControl,
-      );
     } else session.setInput(input);
     this.held = { ...input };
   }
@@ -1039,6 +1146,7 @@ export class BrowserPlay {
       "INVALID_INPUT",
       mechanism?.vehicleCollision?.reason ?? "Unknown supported active vehicle",
     );
+    this.current().controlVehicle(rigId);
     this.clearInput();
     this.overview = undefined;
     this.draw();
@@ -1048,7 +1156,15 @@ export class BrowserPlay {
     this.assertMutable();
     if (!this.state.vehicleControl) return;
     this.clearInput();
-    this.emit({ vehicleControl: undefined });
+    try {
+      this.current().releaseVehicle();
+      this.draw();
+      this.emit({ vehicleControl: undefined });
+    } catch (error) {
+      this.draw();
+      this.emit();
+      throw error;
+    }
   }
   interact() {
     this.assertMutable();
@@ -1078,12 +1194,7 @@ export class BrowserPlay {
       return;
     }
     if (target.kind === "vehicle") {
-      const seat =
-        report.mechanisms?.[target.rigId]?.mode === "dynamic"
-          ? undefined
-          : this.sessionRigs[target.rigId]?.vehicle?.driverSeat;
-      if (seat) this.enterVehicle({ rigId: target.rigId, seatId: seat.id });
-      else this.controlVehicle(target.rigId);
+      this.controlVehicle(target.rigId);
     } else
       this.setJointTarget({
         rigId: target.rigId,
@@ -1325,6 +1436,7 @@ export class BrowserPlay {
     this.session = undefined;
     this.sessionRigs = {};
     this.mechanismViews = {};
+    this.motorComponents = [];
     this.overview = undefined;
     this.avatar?.dispose();
     this.avatar = undefined;

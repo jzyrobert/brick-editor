@@ -113,6 +113,7 @@ export function nearbyPoints(
 export function nearbyInteraction(
   rig: MotionRig,
   report: PlaySnapshotReport,
+  vehicleDistance?: number,
 ): PlayInteraction | undefined {
   const mechanism = report.mechanisms?.[rig.id] ?? report.mechanism;
   if (!mechanism || mechanism.rigId !== rig.id) return;
@@ -126,11 +127,11 @@ export function nearbyInteraction(
   if (rig.vehicle) {
     const frame = mechanism.groupFrames[rig.vehicle.chassisGroup];
     if (frame) {
-      const d = distance(frame.position);
+      const d = vehicleDistance ?? distance(frame.position);
       targets.push({
         kind: "vehicle",
         rigId: rig.id,
-        label: "Drive vehicle",
+        label: "Get in",
         name: rig.name,
         available: d <= 96 && mechanism.vehicleCollision?.supported !== false,
         ...(mechanism.vehicleCollision?.supported === false

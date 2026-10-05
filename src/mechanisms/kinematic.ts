@@ -199,6 +199,7 @@ export function validateRig(
       "limits",
       "motor",
       "angularResistance",
+      "restAssembly",
       "translationLimitsLdu",
       "mating",
     ]);
@@ -242,14 +243,39 @@ export function validateRig(
     }
     const a = rig.groups.find((g) => g.id === joint.bodyA)!,
       b = rig.groups.find((g) => g.id === joint.bodyB)!;
+    if (joint.restAssembly !== undefined) {
+      const d = joint.restAssembly;
+      fields(d, [
+        "profile",
+        "ballOccurrenceId",
+        "socketOccurrenceId",
+        "socketEndpoint",
+      ]);
+      ensure(
+        joint.kind === "spherical" &&
+          d.profile === "arocs-ball-native-seat-v1" &&
+          typeof d.ballOccurrenceId === "string" &&
+          typeof d.socketOccurrenceId === "string" &&
+          d.ballOccurrenceId !== d.socketOccurrenceId &&
+          (d.socketEndpoint === 0 || d.socketEndpoint === 1) &&
+          ((a.occurrenceIds.includes(d.ballOccurrenceId) &&
+            b.occurrenceIds.includes(d.socketOccurrenceId)) ||
+            (b.occurrenceIds.includes(d.ballOccurrenceId) &&
+              a.occurrenceIds.includes(d.socketOccurrenceId))),
+        "INVALID_INPUT",
+        "Native ball seating must name distinct members on opposite joint bodies.",
+      );
+    }
+    const worldA = position(a.frame, joint.anchorA),
+      worldB = position(b.frame, joint.anchorB);
     ensure(
-      near(
-        position(a.frame, joint.anchorA),
-        position(b.frame, joint.anchorB),
-        1e-3,
-      ),
+      joint.restAssembly
+        ? Math.hypot(...worldA.map((v, k) => v - worldB[k])) <= 2.05
+        : near(worldA, worldB, 1e-3),
       "INVALID_INPUT",
-      "Joint rest anchors must coincide in world space.",
+      joint.restAssembly
+        ? "Native ball construction exceeds its bounded source seating envelope."
+        : "Joint rest anchors must coincide in world space.",
     );
     ensure(
       joint.kind === "cylindrical" || joint.translationLimitsLdu === undefined,
@@ -328,7 +354,10 @@ export function validateRig(
           ensure(
             typeof joint.motor.binding.occurrenceId === "string" &&
               joint.motor.binding.occurrenceId.length > 0 &&
-              joint.motor.binding.profile === "power-functions-motor-m-v1",
+              [
+                "power-functions-motor-m-v1",
+                "power-functions-motor-l-v1",
+              ].includes(joint.motor.binding.profile),
             "INVALID_INPUT",
             "Motor binding must name a supported physical motor occurrence.",
           );
@@ -837,6 +866,7 @@ export class KinematicSession {
       };
   }
   setJointPosition(id: string, value: number) {
+    this.requireRestPreview(value === 0);
     const j = this.rig.joints.find((j) => j.id === id);
     ensure(
       j && (j.kind === "revolute" || j.kind === "prismatic") && finite(value),
@@ -964,6 +994,7 @@ export class KinematicSession {
     joint.limits = [limits[0], limits[1]];
   }
   setVehicleInput(input: { throttle: number; steering: number }) {
+    this.requireRestPreview(input.throttle === 0 && input.steering === 0);
     fields(input, ["throttle", "steering"]);
     ensure(
       this.rig.vehicle &&
@@ -980,6 +1011,16 @@ export class KinematicSession {
       input.steering * this.rig.vehicle!.maxSteerDegrees;
   }
   setPose(pose: KinematicPose) {
+    this.requireRestPreview(
+      Object.values(pose.jointPositions ?? {}).every((value) => value === 0) &&
+        (!pose.vehicle ||
+          (pose.vehicle.position.every((value) => value === 0) &&
+            pose.vehicle.headingDegrees === 0 &&
+            pose.vehicle.steeringDegrees === 0 &&
+            Object.values(pose.vehicle.wheelAngles ?? {}).every(
+              (value) => value === 0,
+            ))),
+    );
     const previous = structuredClone(this.pose),
       previousSteering = this.steering;
     try {
@@ -1039,6 +1080,13 @@ export class KinematicSession {
       this.steering = previousSteering;
       throw error;
     }
+  }
+  private requireRestPreview(atRest: boolean) {
+    ensure(
+      atRest || !this.rig.joints.some((j) => j.restAssembly),
+      "INVALID_INPUT",
+      "This assembly must settle in Dynamic Play before it can move; kinematic preview preserves its source rest pose.",
+    );
   }
   stepTicks(count: number) {
     ensure(
@@ -1154,6 +1202,11 @@ export class KinematicSession {
       groupFrames: structuredClone(frames),
       transforms,
       warnings: [
+        ...(this.rig.joints.some((j) => j.restAssembly)
+          ? [
+              "This assembly requires source-bound native seating in Dynamic Play; kinematic preview preserves both source anchors and the authored rest pose.",
+            ]
+          : []),
         ...(this.rig.joints.some((j) => j.kind === "cylindrical")
           ? [
               "Cylindrical bearings retain their rest position and spin in kinematic preview; free axial/spin motion requires Dynamic Play.",
@@ -1193,6 +1246,11 @@ export function rebaseRig(
   rig: MotionRig,
   snapshot: MechanismSnapshot,
 ): MotionRig {
+  ensure(
+    !rig.joints.some((j) => j.restAssembly),
+    "INVALID_INPUT",
+    "Native source anchors cannot be rebased from a kinematic preview.",
+  );
   const next = structuredClone(rig);
   for (const g of next.groups) {
     g.frame = structuredClone(snapshot.groupFrames[g.id]);

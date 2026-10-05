@@ -1,5 +1,91 @@
 # Verification — 27 September 2026
 
+## Technic worktree checkpoints — 5 October 2026
+
+The active, unpublished systems branch verifies motor status without continuous
+shaft-angle counters and third-person vehicle possession. Seven focused engine
+files pass 30 tests, including an actual source Roadster driven through the old
+explorer position in native physics, shared capture visibility, current-location
+exit and retained possession when no safe supported exit exists. The complete
+snapshot validator accepts the new vehicle-reference state. Source project data
+stays unchanged.
+
+Twelve production browser cases pass for nearby interaction, physical seats and
+independent twin motors on desktop and phone. The thirteenth case used the old
+UI action to enter a physical seat; it now calls the explicit seat API, and its
+blocked-exit/reverse recovery passes alone in 37.0 seconds. The production build
+passes (Vite 57.40 seconds). A fresh private production check passes six
+desktop/phone viewports (1440 × 1000, 1080 × 1800, 360 × 600, 411 × 685,
+390 × 844 and 686 × 411) in 2.0 minutes, with usable motor/exit touch targets,
+hidden walking sticks during remote motor control, third-person driving and
+safe exit. Full CI and publication remain pending.
+
+The native angular kernel now runs the existing admitted spur rows without
+changing source or collision admission. Twenty-two integrated spur/rack checks
+and the separate rounded-source axis case pass. Fresh UI confirmation passes
+all six sizes in 3.7 minutes after keeping motor tabs/status outside scrolling
+details, removing their duplicate reading, correcting driving help and hiding
+unavailable recovery. A fresh independent Impeccable reviewer returns SHIP at
+this motor/vehicle-control scope, and the surface documenter records the result.
+Eight additional production interaction/twin-motor cases pass in 3.0 minutes,
+including Dynamic on both desktop and phone and the driving pause menu.
+
+Six source-content tests retain exact fallback leaves/caps and world frames,
+reject ambiguous or displaced cap ancestry and conflicting metadata, and keep
+independent placements separate. A private audit reads both unmodified complete
+OMR models without unresolved content: five paths in 42042 and 29 paths/eight
+springs in 42043. This verifies source organization, not mechanical attachment,
+pneumatic forces, track motion or full-model native admission.
+
+The branch is rebased on main `4282b58`, retaining its split throttle/steering pads
+and current Play loading/menu designs. The production build passes (Vite 1m 26s).
+Fresh private production evidence passes all six desktop/phone sizes in 7.3
+minutes, including both 44px driving pads within the viewport, Get out clear of
+each pad, hidden driving/walking controls during motor control and successful
+current-location release. Those captures supersede the earlier driving screenshots
+with a single joystick. The fresh independent reviewer returns SHIP at this UI scope; the surface
+brief records the updated pads, evidence and review limits. Four production
+interaction cases pass in 2.7 minutes and four twin-motor cases in 1.4 minutes,
+including two-finger driving and independent Dynamic/Kinematic motor controls.
+
+The separate pneumatic native kernel passes seven checks in 1.21 seconds:
+balanced cylinder reaction without direct pose/velocity setters, supply/exhaust
+reversal, neutral gas conservation under native backdrive, compression-powered
+pump/refill, independent valves, external native blocker stall/removal, released
+body refusal and atomic overpressure refusal. Isothermal instantaneous-line flow
+and force caps are declared simulation assumptions, not measured LEGO properties.
+Source-bound cylinder/pump geometry and actual hose admission remain open.
+
+Explicit engineering worm transmission data now survives native save/restore
+and shares the existing bounded coupled-coordinate and angular-kernel paths.
+Six new tests and forty related spur/rack/source-admission cases pass in 9.04
+seconds. Signed orthogonal native dispatch is compared against independently
+calculated inertia/impulses; source stays unchanged. Actual retained-winch
+contact packets and ordinary session integration remain separately required.
+
+The actual source pneumatic routing layer passes four focused cases. Together
+with the native circuit and source-content regressions,17 cases pass in5.12s.
+The28 full authored hoses bind56 separate ports and47 passive connections;
+the16-node pump supply reaches only the four valve supply ports, and each pair
+of work routes reaches exactly one cylinder's opposing chambers. The tests
+preserve source/export and refuse altered dependencies, project shadows, stale
+or unseated placements, ambiguous duplicate fittings and incomplete ends. The
+manifest reproduces offline with `scripts/build-pneumatic-sources.ts --check`.
+The [routing review](reviews/AROCS-PNEUMATIC-ROUTING.md) declares the narrow
+flexible-end seal/frame assumptions. Guided components, native circuit wiring,
+controls and complete Arocs admission remain open.
+
+The bounded semantic hardware index and source-content/pneumatic routing
+regressions pass13 cases in1.83s. All25 port-bearing embedded/official parents,
+28 hoses and56 cap components retain every source leaf of the routing excerpt
+exactly once. A private audit of unmodified complete models accounts for every
+leaf (5540:446;42042:13,550;42043:30,042), with no missing or unresolved
+ownership. Measured index times, including import, are0.113s,0.419s and0.577s
+respectively on this VM. Source/export remains unchanged; ordinary hierarchy
+supplies no part or weld claim, and incomplete or forged leaf views are refused.
+This verifies source ancestry and bounded organization, not native admission,
+component collision or complete mechanical functionality.
+
 ## Physical admission CI follow-up — 4 October 2026
 
 Initial main run [37213302926](https://github.com/jzyrobert/brick-editor/actions/runs/37213302926)
@@ -2127,3 +2213,84 @@ unchanged; no runtime or UI change was needed.
 - **Sheets:** the camera adjustment beside phone and tablet sheets was checked by projecting the build's bounds (it sits in the free band) and by the dimming capture test (pictures are unaffected). Full-viewport headless screenshots can paint a pale rectangle over the canvas beside sheets; clipped captures of the same frame show the model, so it is a capture artefact.
 - **Browser specs:** layout, Play, vehicles, seats, mechanism controls, selection, inspector, transform, instructions (generation, viewer, dimming), menus, mechanisms and Gallery pass locally. The timed train look-hint layout check (`hud-layout.spec.ts`, Train controls at 600 × 360 and 800 × 360) times out intermittently under load locally and in CI.
 - **Not checked:** a physical phone; engine and camera items reported by the critics (train third-person camera clipping into wagons, Drive from here leaving the car out of view, Get out facing away, keyboard throttle speed) belong to the Play engine work.
+
+### Native ball construction data (5 October 2026)
+
+Five focused data cases plus nine existing mechanism/dynamics-data cases pass
+(14 cases, 7.64 seconds), with TypeScript passing. The tests use all three original
+Arocs ball fits, validate the regenerated schema and native save/restore, preserve
+LDraw export and original anchors, refuse undeclared gaps and excessive declared
+gaps, reject forged membership/endpoint/fields and incompatible joint options,
+keep mixed kinematic assemblies static, refuse movement/rebasing atomically, and
+refuse ordinary eligibility even when a declared pair happens to coincide. This
+checks the saved request and static preview contract; it does not certify native
+readiness or whole-model admission.
+
+### Source motor entry and native seating (5 October 2026)
+
+Six actual-source preparation cases pass: original sealed packets are retained,
+Kinematic seating is rejected before binding, copied/transplanted/stale packets
+are refused, a failed roster does not publish partial bindings, and undeclared
+sources cannot retain native construction tokens. Two direct Play-session cases
+pass in 23.43 seconds including import/transform work (9.76 seconds of tests):
+native seating becomes ready, readiness reports validate against the regenerated
+API schema, targets are refused during settling, saved project/anchors/LDraw
+stay exact, and direct Kinematic entry refuses before token publication. The
+session fixture supplies active rig members separately from static geometry,
+matching Browser Play's ordinary capture behavior.
+
+The actual PF-L Browser/adapter regression now also checks the pre-entry source
+review. A previously unavailable source assembly becomes eligible without
+allocating a Play session, capturing native component geometry or changing the
+project export. That case passes in 22.10 seconds including import/transform work
+(8.92 seconds of tests).
+
+The generated Large motor sample has 13 official source parts, including one
+99499 inventory item and the red 3707 axle. The motion/template unit cases pass
+(19 cases); its preview was generated by the app renderer. The Impeccable raster
+provenance scan reports 16 sample rasters and no missing provenance. Both
+production Large motor cases pass on desktop and a 360 × 600 phone (38.4 seconds)
+after rebasing onto main `9250c06`. They check the Dynamic entry option, actual
+independent rotor draw matrix, fixed casing and carrier, forward/reverse motion,
+zero power and reverse-direction resume, visible operating state, no horizontal
+overflow, unchanged query/LDraw/native contents and no page errors. Zero input
+is checked by magnitude because reverse at zero power may report IEEE negative
+zero. The integrated build passes schema generation, TypeScript and Vite
+(56.90 seconds for Vite). The first production passes exposed the pre-entry
+availability and cleaned-up source-label defects; the tests now exercise both
+production paths and find the imported occurrence through its actual motor
+binding. All six control-layout cases pass (2.7 minutes) at 1440 × 1000,
+1080 × 1800, 360 × 600, 411 × 685, 390 × 844 and 686 × 411. Their assertions retain
+44px targets, usable motor tabs, hidden exploration controls while operating,
+separate in-bounds driving pads, a reachable nonoverlapping Get out action,
+third-person driving with a hidden explorer, successful exit and no page errors.
+The fresh independent Impeccable reviewer inspected all fourteen motor/driving
+captures and returned SHIP for the Play UI and Large motor sample; the updated
+surface brief records that evidence and preview provenance. Full mechanical
+systems, complete chooser composition and unpictured accessibility/state
+behavior remain outside that acceptance.
+
+Both production phone exit cases pass at 360px and 1080px (1.2 minutes), including
+a second finger releasing Get out while throttle is held, no subsequent vehicle
+movement, restored third-person explorer visibility and successful re-entry.
+The test releases the actual exit finger through Chromium's touch protocol;
+source export and beside-the-current-vehicle assertions remain in force.
+
+### Actual PF-L casing-bore contact partition (5 October 2026)
+
+Eight source/contact cases pass (16.13 seconds including transform/import work,
+13.45 seconds of tests). The complete original casing support-point multiset and
+all 2,854 convex children remain exact after separating exterior 2,810, front 28
+and bore 16. A bound thrust-disc contact permission checks the whole current and
+predicted source envelope; withdrawal, lateral displacement, tilt, copied parts,
+foreign source components and rotor pins refuse that permission. Actual foreign
+obstruction still blocks the motor and removal restores motion. Thirteen motor
+binding, actual Browser/adapter and native beside-vehicle exit cases also pass
+(52.49 seconds including transform/import work, 31.69 seconds of tests).
+
+The private contact diagnostic records 1,320 native queries in each of its later
+five-tick Kinematic blocks versus 3,810 in the earlier recorded run. Fresh Node
+Kinematic ticks measure 61.65–76.87 ms; Dynamic ticks 16.83–29.35 ms. These separate
+shared-VM observations are not a controlled speed ratio or a phone benchmark.
+Geometry, sweep and aggregate contact budgets remain unchanged. See the
+[source-interface scope](reviews/POWER-FUNCTIONS-MOTOR-L-RUNTIME.md#measured-limits).

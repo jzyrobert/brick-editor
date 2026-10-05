@@ -188,6 +188,25 @@ await api.mechanisms.exit();
 
 `instructions.publish({planId,format,width,height})` returns an artifact for `pdf`, `png-zip` or `html-zip`. Its registered job supports cancellation. The captured steps must cover every occurrence exactly once; this is coverage validation, not proof of physical buildability. `camera.fit()` frames the full build before capture. `render.quality.get()` and `render.quality.set(name, controls)` manage viewport quality; image requests may supply `qualityControls` independently. `render.look.get()` and `render.look.set(name, controls)` choose the shading look — `standard` (default), `realistic` or `photo` — independently of quality; image requests take an optional `look`/`lookControls` and default to `standard`, and the capture manifest records the resolved `look`. `photo` path-traces stills (`lookControls.pathSamples`, `depthOfField`, `backdrop`); `render.look.photo()` and a photo capture's manifest `photo` report whether the path tracer or the raster fallback drew it, and why. `render.collection` accepts `lookControls` too. See [rendering looks](RENDERING.md).
 
+The native rig schema also preserves an explicit engineering worm relation:
+`{id,kind:"worm",jointA,jointB,starts,teeth,direction}`. Both joints are revolute,
+share a carrier and have orthogonal axes; `jointA` is the worm and `jointB` the
+wheel. Signed output turns per input turn are `direction * starts / teeth`
+(direction is ±1). Kinematic preview retains unwrapped phase and reflected
+limits; native angular equations return load reactions to both shafts and the
+carrier. This relation does not infer self-locking or grant ordinary Play
+admission. The real retained source assembly and local tooth/bearing contacts
+must also be bound. The generic proposal currently derives spur/rack families.
+
+Spherical joints may preserve `restAssembly: {profile:"arocs-ball-native-seat-v1",
+ballOccurrenceId,socketOccurrenceId,socketEndpoint:0|1}`. This declaration requests
+source-bound native seating; it does not certify the parts or grant usable controls.
+The two named occurrences must belong to opposite joint bodies. Only this declared
+construction may retain an initial anchor gap up to 2.05 LDU; ordinary joints keep
+their existing coincidence requirement. Kinematic preview stays at authored rest
+and refuses movement or anchor rebasing. Native source preflight, settled readiness
+and ordinary runtime admission remain separate requirements.
+
 ### Layer organization
 
 `layers.duplicate` accepts `{ layerId, includeHidden?, name?, maxAdditions? }` and returns fresh layer/occurrence IDs in the command result. Duplication reads a locked source without changing it and creates an unlocked copy; unsupported opaque metadata and motion rigs are rejected. `layers.folder` sets `{ layerId, parentFolderId: string | null }`. `folders.add`, `folders.rename`, `folders.move`, and `folders.remove` manage organizational folders; removal promotes children/members without deleting build geometry. See the generated command schema for exact fields and bounds. Folder membership persists in native projects.
@@ -320,6 +339,12 @@ await api.play.exit();
 - `play.setMotor({rigId?,jointId,enabled,input?,power?})` controls an authored source-bound revolute or prismatic motor. Optional `input` is finite from −1 to 1 and requires `enabled:true`: negative reverses, zero brakes, and magnitude sets a proportional session velocity. Full rate is the absolute authored velocity target, or 90°/s / 40 LDU/s for a position motor, subject to coupled speed bounds. Omit `input` to restore the preset. Optional `power` is finite from 0 to 1, defaults to 1, and reduces native effort to `maxEffort * power`; it never raises the authored cap. Zero power removes powered drive (native bodies can coast); positive power alone does not change kinematic rate because Kinematic mode does not simulate torque. The Play **Power** slider adjusts both rate input and available effort. Forward/Reverse keep running until Brake, pause or close; selecting another motor in the same rig preserves independent operation. **Brake all** stops all its motors. Clearing live input restores input 0 and power 1 for full capped braking. Reports include effective `mode`, `target`, optional `input`, `power`, `enabled`, `status` (`running`, `holding`, `blocked`, `at-limit`, `stopped`), `units`, `targetUnits` and `simulation` (`kinematic-rate` or `dynamic-motor`).
 - `play.view()` reads the current rendered camera and optional `mechanismOverview` rig ID. Opening remote controls fits the active rig into the canvas area left clear by the controls. Dragging orbits, pinch/scroll zooms out, and **Fit build** restores the full fit. Closing controls restores the explorer view. Capture fits the whole rig to the export frame without reserving interface space.
 - Dynamic mechanism reports use `mode:"dynamic"` and add `dynamics` with the engine, gravity (m/s²), per-group `bodies` (anchored, massKg, colliders, sleeping, linearVelocity in LDU/s, angularSpeed in degrees/s), per-wheel `wheels` (contact, suspensionLength in LDU, steering and rotation in degrees) and chassis `speed` (LDU/s). `setMechanismJoint` is refused for dynamic rigs; use `setJointTarget`, which drives the joint motor.
+  Source-reviewed native ball seating adds `dynamics.restAssemblies[jointId]`
+  with `state` (`seating`, `ready` or `blocked`), `ticks`, `stableTicks`,
+  `gapLdu`, `relativeSpeed` in m/s and optional `reason`. A spherical
+  `restAssembly` declaration preserves both actual source anchors and requires
+  explicit Dynamic entry plus exact source construction checks; it grants no
+  scalar control while seating. It does not certify a complete suspension.
 - `snapshot.autoDoors` lists derived door rigs (`rigId` `auto-door:N`, `jointId`, door and holder occurrence IDs, part, world `pivot`, `axis`, `leaf` and `swing`: `positive`, `negative`, `both` or `blocked`). It also lists `skipped` doors with a reason. Open a door with `play.interact()` near it, or with `setJointTarget`.
 - `play.interact()` performs the contextual E/tap action (a door, joint, vehicle or, beside a track switch, the points) and returns the snapshot.
 - `play.exportPosedModel()` and `mechanisms.exportPosedModel()` return a static posed MPD of all active mechanisms: `{format:"ldraw-mpd",text,sourceRevision,tick,rigIds,posedOccurrenceIds,warnings}`. The project is not edited.

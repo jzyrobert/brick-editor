@@ -1,4 +1,9 @@
 import { PLAY_MEMBER_GEOMETRY_LIMITS } from "./member-geometry";
+import {
+  prepareMotorSourceSweep,
+  motorSourceSweepTravel,
+} from "./motor-source-components";
+import { requireArocsBallRestConstruction } from "./arocs-ball-rest";
 import { occurrences } from "../core/document";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import type { PlayVehicleCollisionReport } from "./types";
@@ -83,6 +88,13 @@ export type PlayMechanismSource = {
   members?: Record<string, CollisionSnapshot>;
   /** Source-bound canonical surfaces, separate from world-space member meshes. */
   memberLocals?: Record<string, import("./types").PlayMemberLocalGeometry>;
+  /** Exact source-preflight tokens authorize construction, never ready controls. */
+  nativeRest?: readonly import("./arocs-ball-rest").PreparedArocsBallRest[];
+  /** Source child collision ownership for a packed real motor; never new parts. */
+  motorComponents?: Record<
+    string,
+    import("./motor-source-components").MotorSourceComponentCapture
+  >;
   /** Optional shared occurrence index of `project` (avoids re-expansion per rig). */
   lookup?: ReadonlyMap<string, Occurrence>;
 };
@@ -110,6 +122,7 @@ export function validatePlayMechanismSource(
   );
   new KinematicSession(source.project, source.rigId, source.lookup);
   const rig = source.project.motionRigs![source.rigId];
+  if (!options.deferReviewedContacts) requireArocsBallRestConstruction(source);
   ensure(
     rig.groups.length <= 128,
     "LIMIT_EXCEEDED",
@@ -583,6 +596,7 @@ export class PlayMechanism {
       prepared?.policy ?? new MechanicalContactPolicy(rig, source);
     this.contactSolids =
       prepared?.solids ?? mechanicalSolids(source, this.contactPolicy);
+    prepareMotorSourceSweep(source, this.contactSolids);
     this.stationarySolids =
       prepared?.stationary ??
       mechanicalStationarySolids(source, this.contactSolids);
@@ -928,9 +942,9 @@ export class PlayMechanism {
         const a = before.groupFrames[solid.groupId],
           b = after.groupFrames[solid.groupId];
         const travel =
-          (Math.hypot(...a.position.map((v, k) => v - b.position[k])) +
-            solid.radius * rotation(a).angleTo(rotation(b))) *
-          S;
+          (motorSourceSweepTravel(this.source, solid, before, after) ??
+            Math.hypot(...a.position.map((v, k) => v - b.position[k])) +
+              solid.radius * rotation(a).angleTo(rotation(b))) * S;
         if (travel > MECHANICAL_CONTACT_LIMITS.sweepLdu * S + 1e-8) {
           this.worldNeedsRefinement = true;
           this.worldFailure = "Motion needs smaller collision-check segments";
@@ -1182,9 +1196,9 @@ export class PlayMechanism {
           const c = before.groupFrames[other.groupId],
             d = after.groupFrames[other.groupId];
           const otherTravel =
-            (Math.hypot(...c.position.map((v, k) => v - d.position[k])) +
-              other.radius * rotation(c).angleTo(rotation(d))) *
-            S;
+            (motorSourceSweepTravel(this.source, other, before, after) ??
+              Math.hypot(...c.position.map((v, k) => v - d.position[k])) +
+                other.radius * rotation(c).angleTo(rotation(d))) * S;
           if (!near(solid, other, travel + otherTravel + 0.001 * S)) continue;
           const old = contact(
             solid,
@@ -1361,6 +1375,13 @@ export class PlayMechanism {
     const frameTravel = Math.max(
       0,
       ...this.contactSolids.map((s) => {
+        const sourceTravel = motorSourceSweepTravel(
+          this.source,
+          s,
+          before,
+          target,
+        );
+        if (sourceTravel !== undefined) return sourceTravel;
         const a = before.groupFrames[s.groupId],
           b = target.groupFrames[s.groupId];
         let unwrapped = 0,

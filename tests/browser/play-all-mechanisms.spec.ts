@@ -141,11 +141,9 @@ for (const width of [360, 1080, 1440]) {
           policy: "safe",
         });
       });
-      await page.getByRole("button", { name: "Drive from here" }).click();
-      await expect(
-        page.getByRole("button", { name: "Stop driving" }),
-      ).toBeVisible();
-      await page.getByRole("button", { name: "Stop driving" }).click();
+      await page.getByRole("button", { name: "Get in" }).click();
+      await expect(page.getByRole("button", { name: "Get out" })).toBeVisible();
+      await page.getByRole("button", { name: "Get out" }).click();
       await page.evaluate(() => window.brickEditor!.play.exit());
       expect(await page.evaluate(() => window.brickEditor!.query())).toEqual(
         before,

@@ -1,6 +1,12 @@
 import { MechanicalQueryWorld } from "./mechanical-query-world";
 import { prepareMechanicalSources } from "./mechanical-solids";
 import { loadReviewedMechanicalProxies } from "./reviewed-mechanical-proxies";
+import { loadArocsBallContacts } from "./arocs-ball-contacts";
+import {
+  hasNativeRestDeclaration,
+  prepareNativeRestSources,
+} from "./native-rest-sources";
+import { loadMotorSourceComponents } from "./motor-source-components";
 import { add, mv } from "../core/math";
 import type { DriverSeatSpec } from "../mechanisms/types";
 import {
@@ -20,6 +26,12 @@ import type {
 } from "./types";
 import { PlayVehicleWorld } from "./vehicle-world";
 import { sessionGroundY } from "./session-ground";
+import {
+  mechanismViewGeometry,
+  mechanismOverviewCamera,
+  type MechanismViewGeometry,
+} from "./mechanism-view";
+import { vehicleExitCandidates } from "./vehicle-possession";
 import {
   compactCollisionMesh,
   type CompactCollisionMesh,
@@ -169,7 +181,21 @@ export class PlaySession {
     placement: SeatedPlacement;
     localLookYaw: number;
     localLookPitch: number;
+    previousCamera: PlayCameraMode;
   };
+  private controlledVehicle?: {
+    rigId: string;
+    chassisGroup: string;
+    geometry: MechanismViewGeometry;
+    previousCamera: PlayCameraMode;
+    previousPitch: number;
+    heading: number;
+    zoom: number;
+  };
+  private vehicleViews = new Map<
+    string,
+    { chassisGroup: string; geometry: MechanismViewGeometry }
+  >();
   private seatedColliders: RAPIER.Collider[] = [];
   private seatEligibilityCache?: { key: string; result: PlaySeatEligibility };
   private world: RAPIER.World;
@@ -403,7 +429,7 @@ export class PlaySession {
             source,
             () => ({
               position: this.feet,
-              walk: this.locomotion === "walk",
+              walk: this.locomotion === "walk" && !this.controlledVehicle,
               ...(this.support ? { support: this.support } : {}),
               ...(this.occupied
                 ? {
@@ -469,6 +495,14 @@ export class PlaySession {
           );
         for (const source of allSources) {
           const vehicle = source.project.motionRigs[source.rigId].vehicle;
+          if (vehicle)
+            this.vehicleViews.set(source.rigId, {
+              chassisGroup: vehicle.chassisGroup,
+              geometry: mechanismViewGeometry(
+                source.project.motionRigs[source.rigId],
+                source.groups,
+              ),
+            });
           if (vehicle?.driverSeat)
             this.seatSources.set(source.rigId, {
               source,
@@ -872,7 +906,14 @@ export class PlaySession {
     // Bind lazy source-reviewed proxies before native initialization or any
     // world/event allocation. The synchronous constructor consumes this exact
     // source identity; missing or changed canonical geometry cannot fall back.
-    await loadReviewedMechanicalProxies(sources);
+    await Promise.all([
+      loadReviewedMechanicalProxies(sources),
+      loadArocsBallContacts(
+        sources.filter((source) => !hasNativeRestDeclaration(source)),
+      ),
+      prepareNativeRestSources(sources, request.dynamicRigIds ?? []),
+      loadMotorSourceComponents(sources),
+    ]);
     validatePlayMechanismSources(sources, snapshot.revision);
     await (initialization ??= RAPIER.init());
     if (autoDoors)
@@ -995,7 +1036,103 @@ export class PlaySession {
     );
   }
   private requireOnFoot() {
-    ensure(!this.occupied, "INVALID_INPUT", "Exit vehicle first");
+    ensure(
+      !this.occupied && !this.controlledVehicle,
+      "INVALID_INPUT",
+      "Exit vehicle first",
+    );
+  }
+  /** Possess a certified vehicle without inventing a physical seat attachment. */
+  controlVehicle(rigId: string) {
+    this.alive();
+    this.requireOnFoot();
+    ensure(!this.riding, "INVALID_INPUT", "Get off the train first");
+    const target = this.rigTarget(rigId);
+    const state = target.rig.snapshot();
+    const view = this.vehicleViews.get(rigId);
+    ensure(
+      view && state.pose.vehicle && this.vehicleWorld?.report(rigId)?.supported,
+      "INVALID_INPUT",
+      state.vehicleCollision?.reason ?? "Unknown supported active vehicle",
+    );
+    this.clearInput();
+    const heading = seatYaw(state.groupFrames[view.chassisGroup]);
+    this.controlledVehicle = {
+      rigId,
+      ...view,
+      previousCamera: this.cameraMode,
+      previousPitch: this.pitch,
+      heading,
+      zoom: 1,
+    };
+    this.cameraMode = "third-person";
+    this.yaw = heading + Math.PI / 5;
+    this.pitch = Math.PI / 7;
+    this.support = undefined;
+    this.inheritedVelocity = [0, 0, 0];
+    this.collider.setEnabled(false);
+    this.dynamics?.setActorSolid(false);
+    this.updateControlledVehicle();
+    this.previous = [...this.feet];
+    this.settle();
+    return this.snapshot();
+  }
+  releaseVehicle() {
+    this.alive();
+    if (!this.controlledVehicle) return this.snapshot();
+    const control = this.controlledVehicle;
+    this.clearInput();
+    const state = this.rigTarget(control.rigId).rig.snapshot();
+    const frame = state.groupFrames[control.chassisGroup];
+    let chosen: Vec3 | undefined;
+    for (const candidate of vehicleExitCandidates(
+      control.geometry,
+      state.groupFrames,
+      frame,
+    )) {
+      try {
+        const position = this.seatStandingPoint(candidate, true);
+        this.validateSpawn({ position });
+        chosen = position;
+        break;
+      } catch {
+        // Failed candidates preserve possession and the hidden player.
+      }
+    }
+    ensure(
+      chosen,
+      "INVALID_INPUT",
+      "Exit blocked — move the vehicle to a clear space",
+    );
+    this.controlledVehicle = undefined;
+    this.cameraMode = control.previousCamera;
+    this.pitch = control.previousPitch;
+    this.locomotion = "walk";
+    this.feet = [...chosen];
+    this.previous = [...chosen];
+    this.velocity = [0, 0, 0];
+    this.grounded = true;
+    this.motion = initialMotion(this.yaw);
+    this.collider.setEnabled(true);
+    this.syncCollider();
+    this.world.step();
+    this.dynamics?.setActorSolid(true, this.feet);
+    this.settle();
+    this.updateArm(true);
+    return this.snapshot();
+  }
+  private updateControlledVehicle() {
+    const control = this.controlledVehicle;
+    if (!control) return;
+    const frame = this.rigTarget(control.rigId).rig.snapshot().groupFrames[
+      control.chassisGroup
+    ];
+    const heading = seatYaw(frame);
+    this.yaw += wrapAngle(heading - control.heading);
+    control.heading = heading;
+    this.feet = [...frame.position];
+    this.velocity = [0, 0, 0];
+    this.grounded = false;
   }
   private sweepStanding(a: Vec3, b: Vec3) {
     if (!this.clear(a) || !this.clear(b)) return false;
@@ -1187,7 +1324,9 @@ export class PlaySession {
       placement,
       localLookYaw: 0,
       localLookPitch: this.pitch,
+      previousCamera: this.cameraMode,
     };
+    this.cameraMode = "third-person";
     this.support = undefined;
     this.inheritedVelocity = [0, 0, 0];
     this.dynamics?.rig(request.rigId)?.setRider(placement);
@@ -1263,6 +1402,7 @@ export class PlaySession {
     for (const collider of this.seatedColliders)
       this.world.removeCollider(collider, true);
     this.seatedColliders = [];
+    this.cameraMode = this.occupied.previousCamera;
     this.occupied = undefined;
     this.collider.setEnabled(true);
     this.feet = [...chosen.position];
@@ -1368,6 +1508,19 @@ export class PlaySession {
     if (input.yaw !== undefined)
       this.yaw = ((input.yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     if (input.pitch !== undefined) this.pitch = this.clampPitch(input.pitch);
+    if (this.controlledVehicle) {
+      this.rigTarget(this.controlledVehicle.rigId).rig.setVehicleInput({
+        throttle: input.moveZ ?? 0,
+        steering: -(input.moveX ?? 0),
+      });
+      this.input = {
+        ...this.input,
+        moveX: 0,
+        moveZ: 0,
+        vertical: 0,
+        jump: false,
+      };
+    }
     if (this.occupied) {
       this.occupied.localLookYaw = Math.atan2(
         Math.sin(this.yaw - this.heading),
@@ -1394,6 +1547,11 @@ export class PlaySession {
       mode === "first-person" || mode === "third-person",
       "INVALID_INPUT",
       "Unknown camera mode.",
+    );
+    ensure(
+      !this.controlledVehicle || mode === "third-person",
+      "INVALID_INPUT",
+      "Exit vehicle first to use first person",
     );
     this.cameraMode = mode;
     this.updateArm(true);
@@ -1663,7 +1821,10 @@ export class PlaySession {
       for (const id of this.trains?.ids ?? []) this.syncTrainDynamics(id);
       this.dynamics.step(
         this.feet,
-        this.locomotion === "walk" && !this.occupied && !this.riding,
+        this.locomotion === "walk" &&
+          !this.occupied &&
+          !this.controlledVehicle &&
+          !this.riding,
         this.support &&
           this.supportTransferClear(
             this.support.frame,
@@ -1673,6 +1834,14 @@ export class PlaySession {
           ? this.support.handle
           : undefined,
       );
+    }
+    if (this.controlledVehicle) {
+      this.previous = [...this.feet];
+      this.updateControlledVehicle();
+      this.world.step();
+      this.settle();
+      this.tick++;
+      return;
     }
     if (this.riding) {
       // Standing at the controls: the feet move with the cab.
@@ -2240,6 +2409,13 @@ export class PlaySession {
       "INVALID_INPUT",
       "Zoom factor must be a positive number.",
     );
+    if (this.controlledVehicle) {
+      this.controlledVehicle.zoom = Math.max(
+        0.25,
+        Math.min(16, this.controlledVehicle.zoom * factor),
+      );
+      return this.snapshot();
+    }
     const { min, max } = PLAY_ZOOM_LIMITS;
     if (this.cameraMode === "first-person") {
       this.zoomPastNear = 0;
@@ -2269,6 +2445,18 @@ export class PlaySession {
   }
   camera(interpolate = false): CameraSpec {
     this.alive();
+    if (this.controlledVehicle) {
+      const control = this.controlledVehicle;
+      const state = this.rigTarget(control.rigId).rig.snapshot();
+      return mechanismOverviewCamera(
+        control.geometry,
+        state,
+        { width: this.aspectRatio, height: 1 },
+        { x: 0, y: 0, width: this.aspectRatio, height: 1 },
+        { yaw: this.yaw, pitch: this.pitch, zoom: control.zoom },
+        this.cameraSettings.fovDeg,
+      );
+    }
     if (this.riding && this.trains) {
       const { target, look, arm } = this.rideCamera();
       const pos = target.map((v, k) => v - look[k] * arm) as Vec3;
@@ -2581,7 +2769,7 @@ export class PlaySession {
       "INVALID_INPUT",
       id ? "Unknown train " + id : "Specify trainId when several trains run",
     );
-    ensure(!this.occupied, "INVALID_INPUT", "Exit the vehicle first");
+    this.requireOnFoot();
     const yaw = this.trainYaw(id);
     const boarded = this.riding?.boarded ?? ([...this.feet] as Vec3);
     if (this.riding && this.riding.trainId !== id) this.releaseLever();
@@ -2750,7 +2938,14 @@ export class PlaySession {
         : {}),
       ...(rigCount ? { mechanisms } : {}),
       ...(rigCount === 1 ? { mechanism: Object.values(mechanisms)[0] } : {}),
-      positionAnchor: this.occupied ? "seated-avatar-root" : "standing-feet",
+      positionAnchor: this.controlledVehicle
+        ? "vehicle-reference"
+        : this.occupied
+          ? "seated-avatar-root"
+          : "standing-feet",
+      ...(this.controlledVehicle
+        ? { vehicleControl: { rigId: this.controlledVehicle.rigId } }
+        : {}),
       ...(this.occupied
         ? {
             occupancy: {
@@ -2784,6 +2979,8 @@ export class PlaySession {
       collisionReady: this.ready,
       avatarReady: true,
       avatarVisible:
+        !this.controlledVehicle &&
+        !this.occupied &&
         this.cameraMode === "third-person" &&
         (!!this.riding || this.currentArm() > 24),
       profile: P,
@@ -2810,6 +3007,8 @@ export class PlaySession {
     this.dynamics = undefined;
     this.seatSources.clear();
     this.occupied = undefined;
+    this.controlledVehicle = undefined;
+    this.vehicleViews.clear();
     this.seatedColliders = [];
     this.vehicleWorld?.dispose();
     this.vehicleWorld = undefined;

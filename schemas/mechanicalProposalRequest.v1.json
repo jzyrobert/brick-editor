@@ -93,7 +93,10 @@
                 "format": "occurrence-id"
               },
               "profile": {
-                "const": "power-functions-motor-m-v1"
+                "enum": [
+                  "power-functions-motor-m-v1",
+                  "power-functions-motor-l-v1"
+                ]
               }
             },
             "required": [

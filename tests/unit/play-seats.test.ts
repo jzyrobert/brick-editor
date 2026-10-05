@@ -37,6 +37,9 @@ it("enters a true rigid seated profile, drives with attached eye/root, and safel
     // minifig's feet level, 28 LDU below its hip axle.
     expect(entry.position[1]).toBeCloseTo(-18.5, 5);
     expect(entry.occupancy!.pelvisWorldLdu[1]).toBe(-46.5);
+    expect(entry.cameraMode).toBe("third-person");
+    expect(entry.avatarVisible).toBe(false);
+    play.setCameraMode("first-person");
     const beforeCamera = play.camera();
     expect(beforeCamera.position).toEqual(
       entry.occupancy!.effectiveEyeWorldLdu,
@@ -367,6 +370,7 @@ it("seated chase frames torso from above a shoulder, preserves first-person eye 
         rigId: "vehicle",
         seatId: project.motionRigs.vehicle.vehicle!.driverSeat!.id,
       });
+      play.setCameraMode("first-person");
       const first = play.camera(),
         actor = play.snapshot().position;
       play.setCameraMode("third-person");
@@ -382,7 +386,7 @@ it("seated chase frames torso from above a shoulder, preserves first-person eye 
         expect(chase.position[2]).toBeLessThan(-168);
       } else {
         expect(arm).toBeCloseTo(PLAY_CAMERA_DEFAULTS.followDistance, 4);
-        expect(play.snapshot().avatarVisible).toBe(true);
+        expect(play.snapshot().avatarVisible).toBe(false);
       }
       const restore = play.beginCameraCapture(10);
       expect(

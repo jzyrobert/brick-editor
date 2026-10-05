@@ -1,0 +1,352 @@
+# Retained crane winch: source witness and native baseline
+
+The source-derived native subsystem now has forward/reverse, load/stall,
+backdrive and foreign-contact evidence. Ordinary Play admission and complete
+crane operation remain open. The current five-body candidate preserves both
+shafts' axial freedom and the input's real one-sided stop. It complements [the drivetrain source review](TECHNIC-DRIVETRAIN-INTERFACES.md)
+and [the native angular kernel review](TECHNIC-ANGULAR-EQUATIONS.md).
+
+The attributed 12-member excerpt in
+`fixtures/ldraw/technic/42042-retained-winch.ldr` derives from Philippe Hurbain's
+[public 42042 OMR source](https://library.ldraw.org/library/omr/42042-1.mpd),
+SHA256 `d9c3aa6e0351fd7bcc352e817dafd2c095d4192d7f691ddbb7c5eece03d7237b`,
+original lines 12085–12097. It preserves composed source frames, using test
+colour 71. Full original geometry, ropes, pulleys and neighbouring supports
+remain private and are outside this excerpt's acceptance scope. Installed
+official part headers remain unchanged.
+
+`bindRetainedWinchSources` verifies the seven full pinned source dependency
+closures in `winch-sources.json`, including the actual project's dependency
+shadows. `retainedWinch` requires all 12 official occurrences in their literal
+source seats; missing, displaced, duplicate or project-defined substitute
+members refuse. The witness is sealed and separates eight carrier members,
+two input members and two output members. A common world rotation preserves
+the source seats and the derived signed 1:8 worm ratio.
+
+The literal interfaces are:
+
+- Four 32449 thin beams have keyed Y bores at local Z ±30 and a round Y bore at
+  Z 10. Their faces lie at Y ±5. Two 87083 cross axles pass through those keyed
+  end bores and the keyed X bores of two 6536 cross-blocks.
+- Each 6536 has its round Z bore at local Y 20 with faces Z ±10. In the actual
+  winch these bores lie along the 4716 input axis at stations −30 and+30; their
+  inner faces capture the worm's original shoulders at −20 and +20.
+- The10928 original faces at axis stations−10 and+10 meet the inner beam
+  faces. Its keyed bore receives the 3737 axle. The4716 keyed bore receives
+  the 15462 stop axle. These are distinct rotating source members, rather than
+  a motor casing or a whole submodel rotated as one body.
+- Independent compiled source rays measure R6 round carrier cores and
+  material on the worm/gear caps at radius 7, outside those cores. The witness
+  names ten real keyed carrier edges and the two capture intervals. It does
+  not certify all-angle tooth clearance, material properties, frictional
+  locking, or an external attachment of this carrier to the complete crane.
+
+The two shoulder captures retain 4716 and 10928, **not both shafts**. The plain
+3737 cross axle has no opposing collars in this excerpt. The 15462 source has
+one R8 stop at local X 48–50 (worm-relative axial stations 38–40), but opposing
+shaft restraint has not been proved. An earlier native baseline combined each
+keyed shaft and its worm/gear using a declared ideal axial grip. The current
+candidate removes that assumption: rotational keying alone does not justify
+rigid ownership, and sealed member lists do not authorize a weld.
+
+Focused source checks cover all required members, source immutability,
+an oblique common world transform, floating/missing/duplicate supports,
+dependency mutation and embedded primitive shadows. Reproduce them with:
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/retained-winch.test.ts --maxWorkers=1
+```
+
+The private baseline `.local/winch-runtime/probe.ts` compiles the actual
+member meshes with the renderer source helper and constructs native bodies
+at the source pivots: eight fixed carrier parts, 4716+15462 input and
+10928+3737 output, with actual revolute axes and the signed angular equation.
+Every source triangle remains present; twelve native TriMesh colliders contain
+8,660 triangles in total. No pair exclusions or collision-group suppression
+are applied. With ideal declared mass 0.05kg per member, zero gravity and
+0.002Nm input torque for 300 ticks at 60Hz, the input moves only 0.000273rad
+and the output approximately −0.000000946rad. Thus this baseline stalls;
+native source surfaces plus the angular equation alone do not establish a
+working collision realization. These numbers describe an exploratory
+TriMesh diagnostic, not the production convex-solid model or a measured
+LEGO torque specification.
+
+## Native source-derived candidate
+
+`winch-convex.ts` constructs 132 convex cells for4716 and 96 for10928.
+The worm's literal thread sectors use their original lower/upper flank
+diagonals, lead8, crest width2 and source end planes±20. Each sector is convex;
+it does not bridge the thread valleys. The core is an annular extrusion around
+the actual24-sided concave rounded keyed hole. The wheel preserves its literal
+root cylinder and eight source tooth nose/base/root profiles, including the
+authored`.707` internal transforms. It splits the unchanged root annulus at
+radius7 to keep the keyed hub separate from the outer tooth-contact band.
+No source positive width/height/volume cutoff, whole-part hull, scale or padding
+is used. End-plane-only supports already belong to neighbouring retained caps.
+
+Authored worm flank and helical-cylinder decimals have small alternatives:
+root coordinate changes are at most0.000141422LDU and the scaled crest
+alternatives differ by at most0.000326LDU. The declared source normal-plane
+envelope is0.00035LDU. Independent finite polygon subtraction clips **every
+point of every actual source triangle** against the expanded candidate-cell
+union: all836 worm and544 wheel triangles leave zero residual area, with an
+explicit floating clipping scope below1e−14LDU² per fragment. This is stronger
+than vertex sampling. Maximum unexpanded source-vertex plane excess is
+0.000292217704LDU for the worm and0.000000361278LDU for the wheel.
+
+The0.00035 number is a source-face normal-plane envelope, not a boundary
+Hausdorff theorem or complete source-solid/topology proof. Native F32 point,
+body-pose and integration rounding are additional. Finite clipping of every
+complete candidate convex projection against a triangulation of the actual
+24-sided keyed-hole polygon gives total intersection area below1e−10LDU².
+Thus that intrinsic opening is retained through every axial station. The
+inserted real axle may occupy that opening in the assembled subsystem.
+
+`prepareRetainedWinchNative` returns a sealed immutable
+`ReviewedRetainedWinchPacket`: eight source carrier regions, 134 input regions
+and 97 output regions, 239 native children in total. Carrier and shaft geometry
+retains every literal compiled source triangle. The input separates its core
+and real stop head; both shaft bodies retain independent axial motion rather
+than inheriting a rest-only bearing-window label. The reference has 8,660 source triangles.
+To consume this packet in ordinary Play, pass the actual canonical captures:
+the preflight compares all12 occurrence IDs, namespaces, revisions, exact rest
+frames and oriented F32 triangle multisets. Changed geometry or context refuses.
+Stock-loader construction alone is labelled`source-constructor-only` and does
+not establish actual renderer binding. Matched captures are labelled
+`matched-canonical`; a structural packet clone never passes the seal.
+
+`retainedWinchContactKind` classifies only sealed source regions as paired
+tooth, bearing, captured cap, keyed, one-sided stop or source-separated head
+contacts. It never disables a native pair itself. The native prototype applies
+the ideal 1:8 equation only to the actual tooth pair, scopes each keyed angular
+row to positive source overlap, keeps every foreign contact active,
+and scopes cap handling to the named supports on opposite literal source
+halfspaces. Preflight checks every original source vertex against those
+separating planes; this fixture has zero excess (`capPlaneRoundoffLdu`). Current and predicted native pivot/axis gates use0.05LDU and0.002
+respectively; misalignment restores responding contacts. Geometry remains
+present in every class. Both source revolutes explicitly enable native contacts.
+Current and predicted shaft poses include carrier rotation, transverse
+position, axis and relative phase. A seated key can react to an angular impulse
+before its predicted phase aligns, but key contact handling requires both
+phases inside the reviewed envelope. Predicted axial withdrawal disables the
+angular row; a currently misphased key restores responding contacts.
+Hooks use cached pre-step poses and do not query the mutably borrowed native
+body set during`World.step`.
+
+The native prototype uses declared ideal member mass0.05kg and bounding-box
+inertia. These are simulation parameters, not measured LEGO material data.
+Reactions and source-derived coordinates use actual native bodies and impulses;
+no output pose or velocity is assigned. The fixed worm pair always remains
+meshed. An upstream selector's neutral must isolate the real input branch;
+there is no API which pretends the worm unmeshes in place. This ideal law does
+not claim frictional self-locking or rope/drum load equivalence.
+
+The focused checks demonstrate real retained input/output forward and reverse,
+output stall and release, backdrive against independently computed reflected
+inertia, a foreign thin blocker stopping the actual output shaft, and1LDU
+misalignment restoring every source allowance. A mobile carrier receives
+the actual input reaction and preserves native linear momentum within1e−6kg·m/s
+and angular momentum within1e−5kg·m²/s. Source data and inventory stay unchanged. Reproduce the source/native evidence with:
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/retained-winch.test.ts tests/unit/winch-convex.test.ts tests/unit/winch-retention.test.ts tests/unit/winch-keyed-column.test.ts tests/unit/retained-winch-native.test.ts --maxWorkers=1
+```
+
+Ordinary Play integration must still prove the external carrier's source
+attachment, bind existing real group/joint bodies to this packet and expose the
+reviewed worm equation without a blanket physical-eligibility fallback. Rope
+winding/tension, the second winch, actual upstream selector isolation, Arocs
+bevel/differential native packages and complete set operation remain separate
+obligations. This bounded subsystem evidence does not close the full goal.
+
+## Axial-retention source and native checks
+
+The attributed `42042-winch-retention.ldr` excerpt extends the same original
+source to all 27 directly placed hardware members of its first winch, original
+lines 12085–12114. The new retention binding verifies 17 official root closures
+and 147 dependency files against the actual project. Three focused source
+checks pass, including full-source rays, common world rotation, missing or
+displaced neighbours, dependency mutation and project-defined shadows:
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-retention.test.ts --maxWorkers=1
+```
+
+The 15462 head begins at worm-relative station 38 and seats against the actual
+6536 counterbore lip at 38. This supplies one negative-motion stop, not an
+opposing positive stop. The bevelled free tip is at −59.5; the neighbouring
+18948 closed divider is at −68, leaving 8.5 LDU. Its raw primitive mesh also
+contains an internal cap at local Z 12 across the negative keyed-hole interval
+2–29.5; the source checks distinguish that mesh face from the actual divider
+at Z 2. The plain 3737 shaft has no head. Four sliding keyed bushes flank two
+pulleys, but rotational keying does not prove those bushes axially fixed to
+the shaft. No unconditional shaft weld follows from this source evidence.
+
+The follow-up native packet retains the same 8,660 source triangles with 239
+children and five bodies: carrier, worm, gear and two independent shafts.
+Cylindrical shaft bearings preserve axial freedom. A source-keyed angular row
+acts only during positive keyed overlap, and the input's one-sided native
+limit reacts directly against its actual carrier support. Its positive
+1,000,000-metre numerical domain is not a source hard stop. Geometry remains
+present, and foreign contacts retain their normal response.
+
+Finite subtraction of every complete shaft-triangle projection, plus every
+projected edge interval, checks the actual negative keyed column with a
+declared 0.000001-LDU source normal-plane envelope. The fixture leaves zero
+residual area and edge gaps. The clipping implementation accepts at most
+1e−10 LDU² residual area and 1e−12 edge-parameter gap; these are explicit
+numerical scopes, not an axial attachment or a general topology theorem.
+Local round-bearing and head-stop handling remains a declared ideal interface
+law tied to the actual source members, not measured LEGO friction.
+
+Nine updated native checks pass: matched canonical binding, actual
+forward/reverse, output load/stall/release, independent reflected-inertia
+backdrive, five-body mobile momentum, bidirectional plain-shaft travel,
+one-sided head reaction, withdrawal isolation, predicted phase/overlap gates,
+and foreign contact/misalignment response. Two additional finite-projection
+negatives reject a triangle whose source vertices lie on the bore but whose
+interior bridges a keyed indentation, and reject an escaping projected edge
+even when its triangle has zero area. The earlier rigid shaft-pair results
+were not used to certify this candidate. A separate mobile head-stop impulse
+check measures reaction on the actual carrier and conserves total linear
+momentum within 1e−6 kg·m/s. The nine native checks pass in 13.25 seconds; the
+unchanged three convex source checks pass separately in 7.80 seconds.
+
+This is native subsystem evidence with declared ideal mass, inertia and
+interface laws. Ordinary Play ownership and integration must consume the free
+shaft degrees of freedom; complete crane operation remains open. The complete
+27-member source excerpt establishes retention evidence, while the native
+packet still contains the bounded original 12 members, not the full winch
+drum, rope or crane.
+
+## Articulated carrier source handoff
+
+The five-body candidate's eight-member carrier also needs decomposition:
+its two 87083 stop axles supply rotational keys and unilateral heads, rather
+than bilateral axial grips. `winch-carrier.ts` now describes the full first
+winch's 27 hardware members plus its two actual root mount holders as 29
+separate bodies. It does not declare any of them rigidly welded. The attributed
+`42042-mounted-winch.ldr` fixture preserves those literal composed source
+frames and adds only the actual 40490 and 32140 occurrences from original
+source lines 209 and 287. Their two full dependency closures are independently
+verified by `winch-carrier-sources.json`, alongside the 17 retention roots.
+
+The source pin chain is concrete: the 2780 connects two adjacent 10-LDU
+32449 round holes to a 20-LDU 32525 hole. Two actual 6558 pins connect that
+beam and the 60484 T-beam to the real 40490 and 32140 root holders. Independent
+complete-library geometry rays measure the 2780 collar planes at ±2, its
+inner catch planes at ±18, the thin/thick bore lips at ±3/±8, and the 87083
+head plane at 38. The pins' ribs and slotted catches remain actual source
+geometry. A declared bounded friction/deformation model may model those fits;
+these source surfaces do not justify a permanent weld.
+
+The sealed plan contains 38 positive, coaxial source interfaces, including
+20 keyed pairs, three one-sided heads and the signed worm pair. All 29 bodies
+connect to the mount-holder boundary through those interfaces. Bushes,
+pulleys, the plain shaft, the 18948 joiner and the round 62462 sleeve retain
+separate ownership and axial freedom. The sleeve's two round bore halves are
+distinct; no keyed torque route is invented through its central slot.
+
+Each bearing emits coincident, independently transformed source anchors and
+axes for a conditional cylindrical native constraint. Each keyed row measures
+its shaft relative to the actual bore body and returns its reaction there,
+using the existing 10-Nm ideal reaction cap. Both kinds must release when
+current or predicted source overlap ends. Three source heads have lower-only
+stops. The plan has `ordinaryAdmission: false`: it is a source connection and
+native-recipe handoff, not native contact or production admission evidence.
+
+The complete original import has 13,550 expanded leaves, including flexible
+render segments. A bounded metadata pass selects 285 reviewed-family
+candidates, then exactly 29 bodies. It neither welds submodels nor increases
+the existing 512-member, 200,000-triangle or 4,096-child native limits. The
+original source and inventory stay unchanged. Three focused source checks
+cover mount seating, source geometry, common rotation, unrelated scenery,
+missing/displaced/duplicate holders, dependency changes and embedded shadows:
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-carrier.test.ts --maxWorkers=1
+```
+
+Ordinary integration needs async actual-renderer canonical binding before
+allocation, member-local collision regions owned by these separate bodies,
+conditional native bearing creation/removal, source snap/cap contact reaction
+and bounded slipping fit friction. The current public rig tree cannot encode
+this cyclic 38-interface graph as 38 ordinary parent joints. A sealed native
+constraint graph must coexist with the public control/export tree, preserving
+all source members and degrees of freedom. Upstream power/selector isolation,
+drum friction, ropes and complete crane operation remain open.
+
+The supplemental `NativeWinchCarrierConstraints` helper now creates and removes
+the 38 cylindrical bearings from the actual current and predicted source
+intervals. All 29 native bodies remain separate. It preserves responding
+contacts, adds exactly three lower-only head limits and couples the 20 keyed
+shaft/bore pairs with carrier-relative one-port angular rows. Each row returns
+equal and opposite torque to its actual source owners. A one-port row still
+acts on two bodies; it is not a world-angle target or a source attachment token.
+The unchanged eight-pass and 10-Nm ideal reaction limits apply.
+
+Four native lifecycle checks use all 34,729 triangles of the actual canonical
+29-member capture: initial interface counts, source retention, predicted
+withdrawal releasing all 13 plain-shaft bearings, re-entry, phase mismatch,
+actual mobile bore reaction and angular momentum. Two additional independent
+inertia checks verify the one-port kernel's reaction cap and neutral isolation.
+The graph adds no contact hooks and applies no friction-fit model. These checks
+do not certify complete winch operation or convert the graph into ordinary
+Play admission; source-bound collision packets, snap/catch reaction and
+slipping fit friction still need integration.
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-carrier-native.test.ts tests/unit/angular-equations-keyed.test.ts --maxWorkers=1
+```
+
+`prepareWinchCollision` additionally binds all 29 members to their actual
+captured canonical oriented faces, including winding and duplicate faces,
+source namespace, frame, revision and complete dependency closure. No native
+allocation precedes this binding. The packet retains 34,729 reference source
+triangles: 33,349 literal mesh triangles in 27 owners and the existing 228
+reviewed worm/gear convex regions in the other two owners, for 255 collision
+children. Every raw native shape admits. Region coordinates already include
+the original member basis and are centered on its source part origin; the
+native body's rest rotation is identity. Source poses and inventory stay exact.
+
+Two source rotor captures retain their four actual support IDs. Complete source
+triangle/convex-vertex halfspace checks bound their initial cap-plane mismatch
+by 0.000001 LDU. This is a finite separating-plane check for the selected source
+captures, not a complete material theorem or a shaft grip. Their unilateral
+native cap reaction and contact policy still need integration. The collision
+packet remains `ordinaryAdmission: false`; it supplies neither friction fit
+nor a contact exemption. Two focused source checks cover raw shape admission,
+source retention, stale/moved captures, changed faces and winding, dependencies
+and project shadows:
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-collision.test.ts --maxWorkers=1
+```
+
+`NativeWinchCapConstraints` now adds four separate unilateral shoulder limits
+between the two rotors and those four actual support owners. Its generic native
+joints lock no radial or angular axes. Lower and upper source faces receive
+opposite one-sided limits; ±1,000,000 m is only the open-side numerical domain.
+The plain shafts, joiner and friction-fit accessories gain no axial grip.
+
+Every step charges complete current and velocity-predicted rotor/support point
+scans to the caller's existing enumeration budget before scanning. Limits release
+when source radial error exceeds 0.05 LDU, axis error exceeds 0.002, or a complete
+separating halfspace exceeds the declared 0.05-LDU native contact envelope.
+This envelope is distinct from the initial 0.000001-LDU source-plane mismatch.
+Failed budget checks release all limits. The helper installs no contact hook;
+all actual source and foreign colliders remain responding. A caller that applies
+impulses must refresh predicted scope before using any paired contact policy.
+
+Three focused native checks retain all 255 actual collision children, verify
+the four source support identities and limits, and refuse current/predicted
+misalignment, source-plane crossing and budget overflow. A separate native
+impulse check isolates the cap law with declared equal masses and proves mobile
+support reaction, linear momentum conservation, free radial motion and free
+rotor rotation. That isolated law check is not full winch-operation evidence.
+Ordinary admission, paired key-region clipping, real fit friction, drum and rope
+operation remain open.
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-cap-native.test.ts --maxWorkers=1
+```

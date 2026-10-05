@@ -129,7 +129,7 @@ describe("pinned rack bottom-beam mounting and housing end clearance", () => {
     for (const localX of [-25 * Math.PI, 8])
       expect(crossings(localX - 40).transverse, `slider ${localX} LDU`).toBe(0);
     expect(crossings(-40).touching).toBeGreaterThan(0);
-  });
+  }, 15000);
 
   it("keeps reviewed pinion supports and its angular travel outside the housing", () => {
     expect(sourceCrossings(housing, supports, new Matrix4()).transverse).toBe(

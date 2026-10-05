@@ -1,4 +1,11 @@
 import type { Transform, Vec3 } from "../core/types";
+/** Requests source-bound native seating; this is not a ready-state witness. */
+export type NativeRestAssembly = {
+  profile: "arocs-ball-native-seat-v1";
+  ballOccurrenceId: string;
+  socketOccurrenceId: string;
+  socketEndpoint: 0 | 1;
+};
 export type RigidGroup = {
   id: string;
   occurrenceIds: string[];
@@ -17,6 +24,8 @@ export type JointSpec = {
   axisB?: Vec3;
   /** Optional rotational resistance of a free spherical joint (Dynamic only). */
   angularResistance?: { maxTorqueNm: number; dampingNmSeconds: number };
+  /** Preserve the two actual source anchors until native assembly settles. */
+  restAssembly?: NativeRestAssembly;
   /** Optional axial stops for a free cylindrical bearing, LDU from rest. */
   translationLimitsLdu?: [number, number];
   /** Explicit ideal bearing overlap, local to the joint axis/anchor. */
@@ -28,7 +37,10 @@ export type JointSpec = {
     target: number;
     maxEffort: { value: number; unit: "N" | "N*m" };
     /** Reviewed physical motor case and keyed output; absent means legacy metadata. */
-    binding?: { occurrenceId: string; profile: "power-functions-motor-m-v1" };
+    binding?: {
+      occurrenceId: string;
+      profile: "power-functions-motor-m-v1" | "power-functions-motor-l-v1";
+    };
   };
 };
 /** All points are chassis-local LDU, with negative Y up. */
@@ -99,7 +111,7 @@ export type MotionRig = {
   mode: "kinematic";
   groups: RigidGroup[];
   joints: JointSpec[];
-  /** Ideal spur/rack meshes, separate from their carrier mounting joints. */
+  /** Ideal mesh relations, separate from their actual carrier mounting joints. */
   transmissions?: Transmission[];
   /** Explicit planar revolute closure edges; tree joints remain acyclic. */
   loopClosures?: PlanarLoopClosure[];
@@ -133,7 +145,26 @@ export type RackTransmission = {
   teethB?: never;
   axisSign?: never;
 };
-export type Transmission = SpurTransmission | RackTransmission;
+export type WormTransmission = {
+  id: string;
+  kind: "worm";
+  /** Revolute worm input and wheel output, in unwrapped degrees. */
+  jointA: string;
+  jointB: string;
+  starts: number;
+  teeth: number;
+  /** Signed output turns per input turn are direction * starts / teeth.
+   * This ideal law does not infer self-locking, friction or part admission. */
+  direction: 1 | -1;
+  teethA?: never;
+  teethB?: never;
+  axisSign?: never;
+  pitchRadiusLdu?: never;
+};
+export type Transmission =
+  | SpurTransmission
+  | RackTransmission
+  | WormTransmission;
 export type KinematicPose = {
   jointPositions: Record<string, number>;
   vehicle?: {

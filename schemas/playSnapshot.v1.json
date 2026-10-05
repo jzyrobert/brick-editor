@@ -119,7 +119,8 @@
     "positionAnchor": {
       "enum": [
         "standing-feet",
-        "seated-avatar-root"
+        "seated-avatar-root",
+        "vehicle-reference"
       ]
     },
     "velocity": {
@@ -311,6 +312,20 @@
         "rightShoulder",
         "leftWrist",
         "rightWrist"
+      ],
+      "additionalProperties": false
+    },
+    "vehicleControl": {
+      "type": "object",
+      "properties": {
+        "rigId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "rigId"
       ],
       "additionalProperties": false
     },
@@ -1122,6 +1137,59 @@
                 }
               }
             },
+            "restAssemblies": {
+              "type": "object",
+              "maxProperties": 10000,
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "seating",
+                      "ready",
+                      "blocked"
+                    ]
+                  },
+                  "ticks": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "stableTicks": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "gapLdu": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "relativeSpeed": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 4096
+                  }
+                },
+                "required": [
+                  "state",
+                  "ticks",
+                  "stableTicks",
+                  "gapLdu",
+                  "relativeSpeed"
+                ],
+                "additionalProperties": false
+              },
+              "propertyNames": {
+                "not": {
+                  "enum": [
+                    "__proto__",
+                    "constructor",
+                    "prototype"
+                  ]
+                }
+              }
+            },
             "wheels": {
               "type": "object",
               "maxProperties": 10000,
@@ -1755,6 +1823,59 @@
                   "required": [
                     "translationLdu",
                     "angleDegrees"
+                  ],
+                  "additionalProperties": false
+                },
+                "propertyNames": {
+                  "not": {
+                    "enum": [
+                      "__proto__",
+                      "constructor",
+                      "prototype"
+                    ]
+                  }
+                }
+              },
+              "restAssemblies": {
+                "type": "object",
+                "maxProperties": 10000,
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "enum": [
+                        "seating",
+                        "ready",
+                        "blocked"
+                      ]
+                    },
+                    "ticks": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "stableTicks": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "gapLdu": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "relativeSpeed": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "reason": {
+                      "type": "string",
+                      "maxLength": 4096
+                    }
+                  },
+                  "required": [
+                    "state",
+                    "ticks",
+                    "stableTicks",
+                    "gapLdu",
+                    "relativeSpeed"
                   ],
                   "additionalProperties": false
                 },

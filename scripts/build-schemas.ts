@@ -412,7 +412,9 @@ const motor = (unit: string) =>
       maxEffort: effort(unit),
       binding: obj({
         occurrenceId,
-        profile: { const: "power-functions-motor-m-v1" },
+        profile: {
+          enum: ["power-functions-motor-m-v1", "power-functions-motor-l-v1"],
+        },
       }),
     },
     ["mode", "target", "maxEffort"],
@@ -450,6 +452,12 @@ const joint = {
       {
         ...jointBase,
         kind: { const: "spherical" },
+        restAssembly: obj({
+          profile: { const: "arocs-ball-native-seat-v1" },
+          ballOccurrenceId: occurrenceId,
+          socketOccurrenceId: occurrenceId,
+          socketEndpoint: { enum: [0, 1] },
+        }),
         angularResistance: obj({
           maxTorqueNm: { type: "number", minimum: 0, maximum: 1000000 },
           dampingNmSeconds: { type: "number", minimum: 0, maximum: 100000 },
@@ -606,6 +614,15 @@ const motionRig = obj(
             teethA: { type: "integer", minimum: 4, maximum: 256 },
             teethB: { type: "integer", minimum: 4, maximum: 256 },
             axisSign: { enum: [-1, 1] },
+          }),
+          obj({
+            id,
+            kind: { const: "worm" },
+            jointA: id,
+            jointB: id,
+            starts: { type: "integer", minimum: 1, maximum: 16 },
+            teeth: { type: "integer", minimum: 4, maximum: 256 },
+            direction: { enum: [-1, 1] },
           }),
           obj({
             id,
@@ -1439,6 +1456,19 @@ const playDynamicsReport = obj(
       }),
     ),
     bearings: dictionary(obj({ translationLdu: num, angleDegrees: num })),
+    restAssemblies: dictionary(
+      obj(
+        {
+          state: { enum: ["seating", "ready", "blocked"] },
+          ticks: { type: "integer", minimum: 0 },
+          stableTicks: { type: "integer", minimum: 0 },
+          gapLdu: { type: "number", minimum: 0 },
+          relativeSpeed: { type: "number", minimum: 0 },
+          reason: str,
+        },
+        ["state", "ticks", "stableTicks", "gapLdu", "relativeSpeed"],
+      ),
+    ),
     wheels: dictionary(
       obj({
         contact: { type: "boolean" },
@@ -1470,7 +1500,9 @@ const playSnapshot = obj({
   sourceRevision: integer,
   tick: integer,
   position: vec,
-  positionAnchor: { enum: ["standing-feet", "seated-avatar-root"] },
+  positionAnchor: {
+    enum: ["standing-feet", "seated-avatar-root", "vehicle-reference"],
+  },
   velocity: vec,
   yaw: {
     ...num,
@@ -1528,6 +1560,7 @@ playSnapshot.properties.avatar.properties.basis = {
   minItems: 9,
   maxItems: 9,
 };
+playSnapshot.properties.vehicleControl = obj({ rigId: id });
 playSnapshot.properties.occupancy = obj({
   rigId: id,
   seatId: id,

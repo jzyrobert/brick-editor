@@ -12,6 +12,13 @@ stud-mounted to the bearing carrier and its keyed output must engage one actual
 axle without crossing the socket's closed back. See the
 [source review](reviews/POWER-FUNCTIONS-MOTOR-M-REVIEW.md).
 
+The reviewed Power Functions L motor (`99499.dat`) adds an actual pin-mounted
+case and separately rotating internal output. Its retained shaft and connected
+carrier must pass source review, and its complete casing/rotor geometry must
+pass the canonical partition checks. The Large motor sample starts in Dynamic
+mode and offers Power, Forward, Reverse and Brake. See the
+[PF-L runtime review](reviews/POWER-FUNCTIONS-MOTOR-L-RUNTIME.md).
+
 Mathematical rig data remains losslessly loadable and exportable. It does not
 make unsupported attachments controllable. Normal Play refuses virtual
 proximity grippers, unreviewed closed linkages, springs/ropes and generic ball or

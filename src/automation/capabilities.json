@@ -214,7 +214,12 @@
       "limbAnimation": "minecraft-style swing, idle sway, head follow, jump/fall/fly poses",
       "authoringIsolation": true,
       "poseApplication": true,
-      "readyToPlaySamples": ["twin-drive", "motor-gears", "rack-drive"],
+      "readyToPlaySamples": [
+        "twin-drive",
+        "motor-gears",
+        "large-motor",
+        "rack-drive"
+      ],
       "mechanicalProposals": {
         "api": "mechanisms.propose({id,name,expectedRevision,frameOccurrenceIds,occurrenceIds?,includeHidden?,motors?})",
         "pack": "reviewed-mechanics-1; 18 source-bound official part profiles",
@@ -295,7 +300,8 @@
             "coupledShaftDegreesPerSecond": 3600,
             "coupledRackLduPerSecond": 3600
           },
-          "scope": "No tooth contact, backlash, slip, automatic disengagement or certified clutch strength; worm, bevel and differential relations remain pending",
+          "scope": "Ideal laws do not certify tooth seating, self-locking, backlash, slip, automatic disengagement or clutch strength. Ordinary worm source/contact admission and complete bevel/differential integration remain pending",
+          "worm": "Engineering coordinate support: signed starts/teeth relation between orthogonal revolute worm/wheel shafts on a shared carrier, with unwrapped turns, native carrier reaction and backdrive; actual retained source packet is still required before ordinary Play admission",
           "rack": "Ideal signed radius relation between a revolute pinion and limited perpendicular prismatic rack on the same carrier; unwrapped degrees and LDU"
         },
         "closedLinkages": {
@@ -323,6 +329,8 @@
           "kinematicPreview": "Authored rest retained with explicit Dynamic-only force warning"
         },
         "sphericalResistance": "Optional angularResistance torque/damping using the public spherical wrapper over an existing native handle; per-axis caps preserve the vector torque bound; no powered orientation or swing/twist limits",
+        "nativeRestDeclaration": "Spherical restAssembly preserves actual source ball/socket anchors and named opposite-body members. The arocs-ball-native-seat-v1 construction envelope is bounded to 2.05 LDU; kinematic movement and anchor rebasing refuse. This serialized request is not a source certificate, ready witness or ordinary control admission",
+        "nativeSourceSeating": "Explicit Dynamic entry prepares sealed actual 6628/32005 source packets before allocating physics, preserves original anchors and body owners, and publishes dynamics.restAssemblies state/ticks/stableTicks/gapLdu/relativeSpeed (m/s)/reason. One socket may serve both source endpoints on three separate bodies; copied, stale, transplanted or duplicate-owner packets refuse. Ready requires native seating and sustained gap/speed/foreign-contact checks, and drift revokes it. Full Arocs suspension, closed body graph and UI admission remain pending",
         "cylindricalBearings": {
           "motion": "Native free axial translation and spin; radial/tilt axes constrained; optional translationLimitsLdu stops",
           "reports": "Read-only dynamics.bearings translationLdu and unwrapped angleDegrees; actual group frames and posed placements",
@@ -397,8 +405,8 @@
         "kinematic": "Position presets travel at 90 degrees/s or 40 LDU/s; live signed input controls bounded continuous rate beyond a saved position target; positive power does not simulate effort, zero power removes driven motion; complete world/actor checks retain obstruction response",
         "dynamic": "Rapier joint motors; session power [0,1] scales available maxEffort downward from the authored cap, without changing source or presets; zero power can coast",
         "control": "play.setMotor({rigId,jointId,enabled,input?,power?}); signed input [-1,1] requires enabled:true and overrides bounded velocity; optional power [0,1] defaults to 1 and reduces native effort within authored cap; power0 removes powered drive, input0 brakes at requested power; global clear resets live input0,power1; omitted input restores preset; manual commands stop the component motor",
-        "remoteControls": "Active HUD Controls action only for usable source-bound mechanisms; latched Forward/Reverse and Power percentage scale signed rate and native available effort, with independent motor tabs and Brake all; selecting another motor within the rig preserves other inputs; pause, switching rigs and closing clear live input, closing also brakes viewed presets; rapid manual sliders coalesce to the latest checked travel target",
-        "samples": "Twin motor table: two mounted motors on one connected frame, red 8-to-8-to-24 reduction and blue 8-to-8 direct drive; independent direction/power and bounded obstruction/recovery; smaller Motor & gears and manual Rack guide examples",
+        "remoteControls": "Active HUD Controls action only for usable source-bound mechanisms; latched Forward/Reverse and Power percentage scale signed rate and native available effort, with independent motor tabs and Brake all; operating status replaces continuous shaft-angle counters; selecting another motor within the rig preserves other inputs; pause, switching rigs and closing clear live input, closing also brakes viewed presets; rapid manual sliders coalesce to the latest checked travel target",
+        "samples": "Twin motor table: two mounted PF-M motors on one connected frame, red 8-to-8-to-24 reduction and blue 8-to-8 direct drive; independent direction/power and bounded obstruction/recovery. Large motor: actual pin-mounted 99499 PF-L case, independently rotating source output and retained axle; Dynamic default with source connection review before entry. Smaller Motor & gears and manual Rack guide examples",
         "overview": "Remote controls fit every live group bound into the canvas area clear of the status bar and control sheet; orbit and closer zoom inspect the mechanism, Fit restores the whole system; walking controls are hidden; leaving restores the explorer view; successful seat/train/vehicle context changes switch to the active driving or riding view; refused transitions retain the overview; play.view() reads the rendered camera and overview rig ID"
       },
       "automaticDoors": {
@@ -421,9 +429,14 @@
       },
       "physicalAdmission": {
         "source": "Ordinary UI and automation Play admit only reviewed actual hinges, retained shafts and guided racks; unsupported authored engineering rigs remain losslessly stored and static",
-        "power": "JointSpec.motor.binding names source-reviewed 58120.dat with real stud-mounted case, connected bearing carrier and engaged keyed axle output",
+        "power": "JointSpec.motor.binding names source-reviewed 58120.dat with real stud-mounted case, connected bearing carrier and engaged keyed axle output, or source-reviewed 99499.dat with an actual pin-mounted case, independently rotating internal source output, connected carrier and retained keyed axle. Complete canonical geometry and paired contact checks remain required",
         "exceptions": "Gravity/collision for loose single source solids or compound groups joined through verified studs; source-supported stable-wheelbase vehicles and trains need no motor",
         "unsupported": "Proximity grippers, unbound motors, closed linkages, force links, generic spherical/cylindrical joints require real reviewed part profiles before ordinary Play"
+      },
+      "vehiclePossession": {
+        "entry": "Nearby Get in controls a certified vehicle in third person, fits its complete live geometry, hides the explorer and disables its native collider; no seat or passenger mass is invented",
+        "exit": "Get out brakes, checks eight candidates beside current live group bounds for capsule clearance and supporting ground, then restores the explorer and previous camera; blocked or unsupported exit retains possession",
+        "snapshot": "vehicleControl.rigId with positionAnchor vehicle-reference; shared live/capture avatar visibility; explicit physical seat API remains separate"
       },
       "automaticVehicles": {
         "families": "4600 holders with 4624+3641 or 6014b+56890; two-axle 2441 base with 4624+3641; 6157 holders with 93593+50951 or 93595+50951; exact source tyre/rim seats, two parallel stable axles and a stud-connected chassis",

@@ -4,7 +4,7 @@ import { PlayMechanismSetup, type MechanismReview } from "./PlayMechanismSetup";
 import type { Editor } from "../core/commands";
 import { PlaySeatEntry } from "./PlaySeatEntry";
 import { PlayWorldSettings } from "./PlayWorldSettings";
-import type { Layer } from "../core/types";
+import type { Layer, Project } from "../core/types";
 import { PlaySettings } from "./PlaySettings";
 import {
   useEffect,
@@ -176,6 +176,60 @@ export function PlayPanel({
   playHint?: string;
 }) {
   const state = useSyncExternalStore(play.subscribe, play.getState);
+  const reviewProject = editor?.snapshot;
+  const needsMotorReview = Object.values(authoredRigs).some((rig) =>
+    rig.joints.some(
+      (joint) => joint.motor?.binding?.profile === "power-functions-motor-l-v1",
+    ),
+  );
+  const [motorReview, setMotorReview] = useState<{
+    project: Readonly<Project>;
+    pending: boolean;
+    errors: Record<string, string>;
+  }>();
+  const checkingMotors =
+    !!reviewProject &&
+    needsMotorReview &&
+    !state.active &&
+    (motorReview?.project !== reviewProject || motorReview.pending);
+  useEffect(() => {
+    if (!reviewProject || !needsMotorReview || state.active) return;
+    let cancelled = false;
+    setMotorReview({ project: reviewProject, pending: true, errors: {} });
+    void play
+      .reviewMotorConnections(reviewProject, Object.values(authoredRigs))
+      .then(
+        (errors) => {
+          if (!cancelled)
+            setMotorReview({ project: reviewProject, pending: false, errors });
+        },
+        (error: unknown) => {
+          if (cancelled) return;
+          const reason =
+            error instanceof Error
+              ? error.message
+              : "These motor connections could not be checked.";
+          setMotorReview({
+            project: reviewProject,
+            pending: false,
+            errors: Object.fromEntries(
+              Object.values(authoredRigs)
+                .filter((rig) =>
+                  rig.joints.some(
+                    (joint) =>
+                      joint.motor?.binding?.profile ===
+                      "power-functions-motor-l-v1",
+                  ),
+                )
+                .map((rig) => [rig.id, reason]),
+            ),
+          });
+        },
+      );
+    return () => {
+      cancelled = true;
+    };
+  }, [play, reviewProject, authoredRigs, needsMotorReview, state.active]);
   const rigReview = useMemo(() => {
     if (!editor) return { usable: authoredRigs, unavailable: [] as string[] };
     const project = editor.snapshot;
@@ -183,15 +237,32 @@ export function PlayPanel({
     const usable: Record<string, MotionRig> = {};
     const unavailable: string[] = [];
     for (const rig of Object.values(authoredRigs)) {
+      if (
+        checkingMotors &&
+        rig.joints.some(
+          (joint) =>
+            joint.motor?.binding?.profile === "power-functions-motor-l-v1",
+        )
+      )
+        continue;
+      const sourceError =
+        motorReview?.project === project
+          ? motorReview.errors[rig.id]
+          : undefined;
+      if (sourceError) {
+        unavailable.push(`${rig.name}: ${sourceError}`);
+        continue;
+      }
       const result = physicalPlayEligibility(project, rig, all);
       if (result.eligible) usable[rig.id] = rig;
       else unavailable.push(`${rig.name}: ${result.reason}`);
     }
     return { usable, unavailable };
-  }, [authoredRigs, editor, editor?.snapshot]);
+  }, [authoredRigs, editor, editor?.snapshot, checkingMotors, motorReview]);
   const rigs = state.active ? play.getSessionRigs() : rigReview.usable;
   const [message, setMessage] = useState("");
   const topRow = useRef<HTMLDivElement>(null);
+  const handledTouchExit = useRef(false);
   useLayoutEffect(() => {
     const row = topRow.current,
       tools = row
@@ -701,6 +772,11 @@ export function PlayPanel({
   const startHint = playHint && <p className="play-intro-hint">{playHint}</p>;
   const mechanismChoice = (
     <>
+      {checkingMotors && (
+        <p className="muted" role="status">
+          Checking motor connections…
+        </p>
+      )}
       {!!rigReview.unavailable.length && (
         <details>
           <summary>
@@ -801,7 +877,7 @@ export function PlayPanel({
     <>
       <button
         className="primary wide"
-        disabled={state.loading || modelLoad !== null}
+        disabled={state.loading || modelLoad !== null || checkingMotors}
         onClick={() => {
           wantLock.current = true;
           setLooked(false);
@@ -982,7 +1058,11 @@ export function PlayPanel({
           text: "Driving · " + (rigs[occupied.rigId]?.name ?? "driver seat"),
         }
       : state.vehicleControl
-        ? { icon: "wheel", text: "Controlling vehicle · on foot" }
+        ? {
+            icon: "wheel",
+            text:
+              "Driving · " + (rigs[state.vehicleControl]?.name ?? "vehicle"),
+          }
         : report.trains?.riding
           ? {
               icon: "train",
@@ -1202,12 +1282,12 @@ export function PlayPanel({
             <Icon name="resume" />
             {remoteOpen
               ? "Resume controls"
-              : occupied
+              : inVehicle
                 ? "Resume driving"
                 : "Resume exploring"}
           </button>
           <div className="play-menu-grid">
-            {!occupied && !remoteOpen && (
+            {!inVehicle && !remoteOpen && (
               <button
                 className="play-tile"
                 aria-keyshortcuts={bindings.fly || undefined}
@@ -1218,7 +1298,7 @@ export function PlayPanel({
                 {keyHint(bindings.fly)}
               </button>
             )}
-            {!remoteOpen && (
+            {!remoteOpen && !state.vehicleControl && (
               <button
                 className="play-tile"
                 aria-keyshortcuts={bindings.camera || undefined}
@@ -1230,7 +1310,7 @@ export function PlayPanel({
               </button>
             )}
             {/* Seated, there is no walking position to recover. */}
-            {!remoteOpen && !occupied && (
+            {!remoteOpen && !inVehicle && (
               <button
                 className="play-tile"
                 onClick={() =>
@@ -1267,7 +1347,7 @@ export function PlayPanel({
             <p className="play-menu-note">
               {occupied
                 ? "Seated driver: the throttle and steering pads, or the movement keys, drive the vehicle."
-                : "The throttle and steering pads, or the movement keys, drive it. You stay on foot; included walls and other rigs can stop the vehicle."}
+                : "Use the throttle and steering pads, or the movement keys, to drive. Drag to orbit the vehicle. Get out returns you beside it."}
             </p>
           )}
           {!remoteOpen && <PlaySettings play={play} report={report} />}
@@ -1309,7 +1389,7 @@ export function PlayPanel({
           )}
           <div
             className="play-hint play-keys-hint"
-            hidden={remoteOpen || (finePointer && !locked && !occupied)}
+            hidden={remoteOpen || (finePointer && !locked && !inVehicle)}
           >
             {riding ? (
               // Driving a train: the lever and the brake.
@@ -1321,17 +1401,17 @@ export function PlayPanel({
               <>
                 {bindings.forward || "—"}/{bindings.left || "—"}/
                 {bindings.backward || "—"}/{bindings.right || "—"}{" "}
-                {occupied ? "drive" : "move"} ·{" "}
+                {inVehicle ? "drive" : "move"} ·{" "}
               </>
             )}
             {locked ? "mouse to look · Esc to release" : "drag to look"} ·{" "}
-            {!occupied && !riding && (
+            {!inVehicle && !riding && (
               <>
                 {bindings.jump || "—"} jump · {bindings.fly || "—"} fly ·{" "}
               </>
             )}
-            {bindings.camera || "—"} camera · {bindings.interact || "—"}{" "}
-            interact
+            {!state.vehicleControl && <>{bindings.camera || "—"} camera · </>}
+            {bindings.interact || "—"} interact
           </div>
           {playHint && !hintDone && !remoteOpen && (
             <div className="play-start-hint" role="status">
@@ -1456,16 +1536,23 @@ export function PlayPanel({
                 aria-keyshortcuts={bindings.interact || undefined}
                 // A second finger while the other drives fires no click:
                 // a touch lift gets out directly.
+                onPointerDown={() => {
+                  handledTouchExit.current = false;
+                }}
                 onPointerUp={(e) => {
                   if (e.pointerType !== "touch") return;
                   e.preventDefault();
+                  handledTouchExit.current = true;
                   clear();
                   attempt(() => play.exitVehicle({}));
                 }}
                 onClick={(e) => {
                   // Touch already acted on pointerup; keys and mice act here.
-                  if ((e.nativeEvent as PointerEvent).pointerType === "touch")
+                  if (handledTouchExit.current && e.detail !== 0) {
+                    handledTouchExit.current = false;
                     return;
+                  }
+                  handledTouchExit.current = false;
                   clear();
                   attempt(() => play.exitVehicle({}));
                 }}
@@ -1517,15 +1604,29 @@ export function PlayPanel({
                   state.vehicleControl ? undefined : state.interaction?.name
                 }
                 aria-keyshortcuts={bindings.interact || undefined}
-                onClick={() => {
+                onPointerDown={() => {
+                  handledTouchExit.current = false;
+                }}
+                onPointerUp={(e) => {
+                  if (!state.vehicleControl || e.pointerType !== "touch")
+                    return;
+                  e.preventDefault();
+                  handledTouchExit.current = true;
+                  clear();
+                  attempt(() => play.interact());
+                }}
+                onClick={(e) => {
+                  if (handledTouchExit.current && e.detail !== 0) {
+                    handledTouchExit.current = false;
+                    return;
+                  }
+                  handledTouchExit.current = false;
                   clear();
                   attempt(() => play.interact());
                 }}
               >
                 <Icon name={interactIcon} />
-                {state.vehicleControl
-                  ? "Stop driving"
-                  : state.interaction?.label}
+                {state.vehicleControl ? "Get out" : state.interaction?.label}
                 {keyHint(bindings.interact)}
               </button>
             </>

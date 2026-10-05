@@ -203,6 +203,39 @@
               "kind": {
                 "const": "spherical"
               },
+              "restAssembly": {
+                "type": "object",
+                "properties": {
+                  "profile": {
+                    "const": "arocs-ball-native-seat-v1"
+                  },
+                  "ballOccurrenceId": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "socketOccurrenceId": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "socketEndpoint": {
+                    "enum": [
+                      0,
+                      1
+                    ]
+                  }
+                },
+                "required": [
+                  "profile",
+                  "ballOccurrenceId",
+                  "socketOccurrenceId",
+                  "socketEndpoint"
+                ],
+                "additionalProperties": false
+              },
               "angularResistance": {
                 "type": "object",
                 "properties": {
@@ -410,7 +443,10 @@
                         "format": "occurrence-id"
                       },
                       "profile": {
-                        "const": "power-functions-motor-m-v1"
+                        "enum": [
+                          "power-functions-motor-m-v1",
+                          "power-functions-motor-l-v1"
+                        ]
                       }
                     },
                     "required": [
@@ -560,7 +596,10 @@
                         "format": "occurrence-id"
                       },
                       "profile": {
-                        "const": "power-functions-motor-m-v1"
+                        "enum": [
+                          "power-functions-motor-m-v1",
+                          "power-functions-motor-l-v1"
+                        ]
                       }
                     },
                     "required": [
@@ -921,6 +960,55 @@
               "teethA",
               "teethB",
               "axisSign"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "kind": {
+                "const": "worm"
+              },
+              "jointA": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "jointB": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "starts": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 16
+              },
+              "teeth": {
+                "type": "integer",
+                "minimum": 4,
+                "maximum": 256
+              },
+              "direction": {
+                "enum": [
+                  -1,
+                  1
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "jointA",
+              "jointB",
+              "starts",
+              "teeth",
+              "direction"
             ],
             "additionalProperties": false
           },

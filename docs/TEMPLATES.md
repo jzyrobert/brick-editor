@@ -1,6 +1,6 @@
 # Sample builds
 
-The template chooser in Project shows picture cards for fifteen sample builds and a blank canvas: three big scenes of thousands of parts written as [build scripts](AGENT-BUILDING.md) (market town, cathedral, harbour) first, then nine smaller detailed builds and three ready-to-play Technic demonstrations. These reference actual official LDraw parts. Each shows off something in Play. **Explore the corner café** on the empty-canvas welcome card opens the café.
+The template chooser in Project shows picture cards for sixteen sample builds and a blank canvas: three big scenes of thousands of parts written as [build scripts](AGENT-BUILDING.md) (market town, cathedral, harbour) first, then nine smaller detailed builds and four ready-to-play Technic demonstrations. These reference actual official LDraw parts. Each shows off something in Play. **Explore the corner café** on the empty-canvas welcome card opens the café.
 
 | Sample            |  Parts | Designs | Outside the curated catalogue                                                                                                                                        | Play                                                                                                                                                                            |
 | ----------------- | -----: | ------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -32,14 +32,19 @@ Reverse keep running until **Brake**, pause or close. **Power** sets the rate an
 in Dynamic mode, the available motor effort; the authored cap stays in force. Each sample opens separately
 so the reviewed contact and native collider budgets remain bounded.
 
-| Sample           |            Pieces | What to try                                                                                                                                                                                                                                                |
-| ---------------- | ----------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Motor & gears    | 15 official parts | The actual Power Functions M motor is mounted on studs and connected to the retained input axle. Tap Forward to turn the red 8-tooth gear; the blue 24-tooth gear follows at one third speed in the opposite direction.                                    |
-| Twin motor table | 35 official parts | Two actually mounted PF-M motors share a stud-connected frame. Run the red two-stage reduction (same direction, one-third speed) and blue direct drive (opposite direction, equal speed) independently. Switch motor tabs, adjust power and use Brake all. |
-| Rack guide       |  2 official parts | Move the blue rack manually inside its real outrigger housing using the joint control. The source-derived guide bounds keep the rack captured.                                                                                                             |
+| Sample           |            Pieces | What to try                                                                                                                                                                                                                                                              |
+| ---------------- | ----------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Motor & gears    | 15 official parts | The actual Power Functions M motor is mounted on studs and connected to the retained input axle. Tap Forward to turn the red 8-tooth gear; the blue 24-tooth gear follows at one third speed in the opposite direction.                                                  |
+| Twin motor table | 35 official parts | Two actually mounted PF-M motors share a stud-connected frame. Run the red two-stage reduction (same direction, one-third speed) and blue direct drive (opposite direction, equal speed) independently. Switch motor tabs, adjust power and use Brake all.               |
+| Large motor      | 13 official parts | The actual Power Functions L motor is mounted through two source-aligned pins. Its internal output and retained red axle rotate independently of the casing. Start in Dynamic mode; set Power, Forward or Reverse. Zero Power keeps the selected direction for resuming. |
+| Rack guide       |  2 official parts | Move the blue rack manually inside its real outrigger housing using the joint control. The source-derived guide bounds keep the rack captured.                                                                                                                           |
 
-The motor uses the reviewed 58120 output socket, a six-stud axle and a common
-stud-connected base carrying both the motor and bearings. Its simulated effort
+Motor & gears and Twin motor table use the reviewed 58120 output socket, a six-stud axle and a common
+stud-connected base carrying both the motor and bearings. Large motor uses the
+reviewed 99499 casing and keyed internal output, with its source-derived collision
+components and two actual retaining collars. Play checks its motor connections
+before offering the Dynamic option; source and native collision admission are
+checked again on entry. Simulated effort
 is a game setting; internal electrics and a battery circuit are not modelled.
 The rack guide deliberately has no powered pinion: a powered rack demonstration
 still needs a reviewed physical motor and pinion mount. Synthetic crank and

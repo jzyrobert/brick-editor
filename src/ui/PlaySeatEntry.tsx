@@ -3,7 +3,8 @@ import { Icon } from "./icons";
 import type { MotionRig } from "../mechanisms/types";
 import type { PlaySnapshotReport } from "../play/types";
 
-/** Physical entry is deliberately distinct from the existing on-foot remote action. */
+/** One driving action for every certified vehicle; detailed seat rigs remain
+ * available through the explicit seated API. Possession invents no seat weld. */
 export function PlaySeatEntry({
   play,
   rig,
@@ -19,7 +20,6 @@ export function PlaySeatEntry({
   eligibility: { eligible: boolean; reason?: string };
   message?: string;
 }) {
-  const seat = rig.vehicle!.driverSeat!;
   const collision = (report.mechanisms?.[rig.id] ?? report.mechanism)
     ?.vehicleCollision;
   return (
@@ -29,7 +29,7 @@ export function PlaySeatEntry({
           {message}
         </small>
       )}
-      {eligibility.reason && (
+      {collision?.supported === false && eligibility.reason && (
         <small className="play-note" role="status">
           {eligibility.reason}
         </small>
@@ -38,23 +38,12 @@ export function PlaySeatEntry({
         {collision?.supported === false ? collision.reason : rig.name}
       </small>
       <div className="play-prompt-row">
-        {collision?.supported !== false && (
-          <button
-            className="play-prompt play-seat-remote"
-            onClick={() => action(() => play.controlVehicle(rig.id))}
-          >
-            <Icon name="wheel" />
-            Drive from here
-          </button>
-        )}
         <button
           className="play-prompt is-commit"
-          disabled={!eligibility.eligible}
-          onClick={() =>
-            action(() => play.enterVehicle({ rigId: rig.id, seatId: seat.id }))
-          }
+          disabled={!eligibility.eligible || collision?.supported === false}
+          onClick={() => action(() => play.controlVehicle(rig.id))}
         >
-          <Icon name="seat" />
+          <Icon name="wheel" />
           Get in
         </button>
       </div>

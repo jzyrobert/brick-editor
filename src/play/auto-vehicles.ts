@@ -12,6 +12,15 @@ import type { Bounds } from "../core/spatial";
 import type { MotionRig, RigidGroup } from "../mechanisms/types";
 import { validateRig } from "../mechanisms/kinematic";
 import { occurrenceBounds } from "./trains";
+import {
+  sourceVehicleAssemblyReview,
+  type SourceVehicleAssemblyReview,
+} from "./source-vehicle-assembly";
+import {
+  reviewedAxleWheelMounts,
+  type ReviewedVehicleAttachment,
+  type ReviewedWheelInstance,
+} from "./reviewed-wheel-mounts";
 
 export const AUTO_VEHICLE_PREFIX = "auto-vehicle:";
 export const isAutoVehicleRig = (id: string) =>
@@ -75,19 +84,35 @@ type Wheel = {
   radius: number;
   side: -1 | 1;
   axle: string;
+  axis?: Vec3;
+  steering?: boolean;
+  members?: Occurrence[];
+  instances?: ReviewedWheelInstance[];
+  mountMembers?: Occurrence[];
+  attachments?: ReviewedVehicleAttachment[];
 };
+const wheelMembers = (w: Wheel) => w.members ?? [w.rim, w.tyre];
+const wheelInstances = (w: Wheel) =>
+  w.instances ?? [
+    { rim: w.rim, tyre: w.tyre, center: w.center, radius: w.radius },
+  ];
+const wheelAxis = (w: Wheel) =>
+  w.axis ?? unit(mv(w.holder.transform.basis, [1, 0, 0]));
 export type AutoVehicle = {
   rigId: string;
   occurrenceIds: string[];
   wheelOccurrenceIds: string[];
   wheelbase: number;
-  rule: "source-wheel-pin-layout";
+  rule: "source-wheel-pin-layout" | "source-retained-axle-layout";
 };
 export type AutoVehicleSkip = { occurrenceIds: string[]; reason: string };
 export type DerivedVehicles = {
   rigs: Record<string, MotionRig>;
   vehicles: AutoVehicle[];
   skipped: AutoVehicleSkip[];
+  /** Included retained-axle source bodies, including deferred/removable members.
+   * This is ownership evidence; only `vehicles` grant current driving admission. */
+  sourceAssemblies?: SourceVehicleAssemblyReview;
 };
 export type AutoVehicleOptions = {
   all?: Occurrence[];
@@ -103,8 +128,61 @@ function mountedWheels(
   reserved: ReadonlySet<string>,
   bounds: (o: Occurrence) => Bounds | null,
 ) {
-  const wheels: Wheel[] = [],
-    skipped: AutoVehicleSkip[] = [],
+  const eligible = all.filter(
+    (o) =>
+      o.namespace === "official" &&
+      o.node.kind === "part" &&
+      nearlyPhysical(o.transform),
+  );
+  const wheelParts = eligible.filter(
+    (o) =>
+      FAMILIES.some((f) => f.rim === key(o) || f.tyre === key(o)) ||
+      ["2695", "2696"].includes(key(o)),
+  );
+  const mountParts = eligible.filter(
+    (o) =>
+      Object.hasOwn(HOLDERS, key(o)) ||
+      ["3700", "4261", "4262", "4263"].includes(key(o)),
+  );
+  if (!wheelParts.length) return { wheels: [] as Wheel[], skipped: [] };
+  if (
+    wheelParts.length > AUTO_VEHICLE_LIMITS.wheelParts ||
+    mountParts.length > AUTO_VEHICLE_LIMITS.holders
+  )
+    return {
+      wheels: [] as Wheel[],
+      skipped: [
+        {
+          occurrenceIds: wheelParts
+            .filter((o) => !reserved.has(o.id))
+            .map((o) => o.id),
+          reason: "Too many wheel parts to infer a vehicle safely",
+        },
+      ],
+    };
+  const reviewed = reviewedAxleWheelMounts(
+      all,
+      reserved,
+      bounds,
+      AUTO_VEHICLE_LIMITS,
+    ),
+    axleWheels: Wheel[] = reviewed.assemblies.map((a) => ({
+      rim: a.instances[0].rim,
+      tyre: a.instances[0].tyre,
+      holder: a.carrier,
+      center: a.center,
+      radius: a.radius,
+      side: a.side,
+      axle: a.shaft.id,
+      axis: a.axis,
+      steering: a.steering,
+      members: a.members,
+      instances: a.instances,
+      mountMembers: a.mountMembers,
+      attachments: reviewed.edges,
+    })),
+    wheels: Wheel[] = [],
+    skipped: AutoVehicleSkip[] = [...reviewed.skipped],
     official = all.filter(
       (o) =>
         o.namespace === "official" &&
@@ -116,7 +194,7 @@ function mountedWheels(
     ),
     tyres = official.filter((o) => FAMILIES.some((f) => f.tyre === key(o))),
     holders = official.filter((o) => Object.hasOwn(HOLDERS, key(o)));
-  if (!rims.length) return { wheels, skipped };
+  if (!rims.length) return { wheels: axleWheels, skipped };
   if (
     rims.length + tyres.length > AUTO_VEHICLE_LIMITS.wheelParts ||
     holders.length > AUTO_VEHICLE_LIMITS.holders
@@ -233,77 +311,110 @@ function mountedWheels(
     for (const id of [w.tyre.id, `${w.axle}:${w.side}`])
       used.set(id, (used.get(id) ?? 0) + 1);
   return {
-    wheels: wheels.filter((w) => {
-      const unique =
-        used.get(w.tyre.id) === 1 && used.get(`${w.axle}:${w.side}`) === 1;
-      if (!unique)
-        skipped.push({
-          occurrenceIds: [w.rim.id, w.tyre.id],
-          reason: "A tyre or pin seat is claimed by more than one wheel",
-        });
-      return unique;
-    }),
+    wheels: [
+      ...axleWheels,
+      ...wheels.filter((w) => {
+        const unique =
+          used.get(w.tyre.id) === 1 && used.get(`${w.axle}:${w.side}`) === 1;
+        if (!unique)
+          skipped.push({
+            occurrenceIds: [w.rim.id, w.tyre.id],
+            reason: "A tyre or pin seat is claimed by more than one wheel",
+          });
+        return unique;
+      }),
+    ],
     skipped,
   };
 }
 
+/** Physical wheel instances share a source support plane; different radii
+ * are valid when their actual centre heights supply that same plane. Coaxial
+ * pin-linked tyres remain one controller assembly. No suspension is invented. */
 function wheelbase(wheels: Wheel[]) {
-  if (!wheels.length) return "This vehicle needs real mounted source wheels";
-  const axis = unit(mv(wheels[0].holder.transform.basis, [1, 0, 0])),
+  if (wheels.length < 2 || wheels.length > 16)
+    return "Automatic driving needs 2–16 real mounted wheel assemblies";
+  const axis = wheelAxis(wheels[0]),
     forward: Vec3 = [-axis[2], 0, axis[0]],
     coordinates = (p: Vec3) => [dot(p, axis), p[1], dot(p, forward)];
-  if (
-    wheels.some(
-      (w) =>
-        Math.abs(dot(axis, unit(mv(w.holder.transform.basis, [1, 0, 0])))) <
-        0.9999,
-    )
-  )
+  if (wheels.some((w) => Math.abs(dot(axis, wheelAxis(w))) < 0.9999))
     return "The wheel axles are not parallel";
-  const axles = [...new Set(wheels.map((w) => w.axle))];
-  if (wheels.length !== 4 || axles.length !== 2)
-    return "Automatic driving needs exactly two axles with a wheel on both ends";
-  for (const id of axles) {
-    const pair = wheels.filter((w) => w.axle === id);
-    if (pair.length !== 2 || pair[0].side === pair[1].side)
-      return "Both ends of each axle need a mounted wheel";
-    if (
-      Math.abs(
-        coordinates(pair[0].center)[1] - coordinates(pair[1].center)[1],
-      ) > 0.5 ||
-      Math.abs(
-        coordinates(pair[0].center)[2] - coordinates(pair[1].center)[2],
-      ) > 0.5
-    )
-      return "The wheels on an axle do not share a horizontal centerline";
+  const stations: Array<{ wheels: Wheel[]; z: number }> = [];
+  for (const w of [...wheels].sort(
+    (a, b) => coordinates(a.center)[2] - coordinates(b.center)[2],
+  )) {
+    const z = coordinates(w.center)[2],
+      last = stations.at(-1);
+    if (last && Math.abs(z - last.z) <= 0.5) last.wheels.push(w);
+    else stations.push({ wheels: [w], z });
   }
-  const axleFrames = axles
-    .map((id) => {
-      const pair = wheels
-        .filter((w) => w.axle === id)
-        .map((w) => ({ center: coordinates(w.center) }));
-      return {
-        x: (pair[0].center[0] + pair[1].center[0]) / 2,
-        y: (pair[0].center[1] + pair[1].center[1]) / 2,
-        z: (pair[0].center[2] + pair[1].center[2]) / 2,
-        track: Math.abs(pair[0].center[0] - pair[1].center[0]),
-      };
-    })
-    .sort((a, b) => a.z - b.z);
-  const length = Math.abs(axleFrames[1].z - axleFrames[0].z);
+  if (stations.length < 2)
+    return "Driving needs at least two distinct supported axle stations";
+  const frames = stations.map((station) => {
+    const left = station.wheels.filter((w) => w.side === -1),
+      right = station.wheels.filter((w) => w.side === 1);
+    if (!left.length || left.length !== right.length) return;
+    const ls = left.map((w) => coordinates(w.center)[0]).sort((a, b) => a - b),
+      rs = right.map((w) => coordinates(w.center)[0]).sort((a, b) => b - a),
+      mid = ls.map((x, k) => (x + rs[k]) / 2);
+    if (
+      Math.max(...mid) - Math.min(...mid) > 0.5 ||
+      Math.min(...rs) - Math.max(...ls) < 40
+    )
+      return;
+    return { x: mid.reduce((s, x) => s + x, 0) / mid.length, z: station.z };
+  });
+  if (frames.some((f) => !f))
+    return "Both sides of each axle need a symmetric mounted wheel assembly";
   if (
-    length < 40 ||
-    length > 400 ||
-    axleFrames.some((a) => a.track < 40 || a.track > 160) ||
-    Math.abs(axleFrames[0].x - axleFrames[1].x) > 0.5 ||
-    Math.abs(axleFrames[0].y - axleFrames[1].y) > 0.5 ||
-    Math.abs(axleFrames[0].track - axleFrames[1].track) > 0.5
+    Math.max(...frames.map((f) => f!.x)) -
+      Math.min(...frames.map((f) => f!.x)) >
+    0.5
   )
-    return "The two axles do not form a stable parallel wheelbase";
-  const r = wheels.map((w) => w.radius);
-  if (Math.max(...r) - Math.min(...r) > 0.5)
-    return "The wheel radii do not give a level supported chassis";
+    return "The axle stations do not share a stable chassis centreline";
+  const support = wheels.flatMap((w) =>
+    wheelInstances(w).map((i) => i.center[1] + i.radius),
+  );
+  // This allowance covers reviewed source radial envelopes (2696 has a
+  // 0.005 LDU enclosing margin), not suspension or a sloped contact plane.
+  if (Math.max(...support) - Math.min(...support) > 0.01)
+    return "The source wheels do not share a level support plane";
+  for (let i = 1; i < stations.length; i++)
+    if (
+      stations[i].z - stations[i - 1].z <
+      Math.max(...stations[i].wheels.map((w) => w.radius)) +
+        Math.max(...stations[i - 1].wheels.map((w) => w.radius)) -
+        0.5
+    )
+      return "Adjacent axle stations overlap their source wheel envelopes";
+  const length = stations.at(-1)!.z - stations[0].z;
+  if (length < 40 || !Number.isFinite(length))
+    return "The axle stations need a stable supported wheelbase";
   return length;
+}
+
+function connectReviewedMounts(
+  edges: Map<string, Set<string>>,
+  wheels: Wheel[],
+  candidateIds: ReadonlySet<string>,
+) {
+  for (const wheel of wheels) {
+    const mountIds = new Set(wheel.mountMembers?.map((o) => o.id) ?? []);
+    for (const e of wheel.attachments ?? [])
+      if (
+        mountIds.has(e.a) &&
+        mountIds.has(e.b) &&
+        candidateIds.has(e.a) &&
+        candidateIds.has(e.b)
+      ) {
+        const a = edges.get(e.a) ?? new Set<string>(),
+          b = edges.get(e.b) ?? new Set<string>();
+        a.add(e.b);
+        b.add(e.a);
+        edges.set(e.a, a);
+        edges.set(e.b, b);
+      }
+  }
 }
 
 /** Bounded enumeration of reviewed stud interfaces for inferred/authored cars. */
@@ -434,11 +545,11 @@ export function authoredVehicleWheelSupport(
 ) {
   if (!rig.vehicle)
     return { supported: false, reason: "This rig has no vehicle wheelbase" };
-  if (rig.groups.length !== 5 || rig.joints.length)
+  if (rig.groups.length !== rig.vehicle.wheels.length + 1 || rig.joints.length)
     return {
       supported: false,
       reason:
-        "The wheel driving exception covers only a chassis and four wheel groups",
+        "The wheel driving exception covers a chassis and its reviewed wheel assemblies",
     };
   const all = options.all ?? occurrences(project),
     ids = new Set(rig.groups.flatMap((g) => g.occurrenceIds)),
@@ -471,8 +582,8 @@ export function authoredVehicleWheelSupport(
       (w) => rig.groups.find((g) => g.id === w.groupId)?.occurrenceIds ?? [],
     ),
     rotating = new Set(declared),
-    wheels = found.wheels.filter(
-      (w) => rotating.has(w.rim.id) && rotating.has(w.tyre.id),
+    wheels = found.wheels.filter((w) =>
+      wheelMembers(w).every((o) => rotating.has(o.id)),
     ),
     result = wheelbase(wheels);
   if (wheels.some((w) => !chassis.occurrenceIds.includes(w.holder.id)))
@@ -483,13 +594,14 @@ export function authoredVehicleWheelSupport(
   if (typeof result === "string")
     return { supported: false, reason: found.skipped[0]?.reason ?? result };
   if (
-    declared.length !== 8 ||
-    new Set(wheels.flatMap((w) => [w.rim.id, w.tyre.id])).size !== rotating.size
+    wheels.length !== rig.vehicle.wheels.length ||
+    new Set(wheels.flatMap((w) => wheelMembers(w).map((o) => o.id))).size !==
+      rotating.size
   )
     return {
       supported: false,
       reason:
-        "Declared wheel groups need exactly their matching source rims and tyres",
+        "Declared wheel groups need every member of their real matching source wheel assembly",
     };
   if (
     !Number.isFinite(rig.vehicle.wheelbase) ||
@@ -518,32 +630,28 @@ export function authoredVehicleWheelSupport(
         reason: "Declared wheel pivot or radius does not match its source tyre",
       };
     if (
-      group.occurrenceIds.length !== 2 ||
-      !wheels.some(
-        (w) =>
-          group.occurrenceIds.includes(w.rim.id) &&
-          group.occurrenceIds.includes(w.tyre.id),
-      ) ||
-      !wheels.some(
-        (w) =>
-          group.occurrenceIds.includes(w.rim.id) &&
-          Math.abs(
-            dot(
-              unit(mv(group.frame.basis, spec.axis)),
-              unit(mv(w.rim.transform.basis, [0, 0, 1])),
-            ),
-          ) >= 0.9999,
-      )
+      group.occurrenceIds.length !== wheelMembers(wheel).length ||
+      !wheelMembers(wheel).every((o) => group.occurrenceIds.includes(o.id)) ||
+      Math.abs(dot(unit(mv(group.frame.basis, spec.axis)), wheelAxis(wheel))) <
+        0.9999
     )
       return {
         supported: false,
-        reason: "A declared wheel group does not match a real mounted wheel",
+        reason:
+          "A declared wheel group does not match a real mounted wheel assembly",
+      };
+    if (wheel.mountMembers?.some((o) => !chassis.occurrenceIds.includes(o.id)))
+      return {
+        supported: false,
+        reason:
+          "Every real axle support and retainer must stay with its reviewed chassis",
       };
   }
   const graph = sourceStudGraph(
     members.filter((o) => chassis.occurrenceIds.includes(o.id)),
   );
   if (!graph.edges) return { supported: false, reason: graph.reason };
+  connectReviewedMounts(graph.edges, wheels, new Set(chassis.occurrenceIds));
   const holderIds = [...new Set(wheels.map((w) => w.holder.id))],
     connected = new Set<string>(),
     stack = [holderIds[0]];
@@ -593,10 +701,63 @@ export function deriveVehicleRigs(
       skipped: found.skipped,
     };
   if (!found.wheels.length) return result;
+  // The reviewed axle family has actual retained carrier/shaft/hinge boundaries.
+  // A source submodel is not permission to flatten those parts into one body.
+  // Ordinary wheel-pin families retain their bounded existing driving profile.
+  const sourceAxleWheels = found.wheels.filter((wheel) => wheel.mountMembers);
+  if (sourceAxleWheels.length) {
+    try {
+      result.sourceAssemblies = sourceVehicleAssemblyReview(project, {
+        all,
+        reserved: options.reserved,
+        bounds: boxes,
+        limits: AUTO_VEHICLE_LIMITS,
+      });
+    } catch (error) {
+      result.skipped.push({
+        occurrenceIds: sourceAxleWheels.flatMap((wheel) =>
+          wheelMembers(wheel).map((o) => o.id),
+        ),
+        reason: (error as Error).message,
+      });
+      found.wheels = found.wheels.filter((wheel) => !wheel.mountMembers);
+      if (!found.wheels.length) return result;
+    }
+  }
+  // Traverse actual source ownership for these mounts rather than their MPD
+  // ancestors. Unsupported multi-body assemblies remain wholly in the world.
+  for (const assembly of result.sourceAssemblies?.assemblies ?? []) {
+    const carriers = new Set(assembly.carrierOccurrenceIds),
+      wheels = found.wheels.filter(
+        (wheel) => wheel.mountMembers && carriers.has(wheel.holder.id),
+      ),
+      length = wheelbase(wheels),
+      reason =
+        typeof length === "string"
+          ? length
+          : assembly.reservedOccurrenceIds.length
+            ? "This source vehicle is connected to another active mechanism"
+            : !assembly.rigidWheelProfileCompatible
+              ? "This vehicle’s axle and hinge assembly is not supported in Play yet"
+              : undefined;
+    if (reason) {
+      result.skipped.push({
+        occurrenceIds: assembly.wheelOccurrenceIds,
+        reason,
+      });
+      const rejected = new Set(assembly.carrierOccurrenceIds);
+      found.wheels = found.wheels.filter(
+        (wheel) => !wheel.mountMembers || !rejected.has(wheel.holder.id),
+      );
+    }
+  }
+  if (!found.wheels.length) return result;
   const holders = [
       ...new Map(found.wheels.map((w) => [w.holder.id, w.holder])).values(),
     ],
-    wheelIds = new Set(found.wheels.flatMap((w) => [w.rim.id, w.tyre.id])),
+    wheelIds = new Set(
+      found.wheels.flatMap((w) => wheelMembers(w).map((o) => o.id)),
+    ),
     near = (o: Occurrence) => {
       const b = boxes(o);
       if (!validBox(b)) return false;
@@ -633,6 +794,11 @@ export function deriveVehicleRigs(
     return result;
   }
   const edges = graph.edges;
+  connectReviewedMounts(
+    edges,
+    found.wheels,
+    new Set(candidates.map((o) => o.id)),
+  );
   const seen = new Set<string>();
   for (const holder of holders.sort((a, b) => a.id.localeCompare(b.id))) {
     if (seen.has(holder.id)) continue;
@@ -646,7 +812,7 @@ export function deriveVehicleRigs(
       for (const next of edges.get(id) ?? []) stack.push(next);
     }
     const wheels = found.wheels.filter((w) => component.has(w.holder.id)),
-      ids = wheels.flatMap((w) => [w.rim.id, w.tyre.id]),
+      ids = wheels.flatMap((w) => wheelMembers(w).map((o) => o.id)),
       length = wheelbase(wheels);
     const refuse = (reason: string) =>
       result.skipped.push({ occurrenceIds: ids, reason });
@@ -667,22 +833,31 @@ export function deriveVehicleRigs(
     }
     // Include unknown official decoration only within a non-root authored
     // submodel touched by this stud component. Never sweep all root scenery in.
-    const parents = new Set(
+    const sourceAssembly = wheels.some((wheel) => wheel.mountMembers)
+        ? result.sourceAssemblies?.assemblies.find((assembly) =>
+            assembly.carrierOccurrenceIds.includes(holder.id),
+          )
+        : undefined,
+      sourceChassis = sourceAssembly
+        ? new Set(sourceAssembly.chassisOccurrenceIds)
+        : undefined,
+      parents = new Set(
         all
           .filter((o) => component.has(o.id) && o.path.length > 1)
           .map((o) => JSON.stringify(o.path.slice(0, -1))),
       ),
-      chassis = all.filter(
-        (o) =>
-          component.has(o.id) ||
-          (!wheelIds.has(o.id) &&
-            o.path.length > 1 &&
-            o.path.some(
-              (_, k) =>
-                k > 0 && parents.has(JSON.stringify(o.path.slice(0, k))),
-            )),
+      chassis = all.filter((o) =>
+        sourceChassis
+          ? sourceChassis.has(o.id)
+          : component.has(o.id) ||
+            (!wheelIds.has(o.id) &&
+              o.path.length > 1 &&
+              o.path.some(
+                (_, k) =>
+                  k > 0 && parents.has(JSON.stringify(o.path.slice(0, k))),
+              )),
       ),
-      members = [...chassis, ...wheels.flatMap((w) => [w.rim, w.tyre])];
+      members = [...chassis, ...wheels.flatMap(wheelMembers)];
     if (
       chassis.some(
         (o) => Object.hasOwn(HOLDERS, key(o)) && !component.has(o.id),
@@ -715,13 +890,16 @@ export function deriveVehicleRigs(
     if (
       result.vehicles.length >=
         Math.min(options.maxRigs, AUTO_VEHICLE_LIMITS.vehicles) ||
-      (result.vehicles.length + 1) * 5 > options.maxGroups
+      Object.values(result.rigs).reduce((n, r) => n + r.groups.length, 0) +
+        wheels.length +
+        1 >
+        options.maxGroups
     ) {
       refuse("No room remains within the Play vehicle/group budget");
       continue;
     }
     const rigId = AUTO_VEHICLE_PREFIX + holder.id,
-      axis = unit(mv(holder.transform.basis, [1, 0, 0])),
+      axis = wheelAxis(wheels[0]),
       // Exact rigid yaw frame: authored LDraw rounded member bases stay intact.
       yawAxis = unit([axis[0], 0, axis[2]]),
       forward: Vec3 = [-yawAxis[2], 0, yawAxis[0]],
@@ -738,7 +916,7 @@ export function deriveVehicleRigs(
       ],
       origin = wheels
         .reduce((p, w) => add(p, w.center), [0, 0, 0] as Vec3)
-        .map((v) => v / 4) as Vec3,
+        .map((v) => v / wheels.length) as Vec3,
       group = (
         id: string,
         parts: Occurrence[],
@@ -766,7 +944,7 @@ export function deriveVehicleRigs(
         groups: [
           group("chassis", chassis, origin),
           ...ordered.map((w, i) =>
-            group(`wheel-${i + 1}`, [w.rim, w.tyre], w.center),
+            group(`wheel-${i + 1}`, wheelMembers(w), w.center),
           ),
         ],
         vehicle: {
@@ -778,7 +956,8 @@ export function deriveVehicleRigs(
             groupId: `wheel-${i + 1}`,
             axis: [1, 0, 0],
             radius: w.radius,
-            steering: Math.abs(dot(w.center, forward) - front) <= 0.5,
+            steering:
+              w.steering ?? Math.abs(dot(w.center, forward) - front) <= 0.5,
           })),
         },
       };
@@ -792,7 +971,9 @@ export function deriveVehicleRigs(
       occurrenceIds: members.map((o) => o.id),
       wheelOccurrenceIds: ids,
       wheelbase: length,
-      rule: "source-wheel-pin-layout",
+      rule: wheels.some((w) => w.mountMembers)
+        ? "source-retained-axle-layout"
+        : "source-wheel-pin-layout",
     });
   }
   const claimed = new Set(result.vehicles.flatMap((v) => v.occurrenceIds));

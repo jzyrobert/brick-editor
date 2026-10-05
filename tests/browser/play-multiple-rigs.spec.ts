@@ -30,7 +30,7 @@ test("door and vehicle keep independent live poses in one frozen Play world", as
   await page.evaluate(() =>
     window.brickEditor!.play.teleport({ position: [-90, -0.3, -280] }),
   );
-  await page.getByRole("button", { name: "Drive from here" }).click();
+  await page.getByRole("button", { name: "Get in" }).click();
   await page.keyboard.down("w");
   await page.evaluate(() => window.brickEditor!.play.stepTicks(12));
   await page.keyboard.up("w");
@@ -40,7 +40,7 @@ test("door and vehicle keep independent live poses in one frozen Play world", as
     -19,
   );
   expect(driven.mechanisms!.vehicle.tick).toBe(driven.mechanisms!.door.tick);
-  await page.getByRole("button", { name: "Stop driving" }).click();
+  await page.getByRole("button", { name: "Get out" }).click();
   const result = await page.evaluate(async () => {
     const a = window.brickEditor!;
     const ambiguous = await a.play.setMechanismJoint("hinge", 0).then(
