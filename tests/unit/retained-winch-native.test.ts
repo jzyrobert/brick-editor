@@ -58,10 +58,18 @@ function run(
   }
 }
 describe("actual retained native crane winch", () => {
-  it("retains all12 source members/8660 reference triangles within244 native children and refuses forged packets", () => {
+  it("retains all12 source members/8660 reference triangles within239 native children and refuses forged packets", () => {
     expect(packet.sourceTriangles).toBe(8660);
-    expect(packet.childCount).toBe(244);
+    expect(packet.childCount).toBe(239);
     expect(packet.capPlaneRoundoffLdu).toBe(0);
+    expect(packet.shaftOwnership).toBe("axially-free-keyed");
+    expect(packet.inputStop.lowerLdu).toBe(0);
+    expect(packet.inputStop.positiveHardStop).toBeNull();
+    for (const proof of Object.values(packet.keyColumnCertificates)) {
+      expect(proof.maxResidualAreaLdu2).toBe(0);
+      expect(proof.maxEdgeGapFraction).toBe(0);
+      expect(proof.normalPlaneEnvelopeLdu).toBe(1e-6);
+    }
     expect(packet.carrier).toHaveLength(8);
     expect(packet.captureBinding).toBe("source-constructor-only");
     expect(isPreparedRetainedWinchPacket(packet)).toBe(true);
@@ -137,8 +145,12 @@ describe("actual retained native crane winch", () => {
       expect(native.solver.snapshot().ports.input.radians).toBeGreaterThan(0.7);
     });
     run((native, _world, step) => {
-      const inputInertia = 1 / native.input.effectiveWorldInvInertia().m33;
-      const outputInertia = 1 / native.output.effectiveWorldInvInertia().m11;
+      const inputInertia =
+        1 / native.input.effectiveWorldInvInertia().m33 +
+        1 / native.inputShaft.effectiveWorldInvInertia().m33;
+      const outputInertia =
+        1 / native.output.effectiveWorldInvInertia().m11 +
+        1 / native.outputShaft.effectiveWorldInvInertia().m11;
       const outputImpulse = 0.003,
         ratio = 1 / 8;
       // Independently computed generalized momentum: the orthogonal input
@@ -178,7 +190,13 @@ describe("actual retained native crane winch", () => {
       expect(native.carrier.rotation()).not.toEqual(rest);
       const linear = new Vector3(),
         angular = new Vector3();
-      for (const b of [native.input, native.output, native.carrier]) {
+      for (const b of [
+        native.input,
+        native.output,
+        native.inputShaft,
+        native.outputShaft,
+        native.carrier,
+      ]) {
         const v = b.linvel(),
           omega = b.angvel(),
           com = b.worldCom(),
@@ -209,6 +227,53 @@ describe("actual retained native crane winch", () => {
       events.free();
       world.free();
     }
+  });
+  it("retains both plain-shaft axial directions, the actual one-sided head stop and withdrawal isolation", () => {
+    for (const sign of [-1, 1])
+      run((native, _world, step) => {
+        const rest = { ...native.outputShaft.translation() };
+        native.outputShaft.applyImpulse({ x: sign * 0.001, y: 0, z: 0 }, true);
+        step(30);
+        expect(
+          (sign * (native.outputShaft.translation().x - rest.x)) / 0.02,
+        ).toBeGreaterThan(0.2);
+        expect(Math.abs(native.output.translation().x - rest.x)).toBeLessThan(
+          1e-6,
+        );
+      });
+    run((native, _world, step) => {
+      const rest = { ...native.inputShaft.translation() };
+      native.inputShaft.applyImpulse({ x: 0, y: 0, z: 0.001 }, true);
+      step(30);
+      expect(
+        (native.inputShaft.translation().z - rest.z) / 0.02,
+      ).toBeGreaterThan(0.2);
+    });
+    run((native, _world, step) => {
+      const rest = { ...native.inputShaft.translation() };
+      native.inputShaft.applyImpulse({ x: 0, y: 0, z: -0.001 }, true);
+      step(30);
+      expect(
+        (native.inputShaft.translation().z - rest.z) / 0.02,
+      ).toBeGreaterThan(-0.05);
+      expect(Math.abs(native.inputShaft.linvel().z)).toBeLessThan(1e-5);
+    });
+    run((native, _world, step) => {
+      const p = native.outputShaft.translation();
+      native.outputShaft.setTranslation({ x: p.x + 1, y: p.y, z: p.z }, true);
+      native.beginStep(DT);
+      expect(native.solver.snapshot().equations["output-key"].enabled).toBe(
+        false,
+      );
+      native.outputShaft.applyTorqueImpulse({ x: 0.003, y: 0, z: 0 }, true);
+      step(10);
+      expect(
+        Math.abs(native.solver.snapshot().ports.output.radians),
+      ).toBeLessThan(1e-5);
+      expect(
+        Math.abs(native.solver.snapshot().ports["output-shaft"].radians),
+      ).toBeGreaterThan(0.1);
+    });
   });
   it("keeps a real foreign thin blocker responding and closes every source allowance on misalignment", () => {
     run((native, world, step) => {

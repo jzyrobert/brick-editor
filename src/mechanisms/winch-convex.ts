@@ -75,6 +75,16 @@ function bore(sources: Readonly<Record<string, string>>) {
     (a, b) => Math.atan2(a[1], a[0]) - Math.atan2(b[1], b[0]),
   );
 }
+/** The literal intrinsic keyed negative footprint, for finite paired-shaft
+ * projection review. The binding is the same complete verified source closure
+ * used by both convex annuli; it is not a radius-only mating profile. */
+export function winchKeyedBoreProfile(
+  binding: RetainedWinchBinding,
+): readonly Readonly<Vec3>[] {
+  return Object.freeze(
+    bore(retainedWinchGeometrySources(binding)).map((p) => Object.freeze(p)),
+  );
+}
 function annulus(
   outer: Vec3[],
   inner: Vec3[],

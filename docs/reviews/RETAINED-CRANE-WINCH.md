@@ -2,7 +2,9 @@
 
 The source-derived native subsystem now has forward/reverse, load/stall,
 backdrive and foreign-contact evidence. Ordinary Play admission and complete
-crane operation remain open. It complements [the drivetrain source review](TECHNIC-DRIVETRAIN-INTERFACES.md)
+crane operation remain open. Those native results describe the earlier rigid
+shaft-pair baseline; the axial-freedom follow-up below is unfinished and has
+not inherited that acceptance. It complements [the drivetrain source review](TECHNIC-DRIVETRAIN-INTERFACES.md)
 and [the native angular kernel review](TECHNIC-ANGULAR-EQUATIONS.md).
 
 The attributed 12-member excerpt in
@@ -151,3 +153,49 @@ reviewed worm equation without a blanket physical-eligibility fallback. Rope
 winding/tension, the second winch, actual upstream selector isolation, Arocs
 bevel/differential native packages and complete set operation remain separate
 obligations. This bounded subsystem evidence does not close the full goal.
+
+## Axial-retention follow-up: unfinished native candidate
+
+The attributed `42042-winch-retention.ldr` excerpt extends the same original
+source to all 27 directly placed hardware members of its first winch, original
+lines 12085–12114. The new retention binding verifies 17 official root closures
+and 147 dependency files against the actual project. Three focused source
+checks pass, including full-source rays, common world rotation, missing or
+displaced neighbours, dependency mutation and project-defined shadows:
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-retention.test.ts --maxWorkers=1
+```
+
+The 15462 head begins at worm-relative station 38 and seats against the actual
+6536 counterbore lip at 38. This supplies one negative-motion stop, not an
+opposing positive stop. The bevelled free tip is at −59.5; the neighbouring
+18948 closed divider is at −68, leaving 8.5 LDU. Its raw primitive mesh also
+contains an internal cap at local Z 12 across the negative keyed-hole interval
+2–29.5; the source checks distinguish that mesh face from the actual divider
+at Z 2. The plain 3737 shaft has no head. Four sliding keyed bushes flank two
+pulleys, but rotational keying does not prove those bushes axially fixed to
+the shaft. No unconditional shaft weld follows from this source evidence.
+
+The follow-up native packet retains the same 8,660 source triangles with 239
+children and five bodies: carrier, worm, gear and two independent shafts.
+Cylindrical shaft bearings preserve axial freedom. A source-keyed angular row
+acts only during positive keyed overlap, and the input's one-sided native
+limit reacts directly against its actual carrier support. Its positive
+1,000,000-metre numerical domain is not a source hard stop. Geometry remains
+present, and foreign contacts retain their normal response.
+
+Finite subtraction of every complete shaft-triangle projection, plus every
+projected edge interval, checks the actual negative keyed column with a
+declared 0.000001-LDU source normal-plane envelope. The fixture leaves zero
+residual area and edge gaps. The clipping implementation accepts at most
+1e−10 LDU² residual area and 1e−12 edge-parameter gap; these are explicit
+numerical scopes, not an axial attachment or a general topology theorem.
+Local round-bearing and head-stop handling remains a declared ideal interface
+law tied to the actual source members, not measured LEGO friction.
+
+The split prototype has a short positive native probe, but its updated full
+forward/reverse, load, stall, backdrive, axial withdrawal and mobile-reaction
+suite is pending. The earlier rigid shaft-pair test results do not certify this
+candidate. Ordinary Play ownership and integration must consume the free
+shaft degrees of freedom; complete crane operation remains open.
