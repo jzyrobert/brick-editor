@@ -4386,6 +4386,19 @@ function Workspace() {
     if (m !== "Build") setPanel("Canvas");
     if (m === "Photo") setCamera(renderer.current?.currentCamera() || camera);
   };
+  // A tap outside the Tools menu closes it, as Escape does.
+  useEffect(() => {
+    if (!modesOpen) return;
+    const outside = (event: PointerEvent) => {
+      if (
+        event.target instanceof Element &&
+        !event.target.closest(".model-tool-picker")
+      )
+        setModesOpen(false);
+    };
+    document.addEventListener("pointerdown", outside, true);
+    return () => document.removeEventListener("pointerdown", outside, true);
+  }, [modesOpen]);
   useEffect(() => {
     if (!modesOpen) return;
     const close = (event: KeyboardEvent) => {

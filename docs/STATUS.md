@@ -385,7 +385,7 @@ The reproduced deep-occurrence input gap is fixed: canonical JSON paths now have
 
 The nearest joint or vehicle among the active Play rigs exposes a contextual button and remappable E action within 96 LDU of its authored joint anchor or vehicle chassis, measured from the explorer's body center. Revolute and prismatic joints toggle between the allowed position nearest zero and the farthest limit (defaults: 90 degrees or 40 LDU). Motion still uses the swept actor-clearance checks and reports a blocked attempt visibly. This is proximity access, not a line-of-sight picking system or automatic door detection.
 
-Vehicle access switches movement keys and the touch joystick to throttle/steering, with an explicit Stop driving action. The explorer remains on foot; pause, focus loss and released inputs stop driving. Look controls remain available. The authored build is unchanged. Seated entry/exit, riding and vehicle/world collision response remain open.
+Vehicle access switches movement keys to throttle/steering and replaces the touch joystick with separate throttle and steering pads (two thumbs at once), with an explicit Stop driving action. The explorer remains on foot; pause, focus loss and released inputs stop driving. Look controls remain available. The authored build is unchanged. Seated entry/exit, riding and vehicle/world collision response remain open.
 
 ## Multiple active Play rigs
 

@@ -1925,17 +1925,22 @@ a {
   .selection-strip-count {
     display: none;
   }
+  /* Five actions share what is left beside the rail, labels kept. */
   .selection-strip button {
-    min-width: 44px;
-    padding: 4px;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 4px 2px;
+    font-size: 10px;
   }
-  .selection-strip button > span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+  /* Messages above the strip may take two lines rather than be cut. */
+  .workshop-app:has(.selection-strip) .status-bar {
+    height: auto;
+    min-height: 30px;
+    padding-block: 4px;
+    white-space: normal;
+  }
+  .workshop-app:has(.selection-strip) .status-bar > span:first-child {
+    white-space: normal;
   }
 }
 /* Phones in Photo, Instructions and Project: the title row (with Tools) is
@@ -1970,4 +1975,14 @@ a {
   color: var(--ink);
   font-weight: 700;
   box-shadow: 0 2px 6px #202a3c10;
+}
+/* Tablets held upright: Play settings is as tall as its tab, not a slab
+   reaching the dock. */
+@media (orientation: portrait) and (min-width: 651px) and (max-width: 1100px) {
+  .workshop-app .mode-card.menu.play-intro {
+    bottom: auto;
+    height: auto;
+    max-height: calc(100% - 260px);
+    overflow: auto;
+  }
 }

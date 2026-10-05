@@ -2119,3 +2119,11 @@ existing 15-second wait reads that captured frame after the tap resolves. All
 three train viewports pass together in 4.2 minutes. The running-state overlap
 assertion, other layout checks, six-second product timers and time limits remain
 unchanged; no runtime or UI change was needed.
+
+## Play and model tools critic loop (5 October 2026)
+
+- **Loop:** two independent agents drove the built app with Playwright each round, one over Play (walking HUD, pause sheet, vehicles and seats, motor controls, trains, settings) and one over the model tools (Build, Instructions, Photo, Project), at 1080 × 1800, 390 × 844, 360 × 600, 686 × 411 and 844 × 390 (touch), 820 × 1180 tablet and 1440 × 1000. Scores by round: Play 7.0, 7.6, 7.9, 8.1, 8.3; model tools 6.4, 6.9, 6.8, 7.0, 7.2. Neither reached the 8.5 target in five rounds; the critics' remaining Play gap is split between UI and engine/camera work (train camera, Drive from here, Get out placement, car spawn), and the model tools' between landscape sheets, the desktop title shown twice, My builds thumbnails and the picture's manifest download.
+- **Driving pads:** two-finger CDP touch drove and steered at once at every phone size; a third finger looked around; a second finger tapped Get out while the throttle was held. `play-interaction.spec.ts` and `play-seats.spec.ts` drive through the pads.
+- **Sheets:** the camera adjustment beside phone and tablet sheets was checked by projecting the build's bounds (it sits in the free band) and by the dimming capture test (pictures are unaffected). Full-viewport headless screenshots can paint a pale rectangle over the canvas beside sheets; clipped captures of the same frame show the model, so it is a capture artefact.
+- **Browser specs:** layout, Play, vehicles, seats, mechanism controls, selection, inspector, transform, instructions (generation, viewer, dimming), menus, mechanisms and Gallery pass locally. The timed train look-hint layout check (`hud-layout.spec.ts`, Train controls at 600 × 360 and 800 × 360) times out intermittently under load locally and in CI.
+- **Not checked:** a physical phone; engine and camera items reported by the critics (train third-person camera clipping into wagons, Drive from here leaving the car out of view, Get out facing away, keyboard throttle speed) belong to the Play engine work.
