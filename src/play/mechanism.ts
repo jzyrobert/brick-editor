@@ -1,4 +1,8 @@
 import { PLAY_MEMBER_GEOMETRY_LIMITS } from "./member-geometry";
+import {
+  prepareMotorSourceSweep,
+  motorSourceSweepTravel,
+} from "./motor-source-components";
 import { requireArocsBallRestConstruction } from "./arocs-ball-rest";
 import { occurrences } from "../core/document";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
@@ -592,6 +596,7 @@ export class PlayMechanism {
       prepared?.policy ?? new MechanicalContactPolicy(rig, source);
     this.contactSolids =
       prepared?.solids ?? mechanicalSolids(source, this.contactPolicy);
+    prepareMotorSourceSweep(source, this.contactSolids);
     this.stationarySolids =
       prepared?.stationary ??
       mechanicalStationarySolids(source, this.contactSolids);
@@ -937,9 +942,9 @@ export class PlayMechanism {
         const a = before.groupFrames[solid.groupId],
           b = after.groupFrames[solid.groupId];
         const travel =
-          (Math.hypot(...a.position.map((v, k) => v - b.position[k])) +
-            solid.radius * rotation(a).angleTo(rotation(b))) *
-          S;
+          (motorSourceSweepTravel(this.source, solid, before, after) ??
+            Math.hypot(...a.position.map((v, k) => v - b.position[k])) +
+              solid.radius * rotation(a).angleTo(rotation(b))) * S;
         if (travel > MECHANICAL_CONTACT_LIMITS.sweepLdu * S + 1e-8) {
           this.worldNeedsRefinement = true;
           this.worldFailure = "Motion needs smaller collision-check segments";
@@ -1191,9 +1196,9 @@ export class PlayMechanism {
           const c = before.groupFrames[other.groupId],
             d = after.groupFrames[other.groupId];
           const otherTravel =
-            (Math.hypot(...c.position.map((v, k) => v - d.position[k])) +
-              other.radius * rotation(c).angleTo(rotation(d))) *
-            S;
+            (motorSourceSweepTravel(this.source, other, before, after) ??
+              Math.hypot(...c.position.map((v, k) => v - d.position[k])) +
+                other.radius * rotation(c).angleTo(rotation(d))) * S;
           if (!near(solid, other, travel + otherTravel + 0.001 * S)) continue;
           const old = contact(
             solid,
@@ -1370,6 +1375,13 @@ export class PlayMechanism {
     const frameTravel = Math.max(
       0,
       ...this.contactSolids.map((s) => {
+        const sourceTravel = motorSourceSweepTravel(
+          this.source,
+          s,
+          before,
+          target,
+        );
+        if (sourceTravel !== undefined) return sourceTravel;
         const a = before.groupFrames[s.groupId],
           b = target.groupFrames[s.groupId];
         let unwrapped = 0,

@@ -3,8 +3,12 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { registerFullLibraryFromDisk } from "../../scripts/full-library-node";
 import { pfLargeSource } from "../helpers/pf-large-source";
 import { add, compose, identity, inverse, mv } from "../../src/core/math";
-import { axisRotation } from "../../src/mechanisms/kinematic";
-import { fromPhysics } from "../../src/play/physics-frame";
+import { axisRotation, KinematicSession } from "../../src/mechanisms/kinematic";
+import {
+  fromPhysics,
+  toPhysics,
+  METRES_PER_LDU,
+} from "../../src/play/physics-frame";
 import {
   prepareMechanicalSources,
   MechanicalContactPolicy,
@@ -14,6 +18,8 @@ import {
   loadMotorSourceComponents,
   motorComponentSolids,
   motorComponentContactAllowed,
+  prepareMotorSourceSweep,
+  motorSourceSweepTravel,
 } from "../../src/play/motor-source-components";
 import { exportLDraw } from "../../src/ldraw/io";
 import { requirePhysicalPlay } from "../../src/mechanisms/physical-play";
@@ -126,6 +132,16 @@ describe("real PF-L internal collision ownership", () => {
     expect(
       [...casing, ...output].every((s) => s.shape instanceof RAPIER.Compound),
     ).toBe(true);
+    for (const s of [...casing, ...output]) {
+      let radiusLdu = 0;
+      for (let i = 0; i < s.points.length; i += 3)
+        radiusLdu = Math.max(
+          radiusLdu,
+          Math.hypot(s.points[i], s.points[i + 1], s.points[i + 2]) /
+            METRES_PER_LDU,
+        );
+      expect(s.radius).toBeCloseTo(radiusLdu, 8);
+    }
     expect(exportLDraw(project)).toBe(before);
     expect(all).toHaveLength(13);
   });
@@ -216,4 +232,131 @@ describe("real PF-L internal collision ownership", () => {
       "matching case and output",
     );
   });
+  it("bounds every actual source support point and falls back for moving carriers, copies and coupled rigs", async () => {
+    const f = await pfLargeSource(identity(), 23),
+      prepared = prepareMechanicalSources([f.source]).get(f.rig.id)!;
+    prepareMotorSourceSweep(f.source, prepared.solids);
+    const session = new KinematicSession(f.project, f.rig.id),
+      before = session.snapshot();
+    session.setJointPosition("motor-output", 1.5);
+    const after = session.snapshot();
+    let max = 0;
+    for (const solid of prepared.solids) {
+      const bound = motorSourceSweepTravel(f.source, solid, before, after)!;
+      expect(bound).toBeGreaterThan(0);
+      max = Math.max(max, bound);
+      for (let i = 0; i < solid.points.length; i += 3) {
+        const p = fromPhysics({
+          x: solid.points[i],
+          y: solid.points[i + 1],
+          z: solid.points[i + 2],
+        });
+        const a = add(
+            before.groupFrames.output.position,
+            mv(before.groupFrames.output.basis, p),
+          ),
+          b = add(
+            after.groupFrames.output.position,
+            mv(after.groupFrames.output.basis, p),
+          );
+        expect(Math.hypot(...a.map((v, k) => v - b[k]))).toBeLessThanOrEqual(
+          bound,
+        );
+      }
+    }
+    expect(max).toBeLessThan(0.53);
+    expect(
+      motorSourceSweepTravel(
+        f.source,
+        { ...prepared.solids[0] },
+        before,
+        after,
+      ),
+    ).toBeUndefined();
+    const moved = structuredClone(after);
+    moved.groupFrames.carrier.position[0] += 0.01;
+    expect(
+      motorSourceSweepTravel(f.source, prepared.solids[0], before, moved),
+    ).toBeUndefined();
+    session.setJointPosition("motor-output", 720);
+    expect(
+      motorSourceSweepTravel(
+        f.source,
+        prepared.solids[0],
+        before,
+        session.snapshot(),
+      ),
+    ).toBeGreaterThan(100);
+    f.rig.joints.push({ ...f.rig.joints[0], id: "other" });
+    expect(
+      motorSourceSweepTravel(f.source, prepared.solids[0], before, after),
+    ).toBeUndefined();
+  });
+  it("stops the actual rotor pins at a foreign obstruction and resumes after removal", async () => {
+    const f = await pfLargeSource(),
+      session = await PlaySession.create(
+        f.geometry,
+        {
+          rigId: f.rig.id,
+          ground: false,
+          locomotion: "fly-noclip",
+          position: [300, -200, 400],
+        },
+        f.source,
+      );
+    try {
+      const runtime = (session as any).rigTarget(f.rig.id).rig;
+      const exterior = runtime.contactSolids.find(
+        (s: import("../../src/play/mechanical-solids").MechanicalSolid) =>
+          isMotorComponentSolid(s) && s.childCount === 68,
+      )!;
+      let tip: import("../../src/core/types").Vec3 = [0, 0, -Infinity];
+      for (let i = 0; i < exterior.points.length; i += 3) {
+        const p = fromPhysics({
+          x: exterior.points[i],
+          y: exterior.points[i + 1],
+          z: exterior.points[i + 2],
+        });
+        if (p[2] > tip[2]) tip = p;
+      }
+      expect(Math.hypot(tip[0], tip[1])).toBeGreaterThan(10);
+      const ahead = add(
+          f.rig.groups[1].frame.position,
+          mv(axisRotation([0, 0, 1], 8), tip),
+        ),
+        p = toPhysics(ahead),
+        world: RAPIER.World = (session as any).world;
+      const obstacle = world.createCollider(
+        RAPIER.ColliderDesc.cuboid(0.015, 0.015, 0.015).setTranslation(
+          p.x,
+          p.y,
+          p.z,
+        ),
+      );
+      session.setMotor({
+        rigId: f.rig.id,
+        jointId: "motor-output",
+        enabled: true,
+        input: 1,
+        power: 1,
+      });
+      const stopped = session.stepTicks(20).mechanism!;
+      expect(stopped.pose.jointPositions["motor-output"]).toBeLessThan(12);
+      expect(stopped.motors!["motor-output"].status).toBe("blocked");
+      world.removeCollider(obstacle, true);
+      session.setMotor({
+        rigId: f.rig.id,
+        jointId: "motor-output",
+        enabled: true,
+        input: 1,
+        power: 1,
+      });
+      const resumed = session.stepTicks(10).mechanism!;
+      expect(resumed.pose.jointPositions["motor-output"]).toBeGreaterThan(
+        stopped.pose.jointPositions["motor-output"] + 10,
+      );
+    } finally {
+      session.dispose();
+    }
+  }, 30000);
 });

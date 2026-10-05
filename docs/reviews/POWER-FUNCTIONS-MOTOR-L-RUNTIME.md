@@ -87,6 +87,31 @@ support points through current and predicted poses. Remaining shaft point scans
 and conservative sweep subdivision still need investigation. No physical sweep,
 geometry, contact or resource budget was relaxed.
 
+Motor component sweep radii now use LDU consistently with ordinary solids;
+their native support points and bounds remain metres. The prior component radius
+used metres where sweep code expected LDU, underestimating rotor motion. A
+regression checks every source component's support-point radius in the correct
+unit. The long shaft dominated the original fixture's initial subdivision, but
+that did not make individual rotor contact predictions conservative.
+
+The next certificate covers source-proven single-root revolute motion only.
+It bounds the whole unwrapped arc by every actual native support point's distance
+from the real local joint axis, plus a conservative matrix norm and actual pose
+residual. Copied solids, moving carriers, multiple joints and coupling use the
+ordinary complete-radius fallback. The same 0.25-LDU sweep budget remains. A
+private oblique-source check covered 60,340 point displacements; tracked tests
+cover every fixture support point, full turns, source guard fallbacks and a real
+foreign obstruction at the rotor pins, including removal and retry. Thirteen
+focused mathematical/source/native cases and TypeScript pass.
+
+Correcting rotor radius exposes additional tight-gap refinement between the
+actual output thrust disc and the source front-case edge. In a loaded diagnostic,
+the thrust class alone made 930 native queries per five ticks against case
+exterior. A smaller initial subdivision count does not establish faster steady
+ticks: further contact refinements remain necessary. Any future improvement must
+prove separation or the precise actual mating interface, preserving source
+geometry and external contacts. There is no whole-case collision exemption.
+
 This 13-part motor bench establishes source ownership and control behaviour.
 The full source-skin Kinematic contact cost still needs improvement before
 claiming usable frame rates or complete large-system controls. The unchanged

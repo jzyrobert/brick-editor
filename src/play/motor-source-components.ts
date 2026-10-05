@@ -13,7 +13,7 @@ import type { SourceComponentLocalGeometry } from "../render/source-component-ge
 import type { PlayMechanismSource } from "./mechanism";
 import { reviewedGeometryDigest } from "./reviewed-geometry-binding";
 import { surfaceCompoundLocal } from "./surface-compound";
-import { fromPhysics, toPhysics } from "./physics-frame";
+import { fromPhysics, toPhysics, METRES_PER_LDU } from "./physics-frame";
 import type { CollisionSnapshot } from "./types";
 import {
   splitMechanicalConvex,
@@ -24,6 +24,12 @@ import { bindPfLargeMotorAssemblies } from "../mechanisms/pf-large-motor-binding
 import { curatedGeometrySource } from "../catalog/geometry-sources";
 import { fullSource } from "../catalog/full-library";
 import { directReferences } from "../catalog/full-pack";
+import {
+  sourceAxisMotion,
+  sourceAxisTravel,
+  type SourceAxisMotion,
+} from "./source-axis-motion";
+import type { MechanismSnapshot } from "../mechanisms/types";
 import {
   axialEnvelopeInside,
   sourceAxialEnvelope,
@@ -114,6 +120,99 @@ type ComponentMetadata = {
   axisToGroup?: Transform;
 };
 const metadata = new WeakMap<MechanicalSolid, ComponentMetadata>();
+const sweepMetadata = new WeakMap<
+  MechanicalSolid,
+  {
+    source: PlayMechanismSource;
+    proof: ResolvedPfLargeMotorBinding;
+    joint: import("../mechanisms/types").JointSpec;
+    envelope: SourceAxisMotion;
+  }
+>();
+
+/** Called only after the complete constructed source solid set is validated.
+ * A packed motor name, copied solid or appended member supplies no witness. */
+export function prepareMotorSourceSweep(
+  source: PlayMechanismSource,
+  solids: readonly MechanicalSolid[],
+) {
+  const rig = source.project.motionRigs[source.rigId];
+  if (
+    rig.joints.length !== 1 ||
+    rig.transmissions?.length ||
+    rig.loopClosures?.length ||
+    rig.forceLinks?.length ||
+    rig.grippers?.length ||
+    rig.vehicle ||
+    rig.joints[0].kind !== "revolute" ||
+    rig.joints[0].motor?.binding?.profile !== PF_LARGE_MOTOR_PROFILE
+  )
+    return;
+  const joint = rig.joints[0],
+    motors = boundMotors(source);
+  if (motors.length !== 1) return;
+  const proof = motors[0].proof,
+    group = rig.groups.find((g) => g.id === proof.outputGroupId)!;
+  for (const solid of solids) {
+    if (solid.groupId !== proof.outputGroupId) continue;
+    const component = metadata.get(solid);
+    if (
+      component
+        ? component.source !== source ||
+          component.proof !== proof ||
+          component.role !== "output"
+        : !solid.memberId || !group.occurrenceIds.includes(solid.memberId)
+    )
+      continue;
+    const envelope = sourceAxisMotion(
+      solid.points,
+      joint.anchorB,
+      joint.axisB!,
+    );
+    if (envelope) sweepMetadata.set(solid, { source, proof, joint, envelope });
+  }
+}
+
+/** A single source-proven rooted revolute with a fixed carrier. Descendants,
+ * coupled shafts and moving axes retain the ordinary complete-radius bound. */
+export function motorSourceSweepTravel(
+  source: PlayMechanismSource,
+  solid: MechanicalSolid,
+  before: MechanismSnapshot,
+  after: MechanismSnapshot,
+) {
+  const entry = sweepMetadata.get(solid),
+    rig = source.project.motionRigs[source.rigId];
+  if (
+    !entry ||
+    entry.source !== source ||
+    bindings.get(source)?.revision !== source.project.revision ||
+    rig.joints.length !== 1 ||
+    rig.joints[0] !== entry.joint ||
+    rig.transmissions?.length ||
+    rig.loopClosures?.length ||
+    rig.forceLinks?.length ||
+    rig.grippers?.length ||
+    rig.vehicle ||
+    !bindings.get(source)?.motors.some((m) => m.proof === entry.proof)
+  )
+    return;
+  const carrierA = before.groupFrames[entry.proof.carrierGroupId],
+    carrierB = after.groupFrames[entry.proof.carrierGroupId];
+  if (
+    !carrierA ||
+    !carrierB ||
+    !carrierA.position.every((v, k) => v === carrierB.position[k]) ||
+    !carrierA.basis.every((v, k) => v === carrierB.basis[k])
+  )
+    return;
+  const a = before.groupFrames[solid.groupId],
+    b = after.groupFrames[solid.groupId],
+    from = before.pose.jointPositions[entry.joint.id],
+    to = after.pose.jointPositions[entry.joint.id];
+  if (!a || !b || !Number.isFinite(from) || !Number.isFinite(to)) return;
+  return sourceAxisTravel(entry.envelope, a, b, to - from);
+}
 export const isMotorComponentSolid = (solid: MechanicalSolid) =>
   metadata.has(solid);
 const localPoint = (frame: Transform, p: Vec3) =>
@@ -445,7 +544,8 @@ export function motorComponentSolids(
         ),
         points: Float32Array.from(points),
         bounds: { min, max },
-        radius,
+        // Mechanical sweep radii are LDU; native points and bounds are metres.
+        radius: radius / METRES_PER_LDU,
         childCount: shapes.length,
         mating: new Set(),
       };
