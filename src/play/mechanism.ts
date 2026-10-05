@@ -1,4 +1,5 @@
 import { PLAY_MEMBER_GEOMETRY_LIMITS } from "./member-geometry";
+import { requireArocsBallRestConstruction } from "./arocs-ball-rest";
 import { occurrences } from "../core/document";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
 import type { PlayVehicleCollisionReport } from "./types";
@@ -83,6 +84,8 @@ export type PlayMechanismSource = {
   members?: Record<string, CollisionSnapshot>;
   /** Source-bound canonical surfaces, separate from world-space member meshes. */
   memberLocals?: Record<string, import("./types").PlayMemberLocalGeometry>;
+  /** Exact source-preflight tokens authorize construction, never ready controls. */
+  nativeRest?: readonly import("./arocs-ball-rest").PreparedArocsBallRest[];
   /** Source child collision ownership for a packed real motor; never new parts. */
   motorComponents?: Record<
     string,
@@ -115,6 +118,7 @@ export function validatePlayMechanismSource(
   );
   new KinematicSession(source.project, source.rigId, source.lookup);
   const rig = source.project.motionRigs![source.rigId];
+  if (!options.deferReviewedContacts) requireArocsBallRestConstruction(source);
   ensure(
     rig.groups.length <= 128,
     "LIMIT_EXCEEDED",

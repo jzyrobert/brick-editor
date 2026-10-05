@@ -1,3 +1,7 @@
+import {
+  arocsBallRestMemberSolids,
+  isArocsBallRestSolid,
+} from "./arocs-ball-rest-solids";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry.js";
 import { Quaternion, Vector3 } from "three";
@@ -890,7 +894,10 @@ export function mechanicalSolids(
         out.push(...motor);
         continue;
       }
-      const ball = id ? arocsBallMemberSolids(source, group, id) : undefined;
+      const ball = id
+        ? (arocsBallRestMemberSolids(source, group, id) ??
+          arocsBallMemberSolids(source, group, id))
+        : undefined;
       if (ball) {
         out.push(...ball);
         continue;
@@ -1228,6 +1235,7 @@ export function mechanicalSolids(
     const k = JSON.stringify([
       separateDoorSlabs.has(solid) ||
       isArocsBallSolid(solid) ||
+      isArocsBallRestSolid(solid) ||
       isMotorComponentSolid(solid)
         ? index
         : null,
@@ -1311,6 +1319,7 @@ export function mechanicalStationarySolids(
           s.groupId === group.id &&
           (s.reviewedPlaneClass !== undefined ||
             isArocsBallSolid(s) ||
+            isArocsBallRestSolid(s) ||
             isMotorComponentSolid(s)),
       );
       if (existing.length) {
@@ -1325,7 +1334,8 @@ export function mechanicalStationarySolids(
         continue;
       }
       const ball = memberId
-        ? arocsBallMemberSolids(source, group, memberId)
+        ? (arocsBallRestMemberSolids(source, group, memberId) ??
+          arocsBallMemberSolids(source, group, memberId))
         : undefined;
       if (ball) {
         out.push(...ball);
@@ -1415,6 +1425,7 @@ export function prepareMechanicalSources(sources: PlayMechanismSource[]) {
           (s) =>
             (s.reviewedPlaneClass !== undefined ||
               isArocsBallSolid(s) ||
+              isArocsBallRestSolid(s) ||
               isMotorComponentSolid(s)) &&
             anchoredGroup(source.project.motionRigs[source.rigId], s.groupId),
         )

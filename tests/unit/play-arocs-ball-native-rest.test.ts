@@ -1,17 +1,14 @@
-import { readFileSync } from "node:fs";
+import {
+  arocsRestFits as fits,
+  arocsRestFixture as fixture,
+} from "../helpers/arocs-ball-rest-source";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { beforeAll, expect, it } from "vitest";
 import { occurrences } from "../../src/core/document";
 import { orthonormalized } from "../../src/core/math";
-import { importLDraw, exportLDraw } from "../../src/ldraw/io";
-import type { JointSpec } from "../../src/mechanisms/types";
+import { exportLDraw } from "../../src/ldraw/io";
 import { physicalPlayEligibility } from "../../src/mechanisms/physical-play";
 import { partsList } from "../../src/inventory/parts-list";
-import {
-  fullLibrarySources,
-  registerFullLibraryFromDisk,
-} from "../../scripts/full-library-node";
-import { playSources } from "../helpers/play-dynamic-source";
 import { createArocsBallNativeRest } from "../../src/play/arocs-ball-native-rest";
 import {
   prepareArocsBallRest,
@@ -19,74 +16,7 @@ import {
 } from "../../src/play/arocs-ball-rest";
 import { frameRotation, toPhysics } from "../../src/play/physics-frame";
 
-registerFullLibraryFromDisk();
 beforeAll(() => RAPIER.init());
-const fits = [
-  {
-    ball: '["n55"]',
-    socket: '["n77"]',
-    endpoint: 1 as const,
-    gap: 1.9804892215,
-  },
-  {
-    ball: '["n53"]',
-    socket: '["n79"]',
-    endpoint: 0 as const,
-    gap: 1.9803807715,
-  },
-  {
-    ball: '["n75"]',
-    socket: '["n79"]',
-    endpoint: 1 as const,
-    gap: 0.0199962344,
-  },
-];
-async function fixture(fit = fits[0]) {
-  const project = importLDraw(
-      readFileSync(
-        "fixtures/play/official-cars/42043-ball-link-interfaces.ldr",
-        "utf8",
-      ),
-    ),
-    all = occurrences(project),
-    ball = all.find((o) => o.id === fit.ball)!,
-    socket = all.find((o) => o.id === fit.socket)!,
-    groups = [ball, socket].map((o, i) => ({
-      id: i ? "socket" : "ball",
-      occurrenceIds: [o.id],
-      frame: orthonormalized(o.transform),
-      restTransforms: { [o.id]: structuredClone(o.transform) },
-    }));
-  project.motionRigs.seat = {
-    schemaVersion: 1,
-    id: "seat",
-    name: "Actual noncoincident source bearing",
-    mode: "kinematic",
-    groups,
-    joints: [
-      {
-        id: "bearing",
-        kind: "spherical",
-        bodyA: "socket",
-        bodyB: "ball",
-        anchorA: [0, 0, fit.endpoint * 100],
-        anchorB: [-10, 0, 0],
-        restAssembly: {
-          profile: "arocs-ball-native-seat-v1",
-          ballOccurrenceId: ball.id,
-          socketOccurrenceId: socket.id,
-          socketEndpoint: fit.endpoint,
-        },
-      } as unknown as JointSpec,
-    ],
-  };
-  const { sources } = await playSources(
-    project,
-    ["seat"],
-    fullLibrarySources(all.map((o) => o.node.ref)),
-  );
-  return { project, source: sources[0], ball, socket };
-}
 const step = (
   world: RAPIER.World,
   events: RAPIER.EventQueue,

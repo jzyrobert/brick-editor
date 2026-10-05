@@ -1,3 +1,4 @@
+import { anchoredGroup } from "../mechanisms/dynamics-settings";
 import { occurrences } from "../core/document";
 import {
   add,
@@ -84,6 +85,9 @@ export async function prepareArocsBallRest(
         j.kind === "spherical" &&
           j.motor === undefined &&
           j.mating === undefined &&
+          j.axisA === undefined &&
+          j.axisB === undefined &&
+          j.limits === undefined &&
           d !== null &&
           typeof d === "object" &&
           !Array.isArray(d) &&
@@ -100,6 +104,10 @@ export async function prepareArocsBallRest(
   if (!declarations.length) return [];
   ensure(
     !rig.transmissions?.length &&
+      !rig.forceLinks?.length &&
+      !rig.grippers?.length &&
+      rig.vehicle === undefined &&
+      !rig.groups.every((g) => anchoredGroup(rig, g.id)) &&
       declarations.length === 1 &&
       rig.joints.length === 1 &&
       rig.groups.length === 2 &&
@@ -280,4 +288,40 @@ export function readPreparedArocsBallRest(
     );
   }
   return s;
+}
+
+/** Construction-only admission: raw metadata cannot claim completed seating. */
+export function requireArocsBallRestConstruction(
+  source: PlayMechanismSource,
+): readonly PreparedArocsBallRest[] {
+  const rig = source.project.motionRigs[source.rigId],
+    marked = rig?.joints.filter((j) => j.restAssembly !== undefined) ?? [],
+    prepared = source.nativeRest;
+  if (!marked.length) {
+    ensure(
+      prepared === undefined ||
+        (Array.isArray(prepared) && prepared.length === 0),
+      "INVALID_INPUT",
+      "Native seating tokens must belong to declared source joints.",
+    );
+    return [];
+  }
+  ensure(
+    Array.isArray(prepared) && prepared.length === marked.length,
+    "INVALID_INPUT",
+    "These ball assemblies need reviewed native seating preflight before construction.",
+  );
+  const used = new Set<string>();
+  for (const token of prepared) {
+    const bound = readPreparedArocsBallRest(token);
+    ensure(
+      bound.source === source &&
+        !used.has(token.jointId) &&
+        marked.some((j) => j.id === token.jointId),
+      "INVALID_INPUT",
+      "Native seating requires the exact checked source and complete joint ownership.",
+    );
+    used.add(token.jointId);
+  }
+  return prepared;
 }
