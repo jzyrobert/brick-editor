@@ -249,8 +249,12 @@ export function Gallery({
     <div className="gallery-error" role="alert">
       <p>
         <strong>
-          Couldn’t open {errorTitle ?? "this build"}. Check your internet and
-          try again.
+          Couldn’t open {errorTitle ?? "this build"}.{" "}
+          {/HTTP 5\d\d/.test(error)
+            ? "The gallery is busy; try again in a moment."
+            : /does not match|damaged|gzip/i.test(error)
+              ? "Its file arrived damaged; try again."
+              : "Check your internet and try again."}
         </strong>{" "}
         <small>{error}</small>
       </p>
@@ -325,7 +329,8 @@ export function Gallery({
       }}
     >
       {error && !detail && errorBanner}
-      {pendingEntry && (
+      {/* A detail page's Explore button says it is opening itself. */}
+      {pendingEntry && !detail && (
         <div className="gallery-loading" role="status">
           Opening {pendingEntry.title}…
         </div>
