@@ -24,6 +24,11 @@ import { bindPfLargeMotorAssemblies } from "../mechanisms/pf-large-motor-binding
 import { curatedGeometrySource } from "../catalog/geometry-sources";
 import { fullSource } from "../catalog/full-library";
 import { directReferences } from "../catalog/full-pack";
+import {
+  axialEnvelopeInside,
+  sourceAxialEnvelope,
+  type SourceAxialEnvelope,
+} from "./source-axial-envelope";
 
 /** Read only already loaded, hash-verified same-origin library definitions.
  * Closure authoring shadows are refused by the shared drivetrain binder. */
@@ -105,6 +110,8 @@ type ComponentMetadata = {
   aperture: boolean;
   thrust: boolean;
   mountFace: boolean;
+  envelope?: SourceAxialEnvelope;
+  axisToGroup?: Transform;
 };
 const metadata = new WeakMap<MechanicalSolid, ComponentMetadata>();
 export const isMotorComponentSolid = (solid: MechanicalSolid) =>
@@ -346,7 +353,11 @@ export function motorComponentSolids(
   for (const motor of motors) {
     const role = parentId ? "case" : "output",
       geometry = motor.capture[role],
-      relative = compose(inverse(group.frame), componentFrame(motor, role));
+      relative = compose(inverse(group.frame), componentFrame(motor, role)),
+      groupToAxis = compose(
+        inverse(componentFrame(motor, "case")),
+        group.frame,
+      );
     let pieces = surfaceCompoundLocal(geometry, `pf-large:${role}`);
     if (role === "output") {
       const work = { value: 0 };
@@ -445,6 +456,11 @@ export function motorComponentSolids(
         aperture: key === "aperture" || key === "mount-face",
         thrust: key === "thrust",
         mountFace: key === "mount-face",
+        envelope:
+          role === "output"
+            ? sourceAxialEnvelope(solid.points, groupToAxis)
+            : undefined,
+        axisToGroup: role === "output" ? inverse(groupToAxis) : undefined,
       });
       solids.push(solid);
     }
@@ -496,6 +512,18 @@ export function motorComponentContactAllowed(
         carrier = frame[motor.proof.carrierGroupId];
       if (!output || !carrier) return false;
       const inv = inverse(compose(carrier, relative));
+      if (
+        face.meta.envelope &&
+        face.meta.axisToGroup &&
+        axialEnvelopeInside(
+          face.meta.envelope,
+          compose(compose(inv, output), face.meta.axisToGroup),
+          9.102,
+          -0.052,
+          0.052,
+        )
+      )
+        return true;
       for (let i = 0; i < face.solid.points.length; i += 3) {
         const p = localPoint(
           inv,
@@ -544,6 +572,21 @@ export function motorComponentContactAllowed(
     if (!frame[proof.carrierGroupId] || !frame[proof.outputGroupId])
       return false;
     const inv = inverse(compose(frame[proof.carrierGroupId], relative));
+    if (
+      otherMeta?.envelope &&
+      otherMeta.axisToGroup &&
+      axialEnvelopeInside(
+        otherMeta.envelope,
+        compose(
+          compose(inv, frame[proof.outputGroupId]),
+          otherMeta.axisToGroup,
+        ),
+        otherMeta.thrust ? 20.102 : 9.102,
+        otherMeta.thrust ? 21.948 : -0.052,
+        22.052,
+      )
+    )
+      return true;
     for (let i = 0; i < other.points.length; i += 3) {
       const p = localPoint(
         inv,

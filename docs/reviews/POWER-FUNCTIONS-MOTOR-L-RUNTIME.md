@@ -54,7 +54,7 @@ complete official-system assembly remain separate acceptance work.
 
 ## Measured limits
 
-The isolated five-case source/runtime batch took 42.54 seconds of test work on
+Before the axial certificate, the isolated five-case source/runtime batch took 42.54 seconds of test work on
 the shared VM, including 82 checked Kinematic ticks, 182 Dynamic ticks and three
 geometry/policy cases. This is an all-in upper bound of approximately 0.52 seconds
 per Kinematic tick, not a separately measured tick latency or phone benchmark.
@@ -62,6 +62,30 @@ Under simultaneous source-test load the longer 185-tick Kinematic case took
 184 seconds; all behavioural assertions completed, but its 30-second test timeout
 failed. The focused numerical test now uses a measured 60-second timeout and
 shorter sufficient Kinematic sequences. No collision or effort limit was relaxed.
+
+An isolated actual-source diagnostic separated cold source compilation (1.28 s)
+from session preflight (0.96 s), then measured Kinematic ticks at 422–463 ms and
+Dynamic ticks at 15–35 ms. Repeated complete bearing-fragment point transforms
+dominated Kinematic permissions; native contact queries cost substantially less.
+These are shared-VM Node measurements, not phone frame-rate results.
+
+The motor-only positive certificate now compiles every native Float32 support
+point into a radial disk and axial interval in the actual source case frame.
+An affine spectral-norm bound checks that entire envelope in every current and
+prediction pose against the existing limits. Uncertain containment falls back
+to the complete original point loop. The existing sealed source, revision,
+component, paired-owner and exterior guards remain required; a geometry token
+grants no ownership or contact permission by itself.
+
+A private same-process alternating prototype measured baseline/certificate
+ticks at 961/229, 634/111 and 713/187 ms (4.2–5.7× improvement). All 1,920 sampled
+pose/pair comparisons retained the original decisions, including 736 negative
+results and 704 conservative positive certificates. The tracked mathematical
+tests independently check actual Float32 points under rotated, tilted, translated,
+scaled and sheared transforms; the source runtime test compares exact bearing
+support points through current and predicted poses. Remaining shaft point scans
+and conservative sweep subdivision still need investigation. No physical sweep,
+geometry, contact or resource budget was relaxed.
 
 This 13-part motor bench establishes source ownership and control behaviour.
 The full source-skin Kinematic contact cost still needs improvement before

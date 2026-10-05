@@ -2,7 +2,9 @@ import RAPIER from "@dimforge/rapier3d-compat";
 import { beforeAll, describe, expect, it } from "vitest";
 import { registerFullLibraryFromDisk } from "../../scripts/full-library-node";
 import { pfLargeSource } from "../helpers/pf-large-source";
-import { identity } from "../../src/core/math";
+import { add, compose, identity, inverse, mv } from "../../src/core/math";
+import { axisRotation } from "../../src/mechanisms/kinematic";
+import { fromPhysics } from "../../src/play/physics-frame";
 import {
   prepareMechanicalSources,
   MechanicalContactPolicy,
@@ -154,6 +156,53 @@ describe("real PF-L internal collision ownership", () => {
       false,
     );
     expect(policy.allowed(casing, output.find((s) => s !== hub)!)).toBe(false);
+    // Independent exact Float32 support-point oracle for the source aperture.
+    // Full turns, small off-axis drift and both prediction endpoints must keep
+    // the same decisions after the conservative positive certificate.
+    const caseRest =
+      source.motorComponents![rig.groups[0].occurrenceIds[0]].case.frame;
+    const caseLocal = compose(inverse(rig.groups[0].frame), caseRest);
+    for (let n = 0; n < 40; n++) {
+      const pose = {
+        ...frame,
+        output: compose(frame.output, {
+          position: [(n % 3) * 0.002, 0, (n % 4) * 0.001],
+          basis: axisRotation([0, 0, 1], n * 137 - 720),
+        }),
+      };
+      const next = {
+        ...pose,
+        output: compose(pose.output, {
+          position: [0, 0, (n % 5) * 0.01],
+          basis: axisRotation([1, 0, 0], (n % 3) * 0.001),
+        }),
+      };
+      const expected = [pose, next].every((f) => {
+        const relative = compose(
+          inverse(compose(frame.carrier, caseLocal)),
+          f.output,
+        );
+        for (let i = 0; i < hub.points.length; i += 3) {
+          const p = add(
+            relative.position,
+            mv(
+              relative.basis,
+              fromPhysics({
+                x: hub.points[i],
+                y: hub.points[i + 1],
+                z: hub.points[i + 2],
+              }),
+            ),
+          );
+          if (Math.hypot(p[0], p[1]) > 9.102 || p[2] < -0.052 || p[2] > 22.052)
+            return false;
+        }
+        return true;
+      });
+      expect(
+        motorComponentContactAllowed(source, casing, hub, [pose, next]),
+      ).toBe(expected);
+    }
   });
   it("refuses altered component buffers before allocating collision shapes", async () => {
     const { source, all } = await pfLargeSource();
