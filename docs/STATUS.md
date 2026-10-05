@@ -1,5 +1,24 @@
 # Implementation status
 
+## Air circuits in ordinary Play — 5 October 2026
+
+Of the three open Technic systems (5540 vehicle, 42042 winch, 42043
+pneumatics), the pneumatics were the one that could reach ordinary Play without
+inventing an input or a connection, so they came first. A complete routed
+circuit of the reviewed 2015 Arocs pump, valves and 2 × 11 cylinders now runs in
+ordinary Play as the session-only rig `pneumatic:0`: tap **Pump** in the
+Controls sheet, set a cylinder's valve to **Push out**, **Hold** or **Pull in**,
+and watch **Air pressure** and **Rod out**. The new **Air pump & cylinder**
+sample pushes a loose crate along its bench.
+
+Only the pump and cylinder rods move, inside their reviewed guides, stops and
+seal; pump cases, cylinder bodies, valves and tubes stay where the build puts
+them. Every closure, tube-end fit and surface digest is verified first; other
+cylinder types, open ports, missing members and the complete Arocs stay still
+with a reason. The hand, gas, masses and friction are declared simulation
+settings. See the [air circuit review](reviews/AROCS-PNEUMATIC-PLAY.md);
+the 5540 vehicle, the 42042 winch and the mounted Arocs system remain open.
+
 ## Technic systems work in progress — 5 October 2026
 
 The isolated Technic worktree now presents motor power, direction and operating

@@ -1,6 +1,6 @@
 # Sample builds
 
-The template chooser in Project shows picture cards for sixteen sample builds and a blank canvas: three big scenes of thousands of parts written as [build scripts](AGENT-BUILDING.md) (market town, cathedral, harbour) first, then nine smaller detailed builds and four ready-to-play Technic demonstrations. These reference actual official LDraw parts. Each shows off something in Play. **Explore the corner café** on the empty-canvas welcome card opens the café.
+The template chooser in Project shows picture cards for seventeen sample builds and a blank canvas: three big scenes of thousands of parts written as [build scripts](AGENT-BUILDING.md) (market town, cathedral, harbour) first, then nine smaller detailed builds and five ready-to-play Technic demonstrations. These reference actual official LDraw parts. Each shows off something in Play. **Explore the corner café** on the empty-canvas welcome card opens the café.
 
 | Sample            |  Parts | Designs | Outside the curated catalogue                                                                                                                                        | Play                                                                                                                                                                            |
 | ----------------- | -----: | ------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -32,12 +32,13 @@ Reverse keep running until **Brake**, pause or close. **Power** sets the rate an
 in Dynamic mode, the available motor effort; the authored cap stays in force. Each sample opens separately
 so the reviewed contact and native collider budgets remain bounded.
 
-| Sample           |            Pieces | What to try                                                                                                                                                                                                                                                              |
-| ---------------- | ----------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Motor & gears    | 15 official parts | The actual Power Functions M motor is mounted on studs and connected to the retained input axle. Tap Forward to turn the red 8-tooth gear; the blue 24-tooth gear follows at one third speed in the opposite direction.                                                  |
-| Twin motor table | 35 official parts | Two actually mounted PF-M motors share a stud-connected frame. Run the red two-stage reduction (same direction, one-third speed) and blue direct drive (opposite direction, equal speed) independently. Switch motor tabs, adjust power and use Brake all.               |
-| Large motor      | 13 official parts | The actual Power Functions L motor is mounted through two source-aligned pins. Its internal output and retained red axle rotate independently of the casing. Start in Dynamic mode; set Power, Forward or Reverse. Zero Power keeps the selected direction for resuming. |
-| Rack guide       |  2 official parts | Move the blue rack manually inside its real outrigger housing using the joint control. The source-derived guide bounds keep the rack captured.                                                                                                                           |
+| Sample              |            Pieces | What to try                                                                                                                                                                                                                                                                                               |
+| ------------------- | ----------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Motor & gears       | 15 official parts | The actual Power Functions M motor is mounted on studs and connected to the retained input axle. Tap Forward to turn the red 8-tooth gear; the blue 24-tooth gear follows at one third speed in the opposite direction.                                                                                   |
+| Twin motor table    | 35 official parts | Two actually mounted PF-M motors share a stud-connected frame. Run the red two-stage reduction (same direction, one-third speed) and blue direct drive (opposite direction, equal speed) independently. Switch motor tabs, adjust power and use Brake all.                                                |
+| Large motor         | 13 official parts | The actual Power Functions L motor is mounted through two source-aligned pins. Its internal output and retained red axle rotate independently of the casing. Start in Dynamic mode; set Power, Forward or Reverse. Zero Power keeps the selected direction for resuming.                                  |
+| Rack guide          |  2 official parts | Move the blue rack manually inside its real outrigger housing using the joint control. The source-derived guide bounds keep the rack captured.                                                                                                                                                            |
+| Air pump & cylinder |         94 pieces | The reviewed 2015 Arocs (42043) hand pump, valve and 2 × 11 cylinder on an original bench, joined by three tubes. Tap **Pump**, then set the valve to **Push out**: the rod slides out and shoves the loose crate along the tiles; **Hold** keeps it, **Pull in** brings it back. Only the two rods move. |
 
 Motor & gears and Twin motor table use the reviewed 58120 output socket, a six-stud axle and a common
 stud-connected base carrying both the motor and bearings. Large motor uses the
@@ -49,6 +50,15 @@ is a game setting; internal electrics and a battery circuit are not modelled.
 The rack guide deliberately has no powered pinion: a powered rack demonstration
 still needs a reviewed physical motor and pinion mount. Synthetic crank and
 capture-zone demonstrations remain developer fixtures, outside normal Play.
+
+The Air pump & cylinder sample is generated by `scripts/pneumatic-sample-node.ts`
+into `fixtures/ldraw/templates/air-pump.mpd`: an original CC0 bench and tube
+paths, with the pump base, valve and cylinder definitions copied unchanged (CCAL
+2.0 headers and the original OMR hash kept) from the reviewed 42043 excerpts.
+Like the build-script samples, the app fetches its text on demand
+(`src/catalog/air-pump-url.ts`) and the offline snapshot precaches it. Play
+admits its air circuit by itself (no saved rig); the loose crate is its only
+authored rig. See the [air circuit review](reviews/AROCS-PNEUMATIC-PLAY.md).
 
 Native samples retain their source-derived rigs and motor binding; ordinary
 LDraw exports preserve the source geometry. Save a `.brickproj` to retain controls.

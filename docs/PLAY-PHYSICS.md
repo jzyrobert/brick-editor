@@ -19,6 +19,16 @@ pass the canonical partition checks. The Large motor sample starts in Dynamic
 mode and offers Power, Forward, Reverse and Brake. See the
 [PF-L runtime review](reviews/POWER-FUNCTIONS-MOTOR-L-RUNTIME.md).
 
+A complete air circuit built from the reviewed 2015 Arocs (42043) pump, valve
+and 2 × 11 cylinder definitions, joined only by seated tubes, runs in ordinary
+Play as the session-only rig `pneumatic:0`. Only the pump and cylinder rods
+move, inside their reviewed guides; the hand pump, valve and gas are simulated
+with declared settings. Controls offer **Pump** and, per cylinder, **Pull in /
+Hold / Push out**. Other pneumatic parts, incomplete routing or the complete
+Arocs stay still with a reason. See the
+[air circuit review](reviews/AROCS-PNEUMATIC-PLAY.md) and the **Air pump &
+cylinder** sample.
+
 Mathematical rig data remains losslessly loadable and exportable. It does not
 make unsupported attachments controllable. Normal Play refuses virtual
 proximity grippers, unreviewed closed linkages, springs/ropes and generic ball or
