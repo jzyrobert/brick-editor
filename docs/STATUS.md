@@ -30,6 +30,16 @@ Guided body/rod component collision, real mounts, runtime circuit wiring and
 whole Arocs admission remain required before pneumatic controls become available
 in ordinary Play. See [the routing review](reviews/AROCS-PNEUMATIC-ROUTING.md).
 
+The source hardware index now retains embedded declared part parents, separate
+flexible caps and every rendered leaf's exact owner. Three focused checks cover
+complete ancestry, repeated instances, undeclared hierarchy/raw surfaces and
+incomplete/duplicate/mismatched leaf views. A private unmodified-source audit
+accounts for all446 leaves of5540,13,550 of42042 and30,042 of42043, with no
+unresolved ownership. The Arocs index takes0.58s locally and distinguishes
+2,802 source placements,37 flexible hosts and74 cap components; these are
+source identities, not an official set inventory or joint/attachment certificate.
+Native budgets and complete-system admission are unchanged.
+
 ## Physical admission follow-up — 4 October 2026
 
 The first publication CI caught two implementation gaps: multi-part gravity

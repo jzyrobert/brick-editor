@@ -75,6 +75,17 @@ The [routing review](reviews/AROCS-PNEUMATIC-ROUTING.md) declares the narrow
 flexible-end seal/frame assumptions. Guided components, native circuit wiring,
 controls and complete Arocs admission remain open.
 
+The bounded semantic hardware index and source-content/pneumatic routing
+regressions pass13 cases in1.83s. All25 port-bearing embedded/official parents,
+28 hoses and56 cap components retain every source leaf of the routing excerpt
+exactly once. A private audit of unmodified complete models accounts for every
+leaf (5540:446;42042:13,550;42043:30,042), with no missing or unresolved
+ownership. Measured index times, including import, are0.113s,0.419s and0.577s
+respectively on this VM. Source/export remains unchanged; ordinary hierarchy
+supplies no part or weld claim, and incomplete or forged leaf views are refused.
+This verifies source ancestry and bounded organization, not native admission,
+component collision or complete mechanical functionality.
+
 ## Physical admission CI follow-up — 4 October 2026
 
 Initial main run [37213302926](https://github.com/jzyrobert/brick-editor/actions/runs/37213302926)
