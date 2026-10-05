@@ -218,3 +218,60 @@ shaft degrees of freedom; complete crane operation remains open. The complete
 27-member source excerpt establishes retention evidence, while the native
 packet still contains the bounded original 12 members, not the full winch
 drum, rope or crane.
+
+## Articulated carrier source handoff
+
+The five-body candidate's eight-member carrier also needs decomposition:
+its two 87083 stop axles supply rotational keys and unilateral heads, rather
+than bilateral axial grips. `winch-carrier.ts` now describes the full first
+winch's 27 hardware members plus its two actual root mount holders as 29
+separate bodies. It does not declare any of them rigidly welded. The attributed
+`42042-mounted-winch.ldr` fixture preserves those literal composed source
+frames and adds only the actual 40490 and 32140 occurrences from original
+source lines 209 and 287. Their two full dependency closures are independently
+verified by `winch-carrier-sources.json`, alongside the 17 retention roots.
+
+The source pin chain is concrete: the 2780 connects two adjacent 10-LDU
+32449 round holes to a 20-LDU 32525 hole. Two actual 6558 pins connect that
+beam and the 60484 T-beam to the real 40490 and 32140 root holders. Independent
+complete-library geometry rays measure the 2780 collar planes at ±2, its
+inner catch planes at ±18, the thin/thick bore lips at ±3/±8, and the 87083
+head plane at 38. The pins' ribs and slotted catches remain actual source
+geometry. A declared bounded friction/deformation model may model those fits;
+these source surfaces do not justify a permanent weld.
+
+The sealed plan contains 38 positive, coaxial source interfaces, including
+20 keyed pairs, three one-sided heads and the signed worm pair. All 29 bodies
+connect to the mount-holder boundary through those interfaces. Bushes,
+pulleys, the plain shaft, the 18948 joiner and the round 62462 sleeve retain
+separate ownership and axial freedom. The sleeve's two round bore halves are
+distinct; no keyed torque route is invented through its central slot.
+
+Each bearing emits coincident, independently transformed source anchors and
+axes for a conditional cylindrical native constraint. Each keyed row measures
+its shaft relative to the actual bore body and returns its reaction there,
+using the existing 10-Nm ideal reaction cap. Both kinds must release when
+current or predicted source overlap ends. Three source heads have lower-only
+stops. The plan has `ordinaryAdmission: false`: it is a source connection and
+native-recipe handoff, not native contact or production admission evidence.
+
+The complete original import has 13,550 expanded leaves, including flexible
+render segments. A bounded metadata pass selects 285 reviewed-family
+candidates, then exactly 29 bodies. It neither welds submodels nor increases
+the existing 512-member, 200,000-triangle or 4,096-child native limits. The
+original source and inventory stay unchanged. Three focused source checks
+cover mount seating, source geometry, common rotation, unrelated scenery,
+missing/displaced/duplicate holders, dependency changes and embedded shadows:
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-carrier.test.ts --maxWorkers=1
+```
+
+Ordinary integration needs async actual-renderer canonical binding before
+allocation, member-local collision regions owned by these separate bodies,
+conditional native bearing creation/removal, source snap/cap contact reaction
+and bounded slipping fit friction. The current public rig tree cannot encode
+this cyclic 38-interface graph as 38 ordinary parent joints. A sealed native
+constraint graph must coexist with the public control/export tree, preserving
+all source members and degrees of freedom. Upstream power/selector isolation,
+drum friction, ropes and complete crane operation remain open.
