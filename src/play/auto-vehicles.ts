@@ -13,6 +13,10 @@ import type { MotionRig, RigidGroup } from "../mechanisms/types";
 import { validateRig } from "../mechanisms/kinematic";
 import { occurrenceBounds } from "./trains";
 import {
+  sourceVehicleAssemblyReview,
+  type SourceVehicleAssemblyReview,
+} from "./source-vehicle-assembly";
+import {
   reviewedAxleWheelMounts,
   type ReviewedVehicleAttachment,
   type ReviewedWheelInstance,
@@ -106,6 +110,9 @@ export type DerivedVehicles = {
   rigs: Record<string, MotionRig>;
   vehicles: AutoVehicle[];
   skipped: AutoVehicleSkip[];
+  /** Included retained-axle source bodies, including deferred/removable members.
+   * This is ownership evidence; only `vehicles` grant current driving admission. */
+  sourceAssemblies?: SourceVehicleAssemblyReview;
 };
 export type AutoVehicleOptions = {
   all?: Occurrence[];
@@ -694,6 +701,57 @@ export function deriveVehicleRigs(
       skipped: found.skipped,
     };
   if (!found.wheels.length) return result;
+  // The reviewed axle family has actual retained carrier/shaft/hinge boundaries.
+  // A source submodel is not permission to flatten those parts into one body.
+  // Ordinary wheel-pin families retain their bounded existing driving profile.
+  const sourceAxleWheels = found.wheels.filter((wheel) => wheel.mountMembers);
+  if (sourceAxleWheels.length) {
+    try {
+      result.sourceAssemblies = sourceVehicleAssemblyReview(project, {
+        all,
+        reserved: options.reserved,
+        bounds: boxes,
+        limits: AUTO_VEHICLE_LIMITS,
+      });
+    } catch (error) {
+      result.skipped.push({
+        occurrenceIds: sourceAxleWheels.flatMap((wheel) =>
+          wheelMembers(wheel).map((o) => o.id),
+        ),
+        reason: (error as Error).message,
+      });
+      found.wheels = found.wheels.filter((wheel) => !wheel.mountMembers);
+      if (!found.wheels.length) return result;
+    }
+  }
+  // Traverse actual source ownership for these mounts rather than their MPD
+  // ancestors. Unsupported multi-body assemblies remain wholly in the world.
+  for (const assembly of result.sourceAssemblies?.assemblies ?? []) {
+    const carriers = new Set(assembly.carrierOccurrenceIds),
+      wheels = found.wheels.filter(
+        (wheel) => wheel.mountMembers && carriers.has(wheel.holder.id),
+      ),
+      length = wheelbase(wheels),
+      reason =
+        typeof length === "string"
+          ? length
+          : assembly.reservedOccurrenceIds.length
+            ? "This source vehicle is connected to another active mechanism"
+            : !assembly.rigidWheelProfileCompatible
+              ? "This vehicle’s axle and hinge assembly is not supported in Play yet"
+              : undefined;
+    if (reason) {
+      result.skipped.push({
+        occurrenceIds: assembly.wheelOccurrenceIds,
+        reason,
+      });
+      const rejected = new Set(assembly.carrierOccurrenceIds);
+      found.wheels = found.wheels.filter(
+        (wheel) => !wheel.mountMembers || !rejected.has(wheel.holder.id),
+      );
+    }
+  }
+  if (!found.wheels.length) return result;
   const holders = [
       ...new Map(found.wheels.map((w) => [w.holder.id, w.holder])).values(),
     ],
@@ -775,20 +833,29 @@ export function deriveVehicleRigs(
     }
     // Include unknown official decoration only within a non-root authored
     // submodel touched by this stud component. Never sweep all root scenery in.
-    const parents = new Set(
+    const sourceAssembly = wheels.some((wheel) => wheel.mountMembers)
+        ? result.sourceAssemblies?.assemblies.find((assembly) =>
+            assembly.carrierOccurrenceIds.includes(holder.id),
+          )
+        : undefined,
+      sourceChassis = sourceAssembly
+        ? new Set(sourceAssembly.chassisOccurrenceIds)
+        : undefined,
+      parents = new Set(
         all
           .filter((o) => component.has(o.id) && o.path.length > 1)
           .map((o) => JSON.stringify(o.path.slice(0, -1))),
       ),
-      chassis = all.filter(
-        (o) =>
-          component.has(o.id) ||
-          (!wheelIds.has(o.id) &&
-            o.path.length > 1 &&
-            o.path.some(
-              (_, k) =>
-                k > 0 && parents.has(JSON.stringify(o.path.slice(0, k))),
-            )),
+      chassis = all.filter((o) =>
+        sourceChassis
+          ? sourceChassis.has(o.id)
+          : component.has(o.id) ||
+            (!wheelIds.has(o.id) &&
+              o.path.length > 1 &&
+              o.path.some(
+                (_, k) =>
+                  k > 0 && parents.has(JSON.stringify(o.path.slice(0, k))),
+              )),
       ),
       members = [...chassis, ...wheels.flatMap(wheelMembers)];
     if (

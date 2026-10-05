@@ -22,7 +22,8 @@ const direction = (o: Occurrence, local: Vec3): Vec3 =>
   mv(orthonormalized(o.transform).basis, local);
 
 /** Converts the reviewed, retained wheel mounts to source ownership evidence.
- * Rubber seating and keyed retainer fits are ideal fixed connections. Round
+ * Rubber seating is an ideal fixed connection. Keyed retainers preserve axial
+ * sliding; a keyed negative alone does not authorize an axial weld. Round
  * bores (including the two off-axis joining pins) remain articulated: a wheel
  * controller's rigid stack is not permission to weld every source member.
  * Pivot/axis identifies the actual bore line, not a native constraint or proof
@@ -63,7 +64,7 @@ export function sourceWheelAttachments(
   const attachments: SourceAssemblyEdge[] = mounts.edges.map((edge) => {
     const a = lookup.get(edge.a)!,
       b = lookup.get(edge.b)!,
-      fixed = edge.kind === "tyre-fit" || edge.kind === "axial-retainer";
+      fixed = edge.kind === "tyre-fit";
     let pivot: Vec3 | undefined,
       axis: Vec3 | undefined,
       featureA: string,
@@ -74,6 +75,8 @@ export function sourceWheelAttachments(
         featureB = "source-matching-rubber-groove";
         break;
       case "axial-retainer":
+        pivot = point(b, [0, 0, 0]);
+        axis = direction(a, a.node.ref === "4261.dat" ? [0, 1, 0] : [1, 0, 0]);
         featureA =
           a.node.ref === "4261.dat" ? "source-keyed-arm-bore" : "shaft";
         featureB =

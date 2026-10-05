@@ -42,6 +42,7 @@ export const SOURCE_ASSEMBLY_LIMITS = Object.freeze({
 export function sourceAssemblyEdges(
   project: Project,
   all = occurrences(project),
+  options: { keyedAxialFreedom?: boolean } = {},
 ): SourceAssemblyEdge[] {
   // A root can be official while an embedded project primitive changes its
   // dependency geometry. Decline this review rather than trust the basename.
@@ -76,9 +77,12 @@ export function sourceAssemblyEdges(
     JSON.stringify([e.occurrenceId, e.featureId]);
   for (const c of graph.contacts) {
     const fixed =
-      c.kind === "stud-weld" || (c.kind === "keyed-slide" && c.axialGrip);
+      c.kind === "stud-weld" ||
+      (c.kind === "keyed-slide" && c.axialGrip && !options.keyedAxialFreedom);
     const articulated =
-      c.kind === "finger-hinge" || (c.kind === "pin-bearing" && c.retained);
+      c.kind === "finger-hinge" ||
+      (c.kind === "pin-bearing" && c.retained) ||
+      (c.kind === "keyed-slide" && !!options.keyedAxialFreedom);
     if (!fixed && !articulated) continue;
     emit({
       a: c.a.occurrenceId,
@@ -191,7 +195,7 @@ export function sourceAssemblyEdges(
       span[1] + limits[1] > shaft.span[1] + 0.5
     )
       continue;
-    const fixed = limits[1] - limits[0] <= 1;
+    const fixed = !options.keyedAxialFreedom && limits[1] - limits[0] <= 1;
     emit({
       a: shaft.occurrenceId,
       b: bore.occurrenceId,
@@ -203,7 +207,9 @@ export function sourceAssemblyEdges(
       },
       pivot: bore.center,
       axis: shaft.axis,
-      ...(!fixed ? { axialLimitsLdu: limits } : {}),
+      ...(!fixed && !options.keyedAxialFreedom
+        ? { axialLimitsLdu: limits }
+        : {}),
     });
   }
   const studs = new ConnectorIndex(),
@@ -300,6 +306,9 @@ export function sourceConnectedAssembly(
     reserved?: ReadonlySet<string>;
     included?: ReadonlySet<string>;
     attachments?: readonly SourceAssemblyEdge[];
+    /** Vehicle/native ownership retains mobile keyed collars as separate
+     * bodies; axialGrip is a legacy ideal-clutch assumption, not a hard weld. */
+    keyedAxialFreedom?: boolean;
   },
 ): SourceAssembly {
   const all = options.all ?? occurrences(project),
@@ -314,7 +323,7 @@ export function sourceConnectedAssembly(
     !options.reserved?.has(id) &&
     (!options.included || options.included.has(id));
   const edges = [
-    ...sourceAssemblyEdges(project, all),
+    ...sourceAssemblyEdges(project, all, options),
     ...(options.attachments ?? []),
   ];
   ensure(
@@ -409,6 +418,7 @@ export function sourceAssemblyPartition(
     reserved?: ReadonlySet<string>;
     included?: ReadonlySet<string>;
     attachments?: readonly SourceAssemblyEdge[];
+    keyedAxialFreedom?: boolean;
   } = {},
 ) {
   const all = options.all ?? occurrences(project);

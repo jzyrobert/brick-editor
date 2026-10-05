@@ -27,7 +27,7 @@ const review = (
   });
 
 describe("actual retained wheel attachment boundaries", () => {
-  it("keeps source wheel/hub and off-axis pin freedom outside the keyed retainer and rubber fixed islands", () => {
+  it("keeps source wheel/hub, keyed collar and off-axis pin freedom outside the rubber fixed islands", () => {
     const p = fixture(),
       all = occurrences(p),
       before = JSON.stringify(p),
@@ -40,15 +40,16 @@ describe("actual retained wheel attachment boundaries", () => {
     ]);
     expect(result.attachments).toHaveLength(60);
     expect(result.attachments.filter((e) => e.kind === "fixed")).toHaveLength(
-      18,
+      10,
     );
     const boundaries = result.attachments.filter(
       (e) => e.kind === "articulated",
     );
-    expect(boundaries).toHaveLength(42);
+    expect(boundaries).toHaveLength(50);
     expect(boundaries.every((e) => e.pivot && e.axis)).toBe(true);
     const partition = sourceAssemblyPartition(p, {
       attachments: result.attachments,
+      keyedAxialFreedom: true,
     });
     expect(partition.occurrenceIds).toHaveLength(52);
     expect(partition.attachmentComponents.map((g) => g.length).sort()).toEqual([
@@ -66,7 +67,7 @@ describe("actual retained wheel attachment boundaries", () => {
     const shaft = result.assemblies[0].shaft;
     expect(
       partition.rigidIslands.find((g) => g.includes(shaft.id)),
-    ).toHaveLength(3);
+    ).toHaveLength(1);
     expect(JSON.stringify(p)).toBe(before);
     expect(exportLDraw(p)).toBe(exported);
     expect(partsList(p, all)).toEqual(inventory);
@@ -112,7 +113,7 @@ describe("actual retained wheel attachment boundaries", () => {
     expect(moved).toEqual(saved);
   });
 
-  it("keeps the actual steering link pins keyed to their arms while each capturing plate socket remains articulated", () => {
+  it("preserves actual keyed steering link axial freedom and capturing plate socket articulation", () => {
     // Four unchanged source placements from the attributed original 5540 OMR
     // whose 52-part wheel-mount excerpt is the fixture above. These connect the
     // existing source steering arms to their actual link plate sockets.
@@ -127,7 +128,7 @@ describe("actual retained wheel attachment boundaries", () => {
     expect(result.attachments).toHaveLength(64);
     for (const pin of all.slice(-4).filter((o) => o.node.ref === "3749.dat")) {
       expect(result.attachments.find((e) => e.b === pin.id)).toMatchObject({
-        kind: "fixed",
+        kind: "articulated",
         evidence: {
           profile: "source-wheel-axial-retainer",
           featureA: "source-keyed-arm-bore",
