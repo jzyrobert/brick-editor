@@ -1,4 +1,11 @@
 import type { Transform, Vec3 } from "../core/types";
+/** Requests source-bound native seating; this is not a ready-state witness. */
+export type NativeRestAssembly = {
+  profile: "arocs-ball-native-seat-v1";
+  ballOccurrenceId: string;
+  socketOccurrenceId: string;
+  socketEndpoint: 0 | 1;
+};
 export type RigidGroup = {
   id: string;
   occurrenceIds: string[];
@@ -17,6 +24,8 @@ export type JointSpec = {
   axisB?: Vec3;
   /** Optional rotational resistance of a free spherical joint (Dynamic only). */
   angularResistance?: { maxTorqueNm: number; dampingNmSeconds: number };
+  /** Preserve the two actual source anchors until native assembly settles. */
+  restAssembly?: NativeRestAssembly;
   /** Optional axial stops for a free cylindrical bearing, LDU from rest. */
   translationLimitsLdu?: [number, number];
   /** Explicit ideal bearing overlap, local to the joint axis/anchor. */

@@ -452,6 +452,12 @@ const joint = {
       {
         ...jointBase,
         kind: { const: "spherical" },
+        restAssembly: obj({
+          profile: { const: "arocs-ball-native-seat-v1" },
+          ballOccurrenceId: occurrenceId,
+          socketOccurrenceId: occurrenceId,
+          socketEndpoint: { enum: [0, 1] },
+        }),
         angularResistance: obj({
           maxTorqueNm: { type: "number", minimum: 0, maximum: 1000000 },
           dampingNmSeconds: { type: "number", minimum: 0, maximum: 100000 },

@@ -33,6 +33,10 @@ export function physicalPlayEligibility(
   source?: PlayMechanismSource,
 ): { eligible: boolean; reason?: string } {
   const refuse = (reason: string) => ({ eligible: false, reason });
+  if (rig.joints.some((j) => j.restAssembly))
+    return refuse(
+      "This source assembly must finish native seating before its controls are available.",
+    );
   if (rig.grippers?.length)
     return refuse(
       "This grab control needs real jaws and a supported physical grasp. Proximity attachments are not available in Play.",

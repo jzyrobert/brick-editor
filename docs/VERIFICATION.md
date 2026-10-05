@@ -2213,3 +2213,15 @@ unchanged; no runtime or UI change was needed.
 - **Sheets:** the camera adjustment beside phone and tablet sheets was checked by projecting the build's bounds (it sits in the free band) and by the dimming capture test (pictures are unaffected). Full-viewport headless screenshots can paint a pale rectangle over the canvas beside sheets; clipped captures of the same frame show the model, so it is a capture artefact.
 - **Browser specs:** layout, Play, vehicles, seats, mechanism controls, selection, inspector, transform, instructions (generation, viewer, dimming), menus, mechanisms and Gallery pass locally. The timed train look-hint layout check (`hud-layout.spec.ts`, Train controls at 600 × 360 and 800 × 360) times out intermittently under load locally and in CI.
 - **Not checked:** a physical phone; engine and camera items reported by the critics (train third-person camera clipping into wagons, Drive from here leaving the car out of view, Get out facing away, keyboard throttle speed) belong to the Play engine work.
+
+### Native ball construction data (5 October 2026)
+
+Five focused data cases plus nine existing mechanism/dynamics-data cases pass
+(14 cases, 7.64 seconds), with TypeScript passing. The tests use all three original
+Arocs ball fits, validate the regenerated schema and native save/restore, preserve
+LDraw export and original anchors, refuse undeclared gaps and excessive declared
+gaps, reject forged membership/endpoint/fields and incompatible joint options,
+keep mixed kinematic assemblies static, refuse movement/rebasing atomically, and
+refuse ordinary eligibility even when a declared pair happens to coincide. This
+checks the saved request and static preview contract; it does not certify native
+readiness or whole-model admission.

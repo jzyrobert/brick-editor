@@ -198,6 +198,15 @@ carrier. This relation does not infer self-locking or grant ordinary Play
 admission. The real retained source assembly and local tooth/bearing contacts
 must also be bound. The generic proposal currently derives spur/rack families.
 
+Spherical joints may preserve `restAssembly: {profile:"arocs-ball-native-seat-v1",
+ballOccurrenceId,socketOccurrenceId,socketEndpoint:0|1}`. This declaration requests
+source-bound native seating; it does not certify the parts or grant usable controls.
+The two named occurrences must belong to opposite joint bodies. Only this declared
+construction may retain an initial anchor gap up to 2.05 LDU; ordinary joints keep
+their existing coincidence requirement. Kinematic preview stays at authored rest
+and refuses movement or anchor rebasing. Native source preflight, settled readiness
+and ordinary runtime admission remain separate requirements.
+
 ### Layer organization
 
 `layers.duplicate` accepts `{ layerId, includeHidden?, name?, maxAdditions? }` and returns fresh layer/occurrence IDs in the command result. Duplication reads a locked source without changing it and creates an unlocked copy; unsupported opaque metadata and motion rigs are rejected. `layers.folder` sets `{ layerId, parentFolderId: string | null }`. `folders.add`, `folders.rename`, `folders.move`, and `folders.remove` manage organizational folders; removal promotes children/members without deleting build geometry. See the generated command schema for exact fields and bounds. Folder membership persists in native projects.

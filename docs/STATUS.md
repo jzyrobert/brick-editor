@@ -1420,3 +1420,13 @@ Focused runtime and production-browser evidence is recorded in
 with source-level samples and limits in [templates](TEMPLATES.md),
 [the twin sample review](reviews/TWIN-DRIVE-SAMPLE.md) and
 [temporary ground review](reviews/VEHICLE-SESSION-GROUND.md).
+
+### Native ball construction data (5 October 2026)
+
+The native rig schema now preserves an explicit source ball/socket seating
+request without replacing either original anchor. The declaration names distinct
+members on opposite bodies and bounds the construction gap to 2.05 LDU; unmarked
+joints retain strict coincidence. Kinematic preview keeps authored rest, refuses
+movement and refuses anchor rebasing. A declaration alone grants no ordinary
+Play control eligibility. Actual native readiness, compound ownership and full
+Arocs suspension integration remain open.

@@ -203,6 +203,39 @@
               "kind": {
                 "const": "spherical"
               },
+              "restAssembly": {
+                "type": "object",
+                "properties": {
+                  "profile": {
+                    "const": "arocs-ball-native-seat-v1"
+                  },
+                  "ballOccurrenceId": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "socketOccurrenceId": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "socketEndpoint": {
+                    "enum": [
+                      0,
+                      1
+                    ]
+                  }
+                },
+                "required": [
+                  "profile",
+                  "ballOccurrenceId",
+                  "socketOccurrenceId",
+                  "socketEndpoint"
+                ],
+                "additionalProperties": false
+              },
               "angularResistance": {
                 "type": "object",
                 "properties": {
