@@ -562,19 +562,33 @@ export function InstructionViewer({
                   </button>
                 </details>
               )}
-              {guide.explicitPlan.stepMetadata?.[current!.planStep!]
-                ?.insertionChecks && (
-                <p className="guide-note guide-approach-note" role="status">
-                  {insertionBadge(
-                    guide.explicitPlan.stepMetadata[current!.planStep!]
-                      .insertionChecks,
+              {/* The generator's fit and access notes are for checking a
+                  plan, not following it: folded away by default. */}
+              {(guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                ?.insertionChecks ||
+                guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                  ?.notes) && (
+                <details className="guide-tech-notes">
+                  <summary>Building notes</summary>
+                  {guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                    ?.insertionChecks && (
+                    <p className="guide-note guide-approach-note" role="status">
+                      {insertionBadge(
+                        guide.explicitPlan.stepMetadata[current!.planStep!]
+                          .insertionChecks,
+                      )}
+                    </p>
                   )}
-                </p>
-              )}
-              {guide.explicitPlan.stepMetadata?.[current!.planStep!]?.notes && (
-                <p className="guide-note guide-placement-note">
-                  {guide.explicitPlan.stepMetadata[current!.planStep!].notes}
-                </p>
+                  {guide.explicitPlan.stepMetadata?.[current!.planStep!]
+                    ?.notes && (
+                    <p className="guide-note guide-placement-note">
+                      {
+                        guide.explicitPlan.stepMetadata[current!.planStep!]
+                          .notes
+                      }
+                    </p>
+                  )}
+                </details>
               )}
             </>
           )}

@@ -1332,6 +1332,21 @@ function Workspace() {
   useEffect(() => {
     if (mode === "Play" || mode === "Photo") setGuideOpen(false);
   }, [mode]);
+  // The step guide frames each step; closing it returns the view the person
+  // had (as closing a sheet does).
+  useEffect(() => {
+    if (!guideOpen) return;
+    const before = renderer.current?.currentCamera();
+    return () => {
+      // Instructions frames its current step itself once the guide closes.
+      if (before && modeRef.current !== "Instructions")
+        try {
+          renderer.current?.setCamera(before);
+        } catch {
+          // A capture in progress keeps its camera; the view stays as it is.
+        }
+    };
+  }, [guideOpen]);
   useEffect(() => {
     if (!guideOpen) return;
     // The viewer shows its own steps: the editor's step view and the
@@ -1365,7 +1380,10 @@ function Workspace() {
     const canvas = r.renderer.domElement.getBoundingClientRect(),
       app = r.renderer.domElement.closest(".app"),
       insets = { top: 0, right: 0, bottom: 0, left: 0 };
-    for (const element of app?.querySelectorAll(".mode-card, .hud-top") ?? []) {
+    // The title row counts too: on phones it is the only chrome row.
+    for (const element of app?.querySelectorAll(
+      ".mode-card, .hud-top, .model-context",
+    ) ?? []) {
       const box = element.getBoundingClientRect();
       if (!box.width || !box.height) continue;
       if (box.height < 100)
@@ -2639,36 +2657,77 @@ function Workspace() {
     let observer: ResizeObserver | undefined;
     const measure = () => {
       const view = document.querySelector(".viewport")?.getBoundingClientRect();
-      if (!view || galleryOpen || innerWidth > 1100) return r.setViewInset({});
-      let bottom = 0,
-        left = 0;
+      // Instructions and the step guide frame their own camera for each
+      // step; only Build and Photo leave the view to the person.
+      if (
+        !view ||
+        galleryOpen ||
+        guideOpen ||
+        (mode !== "Build" && mode !== "Photo") ||
+        innerWidth > 1100
+      )
+        return r.setViewInset({});
+      // The tool rail down the right edge is never free either.
+      const rail = document
+        .querySelector<HTMLElement>(".canvas-toolbar")
+        ?.getBoundingClientRect();
+      const railSpace =
+        rail && rail.height > view.height * 0.3 && rail.left > view.width / 2
+          ? view.right - rail.left + 8
+          : 0;
+      document
+        .querySelector<HTMLElement>(".app")
+        ?.style.setProperty("--rail-space", `${railSpace || 124}px`);
+      // Each sheet leaves its largest free area: above, below or beside it.
+      let insets: { top?: number; bottom?: number; left?: number } = {};
+      let best = 0;
       for (const el of document.querySelectorAll<HTMLElement>(sheets)) {
         const b = el.getBoundingClientRect();
-        if (!b.height) continue;
-        if (b.width >= view.width * 0.8) {
-          // A sheet across the view, resting on the hotbar or the bottom.
-          if (b.bottom >= view.bottom - 120 && b.top > view.top)
-            bottom = Math.max(bottom, view.bottom - b.top);
-        } else if (b.left <= view.left + 32 && b.height > 160) {
-          // A tablet's panel down the left side (however tall its tab is,
-          // so switching tabs does not move the view).
-          left = Math.max(left, b.right - view.left);
+        if (b.height < 160 || b.width < 160) continue;
+        if (b.bottom < view.top || b.top > view.bottom) continue;
+        const free = [
+          {
+            area: (b.top - view.top) * view.width,
+            insets: { bottom: view.bottom - b.top },
+          },
+          {
+            area: (view.bottom - b.bottom) * view.width,
+            insets: { top: b.bottom - view.top },
+          },
+          {
+            area: (view.right - railSpace - b.right) * view.height,
+            insets: { left: b.right - view.left },
+          },
+        ];
+        // A sheet that covers little of the view needs no reframing.
+        const covered = (b.width * b.height) / (view.width * view.height);
+        if (covered < 0.15) continue;
+        for (const f of free)
+          if (f.area > best) {
+            best = f.area;
+            insets = f.insets;
+          }
+      }
+      if (!best) return r.setViewInset({});
+      let top = insets.top ?? 0;
+      if (insets.bottom) {
+        // The title row and tool chips above the band are not free either.
+        for (const el of document.querySelectorAll<HTMLElement>(
+          ".model-context, .hud-top",
+        )) {
+          const b = el.getBoundingClientRect();
+          if (b.height && b.top < view.top + view.height / 3)
+            top = Math.max(top, b.bottom - view.top);
         }
       }
-      if (!bottom && !left) return r.setViewInset({});
-      // The title row and tool chips above the band are not free either.
-      let top = 0;
-      for (const el of document.querySelectorAll<HTMLElement>(
-        ".model-context, .hud-top",
-      )) {
-        const b = el.getBoundingClientRect();
-        if (b.height && b.top < view.top + view.height / 3)
-          top = Math.max(top, b.bottom - view.top);
-      }
+      const band = view.height - top - (insets.bottom ?? 0);
+      // Too thin a band to show the build: leave the view as it is.
+      if (band < 120) return r.setViewInset({});
       r.setViewInset({
-        top: bottom ? Math.min(top, view.height * 0.3) : 0,
-        bottom: Math.min(bottom, view.height * 0.7),
-        left: Math.min(left, view.width * 0.6),
+        top,
+        bottom: insets.bottom ?? 0,
+        left: insets.left ?? 0,
+        right: insets.left ? railSpace : 0,
       });
     };
     const frame = requestAnimationFrame(() => {
@@ -4316,6 +4375,8 @@ function Workspace() {
     } else navBack(() => setGalleryDetail(undefined));
   };
   const enterMode = (m: typeof mode) => {
+    // Leaving Play for a tool ends the walk rather than leaving it hidden.
+    if (m !== "Play" && play.current?.getState().active) play.current.exit();
     if (galleryOpenRef.current) pushNav({ view: "model" });
     galleryOpenRef.current = false;
     setGalleryOpen(false);
@@ -4777,9 +4838,10 @@ function Workspace() {
               aria-expanded={modesOpen}
               aria-controls="model-tools-menu"
               onClick={() => {
-                // Every tool leaves Play, so the walk ends here instead of a
-                // tools menu stacking on the pause sheet.
-                if (play.current?.getState().active) play.current.exit();
+                // From Play the walk waits, paused, while the menu is open;
+                // choosing another view ends it (enterMode), closing resumes
+                // the pause sheet.
+                if (play.current?.getState().active) play.current.pause(true);
                 setModesOpen((open) => !open);
               }}
             >

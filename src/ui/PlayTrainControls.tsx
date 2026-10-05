@@ -234,6 +234,7 @@ export function PlayTrainControls({
               {key("reverse")}
             </button>
             <div className="play-train-speed">
+              <span aria-hidden="true">Speed</span>
               <input
                 type="range"
                 aria-label="Train speed"

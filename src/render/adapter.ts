@@ -3828,18 +3828,29 @@ export class SceneAdapter {
    * that band, and returns when the sheet closes; currentCamera() reports
    * the camera without this adjustment.
    */
-  private viewInsets = { top: 0, bottom: 0, left: 0 };
+  private viewInsets = { top: 0, bottom: 0, left: 0, right: 0 };
   private insetShift = new THREE.Vector3();
   private insetDolly = new THREE.Vector3();
   private insetZoom = 1;
-  setViewInset(insets: { top?: number; bottom?: number; left?: number }) {
+  setViewInset(insets: {
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  }) {
     const next = {
       top: Math.max(0, Math.round(insets.top ?? 0)),
       bottom: Math.max(0, Math.round(insets.bottom ?? 0)),
       left: Math.max(0, Math.round(insets.left ?? 0)),
+      right: Math.max(0, Math.round(insets.right ?? 0)),
     };
     const v = this.viewInsets;
-    if (next.top === v.top && next.bottom === v.bottom && next.left === v.left)
+    if (
+      next.top === v.top &&
+      next.bottom === v.bottom &&
+      next.left === v.left &&
+      next.right === v.right
+    )
       return;
     this.viewInsets = next;
     this.applyViewInset();
@@ -3882,8 +3893,8 @@ export class SceneAdapter {
     this.clearViewInset();
     const w = this.element.clientWidth,
       h = this.element.clientHeight;
-    const { top, bottom, left } = this.viewInsets;
-    if (!w || !h || (!top && !bottom && !left)) {
+    const { top, bottom, left, right: rightInset } = this.viewInsets;
+    if (!w || !h || (!top && !bottom && !left && !rightInset)) {
       this.invalidate({ cameraOnly: true });
       return;
     }
@@ -3899,14 +3910,17 @@ export class SceneAdapter {
           h
         : (camera.top - camera.bottom) / camera.zoom / h;
     const bandH = Math.max(1, h - top - bottom),
-      bandW = Math.max(1, w - left);
+      bandW = Math.max(1, w - left - rightInset);
     // Step back so what filled the view fits the free band, then centre it
     // there: the band's middle sits (bottom - top)/2 above the view's.
     // Only a bottom sheet steps back (it takes most of a phone's height); a
     // tablet's side panel leaves enough room for a sideways shift alone.
-    const scale = bottom ? Math.min(3, Math.max(h / bandH, w / bandW)) : 1;
+    const scale =
+      bottom || top
+        ? Math.min(3, Math.max(h / bandH, w / bandW))
+        : Math.min(2, w / bandW);
     const upPx = (bottom - top) / 2,
-      rightPx = left / 2;
+      rightPx = (left - rightInset) / 2;
     const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
     const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
     const back = new THREE.Vector3(0, 0, 1).applyQuaternion(camera.quaternion);

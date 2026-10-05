@@ -136,7 +136,7 @@ test("Play mechanisms panel operates a hinge and explicitly applies its pose", a
     return (await a.query()).revision;
   });
   await openMode(page, "Play");
-  await page.getByLabel("Authored rig").selectOption("door");
+  await page.getByRole("combobox", { name: /^Mechanism/ }).selectOption("door");
   await page
     .getByRole("button", { name: "Preview mechanism", exact: true })
     .click();

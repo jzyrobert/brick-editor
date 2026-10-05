@@ -131,7 +131,9 @@ function DrivePad({
         style={{ "--v": value } as React.CSSProperties}
       >
         {axis === "steer"
-          ? "Steer"
+          ? value
+            ? "Steer"
+            : null
           : value
             ? value < 0
               ? "Back"

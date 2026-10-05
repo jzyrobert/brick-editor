@@ -41,14 +41,14 @@ export function MechanismPanel({
       </p>
       {!Object.keys(rigs).length ? (
         <p>
-          Open the “Door & vehicle” template to try two original rigs. Rig
-          authoring is available in Build → Inspector → Tools → Create or edit a
+          Open the “Door & vehicle” template to try two moving models. To make
+          parts move yourself, use Build → Inspector → Extras → Create or edit a
           rig.
         </p>
       ) : (
         <>
           <label>
-            Authored rig{" "}
+            Mechanism{" "}
             <select
               value={selectedId}
               disabled={state.active || state.loading}
