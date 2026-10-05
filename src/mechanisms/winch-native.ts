@@ -67,6 +67,24 @@ const norm = (a: Vec3) => Math.hypot(...a);
 const vec = (v: V): Vec3 => [v.x, v.y, v.z];
 const rotate = (q: RAPIER.Rotation, v: Vec3) =>
   new Vector3(...v).applyQuaternion(q).toArray() as Vec3;
+const predictedPose = (body: RAPIER.RigidBody, dt: number) => {
+  const rotation = new Quaternion().copy(body.rotation()),
+    omega = vec(body.angvel()),
+    speed = norm(omega);
+  if (dt && speed)
+    rotation
+      .premultiply(
+        new Quaternion().setFromAxisAngle(
+          new Vector3(...scale(omega, 1 / speed)),
+          speed * dt,
+        ),
+      )
+      .normalize();
+  return {
+    position: add(vec(body.translation()), scale(vec(body.linvel()), dt)),
+    rotation,
+  };
+};
 
 /** Compile literal canonical closure bytes, once during preflight. No world or
  * native allocation precedes source verification. The loader applies authored
@@ -409,6 +427,7 @@ export class RetainedWinchNative {
   private contactAligned = false;
   private bearingAligned = false;
   private keyAligned = new Map<string, boolean>();
+  private keySeated = new Map<string, boolean>();
   private headSeparated = false;
   private timestep = 0;
   constructor(
@@ -620,24 +639,7 @@ export class RetainedWinchNative {
    * source contact; this is not a disabled pair attached to arbitrary bodies. */
   aligned(dt = 0) {
     if (dt !== 0 && !this.aligned()) return false;
-    const pose = (body: RAPIER.RigidBody) => {
-      const q = new Quaternion().copy(body.rotation());
-      if (dt) {
-        const omega = vec(body.angvel()),
-          speed = norm(omega);
-        if (speed)
-          q.premultiply(
-            new Quaternion().setFromAxisAngle(
-              new Vector3(...scale(omega, 1 / speed)),
-              speed * dt,
-            ),
-          ).normalize();
-      }
-      return {
-        position: add(vec(body.translation()), scale(vec(body.linvel()), dt)),
-        rotation: q,
-      };
-    };
+    const pose = (body: RAPIER.RigidBody) => predictedPose(body, dt);
     const carrier = this.carrier,
       carrierPose = pose(carrier),
       q = carrierPose.rotation,
@@ -695,11 +697,11 @@ export class RetainedWinchNative {
     this.prepareContacts();
     this.solver.setEnabled(
       "input-key",
-      this.keyAligned.get(this.packet.witness.inputMembers[1]) === true,
+      this.keySeated.get(this.packet.witness.inputMembers[1]) === true,
     );
     this.solver.setEnabled(
       "output-key",
-      this.keyAligned.get(
+      this.keySeated.get(
         this.packet.witness.outputMembers.find(
           (id) => id !== this.packet.witness.output.occurrenceId,
         )!,
@@ -717,8 +719,6 @@ export class RetainedWinchNative {
    * outside the callback, after controls/constraint impulses. */
   prepareContacts() {
     this.contactAligned = this.aligned(this.timestep);
-    const q = this.carrier.rotation(),
-      origin = vec(this.carrier.translation());
     // Original clipped bearing fragments must not receive a rest-only label
     // after an axially free shaft leaves its source window. This narrow gate
     // does not inhibit axial motion; it restores ordinary native contacts.
@@ -759,44 +759,51 @@ export class RetainedWinchNative {
         )!,
       ],
     ] as const) {
-      const expected = add(origin, rotate(q, offset)),
-        delta = sub(vec(shaft.translation()), expected),
-        direction = rotate(q, axis),
-        next = add(
-          delta,
-          scale(
-            sub(vec(shaft.linvel()), vec(this.carrier.linvel())),
-            this.timestep,
-          ),
-        ),
-        transverse = (v: Vec3) =>
-          norm(sub(v, scale(direction, dot(v, direction)))),
-        axial = [dot(delta, direction) / 0.02, dot(next, direction) / 0.02],
-        phase = new Quaternion()
-          .copy(part.rotation())
-          .invert()
-          .multiply(new Quaternion().copy(shaft.rotation())),
-        phaseAngle =
-          2 *
-          Math.atan2(Math.hypot(phase.x, phase.y, phase.z), Math.abs(phase.w));
-      const radial =
-        Math.max(transverse(delta), transverse(next)) <= 0.05 * 0.02 &&
-        norm(sub(rotate(shaft.rotation(), axis), direction)) <= 0.002;
+      const states = [0, this.timestep].map((dt) => {
+        const carrier = predictedPose(this.carrier, dt),
+          shaftPose = predictedPose(shaft, dt),
+          partPose = predictedPose(part, dt),
+          expected = add(carrier.position, rotate(carrier.rotation, offset)),
+          delta = sub(shaftPose.position, expected),
+          direction = rotate(carrier.rotation, axis),
+          station = dot(delta, direction),
+          phase = partPose.rotation
+            .clone()
+            .invert()
+            .multiply(shaftPose.rotation);
+        return {
+          axial: station / 0.02,
+          radial:
+            norm(sub(delta, scale(direction, station))) <= 0.05 * 0.02 &&
+            norm(sub(rotate(shaftPose.rotation, axis), direction)) <= 0.002,
+          phaseAngle:
+            2 *
+            Math.atan2(
+              Math.hypot(phase.x, phase.y, phase.z),
+              Math.abs(phase.w),
+            ),
+        };
+      });
+      const radial = states.every((s) => s.radial),
+        overlap = states.every(
+          (s) =>
+            Math.min(bodyHi + s.axial, keyHi) >
+            Math.max(bodyLo + s.axial, keyLo),
+        );
       roundAligned &&= radial;
       if (shaft === this.inputShaft)
         this.headSeparated =
           radial &&
-          axial.every(
-            (s) => s + 38 - 20 > 0.05 + (8 + 12.7) * 0.002 + 0.00035 + 0.00001,
+          states.every(
+            (s) =>
+              s.axial + 38 - 20 > 0.05 + (8 + 12.7) * 0.002 + 0.00035 + 0.00001,
           );
-      this.keyAligned.set(
-        id,
-        radial &&
-          phaseAngle <= 0.002 &&
-          axial.every(
-            (s) => Math.min(bodyHi + s, keyHi) > Math.max(bodyLo + s, keyLo),
-          ),
-      );
+      // A currently seated key must react to an angular impulse before its
+      // predicted phase is aligned. Contact suppression requires BOTH phases;
+      // the equation itself never survives predicted axial withdrawal.
+      const seated = radial && overlap && states[0].phaseAngle <= 0.002;
+      this.keySeated.set(id, seated);
+      this.keyAligned.set(id, seated && states[1].phaseAngle <= 0.002);
     }
     this.bearingAligned = roundAligned;
   }

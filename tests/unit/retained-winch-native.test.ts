@@ -12,6 +12,7 @@ import {
   prepareRetainedWinchNative,
   RetainedWinchNative,
   isPreparedRetainedWinchPacket,
+  retainedWinchContactKind,
   type ReviewedRetainedWinchPacket,
 } from "../../src/mechanisms/winch-native";
 import { memberLocalOf } from "../helpers/play-dynamic-source";
@@ -274,6 +275,94 @@ describe("actual retained native crane winch", () => {
         Math.abs(native.solver.snapshot().ports["output-shaft"].radians),
       ).toBeGreaterThan(0.1);
     });
+  });
+  it("closes key contact handling on predicted phase or withdrawal while preserving a seated angular reaction", () => {
+    const responseForOutputKey = (native: RetainedWinchNative) => {
+      const entries = [...native.metadata],
+        shaft = entries.find(([, r]) => r.keyed && packet.output.includes(r))!,
+        gear = entries.find(
+          ([, r]) => r.memberId === packet.witness.output.occurrenceId,
+        )!;
+      expect(retainedWinchContactKind(packet, shaft[1], gear[1])).toBe("key");
+      return native.hooks.filterContactPair(shaft[0], gear[0], 0, 0);
+    };
+    run((native) => {
+      native.outputShaft.setAngvel({ x: 0.2, y: 0, z: 0 }, true);
+      native.beginStep(DT);
+      expect(native.solver.snapshot().equations["output-key"].enabled).toBe(
+        true,
+      );
+      expect(responseForOutputKey(native)).toBe(
+        RAPIER.SolverFlags.COMPUTE_IMPULSE,
+      );
+      for (let i = 0; i < 8; i++) native.solvePass();
+      expect(responseForOutputKey(native)).toBeNull();
+    });
+    run((native) => {
+      const p = native.outputShaft.translation();
+      // Only .01 LDU of the source constant key remains inside the gear.
+      // Its actual next axial motion withdraws it: no angular weld survives.
+      native.outputShaft.setTranslation({ ...p, x: p.x + 37.49 * 0.02 }, true);
+      native.outputShaft.setLinvel({ x: 0.1, y: 0, z: 0 }, true);
+      native.beginStep(DT);
+      expect(native.solver.snapshot().equations["output-key"].enabled).toBe(
+        false,
+      );
+      expect(responseForOutputKey(native)).toBe(
+        RAPIER.SolverFlags.COMPUTE_IMPULSE,
+      );
+    });
+    run((native) => {
+      native.outputShaft.setRotation(
+        { x: Math.sin(0.005), y: 0, z: 0, w: Math.cos(0.005) },
+        true,
+      );
+      native.beginStep(DT);
+      expect(native.solver.snapshot().equations["output-key"].enabled).toBe(
+        false,
+      );
+      expect(responseForOutputKey(native)).toBe(
+        RAPIER.SolverFlags.COMPUTE_IMPULSE,
+      );
+    });
+  });
+  it("returns the one-sided head impulse directly to a mobile source carrier", () => {
+    const world = new RAPIER.World({ x: 0, y: 0, z: 0 }),
+      events = new RAPIER.EventQueue(true);
+    world.timestep = DT;
+    try {
+      const native = new RetainedWinchNative(world, packet, true),
+        rest =
+          native.inputShaft.translation().z - native.carrier.translation().z;
+      native.inputShaft.applyImpulse({ x: 0, y: 0, z: -0.001 }, true);
+      for (let i = 0; i < 30; i++) {
+        native.beginStep(DT);
+        for (let j = 0; j < 8; j++) native.solvePass();
+        world.step(events, native.hooks);
+      }
+      expect(native.carrier.linvel().z).toBeLessThan(-1e-4);
+      expect(
+        (native.inputShaft.translation().z -
+          native.carrier.translation().z -
+          rest) /
+          0.02,
+      ).toBeGreaterThan(-0.05);
+      const momentum = new Vector3();
+      for (const body of [
+        native.carrier,
+        native.input,
+        native.output,
+        native.inputShaft,
+        native.outputShaft,
+      ]) {
+        const v = body.linvel();
+        momentum.add(new Vector3(v.x, v.y, v.z).multiplyScalar(body.mass()));
+      }
+      expect(momentum.distanceTo(new Vector3(0, 0, -0.001))).toBeLessThan(1e-6);
+    } finally {
+      events.free();
+      world.free();
+    }
   });
   it("keeps a real foreign thin blocker responding and closes every source allowance on misalignment", () => {
     run((native, world, step) => {

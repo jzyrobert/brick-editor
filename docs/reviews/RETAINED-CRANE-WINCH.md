@@ -2,9 +2,8 @@
 
 The source-derived native subsystem now has forward/reverse, load/stall,
 backdrive and foreign-contact evidence. Ordinary Play admission and complete
-crane operation remain open. Those native results describe the earlier rigid
-shaft-pair baseline; the axial-freedom follow-up below is unfinished and has
-not inherited that acceptance. It complements [the drivetrain source review](TECHNIC-DRIVETRAIN-INTERFACES.md)
+crane operation remain open. The current five-body candidate preserves both
+shafts' axial freedom and the input's real one-sided stop. It complements [the drivetrain source review](TECHNIC-DRIVETRAIN-INTERFACES.md)
 and [the native angular kernel review](TECHNIC-ANGULAR-EQUATIONS.md).
 
 The attributed 12-member excerpt in
@@ -45,11 +44,10 @@ The literal interfaces are:
 The two shoulder captures retain 4716 and 10928, **not both shafts**. The plain
 3737 cross axle has no opposing collars in this excerpt. The 15462 source has
 one R8 stop at local X 48–50 (worm-relative axial stations 38–40), but opposing
-shaft restraint has not been proved. The native subsystem combines each keyed
-shaft and its worm/gear using a declared ideal axial grip. Rotational keying
-alone does not justify that rigid ownership. Ordinary Play must explicitly
-review that ideal grip, prove additional source retention, or retain axial
-shaft freedom; the sealed member lists do not authorize a weld by themselves.
+shaft restraint has not been proved. An earlier native baseline combined each
+keyed shaft and its worm/gear using a declared ideal axial grip. The current
+candidate removes that assumption: rotational keying alone does not justify
+rigid ownership, and sealed member lists do not authorize a weld.
 
 Focused source checks cover all required members, source immutability,
 an oblique common world transform, floating/missing/duplicate supports,
@@ -105,10 +103,11 @@ Thus that intrinsic opening is retained through every axial station. The
 inserted real axle may occupy that opening in the assembled subsystem.
 
 `prepareRetainedWinchNative` returns a sealed immutable
-`ReviewedRetainedWinchPacket`: eight source carrier regions,135 input regions
-and101 output regions,244 native children in total. Carrier and shaft geometry
-retains every literal compiled source triangle; shaft surfaces are partitioned
-at the actual paired bearing windows. The reference has8660 source triangles.
+`ReviewedRetainedWinchPacket`: eight source carrier regions, 134 input regions
+and 97 output regions, 239 native children in total. Carrier and shaft geometry
+retains every literal compiled source triangle. The input separates its core
+and real stop head; both shaft bodies retain independent axial motion rather
+than inheriting a rest-only bearing-window label. The reference has 8,660 source triangles.
 To consume this packet in ordinary Play, pass the actual canonical captures:
 the preflight compares all12 occurrence IDs, namespaces, revisions, exact rest
 frames and oriented F32 triangle multisets. Changed geometry or context refuses.
@@ -117,14 +116,20 @@ not establish actual renderer binding. Matched captures are labelled
 `matched-canonical`; a structural packet clone never passes the seal.
 
 `retainedWinchContactKind` classifies only sealed source regions as paired
-tooth, local bearing or captured cap contacts. It never disables a native pair
-itself. The native prototype applies the ideal1:8 equation only to the actual
-tooth pair, keeps the inner keyed hub/core and every foreign contact active,
+tooth, bearing, captured cap, keyed, one-sided stop or source-separated head
+contacts. It never disables a native pair itself. The native prototype applies
+the ideal 1:8 equation only to the actual tooth pair, scopes each keyed angular
+row to positive source overlap, keeps every foreign contact active,
 and scopes cap handling to the named supports on opposite literal source
 halfspaces. Preflight checks every original source vertex against those
 separating planes; this fixture has zero excess (`capPlaneRoundoffLdu`). Current and predicted native pivot/axis gates use0.05LDU and0.002
 respectively; misalignment restores responding contacts. Geometry remains
 present in every class. Both source revolutes explicitly enable native contacts.
+Current and predicted shaft poses include carrier rotation, transverse
+position, axis and relative phase. A seated key can react to an angular impulse
+before its predicted phase aligns, but key contact handling requires both
+phases inside the reviewed envelope. Predicted axial withdrawal disables the
+angular row; a currently misphased key restores responding contacts.
 Hooks use cached pre-step poses and do not query the mutably borrowed native
 body set during`World.step`.
 
@@ -144,7 +149,7 @@ the actual input reaction and preserves native linear momentum within1e−6kg·m
 and angular momentum within1e−5kg·m²/s. Source data and inventory stay unchanged. Reproduce the source/native evidence with:
 
 ```sh
-FORCE_COLOR=0 npx vitest run tests/unit/retained-winch.test.ts tests/unit/winch-convex.test.ts tests/unit/retained-winch-native.test.ts --maxWorkers=1
+FORCE_COLOR=0 npx vitest run tests/unit/retained-winch.test.ts tests/unit/winch-convex.test.ts tests/unit/winch-retention.test.ts tests/unit/winch-keyed-column.test.ts tests/unit/retained-winch-native.test.ts --maxWorkers=1
 ```
 
 Ordinary Play integration must still prove the external carrier's source
@@ -154,7 +159,7 @@ winding/tension, the second winch, actual upstream selector isolation, Arocs
 bevel/differential native packages and complete set operation remain separate
 obligations. This bounded subsystem evidence does not close the full goal.
 
-## Axial-retention follow-up: unfinished native candidate
+## Axial-retention source and native checks
 
 The attributed `42042-winch-retention.ldr` excerpt extends the same original
 source to all 27 directly placed hardware members of its first winch, original
@@ -194,8 +199,22 @@ numerical scopes, not an axial attachment or a general topology theorem.
 Local round-bearing and head-stop handling remains a declared ideal interface
 law tied to the actual source members, not measured LEGO friction.
 
-The split prototype has a short positive native probe, but its updated full
-forward/reverse, load, stall, backdrive, axial withdrawal and mobile-reaction
-suite is pending. The earlier rigid shaft-pair test results do not certify this
-candidate. Ordinary Play ownership and integration must consume the free
-shaft degrees of freedom; complete crane operation remains open.
+Nine updated native checks pass: matched canonical binding, actual
+forward/reverse, output load/stall/release, independent reflected-inertia
+backdrive, five-body mobile momentum, bidirectional plain-shaft travel,
+one-sided head reaction, withdrawal isolation, predicted phase/overlap gates,
+and foreign contact/misalignment response. Two additional finite-projection
+negatives reject a triangle whose source vertices lie on the bore but whose
+interior bridges a keyed indentation, and reject an escaping projected edge
+even when its triangle has zero area. The earlier rigid shaft-pair results
+were not used to certify this candidate. A separate mobile head-stop impulse
+check measures reaction on the actual carrier and conserves total linear
+momentum within 1e−6 kg·m/s. The nine native checks pass in 13.25 seconds; the
+unchanged three convex source checks pass separately in 7.80 seconds.
+
+This is native subsystem evidence with declared ideal mass, inertia and
+interface laws. Ordinary Play ownership and integration must consume the free
+shaft degrees of freedom; complete crane operation remains open. The complete
+27-member source excerpt establishes retention evidence, while the native
+packet still contains the bounded original 12 members, not the full winch
+drum, rope or crane.
