@@ -18,7 +18,10 @@ export type AngularPort = {
 export type AngularEquation = {
   id: string;
   terms: readonly { portId: string; coefficient: number }[];
-  /** Sum(coefficients * measured relative radians) = phaseRadians. */
+  /** One to three carrier-relative ports. A one-port row locks only the
+   * shaft/bore relative twist and reacts on BOTH bodies; it is not a fixed
+   * world angle or an axial attachment. Source admission belongs to caller.
+   * Sum(coefficients * measured relative radians) = phaseRadians. */
   phaseRadians?: number;
   enabled?: boolean;
   /** Ideal constraint reaction cap, separate from motor torque and friction. */
@@ -123,7 +126,7 @@ export class AngularEquationSolver {
       ensure(
         validId(equation.id) &&
           !this.equations.has(equation.id) &&
-          equation.terms.length >= 2 &&
+          equation.terms.length >= 1 &&
           equation.terms.length <= 3 &&
           new Set(equation.terms.map((t) => t.portId)).size ===
             equation.terms.length &&

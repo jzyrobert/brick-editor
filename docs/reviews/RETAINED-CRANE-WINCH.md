@@ -275,3 +275,26 @@ this cyclic 38-interface graph as 38 ordinary parent joints. A sealed native
 constraint graph must coexist with the public control/export tree, preserving
 all source members and degrees of freedom. Upstream power/selector isolation,
 drum friction, ropes and complete crane operation remain open.
+
+The supplemental `NativeWinchCarrierConstraints` helper now creates and removes
+the 38 cylindrical bearings from the actual current and predicted source
+intervals. All 29 native bodies remain separate. It preserves responding
+contacts, adds exactly three lower-only head limits and couples the 20 keyed
+shaft/bore pairs with carrier-relative one-port angular rows. Each row returns
+equal and opposite torque to its actual source owners. A one-port row still
+acts on two bodies; it is not a world-angle target or a source attachment token.
+The unchanged eight-pass and 10-Nm ideal reaction limits apply.
+
+Four native lifecycle checks use all 34,729 triangles of the actual canonical
+29-member capture: initial interface counts, source retention, predicted
+withdrawal releasing all 13 plain-shaft bearings, re-entry, phase mismatch,
+actual mobile bore reaction and angular momentum. Two additional independent
+inertia checks verify the one-port kernel's reaction cap and neutral isolation.
+The graph adds no contact hooks and applies no friction-fit model. These checks
+do not certify complete winch operation or convert the graph into ordinary
+Play admission; source-bound collision packets, snap/catch reaction and
+slipping fit friction still need integration.
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-carrier-native.test.ts tests/unit/angular-equations-keyed.test.ts --maxWorkers=1
+```
