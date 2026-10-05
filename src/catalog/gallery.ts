@@ -17,6 +17,14 @@ export const MODEL_TOOLS: { name: ModelTool; description: string }[] = [
   { name: "Photo", description: "Set up a view and render a picture" },
   { name: "Project", description: "Save a copy, import or export" },
 ];
+/** Every view of an open model: Play first, then the four tools. */
+export const MODEL_VIEWS: {
+  name: ModelTool | "Play";
+  description: string;
+}[] = [
+  { name: "Play", description: "Walk around inside the model" },
+  ...MODEL_TOOLS,
+];
 export type GalleryAngle = "iso" | "front" | "iso-back";
 export const GALLERY_ANGLES: { id: GalleryAngle; label: string }[] = [
   { id: "iso", label: "Three-quarter" },

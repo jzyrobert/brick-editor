@@ -362,8 +362,15 @@ summary:focus-visible {
   white-space: nowrap;
 }
 .status-bar button {
+  position: relative;
   min-height: 28px;
   padding: 0 10px;
+}
+/* A 44px touch target without a taller toast. */
+.status-bar button::after {
+  content: "";
+  position: absolute;
+  inset: -8px -4px;
 }
 /* Model loading: a thin bar and a percentage beside the status text. */
 .status-bar > .load-progress {

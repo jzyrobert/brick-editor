@@ -252,9 +252,8 @@ for (const viewport of [
       await page
         .getByRole("button", { name: "Exit Play", exact: true })
         .click();
-      await expect(
-        page.getByRole("navigation", { name: "Mobile panels" }),
-      ).toBeVisible();
+      // Exit Play stays on the model, ready to walk again.
+      await expect(page.locator(".play-entry")).toBeVisible();
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,

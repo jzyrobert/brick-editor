@@ -116,19 +116,34 @@ test("a build's page spins it in 3D on desktop and waits for a tap on phones", a
       isMobile: true,
       baseURL: new URL(page.url()).origin,
     });
+  // Phones open the detail page in live 3D too.
   const p = await phone.newPage();
-  const phoneRequests = await mockGallery(p);
+  await mockGallery(p);
   await p.goto(`./?galleryIndex=1&gallery=${BUILD_IDS[1]}`);
   await expect(p.getByRole("heading", { name: TITLES[1] })).toBeVisible();
-  await expect(p.locator(".gallery-live")).toHaveCount(0);
-  expect(phoneRequests.some((r) => r.startsWith("/b/"))).toBe(false);
-  await p.getByRole("button", { name: "Spin in 3D" }).click();
   await expect(p.locator(".gallery-live.ready canvas")).toBeVisible({
     timeout: 60000,
   });
   expect(
     await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
   ).toBe(true);
+  // A browser asking to save data starts on the pictures: no MPD request
+  // until Spin in 3D.
+  const saver = await phone.newPage();
+  await saver.addInitScript(() =>
+    Object.defineProperty(navigator, "connection", {
+      value: { saveData: true },
+    }),
+  );
+  const saverRequests = await mockGallery(saver);
+  await saver.goto(`./?galleryIndex=1&gallery=${BUILD_IDS[1]}`);
+  await expect(saver.getByRole("heading", { name: TITLES[1] })).toBeVisible();
+  await expect(saver.locator(".gallery-live")).toHaveCount(0);
+  expect(saverRequests.some((r) => r.startsWith("/b/"))).toBe(false);
+  await saver.getByRole("button", { name: "Spin in 3D" }).click();
+  await expect(saver.locator(".gallery-live.ready canvas")).toBeVisible({
+    timeout: 60000,
+  });
   await phone.close();
 });
 

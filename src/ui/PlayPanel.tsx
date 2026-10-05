@@ -45,6 +45,7 @@ import {
 import { PlayTrainControls } from "./PlayTrainControls";
 import { promptVisible } from "../play/interaction";
 import { pinchZoomFactor, wheelZoomFactor } from "../play/zoom-input";
+import { useLoadPercent } from "./LoadProgress";
 import { Icon, type IconName } from "./icons";
 import {
   choosePortrait,
@@ -62,6 +63,7 @@ export function PlayPanel({
   play,
   bookmark,
   exit,
+  modelLoading,
   children,
   rigs: authoredRigs = {},
   editor,
@@ -72,6 +74,8 @@ export function PlayPanel({
   play: BrowserPlay;
   bookmark: () => void;
   exit: () => void;
+  /** A model is being opened; its parts have not started loading yet. */
+  modelLoading?: boolean;
   children?: React.ReactNode;
   rigs?: Record<string, MotionRig>;
   editor?: Editor;
@@ -124,6 +128,8 @@ export function PlayPanel({
     };
   }, [state.active]);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const loadPercent = useLoadPercent();
+  const modelLoad = loadPercent ?? (modelLoading ? 0 : null);
   const [setupOpen, setSetupOpen] = useState(false);
   const [mechanismReview, setMechanismReview] = useState<MechanismReview>();
   const [rigId, setRigId] = useState("");
@@ -373,16 +379,27 @@ export function PlayPanel({
     };
     // Esc releases pointer lock (the browser handles that key itself), which
     // pauses Play so every button is reachable again.
+    // Chromium reports the pointer's jump to the lock point as the first
+    // locked movement (hundreds of pixels), which spun a new explorer to face
+    // the sky. That event, and any other impossible single-event jump, is not
+    // a look.
+    let lockSettling = false;
     const lock = () => {
       setLocked(!!document.pointerLockElement);
+      lockSettling = !!document.pointerLockElement;
       if (!document.pointerLockElement && !play.getState().mechanismOverview)
         pause();
       else setLockRefused(false);
     };
     const lockError = () => setLockRefused(true);
     const mouse = (e: MouseEvent) => {
-      if (document.pointerLockElement)
-        play.look(e.movementX, e.movementY, mouseLook());
+      if (!document.pointerLockElement) return;
+      const jump = Math.max(Math.abs(e.movementX), Math.abs(e.movementY));
+      if (lockSettling || jump > 400) {
+        lockSettling = false;
+        return;
+      }
+      play.look(e.movementX, e.movementY, mouseLook());
     };
     // Wheel and trackpad pinch (ctrl+wheel) zoom the third-person camera.
     // Over the view or with the mouse captured, the page never scrolls or
@@ -686,7 +703,7 @@ export function PlayPanel({
     <>
       <button
         className="primary wide"
-        disabled={state.loading}
+        disabled={state.loading || modelLoad !== null}
         onClick={() => {
           wantLock.current = true;
           setLooked(false);
@@ -728,7 +745,13 @@ export function PlayPanel({
           );
         }}
       >
-        {state.loading ? "Preparing your world…" : "Enter Play"}
+        {state.loading
+          ? "Preparing your world…"
+          : loadPercent !== null
+            ? `Loading ${loadPercent}%`
+            : modelLoading
+              ? "Opening…"
+              : "Enter Play"}
       </button>
       {state.loading && <button onClick={() => play.exit()}>Cancel</button>}
       <p role="status">{message || state.error}</p>
@@ -748,7 +771,11 @@ export function PlayPanel({
         {!setupOpen && (
           <div className="play-entry">
             <div>
-              <strong>Ready to explore?</strong>
+              <strong>
+                {modelLoad !== null
+                  ? "Putting the bricks in place…"
+                  : "Ready to explore?"}
+              </strong>
               <p>Walk around at minifigure scale.</p>
             </div>
             <div className="play-entry-actions">
@@ -1381,12 +1408,8 @@ export function PlayPanel({
           </div>
         )}
       {rotateAsk && (
-        <div
-          className="play-rotate"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="play-rotate-title"
-        >
+        // A hint, not a gate: portrait Play works and some people prefer it.
+        <div className="play-rotate" role="status">
           <div className="play-rotate-card">
             <svg
               className="play-rotate-art"
@@ -1404,19 +1427,14 @@ export function PlayPanel({
                 <path d="M44 70h8" />
               </g>
             </svg>
-            <h2 id="play-rotate-title">Rotate your phone for the best view</h2>
-            <p>
-              Play fits best sideways: more of your build on screen, and a thumb
-              on each side.
-            </p>
+            <p>Turn your phone sideways for a wider view.</p>
             <button
-              autoFocus
               onClick={() => {
                 choosePortrait();
                 setRotateAsk(false);
               }}
             >
-              Play in portrait anyway
+              Keep portrait
             </button>
           </div>
         </div>

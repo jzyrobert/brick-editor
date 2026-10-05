@@ -227,10 +227,23 @@ a {
   border: 0;
   padding: 12px 4px;
   background: transparent;
-  min-height: 74px;
+  min-height: 64px;
 }
 .model-tools-menu > button:hover {
   background: #f0e6d7;
+}
+/* The view you are in: a pressed well and a "You're here" mark. */
+.model-tools-menu > button[aria-pressed="true"] {
+  background: var(--tab-well, #eee8dd);
+  border-radius: 12px;
+}
+.model-tools-menu > button[aria-pressed="true"] > .icon:last-child {
+  visibility: hidden;
+}
+.model-tools-menu > button[aria-pressed="true"] strong::after {
+  content: " · You’re here";
+  font-weight: 500;
+  color: var(--secondary);
 }
 .model-tool-icon {
   display: grid;
@@ -284,6 +297,22 @@ a {
 .workshop-app:has(.play-overlay) .model-tool-picker {
   width: auto;
 }
+/* The pause sheet starts below the Tools button that shares its corner. */
+@media (min-width: 651px) {
+  .workshop-app .play-menu {
+    top: calc(var(--play-top) + 56px);
+  }
+}
+/* Phones on their side: walking gets the full height; the header returns
+   with the pause sheet. */
+@media (max-height: 500px) and (min-width: 500px) {
+  .workshop-app:has(.play-overlay:not(.is-paused)) {
+    --site-h: var(--safe-top);
+  }
+  .workshop-app:has(.play-overlay:not(.is-paused)) .site-header {
+    display: none;
+  }
+}
 .workshop-app .hud-slab {
   border-width: 0;
 }
@@ -303,6 +332,10 @@ a {
 }
 .gallery-page button {
   min-height: 44px;
+}
+/* Headings take focus only to move screen readers to the new page. */
+.gallery-page h1[tabindex="-1"]:focus {
+  outline: none;
 }
 .gallery-prompts {
   padding: 15px max(36px, var(--safe-right)) 15px max(36px, var(--safe-left));
@@ -551,6 +584,28 @@ a {
   font-size: 12px;
   color: var(--secondary);
 }
+.gallery-open-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 650;
+}
+.gallery-open-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f48a4d;
+}
 .gallery-fit {
   position: absolute;
   bottom: 12px;
@@ -692,14 +747,16 @@ a {
 }
 .gallery-detail-stage {
   position: relative;
+  container-type: inline-size;
   border-radius: 16px;
   overflow: hidden;
 }
 .gallery-detail-stage > img {
   display: block;
   width: 100%;
-  height: calc(100dvh - 218px);
-  min-height: 430px;
+  /* No taller than square: tall tablets otherwise got a 1,500px stage. */
+  height: min(calc(100dvh - 218px), 100cqw);
+  min-height: min(430px, 100cqw);
   object-fit: contain;
   mix-blend-mode: multiply;
 }
@@ -1073,6 +1130,9 @@ a {
   }
 }
 @media (max-width: 760px) {
+  .model-agent {
+    display: none;
+  }
   .workshop-app {
     --site-h: calc(68px + var(--safe-top));
     --hud-top-h: 180px;
@@ -1498,4 +1558,86 @@ a {
     animation: none !important;
     scroll-behavior: auto !important;
   }
+}
+/* Portrait tablets stack the detail page like phones, with a larger stage. */
+@media (orientation: portrait) and (min-width: 761px) and (max-width: 1100px) {
+  .gallery-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .gallery-detail-stage > img {
+    height: min(100cqw, 58dvh);
+    min-height: 0;
+  }
+  .gallery-detail-info h1 {
+    max-width: none;
+  }
+}
+/* Phones on their side: the stage beside the facts, with Explore in view. */
+@media (max-height: 500px) and (min-width: 500px) and (orientation: landscape) {
+  .gallery-detail {
+    padding-top: 8px;
+  }
+  .gallery-back {
+    margin-bottom: 8px;
+  }
+  .gallery-detail-layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+  }
+  .gallery-detail-stage,
+  .gallery-detail-stage > img {
+    height: calc(100dvh - var(--site-h) - 72px);
+    min-height: 0;
+  }
+  .gallery-detail-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .gallery-detail-info h1,
+  .gallery-detail-info h1.long {
+    order: -2;
+    font-size: 26px;
+    margin: 0 0 6px;
+  }
+  /* The action comes before the description and facts. */
+  .gallery-detail-info .gallery-explore {
+    order: -1;
+    margin: 0 0 10px;
+  }
+  .gallery-detail-info > p:not(.gallery-source),
+  .gallery-detail-info dl {
+    font-size: 12px;
+    margin: 6px 0;
+  }
+}
+.workspace-crash {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: start;
+  gap: 12px;
+  padding: 24px max(24px, var(--safe-left));
+  background: var(--paper);
+  color: var(--ink);
+}
+.workspace-crash h1 {
+  margin: 0;
+  font: 750 35px/1.1 var(--font-display);
+  letter-spacing: -0.03em;
+}
+.workspace-crash p {
+  margin: 0;
+  max-width: 44ch;
+  line-height: 1.5;
+  color: var(--secondary);
+}
+.workspace-crash .workspace-crash-detail {
+  font-size: 12px;
+}
+.workspace-crash button {
+  min-height: 44px;
+  padding: 0 20px;
 }

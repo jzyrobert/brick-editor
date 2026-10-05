@@ -14,7 +14,7 @@ export async function enterPlay(page: Page, name = "Enter Play") {
 
 export async function dismissRotatePrompt(page: Page) {
   const portrait = page.getByRole("button", {
-    name: "Play in portrait anyway",
+    name: "Keep portrait",
   });
   if (await portrait.isVisible()) await portrait.click();
 }

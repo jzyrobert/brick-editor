@@ -3735,6 +3735,11 @@ export class SceneAdapter {
   }
   private framesHeldUntil = 0;
   private frameHeld = false;
+  /** Keeps orbiting above the ground: no turning up through the baseplate
+   * (the Gallery's preview, where nothing is edited from below). */
+  limitOrbitAboveGround() {
+    this.controls.maxPolarAngle = THREE.MathUtils.degToRad(85);
+  }
   resize() {
     const w = this.element.clientWidth,
       h = this.element.clientHeight;

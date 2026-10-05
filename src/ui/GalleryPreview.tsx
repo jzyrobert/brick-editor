@@ -51,6 +51,7 @@ export function GalleryPreview({
       const scene = new SceneAdapter(host.current, () => {});
       adapter.current = scene;
       scene.setGridVisible(false);
+      scene.limitOrbitAboveGround();
       scene.setLook("realistic");
       scene.requestFitOnFirstParts();
       scene.update(project, { owned: true });
@@ -92,7 +93,15 @@ export function GalleryPreview({
     };
     const aspect =
       host.current.clientWidth / host.current.clientHeight || 4 / 3;
-    scene.setCamera(viewCamera(bounds, angle, aspect));
+    // Lift the build a little in its stage so the angle tabs along the
+    // bottom never cover it (LDraw's +Y is down).
+    const view = viewCamera(bounds, angle, aspect);
+    const lift = f.radius * 0.16;
+    scene.setCamera({
+      ...view,
+      position: [view.position[0], view.position[1] + lift, view.position[2]],
+      target: [view.target[0], view.target[1] + lift, view.target[2]],
+    });
   }, [angle, ready]);
   return (
     <div

@@ -15,7 +15,7 @@ import { ExportProfiles } from "./ExportProfiles";
 import { ModelTools } from "./ModelTools";
 import { Gallery, type GallerySource } from "./Gallery";
 import {
-  MODEL_TOOLS,
+  MODEL_VIEWS,
   galleryPrompts,
   type GalleryEntry,
   type ModelTool,
@@ -142,6 +142,7 @@ import { BrowserPlay } from "../play/browser";
 import { PlayPanel } from "./PlayPanel";
 import { ModeMenu } from "./ModeMenu";
 import {
+  Component,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -149,6 +150,7 @@ import {
   useState,
   useSyncExternalStore,
   type PointerEvent as ReactPointerEvent,
+  type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
 import { Editor } from "../core/commands";
@@ -481,8 +483,36 @@ export default function App() {
       enqueueSave={enqueueSourceSave}
     />
   ) : (
-    <Workspace key={workspaceEpoch} />
+    <WorkspaceBoundary>
+      <Workspace key={workspaceEpoch} />
+    </WorkspaceBoundary>
   );
+}
+/** One renderer or panel throw must not blank the whole page. */
+class WorkspaceBoundary extends Component<
+  { children: ReactNode },
+  { error?: Error }
+> {
+  state: { error?: Error } = {};
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  render() {
+    if (!this.state.error) return this.props.children;
+    return (
+      <main className="workspace-crash" role="alert">
+        <h1>Something went wrong.</h1>
+        <p>
+          Your build is saved on this device. Reload to carry on where you left
+          off.
+        </p>
+        <p className="workspace-crash-detail">{this.state.error.message}</p>
+        <button className="primary" onClick={() => location.reload()}>
+          Reload
+        </button>
+      </main>
+    );
+  }
 }
 function Workspace() {
   const [galleryOpen, setGalleryOpen] = useState(
@@ -4118,7 +4148,65 @@ function Workspace() {
       renderer={renderer.current}
     />
   );
+  // Browser history mirrors Gallery → detail → model, so Back (and a
+  // phone's back gesture) steps out instead of leaving the site.
+  type GalleryNav =
+    | { view: "grid" }
+    | { view: "detail"; id: string }
+    | { view: "model" };
+  const navDepth = useRef(0);
+  const pushNav = (nav: GalleryNav) => {
+    navDepth.current++;
+    history.pushState(
+      { ...history.state, brickNav: nav, brickDepth: navDepth.current },
+      "",
+    );
+  };
+  /** Steps back through our own entries, or runs `fallback` at the first. */
+  const navBack = (fallback: () => void) => {
+    if (navDepth.current > 0) history.back();
+    else fallback();
+  };
+  useEffect(() => {
+    history.replaceState(
+      {
+        ...history.state,
+        brickNav: galleryOpenRef.current
+          ? galleryDetail
+            ? { view: "detail", id: galleryDetail }
+            : { view: "grid" }
+          : { view: "model" },
+        brickDepth: 0,
+      },
+      "",
+    );
+    const restore = (event: PopStateEvent) => {
+      const nav = event.state?.brickNav as GalleryNav | undefined;
+      if (!nav) return;
+      navDepth.current = event.state.brickDepth ?? 0;
+      if (nav.view === "model") {
+        setModesOpen(false);
+        setGalleryOpen(false);
+        return;
+      }
+      play.current?.exit();
+      mechanisms.current?.exit();
+      setModesOpen(false);
+      setGalleryDetail(nav.view === "detail" ? nav.id : undefined);
+      setGalleryOpen(true);
+    };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+  const showDetail = (id?: string) => {
+    if (id) {
+      pushNav({ view: "detail", id });
+      setGalleryDetail(id);
+    } else navBack(() => setGalleryDetail(undefined));
+  };
   const enterMode = (m: typeof mode) => {
+    if (galleryOpenRef.current) pushNav({ view: "model" });
+    galleryOpenRef.current = false;
     setGalleryOpen(false);
     setModesOpen(false);
     if (m === mode) return;
@@ -4139,6 +4227,8 @@ function Workspace() {
     return () => document.removeEventListener("keydown", close);
   }, [modesOpen]);
   const showGallery = () => {
+    if (!galleryOpenRef.current || galleryDetail) pushNav({ view: "grid" });
+    galleryOpenRef.current = true;
     play.current?.exit();
     mechanisms.current?.exit();
     setModesOpen(false);
@@ -4176,6 +4266,11 @@ function Workspace() {
     destination: ModelTool | "Play",
   ) {
     if (galleryPending) return;
+    // The open document already is this build's copy: resume it.
+    if (currentGalleryModel?.id === entry.id) {
+      enterMode(destination);
+      return;
+    }
     setGalleryPending(entry.id);
     setGalleryError("");
     try {
@@ -4205,6 +4300,8 @@ function Workspace() {
           setSelectionSafe([]);
           setPanel("Canvas");
           enterMode(destination);
+          // The document is open: drawing it must not hold the gallery.
+          setGalleryPending(undefined);
           await renderer.current?.ready();
           renderer.current?.fit();
           setStatus(
@@ -4472,18 +4569,25 @@ function Workspace() {
             Gallery
           </button>
           <button
-            aria-pressed={!galleryOpen}
+            aria-pressed={!galleryOpen && mode === "Play"}
             disabled={!!galleryPending}
             onClick={() => {
               void run(async () => {
                 await applicationAPI.ready();
-                // An empty canvas walks the first published build instead.
-                const first =
+                // From a detail page, Play walks the build on screen; an
+                // empty canvas walks the first published build instead.
+                const builds =
                   gallerySource.state === "ready"
-                    ? gallerySource.prompts[0]?.entries[0]
-                    : undefined;
-                if (galleryOpen && first && !occurrences(editor.project).length)
-                  await openGalleryModel(first, "Play");
+                    ? gallerySource.prompts.flatMap((p) => p.entries)
+                    : [];
+                const target = galleryOpen
+                  ? galleryDetail
+                    ? builds.find((e) => e.id === galleryDetail)
+                    : occurrences(editor.project).length
+                      ? undefined
+                      : builds[0]
+                  : undefined;
+                if (target) await openGalleryModel(target, "Play");
                 else enterMode("Play");
               });
             }}
@@ -4506,7 +4610,8 @@ function Workspace() {
           onRetry={() => setGalleryAttempt((n) => n + 1)}
           maxBytes={resourceLimits(editor.resourceProfile).importBytes}
           detailId={galleryDetail}
-          onDetail={setGalleryDetail}
+          onDetail={showDetail}
+          openId={currentGalleryModel?.id}
           onOpen={(s, m) => void openGalleryModel(s, m)}
           onImport={() => fileInput.current?.click()}
           pending={galleryPending}
@@ -4516,18 +4621,25 @@ function Workspace() {
       {!galleryOpen && (
         <div className="model-context">
           <div className="model-heading">
-            <button aria-label="Back to gallery" onClick={showGallery}>
+            <button
+              aria-label="Back to gallery"
+              onClick={() => navBack(showGallery)}
+            >
               <Icon name="arrowLeft" size={18} />
             </button>
             <div>
               <strong>{currentGalleryModel?.title ?? project.title}</strong>
               <span>
-                {currentGalleryModel
-                  ? `${currentGalleryModel.agent} · ` +
-                    (currentGalleryModel.effort
+                {currentGalleryModel && (
+                  <>
+                    <span className="model-agent">
+                      {currentGalleryModel.agent} ·{" "}
+                    </span>
+                    {currentGalleryModel.effort
                       ? `${currentGalleryModel.effort} effort · `
-                      : "")
-                  : ""}
+                      : ""}
+                  </>
+                )}
                 {all.length.toLocaleString("en")} parts
               </span>
             </div>
@@ -4563,7 +4675,7 @@ function Workspace() {
                   </button>
                 </div>
                 <p>A whole workshop, whenever you need it.</p>
-                {MODEL_TOOLS.map((t) => (
+                {MODEL_VIEWS.map((t) => (
                   <button
                     key={t.name}
                     aria-label={t.name}
@@ -5495,7 +5607,9 @@ function Workspace() {
               layers={project.layers}
               rigs={project.motionRigs}
               playHint={project.scene?.playHint}
-              exit={() => setMode("Build")}
+              // Stay on the model with the entry dock, ready to walk again.
+              exit={() => {}}
+              modelLoading={busy || !!galleryPending}
               bookmark={() => {
                 const view = play.current!.camera();
                 command("camera.bookmark", {

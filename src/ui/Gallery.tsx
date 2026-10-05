@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   GALLERY_ANGLES,
   MODEL_TOOLS,
@@ -27,15 +27,17 @@ type Props = {
   onImport: () => void;
   /** This device's import limit (the 3D preview checks against it). */
   maxBytes: number;
+  /** The build open as the current document. */
+  openId?: string;
 };
 const count = (n: number) => n.toLocaleString("en");
 const agentLabel = (e: GalleryEntry) =>
   e.effort ? `${e.agent}, ${e.effort} effort` : e.agent;
-/** Phones and touch tablets start the detail page on its still pictures, and
- * load the 3D view on request (data and battery). */
+/** The detail page opens in live 3D everywhere; only a browser asking to
+ * save data starts on the still pictures and loads 3D on request. */
 const startsStill = () =>
-  typeof matchMedia === "function" &&
-  matchMedia("(pointer: coarse), (max-width: 760px)").matches;
+  !!(navigator as Navigator & { connection?: { saveData?: boolean } })
+    .connection?.saveData;
 
 function Angles({
   value,
@@ -92,6 +94,7 @@ function DetailStage({
   const [state, setState] = useState<{ s: PreviewState; message?: string }>({
     s: "loading",
   });
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     setAngle("iso");
     setLive(!startsStill());
@@ -106,6 +109,7 @@ function DetailStage({
       <ModelImage entry={entry} angle={angle} />
       {live && state.s !== "failed" && (
         <GalleryPreview
+          key={attempt}
           entry={entry}
           angle={angle}
           maxBytes={maxBytes}
@@ -130,10 +134,21 @@ function DetailStage({
           </span>
         )}
         {live && state.s === "failed" && (
-          <span className="gallery-stage-note" role="status">
-            The 3D view could not load ({state.message?.replace(/\.$/, "")}).
-            The pictures are still here.
-          </span>
+          <>
+            <span className="gallery-stage-note" role="status">
+              The 3D view could not load. The pictures are still here.
+            </span>
+            <button
+              className="gallery-spin"
+              onClick={() => {
+                setState({ s: "loading" });
+                setAttempt((n) => n + 1);
+              }}
+            >
+              <Icon name="rotate" size={18} />
+              Try again
+            </button>
+          </>
         )}
       </div>
       <Angles value={angle} onChange={setAngle} />
@@ -151,6 +166,7 @@ export function Gallery({
   error,
   onImport,
   maxBytes,
+  openId,
 }: Props) {
   const prompts = source.state === "ready" ? source.prompts : [];
   const [promptId, setPromptId] = useState("");
@@ -161,6 +177,23 @@ export function Gallery({
   const [hidden, setHidden] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  const page = useRef<HTMLElement>(null);
+  const gridScroll = useRef(0);
+  useLayoutEffect(() => {
+    // A detail page opens at its top; the list comes back where it was.
+    const el = page.current;
+    if (el) el.scrollTop = detailId ? 0 : gridScroll.current;
+  }, [detailId]);
+  useEffect(() => {
+    if (!detailId) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      event.preventDefault();
+      onDetail(undefined);
+    };
+    document.addEventListener("keydown", close);
+    return () => document.removeEventListener("keydown", close);
+  }, [detailId, onDetail]);
   const prompt = prompts.find((p) => p.id === promptId) ?? prompts[0];
   const entries = prompt?.entries ?? [];
   const all = prompts.flatMap((p) => p.entries.map((e) => ({ p, e })));
@@ -247,7 +280,14 @@ export function Gallery({
       </main>
     );
   return (
-    <main className="gallery-page" aria-label="Agent model gallery">
+    <main
+      ref={page}
+      className="gallery-page"
+      aria-label="Agent model gallery"
+      onScroll={(e) => {
+        if (!detailId) gridScroll.current = e.currentTarget.scrollTop;
+      }}
+    >
       {error && (
         <div className="gallery-error" role="alert">
           {error} Try opening the model again.
@@ -504,6 +544,9 @@ export function Gallery({
                           {s.effort && <small>{s.effort} effort</small>}
                         </span>
                       </div>
+                      {openId === s.id && (
+                        <span className="gallery-open-badge">Open now</span>
+                      )}
                       <button
                         className="gallery-fit"
                         aria-label={`Look closer at ${s.title}`}
@@ -530,7 +573,8 @@ export function Gallery({
                         onClick={() => onOpen(s, "Play")}
                       >
                         <Icon name="resume" size={16} />
-                        Explore<span className="sr-only"> {s.title}</span>
+                        {openId === s.id ? "Continue" : "Explore"}
+                        <span className="sr-only"> {s.title}</span>
                       </button>
                     </div>
                   </article>

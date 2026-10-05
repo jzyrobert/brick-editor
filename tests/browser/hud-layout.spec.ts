@@ -309,13 +309,12 @@ for (const viewport of [
     await openMode(page, "Play");
     await button("Enter Play").click();
     await expect(button("Pause")).toBeVisible({ timeout: 30000 });
-    const rotate = page.getByRole("dialog", {
-      name: "Rotate your phone for the best view",
-    });
-    // Only a phone held upright is asked to rotate.
+    const rotate = page.locator(".play-rotate");
+    // Only a phone held upright is offered the rotate hint, which sits
+    // beside the walking controls rather than over them.
     await expect(rotate).toHaveCount(portrait ? 1 : 0);
     if (portrait) {
-      await check("rotate prompt", [".play-rotate-card"]);
+      await check("rotate hint", [...PLAY_SLOTS, ".play-rotate-card"]);
       await dismissRotatePrompt(page);
       await expect(rotate).toHaveCount(0);
     }

@@ -16,6 +16,14 @@ const subscribe = (listener: () => void) => {
   return () => void listeners.delete(listener);
 };
 
+/** The loading model's percentage, or null when nothing is loading. */
+export function useLoadPercent() {
+  const progress = useSyncExternalStore(subscribe, () => current);
+  return progress
+    ? Math.round((100 * progress.done) / Math.max(1, progress.total))
+    : null;
+}
+
 /** A thin bar and percentage in the status bar while a model loads. The
  * status bar (a transient toast) stays shown until loading ends. */
 export function LoadProgressIndicator() {
