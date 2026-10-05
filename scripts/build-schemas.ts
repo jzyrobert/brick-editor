@@ -1344,6 +1344,7 @@ const playRequest = obj(
     dynamicRigIds: { ...arr(id, 14), uniqueItems: true },
     autoDoors: { type: "boolean" },
     trains: { type: "boolean" },
+    pneumatics: { type: "boolean" },
     locomotion: { enum: ["walk", "fly-noclip"] },
     cameraMode: { enum: ["first-person", "third-person"] },
     position: vec,
@@ -1407,6 +1408,52 @@ const playMotorRequest = obj(
   },
   ["jointId", "enabled"],
 );
+const pneumaticValvePosition = { enum: ["out", "hold", "in"] };
+const playPneumaticRequest = obj(
+  {
+    rigId: id,
+    pumping: { type: "boolean" },
+    pumpId: occurrenceId,
+    valves: { ...dictionary(pneumaticValvePosition), maxProperties: 16 },
+  },
+  [],
+);
+const unit01 = { type: "number", minimum: 0, maximum: 1 };
+const playPneumaticReport = obj({
+  profile: { const: "source-pneumatic-circuit-v1" },
+  pumps: arr(
+    obj({
+      id: occurrenceId,
+      pumping: { type: "boolean" },
+      strokes: { type: "integer", minimum: 0 },
+      status: { enum: ["idle", "pumping", "stalled"] },
+      pushedIn: unit01,
+    }),
+    8,
+  ),
+  pressure: obj({ supplyGaugePa: num, level: unit01 }),
+  valves: arr(
+    obj(
+      {
+        id: occurrenceId,
+        cylinderId: occurrenceId,
+        position: pneumaticValvePosition,
+      },
+      ["id", "position"],
+    ),
+    16,
+  ),
+  cylinders: arr(
+    obj({
+      id: occurrenceId,
+      extension: unit01,
+      extensionLdu: num,
+      strokeLdu: num,
+      moving: { type: "boolean" },
+    }),
+    16,
+  ),
+});
 const playGripTarget = obj({ rigId: id, groupId: id });
 const playGripRequest = obj({ rigId: id, gripperId: id });
 const playGrabRequest = obj({
@@ -1588,6 +1635,9 @@ playSnapshot.properties.autoDoors = obj({
   ),
   skipped: arr(obj({ occurrenceId, part: id, reason: str })),
 });
+playSnapshot.properties.pneumatics = obj({
+  skipped: arr(obj({ occurrenceId: str, part: str, reason: str }), 1000),
+});
 const trackEnd = obj({ occurrenceId, end: integer });
 playSnapshot.properties.trains = obj(
   {
@@ -1683,6 +1733,7 @@ playSnapshot.properties.mechanism = obj(
     pose: mechanismPose,
     motors: dictionary(playMotorReport),
     dynamics: playDynamicsReport,
+    pneumatic: playPneumaticReport,
     grippers: dictionary(playGripperReport),
     groupFrames: dictionary(transform),
     transforms: dictionary(transform),
@@ -1744,6 +1795,7 @@ const api = {
     "play.setInput": { $ref: "playInput" },
     "play.setJointTarget": { $ref: "playJointTarget" },
     "play.setMotor": { $ref: "playMotorRequest" },
+    "play.setPneumatic": { $ref: "playPneumaticRequest" },
     "play.grab": { $ref: "playGrabRequest" },
     "play.release": { $ref: "playGripRequest" },
     "play.setTrainThrottle": { $ref: "playTrainThrottle" },
@@ -1952,6 +2004,7 @@ const schemas = {
   playInput,
   playJointTarget,
   playMotorRequest,
+  playPneumaticRequest,
   playGrabRequest,
   playGripRequest,
   playTrainThrottle,

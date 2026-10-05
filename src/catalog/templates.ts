@@ -5,6 +5,7 @@ import {
   physicsFixture,
 } from "../mechanisms/fixtures";
 import { doorRoomSource } from "./door-room";
+import { AIR_PUMP_SAMPLE, airPumpProject } from "./air-pump-sample";
 import { houseSource } from "./builds/house";
 import { castleProject } from "./builds/castle";
 import { carProject } from "./builds/car";
@@ -32,6 +33,7 @@ export const TEMPLATE_BACKDROPS: Partial<Record<TemplateName, BackdropName>> = {
   "twin-drive": "studio",
   "motor-gears": "studio",
   "rack-drive": "studio",
+  "air-pump": "studio",
   house: "grass",
   castle: "grass",
   windmill: "grass",
@@ -54,6 +56,7 @@ export function template(name: TemplateName) {
 function templateProject(name: TemplateName) {
   if (isMotionSample(name)) return motionSample(name);
   if (isScriptTemplate(name)) return scriptTemplateProject(name);
+  if (name === AIR_PUMP_SAMPLE.name) return airPumpProject();
   if (name === "house") {
     const project = importLDraw(houseSource(), "house-with-garden.mpd");
     project.title = "House with garden";

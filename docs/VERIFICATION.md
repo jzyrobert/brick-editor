@@ -1,5 +1,30 @@
 # Verification — 27 September 2026
 
+## Air circuits in ordinary Play — 5 October 2026
+
+Six focused engine checks (`tests/unit/play-pneumatic-air-pump.test.ts`) pass
+in about 12 s on the shared VM: the sample derives one circuit (four groups, three
+tubes, six ports, reviewed 1,533- and 2,263-triangle surfaces); in a real
+`PlaySession` a closed valve lets the hand fill the supply tube and stall,
+**Push out** moves the rod over 80% of its stroke within 1,500 ticks with its
+rendered leaves following, **Hold** keeps it within 5% and **Pull in** returns it
+below 10%; a static obstacle stops it at 23% with full pressure reported; a
+removed tube, a 2947 cylinder, a missing pump or pump rod and a rod outside its
+guide are each refused with their reason; the committed sample matches its
+generator. Three presentation checks cover the plain-word readings.
+
+In the production bundle, `tests/browser/play-air-pump.spec.ts` passes on
+desktop and 390 × 844 phone emulation (Controls **Pump** and **Push out** push
+the Dynamic crate over 20 LDU and extend the rod past 60% in 1,800 ticks;
+**Pull in** returns it below 15%; closing lets go of the pump; LDraw export is
+unchanged) and **Static build** keeps the circuit still. The menus, motion
+sample, Large motor, mechanism controls, offline and physics specs also pass (26
+tests). Controls were checked at 1080 × 1800, 390 × 844, 360 × 600, 686 × 411
+and 1440 × 1000 with every sheet button at least 44 px. A private run measured
+1.2–2.1 ms per tick (snapshots included) and about 1 s for entry in SwiftShader
+Chromium; no phone-hardware measurement was made. The full Vitest suite (275
+files, 1,856 tests), `tsc -b`, `format:check` and `library:validate` pass.
+
 ## Technic worktree checkpoints — 5 October 2026
 
 The active, unpublished systems branch verifies motor status without continuous

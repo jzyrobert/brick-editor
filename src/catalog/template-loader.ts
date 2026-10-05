@@ -1,5 +1,10 @@
 import { isMotionSample } from "./motion-sample-specs";
 import { template } from "./templates";
+import {
+  AIR_PUMP_SAMPLE,
+  airPumpSourceLoaded,
+  registerAirPumpSource,
+} from "./air-pump-sample";
 import type { TemplateName } from "./template-names";
 import {
   loadFullLibraryIndex,
@@ -25,9 +30,16 @@ export async function loadTemplate(name: TemplateName) {
     );
     registerScriptTemplateSource(name, await fetchScriptTemplateSource(name));
   }
+  // The air pump sample's LDraw text (with its embedded definitions) also
+  // loads on demand; its pneumatic parts come from the complete library.
+  if (name === AIR_PUMP_SAMPLE.name && !airPumpSourceLoaded()) {
+    const { fetchAirPumpSource } = await import("./air-pump-url");
+    registerAirPumpSource(await fetchAirPumpSource());
+  }
   // Reviewed Technic proposals require source identities from the full index
   // before their rigs can be authored, including the first open in a fresh tab.
-  if (isMotionSample(name)) await loadFullLibraryIndex();
+  if (isMotionSample(name) || name === AIR_PUMP_SAMPLE.name)
+    await loadFullLibraryIndex();
   const first = template(name);
   if (!unresolvedCuratedRefs(first).size) return first;
   try {

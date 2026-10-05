@@ -1,3 +1,4 @@
+import { sourceStamp } from "../mechanisms/frozen-source";
 import { directReferences } from "../catalog/full-pack";
 import { sha256 } from "../core/hash";
 import { inverse, mv, nearlyPhysical, orthonormalized } from "../core/math";
@@ -37,7 +38,7 @@ type Seal = {
   rod: { frame: Transform; surface: PneumaticCylinderSurface };
 };
 const seals = new WeakMap<PreparedPneumaticCylinder, Seal>();
-function stamp(p: Project) {
+function fullStamp(p: Project) {
   let bytes = 0;
   const data = Object.entries(p.models).map(([id, m]) => {
     const row = JSON.stringify([id, m.name, m.nodes, m.records]);
@@ -51,6 +52,9 @@ function stamp(p: Project) {
   });
   return JSON.stringify(data);
 }
+/** Frozen Play snapshots are stamped once; other projects every time. */
+const stamp = (project: Project) =>
+  sourceStamp(project, "cylinder", () => fullStamp(project));
 const refs = ["42043 - 19466c01.dat", "42043 - 19467c01.dat"] as const;
 /** Narrow embedded 2015 V2 profile; no filename-only or nearest-part match. */
 export async function prepareSourcePneumaticCylinder(

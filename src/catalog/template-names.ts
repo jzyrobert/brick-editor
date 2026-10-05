@@ -21,6 +21,7 @@ export const SAMPLE_TEMPLATES = [
   "large-motor",
   "twin-drive",
   "rack-drive",
+  "air-pump",
 ] as const;
 /**
  * Older technical starts kept only as test fixtures for the automation API
@@ -65,6 +66,7 @@ export const TEMPLATE_CARDS: { name: SampleTemplateName; title: string }[] = [
   { name: "large-motor", title: "Large motor" },
   { name: "twin-drive", title: "Twin motor table" },
   { name: "rack-drive", title: "Rack guide" },
+  { name: "air-pump", title: "Air pump & cylinder" },
   { name: "blank", title: "Blank canvas" },
 ];
 /** The sample the welcome card opens. */

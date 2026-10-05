@@ -20,6 +20,7 @@ import type {
   PlayLocomotion,
   PlayTeleportRequest,
   PlayMotorRequest,
+  PlayPneumaticRequest,
   PlayGrabRequest,
   PlayGripRequest,
 } from "../play/types";
@@ -326,6 +327,13 @@ export function createAPI(
       setMotor: async (input: PlayMotorRequest) => {
         validateRequest("playMotorRequest", input);
         return player().setMotor(input);
+      },
+      /** Hold the pump (pumping) or set valves of an admitted air circuit. */
+      setPneumatic: async (input: PlayPneumaticRequest) => {
+        validateRequest("playPneumaticRequest", input);
+        const report = player().setPneumatic(input);
+        validate("playSnapshot", report);
+        return report;
       },
       grab: async (input: PlayGrabRequest) => {
         validateRequest("playGrabRequest", input);

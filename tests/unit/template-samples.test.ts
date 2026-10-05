@@ -117,6 +117,7 @@ describe("sample builds", () => {
         "large-motor",
         "twin-drive",
         "rack-drive",
+        "air-pump",
       ].sort(),
     );
     expect(SHOWCASE_TEMPLATE).toBe("cafe");

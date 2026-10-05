@@ -32,6 +32,7 @@ import type {
   PlaySpawnRequest,
   PlaySeatRequest,
   PlayMotorRequest,
+  PlayPneumaticRequest,
   PlayGrabRequest,
   PlayGripRequest,
   PlayPosedModel,
@@ -53,10 +54,19 @@ import type { CollisionSnapshot } from "./types";
 import type { DynamicRigSource } from "./dynamics";
 import { BrickAvatar, loadAvatarGeometry } from "./avatar";
 import {
+  loadFullSources,
   prepareFullLibrary,
   unresolvedCuratedRefs,
 } from "../catalog/full-library-loader";
-import { fullLibraryGeneration } from "../catalog/full-library";
+import { fullLibraryGeneration, fullSource } from "../catalog/full-library";
+import { curatedGeometrySource } from "../catalog/geometry-sources";
+import {
+  derivePneumaticPlay,
+  PNEUMATIC_PLAY_LIBRARY_ROOTS,
+  pneumaticViewBounds,
+  preparePneumaticPlay,
+} from "./pneumatic-play-source";
+import type { PlayPneumaticSource } from "./session";
 import { PLAY_CAMERA_LIMITS } from "./types";
 import { vehicleReachDistance } from "./vehicle-possession";
 import { PF_LARGE_MOTOR_PROFILE } from "../mechanisms/pf-large-motor-binding";
@@ -439,13 +449,84 @@ export class BrowserPlay {
           motionRigs: { ...sourceProject!.motionRigs, ...vehicles.rigs },
         };
       }
+      // A complete reviewed air circuit (session-only rig). Its pump case,
+      // rods and cylinder bodies become native bodies; refusals keep every
+      // part in the static world with a reason.
+      let pneumatic: PlayPneumaticSource | undefined;
+      if (project && request.pneumatics !== false) {
+        const found = derivePneumaticPlay(project, {
+          all,
+          included: worldProfile
+            ? new Set(worldProfile.includedOccurrenceIds)
+            : undefined,
+          reserved: new Set([
+            ...ids,
+            ...(trains?.occurrenceIds ?? []),
+            ...Object.values(project.motionRigs ?? {}).flatMap((rig) =>
+              rig.groups.flatMap((group) => group.occurrenceIds),
+            ),
+          ]),
+        });
+        if (found.systems.length || found.skipped.length) {
+          pneumatic = { meshes: {}, skipped: [...found.skipped] };
+          const candidate = found.systems[0];
+          if (candidate)
+            try {
+              await loadFullSources(PNEUMATIC_PLAY_LIBRARY_ROOTS);
+              ensure(
+                epoch === this.epoch,
+                "INVALID_INPUT",
+                "Play entry cancelled",
+              );
+              pneumatic.prepared = await preparePneumaticPlay(
+                project,
+                candidate,
+                (name) => curatedGeometrySource(name) ?? fullSource(name),
+              );
+            } catch (e) {
+              ensure(
+                epoch === this.epoch,
+                "INVALID_INPUT",
+                "Play entry cancelled",
+              );
+              const reason = e instanceof Error ? e.message : String(e);
+              for (const pump of candidate.pumps)
+                pneumatic.skipped.push({
+                  occurrenceId: pump.owners[0],
+                  part: "42043 - 2943-v2.dat",
+                  reason: `The air circuit stays still: ${reason}`,
+                });
+            }
+          ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+        }
+      }
+      const pneumaticRig = pneumatic?.prepared?.candidate.rig;
       const [{ PlaySession }, geometry] = await Promise.all([
         import("./session"),
         r.playGeometry({
           include: worldProfile?.includedOccurrenceIds,
-          exclude: [...ids, ...(trains?.occurrenceIds ?? [])],
+          exclude: [
+            ...ids,
+            ...(trains?.occurrenceIds ?? []),
+            ...(pneumatic?.prepared?.candidate.movingOccurrenceIds ?? []),
+          ],
         }),
       ]);
+      if (pneumaticRig) {
+        for (const group of pneumaticRig.groups) {
+          pneumatic!.meshes[group.id] = await r.playGeometry({
+            include: group.occurrenceIds,
+          });
+          ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+        }
+        this.mechanismViews[pneumaticRig.id] = mechanismViewGeometry(
+          pneumaticRig,
+          pneumaticViewBounds(
+            pneumatic!.prepared!.candidate,
+            pneumatic!.meshes,
+          ),
+        );
+      }
       const trainMeshes: Record<string, CollisionSnapshot> = {};
       for (const train of trains?.trains ?? [])
         for (const [i, car] of train.cars.entries()) {
@@ -620,6 +701,7 @@ export class BrowserPlay {
           ? { doors: derived.doors, skipped: derived.skipped }
           : undefined,
         trains ? { derived: trains, meshes: trainMeshes } : undefined,
+        pneumatic,
       );
       if (epoch !== this.epoch) {
         session.dispose();
@@ -650,9 +732,12 @@ export class BrowserPlay {
         ...Object.fromEntries(authored.map((rig) => [rig.id, rig])),
         ...doorRigs,
         ...vehicles?.rigs,
+        ...(pneumaticRig && session.snapshot().mechanisms?.[pneumaticRig.id]
+          ? { [pneumaticRig.id]: pneumaticRig }
+          : {}),
       };
       this.held = {};
-      if (rigs.length || trains?.trains.length)
+      if (rigs.length || trains?.trains.length || pneumaticRig)
         this.restorePose ??= r.beginTransientPose();
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
@@ -1252,6 +1337,14 @@ export class BrowserPlay {
   setMotor(request: PlayMotorRequest) {
     this.assertMutable();
     const report = this.current().setMotor(request);
+    this.draw();
+    this.emit();
+    return report;
+  }
+  /** Hold the pump or set a valve of an admitted air circuit. */
+  setPneumatic(request: PlayPneumaticRequest) {
+    this.assertMutable();
+    const report = this.current().setPneumatic(request);
     this.draw();
     this.emit();
     return report;

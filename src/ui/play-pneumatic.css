@@ -1,0 +1,74 @@
+/* ---- Air circuit (pump, valve and cylinder) inside the Controls sheet ---- */
+/* Label, meter and plain reading share one row so the pump and valve stay
+   within the phone sheet without scrolling. */
+.play-air-row {
+  display: grid;
+  grid-template-columns: auto minmax(48px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 8px;
+  font-size: var(--text-body);
+}
+.play-air-row output {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.play-air-meter {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--tab-well);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.play-air-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 120ms linear;
+}
+.play-mechanism .play-air-pump {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  margin: 0 0 6px;
+  border: 0;
+  border-radius: var(--r-key);
+  background: var(--accent);
+  color: var(--card);
+  font-size: var(--text-body);
+  font-weight: 700;
+  touch-action: manipulation;
+}
+.play-mechanism .play-air-pump:hover {
+  background: var(--accent-deep);
+}
+/* Pumping: the latched hand shows on navy, like a held HUD control. */
+.play-mechanism .play-air-pump[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--chalk);
+}
+.play-air .play-drive-feedback {
+  margin: 0 0 4px;
+}
+.play-air-valve button {
+  min-height: 44px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .play-air-meter > span {
+    transition: none;
+  }
+}
+/* Short screens (small phones, landscape): a lower pump keeps the valve
+   on screen. */
+@media (max-height: 700px) {
+  .play-mechanism .play-air-pump {
+    min-height: 44px;
+  }
+  .play-air-row {
+    margin: 8px 0 6px;
+  }
+}
