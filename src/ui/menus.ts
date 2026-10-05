@@ -46,6 +46,7 @@ export const MENUS: Record<MenuKey, MenuEntry[]> = {
   ],
   Photo: [
     { id: "download", label: "Download picture", pin: true },
+    { id: "look", label: "Look", tab: "Picture" },
     { id: "size", label: "Picture size", tab: "Picture" },
     { id: "views", label: "Saved views", tab: "Saved views" },
     { id: "exact", label: "Exact camera position", tab: "Saved views" },

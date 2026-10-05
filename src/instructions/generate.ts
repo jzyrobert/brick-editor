@@ -301,7 +301,7 @@ export function generateInstructions(
     "INVALID_INPUT",
     "Heuristic steps support 1–20 new parts.",
   );
-  const name = options.name ?? "Heuristic build";
+  const name = options.name ?? "Suggested steps";
   ensure(
     typeof name === "string" && name.trim().length > 0 && name.length <= 200,
     "INVALID_INPUT",

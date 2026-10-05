@@ -130,17 +130,13 @@ function DrivePad({
         className="play-pad-knob"
         style={{ "--v": value } as React.CSSProperties}
       >
-        {axis === "steer" ? (
-          "Steer"
-        ) : value ? (
-          value < 0 ? (
-            "Back"
-          ) : (
-            "Go"
-          )
-        ) : (
-          <Icon name="arrowUp" size={20} />
-        )}
+        {axis === "steer"
+          ? "Steer"
+          : value
+            ? value < 0
+              ? "Back"
+              : "Go"
+            : null}
       </span>
       <span className="play-pad-end" aria-hidden="true">
         <Icon name={axis === "steer" ? "arrowRight" : "arrowDown"} size={18} />
@@ -1231,10 +1227,10 @@ export function PlayPanel({
                 {keyHint(bindings.camera)}
               </button>
             )}
-            {!remoteOpen && (
+            {/* Seated, there is no walking position to recover. */}
+            {!remoteOpen && !occupied && (
               <button
                 className="play-tile"
-                disabled={!!occupied}
                 onClick={() =>
                   attempt(() => {
                     play.respawn();

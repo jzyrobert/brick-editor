@@ -182,8 +182,8 @@ export function InstructionEditor({
       {plan && (
         <>
           <p role="status">
-            {coverage!.introduced} of {coverage!.total} occurrences assigned ·{" "}
-            {coverage!.missing.length} unassigned · {coverage!.emptySteps} empty
+            {coverage!.introduced} of {coverage!.total} parts are in a step ·{" "}
+            {coverage!.missing.length} not yet · {coverage!.emptySteps} empty
             steps
           </p>
           <details className="layer-folders">

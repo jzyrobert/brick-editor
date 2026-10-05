@@ -51,11 +51,11 @@ export async function showAllTemplates(page: Page) {
   if (await more.isVisible()) await more.click();
 }
 
-/** The Inspector's Tools tab (on a phone, open the Inspector sheet first). */
+/** The Inspector's Extras tab (on a phone, open the Inspector sheet first). */
 export async function openTools(page: Page) {
   await page
     .locator(".right-tabs")
-    .getByRole("button", { name: "Tools", exact: true })
+    .getByRole("button", { name: "Extras", exact: true })
     .click();
 }
 

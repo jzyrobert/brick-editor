@@ -406,12 +406,13 @@
   box-sizing: border-box;
   padding: 6px;
   border-radius: 999px;
-  background: rgba(29, 34, 48, 0.26);
+  /* Dark enough to read over a red or white car body. */
+  background: rgba(29, 34, 48, 0.5);
   border: 2px solid var(--play-glass-line);
   color: var(--chalk);
   pointer-events: auto;
   touch-action: none;
-  opacity: 0.85;
+  opacity: 0.9;
   transition: opacity 0.15s ease-out;
 }
 .play-pad.is-held {

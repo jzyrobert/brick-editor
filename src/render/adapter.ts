@@ -3814,71 +3814,148 @@ export class SceneAdapter {
     this.camera.position.fromArray(conversion(spec.position));
     this.camera.lookAt(this.controls.target);
     this.resize();
-    // A new camera is framed for the whole view: shift it for any sheet.
-    this.appliedInset = 0;
-    this.appliedInsetLeft = 0;
+    // A new camera is framed for the whole view: adjust it for any sheet.
     this.insetShift.set(0, 0, 0);
+    this.insetDolly.set(0, 0, 0);
+    this.insetZoom = 1;
+    this.insetBase = undefined;
     this.applyViewInset();
   }
-  /** Pixels of the view covered by a sheet: at the bottom on phones, on the
-   * left on tablets. */
-  private viewInset = 0;
-  private appliedInset = 0;
-  private viewInsetLeft = 0;
-  private appliedInsetLeft = 0;
-  private insetShift = new THREE.Vector3();
   /**
-   * Keeps the build in the part of the view a bottom sheet leaves visible:
-   * the camera pans up by half the covered height (and back when the sheet
-   * closes), so opening Parts or Photo on a phone never hides the model.
+   * The part of the view a sheet leaves free (phones: above a bottom sheet
+   * and below the title row; tablets: beside a left panel), in pixels from
+   * the view's edges. The camera moves and steps back so the build sits in
+   * that band, and returns when the sheet closes; currentCamera() reports
+   * the camera without this adjustment.
    */
-  setViewInset(bottom: number, left = 0) {
-    this.viewInset = Math.max(0, Math.round(bottom));
-    this.viewInsetLeft = Math.max(0, Math.round(left));
+  private viewInsets = { top: 0, bottom: 0, left: 0 };
+  private insetShift = new THREE.Vector3();
+  private insetDolly = new THREE.Vector3();
+  private insetZoom = 1;
+  setViewInset(insets: { top?: number; bottom?: number; left?: number }) {
+    const next = {
+      top: Math.max(0, Math.round(insets.top ?? 0)),
+      bottom: Math.max(0, Math.round(insets.bottom ?? 0)),
+      left: Math.max(0, Math.round(insets.left ?? 0)),
+    };
+    const v = this.viewInsets;
+    if (next.top === v.top && next.bottom === v.bottom && next.left === v.left)
+      return;
+    this.viewInsets = next;
     this.applyViewInset();
+  }
+  /** Takes the sheet adjustment off the camera (before a new one, a capture
+   * or a programmatic camera). */
+  /** The exact camera before the adjustment, while it is untouched since. */
+  private insetBase?: {
+    position: THREE.Vector3;
+    target: THREE.Vector3;
+    adjusted: THREE.Vector3;
+    adjustedTarget: THREE.Vector3;
+  };
+  private clearViewInset() {
+    const camera = this.camera;
+    const base = this.insetBase;
+    this.insetBase = undefined;
+    if (
+      base &&
+      camera.position.equals(base.adjusted) &&
+      this.controls.target.equals(base.adjustedTarget)
+    ) {
+      // Unmoved since: restore it bit for bit (no floating-point drift).
+      camera.position.copy(base.position);
+      this.controls.target.copy(base.target);
+    } else {
+      camera.position.sub(this.insetShift).sub(this.insetDolly);
+      this.controls.target.sub(this.insetShift);
+    }
+    if (camera instanceof THREE.OrthographicCamera && this.insetZoom !== 1) {
+      camera.zoom /= this.insetZoom;
+      camera.updateProjectionMatrix();
+    }
+    this.insetShift.set(0, 0, 0);
+    this.insetDolly.set(0, 0, 0);
+    this.insetZoom = 1;
   }
   private applyViewInset() {
-    const delta = this.viewInset - this.appliedInset;
-    const deltaLeft = this.viewInsetLeft - this.appliedInsetLeft;
-    const h = this.element.clientHeight;
-    if (
-      (!delta && !deltaLeft) ||
-      !h ||
-      this.captureActive ||
-      this.playViewActive
-    )
+    if (this.captureActive || this.playViewActive) return;
+    this.clearViewInset();
+    const w = this.element.clientWidth,
+      h = this.element.clientHeight;
+    const { top, bottom, left } = this.viewInsets;
+    if (!w || !h || (!top && !bottom && !left)) {
+      this.invalidate({ cameraOnly: true });
       return;
+    }
     const camera = this.camera;
+    const before = {
+      position: camera.position.clone(),
+      target: this.controls.target.clone(),
+    };
     const distance = camera.position.distanceTo(this.controls.target);
     const worldPerPixel =
       camera instanceof THREE.PerspectiveCamera
         ? (2 * distance * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)) /
           h
         : (camera.top - camera.bottom) / camera.zoom / h;
-    // Moving the camera down the screen's up axis lifts the build; moving it
-    // left moves the build right, beside a left-hand sheet.
+    const bandH = Math.max(1, h - top - bottom),
+      bandW = Math.max(1, w - left);
+    // Step back so what filled the view fits the free band, then centre it
+    // there: the band's middle sits (bottom - top)/2 above the view's.
+    // Only a bottom sheet steps back (it takes most of a phone's height); a
+    // tablet's side panel leaves enough room for a sideways shift alone.
+    const scale = bottom ? Math.min(3, Math.max(h / bandH, w / bandW)) : 1;
+    const upPx = (bottom - top) / 2,
+      rightPx = left / 2;
     const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
     const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-    const shift = up
-      .multiplyScalar((-delta / 2) * worldPerPixel)
-      .addScaledVector(right, (-deltaLeft / 2) * worldPerPixel);
-    camera.position.add(shift);
-    this.controls.target.add(shift);
-    this.insetShift.add(shift);
-    this.appliedInset = this.viewInset;
-    this.appliedInsetLeft = this.viewInsetLeft;
+    const back = new THREE.Vector3(0, 0, 1).applyQuaternion(camera.quaternion);
+    // After stepping back, a pixel covers `scale` times more of the world.
+    const perPixel = worldPerPixel * scale;
+    this.insetShift
+      .copy(up)
+      .multiplyScalar(-upPx * perPixel)
+      .addScaledVector(right, -rightPx * perPixel);
+    camera.position.add(this.insetShift);
+    this.controls.target.add(this.insetShift);
+    if (camera instanceof THREE.PerspectiveCamera) {
+      this.insetDolly.copy(back).multiplyScalar(distance * (scale - 1));
+      camera.position.add(this.insetDolly);
+    } else {
+      this.insetZoom = 1 / scale;
+      camera.zoom *= this.insetZoom;
+      camera.updateProjectionMatrix();
+    }
+    this.insetBase = {
+      ...before,
+      adjusted: camera.position.clone(),
+      adjustedTarget: this.controls.target.clone(),
+    };
     this.invalidate({ cameraOnly: true });
+  }
+  /** The camera as the person set it, without a sheet's adjustment. */
+  private unadjusted() {
+    const base = this.insetBase;
+    if (
+      base &&
+      this.camera.position.equals(base.adjusted) &&
+      this.controls.target.equals(base.adjustedTarget)
+    )
+      return { position: base.position, target: base.target };
+    return {
+      position: this.camera.position
+        .clone()
+        .sub(this.insetShift)
+        .sub(this.insetDolly),
+      target: this.controls.target.clone().sub(this.insetShift),
+    };
   }
   currentCamera(): CameraSpec {
     return {
       ...this.cameraSpec,
-      // Reported without a sheet's temporary pan (setViewInset).
-      position: conversion(
-        this.camera.position.clone().sub(this.insetShift).toArray() as Vec3,
-      ),
-      target: conversion(
-        this.controls.target.clone().sub(this.insetShift).toArray() as Vec3,
-      ),
+      // Reported without a sheet's adjustment (setViewInset).
+      position: conversion(this.unadjusted().position.toArray() as Vec3),
+      target: conversion(this.unadjusted().target.toArray() as Vec3),
       up: conversion(this.camera.up.toArray() as Vec3),
     };
   }
@@ -5771,6 +5848,8 @@ export class SceneAdapter {
       "INVALID_INPUT",
       "Another capture is in progress",
     );
+    // Pictures use the person's camera, not the sheet adjustment.
+    this.clearViewInset();
     this.captureActive = true;
     this.controls.enabled = false;
     // Captures keep full detail whatever the interactive view last drew,
@@ -5927,6 +6006,7 @@ export class SceneAdapter {
       );
     } finally {
       this.captureActive = false;
+      this.applyViewInset();
       this.computeFloorFocus();
       this.environment.setDrawn(true);
       this.environment.set(this.viewBackdrop);

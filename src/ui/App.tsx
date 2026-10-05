@@ -2639,25 +2639,37 @@ function Workspace() {
     let observer: ResizeObserver | undefined;
     const measure = () => {
       const view = document.querySelector(".viewport")?.getBoundingClientRect();
-      if (!view || galleryOpen || innerWidth > 1100) return r.setViewInset(0);
-      let cover = 0,
-        side = 0;
+      if (!view || galleryOpen || innerWidth > 1100) return r.setViewInset({});
+      let bottom = 0,
+        left = 0;
       for (const el of document.querySelectorAll<HTMLElement>(sheets)) {
         const b = el.getBoundingClientRect();
         if (!b.height) continue;
         if (b.width >= view.width * 0.8) {
-          // A bottom sheet across the view.
-          if (b.bottom >= view.bottom - 48)
-            cover = Math.max(cover, view.bottom - b.top);
-        } else if (b.left <= view.left + 32 && b.height > view.height * 0.5) {
-          // A tablet's tall sheet down the left side.
-          side = Math.max(side, b.right - view.left);
+          // A sheet across the view, resting on the hotbar or the bottom.
+          if (b.bottom >= view.bottom - 120 && b.top > view.top)
+            bottom = Math.max(bottom, view.bottom - b.top);
+        } else if (b.left <= view.left + 32 && b.height > 160) {
+          // A tablet's panel down the left side (however tall its tab is,
+          // so switching tabs does not move the view).
+          left = Math.max(left, b.right - view.left);
         }
       }
-      r.setViewInset(
-        Math.min(cover, view.height * 0.7),
-        Math.min(side, view.width * 0.6),
-      );
+      if (!bottom && !left) return r.setViewInset({});
+      // The title row and tool chips above the band are not free either.
+      let top = 0;
+      for (const el of document.querySelectorAll<HTMLElement>(
+        ".model-context, .hud-top",
+      )) {
+        const b = el.getBoundingClientRect();
+        if (b.height && b.top < view.top + view.height / 3)
+          top = Math.max(top, b.bottom - view.top);
+      }
+      r.setViewInset({
+        top: bottom ? Math.min(top, view.height * 0.3) : 0,
+        bottom: Math.min(bottom, view.height * 0.7),
+        left: Math.min(left, view.width * 0.6),
+      });
     };
     const frame = requestAnimationFrame(() => {
       measure();
@@ -3521,13 +3533,18 @@ function Workspace() {
       command("parts.transform", { ...scoped(), space: "ldraw", transform });
     });
   const applyColour = () =>
-    void run(() =>
-      command("parts.recolor", {
+    void run(async () => {
+      await command("parts.recolor", {
         ...scoped(),
         colorCode: color,
         preserveFixedColors: true,
-      }),
-    );
+      });
+      // Said out loud: the strip's Paint uses the hotbar colour at once.
+      const name = colors.find((c) => c.code === color)?.name ?? "the colour";
+      setStatus(
+        `Painted ${selection.length === 1 ? "1 part" : `${selection.length} parts`} ${name.toLowerCase()} · Undo to change back`,
+      );
+    });
   const duplicateSelected = () =>
     void run(() => command("parts.duplicate", scoped()));
   const deleteSelected = () =>
@@ -5493,7 +5510,10 @@ function Workspace() {
                   </span>
                 ) : (
                   <span>
-                    Tap the ground, or a part to stack on or beside ·{" "}
+                    {matchMedia("(pointer: fine)").matches
+                      ? "Click the ground or a part, then Enter to place"
+                      : "Tap the ground, or a part to stack on or beside"}{" "}
+                    ·{" "}
                     {workplane.free
                       ? "free placement"
                       : workplane.grid % 20 === 0
@@ -5662,6 +5682,29 @@ function Workspace() {
               label="Photo"
               sections={{
                 download: photoDownload,
+                // The same choice as Camera views › Look, where a photo is
+                // actually set up.
+                look: (
+                  <div
+                    className="look-control"
+                    role="group"
+                    aria-label="Picture look"
+                  >
+                    {LOOK_NAMES.map((name) => (
+                      <button
+                        key={name}
+                        aria-pressed={renderLook === name}
+                        onClick={() => chooseLook(name)}
+                      >
+                        {name === "standard"
+                          ? "Standard"
+                          : name === "realistic"
+                            ? "Realistic"
+                            : "Photo"}
+                      </button>
+                    ))}
+                  </div>
+                ),
                 size: photoSizeFields,
                 views: photoViews,
                 exact: photoExact,
@@ -5868,7 +5911,7 @@ function Workspace() {
                     style={{ background: colorHex(color) }}
                     aria-hidden="true"
                   />
-                  <span>Colour</span>
+                  <span>Paint</span>
                 </button>
                 <button onClick={duplicateSelected}>
                   <Icon name="copy" size={18} />
@@ -5939,7 +5982,8 @@ function Workspace() {
                 setInspectorTools(true);
               }}
             >
-              Tools
+              {/* "Tools" is the header's menu of views; these are extras. */}
+              Extras
             </button>
           </div>
           {panel === "Inspector" ? (
@@ -5995,7 +6039,7 @@ function Workspace() {
           {/* Advanced tools: a tab of their own, one drawer each. */}
           <ModeMenu
             menu="Tools"
-            label="Tools"
+            label="Extras"
             className="menu-tools"
             hidden={panel !== "Inspector" || !toolsTab}
             sections={{
