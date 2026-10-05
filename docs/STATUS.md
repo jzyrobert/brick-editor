@@ -1,5 +1,22 @@
 # Implementation status
 
+## Efficient vehicle and systems physics (experimental) — 5 October 2026
+
+An experimental compact vehicle (`src/play/compact-vehicle.ts`, not used by the
+app) drives the whole 5540 source car as one rigid body. That body has one
+compound of convex member hulls and rides on four ray-cast wheels taken from the
+reviewed mounts. On the shared VM (Node WASM) it steps in 0.85–1.7 ms with no
+internal contact pairs. One body per fixed island needs 55 bodies and at least
+67 joints, steps in 10.8 ms with convex hulls or 661 ms with source triangles,
+and blows apart from false deep contacts. Coarser hulls (one per island, or one
+for the whole chassis) are cheaper but scrape the ground.
+
+The compact car holds hinges and bearings as built and leaves the unattached
+cowl, stickers and hoses behind, so it is **not** admitted to ordinary Play.
+Synthetic sketches put a winch (drum plus soft rope) and a pivoting pneumatic
+cylinder loop at about 0.1 ms per tick each. See the
+[proposal](reviews/EFFICIENT-VEHICLE-AND-SYSTEMS-PHYSICS.md).
+
 ## Air circuits in ordinary Play — 5 October 2026
 
 Of the three open Technic systems (5540 vehicle, 42042 winch, 42043
