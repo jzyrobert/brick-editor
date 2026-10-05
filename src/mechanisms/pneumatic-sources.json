@@ -1,0 +1,168 @@
+{
+  "165.dat": {
+    "kind": "hose-end",
+    "ports": [],
+    "files": 10,
+    "closureSha256": "8bccc24c5c7a9f87f621539ed22c3cabd90673df897e88684a96c414289eb56d"
+  },
+  "166.dat": {
+    "kind": "hose-skin",
+    "ports": [],
+    "files": 3,
+    "closureSha256": "44b1176fa22802e8e9f666b912b169140cb5698f8eba93739237eafa63407c69"
+  },
+  "99021.dat": {
+    "kind": "joiner",
+    "ports": [
+      {
+        "id": "left",
+        "role": "passive",
+        "base": [-4, -20, 0],
+        "tip": [-20, -20, 0],
+        "radiusLdu": 4
+      },
+      {
+        "id": "right",
+        "role": "passive",
+        "base": [4, -20, 0],
+        "tip": [20, -20, 0],
+        "radiusLdu": 4
+      }
+    ],
+    "files": 28,
+    "closureSha256": "44d1e8b896b71cc153243f42d8f48d738c0c8076a7c625f49fac8ec7e3fce972"
+  },
+  "4697b.dat": {
+    "kind": "tee",
+    "ports": [
+      {
+        "id": "branch",
+        "role": "passive",
+        "base": [0, 4, 0],
+        "tip": [0, 20, 0],
+        "radiusLdu": 4
+      },
+      {
+        "id": "left",
+        "role": "passive",
+        "base": [0, 0, -4],
+        "tip": [0, 0, -20],
+        "radiusLdu": 4
+      },
+      {
+        "id": "right",
+        "role": "passive",
+        "base": [0, 0, 4],
+        "tip": [0, 0, 20],
+        "radiusLdu": 4
+      }
+    ],
+    "files": 8,
+    "closureSha256": "d9bfe73c9f69f8b17b65a3a48bac1e960fee192c39930ae5d9e7b96fbe8e443a"
+  },
+  "2947.dat": {
+    "kind": "cylinder",
+    "ports": [
+      {
+        "id": "base",
+        "role": "base",
+        "base": [0, -10, -10],
+        "tip": [0, -10, -26],
+        "radiusLdu": 4
+      },
+      {
+        "id": "cap",
+        "role": "cap",
+        "base": [0, -60, -10],
+        "tip": [0, -60, -26],
+        "radiusLdu": 4
+      }
+    ],
+    "files": 21,
+    "closureSha256": "1e0e9089419f0f5d9023989ee84793324786b185e27152c6e8bbb420bee8968b"
+  },
+  "42043 - 19466c01.dat": {
+    "kind": "cylinder",
+    "ports": [
+      {
+        "id": "base",
+        "role": "base",
+        "base": [0, -20, -18],
+        "tip": [0, -20, -36],
+        "radiusLdu": 4
+      },
+      {
+        "id": "cap",
+        "role": "cap",
+        "base": [0, -168, -19],
+        "tip": [0, -168, -36],
+        "radiusLdu": 4
+      }
+    ],
+    "files": 58,
+    "closureSha256": "d8aa468c31ce76f863509b373d0fe0458c9cfac354ffb00da865ebf14f2d2c5f"
+  },
+  "42043 - u9145c01.dat": {
+    "kind": "cylinder",
+    "ports": [
+      {
+        "id": "base",
+        "role": "base",
+        "base": [0, -10, -9],
+        "tip": [0, -10, -26],
+        "radiusLdu": 4
+      },
+      {
+        "id": "cap",
+        "role": "cap",
+        "base": [0, -170, -10],
+        "tip": [0, -170, -26],
+        "radiusLdu": 4
+      }
+    ],
+    "files": 25,
+    "closureSha256": "a2011d0f91b66b8983ef9e318c4d58b92aa72e0e803964320b4cc66f2ebb41a5"
+  },
+  "42043 - 2943-v2.dat": {
+    "kind": "pump",
+    "ports": [
+      {
+        "id": "outlet",
+        "role": "pump",
+        "base": [0, -10, -9],
+        "tip": [0, -10, -26],
+        "radiusLdu": 4
+      }
+    ],
+    "files": 16,
+    "closureSha256": "cce51af2b321676fd637836d1e8991c15347d1829fe4c7995fed3b67040366b7"
+  },
+  "42043 - 47223-v2-p1.dat": {
+    "kind": "valve",
+    "ports": [
+      {
+        "id": "supply",
+        "role": "supply",
+        "base": [10, 0, -24],
+        "tip": [26, 0, -24],
+        "radiusLdu": 4
+      },
+      {
+        "id": "workA",
+        "role": "workA",
+        "base": [10, 11, -30],
+        "tip": [26, 11, -30],
+        "radiusLdu": 4
+      },
+      {
+        "id": "workB",
+        "role": "workB",
+        "base": [10, -11, -30],
+        "tip": [26, -11, -30],
+        "radiusLdu": 4
+      }
+    ],
+    "files": 29,
+    "closureSha256": "35a41a04d5c1c30e29805b4ffddd512cc5e322a0135416b4aab763336e7c0e78"
+  }
+}

@@ -63,10 +63,12 @@ Seven focused native checks cover balanced reaction, valve reversal and exhaust,
 neutral gas retention under backdrive, native pump compression/refill, independent
 circuits, external-obstacle stall/recovery, released-body refusal and atomic
 excess-pressure refusal. These benches establish the kernel, not LEGO part
-connections or flow ratings. Ordinary Play still needs source-bound actual ports,
-seated hose ends, cylinder/pump component ownership and guided rod collision
-profiles before exposing pneumatic controls. Complete Arocs routing and operation
-remain open.
+connections or flow ratings. A separate [source-routing packet](reviews/AROCS-PNEUMATIC-ROUTING.md)
+now binds all28 actual Arocs hoses and56 ports, including separate valve work
+routes and opposing cylinder chambers. Its flexible-end sealing assumptions are
+explicit. Ordinary Play still needs cylinder/pump component ownership, actual
+mounts, guided rod collision and runtime circuit wiring before exposing pneumatic
+controls. Complete Arocs operation remains open.
 
 ## Spherical angular resistance
 

@@ -21,8 +21,14 @@ relations, suspension, ropes/tracks and pneumatic routing remain active work.
 The branch now includes a bounded native pneumatic kernel with actual chamber
 compression, closed-center valves, pressure-driven cylinder reactions and gas
 accounting. Seven focused checks include a real native obstacle stall/recovery.
-Source ports, hose seating, guided component collision and whole Arocs admission
-remain required before pneumatic controls become available in ordinary Play.
+The source-routing layer now binds all28 actual Arocs hoses and56 ports,
+preserving the2015 embedded hardware definitions and separate work chambers.
+Source/export preservation and altered, unseated, ambiguous and incomplete
+fitting refusals are covered by four focused checks. Its narrow flexible-end
+sealing model is explicit; it supplies gas topology, not rigid attachments.
+Guided body/rod component collision, real mounts, runtime circuit wiring and
+whole Arocs admission remain required before pneumatic controls become available
+in ordinary Play. See [the routing review](reviews/AROCS-PNEUMATIC-ROUTING.md).
 
 ## Physical admission follow-up — 4 October 2026
 

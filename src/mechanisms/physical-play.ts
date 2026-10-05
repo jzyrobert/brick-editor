@@ -11,7 +11,7 @@ import { deriveDoorRigs } from "../play/auto-doors";
 import { proposeMechanicalRig } from "./mechanical-proposals";
 import { checkPhysicalMotorBinding } from "./motor-binding";
 import { reviewedPfLargeRigEligible } from "./pf-large-motor-binding";
-import { arocsBallJointIds } from "../play/arocs-ball-contacts";
+import { arocsBallJointIds } from "../play/arocs-ball-binding";
 import { sourceAssemblyEdges } from "../play/source-assembly";
 import type { PlayMechanismSource } from "../play/mechanism";
 import { mechanicalContactGraph } from "./mechanical-contacts";

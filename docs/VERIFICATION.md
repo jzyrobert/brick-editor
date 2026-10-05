@@ -63,6 +63,18 @@ seconds. Signed orthogonal native dispatch is compared against independently
 calculated inertia/impulses; source stays unchanged. Actual retained-winch
 contact packets and ordinary session integration remain separately required.
 
+The actual source pneumatic routing layer passes four focused cases. Together
+with the native circuit and source-content regressions,17 cases pass in5.12s.
+The28 full authored hoses bind56 separate ports and47 passive connections;
+the16-node pump supply reaches only the four valve supply ports, and each pair
+of work routes reaches exactly one cylinder's opposing chambers. The tests
+preserve source/export and refuse altered dependencies, project shadows, stale
+or unseated placements, ambiguous duplicate fittings and incomplete ends. The
+manifest reproduces offline with `scripts/build-pneumatic-sources.ts --check`.
+The [routing review](reviews/AROCS-PNEUMATIC-ROUTING.md) declares the narrow
+flexible-end seal/frame assumptions. Guided components, native circuit wiring,
+controls and complete Arocs admission remain open.
+
 ## Physical admission CI follow-up — 4 October 2026
 
 Initial main run [37213302926](https://github.com/jzyrobert/brick-editor/actions/runs/37213302926)
