@@ -7,6 +7,11 @@ import {
 import { NativeGrippers, type NativeGripRig } from "./grippers";
 import type { SeatedPlacement } from "./seated-profile";
 import RAPIER from "@dimforge/rapier3d-compat";
+import { isArocsBallSolid } from "./arocs-ball-contacts";
+import {
+  isMotorComponentSolid,
+  motorOutputOwnedMembers,
+} from "./motor-source-components";
 import { effectiveMotor, validateMotorInput } from "./motor-input";
 import { occurrences } from "../core/document";
 import { worldMechanicalFeatures } from "../mechanisms/mechanical-contacts";
@@ -30,6 +35,7 @@ import {
 } from "./mechanical-solids";
 import {
   transmissionMap,
+  transmissionRatio,
   transmissionSpeedLimit,
   TRANSMISSION_MAX_SPEED,
   type TransmissionMap,
@@ -418,14 +424,21 @@ export class DynamicRig {
       if (anchored) {
         // Anchored groups never move: exact trimesh keeps door-frame openings.
         const fixedMembers = source.members
-          ? group.occurrenceIds.map((id) => [id, source.members[id]] as const)
+          ? [
+              ...group.occurrenceIds.map(
+                (id) => [id, source.members[id]] as const,
+              ),
+              ...motorOutputOwnedMembers(source, group),
+            ]
           : [[undefined, source.groups[group.id]] as const];
         for (const [memberId, mesh] of fixedMembers) {
           const reviewed = stationary.filter(
             (s) =>
               s.groupId === group.id &&
               s.memberId === memberId &&
-              s.reviewedPlaneClass !== undefined,
+              (s.reviewedPlaneClass !== undefined ||
+                isArocsBallSolid(s) ||
+                isMotorComponentSolid(s)),
           );
           if (reviewed.length) {
             const q = frameRotation(group.frame);
@@ -607,7 +620,9 @@ export class DynamicRig {
     const anchorA = toPhysics(
         world.map((v, k) => v - a.rest.position[k]) as Vec3,
       ),
-      anchorB = toPhysics(world.map((v, k) => v - b.rest.position[k]) as Vec3);
+      // Keep each authored source attachment point. Deriving B from A silently
+      // removed a real source rest gap before the native constraint could seat.
+      anchorB = toPhysics(mv(b.rest.basis, spec.anchorB));
     const axisWorld = spec.axisA ? mv(a.rest.basis, spec.axisA) : undefined;
     const axis = axisWorld
       ? toPhysicsDirection(axisWorld)
@@ -1370,7 +1385,7 @@ export class DynamicRig {
     const ports = new Map<string, AngularPort>();
     const equations: AngularEquation[] = [];
     for (const t of this.rig.transmissions ?? []) {
-      if (t.kind !== "spur") continue;
+      if (t.kind === "rack") continue;
       for (const id of [t.jointA, t.jointB]) {
         if (ports.has(id)) continue;
         const control = this.joints.get(id)!;
@@ -1392,7 +1407,7 @@ export class DynamicRig {
           ],
         });
       }
-      const ratio = (-t.axisSign * t.teethA) / t.teethB;
+      const ratio = transmissionRatio(t);
       equations.push({
         id: t.id,
         terms: [

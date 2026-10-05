@@ -37,6 +37,17 @@ import {
   reviewedGuideAlignment,
   reviewedHousingGuideClass,
 } from "./reviewed-guide-alignment";
+import {
+  arocsBallMemberSolids,
+  arocsBallContactAllowed,
+  isArocsBallSolid,
+} from "./arocs-ball-contacts";
+import {
+  motorComponentSolids,
+  motorComponentContactAllowed,
+  isMotorComponentSolid,
+  motorOutputOwnedMembers,
+} from "./motor-source-components";
 
 export const MECHANICAL_CONTACT_LIMITS = Object.freeze({
   solids: 4096,
@@ -152,7 +163,9 @@ export class MechanicalContactPolicy {
     restBasis: Transform["basis"];
     aligned: boolean;
   }> = [];
+  private source?: PlayMechanismSource;
   constructor(rig: MotionRig, _source?: PlayMechanismSource) {
+    this.source = _source;
     const groups = new Map(rig.groups.map((g) => [g.id, g]));
     this.contactFrames = [
       Object.fromEntries(rig.groups.map((g) => [g.id, g.frame])),
@@ -187,6 +200,78 @@ export class MechanicalContactPolicy {
       const feature = new Map(graph.features.map((f) => [f.key, f]));
       const endpointKey = (e: { occurrenceId: string; featureId: string }) =>
         JSON.stringify([e.occurrenceId, e.featureId]);
+      // A reviewed PF-L binding already proves the actual fixed carrier and
+      // captured source axle. Derive each intervening literal round bore;
+      // generic convex brick covers otherwise fill those source apertures.
+      for (const joint of rig.joints.filter(
+        (j) => j.motor?.binding?.profile === "power-functions-motor-l-v1",
+      )) {
+        const motor = resolvePhysicalMotorBinding(
+          _source.project,
+          rig,
+          joint,
+          joint.motor!.binding!,
+          [...lookup.values()],
+        );
+        for (const contact of graph.contacts) {
+          if (
+            contact.kind !== "bearing" ||
+            contact.a.occurrenceId !== motor.shaftOccurrenceId ||
+            !groups
+              .get(joint.bodyA)!
+              .occurrenceIds.includes(contact.b.occurrenceId)
+          )
+            continue;
+          const bore = feature.get(endpointKey(contact.b))!;
+          if (bore.kind !== "round-hole") continue;
+          const span = bore.faceSpan ?? bore.span;
+          this.bearings.push({
+            id: `${joint.id}:source-bore:${bore.key}`,
+            a: joint.bodyA,
+            b: joint.bodyB,
+            pivot: add(
+              bore.center,
+              bore.axis.map((x) => (x * (span[0] + span[1])) / 2) as Vec3,
+            ),
+            normals: [...bearingNormals(bore.axis), bore.axis],
+            extents: [
+              bore.radius + 0.1,
+              bore.radius + 0.1,
+              (span[1] - span[0]) / 2 + 0.1,
+            ],
+          });
+          // Reviewed 4265a has a literal 9-LDU collar and keyed bore ±5.
+          // Its seated outer cap rubs the source bore mouth beyond radius6;
+          // retain only that actual thin thrust plane as an ideal retainer.
+          for (const keyed of graph.contacts) {
+            if (
+              keyed.kind !== "keyed-slide" ||
+              keyed.a.occurrenceId !== motor.shaftOccurrenceId ||
+              !groups
+                .get(joint.bodyB)!
+                .occurrenceIds.includes(keyed.b.occurrenceId)
+            )
+              continue;
+            const collar = feature.get(endpointKey(keyed.b));
+            if (collar?.ref !== "4265a.dat" || collar.kind !== "keyed-hole")
+              continue;
+            const ends = mechanicalInterval(collar, bore);
+            for (const end of span) {
+              if (!ends.some((e) => Math.abs(e - end) <= 0.05)) continue;
+              this.bearings.push({
+                id: `${joint.id}:source-retainer:${bore.key}:${collar.key}:${end}`,
+                a: joint.bodyA,
+                b: joint.bodyB,
+                memberA: bore.occurrenceId,
+                memberB: collar.occurrenceId,
+                pivot: add(bore.center, bore.axis.map((x) => x * end) as Vec3),
+                normals: [...bearingNormals(bore.axis), bore.axis],
+                extents: [9.1, 9.1, 0.1],
+              });
+            }
+          }
+        }
+      }
       const keyedByShaft = new Map<
         string,
         Array<Extract<(typeof graph.contacts)[number], { kind: "keyed-slide" }>>
@@ -201,6 +286,10 @@ export class MechanicalContactPolicy {
       for (const bearing of this.bearings) {
         const a = groups.get(bearing.a)!,
           b = groups.get(bearing.b)!;
+        if (bearing.memberA && bearing.memberB) {
+          bearing.pairs = [[bearing.memberA, bearing.memberB]];
+          continue;
+        }
         // Synthetic engineering fixtures have no reviewed interface profiles.
         // Real source interfaces never turn a group into a collision exemption.
         if (
@@ -440,6 +529,22 @@ export class MechanicalContactPolicy {
       (fixedRoot !== undefined && fixedRoot === this.fixedRoots.get(b.groupId))
     )
       return true;
+    if (this.source) {
+      const motor = motorComponentContactAllowed(
+        this.source,
+        a,
+        b,
+        this.contactFrames,
+      );
+      if (motor !== undefined) return motor;
+      const ball = arocsBallContactAllowed(
+        this.source,
+        a,
+        b,
+        this.contactFrames,
+      );
+      if (ball !== undefined) return ball;
+    }
     if (
       this.motorApproaches.some((approach) => {
         const shaft =
@@ -529,7 +634,7 @@ function bounds(points: Vec3[]) {
 }
 /** Convex clipping includes intersections with hull edges, rather than selecting
  * vertices and shrinking the original proxy. */
-function split(
+export function splitMechanicalConvex(
   points: Vec3[],
   normal: Vec3,
   plane: number,
@@ -572,6 +677,7 @@ function split(
       [0, 1, 2].every((k) => bounds(p).max[k] - bounds(p).min[k] > 1e-7),
   );
 }
+const split = splitMechanicalConvex;
 function clip2(
   poly: number[][],
   normal: number[],
@@ -774,9 +880,21 @@ export function mechanicalSolids(
     const entries = source.members
       ? group.occurrenceIds.map((id) => [id, source.members![id]] as const)
       : [[undefined, source.groups[group.id]] as const];
+    const motorOutputs = motorComponentSolids(source, group);
+    if (motorOutputs) out.push(...motorOutputs);
     for (const [id, mesh] of entries) {
       if (!mesh?.indices.length) continue;
       const occurrence = id ? lookup.get(id) : undefined;
+      const motor = id ? motorComponentSolids(source, group, id) : undefined;
+      if (motor) {
+        out.push(...motor);
+        continue;
+      }
+      const ball = id ? arocsBallMemberSolids(source, group, id) : undefined;
+      if (ball) {
+        out.push(...ball);
+        continue;
+      }
       const reviewed = id ? reviewedMemberSolids(source, group, id) : undefined;
       if (reviewed) {
         out.push(...reviewed);
@@ -1108,7 +1226,11 @@ export function mechanicalSolids(
   const classes = new Map<string, MechanicalSolid[]>();
   for (const [index, solid] of out.entries()) {
     const k = JSON.stringify([
-      separateDoorSlabs.has(solid) ? index : null,
+      separateDoorSlabs.has(solid) ||
+      isArocsBallSolid(solid) ||
+      isMotorComponentSolid(solid)
+        ? index
+        : null,
       solid.groupId,
       solid.memberId,
       solid.feature,
@@ -1165,6 +1287,19 @@ export function mechanicalStationarySolids(
       new Map(occurrences(source.project).map((o) => [o.id, o]));
   const out: MechanicalSolid[] = [];
   for (const group of rig.groups) {
+    for (const [componentId] of motorOutputOwnedMembers(source, group)) {
+      const existing = moving.filter(
+        (s) =>
+          s.groupId === group.id &&
+          s.memberId === componentId &&
+          isMotorComponentSolid(s),
+      );
+      out.push(
+        ...(existing.length
+          ? existing
+          : (motorComponentSolids(source, group) ?? [])),
+      );
+    }
     const entries = source.members
       ? group.occurrenceIds.map((id) => [id, source.members![id]] as const)
       : [[undefined, source.groups[group.id]] as const];
@@ -1174,10 +1309,26 @@ export function mechanicalStationarySolids(
         (s) =>
           s.memberId === memberId &&
           s.groupId === group.id &&
-          s.reviewedPlaneClass !== undefined,
+          (s.reviewedPlaneClass !== undefined ||
+            isArocsBallSolid(s) ||
+            isMotorComponentSolid(s)),
       );
       if (existing.length) {
         out.push(...existing);
+        continue;
+      }
+      const motor = memberId
+        ? motorComponentSolids(source, group, memberId)
+        : undefined;
+      if (motor) {
+        out.push(...motor);
+        continue;
+      }
+      const ball = memberId
+        ? arocsBallMemberSolids(source, group, memberId)
+        : undefined;
+      if (ball) {
+        out.push(...ball);
         continue;
       }
       const reviewed = memberId
@@ -1262,7 +1413,9 @@ export function prepareMechanicalSources(sources: PlayMechanismSource[]) {
       stationary
         .filter(
           (s) =>
-            s.reviewedPlaneClass !== undefined &&
+            (s.reviewedPlaneClass !== undefined ||
+              isArocsBallSolid(s) ||
+              isMotorComponentSolid(s)) &&
             anchoredGroup(source.project.motionRigs[source.rigId], s.groupId),
         )
         .reduce((n, s) => n + s.childCount, 0);

@@ -27,6 +27,7 @@ export type ResolvedPfLargeMotorBinding = ResolvedMotorBinding & {
   jointId: string;
   axisSign: 1 | -1;
   rotorRestPhaseDegrees: number;
+  mountSupportOccurrenceIds: readonly string[];
   sourceContact: PfLargeMotorContacts;
 };
 type BoundRig = {
@@ -264,6 +265,7 @@ export async function bindPfLargeMotorAssemblies(
           jointId: joint.id,
           axisSign: alignment < 0 ? -1 : 1,
           rotorRestPhaseDegrees: contact.rotorRestPhaseDegrees,
+          mountSupportOccurrenceIds: Object.freeze([...new Set(anchors)]),
           sourceContact: contact,
         }),
       );

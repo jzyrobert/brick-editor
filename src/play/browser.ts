@@ -59,6 +59,14 @@ import {
 import { fullLibraryGeneration } from "../catalog/full-library";
 import { PLAY_CAMERA_LIMITS } from "./types";
 import { vehicleReachDistance } from "./vehicle-possession";
+import { PF_LARGE_MOTOR_PROFILE } from "../mechanisms/pf-large-motor-binding";
+import {
+  prepareLoadedMotorAssemblies,
+  loadMotorSourceComponents,
+  motorComponentGroupMeshes,
+  motorComponentPresentation,
+} from "./motor-source-components";
+import { loadArocsBallContacts } from "./arocs-ball-contacts";
 
 const ZOOM_KEY = "brick-editor-play-zoom-v1";
 /** The follow distance last chosen by zoom in this tab, if valid. */
@@ -105,6 +113,7 @@ export class BrowserPlay {
    * project per frame would deep-copy the whole document every frame. */
   private sessionRigs: Project["motionRigs"] = {};
   private mechanismViews: Record<string, MechanismViewGeometry> = {};
+  private motorComponents: ReturnType<typeof motorComponentPresentation> = [];
   private overview?: {
     rigId: string;
     yaw: number;
@@ -291,8 +300,6 @@ export class BrowserPlay {
       // One occurrence expansion serves door derivation and every rig check.
       const all = project ? occurrences(project) : [];
       const lookup = new Map(all.map((o) => [o.id, o]));
-      if (project)
-        for (const rig of authored) requirePhysicalPlay(project, rig, all);
       let derived: DerivedDoors | undefined;
       if (project && request.autoDoors !== false) {
         derived = deriveDoorRigs(project, {
@@ -413,6 +420,25 @@ export class BrowserPlay {
           ? await r.playMemberGeometry(canonicalIds)
           : undefined;
       ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      if (sourceProject)
+        await prepareLoadedMotorAssemblies(sourceProject, rigs, all);
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      const motorIds = rigs.flatMap((rig) =>
+        rig.joints.flatMap((joint) =>
+          joint.motor?.binding?.profile === PF_LARGE_MOTOR_PROFILE
+            ? [joint.motor.binding.occurrenceId]
+            : [],
+        ),
+      );
+      // Establish cleanup before any component capture, including failed entry.
+      if (motorIds.length) this.restorePose = r.beginTransientPose();
+      const motorCaptures = motorIds.length
+        ? await r.playMotorComponentGeometry(
+            motorIds,
+            () => epoch === this.epoch,
+          )
+        : undefined;
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
       ensure(
         geometry.revision === this.revision(),
         "REVISION_CONFLICT",
@@ -464,6 +490,22 @@ export class BrowserPlay {
           rigId: rig.id,
           groups,
           lookup,
+          ...(motorCaptures
+            ? {
+                motorComponents: Object.fromEntries(
+                  rig.joints.flatMap((joint) =>
+                    joint.motor?.binding?.profile === PF_LARGE_MOTOR_PROFILE
+                      ? [
+                          [
+                            joint.motor.binding.occurrenceId,
+                            motorCaptures[joint.motor.binding.occurrenceId],
+                          ],
+                        ]
+                      : [],
+                  ),
+                ),
+              }
+            : {}),
           ...(Object.keys(members).length ===
             rig.groups.flatMap((g) => g.occurrenceIds).length &&
           canonicalMembers
@@ -478,8 +520,22 @@ export class BrowserPlay {
             ? { members }
             : {}),
         });
-        this.mechanismViews[rig.id] = mechanismViewGeometry(rig, groups);
       }
+      await Promise.all([
+        loadMotorSourceComponents(mechanismSources),
+        loadArocsBallContacts(mechanismSources),
+      ]);
+      ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
+      for (const source of mechanismSources) {
+        const rig = source.project.motionRigs[source.rigId];
+        source.groups = motorComponentGroupMeshes(source);
+        this.mechanismViews[rig.id] = mechanismViewGeometry(rig, source.groups);
+        if (authored.some((r) => r.id === rig.id))
+          requirePhysicalPlay(source.project, rig, all, source);
+      }
+      this.motorComponents = mechanismSources.flatMap(
+        motorComponentPresentation,
+      );
       ensure(
         geometry.revision === this.revision(),
         "REVISION_CONFLICT",
@@ -540,7 +596,7 @@ export class BrowserPlay {
       };
       this.held = {};
       if (rigs.length || trains?.trains.length)
-        this.restorePose = r.beginTransientPose();
+        this.restorePose ??= r.beginTransientPose();
       this.restore = r.beginPlayView(worldProfile?.includedOccurrenceIds);
       this.avatar = new BrickAvatar();
       if (figureGeometry instanceof Error)
@@ -595,6 +651,17 @@ export class BrowserPlay {
             this.session.trainTransforms(),
           )
         : undefined;
+    const motorOutputs = Object.fromEntries(
+      this.motorComponents.map((motor) => {
+        const mechanism = mechanisms.find((m) => m.rigId === motor.rigId);
+        return [
+          motor.parentOccurrenceId,
+          motor.restPhaseDegrees +
+            motor.axisSign *
+              (mechanism?.pose.jointPositions[motor.jointId] ?? 0),
+        ];
+      }),
+    );
     const interpolate = this.realtime && !this.state.paused;
     const camera = this.overviewCamera() ?? this.session.camera(interpolate);
     // The figure uses the same interpolation factor as the camera, so both
@@ -617,6 +684,7 @@ export class BrowserPlay {
           r.cameraChanges,
           camera,
           transforms,
+          motorOutputs,
           figureShown,
           report.cameraMode,
           figureShown ? view.position : undefined,
@@ -634,12 +702,16 @@ export class BrowserPlay {
       // Shadows depend on the scene, not the camera: a frame where only the
       // camera (or the figure, which casts no shadow) moved reuses the cached
       // shadow map of the Realistic/Photo looks. Moving parts re-render it.
-      const scene = JSON.stringify(transforms ?? null, (_, value) =>
-        typeof value === "number" ? Math.round(value * 1000) / 1000 : value,
+      const scene = JSON.stringify(
+        [transforms ?? null, motorOutputs],
+        (_, value) =>
+          typeof value === "number" ? Math.round(value * 1000) / 1000 : value,
       );
       const sceneChanged = scene !== this.lastScene;
       this.lastScene = scene;
       if (transforms && sceneChanged) r.applyTransientPose(transforms);
+      if (this.motorComponents.length && sceneChanged)
+        r.applyTransientMotorOutputs(motorOutputs);
       r.playCamera(camera);
       // camera() is read-only, so one snapshot serves the avatar, pose and UI.
       this.avatar?.update(
@@ -1307,6 +1379,7 @@ export class BrowserPlay {
     this.session = undefined;
     this.sessionRigs = {};
     this.mechanismViews = {};
+    this.motorComponents = [];
     this.overview = undefined;
     this.avatar?.dispose();
     this.avatar = undefined;

@@ -4032,13 +4032,17 @@ export class SceneAdapter {
   };
   /** Capture the actual motor case/output separately while retaining the one
    * document occurrence. This grants no mounting, motor or physics admission. */
-  async playMotorComponentGeometry(requested: readonly string[]) {
+  async playMotorComponentGeometry(
+    requested: readonly string[],
+    isCurrent: () => boolean = () => true,
+  ) {
     ensure(
       !this.transformDragging,
       "INVALID_INPUT",
       "Finish or cancel the transform gesture before entering Play",
     );
     await this.ready();
+    ensure(isCurrent(), "INVALID_INPUT", "Play entry cancelled");
     const project = this.project;
     ensure(project, "INVALID_INPUT", "Open a project before entering Play");
     const revision = this.revision;
@@ -4084,7 +4088,8 @@ export class SceneAdapter {
     const partitions = new Map<string, MotorSourceComponentPartition>();
     if (ids.length) {
       const binding = await bindMotorComponentSources(sources, project);
-      for (const id of ids)
+      ensure(isCurrent(), "INVALID_INPUT", "Play entry cancelled");
+      for (const id of ids) {
         partitions.set(
           id,
           await partitionMotorSourcePrototype(
@@ -4094,7 +4099,10 @@ export class SceneAdapter {
             binding,
           ),
         );
+        ensure(isCurrent(), "INVALID_INPUT", "Play entry cancelled");
+      }
     }
+    ensure(isCurrent(), "INVALID_INPUT", "Play entry cancelled");
     ensure(
       this.project === project && this.revision === revision,
       "REVISION_CONFLICT",

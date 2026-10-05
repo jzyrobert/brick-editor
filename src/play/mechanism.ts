@@ -83,6 +83,11 @@ export type PlayMechanismSource = {
   members?: Record<string, CollisionSnapshot>;
   /** Source-bound canonical surfaces, separate from world-space member meshes. */
   memberLocals?: Record<string, import("./types").PlayMemberLocalGeometry>;
+  /** Source child collision ownership for a packed real motor; never new parts. */
+  motorComponents?: Record<
+    string,
+    import("./motor-source-components").MotorSourceComponentCapture
+  >;
   /** Optional shared occurrence index of `project` (avoids re-expansion per rig). */
   lookup?: ReadonlyMap<string, Occurrence>;
 };

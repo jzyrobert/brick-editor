@@ -1,6 +1,8 @@
 import { MechanicalQueryWorld } from "./mechanical-query-world";
 import { prepareMechanicalSources } from "./mechanical-solids";
 import { loadReviewedMechanicalProxies } from "./reviewed-mechanical-proxies";
+import { loadArocsBallContacts } from "./arocs-ball-contacts";
+import { loadMotorSourceComponents } from "./motor-source-components";
 import { add, mv } from "../core/math";
 import type { DriverSeatSpec } from "../mechanisms/types";
 import {
@@ -900,7 +902,11 @@ export class PlaySession {
     // Bind lazy source-reviewed proxies before native initialization or any
     // world/event allocation. The synchronous constructor consumes this exact
     // source identity; missing or changed canonical geometry cannot fall back.
-    await loadReviewedMechanicalProxies(sources);
+    await Promise.all([
+      loadReviewedMechanicalProxies(sources),
+      loadArocsBallContacts(sources),
+      loadMotorSourceComponents(sources),
+    ]);
     validatePlayMechanismSources(sources, snapshot.revision);
     await (initialization ??= RAPIER.init());
     if (autoDoors)

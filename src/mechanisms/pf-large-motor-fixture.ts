@@ -1,5 +1,5 @@
 import { occurrences } from "../core/document";
-import { compose, identity, inverse } from "../core/math";
+import { compose, identity } from "../core/math";
 import type { Transform, Vec3 } from "../core/types";
 import { importLDraw } from "../ldraw/io";
 import { axisRotation } from "./kinematic";
@@ -55,10 +55,7 @@ export function physicalPfLargeMotorFixture(
       occurrenceIds: indexes.map((i) => all[i].id),
       frame: origin,
       restTransforms: Object.fromEntries(
-        indexes.map((i) => [
-          all[i].id,
-          compose(inverse(origin), all[i].transform),
-        ]),
+        indexes.map((i) => [all[i].id, structuredClone(all[i].transform)]),
       ),
     });
   const rig: MotionRig = {
@@ -83,7 +80,8 @@ export function physicalPfLargeMotorFixture(
         motor: {
           mode: "velocity",
           target: 90,
-          maxEffort: { value: 1, unit: "N*m" },
+          // Simulation cap for the source bench, not measured motor torque.
+          maxEffort: { value: 20, unit: "N*m" },
           binding: { occurrenceId: all[0].id, profile: PF_LARGE_MOTOR_PROFILE },
         },
       },
