@@ -101,7 +101,7 @@ Playwright runs Chromium on SwiftShader (software WebGL), which is CPU-bound and
   (set `GIT_COMMITTER_NAME`/`GIT_COMMITTER_EMAIL` the same). Messages: an imperative subject saying what changed for the user ("Drive trains from the cab: …"), a body explaining why and how, with measurements where relevant, then the `Co-Authored-By:` / `Claude-Session:` trailers.
 
 - Never commit `.local/`, `.impeccable/mocks/` or `.impeccable/review/`, secrets or tokens, or user-provided private models (e.g. the user's Santorini MPD files; the build script `fixtures/build-scripts/santorini.json` is ours and fine).
-- Work on a branch or worktree; rebase onto `main` before merging. Push only when asked. Only `main` is published, and only after every CI job passes; don't deploy by hand.
+- Work on a branch or worktree; rebase onto `main` before merging. Push only when asked. Only `main` is published, and only after every CI job passes; don't deploy by hand. Pull requests into `main` run the same CI (validation only), so check a PR's checks before merging.
 - Keep TODO.md, docs/STATUS.md, docs/VERIFICATION.md and `src/automation/capabilities.json` honest when you close or find work.
 
 ## Product constraints

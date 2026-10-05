@@ -3,6 +3,11 @@ name: Validate and deploy Cloudflare Pages
 on:
   push:
     branches: [main]
+  # Pull requests into main run the same build, checks and browser shards;
+  # like manual runs they validate only (publish is main-only, below), and a
+  # new push to the PR cancels its superseded run.
+  pull_request:
+    branches: [main]
   # Manual runs on any branch validate only; publish is main-only (below).
   workflow_dispatch:
 
