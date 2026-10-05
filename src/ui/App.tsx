@@ -526,6 +526,11 @@ function Workspace() {
   );
   const [galleryPending, setGalleryPending] = useState<string>();
   const [galleryError, setGalleryError] = useState("");
+  // What a failed open was, so its message can name it and try again.
+  const [galleryRetry, setGalleryRetry] = useState<{
+    entry: GalleryEntry;
+    destination: ModelTool | "Play";
+  }>();
   const [galleryModel, setGalleryModel] = useState<{
     entry: GalleryEntry;
     projectId: string;
@@ -2572,6 +2577,10 @@ function Workspace() {
       setStatus(e instanceof Error ? e.message : String(e));
     }
   };
+  // Play stages the model alone: the editor's floor grid is for building.
+  useEffect(() => {
+    renderer.current?.setGridVisible(gridOn && mode !== "Play");
+  }, [mode, gridOn]);
   const toggleGrid = (on: boolean) => {
     setGridOn(on);
     saveGridPreference(on);
@@ -4157,9 +4166,14 @@ function Workspace() {
   const navDepth = useRef(0);
   const pushNav = (nav: GalleryNav) => {
     navDepth.current++;
+    // A detail page's address opens it again (?gallery=<id>).
+    const url = new URL(location.href);
+    if (nav.view === "detail") url.searchParams.set("gallery", nav.id);
+    else url.searchParams.delete("gallery");
     history.pushState(
       { ...history.state, brickNav: nav, brickDepth: navDepth.current },
       "",
+      url,
     );
   };
   /** Steps back through our own entries, or runs `fallback` at the first. */
@@ -4199,6 +4213,7 @@ function Workspace() {
     return () => window.removeEventListener("popstate", restore);
   }, []);
   const showDetail = (id?: string) => {
+    setGalleryError("");
     if (id) {
       pushNav({ view: "detail", id });
       setGalleryDetail(id);
@@ -4316,6 +4331,7 @@ function Workspace() {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       setGalleryError(message);
+      setGalleryRetry({ entry, destination });
       setStatus(message);
     } finally {
       setGalleryPending(undefined);
@@ -4616,6 +4632,12 @@ function Workspace() {
           onImport={() => fileInput.current?.click()}
           pending={galleryPending}
           error={galleryError}
+          errorTitle={galleryRetry?.entry.title}
+          onRetryOpen={() =>
+            galleryRetry &&
+            void openGalleryModel(galleryRetry.entry, galleryRetry.destination)
+          }
+          onDismissError={() => setGalleryError("")}
         />
       )}
       {!galleryOpen && (

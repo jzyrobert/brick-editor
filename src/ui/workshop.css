@@ -297,19 +297,23 @@ a {
 .workshop-app:has(.play-overlay) .model-tool-picker {
   width: auto;
 }
+/* The entry dock already says Opening / Loading N%: no second toast. */
+.workshop-app:has(.play-entry) .status-bar {
+  display: none;
+}
 /* The pause sheet starts below the Tools button that shares its corner. */
 @media (min-width: 651px) {
   .workshop-app .play-menu {
     top: calc(var(--play-top) + 56px);
   }
 }
-/* Phones on their side: walking gets the full height; the header returns
-   with the pause sheet. */
+/* Phones on their side: Play gets the full height until Exit Play brings
+   the header back (pausing keeps the layout still under the pause sheet). */
 @media (max-height: 500px) and (min-width: 500px) {
-  .workshop-app:has(.play-overlay:not(.is-paused)) {
+  .workshop-app:has(.play-overlay) {
     --site-h: var(--safe-top);
   }
-  .workshop-app:has(.play-overlay:not(.is-paused)) .site-header {
+  .workshop-app:has(.play-overlay) .site-header {
     display: none;
   }
 }
@@ -958,6 +962,38 @@ a {
   color: var(--caution-ink);
   line-height: 1.5;
 }
+.gallery-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.gallery-error p {
+  margin: 0;
+  flex: 1 1 260px;
+}
+.gallery-error small {
+  display: block;
+  font-size: 12px;
+  opacity: 0.85;
+}
+.gallery-error > div {
+  display: flex;
+  gap: 8px;
+}
+.gallery-error button {
+  min-width: 44px;
+  display: inline-grid;
+  place-items: center;
+}
+/* Beside Explore on a detail page, the message is a card, not a strip. */
+.gallery-detail-info .gallery-error {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--caution-line);
+  border-radius: 12px;
+}
 .play-entry {
   position: absolute;
   z-index: 12;
@@ -1132,6 +1168,24 @@ a {
 @media (max-width: 760px) {
   .model-agent {
     display: none;
+  }
+  /* The main action sits under the title, above the description and facts. */
+  .gallery-detail-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .gallery-detail-info h1 {
+    order: -3;
+  }
+  .gallery-detail-info .gallery-source {
+    order: -2;
+  }
+  .gallery-detail-info .gallery-explore,
+  .gallery-detail-info .gallery-error {
+    order: -1;
+  }
+  .gallery-detail-info .gallery-explore {
+    margin: 4px 0 14px;
   }
   .workshop-app {
     --site-h: calc(68px + var(--safe-top));
@@ -1640,4 +1694,10 @@ a {
 .workspace-crash button {
   min-height: 44px;
   padding: 0 20px;
+}
+/* Short phones: a shorter stage keeps the title and Explore in view. */
+@media (max-width: 760px) and (max-height: 650px) {
+  .gallery-detail-stage > img {
+    height: 240px;
+  }
 }

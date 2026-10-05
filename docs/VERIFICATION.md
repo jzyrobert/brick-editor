@@ -1284,12 +1284,18 @@ change. These checks do not establish large-model or Photo performance.
 - **Unit:** `tests/unit/gallery-index.test.ts` and `tests/unit/gallery-publish.test.ts`: ids and names, index generation from D1 rows and its decoder, download checks (size, checksum, library release, damaged gzip), when a page reads the index, SQL quoting, one-shot folder discovery, and each prompt and agent inserted once.
 - **Browser:** `tests/browser/gallery.spec.ts` (4 tests) mocks the bucket (`tests/browser/helpers/gallery.ts`) and checks:
   - browsing by brief, shared angles, the effort filter, compare (disabled for a single build), no overflow and 44 px targets at six sizes, and Open your model;
-  - the detail page's facts and live 3D view loading on a desktop, the angle tabs, and on a 390 × 844 touch phone no MPD request until **Spin in 3D**;
+  - the detail page's facts and live 3D view loading on a desktop and on a 390 × 844 touch phone, the angle tabs, and with data saver no MPD request until **Spin in 3D**;
   - opening a build in all four tools and walking it in Play, and the save prompt protecting an edited copy;
   - a 503 or damaged MPD keeping the current model, the "needs a connection" state, and no request to the bucket on plain http without `?galleryIndex=1`.
 - **Live:** `index.json` on `gallery.bricks.robertj.in` serves 10 builds with CORS for the site and `max-age=60`; MPDs and renders are `immutable`. Screenshots of the Gallery and the live preview (desktop 1440 × 1000, phone 390 × 844) were taken against a local mirror of the live files.
 - **Design check:** Impeccable's detector found one new off-ramp font size (fixed to the 43 px display step); its other advisories predate this change.
 - **Not checked:** a physical phone (memory and frame time with the preview beside the workspace scene).
+
+## Gallery ↔ Play journey (4–5 October 2026)
+
+- **Critic loop:** an independent agent drove the built app with Playwright at 390 × 844, 360 × 600, 686 × 411 and 1080 × 1800 (touch) and 1440 × 1000, scoring the Gallery-to-Play journey each round; findings were fixed and rechecked (scores 5.5, 5, 6.5 on the earlier gallery, then rechecked on the published-builds Gallery).
+- **Browser:** `tests/browser/gallery.spec.ts` adds phones opening the live view by default and the data-saver path; `hud-layout.spec.ts` checks the rotate hint beside the Play controls; `play.spec.ts` checks Exit Play returns to the entry dock. Gallery, hud-layout, play and menus specs pass locally.
+- **Not checked:** a physical phone's memory and frame time with the live preview loading on open; the full CI suite.
 
 ## brick.build, draft checks and the recalibrated prompt (3 October 2026)
 

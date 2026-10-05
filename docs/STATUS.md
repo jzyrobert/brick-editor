@@ -944,8 +944,15 @@ two run-4 runs (GPT-6.1-Sol and Opus 5.5) on `gallery.bricks.robertj.in`.
   groups builds by model and effort, and opens them after checking each MPD's
   size, SHA-256 and library release.
 - The detail page spins the build in 3D in the Realistic look
-  (`src/ui/GalleryPreview.tsx`): on open on desktops, on **Spin in 3D** on
-  touch or narrow screens.
+  (`src/ui/GalleryPreview.tsx`) as soon as the page opens, on phones too
+  (**Spin in 3D** first only when the browser asks to save data).
+- Gallery ↔ Play journey (UX critic rounds, 4–5 October 2026): Play is the
+  first row of Tools; Exit Play stays on the model; browser Back steps
+  Play → detail → list; Enter Play waits for loading; the portrait rotate
+  prompt is a hint; desktop Play no longer starts facing the sky; an error
+  boundary replaces a blank page. Verified with `tests/browser/gallery.spec.ts`,
+  `hud-layout`, `play` and `menus` specs and Playwright walks at 390 × 844,
+  360 × 600, 686 × 411, 1080 × 1800 and 1440 × 1000.
 - Without the index (offline, or a local server without `?galleryIndex=1`) the
   Gallery says it needs a connection and offers **Open your model**.
 

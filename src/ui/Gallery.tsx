@@ -24,6 +24,10 @@ type Props = {
   onOpen: (entry: GalleryEntry, mode: ModelTool | "Play") => void;
   pending?: string;
   error: string;
+  /** The build a failed open was for, and how to try it again. */
+  errorTitle?: string;
+  onRetryOpen: () => void;
+  onDismissError: () => void;
   onImport: () => void;
   /** This device's import limit (the 3D preview checks against it). */
   maxBytes: number;
@@ -31,6 +35,8 @@ type Props = {
   openId?: string;
 };
 const count = (n: number) => n.toLocaleString("en");
+/** Where the list was scrolled, kept while Play or a tool replaces it. */
+let listScroll = 0;
 const agentLabel = (e: GalleryEntry) =>
   e.effort ? `${e.agent}, ${e.effort} effort` : e.agent;
 /** The detail page opens in live 3D everywhere; only a browser asking to
@@ -167,6 +173,9 @@ export function Gallery({
   onImport,
   maxBytes,
   openId,
+  errorTitle,
+  onRetryOpen,
+  onDismissError,
 }: Props) {
   const prompts = source.state === "ready" ? source.prompts : [];
   const [promptId, setPromptId] = useState("");
@@ -178,7 +187,14 @@ export function Gallery({
   const [filtersOpen, setFiltersOpen] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const page = useRef<HTMLElement>(null);
-  const gridScroll = useRef(0);
+  useEffect(() => {
+    // A failed open is said where the person is looking.
+    if (error)
+      page.current
+        ?.querySelector(".gallery-error")
+        ?.scrollIntoView({ block: "nearest" });
+  }, [error]);
+  const gridScroll = useRef(listScroll);
   useLayoutEffect(() => {
     // A detail page opens at its top; the list comes back where it was.
     const el = page.current;
@@ -229,6 +245,25 @@ export function Gallery({
     };
   });
   const pendingEntry = all.find((x) => x.e.id === pending)?.e;
+  const errorBanner = error && (
+    <div className="gallery-error" role="alert">
+      <p>
+        <strong>
+          Couldn’t open {errorTitle ?? "this build"}. Check your internet and
+          try again.
+        </strong>{" "}
+        <small>{error}</small>
+      </p>
+      <div>
+        <button className="primary" onClick={onRetryOpen}>
+          Try again
+        </button>
+        <button aria-label="Dismiss" onClick={onDismissError}>
+          <Icon name="close" size={18} />
+        </button>
+      </div>
+    </div>
+  );
   const footer = (
     <footer className="gallery-footer">
       <strong>One prompt. Many builds. Step inside.</strong>
@@ -285,14 +320,11 @@ export function Gallery({
       className="gallery-page"
       aria-label="Agent model gallery"
       onScroll={(e) => {
-        if (!detailId) gridScroll.current = e.currentTarget.scrollTop;
+        if (!detailId)
+          gridScroll.current = listScroll = e.currentTarget.scrollTop;
       }}
     >
-      {error && (
-        <div className="gallery-error" role="alert">
-          {error} Try opening the model again.
-        </div>
-      )}
+      {error && !detail && errorBanner}
       {pendingEntry && (
         <div className="gallery-loading" role="status">
           Opening {pendingEntry.title}…
@@ -339,9 +371,14 @@ export function Gallery({
                 onClick={() => onOpen(detail.e, "Play")}
               >
                 <Icon name="resume" />
-                Explore this model
+                {pending === detail.e.id
+                  ? "Opening…"
+                  : openId === detail.e.id
+                    ? "Continue exploring"
+                    : "Explore this model"}
                 <Icon name="arrowRight" size={18} />
               </button>
+              {error && errorBanner}
               <div
                 className="gallery-model-tools"
                 aria-label="Tools for this model"
@@ -479,6 +516,15 @@ export function Gallery({
                 aria-pressed={compare}
                 disabled={entries.length < 2}
                 onClick={() => {
+                  // Compare starts from the builds the filter shows.
+                  if (!compare) {
+                    const visible = entries.filter(
+                      (e) => !hidden.includes(e.id),
+                    );
+                    const a = visible[0] ?? entries[0];
+                    const b = visible[1] ?? entries.find((e) => e !== a);
+                    if (a && b) setPair([a.id, b.id]);
+                  }
                   setCompare((v) => !v);
                   setFiltersOpen(false);
                 }}
@@ -517,12 +563,18 @@ export function Gallery({
                         setPair(next);
                       }}
                     >
-                      {entries.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.agent}
-                          {s.effort ? ` · ${s.effort}` : ""} · {s.title}
-                        </option>
-                      ))}
+                      {/* What tells builds apart comes first: narrow
+                          pickers cut the end off. */}
+                      {entries
+                        .filter(
+                          (e) => !hidden.includes(e.id) || pair.includes(e.id),
+                        )
+                        .map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.effort ? `${s.effort} effort` : s.title} ·{" "}
+                            {s.agent}
+                          </option>
+                        ))}
                     </select>
                   </label>
                 ))}
@@ -573,7 +625,11 @@ export function Gallery({
                         onClick={() => onOpen(s, "Play")}
                       >
                         <Icon name="resume" size={16} />
-                        {openId === s.id ? "Continue" : "Explore"}
+                        {pending === s.id
+                          ? "Opening…"
+                          : openId === s.id
+                            ? "Continue"
+                            : "Explore"}
                         <span className="sr-only"> {s.title}</span>
                       </button>
                     </div>

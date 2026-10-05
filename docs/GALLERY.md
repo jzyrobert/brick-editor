@@ -28,16 +28,31 @@ warnings), its source run and the tools. Its stage is a live, spinnable 3D view
 in the Realistic look (`src/ui/GalleryPreview.tsx`): a second, small scene
 without the grid that fetches the build's MPD, checks it against the index and
 fades in over the still picture. The angle tabs swing its camera to the same
-framing as the pictures. Desktops load it when the page opens; touch devices
-and narrow screens show the picture with **Spin in 3D** first, to save data and
-battery. The scene is freed when the page closes, so at most one preview and the
-workspace exist together. `?gallery=<id>` opens a build's page.
+framing as the pictures, lifted clear of the tabs, and turning stops above the
+ground. It loads when the page opens on every device; only a browser asking to
+save data (`navigator.connection.saveData`) shows the picture with **Spin in
+3D** first. A failed view keeps the pictures and offers **Try again**. The scene
+is freed when the page closes, so at most one preview and the workspace exist
+together. `?gallery=<id>` opens a build's page.
+
+Browser Back (and a phone's back gesture) steps from Play or a tool to the
+detail page and then the list instead of leaving the site; Escape closes the
+detail page, which opens at its top while the list keeps its scroll (also
+across a trip through Play). A detail page's address carries `?gallery=<id>`, so
+reloading or sharing it opens the same build. The list marks the build that is
+open now (**Open now**, **Continue**).
 
 ## Opening and editing
 
 Explore fetches the build's MPD, checks its size, SHA-256 and library release
-against the index, imports it as a new local project and opens Play. Choose a
-tool from a detail page to open the same build in that tool.
+against the index, imports it as a new local project and opens Play; the build
+already open resumes instead. Choose a tool from a detail page to open the same
+build in that tool. Play is the first row of **Tools**, so every tool can return
+to it, and the current view is marked. The header's Play walks the build on a
+detail page, or the first build when nothing is open. Enter Play says
+**Opening…** and then **Loading N%** until every part is in place; Exit Play
+stays on the model with the entry dock. On a phone held upright Play suggests
+turning sideways with a dismissible hint (**Keep portrait**).
 The existing editor, instruction viewer, photo controls, project library,
 import/export, autosave and automation services remain in use.
 
@@ -66,7 +81,9 @@ app reads the published index only on https pages: local and test servers need
 Gallery needs a connection. Offline, or when the index can't load, it says so
 with **Try again** and **Open your model**; builds opened before stay in Cache
 Storage and open again offline. A failed or damaged build keeps the current
-document and shows the reason.
+document and says so where the person is looking (beside Explore on a detail
+page), naming the build, with **Try again** and the technical reason in small
+print.
 
 The font is local Bricolage Grotesque; retain `public/notices/BRICOLAGE.txt`.
 Existing LDraw notices remain required. No accounts, uploads, analytics or
