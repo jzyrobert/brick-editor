@@ -10,6 +10,7 @@ import {
   readArocsBallNativeCover,
 } from "../../src/play/arocs-ball-native-covers";
 import { prepareMechanicalSources } from "../../src/play/mechanical-solids";
+import { createArocsBallNativeRest } from "../../src/play/arocs-ball-native-rest";
 import { PlayDynamicsWorld } from "../../src/play/dynamics";
 import { toPhysics } from "../../src/play/physics-frame";
 import { arocsBallLinkFixture } from "../helpers/arocs-ball-link-source";
@@ -200,5 +201,41 @@ it("keeps foreign obstruction responding at either end and never admits both end
   } finally {
     d.dispose();
     character.free();
+  }
+}, 30000);
+
+it("refuses a duplicated live socket through the standalone factory and permits reconstruction only after removal", async () => {
+  const f = await arocsBallLinkFixture(),
+    tokens = await prepareArocsBallRest(f.source),
+    before = JSON.stringify(f.project),
+    world = new RAPIER.World({ x: 0, y: 0, z: 0 });
+  const first = createArocsBallNativeRest(tokens[0], world, {
+    socketAnchored: true,
+  });
+  try {
+    const counts = () => [
+      world.bodies.len(),
+      world.colliders.len(),
+      world.impulseJoints.len(),
+    ];
+    expect(counts()).toEqual([2, 5, 1]);
+    expect(() =>
+      createArocsBallNativeRest(tokens[1], world, { socketAnchored: true }),
+    ).toThrow(/one native body/);
+    expect(counts()).toEqual([2, 5, 1]);
+    first.dispose();
+    expect(counts()).toEqual([0, 0, 0]);
+    const retry = createArocsBallNativeRest(tokens[1], world, {
+      socketAnchored: true,
+    });
+    try {
+      expect(counts()).toEqual([2, 5, 1]);
+      expect(JSON.stringify(f.project)).toBe(before);
+    } finally {
+      retry.dispose();
+    }
+  } finally {
+    first.dispose();
+    world.free();
   }
 }, 30000);

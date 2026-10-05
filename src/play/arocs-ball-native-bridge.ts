@@ -34,6 +34,22 @@ const perWorld = new WeakMap<
   RAPIER.World,
   WeakMap<PreparedArocsBallRest, RAPIER.ImpulseJoint>
 >();
+// A physical source occurrence has one native owner in a world, including
+// when distinct prepared endpoints share the same socket. Dead owners permit
+// reconstruction; live owners may never be replaced by a duplicated part.
+const memberOwners = new WeakMap<
+  RAPIER.World,
+  WeakMap<
+    object,
+    Map<
+      string,
+      {
+        body: RAPIER.RigidBody;
+        classes: ReadonlyMap<ArocsBallNativeCover, RAPIER.Collider>;
+      }
+    >
+  >
+>();
 // Only verified controller closures are registered; a public state object or
 // copied shape cannot exempt another assembly's contact from readiness checks.
 const activePairs = new WeakMap<
@@ -176,6 +192,36 @@ export function createArocsBallRestJoint(
     "INVALID_INPUT",
     "This native source bearing already has its seating constraint.",
   );
+  let sources = memberOwners.get(world);
+  if (!sources) {
+    sources = new WeakMap();
+    memberOwners.set(world, sources);
+  }
+  let owners = sources.get(verified.seal.source);
+  if (!owners) {
+    owners = new Map();
+    sources.set(verified.seal.source, owners);
+  }
+  const pending = [verified.seal.ball, verified.seal.socket].map((m) => {
+    const body = m.id === verified.seal.ball.id ? a.ball : a.socket,
+      owned = verified.covers.filter((c) => c.body === body),
+      previous = owners.get(m.id);
+    if (previous?.body.isValid())
+      ensure(
+        previous.body === body &&
+          previous.classes.size === owned.length &&
+          owned.every(
+            (c) => previous.classes.get(c.entry.cover) === c.entry.collider,
+          ),
+        "INVALID_INPUT",
+        "A source part must keep one native body and its exact collider classes.",
+      );
+    return {
+      id: m.id,
+      body,
+      classes: new Map(owned.map((c) => [c.entry.cover, c.entry.collider])),
+    };
+  });
   const joint = world.createImpulseJoint(
     RAPIER.JointData.spherical(verified.ball.anchor, verified.socket.anchor),
     a.ball,
@@ -183,6 +229,7 @@ export function createArocsBallRestJoint(
     true,
   );
   joint.setContactsEnabled(true);
+  for (const owner of pending) owners.set(owner.id, owner);
   joints.set(joint, { prepared, world, ball: a.ball, socket: a.socket });
   let map = perWorld.get(world);
   if (!map) {
