@@ -39,7 +39,7 @@ export const FLEXIBLE_HOSE_SOURCES = Object.freeze({
   },
 });
 /** Full literal fallback geometry fingerprints, independent of model names.
- * Proprietary PATH authoring metadata is neither read nor copied. */
+ * PATH authoring metadata is neither required nor copied here. */
 export const REVIEWED_FLEXIBLE_GEOMETRY = Object.freeze([
   "d4b15c2c0e53be857723129ceb5287264ffc3b8cbda29cc1f11c944402c3dd78",
   "a21a6f48fb4024146ab228fa7da2d87a05d589af048469e8ed06d99a17d22fec",
