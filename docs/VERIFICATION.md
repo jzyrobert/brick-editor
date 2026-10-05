@@ -2102,3 +2102,14 @@ The corrected production build passes (Vite 46.95 s), full formatting passes,
 and the three failed browser cases pass together in 2.3 minutes: blocked-seat
 boarding/exit/reverse recovery and the desktop/phone full chooser. No collision
 allowance, seat clearance, source placement or template layout is weakened.
+
+The corrected main run passed those seat and chooser cases, but a timed train
+hint observation expired at 600 × 360. That isolated case passed locally;
+retrying the shard passed 600 × 360 but exposed the same observation race at
+800 × 360. The test now installs an animation-frame observer before entering
+Play, and retains the two control rectangles only while the look hint is
+visible (opacity above 0.5) and the actual Stop train control is present. The
+existing 15-second wait reads that captured frame after the tap resolves. All
+three train viewports pass together in 4.2 minutes. The running-state overlap
+assertion, other layout checks, six-second product timers and time limits remain
+unchanged; no runtime or UI change was needed.
