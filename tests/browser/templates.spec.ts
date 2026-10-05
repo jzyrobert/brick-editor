@@ -50,6 +50,7 @@ const CARDS = [
   "Large motor",
   "Twin motor table",
   "Rack guide",
+  "Air pump & cylinder",
   "Blank canvas",
 ];
 

@@ -1317,7 +1317,16 @@ function Workspace() {
     // left button stays free for taps, boxes and lassos; Navigate keeps pan.
     r.controls.mouseButtons.RIGHT = orbit ? 2 : 0;
     r.controls.touches.ONE = orbit ? 0 : (null as any);
-    r.controls.enabled = mode !== "Play";
+    // Play's entry view is the live model: turn, pan and zoom it before
+    // walking. An active walk or drive takes the camera itself (the play
+    // view disables these controls and restores them when it ends).
+    if (mode === "Play") {
+      r.controls.enableRotate = true;
+      r.controls.mouseButtons.LEFT = 0;
+      r.controls.mouseButtons.RIGHT = 2;
+      r.controls.touches.ONE = 0;
+    }
+    r.controls.enabled = mode !== "Play" || !play.current?.getState().active;
   }, [tool, mode, transientView, guideOpen]);
   useEffect(() => {
     if (mode === "Instructions" && !ownsTransientView() && !guideOpen)
