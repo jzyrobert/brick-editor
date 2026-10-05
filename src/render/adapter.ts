@@ -3865,6 +3865,8 @@ export class SceneAdapter {
     adjustedTarget: THREE.Vector3;
   };
   private clearViewInset() {
+    // Nothing applied yet (or a bare adapter in a test): nothing to undo.
+    if (!this.insetShift) return;
     const camera = this.camera;
     const base = this.insetBase;
     this.insetBase = undefined;
@@ -3889,7 +3891,7 @@ export class SceneAdapter {
     this.insetZoom = 1;
   }
   private applyViewInset() {
-    if (this.captureActive || this.playViewActive) return;
+    if (!this.viewInsets || this.captureActive || this.playViewActive) return;
     this.clearViewInset();
     const w = this.element.clientWidth,
       h = this.element.clientHeight;
