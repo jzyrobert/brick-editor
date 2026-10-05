@@ -49,6 +49,10 @@ export type NativePneumaticPump = NativePneumaticStroke & {
   chamber: string;
   outlet: string;
   areaM2: number;
+  /** Source pump admission can require actual pressure reaction to remain
+   * inside its native effort envelope, rather than clip resistance while
+   * silently continuing chamber compression. Engineering callers default off. */
+  requireUnclippedReaction?: boolean;
 };
 type Sample = {
   stroke: number;
@@ -237,7 +241,10 @@ export class NativePneumaticCircuit {
     }
     for (const p of this.pumps) {
       ensure(
-        have(p.chamber, p.outlet) && positive(p.areaM2, 1),
+        have(p.chamber, p.outlet) &&
+          positive(p.areaM2, 1) &&
+          (p.requireUnclippedReaction === undefined ||
+            typeof p.requireUnclippedReaction === "boolean"),
         "INVALID_INPUT",
         "Pumps need a chamber, separate outlet and bounded area",
       );
@@ -381,12 +388,15 @@ export class NativePneumaticCircuit {
           (pressures.get(p.base)! - this.atmospherePa) * p.areaBaseM2 -
           (pressures.get(p.cap)! - this.atmospherePa) * p.areaCapM2,
       });
-    for (const p of this.pumps)
-      impulses.push({
-        port: p,
-        sample: samples.get(p.id)!,
-        force: -(pressures.get(p.chamber)! - this.atmospherePa) * p.areaM2,
-      });
+    for (const p of this.pumps) {
+      const force = -(pressures.get(p.chamber)! - this.atmospherePa) * p.areaM2;
+      ensure(
+        !p.requireUnclippedReaction || Math.abs(force) <= p.maxForceN,
+        "LIMIT_EXCEEDED",
+        "The pump pressure exceeds its supported native reaction. Release pressure before pumping again.",
+      );
+      impulses.push({ port: p, sample: samples.get(p.id)!, force });
+    }
     for (const [id, gas] of charge) this.charge.set(id, gas);
     this.gasFromAtmosphere += intake;
     this.gasToAtmosphere += released;
