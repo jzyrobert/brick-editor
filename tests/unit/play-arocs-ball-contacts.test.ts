@@ -1,16 +1,13 @@
-import { readFileSync } from "node:fs";
 import RAPIER from "@dimforge/rapier3d-compat";
 import { Quaternion, Vector3 } from "three";
 import { beforeAll, expect, it } from "vitest";
-import {
-  fullLibrarySources,
-  registerFullLibraryFromDisk,
-} from "../../scripts/full-library-node";
-import { importLDraw, exportLDraw } from "../../src/ldraw/io";
+import { registerFullLibraryFromDisk } from "../../scripts/full-library-node";
+import { exportLDraw } from "../../src/ldraw/io";
 import { occurrences } from "../../src/core/document";
-import { add, compose, mv, orthonormalized } from "../../src/core/math";
+
 import type { Transform, Vec3 } from "../../src/core/types";
 import { partsList } from "../../src/inventory/parts-list";
+import { physicalPlayEligibility } from "../../src/mechanisms/physical-play";
 import { axisRotation } from "../../src/mechanisms/kinematic";
 import {
   loadArocsBallContacts,
@@ -25,77 +22,9 @@ import {
   basisFromRotation,
 } from "../../src/play/physics-frame";
 import type { MechanicalSolid } from "../../src/play/mechanical-solids";
-import { playSources } from "../helpers/play-dynamic-source";
+import { arocsBallFixture as fixture } from "../helpers/arocs-ball-source";
 registerFullLibraryFromDisk();
 beforeAll(() => RAPIER.init());
-async function fixture(pose?: Transform) {
-  const project = importLDraw(
-    readFileSync(
-      "fixtures/play/official-cars/42043-ball-link-interfaces.ldr",
-      "utf8",
-    ),
-  );
-  if (pose)
-    for (const node of project.models[project.rootModelId].nodes)
-      if (node.kind === "part") node.transform = compose(pose, node.transform);
-  const all = occurrences(project),
-    ball = all.find(
-      (o) =>
-        o.node.ref === "6628.dat" &&
-        all.some(
-          (s) =>
-            s.node.ref === "32005.dat" &&
-            Math.hypot(
-              ...add(
-                o.transform.position,
-                mv(o.transform.basis, [-10, 0, 0]),
-              ).map((v, k) => v - s.transform.position[k]),
-            ) < 1e-8,
-        ),
-    )!,
-    socket = all.find(
-      (o) =>
-        o.node.ref === "32005.dat" &&
-        Math.hypot(
-          ...add(
-            ball.transform.position,
-            mv(ball.transform.basis, [-10, 0, 0]),
-          ).map((v, k) => v - o.transform.position[k]),
-        ) < 1e-8,
-    )!;
-  const groups = [ball, socket].map((o, i) => ({
-    id: i ? "socket" : "ball",
-    occurrenceIds: [o.id],
-    frame: orthonormalized(o.transform),
-    restTransforms: { [o.id]: structuredClone(o.transform) },
-  }));
-  project.motionRigs.ball = {
-    schemaVersion: 1,
-    id: "ball",
-    name: "Actual source bearing",
-    mode: "kinematic",
-    groups,
-    joints: [
-      {
-        id: "bearing",
-        kind: "spherical",
-        bodyA: "socket",
-        bodyB: "ball",
-        anchorA: [0, 0, 0],
-        anchorB: [-10, 0, 0],
-      },
-    ],
-    dynamics: {
-      groups: { socket: { anchored: true }, ball: { anchored: false } },
-    },
-  };
-  const { sources } = await playSources(
-    project,
-    ["ball"],
-    fullLibrarySources(all.map((o) => o.node.ref)),
-  );
-  return { project, source: sources[0], groups, ball, socket };
-}
 it("binds exact occurrence geometry and retains both source socket ends without phantom mating", async () => {
   const f = await fixture(),
     before = JSON.stringify(f.project),
@@ -172,6 +101,44 @@ it("rejects moving-joint edits during async binding without publishing a stale c
   f.project.motionRigs.ball.joints[0].anchorB[0] += 0.01;
   await expect(pending).rejects.toThrow("changed");
   expect(arocsBallJointIds(f.source)).toEqual([]);
+});
+it("requires the exact preflight source for ordinary ball entry and refuses disconnected compound ownership", async () => {
+  const f = await fixture(),
+    rig = f.project.motionRigs.ball,
+    all = occurrences(f.project);
+  expect(physicalPlayEligibility(f.project, rig, all).eligible).toBe(false);
+  expect(physicalPlayEligibility(f.project, rig, all, f.source).eligible).toBe(
+    false,
+  );
+  await loadArocsBallContacts([f.source]);
+  expect(physicalPlayEligibility(f.project, rig, all, f.source).eligible).toBe(
+    true,
+  );
+  expect(
+    physicalPlayEligibility(f.project, rig, all, { ...f.source }).eligible,
+  ).toBe(false);
+  const clone = structuredClone(f.project);
+  expect(
+    physicalPlayEligibility(
+      clone,
+      clone.motionRigs.ball,
+      occurrences(clone),
+      f.source,
+    ).eligible,
+  ).toBe(false);
+  const g = await fixture(),
+    extra = occurrences(g.project).find((o) => o.node.ref === "2736.dat")!;
+  g.groups[0].occurrenceIds.push(extra.id);
+  g.groups[0].restTransforms[extra.id] = structuredClone(extra.transform);
+  await loadArocsBallContacts([g.source]);
+  expect(
+    physicalPlayEligibility(
+      g.project,
+      g.project.motionRigs.ball,
+      occurrences(g.project),
+      g.source,
+    ).eligible,
+  ).toBe(false);
 });
 it.each([
   undefined,
