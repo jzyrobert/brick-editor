@@ -436,6 +436,22 @@ export function PlayMechanismControls({
                           ? (directions.current[controlKey] ?? 0)
                           : 0;
                       if (direction) input(direction * value, value);
+                      // A motor that starts by itself keeps its own motion
+                      // at the new power (it has no direction of yours).
+                      else if (
+                        motor.input === undefined &&
+                        motor.enabled &&
+                        play.getState().active &&
+                        !play.getState().paused
+                      )
+                        attempt(() =>
+                          play.setMotor({
+                            rigId: rig.id,
+                            jointId: joint.id,
+                            enabled: true,
+                            power: value,
+                          }),
+                        );
                     }}
                   />
                 </label>
@@ -476,9 +492,11 @@ export function PlayMechanismControls({
                 </div>
                 <div className="play-drive-feedback">
                   <span>
-                    {motor.input === 0 || !motor.enabled || power === 0
-                      ? "Stopped. Tap Forward or Reverse to run it."
-                      : "Keeps running until you brake or close controls."}
+                    {motor.input === undefined && motor.enabled && power > 0
+                      ? "Starts by itself. Tap a button to take over."
+                      : motor.input === 0 || !motor.enabled || power === 0
+                        ? "Stopped. Tap Forward or Reverse to run it."
+                        : "Keeps running until you brake or close controls."}
                   </span>
                 </div>
                 {runningOthers > 0 && (
@@ -624,13 +642,15 @@ export function PlayMechanismControls({
               />
             </label>
             <div className="play-drive-buttons">
+              {/* Worded like the driving pads (Go / Back). */}
               {[
-                [-1, "Hold reverse"],
-                [1, "Hold forward"],
-              ].map(([value, text]) => (
+                [-1, "Hold reverse", "Hold to go back"],
+                [1, "Hold forward", "Hold to go"],
+              ].map(([value, name, text]) => (
                 <button
                   type="button"
-                  key={text}
+                  key={name}
+                  aria-label={String(name)}
                   disabled={report.vehicleCollision?.supported === false}
                   {...heldButton(Number(value), drive)}
                 >

@@ -2294,3 +2294,9 @@ Kinematic ticks measure 61.65–76.87 ms; Dynamic ticks 16.83–29.35 ms. These 
 shared-VM observations are not a controlled speed ratio or a phone benchmark.
 Geometry, sweep and aggregate contact budgets remain unchanged. See the
 [source-interface scope](reviews/POWER-FUNCTIONS-MOTOR-L-RUNTIME.md#measured-limits).
+
+## PR #3 motor controls and third-person vehicles (5 October 2026)
+
+- **Critic loop:** three Playwright-driven rounds over the motor Controls (`large-motor`, `twin-drive`, `motor-gears`, and a refused `large-motor` with its axle moved off the motor) and third-person vehicle entry/exit with the throttle and steering pads (`car`, `jeep`), at 1080 × 1800, 390 × 844, 360 × 600, 686 × 411, 844 × 390 (touch) and 1440 × 1000. Scores: 7.0, 7.5, 7.3; the last round's two causes (refusal note hidden on phones, Power ignored by a self-starting motor) were fixed afterwards and not re-scored.
+- **Browser specs:** mechanism controls (all six layouts), large motor, twin/linked/combined controls, physics, all mechanisms and menus pass; the timed train look-hint check passes alone under load.
+- **Open:** the rotor is small in Controls at 844 × 390; Get out leaves the first-person camera facing bodywork; motor tabs are numbered rather than named by colour or role.

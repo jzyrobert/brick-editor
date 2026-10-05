@@ -1540,7 +1540,7 @@ a {
     font-size: 16px;
     white-space: normal;
   }
-  .play-entry > div:first-child > p {
+  .play-entry > div:first-child > p:not(.play-entry-refused) {
     display: none;
   }
   .play-entry-actions {
