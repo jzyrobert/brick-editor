@@ -298,3 +298,27 @@ slipping fit friction still need integration.
 ```sh
 FORCE_COLOR=0 npx vitest run tests/unit/winch-carrier-native.test.ts tests/unit/angular-equations-keyed.test.ts --maxWorkers=1
 ```
+
+`prepareWinchCollision` additionally binds all 29 members to their actual
+captured canonical oriented faces, including winding and duplicate faces,
+source namespace, frame, revision and complete dependency closure. No native
+allocation precedes this binding. The packet retains 34,729 reference source
+triangles: 33,349 literal mesh triangles in 27 owners and the existing 228
+reviewed worm/gear convex regions in the other two owners, for 255 collision
+children. Every raw native shape admits. Region coordinates already include
+the original member basis and are centered on its source part origin; the
+native body's rest rotation is identity. Source poses and inventory stay exact.
+
+Two source rotor captures retain their four actual support IDs. Complete source
+triangle/convex-vertex halfspace checks bound their initial cap-plane mismatch
+by 0.000001 LDU. This is a finite separating-plane check for the selected source
+captures, not a complete material theorem or a shaft grip. Their unilateral
+native cap reaction and contact policy still need integration. The collision
+packet remains `ordinaryAdmission: false`; it supplies neither friction fit
+nor a contact exemption. Two focused source checks cover raw shape admission,
+source retention, stale/moved captures, changed faces and winding, dependencies
+and project shadows:
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-collision.test.ts --maxWorkers=1
+```
