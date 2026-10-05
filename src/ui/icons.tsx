@@ -222,6 +222,13 @@ const paths = {
     </>
   ),
   seat: <path d="M8 3.5V13h8.5l1.5 7.5M8 13l-1.5 7.5M8 9h5" />,
+  pump: (
+    <>
+      <path d="M7 3.5h10M12 3.5v6" />
+      <rect x="8.5" y="9.5" width="7" height="11" rx="1.5" />
+      <path d="M15.5 17h3v-4.5" />
+    </>
+  ),
   exit: (
     <>
       <path d="M13 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H13" />

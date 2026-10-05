@@ -55,6 +55,7 @@ import {
   type TransmissionMap,
 } from "../mechanisms/transmissions";
 import type { DrivingTriangleSource } from "./vehicle-obstacles";
+import type { PlayPneumaticSystem } from "./pneumatic-play";
 import {
   CHARACTER_PROFILE as P,
   JOINT_TARGET_SPEED_LIMITS,
@@ -1962,6 +1963,26 @@ export class PlayDynamicsWorld {
   rig(id: string) {
     return this.rigs.get(id);
   }
+  private pneumaticSystems = new Map<string, PlayPneumaticSystem>();
+  /** An admitted air circuit whose native actors live in this world. */
+  addPneumatic(system: PlayPneumaticSystem) {
+    ensure(
+      !this.rigs.has(system.rigId) && !this.pneumaticSystems.has(system.rigId),
+      "INVALID_INPUT",
+      "Duplicate air circuit",
+    );
+    this.pneumaticSystems.set(system.rigId, system);
+  }
+  pneumatic(id: string) {
+    return this.pneumaticSystems.get(id);
+  }
+  pneumaticIds() {
+    return [...this.pneumaticSystems.keys()].sort();
+  }
+  /** Walking-world collider of a native body: walking into it pushes it. */
+  addMirror(handle: number, body: RAPIER.RigidBody) {
+    this.mirrorBodies.set(handle, body);
+  }
   rigIds() {
     return [...this.rigs.keys()].sort();
   }
@@ -2027,6 +2048,8 @@ export class PlayDynamicsWorld {
       this.player.setTranslation(next, false);
     else this.player.setNextKinematicTranslation(next);
     for (const id of this.rigIds()) this.rigs.get(id)!.beforeStep();
+    for (const id of this.pneumaticIds())
+      this.pneumaticSystems.get(id)!.beforeStep();
     const supportingBody =
       supportHandle === undefined
         ? undefined
@@ -2041,11 +2064,15 @@ export class PlayDynamicsWorld {
           return null;
         for (const rig of this.rigs.values())
           if (!rig.contactAllowed(a, b)) return null;
+        for (const system of this.pneumaticSystems.values())
+          if (!system.contactAllowed(a, b)) return null;
         return RAPIER.SolverFlags.COMPUTE_IMPULSE;
       },
       filterIntersectionPair: () => true,
     });
     for (const id of this.rigIds()) this.rigs.get(id)!.afterStep();
+    for (const id of this.pneumaticIds())
+      this.pneumaticSystems.get(id)!.afterStep();
     this.grippers.invalidate();
   }
   supportFrame(handle: number) {
@@ -2090,6 +2117,8 @@ export class PlayDynamicsWorld {
   }
   dispose() {
     this.grippers.dispose();
+    for (const system of this.pneumaticSystems.values()) system.dispose();
+    this.pneumaticSystems.clear();
     for (const rig of this.rigs.values()) rig.dispose();
     this.rigs.clear();
     this.kinematic.clear();

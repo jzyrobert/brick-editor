@@ -508,6 +508,42 @@
       ],
       "additionalProperties": false
     },
+    "pneumatics": {
+      "type": "object",
+      "properties": {
+        "skipped": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "occurrenceId": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "part": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 4096
+              }
+            },
+            "required": [
+              "occurrenceId",
+              "part",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "skipped"
+      ],
+      "additionalProperties": false
+    },
     "trains": {
       "type": "object",
       "properties": {
@@ -1238,6 +1274,152 @@
           ],
           "additionalProperties": false
         },
+        "pneumatic": {
+          "type": "object",
+          "properties": {
+            "profile": {
+              "const": "source-pneumatic-circuit-v1"
+            },
+            "pumps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "pumping": {
+                    "type": "boolean"
+                  },
+                  "strokes": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "status": {
+                    "enum": [
+                      "idle",
+                      "pumping",
+                      "stalled"
+                    ]
+                  },
+                  "pushedIn": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "id",
+                  "pumping",
+                  "strokes",
+                  "status",
+                  "pushedIn"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8
+            },
+            "pressure": {
+              "type": "object",
+              "properties": {
+                "supplyGaugePa": {
+                  "type": "number"
+                },
+                "level": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "supplyGaugePa",
+                "level"
+              ],
+              "additionalProperties": false
+            },
+            "valves": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "cylinderId": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "position": {
+                    "enum": [
+                      "out",
+                      "hold",
+                      "in"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "position"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 16
+            },
+            "cylinders": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 393409,
+                    "format": "occurrence-id"
+                  },
+                  "extension": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "extensionLdu": {
+                    "type": "number"
+                  },
+                  "strokeLdu": {
+                    "type": "number"
+                  },
+                  "moving": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "id",
+                  "extension",
+                  "extensionLdu",
+                  "strokeLdu",
+                  "moving"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 16
+            }
+          },
+          "required": [
+            "profile",
+            "pumps",
+            "pressure",
+            "valves",
+            "cylinders"
+          ],
+          "additionalProperties": false
+        },
         "grippers": {
           "type": "object",
           "maxProperties": 10000,
@@ -1934,6 +2116,152 @@
               "engine",
               "gravity",
               "bodies"
+            ],
+            "additionalProperties": false
+          },
+          "pneumatic": {
+            "type": "object",
+            "properties": {
+              "profile": {
+                "const": "source-pneumatic-circuit-v1"
+              },
+              "pumps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 393409,
+                      "format": "occurrence-id"
+                    },
+                    "pumping": {
+                      "type": "boolean"
+                    },
+                    "strokes": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "status": {
+                      "enum": [
+                        "idle",
+                        "pumping",
+                        "stalled"
+                      ]
+                    },
+                    "pushedIn": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pumping",
+                    "strokes",
+                    "status",
+                    "pushedIn"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 8
+              },
+              "pressure": {
+                "type": "object",
+                "properties": {
+                  "supplyGaugePa": {
+                    "type": "number"
+                  },
+                  "level": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "supplyGaugePa",
+                  "level"
+                ],
+                "additionalProperties": false
+              },
+              "valves": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 393409,
+                      "format": "occurrence-id"
+                    },
+                    "cylinderId": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 393409,
+                      "format": "occurrence-id"
+                    },
+                    "position": {
+                      "enum": [
+                        "out",
+                        "hold",
+                        "in"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "position"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 16
+              },
+              "cylinders": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 393409,
+                      "format": "occurrence-id"
+                    },
+                    "extension": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "extensionLdu": {
+                      "type": "number"
+                    },
+                    "strokeLdu": {
+                      "type": "number"
+                    },
+                    "moving": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "extension",
+                    "extensionLdu",
+                    "strokeLdu",
+                    "moving"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 16
+              }
+            },
+            "required": [
+              "profile",
+              "pumps",
+              "pressure",
+              "valves",
+              "cylinders"
             ],
             "additionalProperties": false
           },

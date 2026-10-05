@@ -1,3 +1,4 @@
+import { sourceStamp } from "../mechanisms/frozen-source";
 import { directReferences } from "../catalog/full-pack";
 import { sha256 } from "../core/hash";
 import { inverse, mv, nearlyPhysical, orthonormalized } from "../core/math";
@@ -42,7 +43,7 @@ type Seal = {
   members: readonly Member[];
 };
 const seals = new WeakMap<PreparedPneumaticPump, Seal>();
-function stamp(project: Project) {
+function fullStamp(project: Project) {
   let length = 0;
   return JSON.stringify(
     Object.entries(project.models).map(([id, m]) => {
@@ -57,6 +58,9 @@ function stamp(project: Project) {
     }),
   );
 }
+/** Frozen Play snapshots are stamped once; other projects every time. */
+const stamp = (project: Project) =>
+  sourceStamp(project, "pump", () => fullStamp(project));
 /** The three fixed factory case components are certified by the pinned pump
  * shortcuts and literal source surfaces, not proximity or shared transforms.
  * Original 2015 stepped outlet and current pinned rod remain separate owners. */

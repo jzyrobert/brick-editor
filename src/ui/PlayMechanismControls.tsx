@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PlayGripperControls } from "./PlayGripperControls";
+import { PlayPneumaticControls } from "./PlayPneumaticControls";
 import { Icon } from "./icons";
 import type { PlayMechanismReport } from "../play/types";
 import type { BrowserPlay } from "../play/browser";
@@ -376,6 +377,14 @@ export function PlayMechanismControls({
               ))}
             </select>
           </label>
+        )}
+        {report.pneumatic && (
+          <PlayPneumaticControls
+            play={play}
+            rigId={rig.id}
+            report={report.pneumatic}
+            onError={onError}
+          />
         )}
         {dynamic && report.grippers && (
           <PlayGripperControls

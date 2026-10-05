@@ -49,6 +49,11 @@ import {
   type ScriptTemplateName,
 } from "../src/catalog/script-templates";
 import { compileScriptTemplate } from "./script-templates-node";
+import { airPumpSampleSource } from "./pneumatic-sample-node";
+import {
+  AIR_PUMP_SAMPLE,
+  registerAirPumpSource,
+} from "../src/catalog/air-pump-sample";
 
 export const TEMPLATE_BUILDS = [
   { name: "house", file: "house-with-garden.mpd", source: houseSource },
@@ -98,6 +103,7 @@ const CAMERAS: Partial<Record<TemplateName, CameraSpec>> = {
   "large-motor": cam([210, -210, -280], [0, -35, -20], 38),
   "twin-drive": cam([440, -280, -460], [90, -35, 60], 38),
   "rack-drive": cam([240, -210, -430], [-35, -25, 0], 38),
+  "air-pump": cam([420, -330, -540], [110, -30, 30], 40),
   harbour: cam([1900, -1700, -2700], [60, -280, -80], 40),
 };
 
@@ -156,6 +162,19 @@ for (const name of Object.keys(MOTION_SAMPLES) as MotionSampleName[]) {
     `${name}: ${occurrences(project).length} pieces; authored rigs valid`,
   );
 }
+// The air pump sample: reviewed pneumatic hardware nests and its tubes sit
+// off the stud grid, so validate its crate rig rather than occupancy.
+{
+  const text = airPumpSampleSource();
+  writeFileSync("fixtures/ldraw/templates/" + AIR_PUMP_SAMPLE.file, text);
+  registerAirPumpSource(text);
+  const project = template("air-pump");
+  for (const rig of Object.values(project.motionRigs))
+    validateRig(project, rig);
+  console.log(
+    `air-pump: ${occurrences(project).length} pieces; authored rigs valid`,
+  );
+}
 if (failed) throw new Error("A template build failed its checks");
 
 if (!process.argv.includes("--check")) {
@@ -165,9 +184,11 @@ if (!process.argv.includes("--check")) {
   for (const card of TEMPLATE_CARDS.filter((c) => c.name !== "blank")) {
     const source = isMotionSample(card.name)
       ? MOTION_SAMPLES[card.name].file
-      : isScriptTemplate(card.name)
-        ? SCRIPT_TEMPLATES[card.name].file
-        : TEMPLATE_BUILDS.find((b) => b.name === card.name)?.file;
+      : card.name === AIR_PUMP_SAMPLE.name
+        ? AIR_PUMP_SAMPLE.file
+        : isScriptTemplate(card.name)
+          ? SCRIPT_TEMPLATES[card.name].file
+          : TEMPLATE_BUILDS.find((b) => b.name === card.name)?.file;
     if (!source) throw new Error(`No source recorded for ${card.name}`);
     writeFileSync(
       `public/templates/${card.name}.webp.json`,

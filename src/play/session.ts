@@ -1,3 +1,4 @@
+import { Quaternion, Vector3 } from "three";
 import { MechanicalQueryWorld } from "./mechanical-query-world";
 import { prepareMechanicalSources } from "./mechanical-solids";
 import { loadReviewedMechanicalProxies } from "./reviewed-mechanical-proxies";
@@ -57,6 +58,11 @@ import {
   type DynamicRigSource,
 } from "./dynamics";
 import RAPIER from "@dimforge/rapier3d-compat";
+import { PlayPneumaticSystem } from "./pneumatic-play";
+import type {
+  PneumaticPlaySkip,
+  PreparedPneumaticPlay,
+} from "./pneumatic-play-source";
 import {
   AVATAR_MOTION,
   advanceMotion,
@@ -85,6 +91,7 @@ import {
   type PlayInput,
   type PlayJointTargetRequest,
   type PlayMotorRequest,
+  type PlayPneumaticRequest,
   type PlayGrabRequest,
   type PlayGripRequest,
   type PlayAutoDoorSwing,
@@ -143,6 +150,12 @@ export type PlayTrainSource = {
   derived: DerivedTrains;
   meshes: Record<string, CollisionSnapshot>;
 };
+/** A prepared air circuit and its group meshes (world LDU), plus refusals. */
+export type PlayPneumaticSource = {
+  prepared?: PreparedPneumaticPlay;
+  meshes: Record<string, CollisionSnapshot>;
+  skipped: PneumaticPlaySkip[];
+};
 export class PlaySession {
   private mechanisms = new Map<string, PlayMechanism>();
   private trains?: TrainWorld;
@@ -197,6 +210,13 @@ export class PlaySession {
     { chassisGroup: string; geometry: MechanismViewGeometry }
   >();
   private seatedColliders: RAPIER.Collider[] = [];
+  /** Air-circuit parts that stay still, with reasons. */
+  private pneumaticSkipped: PneumaticPlaySkip[] = [];
+  /** Walking-world copies of the moving air-circuit rods. */
+  private pneumaticMirrors: Array<{
+    collider: RAPIER.Collider;
+    body: RAPIER.RigidBody;
+  }> = [];
   private seatEligibilityCache?: { key: string; result: PlaySeatEligibility };
   private world: RAPIER.World;
   private collider: RAPIER.Collider;
@@ -273,7 +293,9 @@ export class PlaySession {
     mechanismSource?: PlayMechanismSource | PlayMechanismSource[],
     autoDoors?: { doors: AutoDoor[]; skipped: AutoDoorSkip[] },
     trains?: PlayTrainSource,
+    pneumatics?: PlayPneumaticSource,
   ) {
+    this.pneumaticSkipped = [...(pneumatics?.skipped ?? [])];
     this.worldProfile = {
       ...validatePlayWorldProfile(
         snapshot.worldProfile
@@ -399,7 +421,19 @@ export class PlaySession {
       const dynamicSources = allSources.filter((source) =>
         dynamicIds.has(source.rigId),
       ) as DynamicRigSource[];
-      if (dynamicSources.length) {
+      // An admitted air circuit always simulates its rods dynamically; it
+      // needs the complete static world its rods can touch.
+      let pneumatic = pneumatics?.prepared;
+      if (pneumatic && !this.ready) {
+        this.pneumaticSkipped.push({
+          occurrenceId: pneumatic.candidate.pumps[0].owners[0],
+          part: "42043 - 2943-v2.dat",
+          reason:
+            "The air circuit needs the build's complete collision, so it stays still.",
+        });
+        pneumatic = undefined;
+      }
+      if (dynamicSources.length || pneumatic) {
         ensure(
           this.ready,
           "INVALID_INPUT",
@@ -463,6 +497,15 @@ export class PlaySession {
           this.dynamics.addKinematicRig(id, mechanism.movingShapes());
           this.dynamics.syncKinematicRig(id, mechanism.groupFrames(), true);
         }
+      if (pneumatic && this.dynamics) {
+        const system = new PlayPneumaticSystem(
+          this.dynamics.world,
+          pneumatic,
+          revision,
+        );
+        this.dynamics.addPneumatic(system);
+        this.addPneumaticColliders(system, pneumatic, pneumatics!.meshes);
+      }
       if (
         allSources.some(
           (source) => source.project.motionRigs[source.rigId].vehicle,
@@ -757,12 +800,91 @@ export class PlaySession {
       limits: [negative ? -negative : 0, positive],
     };
   }
+  /** Walking-world colliders of the air circuit's native parts: fixed cases
+   * and bodies (left out of the static world), and rod copies that follow
+   * their native bodies every tick. */
+  private addPneumaticColliders(
+    system: PlayPneumaticSystem,
+    prepared: PreparedPneumaticPlay,
+    meshes: Record<string, CollisionSnapshot>,
+  ) {
+    const bodies = system.movingBodies();
+    for (const group of prepared.candidate.rig.groups) {
+      const mesh = meshes[group.id];
+      ensure(
+        mesh &&
+          mesh.revision === this.revision &&
+          !mesh.unsupported &&
+          mesh.indices.length > 0 &&
+          validMesh(mesh.vertices, mesh.indices),
+        "INVALID_INPUT",
+        "The air circuit needs complete geometry from this revision",
+      );
+      const body = bodies.get(group.id),
+        v = new Float32Array(mesh.vertices.length),
+        t = body?.translation() ?? { x: 0, y: 0, z: 0 },
+        r = body?.rotation() ?? { x: 0, y: 0, z: 0, w: 1 },
+        inverseRotation = new Quaternion(r.x, r.y, r.z, r.w).invert(),
+        p = new Vector3();
+      for (let i = 0; i < v.length; i += 3) {
+        p.set(
+          mesh.vertices[i] * S - t.x,
+          -mesh.vertices[i + 1] * S - t.y,
+          -mesh.vertices[i + 2] * S - t.z,
+        ).applyQuaternion(inverseRotation);
+        v[i] = p.x;
+        v[i + 1] = p.y;
+        v[i + 2] = p.z;
+      }
+      const collider = this.world.createCollider(
+        RAPIER.ColliderDesc.trimesh(v, Uint32Array.from(mesh.indices))
+          .setTranslation(t.x, t.y, t.z)
+          .setRotation(r),
+      );
+      if (body) {
+        this.pneumaticMirrors.push({ collider, body });
+        this.dynamics!.addMirror(collider.handle, body);
+      }
+    }
+  }
+  private syncPneumaticMirrors() {
+    for (const { collider, body } of this.pneumaticMirrors) {
+      collider.setTranslation(body.translation());
+      collider.setRotation(body.rotation());
+    }
+  }
+  /** Hold the pump or set an air-circuit valve by its effect on the rod. */
+  setPneumatic(input: PlayPneumaticRequest) {
+    this.alive();
+    ensure(
+      input && typeof input === "object" && !Array.isArray(input),
+      "INVALID_INPUT",
+      "Air circuit request must be an object",
+    );
+    keys(input, ["rigId", "pumping", "pumpId", "valves"]);
+    const ids = this.dynamics?.pneumaticIds() ?? [];
+    ensure(
+      ids.length,
+      "INVALID_INPUT",
+      this.pneumaticSkipped[0]?.reason ??
+        "This build has no working air circuit",
+    );
+    const id = input.rigId ?? (ids.length === 1 ? ids[0] : undefined);
+    ensure(
+      id !== undefined && ids.includes(id),
+      "INVALID_INPUT",
+      "Choose an air circuit rigId",
+    );
+    this.dynamics!.pneumatic(id)!.control(input);
+    return this.snapshot();
+  }
   static async create(
     snapshot: CollisionSnapshot,
     request: PlayRequest = {},
     mechanismSource?: PlayMechanismSource | PlayMechanismSource[],
     autoDoors?: { doors: AutoDoor[]; skipped: AutoDoorSkip[] },
     trains?: PlayTrainSource,
+    pneumatics?: PlayPneumaticSource,
   ): Promise<PlaySession> {
     ensure(
       request && typeof request === "object",
@@ -784,6 +906,7 @@ export class PlaySession {
       "cameraSettings",
       "worldProfile",
       "trains",
+      "pneumatics",
     ]);
     const requestedWorld = validatePlayWorldProfile(request.worldProfile);
     const resolvedWorld = validatePlayWorldProfile(
@@ -956,6 +1079,7 @@ export class PlaySession {
       mechanismSource,
       autoDoors,
       trains,
+      pneumatics,
     );
   }
   private alive() {
@@ -1537,6 +1661,8 @@ export class PlaySession {
     for (const mechanism of this.mechanisms.values()) mechanism.clearInput();
     for (const id of this.dynamics?.rigIds() ?? [])
       this.dynamics!.rig(id)!.clearInput();
+    for (const id of this.dynamics?.pneumaticIds() ?? [])
+      this.dynamics!.pneumatic(id)!.release();
     this.setInput({});
     this.accumulator = 0;
     this.jumpHeld = false;
@@ -1834,6 +1960,7 @@ export class PlaySession {
           ? this.support.handle
           : undefined,
       );
+      this.syncPneumaticMirrors();
     }
     if (this.controlledVehicle) {
       this.previous = [...this.feet];
@@ -2923,11 +3050,17 @@ export class PlaySession {
             },
           ] as const;
         }),
+        ...(this.dynamics?.pneumaticIds() ?? []).map(
+          (id) => [id, this.dynamics!.pneumatic(id)!.snapshot()] as const,
+        ),
       ].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
     );
     const rigCount = Object.keys(mechanisms).length;
     return {
       ...(this.autoDoors ? { autoDoors: structuredClone(this.autoDoors) } : {}),
+      ...(this.pneumaticSkipped.length
+        ? { pneumatics: { skipped: structuredClone(this.pneumaticSkipped) } }
+        : {}),
       ...(this.trains
         ? {
             trains: {

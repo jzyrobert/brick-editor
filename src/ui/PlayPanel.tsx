@@ -933,7 +933,7 @@ export function PlayPanel({
                     : {}),
                 // Static build keeps every part still, doors included.
                 ...(mechanismMode === "static" && Object.keys(rigs).length
-                  ? { autoDoors: false }
+                  ? { autoDoors: false, pneumatics: false }
                   : {}),
               })
               .then(explainFly),
@@ -1050,6 +1050,7 @@ export function PlayPanel({
     (rig) =>
       !!mechanisms[rig.id] &&
       (independentRigIds.has(rig.id) ||
+        !!mechanisms[rig.id].pneumatic ||
         Object.keys(mechanisms[rig.id].grippers ?? {}).length > 0 ||
         (rig.vehicle &&
           mechanisms[rig.id].vehicleCollision?.supported !== false)),

@@ -1,3 +1,4 @@
+import { sourceStamp } from "./frozen-source";
 import { directReferences } from "../catalog/full-pack";
 import { sha256 } from "../core/hash";
 import { encodePath, occurrences } from "../core/document";
@@ -65,7 +66,7 @@ type Bound = {
   refs: ReadonlySet<string>;
 };
 const bindings = new WeakMap<PneumaticSourceBinding, Bound>();
-const stamp = (project: Project) => {
+const fullStamp = (project: Project) => {
   ensure(
     Object.keys(project.models).length <= 4096,
     "LIMIT_EXCEEDED",
@@ -85,6 +86,9 @@ const stamp = (project: Project) => {
   }
   return JSON.stringify(rows);
 };
+/** Frozen Play snapshots are stamped once; other projects every time. */
+const stamp = (project: Project) =>
+  sourceStamp(project, "routing", () => fullStamp(project));
 /** Wrapper FILE/NOFILE records belong to the container, not the literal part.
  * Other source records, including BFC and reference transforms, are retained. */
 export function normalizedPneumaticSource(text: string) {

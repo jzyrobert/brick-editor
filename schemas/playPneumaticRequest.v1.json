@@ -1,0 +1,43 @@
+{
+  "$id": "playPneumaticRequest",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "rigId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "pumping": {
+      "type": "boolean"
+    },
+    "pumpId": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 393409,
+      "format": "occurrence-id"
+    },
+    "valves": {
+      "type": "object",
+      "maxProperties": 16,
+      "additionalProperties": {
+        "enum": [
+          "out",
+          "hold",
+          "in"
+        ]
+      },
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "__proto__",
+            "constructor",
+            "prototype"
+          ]
+        }
+      }
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

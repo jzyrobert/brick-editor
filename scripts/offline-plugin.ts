@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { shardOf } from "../src/catalog/full-connector-pack";
+import { PNEUMATIC_PLAY_LIBRARY_ROOTS } from "../src/play/pneumatic-library-roots";
 import { join } from "node:path";
 import type { Plugin } from "vite";
 function publicFiles(path = "public", prefix = ""): string[] {
@@ -25,6 +26,10 @@ export function templateLibraryFiles(root = "public") {
         /^\s*1\s+\S+(?:\s+\S+){12}\s+(.+?)\s*$/gm,
       ))
         refs.add(m[1].toLowerCase());
+  // The Air pump sample's Play check also reads the pump's factory
+  // shortcuts, which the sample itself does not place.
+  if (existsSync(join(dir, "air-pump.mpd")))
+    for (const ref of PNEUMATIC_PLAY_LIBRARY_ROOTS) refs.add(ref);
   const curated = new Set(
     Object.keys(
       JSON.parse(readFileSync("src/catalog/data.json", "utf8")).catalog,

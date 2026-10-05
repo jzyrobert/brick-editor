@@ -10,6 +10,10 @@ import {
   registerScriptTemplateSource,
   type ScriptTemplateName,
 } from "../src/catalog/script-templates";
+import {
+  AIR_PUMP_SAMPLE,
+  registerAirPumpSource,
+} from "../src/catalog/air-pump-sample";
 import { registerAgentData } from "./build-script-cli";
 import { registerFullLibraryFromDisk } from "./full-library-node";
 
@@ -28,7 +32,8 @@ export function compileScriptTemplate(name: ScriptTemplateName) {
   return compileBuildScript(script, { check: false }).ldraw;
 }
 
-/** Registers every committed sample source; returns the names found. */
+/** Registers every committed sample source; returns the build-script
+ * names found. The on-demand Air pump sample is registered too. */
 export function registerScriptTemplatesFromDisk() {
   const found: ScriptTemplateName[] = [];
   for (const name of Object.keys(SCRIPT_TEMPLATES) as ScriptTemplateName[]) {
@@ -38,5 +43,7 @@ export function registerScriptTemplatesFromDisk() {
     registerScriptTemplateSource(name, readFileSync(file, "utf8"));
     found.push(name);
   }
+  const airPump = root + "fixtures/ldraw/templates/" + AIR_PUMP_SAMPLE.file;
+  if (existsSync(airPump)) registerAirPumpSource(readFileSync(airPump, "utf8"));
   return found;
 }

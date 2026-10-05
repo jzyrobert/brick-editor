@@ -76,6 +76,11 @@ export type PlayRequest = {
    * trains are session-only and never written to the project.
    */
   trains?: boolean;
+  /**
+   * Run a complete reviewed air circuit (pump, valves, cylinders and tubes;
+   * default true). Its rods move with Dynamic physics in a session-only rig.
+   */
+  pneumatics?: boolean;
   locomotion?: PlayLocomotion;
   cameraMode?: PlayCameraMode;
   position?: Vec3;
@@ -254,8 +259,47 @@ export type PlayDynamicsReport = {
   /** Forward chassis speed, LDU/second. */
   speed?: number;
 };
+/** Session controls of an admitted air circuit (`pneumatic:N` rigs). */
+export type PlayPneumaticRequest = {
+  rigId?: string;
+  /** Hold (true) or let go of the pump handle; omit to leave it. */
+  pumping?: boolean;
+  /** One pump of the circuit; omit for all of them. */
+  pumpId?: string;
+  /** Valve lever by its effect on the routed cylinder rod. */
+  valves?: Record<string, "out" | "hold" | "in">;
+};
+export type PlayPneumaticReport = {
+  profile: "source-pneumatic-circuit-v1";
+  pumps: Array<{
+    id: string;
+    pumping: boolean;
+    /** Completed push strokes since Play started. */
+    strokes: number;
+    status: "idle" | "pumping" | "stalled";
+    /** 0 pulled fully out .. 1 pushed fully in. */
+    pushedIn: number;
+  }>;
+  /** Supply line: gauge pascals and the fraction of what a hand can reach. */
+  pressure: { supplyGaugePa: number; level: number };
+  valves: Array<{
+    id: string;
+    cylinderId?: string;
+    position: "out" | "hold" | "in";
+  }>;
+  cylinders: Array<{
+    id: string;
+    /** 0 fully in .. 1 fully out within the retained stroke. */
+    extension: number;
+    extensionLdu: number;
+    strokeLdu: number;
+    moving: boolean;
+  }>;
+};
 export type PlayMechanismReport = MechanismSnapshot & {
   blocked: boolean;
+  /** Present on an admitted air circuit's session rig. */
+  pneumatic?: PlayPneumaticReport;
   blockedReason?: string;
   jointTargets: Record<string, PlayJointTargetReport>;
   vehicleCollision?: PlayVehicleCollisionReport;
@@ -319,6 +363,10 @@ export type PlayAutoDoorsReport = {
 };
 export type PlaySnapshotReport = {
   autoDoors?: PlayAutoDoorsReport;
+  /** Pneumatic parts that stay still, each with a reason. */
+  pneumatics?: {
+    skipped: Array<{ occurrenceId: string; part: string; reason: string }>;
+  };
   /** Running trains on official track (session-only; docs/PLAY-TRAINS.md). */
   trains?: PlayTrainsReport & { riding?: string };
   occupancy?: PlayOccupancy;
