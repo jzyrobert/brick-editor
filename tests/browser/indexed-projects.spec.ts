@@ -42,7 +42,9 @@ test("legacy source migrates on save without deleting backup and corrupted newes
       payload: { title: "Migrated revision" },
     });
   });
-  await expect(page.locator(".save-state")).toHaveText("Saved revision 2");
+  await expect(page.locator(".save-state")).toHaveText(
+    "Saved on this device · version 2",
+  );
   expect(
     await page.evaluate(
       () =>
@@ -105,9 +107,12 @@ test("project exceeding localStorage quota remains durable through two revisions
   );
   // The default localStorage envelope previously threw QuotaExceededError at this size.
   await page.evaluate(() => window.brickEditor!.ready());
-  await expect(page.locator(".save-state")).toHaveText("Saved revision 1", {
-    timeout: 60000,
-  });
+  await expect(page.locator(".save-state")).toHaveText(
+    "Saved on this device · version 1",
+    {
+      timeout: 60000,
+    },
+  );
   const before = await page.evaluate(async () =>
     Array.from(
       (await window.brickEditor!.project.export({ format: "native" })).bytes,
@@ -131,9 +136,12 @@ test("project exceeding localStorage quota remains durable through two revisions
       payload: { title: "Durable large project" },
     });
   });
-  await expect(page.locator(".save-state")).toHaveText("Saved revision 3", {
-    timeout: 60000,
-  });
+  await expect(page.locator(".save-state")).toHaveText(
+    "Saved on this device · version 3",
+    {
+      timeout: 60000,
+    },
+  );
   await page.reload();
   await expect(page.getByLabel("Project title")).toHaveValue(
     "Durable large project",

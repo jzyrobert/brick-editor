@@ -173,7 +173,7 @@ for (const viewport of [
       // A template just opened has nothing unsaved (it is autosaved for
       // recovery, so the state may already read "Saved").
       await expect(page.locator(".save-state")).toHaveText(
-        /^(No changes|Saving…|Saved revision \d+)$/,
+        /^(No changes|Saving…|Saved on this device · version \d+)$/,
       );
       await page.screenshot({ path: `${shots}${file}-${viewport.width}.png` });
     }

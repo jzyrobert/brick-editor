@@ -56,9 +56,12 @@ test("a large autosaved project recovers without freezing the page @perf", async
     await a.ready({ minRevision: r.revision });
   }, model.text);
   // Autosaved as this device's current project.
-  await expect(page.locator(".save-state")).toHaveText(/^Saved revision/, {
-    timeout: 300000,
-  });
+  await expect(page.locator(".save-state")).toHaveText(
+    /^Saved on this device · version/,
+    {
+      timeout: 300000,
+    },
+  );
 
   await page.reload();
   await page.getByRole("button", { name: "Model tools", exact: true }).click();

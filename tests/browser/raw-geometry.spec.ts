@@ -155,6 +155,8 @@ test("hundreds of non-certified raw faces load lit and stay individually editabl
   expect(result.originalWallKept).toBe(true);
   expect(result.undoneEqual).toBe(true);
   expect(result.restored.blue).toBe(result.lit.blue);
-  await expect(page.locator(".save-state")).toContainText("Saved revision");
+  await expect(page.locator(".save-state")).toContainText(
+    "Saved on this device · version",
+  );
   expect(errors).toEqual([]);
 });

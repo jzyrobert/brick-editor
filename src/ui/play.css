@@ -538,7 +538,7 @@
 }
 /* Get out and Stop driving stand above the steering pad. */
 .play-overlay:has(.play-drive-pads) .play-interaction {
-  bottom: calc(var(--play-bottom) + 72px + 12px);
+  bottom: calc(var(--play-bottom) + 72px + 28px);
 }
 .play-prompt-row {
   display: flex;
@@ -689,6 +689,8 @@
 .play-intro-hint {
   margin: 0;
   font-weight: 650;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 @keyframes play-hint-life {
   0% {
@@ -829,7 +831,13 @@
 .play-menu-note:empty {
   display: none;
 }
+/* Exit Play stays in reach at the foot of a sheet that scrolls (phones on
+   their side), over a fade of the sheet's own paper. */
 .play-menu .play-exit {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  box-shadow: 0 -14px 12px -6px var(--chalk);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1244,7 +1252,8 @@
 
 /* Hover only where a pointer can hover, so a tapped key does not stay lit. */
 @media (hover: hover) {
-  .play-key:hover {
+  .play-key:hover,
+  .play-train-key:hover {
     background: var(--hud-hover);
   }
   .play-mechanism .play-mechanism-close:hover {

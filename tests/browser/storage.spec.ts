@@ -17,7 +17,9 @@ async function rename(page: Page, title: string) {
   }, title);
 }
 async function saved(page: Page) {
-  await expect(page.locator(".save-state")).toContainText("Saved revision");
+  await expect(page.locator(".save-state")).toContainText(
+    "Saved on this device · version",
+  );
 }
 async function stored(page: Page, id?: string) {
   return page.evaluate(async (id) => {

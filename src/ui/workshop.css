@@ -297,6 +297,17 @@ a {
 .workshop-app:has(.play-overlay) .model-tool-picker {
   width: auto;
 }
+/* While walking or driving, Play's own bar is the only top row, so the
+   status beside Pause is never cut to "Wa…". Tools returns with the pause
+   sheet (choosing it ends the walk rather than stacking two sheets). */
+.workshop-app:has(.play-overlay:not(.is-paused)) .model-context {
+  display: none;
+}
+/* Dialogs are modal: they cover the site header (z-index 40) too, so their
+   headings and Close buttons are never underneath it. */
+.workshop-app .modal-backdrop {
+  z-index: 60;
+}
 /* The entry dock already says Opening / Loading N%: no second toast. */
 .workshop-app:has(.play-entry) .status-bar {
   display: none;
@@ -587,6 +598,28 @@ a {
   display: block;
   font-size: 12px;
   color: var(--secondary);
+}
+/* Back to the model that is open, from the top of the list. */
+.gallery-resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  margin: 0 0 18px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+}
+.gallery-resume:hover {
+  background: var(--hud-hover);
+}
+.gallery-resume > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .gallery-open-badge {
   position: absolute;
@@ -1710,5 +1743,58 @@ a {
   }
   .gallery-detail-info .gallery-explore {
     margin: 2px 0 12px;
+  }
+}
+/* Play settings on a phone on its side: the sheet uses the height between
+   the title row (Tools stays reachable) and the entry dock, and scrolls. */
+@media (max-height: 500px) and (min-width: 500px) {
+  .workshop-app .mode-card.play-intro {
+    top: calc(var(--site-h) + 66px);
+    bottom: 86px;
+    height: auto;
+    max-height: none;
+    overflow: auto;
+  }
+}
+/* Photo, Instructions and Project own the canvas at every width: the Build
+   toolbar (Select, Place, Paint) and its part count belong to Build. */
+.workshop-app:is(.mode-photo, .mode-instructions, .mode-project)
+  :is(.canvas-toolbar, .canvas-bottom) {
+  display: none;
+}
+.welcome .welcome-note {
+  display: block;
+}
+/* Phones: the empty-canvas welcome stays clear of the tool rail and dock. */
+@media (max-width: 650px) {
+  .workshop-app .welcome {
+    left: max(14px, var(--safe-left));
+    /* The tool rail can be two keys wide on a phone. */
+    right: calc(var(--edge-right, 12px) + 124px);
+    width: auto;
+    transform: none;
+    top: auto;
+    bottom: calc(max(14px, var(--safe-bottom)) + 108px);
+    padding: 18px;
+    text-align: left;
+  }
+  .workshop-app .welcome h1 {
+    font: 750 26px/1.15 var(--font-display);
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+  }
+  .workshop-app .welcome p {
+    line-height: 1.5;
+  }
+}
+@media (max-width: 650px) and (max-height: 640px) {
+  .workshop-app .welcome .welcome-note {
+    display: none;
+  }
+  .workshop-app .welcome h1 {
+    font-size: 22px;
+  }
+  .workshop-app .welcome .primary {
+    min-height: 44px;
   }
 }

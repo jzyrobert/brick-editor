@@ -345,7 +345,9 @@ for (const { width, denyStorage } of [
           async () => (await window.brickEditor!.query()).occurrences.length,
         ),
       ).toBe(0);
-      await expect(page.locator(".save-state")).toContainText("Saved revision");
+      await expect(page.locator(".save-state")).toContainText(
+        "Saved on this device · version",
+      );
       await page.reload();
       await expect(
         page.getByRole("button", { name: "Build", exact: true }),

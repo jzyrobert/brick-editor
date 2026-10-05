@@ -262,14 +262,18 @@ for (const [width, height, dynamic] of sizes)
             box: e.getBoundingClientRect().toJSON(),
           })),
       }));
-      const toolsBox = (await page
-          .getByRole("button", { name: "Model tools", exact: true })
+      // While Play runs its own bar is the only top row: the model tools
+      // come back with the pause sheet.
+      await expect(
+        page.getByRole("button", { name: "Model tools", exact: true }),
+      ).toBeHidden();
+      const statusBox = (await page
+          .locator(".play-status-slab")
           .boundingBox())!,
-        statusBox = (await page.locator(".play-status-slab").boundingBox())!,
         pauseBox = (await page
           .getByRole("button", { name: "Pause", exact: true })
           .boundingBox())!;
-      expect(statusBox.x + statusBox.width).toBeLessThanOrEqual(toolsBox.x - 7);
+      expect(statusBox.x + statusBox.width).toBeLessThanOrEqual(width);
       expect(pauseBox.width).toBeGreaterThanOrEqual(44);
       expect(pauseBox.height).toBeGreaterThanOrEqual(44);
       // Phones on their side hide the site header for Play; otherwise the

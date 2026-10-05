@@ -76,19 +76,25 @@ function DrivePad({
   onChange: (value: number) => void;
 }) {
   const pointer = useRef<number | null>(null);
+  // Where the thumb landed on the knob: sliding from there drives, so a
+  // press on "the middle" never sits in a dead zone.
+  const origin = useRef<number | null>(null);
+  const at = (e: React.PointerEvent<HTMLDivElement>) =>
+    axis === "steer" ? e.clientX : -e.clientY;
   const read = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
-    const v =
-      axis === "steer"
-        ? (e.clientX - (r.left + r.width / 2)) / (r.width / 2 - 28)
-        : -(e.clientY - (r.top + r.height / 2)) / (r.height / 2 - 28);
+    const half = (axis === "steer" ? r.width : r.height) / 2 - 28;
+    const middle =
+      origin.current ??
+      (axis === "steer" ? r.left + r.width / 2 : -(r.top + r.height / 2));
+    const clamped = Math.max(-1, Math.min(1, (at(e) - middle) / half));
     // A small dead zone keeps a resting thumb from creeping.
-    const clamped = Math.max(-1, Math.min(1, v));
     return Math.abs(clamped) < 0.12 ? 0 : clamped;
   };
   const release = (e: React.PointerEvent<HTMLDivElement>) => {
     if (pointer.current !== e.pointerId) return;
     pointer.current = null;
+    origin.current = null;
     onChange(0);
   };
   return (
@@ -100,6 +106,14 @@ function DrivePad({
         if (pointer.current !== null) return;
         pointer.current = e.pointerId;
         e.currentTarget.setPointerCapture?.(e.pointerId);
+        // On the knob: relative to the landing point. Towards an end: from
+        // the middle, so a tap on an arrow drives at once.
+        const r = e.currentTarget.getBoundingClientRect();
+        const off =
+          axis === "steer"
+            ? e.clientX - (r.left + r.width / 2)
+            : e.clientY - (r.top + r.height / 2);
+        origin.current = Math.abs(off) <= 30 ? at(e) : null;
         onChange(read(e));
       }}
       onPointerMove={(e) => {
@@ -116,7 +130,17 @@ function DrivePad({
         className="play-pad-knob"
         style={{ "--v": value } as React.CSSProperties}
       >
-        {axis === "steer" ? "Steer" : value < 0 ? "Back" : "Go"}
+        {axis === "steer" ? (
+          "Steer"
+        ) : value ? (
+          value < 0 ? (
+            "Back"
+          ) : (
+            "Go"
+          )
+        ) : (
+          <Icon name="arrowUp" size={20} />
+        )}
       </span>
       <span className="play-pad-end" aria-hidden="true">
         <Icon name={axis === "steer" ? "arrowRight" : "arrowDown"} size={18} />
@@ -130,6 +154,7 @@ export function PlayPanel({
   bookmark,
   exit,
   modelLoading,
+  empty,
   children,
   rigs: authoredRigs = {},
   editor,
@@ -142,6 +167,8 @@ export function PlayPanel({
   exit: () => void;
   /** A model is being opened; its parts have not started loading yet. */
   modelLoading?: boolean;
+  /** The build has no parts: there is nothing to walk around yet. */
+  empty?: boolean;
   children?: React.ReactNode;
   rigs?: Record<string, MotionRig>;
   editor?: Editor;
@@ -847,9 +874,15 @@ export function PlayPanel({
               <strong>
                 {modelLoad !== null
                   ? "Putting the bricks in place…"
-                  : "Ready to explore?"}
+                  : empty
+                    ? "Nothing built yet."
+                    : "Ready to explore?"}
               </strong>
-              <p>Walk around at minifigure scale.</p>
+              <p>
+                {empty
+                  ? "Walk the empty ground, or open a model from the Gallery."
+                  : "Walk around at minifigure scale."}
+              </p>
             </div>
             <div className="play-entry-actions">
               {enterPlay}

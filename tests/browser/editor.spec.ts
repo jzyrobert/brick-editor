@@ -171,7 +171,7 @@ for (const viewport of [
     await page.getByRole("button", { name: "Place part", exact: true }).click();
     await expect(page.locator(".canvas-bottom")).toContainText("1 parts");
     const save = page.waitForEvent("download");
-    await page.getByRole("button", { name: "Save project" }).click();
+    await page.getByRole("button", { name: "Download backup" }).click();
     expect((await save).suggestedFilename()).toMatch(/brickproj$/);
     await page.getByRole("button", { name: "Export", exact: true }).click();
     await page.getByRole("button", { name: "Preview parts list" }).click();
@@ -403,7 +403,7 @@ test("Photo UI exports a transparent PNG with the selected dimensions", async ({
   const download = page.waitForEvent("download", {
     predicate: (d) => d.suggestedFilename().endsWith(".png"),
   });
-  await page.getByRole("button", { name: "Download PNG + manifest" }).click();
+  await page.getByRole("button", { name: "Download picture" }).click();
   const file = await download;
   const bytes = await readFile((await file.path())!);
   expect(bytes.readUInt32BE(16)).toBe(320);

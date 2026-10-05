@@ -82,8 +82,8 @@ export function ReplaceProjectDialog({
         <p id="replace-dialog-body">
           Opening {action} replaces “{title}”.{" "}
           {storedBefore
-            ? "Save keeps your changes; Discard puts it back as it was when you opened it."
-            : "Save keeps it in Saved on this device; Discard removes it."}
+            ? "Save keeps your changes in My builds; Discard puts it back as it was when you opened it."
+            : "It isn’t in My builds yet. Save adds it there on this device; Discard lets it go."}
         </p>
         <div className="replace-actions">
           <button

@@ -785,6 +785,15 @@ function Workspace() {
     [placeScene, part, position, placeOrientation, workplane, angle],
   );
   const placeRefused = !!placeCheck && !placeCheck.ok;
+  // Before the first tap, and right after placing, the preview still sits
+  // where the last part went: guide rather than warn until a spot is chosen.
+  const [placeSettled, setPlaceSettled] = useState<Vec3 | null>(null);
+  useEffect(() => {
+    if (tool === "Place") setPlaceSettled(position);
+    // Only entering Place starts quiet; later moves are the person's.
+  }, [tool]);
+  const placeQuiet =
+    !!placeSettled && placeSettled.every((v, i) => v === position[i]);
   /** Snap together: why moving parts to these transforms is refused, or null. */
   const moveRefusal = (transforms: Record<string, Transform>) => {
     if (!snapTogether) return null;
@@ -1113,7 +1122,7 @@ function Workspace() {
             setSaveCoordinationUnavailable(false);
             setSaveStatus(
               editor.revision === p.revision
-                ? "Saved revision " + p.revision
+                ? "Saved on this device · version " + p.revision
                 : "Unsaved changes",
             );
           }
@@ -1912,6 +1921,15 @@ function Workspace() {
         return;
       }
       if (action === "duplicate" || action === "remove") {
+        // Nothing picked yet: say what to do rather than "Invalid command".
+        if (!selection.length) {
+          setStatus(
+            action === "remove"
+              ? "Pick a part first, then press Delete to remove it."
+              : "Pick a part first, then duplicate it.",
+          );
+          return;
+        }
         void run(() =>
           command(
             action === "duplicate" ? "parts.duplicate" : "parts.remove",
@@ -2577,6 +2595,20 @@ function Workspace() {
       setStatus(e instanceof Error ? e.message : String(e));
     }
   };
+  // Camera views belongs to the view it opened in: a new mode, model or the
+  // Gallery closes it, and so does Escape.
+  useEffect(() => setViewsOpen(false), [mode, project.id, galleryOpen]);
+  useEffect(() => {
+    if (!viewsOpen) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      setViewsOpen(false);
+    };
+    document.addEventListener("keydown", close, true);
+    return () => document.removeEventListener("keydown", close, true);
+  }, [viewsOpen]);
   // Play stages the model alone: the editor's floor grid is for building.
   useEffect(() => {
     renderer.current?.setGridVisible(gridOn && mode !== "Play");
@@ -3698,7 +3730,7 @@ function Workspace() {
       disabled={busy}
       onClick={() => void capture()}
     >
-      Download PNG + manifest <Icon name="arrowDown" size={16} />
+      Download picture <Icon name="arrowDown" size={16} />
     </button>
   );
   const photoViews = (
@@ -4628,6 +4660,14 @@ function Workspace() {
           detailId={galleryDetail}
           onDetail={showDetail}
           openId={currentGalleryModel?.id}
+          resume={
+            all.length
+              ? {
+                  title: currentGalleryModel?.title ?? project.title,
+                  go: () => enterMode(mode),
+                }
+              : undefined
+          }
           onOpen={(s, m) => void openGalleryModel(s, m)}
           onImport={() => fileInput.current?.click()}
           pending={galleryPending}
@@ -4673,7 +4713,9 @@ function Workspace() {
               aria-expanded={modesOpen}
               aria-controls="model-tools-menu"
               onClick={() => {
-                if (play.current?.getState().active) play.current.pause(true);
+                // Every tool leaves Play, so the walk ends here instead of a
+                // tools menu stacking on the pause sheet.
+                if (play.current?.getState().active) play.current.exit();
                 setModesOpen((open) => !open);
               }}
             >
@@ -4749,14 +4791,12 @@ function Workspace() {
             className="hud-slab"
             onClick={() => void exportFile("native")}
           >
+            {/* Autosave keeps the build on this device; this downloads a
+                backup file, so it says so rather than reading as status. */}
             <Icon name="save" />
-            <span className="tool-label">Save project</span>
+            <span className="tool-label">Download backup</span>
             <span className="save-chip" aria-hidden="true">
-              {saveStatus.startsWith("Saved")
-                ? "Saved"
-                : /…|ing/.test(saveStatus)
-                  ? "Saving"
-                  : "Save"}
+              Backup
             </span>
           </button>
           <button className="primary" onClick={() => setInventoryOpen(true)}>
@@ -5340,9 +5380,10 @@ function Workspace() {
                 piece by piece.
               </h1>
               <p>
-                Choose a part, tap the grid, and place it.
-                <br />
-                Your build stays on this device.
+                Choose a part, tap the grid, and place it.{" "}
+                <span className="welcome-note">
+                  Your build stays on this device.
+                </span>
               </p>
               <button
                 className="primary"
@@ -5366,7 +5407,7 @@ function Workspace() {
               className={
                 "placement-card" +
                 (placeExact ? " exact" : "") +
-                (placeRefused ? " refused" : "")
+                (placeRefused && !placeQuiet ? " refused" : "")
               }
             >
               <div>
@@ -5399,7 +5440,7 @@ function Workspace() {
                     Snap together
                   </button>
                 </div>
-                {placeRefused ? (
+                {placeRefused && !placeQuiet ? (
                   <span className="placement-refusal" aria-live="polite">
                     {placeCheck!.message}
                   </span>
@@ -5556,6 +5597,7 @@ function Workspace() {
                     });
                     // The part now fills that fit; the next tap finds new ones.
                     setPlaceFits(null);
+                    setPlaceSettled(position);
                     setStatus("Placed " + currentPart.name);
                     // Recently used means placed, not merely browsed.
                     setRecentParts((recent) => pushRecent(recent, part));
@@ -5632,6 +5674,7 @@ function Workspace() {
               // Stay on the model with the entry dock, ready to walk again.
               exit={() => {}}
               modelLoading={busy || !!galleryPending}
+              empty={!all.length}
               bookmark={() => {
                 const view = play.current!.camera();
                 command("camera.bookmark", {

@@ -161,7 +161,9 @@ test("the backdrop switches from the views popover, is saved with the build and 
   ).toBe(false);
   await page.getByRole("checkbox", { name: "Grid" }).check();
 
-  await expect(page.locator(".save-state")).toContainText("Saved revision");
+  await expect(page.locator(".save-state")).toContainText(
+    "Saved on this device · version",
+  );
   await page.reload();
   await page.waitForFunction(() => !!window.brickEditor);
   await expect

@@ -28,9 +28,13 @@ button {
     background 0.15s,
     border-color 0.15s;
 }
-button:hover {
-  background: var(--paper);
-  border-color: var(--sheet-handle);
+/* Hover only where a pointer hovers: on touch a tapped button would stay
+   cream, which hid light-on-dark HUD keys such as the train's Horn. */
+@media (hover: hover) {
+  button:hover {
+    background: var(--paper);
+    border-color: var(--sheet-handle);
+  }
 }
 button:disabled {
   opacity: 0.4;

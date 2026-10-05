@@ -43,9 +43,12 @@ test("Clear saved builds deletes every saved project and autosave, keeps the par
       const r = await a.project.import({ format: "template", template });
       await a.ready({ minRevision: r.revision, strict: true });
     }, template);
-    await expect(page.locator(".save-state")).toHaveText(/^Saved revision/, {
-      timeout: 60000,
-    });
+    await expect(page.locator(".save-state")).toHaveText(
+      /^Saved on this device · version/,
+      {
+        timeout: 60000,
+      },
+    );
   }
   // A preference in the same storage stays.
   await page.evaluate(() =>

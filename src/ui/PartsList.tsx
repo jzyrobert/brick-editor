@@ -83,6 +83,12 @@ export function PartsList({
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
+      onKeyDown={(e) => {
+        if (e.key !== "Escape") return;
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }}
     >
       <div
         className="dialog parts-list-dialog"
@@ -98,7 +104,17 @@ export function PartsList({
               {kinds.toLocaleString("en")} kinds
             </p>
           </div>
-          <button onClick={onClose} aria-label="Close parts list">
+          <button
+            ref={(el) => {
+              // Focus moves into the dialog once, so Escape and Tab work.
+              if (el && !el.dataset.focused) {
+                el.dataset.focused = "1";
+                el.focus({ preventScroll: true });
+              }
+            }}
+            onClick={onClose}
+            aria-label="Close parts list"
+          >
             <Icon name="close" />
           </button>
         </div>

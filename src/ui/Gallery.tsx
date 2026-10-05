@@ -33,6 +33,8 @@ type Props = {
   maxBytes: number;
   /** The build open as the current document. */
   openId?: string;
+  /** The open document's name and how to go back to it, when it has parts. */
+  resume?: { title: string; go: () => void };
 };
 const count = (n: number) => n.toLocaleString("en");
 /** Where the list was scrolled, kept while Play or a tool replaces it. */
@@ -173,6 +175,7 @@ export function Gallery({
   onImport,
   maxBytes,
   openId,
+  resume,
   errorTitle,
   onRetryOpen,
   onDismissError,
@@ -454,6 +457,15 @@ export function Gallery({
             </select>
           </div>
           <div className="gallery-body">
+            {resume && (
+              <button className="gallery-resume" onClick={resume.go}>
+                <Icon name="resume" size={16} />
+                <span>
+                  Continue with <strong>{resume.title}</strong>
+                </span>
+                <Icon name="arrowRight" size={16} />
+              </button>
+            )}
             <div className="gallery-heading">
               <div>
                 <h1 ref={heading} tabIndex={-1}>

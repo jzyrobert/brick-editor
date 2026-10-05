@@ -94,7 +94,9 @@ test.describe("replacing a changed build asks to save or discard it", () => {
     await expect(page.getByLabel("Project title")).toHaveValue("Small castle", {
       timeout: LOAD,
     });
-    await expect(page.locator(".save-state")).toHaveText(/^Saved revision/);
+    await expect(page.locator(".save-state")).toHaveText(
+      /^Saved on this device · version/,
+    );
     await openMenuTab(page, "Project", "My builds");
     await page.getByRole("button", { name: "Refresh saved projects" }).click();
     await expect(savedRow(page, "Small castle")).toBeVisible();

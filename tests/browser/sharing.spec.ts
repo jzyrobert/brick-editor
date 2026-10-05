@@ -28,7 +28,9 @@ test("shared links preview safely, dismiss without replacement and keep the save
     });
   });
   await expect(textarea).toHaveCount(0);
-  await expect(page.locator(".save-state")).toContainText("Saved revision");
+  await expect(page.locator(".save-state")).toContainText(
+    "Saved on this device · version",
+  );
   await openMode(page, "Build");
   await page.goto(url.href);
   await page.waitForFunction(() => !!window.brickEditor);
@@ -89,7 +91,9 @@ test("a damaged share checksum is rejected without changing the recovered projec
       template: "wall",
     });
   });
-  await expect(page.locator(".save-state")).toContainText("Saved revision");
+  await expect(page.locator(".save-state")).toContainText(
+    "Saved on this device · version",
+  );
   await openMenuTab(page, "Project", "Export");
   await page
     .getByRole("button", { name: "Create share link", exact: true })
