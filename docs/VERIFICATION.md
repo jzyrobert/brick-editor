@@ -2066,6 +2066,8 @@ wheel seat, collision allowance or resource cap is bypassed.
   recovery still passes. Reported forward/reverse snapshots remain below
   170 LDU/s with the existing 160 LDU/s fixed-tick cap; this is not a claim
   about every intermediate peak. See [native yaw review](reviews/NATIVE-VEHICLE-YAW.md).
+  The final production build passes (Vite 36.61 s); rendered seated native
+  Jeep driving and safe exit pass at 1440 px and 360 px in 49.1 s.
 - Actual full public 31027 Blue Racer and 30572 Race Car imports pass four
   production cases on desktop and phone in 59.1 s. The rotated Race Car drives
   and exports all 68 parts; Blue Racer exports 59 car parts while its eight
