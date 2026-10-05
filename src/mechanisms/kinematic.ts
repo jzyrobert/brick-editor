@@ -328,7 +328,10 @@ export function validateRig(
           ensure(
             typeof joint.motor.binding.occurrenceId === "string" &&
               joint.motor.binding.occurrenceId.length > 0 &&
-              joint.motor.binding.profile === "power-functions-motor-m-v1",
+              [
+                "power-functions-motor-m-v1",
+                "power-functions-motor-l-v1",
+              ].includes(joint.motor.binding.profile),
             "INVALID_INPUT",
             "Motor binding must name a supported physical motor occurrence.",
           );

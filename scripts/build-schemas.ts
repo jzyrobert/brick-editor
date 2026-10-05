@@ -412,7 +412,9 @@ const motor = (unit: string) =>
       maxEffort: effort(unit),
       binding: obj({
         occurrenceId,
-        profile: { const: "power-functions-motor-m-v1" },
+        profile: {
+          enum: ["power-functions-motor-m-v1", "power-functions-motor-l-v1"],
+        },
       }),
     },
     ["mode", "target", "maxEffort"],

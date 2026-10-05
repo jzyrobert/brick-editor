@@ -27,6 +27,7 @@ import {
   sourceComponentGeometrySignature,
 } from "../../src/render/source-component-geometry";
 import { LDrawConditionalLineMaterial } from "three/addons/materials/LDrawConditionalLineMaterial.js";
+import { compileOfficialPart } from "../helpers/compile-part";
 
 let sources: Record<string, string>,
   prototype: THREE.Group,
@@ -57,6 +58,18 @@ beforeAll(async () => {
   indexPrototypeGeometry(prototype);
 }, 20000);
 describe("literal source motor render components", () => {
+  it("retains exact source coverage in the certified production parent BFC context", async () => {
+    const p = project(),
+      o = occurrences(p)[0],
+      binding = await bindMotorComponentSources(sources, p);
+    const actual = await compileOfficialPart("99499.dat"),
+      partition = await partitionMotorSourcePrototype(p, o, actual, binding);
+    expect(partition.coverage).toMatchObject({
+      triangles: 6080,
+      componentTriangles: [5712, 368],
+      drawables: drawableTemplates(actual).length,
+    });
+  });
   it("covers every actual triangle and line exactly once while preserving one source/inventory occurrence", async () => {
     const p = project(),
       o = occurrences(p)[0],

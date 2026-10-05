@@ -18,10 +18,14 @@ import {
   worldMechanicalFeatures,
 } from "./mechanical-contacts";
 import type { JointSpec, MotionRig } from "./types";
+import {
+  PF_LARGE_MOTOR_PROFILE,
+  reviewedPfLargeMotorBinding,
+} from "./pf-large-motor-binding";
 
 export type MotorBinding = {
   occurrenceId: string;
-  profile: "power-functions-motor-m-v1";
+  profile: "power-functions-motor-m-v1" | "power-functions-motor-l-v1";
 };
 /** Actual official output geometry: 47157's blind keyed socket Z0..20;
  * its back cap is closed, and the casing stays on the joint's carrier. */
@@ -60,6 +64,8 @@ export function resolvePhysicalMotorBinding(
   binding: MotorBinding,
   all: readonly Occurrence[] = occurrences(project),
 ): ResolvedMotorBinding {
+  if (binding?.profile === PF_LARGE_MOTOR_PROFILE)
+    return reviewedPfLargeMotorBinding(project, rig, joint, all);
   ensure(
     binding && binding.profile === PHYSICAL_MOTOR_PROFILE.id,
     "INVALID_INPUT",

@@ -28,7 +28,10 @@ export type JointSpec = {
     target: number;
     maxEffort: { value: number; unit: "N" | "N*m" };
     /** Reviewed physical motor case and keyed output; absent means legacy metadata. */
-    binding?: { occurrenceId: string; profile: "power-functions-motor-m-v1" };
+    binding?: {
+      occurrenceId: string;
+      profile: "power-functions-motor-m-v1" | "power-functions-motor-l-v1";
+    };
   };
 };
 /** All points are chassis-local LDU, with negative Y up. */

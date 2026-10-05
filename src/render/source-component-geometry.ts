@@ -23,6 +23,13 @@ export const MOTOR_COMPONENT_REVIEW = Object.freeze({
     triangles: 5824,
     geometrySha256:
       "7910889eaeecc44d8937e54ca69ae9da297cff33e31ece40057964cebbb387c6",
+    /** A certified parent BFC context emits one side of 112 uncertified detail
+     * triangles. Both exact compiler outputs retain the literal source tree. */
+    certifiedParent: {
+      triangles: 5712,
+      geometrySha256:
+        "44adfc9afe7be71dde3f45db8e77589a7a8b41a429c867a1a080ca6aff74d814",
+    },
   },
   output: {
     ref: "10095.dat",
@@ -243,10 +250,18 @@ export async function partitionMotorSourcePrototype(
   );
   const expected = [MOTOR_COMPONENT_REVIEW.case, MOTOR_COMPONENT_REVIEW.output];
   ensure(
-    signatures.every(
-      (s, i) =>
-        s.triangles === expected[i].triangles &&
-        s.geometrySha256 === expected[i].geometrySha256,
+    signatures.every((s, i) =>
+      (i === 0
+        ? [
+            MOTOR_COMPONENT_REVIEW.case,
+            MOTOR_COMPONENT_REVIEW.case.certifiedParent,
+          ]
+        : [MOTOR_COMPONENT_REVIEW.output]
+      ).some(
+        (variant) =>
+          s.triangles === variant.triangles &&
+          s.geometrySha256 === variant.geometrySha256,
+      ),
     ),
     "INVALID_INPUT",
     "Motor source component geometry changed or lost source coverage",

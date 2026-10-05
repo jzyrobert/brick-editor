@@ -11,6 +11,7 @@ export type DrivetrainSourceBinding = Readonly<{
   refs: readonly DrivetrainRef[];
 }>;
 const verifiedInterfaces = new WeakSet<DrivetrainPartInterfaces>();
+const verifiedPfLargeContacts = new WeakSet<PfLargeMotorContacts>();
 const bindings = new WeakMap<DrivetrainSourceBinding, ReadonlySet<string>>();
 /** Hash once when assembling the session. Source/root/subpart changes fail the
  * complete binding; a project file named after an official part never qualifies. */
@@ -333,16 +334,24 @@ export function pfLargeMotorContacts(
   );
   const rotorRestPhaseDegrees =
     (((phase * 180) / Math.PI + 45 + 360) % 90) - 45;
-  return {
+  const contacts = Object.freeze({
     rotorRestPhaseDegrees,
     caseOccurrenceId: motor.occurrenceId,
     outputComponentId: "output",
     shaftOccurrenceId: shaft.occurrenceId,
     socket,
     engagementLdu: Math.min(20, ends[1]),
-    mounts: [...unique.values()],
-  };
+    mounts: Object.freeze(
+      [...unique.values()].map((seat) => Object.freeze(seat)),
+    ),
+  });
+  verifiedPfLargeContacts.add(contacts);
+  return contacts;
 }
+export type PfLargeMotorContacts = ReturnType<typeof pfLargeMotorContacts>;
+export const isReviewedPfLargeMotorContacts = (
+  contacts: PfLargeMotorContacts,
+) => verifiedPfLargeContacts.has(contacts);
 /** Geometric selector state. No rotational weld while neutral, entering or
  * tooth phase mismatched. Requires the separately mounted ridged coupler. */
 export function clutchSelectorState(
