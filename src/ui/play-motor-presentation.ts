@@ -10,5 +10,5 @@ export function motorStatusText(motor?: PlayMotorReport): string {
   if (motor.status === "holding") return "Holding";
   if (motor.input !== undefined)
     return `Running ${motor.input < 0 ? "reverse" : "forward"}`;
-  return "Running on its own";
+  return "Running (starts by itself)";
 }

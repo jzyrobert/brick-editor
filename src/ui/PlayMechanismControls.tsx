@@ -171,8 +171,10 @@ export function PlayMechanismControls({
       window.removeEventListener("resize", frame);
       if (play.getState().active) {
         const motors = play.snapshot().mechanisms?.[rig.id]?.motors;
+        // Motors you drove stop when Controls close; one that starts by
+        // itself (no input of yours) keeps running as it did before.
         for (const j of rig.joints)
-          if (motors?.[j.id]?.enabled)
+          if (motors?.[j.id]?.enabled && motors[j.id]!.input !== undefined)
             play.setMotor({
               rigId: rig.id,
               jointId: j.id,
@@ -374,6 +376,20 @@ export function PlayMechanismControls({
               <div className="play-control-reading">
                 <strong>{label(joint.id)}</strong>
                 <output>
+                  {motor && /^Running/.test(motorState) && (
+                    // A turning mark: the rotor itself can be small on screen.
+                    <span
+                      className={
+                        "play-motor-spin" +
+                        (motor.input !== undefined && motor.input < 0
+                          ? " is-reverse"
+                          : "")
+                      }
+                      aria-hidden="true"
+                    >
+                      <Icon name="rotate" size={16} />
+                    </span>
+                  )}
                   {motor
                     ? motorState
                     : `${position.toFixed(1)} ${joint.kind === "revolute" ? "degrees" : "LDU"}`}
@@ -427,6 +443,7 @@ export function PlayMechanismControls({
                       input(0);
                     }}
                     aria-label="Brake motor"
+                    aria-pressed={motor.input === 0}
                   >
                     Brake
                   </button>
@@ -443,7 +460,11 @@ export function PlayMechanismControls({
                   </button>
                 </div>
                 <div className="play-drive-feedback">
-                  <span>Keeps running until you brake or close controls.</span>
+                  <span>
+                    {motor.input === 0 || !motor.enabled || power === 0
+                      ? "Stopped. Tap Forward or Reverse to run it."
+                      : "Keeps running until you brake or close controls."}
+                  </span>
                 </div>
                 {runningOthers > 0 && (
                   <div className="play-motor-state play-other-motors">
@@ -478,7 +499,7 @@ export function PlayMechanismControls({
                       : "Power limits turning speed. Dynamic mode also simulates motor force."}
                   </p>
                   <div className="play-motor-state">
-                    <span>Use the motor's saved setting.</span>
+                    <span>Let the motor start by itself, as it was built.</span>
                     <button
                       type="button"
                       onClick={() =>
@@ -493,7 +514,7 @@ export function PlayMechanismControls({
                       }
                     >
                       {motor.input !== undefined || !motor.enabled
-                        ? "Run preset"
+                        ? "Start by itself"
                         : "Stop motor"}
                     </button>
                   </div>

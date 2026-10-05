@@ -1674,3 +1674,25 @@
 .play-part-identity small {
   color: var(--secondary);
 }
+/* A running motor's status turns, in its direction: the rotor itself can be
+   only a few pixels on a phone. */
+.play-motor-spin {
+  display: inline-grid;
+  margin-right: 6px;
+  vertical-align: -3px;
+  color: var(--sun);
+  animation: play-motor-spin 1.2s linear infinite;
+}
+.play-motor-spin.is-reverse {
+  animation-direction: reverse;
+}
+@keyframes play-motor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play-motor-spin {
+    animation: none;
+  }
+}

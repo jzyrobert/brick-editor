@@ -197,7 +197,7 @@ for (const viewport of [desktop, phone])
       });
       await stop.click();
       await expect(
-        page.getByRole("button", { name: "Run preset" }),
+        page.getByRole("button", { name: "Start by itself" }),
       ).toBeVisible();
       expect(
         (await snapshot(page)).mechanisms!["technic-drive"].motors![

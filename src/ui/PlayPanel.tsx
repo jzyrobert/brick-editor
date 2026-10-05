@@ -769,7 +769,12 @@ export function PlayPanel({
       input();
     },
   });
-  const startHint = playHint && <p className="play-intro-hint">{playHint}</p>;
+  // Every mechanism was refused (a motor not seated on its axle, say): the
+  // build's own hint ("Open Controls…") would point at nothing.
+  const allRefused =
+    !Object.keys(rigs).length && rigReview.unavailable.length > 0;
+  const shownHint = allRefused ? undefined : playHint;
+  const startHint = shownHint && <p className="play-intro-hint">{shownHint}</p>;
   const mechanismChoice = (
     <>
       {checkingMotors && (
@@ -780,7 +785,7 @@ export function PlayPanel({
       {!!rigReview.unavailable.length && (
         <details>
           <summary>
-            Connections need review ({rigReview.unavailable.length})
+            Why some parts won’t move ({rigReview.unavailable.length})
           </summary>
           {rigReview.unavailable.map((reason) => (
             <p key={reason}>{reason}</p>
@@ -955,7 +960,9 @@ export function PlayPanel({
               <p>
                 {empty
                   ? "Walk the empty ground, or open a model from the Gallery."
-                  : "Walk around at minifigure scale."}
+                  : allRefused
+                    ? "Its moving parts aren’t connected, so they stay still. Fix them in Build."
+                    : "Walk around at minifigure scale."}
               </p>
             </div>
             <div className="play-entry-actions">
@@ -1413,9 +1420,9 @@ export function PlayPanel({
             {!state.vehicleControl && <>{bindings.camera || "—"} camera · </>}
             {bindings.interact || "—"} interact
           </div>
-          {playHint && !hintDone && !remoteOpen && (
+          {shownHint && !hintDone && !remoteOpen && (
             <div className="play-start-hint" role="status">
-              {playHint}
+              {shownHint}
             </div>
           )}
           {!finePointer && !looked && !remoteOpen && lookHintDue && (
@@ -1625,7 +1632,7 @@ export function PlayPanel({
                   attempt(() => play.interact());
                 }}
               >
-                <Icon name={interactIcon} />
+                <Icon name={state.vehicleControl ? "exit" : interactIcon} />
                 {state.vehicleControl ? "Get out" : state.interaction?.label}
                 {keyHint(bindings.interact)}
               </button>
