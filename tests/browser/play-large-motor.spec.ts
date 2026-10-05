@@ -68,12 +68,18 @@ for (const phone of [false, true])
             ],
         );
       const components = () =>
-        page.evaluate(() => {
+        page.evaluate(async () => {
           type Child = { matrix: { elements: number[] }; children: Child[] };
+          const rig = (await window.brickEditor!.mechanisms.list()).find(
+            (rig) => rig.id === "pf-large-drive",
+          )!;
+          const motorId = rig.joints.find(
+            (joint) => joint.id === "motor-output",
+          )!.motor!.binding!.occurrenceId;
           const scene = window.__brickScene as {
             handles: { get(id: string): { object: Child | null } | undefined };
           };
-          const motor = scene.handles.get('["n1"]')!.object!;
+          const motor = scene.handles.get(motorId)!.object!;
           return {
             casing: [...motor.children[0].children[0].matrix.elements],
             rotor: [...motor.children[0].children[1].matrix.elements],
