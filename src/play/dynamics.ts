@@ -319,6 +319,9 @@ export class DynamicRig {
     controller: RAPIER.DynamicRayCastVehicleController;
     chassis: Body;
     wheels: Wheel[];
+    /** Native body-local forward at rest; body rotation starts at identity. */
+    forward: RAPIER.Vector;
+    speedSign: 1 | -1;
     throttle: number;
     steering: number;
     engineForce: number;
@@ -686,8 +689,17 @@ export class DynamicRig {
     (
       controller as unknown as { setIndexForwardAxis: number }
     ).setIndexForwardAxis = 2;
+    // Colliders and wheel anchors already include the authored rest basis:
+    // native body rotation is identity, not chassis.rest.basis. Direction must
+    // nevertheless follow the source chassis, rather than native world +Z.
     const up = { x: 0, y: 1, z: 0 },
-      forward = { x: 0, y: 0, z: 1 };
+      sourceForward = toPhysicsDirection(mv(chassis.rest.basis, [0, 0, -1])),
+      length = Math.hypot(sourceForward.x, sourceForward.y, sourceForward.z),
+      forward = {
+        x: sourceForward.x / length,
+        y: sourceForward.y / length,
+        z: sourceForward.z / length,
+      };
     const wheels: Wheel[] = [];
     v.wheels.forEach((w, index) => {
       const group = this.rig.groups.find((g) => g.id === w.groupId)!;
@@ -736,6 +748,8 @@ export class DynamicRig {
       controller,
       chassis,
       wheels,
+      forward,
+      speedSign: 1,
       throttle: 0,
       steering: 0,
       engineForce:
@@ -744,6 +758,12 @@ export class DynamicRig {
       maxSteerRadians: (v.maxSteerDegrees * Math.PI) / 180,
       brake: Math.max(1, mass * 0.1),
     };
+  }
+  /** Preserve Rapier's cached speed magnitude and sampling time, while
+   * replacing its axis-index sign with the actual source-forward sign. */
+  private vehicleSpeed() {
+    const v = this.vehicle!;
+    return Math.abs(v.controller.currentVehicleSpeed()) * v.speedSign;
   }
   private riderColliders: RAPIER.Collider[] = [];
   /** Rigid, zero-mass occupant shapes share the actual chassis response. */
@@ -1174,7 +1194,7 @@ export class DynamicRig {
     }
     const v = this.vehicle;
     if (v) {
-      const speed = v.controller.currentVehicleSpeed();
+      const speed = this.vehicleSpeed();
       const limited =
         (v.throttle > 0 && speed >= v.maxSpeed) ||
         (v.throttle < 0 && speed <= -v.maxSpeed);
@@ -1189,7 +1209,18 @@ export class DynamicRig {
           wheel.steering ? v.steering * v.maxSteerRadians : 0,
         );
       }
-      const own = rigBit(this.index);
+      const own = rigBit(this.index),
+        forward = rotate(v.chassis.body.rotation(), v.forward),
+        velocity = v.chassis.body.linvel();
+      // The controller samples velocity before applying wheel forces. Cache
+      // its source-forward sign at the same point, including native tilt.
+      v.speedSign =
+        velocity.x * forward.x +
+          velocity.y * forward.y +
+          velocity.z * forward.z <
+        0
+          ? -1
+          : 1;
       v.controller.updateVehicle(
         DT,
         undefined,
@@ -1658,7 +1689,7 @@ export class DynamicRig {
           rotationDegrees: rotation,
         };
       }
-      dynamics.speed = v.controller.currentVehicleSpeed() / S;
+      dynamics.speed = this.vehicleSpeed() / S;
       vehiclePose = {
         position: chassis.position.map(
           (p, k) => p - v.chassis.rest.position[k],
