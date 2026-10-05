@@ -38,9 +38,13 @@ function split(p: P[], f: Plane) {
 export function certifyWinchKeyedColumn(
   triangles: readonly (readonly Readonly<Vec3>[])[],
   hole: readonly Readonly<Vec3>[],
+  boundaryResidualEnvelopeLdu = 0,
 ) {
   ensure(
-    hole.length === 24 &&
+    (hole.length === 24 || hole.length === 28) &&
+      Number.isFinite(boundaryResidualEnvelopeLdu) &&
+      boundaryResidualEnvelopeLdu >= 0 &&
+      boundaryResidualEnvelopeLdu <= 0.0004 &&
       triangles.length <= 20_000 &&
       [...hole, ...triangles.flat()].every((p) => p.every(Number.isFinite)),
     "INVALID_INPUT",
@@ -67,8 +71,35 @@ export function certifyWinchKeyedColumn(
       return { x, y, d: d + WINCH_KEY_SOURCE_PLANE_ENVELOPE_LDU };
     });
   });
+  const distance = (p: P, a: P, b: P) => {
+    const x = b[0] - a[0],
+      y = b[1] - a[1],
+      length2 = x * x + y * y,
+      t = length2
+        ? Math.max(
+            0,
+            Math.min(1, ((p[0] - a[0]) * x + (p[1] - a[1]) * y) / length2),
+          )
+        : 0;
+    return Math.hypot(p[0] - a[0] - t * x, p[1] - a[1] - t * y);
+  };
   let maxResidualAreaLdu2 = 0,
-    maxEdgeGapFraction = 0;
+    maxEdgeGapFraction = 0,
+    maxResidualCapsuleLdu = 0;
+  const capsule = (p: P[]) => {
+    // Each complete convex residual polygon/edge lies in one real boundary
+    // segment's convex capsule. Vertex bounds therefore cover its full interior.
+    maxResidualCapsuleLdu = Math.max(
+      maxResidualCapsuleLdu,
+      Math.min(
+        ...hole.map((a, i) =>
+          Math.max(
+            ...p.map((v) => distance(v, a, hole[(i + 1) % hole.length])),
+          ),
+        ),
+      ),
+    );
+  };
   for (const triangle of triangles) {
     ensure(
       triangle.length === 3,
@@ -101,6 +132,7 @@ export function certifyWinchKeyedColumn(
       maxResidualAreaLdu2,
       remaining.reduce((s, p) => s + area(p), 0),
     );
+    for (const p of remaining) capsule(p);
     for (let i = 0; i < 3; i++) {
       const a = triangle[i],
         b = triangle[(i + 1) % 3],
@@ -124,15 +156,28 @@ export function certifyWinchKeyedColumn(
       }
       intervals.sort((a, b) => a[0] - b[0]);
       let end = 0;
+      const gap = (lo: number, hi: number) => {
+        if (hi <= lo) return;
+        capsule(
+          [lo, hi].map((t) => [
+            a[0] + t * (b[0] - a[0]),
+            a[1] + t * (b[1] - a[1]),
+          ]),
+        );
+      };
       for (const [lo, hi] of intervals) {
         maxEdgeGapFraction = Math.max(maxEdgeGapFraction, lo - end);
+        gap(end, lo);
         end = Math.max(end, hi);
       }
       maxEdgeGapFraction = Math.max(maxEdgeGapFraction, 1 - end);
+      gap(end, 1);
     }
   }
   ensure(
-    maxResidualAreaLdu2 <= 1e-10 && maxEdgeGapFraction <= 1e-12,
+    (maxResidualAreaLdu2 <= 1e-10 && maxEdgeGapFraction <= 1e-12) ||
+      (boundaryResidualEnvelopeLdu > 0 &&
+        maxResidualCapsuleLdu <= boundaryResidualEnvelopeLdu),
     "INVALID_INPUT",
     "Shaft source footprint crosses the keyed negative column.",
   );
@@ -141,5 +186,7 @@ export function certifyWinchKeyedColumn(
     normalPlaneEnvelopeLdu: WINCH_KEY_SOURCE_PLANE_ENVELOPE_LDU,
     maxResidualAreaLdu2,
     maxEdgeGapFraction,
+    boundaryResidualEnvelopeLdu,
+    maxResidualCapsuleLdu,
   });
 }
