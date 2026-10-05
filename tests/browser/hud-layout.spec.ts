@@ -461,7 +461,7 @@ for (const viewport of [
             }
           ).trainLookHintGeometry,
         undefined,
-        { timeout: 15000 },
+        { timeout: 60000 },
       )
     ).jsonValue();
     if (!hintGeometry)

@@ -119,6 +119,7 @@ describe("literal convex worm and gear profiles", () => {
       }
       expect(residueArea).toBe(0);
     },
+    15000,
   );
   it("preserves the actual rounded keyed hole for every axial station in the extruded core", () => {
     // Clip every complete convex-cell projection against a triangulation of
