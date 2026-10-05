@@ -296,7 +296,7 @@ function fitStatus(
         : mode === "side"
           ? `Turned onto the side studs: ${plural(fit.contacts, "stud connection")}.`
           : `Snapped to ${plural(fit.contacts, "stud connection")}.`;
-  return lead + of + " Choose Place part to commit.";
+  return lead + of + " Choose Place part (or press Enter) to place it.";
 }
 
 function enqueueSourceSave<T>(action: () => Promise<T>): Promise<T> {
@@ -992,7 +992,7 @@ function Workspace() {
       eligibleSelection(p, all, next, s.activeLayer, s.crossLayer),
     );
     setStatus(
-      `${eligible.length} matching editable part${eligible.length === 1 ? "" : "s"}${ids.length > eligible.length ? `; ${ids.length - eligible.length} excluded by scope` : ""}`,
+      `${eligible.length} part${eligible.length === 1 ? "" : "s"} selected${ids.length > eligible.length ? `; ${ids.length - eligible.length} hidden or on another layer` : ""}`,
     );
   };
   useEffect(
@@ -1775,7 +1775,9 @@ function Workspace() {
         setStatus(
           where +
             (index >= 0 ? " " + fitStatus("stud", list, index) : "") +
-            (index >= 0 ? "" : " Choose Place part to commit."),
+            (index >= 0
+              ? ""
+              : " Choose Place part (or press Enter) to place it."),
         );
         return;
       }
@@ -1814,7 +1816,9 @@ function Workspace() {
         });
       else {
         receiveSelection([id], e.shiftKey ? "toggle" : s.selectionOperation);
-        setPanel("Inspector");
+        // Phones and tablets keep the model in view: the selection strip
+        // offers the everyday actions, and More opens the Inspector.
+        if (!matchMedia("(max-width: 1100px)").matches) setPanel("Inspector");
       }
     };
     const cancel = () => {
@@ -1849,6 +1853,22 @@ function Workspace() {
         e.isComposing
       )
         return;
+      // Enter places the previewed part, as the card's Place part does, when
+      // focus is on the page or canvas rather than on a button.
+      if (
+        e.key === "Enter" &&
+        interact.current.tool === "Place" &&
+        !(e.target instanceof Element && e.target.closest("button,a"))
+      ) {
+        const place = document.querySelector<HTMLButtonElement>(
+          ".placement-card button.primary",
+        );
+        if (place && !place.disabled) {
+          e.preventDefault();
+          place.click();
+        }
+        return;
+      }
       // Next connector fit: N (unless remapped to an action), or Tab while
       // focus is on the page or canvas rather than a control.
       const fits = interact.current.placeFits;
@@ -2041,10 +2061,11 @@ function Workspace() {
         if (result.materialization.status === "limited") return;
         setGalleryOpen(false);
         setMode("Build");
-        setStatus("Imported revision " + result.revision);
+        setStatus("Drawing your model…");
         await renderer.current?.ready();
         renderer.current?.fit();
         setSelectionSafe([]);
+        setStatus(`Opened “${file.name}”`);
       } finally {
         renderer.current?.requestFitOnFirstParts(false);
         setBusy(false);
@@ -2609,6 +2630,47 @@ function Workspace() {
     document.addEventListener("keydown", close, true);
     return () => document.removeEventListener("keydown", close, true);
   }, [viewsOpen]);
+  // Phones and tablets: a bottom sheet (Parts, Inspector, a tool's menu)
+  // covers part of the view; the camera keeps the build in what is left.
+  useEffect(() => {
+    const r = renderer.current;
+    if (!r) return;
+    const sheets = ".mobile-panel.mobile-open, .mode-card";
+    let observer: ResizeObserver | undefined;
+    const measure = () => {
+      const view = document.querySelector(".viewport")?.getBoundingClientRect();
+      if (!view || galleryOpen || innerWidth > 1100) return r.setViewInset(0);
+      let cover = 0,
+        side = 0;
+      for (const el of document.querySelectorAll<HTMLElement>(sheets)) {
+        const b = el.getBoundingClientRect();
+        if (!b.height) continue;
+        if (b.width >= view.width * 0.8) {
+          // A bottom sheet across the view.
+          if (b.bottom >= view.bottom - 48)
+            cover = Math.max(cover, view.bottom - b.top);
+        } else if (b.left <= view.left + 32 && b.height > view.height * 0.5) {
+          // A tablet's tall sheet down the left side.
+          side = Math.max(side, b.right - view.left);
+        }
+      }
+      r.setViewInset(
+        Math.min(cover, view.height * 0.7),
+        Math.min(side, view.width * 0.6),
+      );
+    };
+    const frame = requestAnimationFrame(() => {
+      measure();
+      observer = new ResizeObserver(measure);
+      document
+        .querySelectorAll<HTMLElement>(`${sheets}, .viewport`)
+        .forEach((el) => observer!.observe(el));
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
+  }, [panel, mode, sheetFull, galleryOpen, modesOpen, guideOpen]);
   // Play stages the model alone: the editor's floor grid is for building.
   useEffect(() => {
     renderer.current?.setGridVisible(gridOn && mode !== "Play");
@@ -3435,6 +3497,41 @@ function Workspace() {
       }
     />
   );
+  // The selection's everyday actions: the Inspector's quick actions and the
+  // phone selection strip share them.
+  const rotateSelected = () =>
+    void run(() => {
+      ensure(
+        selected.length === 1,
+        "INVALID_INPUT",
+        "Select one part to rotate",
+      );
+      const transform = {
+        position: selected[0].transform.position,
+        basis: compose(
+          { position: [0, 0, 0], basis: rotationY(90) },
+          { position: [0, 0, 0], basis: selected[0].transform.basis },
+        ).basis,
+      };
+      const refusal = moveRefusal({ [selected[0].id]: transform });
+      if (refusal) {
+        setStatus(refusal);
+        return;
+      }
+      command("parts.transform", { ...scoped(), space: "ldraw", transform });
+    });
+  const applyColour = () =>
+    void run(() =>
+      command("parts.recolor", {
+        ...scoped(),
+        colorCode: color,
+        preserveFixedColors: true,
+      }),
+    );
+  const duplicateSelected = () =>
+    void run(() => command("parts.duplicate", scoped()));
+  const deleteSelected = () =>
+    void run(() => command("parts.remove", scoped()));
   const inspectorPanel = (
     <>
       <div className="panel-title">
@@ -3562,37 +3659,7 @@ function Workspace() {
             </details>
           )}
           <div className="quick-actions">
-            <button
-              onClick={() =>
-                void run(() => {
-                  ensure(
-                    selected.length === 1,
-                    "INVALID_INPUT",
-                    "Select one part to rotate",
-                  );
-                  const transform = {
-                    position: selected[0].transform.position,
-                    basis: compose(
-                      { position: [0, 0, 0], basis: rotationY(90) },
-                      {
-                        position: [0, 0, 0],
-                        basis: selected[0].transform.basis,
-                      },
-                    ).basis,
-                  };
-                  const refusal = moveRefusal({ [selected[0].id]: transform });
-                  if (refusal) {
-                    setStatus(refusal);
-                    return;
-                  }
-                  command("parts.transform", {
-                    ...scoped(),
-                    space: "ldraw",
-                    transform,
-                  });
-                })
-              }
-            >
+            <button onClick={rotateSelected}>
               <Icon name="rotate" size={16} /> Rotate 90°
             </button>
             <button
@@ -3631,18 +3698,7 @@ function Workspace() {
             >
               <Icon name="arrowDown" size={16} /> 1 plate
             </button>
-            <button
-              className="quick-colour"
-              onClick={() =>
-                void run(() =>
-                  command("parts.recolor", {
-                    ...scoped(),
-                    colorCode: color,
-                    preserveFixedColors: true,
-                  }),
-                )
-              }
-            >
+            <button className="quick-colour" onClick={applyColour}>
               <i
                 className="quick-swatch"
                 style={{ background: colorHex(color) }}
@@ -3650,17 +3706,8 @@ function Workspace() {
               />
               Apply current colour
             </button>
-            <button
-              onClick={() =>
-                void run(() => command("parts.duplicate", scoped()))
-              }
-            >
-              Duplicate
-            </button>
-            <button
-              className="danger"
-              onClick={() => void run(() => command("parts.remove", scoped()))}
-            >
+            <button onClick={duplicateSelected}>Duplicate</button>
+            <button className="danger" onClick={deleteSelected}>
               Delete
             </button>
           </div>
@@ -3883,7 +3930,7 @@ function Workspace() {
         })
       }
     >
-      Generate layer steps
+      One step per layer
     </button>
   );
   const restoreInstructionPlacement = (camera?: CameraSpec) => {
@@ -3966,7 +4013,7 @@ function Workspace() {
       >
         {generatingInstructions
           ? "Generating instructions…"
-          : "Generate heuristic steps"}
+          : "Make steps automatically"}
       </button>
       {generatingInstructions && (
         <button
@@ -5649,9 +5696,9 @@ function Workspace() {
                 plan: (
                   <>
                     <p className="muted">
-                      Generate a heuristic draft, then review its fit and access
-                      notes. Layer plans follow your layers. Assembly
-                      feasibility remains unverified.
+                      Let the app suggest steps, then check its notes on fit and
+                      reach, or make one step per layer. Real bricks may still
+                      need a different order.
                     </p>
                     {heuristicSteps}
                     {generateSteps}
@@ -5793,6 +5840,50 @@ function Workspace() {
               </div>
             </div>
           )}
+          {mode === "Build" &&
+            panel === "Canvas" &&
+            tool !== "Place" &&
+            !regionMode &&
+            selection.length > 0 && (
+              <div
+                className="selection-strip hud-el"
+                role="toolbar"
+                aria-label="Selected parts"
+              >
+                <span className="selection-strip-count">
+                  {selection.length === 1
+                    ? (partSpec(selected[0]?.node.ref ?? "")?.name ?? "1 part")
+                    : `${selection.length} parts`}
+                </span>
+                <button
+                  onClick={rotateSelected}
+                  disabled={selected.length !== 1}
+                >
+                  <Icon name="rotate" size={18} />
+                  <span>Rotate</span>
+                </button>
+                <button onClick={applyColour}>
+                  <i
+                    className="quick-swatch"
+                    style={{ background: colorHex(color) }}
+                    aria-hidden="true"
+                  />
+                  <span>Colour</span>
+                </button>
+                <button onClick={duplicateSelected}>
+                  <Icon name="copy" size={18} />
+                  <span>Copy</span>
+                </button>
+                <button className="danger" onClick={deleteSelected}>
+                  <Icon name="trash" size={18} />
+                  <span>Delete</span>
+                </button>
+                <button onClick={() => setPanel("Inspector")}>
+                  <Icon name="inspector" size={18} />
+                  <span>More</span>
+                </button>
+              </div>
+            )}
           <div className="canvas-bottom hud-el hud-slab">
             <span>
               {all.length.toLocaleString()} parts <b>·</b> {selection.length}{" "}
@@ -6109,12 +6200,12 @@ function Workspace() {
                 <small>Follow along, step by step</small>
               </button>
               <button onClick={() => void exportFile("native")}>
-                <strong>Native project</strong>
-                <small>Editable .brickproj backup</small>
+                <strong>Editable backup</strong>
+                <small>Reopen it here (.brickproj)</small>
               </button>
               <button onClick={() => void exportFile("ldraw")}>
                 <strong>LDraw model</strong>
-                <small>Interoperable .mpd</small>
+                <small>For other LDraw apps (.mpd)</small>
               </button>
               <button
                 onClick={() => {

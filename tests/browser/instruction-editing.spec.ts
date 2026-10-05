@@ -30,7 +30,7 @@ for (const size of [
       const before = await page.evaluate(() => window.brickEditor!.query());
       await openMode(page, "Instructions");
       await page
-        .getByRole("button", { name: "Generate layer steps", exact: true })
+        .getByRole("button", { name: "One step per layer", exact: true })
         .click();
       const editor = page.getByRole("region", {
         name: "Instruction plan editor",
@@ -143,7 +143,7 @@ test("instruction viewport keeps its cumulative step mask after asynchronous doc
   });
   await openMode(page, "Instructions");
   await page
-    .getByRole("button", { name: "Generate layer steps", exact: true })
+    .getByRole("button", { name: "One step per layer", exact: true })
     .click();
   const settle = () =>
     page.evaluate(async () => {

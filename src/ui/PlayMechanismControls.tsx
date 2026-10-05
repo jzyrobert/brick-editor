@@ -258,7 +258,7 @@ export function PlayMechanismControls({
               ? "Braking"
               : `${Math.round(Math.abs(motor.input) * 100)}% ${motor.input < 0 ? "reverse" : "forward"}`
             : motor.enabled
-              ? "Running preset"
+              ? "Running on its own"
               : "Motor stopped";
   const runningOthers = controls.filter((j) => {
     const drive = report.motors?.[j.id];
@@ -353,7 +353,7 @@ export function PlayMechanismControls({
                       : input
                         ? `${Math.round(Math.abs(input) * 100)}% ${input < 0 ? "reverse" : "forward"}`
                         : input === undefined
-                          ? "Preset running"
+                          ? "Running"
                           : "Braking"}
                   </span>
                 </button>

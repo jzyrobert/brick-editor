@@ -1,6 +1,6 @@
 # Heuristic build instructions
 
-Instructions → **Generate heuristic steps** creates a new editable hobbyist draft for an existing model. Imported plans, source records and final part poses remain intact. Review the fit, access and visibility notes before building. Publication continues to state `assemblyValidated: false`.
+Instructions → **Make steps automatically** creates a new editable hobbyist draft for an existing model. Imported plans, source records and final part poses remain intact. Review the fit, access and visibility notes before building. Publication continues to state `assemblyValidated: false`.
 
 The [research audit](reports/instruction-generation/research.md), [baseline evaluation](reports/instruction-generation/evaluation.md) and [six refinement rounds](reports/instruction-generation/refinement-rounds.md) record the investigation, review scope and independent critic findings. Generated plans, images, booklets and audit logs are local artifacts; see the [artifact policy](reports/instruction-generation/README.md#local-artifacts). The user's [additional theoretical report](reports/instruction-generation/lego_instruction_generation_heuristic.md) is preserved verbatim; its [assessment](reports/instruction-generation/additional-report-assessment.md) separates useful proposals from physical validation. The [collision investigation](reports/instruction-generation/collision-checks.md) records the subsequent bounded CAD approach checker.
 

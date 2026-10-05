@@ -264,8 +264,8 @@ export function PlaySettings({
       )}
       {report.occupancy && (
         <p className="muted">
-          The seat profile fixes your eye anchor. Exit the vehicle before
-          choosing a walking spawn or recovering your position.
+          Your view is fixed to the seat. Get out before choosing where to start
+          walking or going back to a safe spot.
         </p>
       )}
       <p role="status" aria-live="polite">

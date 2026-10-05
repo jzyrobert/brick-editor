@@ -54,7 +54,7 @@ test("explicit offline installation reloads at its deployed base path and provid
     expect(result).toEqual({ count: 74, ready: true, inventory: 74 });
     await openMode(page, "Instructions");
     await page
-      .getByRole("button", { name: "Generate layer steps", exact: true })
+      .getByRole("button", { name: "One step per layer", exact: true })
       .click();
     await openMenuTab(page, "Instructions", "Publish");
     const publication = page.getByRole("region", {

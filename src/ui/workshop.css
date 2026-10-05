@@ -1474,37 +1474,55 @@ a {
   .workshop-app .hud-top .workspace-tool-label {
     min-height: 44px;
   }
-  .workshop-app.mode-build {
+  .workshop-app:is(
+      .mode-build,
+      .mode-photo,
+      .mode-instructions,
+      .mode-project
+    ) {
     --hud-top-h: 124px;
   }
-  .workshop-app.mode-build .model-context {
+  .workshop-app:is(.mode-build, .mode-photo, .mode-instructions, .mode-project)
+    .model-context {
     flex-wrap: nowrap;
     align-items: center;
   }
-  .workshop-app.mode-build .model-heading {
+  .workshop-app:is(.mode-build, .mode-photo, .mode-instructions, .mode-project)
+    .model-heading {
     flex: 1;
     max-width: calc(100% - 120px);
     min-height: 48px;
     padding: 4px 8px 4px 4px;
   }
-  .workshop-app.mode-build .model-heading strong,
-  .workshop-app.mode-build .model-heading > div > span {
+  .workshop-app:is(.mode-build, .mode-photo, .mode-instructions, .mode-project)
+    .model-heading
+    strong,
+  .workshop-app:is(.mode-build, .mode-photo, .mode-instructions, .mode-project)
+    .model-heading
+    > div
+    > span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .workshop-app.mode-build .model-heading > div > span {
+  .workshop-app:is(.mode-build, .mode-photo, .mode-instructions, .mode-project)
+    .model-heading
+    > div
+    > span {
     margin-top: 2px;
   }
-  .workshop-app.mode-build .model-tool-picker {
+  .workshop-app:is(.mode-build, .mode-photo, .mode-instructions, .mode-project)
+    .model-tool-picker {
     width: auto;
   }
-  .workshop-app.mode-build .model-tools-menu {
+  .workshop-app:is(.mode-build, .mode-photo, .mode-instructions, .mode-project)
+    .model-tools-menu {
     left: auto;
     right: 0;
     width: calc(100vw - 28px - var(--safe-left) - var(--safe-right));
   }
-  .workshop-app.mode-build .hud-top {
+  .workshop-app:is(.mode-build, .mode-photo, .mode-instructions, .mode-project)
+    .hud-top {
     top: calc(var(--site-h) + 72px);
   }
   .play-entry {
@@ -1748,9 +1766,10 @@ a {
 /* Play settings on a phone on its side: the sheet uses the height between
    the title row (Tools stays reachable) and the entry dock, and scrolls. */
 @media (max-height: 500px) and (min-width: 500px) {
+  /* Measured from the canvas, which already starts below the header. */
   .workshop-app .mode-card.play-intro {
-    top: calc(var(--site-h) + 66px);
-    bottom: 86px;
+    top: calc(76px + var(--safe-top));
+    bottom: calc(108px + var(--safe-bottom));
     height: auto;
     max-height: none;
     overflow: auto;
@@ -1796,5 +1815,83 @@ a {
   }
   .workshop-app .welcome .primary {
     min-height: 44px;
+  }
+}
+/* Phones and tablets: tapping a part offers its everyday actions in a strip
+   above the hotbar instead of a sheet that hides the model. */
+.selection-strip {
+  display: none;
+}
+@media (max-width: 1100px) {
+  .selection-strip {
+    position: absolute;
+    z-index: 18;
+    left: max(10px, var(--safe-left));
+    right: max(10px, var(--safe-right));
+    bottom: calc(max(10px, var(--safe-bottom)) + 74px);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--hud);
+    color: var(--paper);
+    box-shadow: 0 6px 18px #18213433;
+  }
+  .selection-strip-count {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 650;
+  }
+  .selection-strip button {
+    flex: none;
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    min-width: 50px;
+    min-height: 48px;
+    padding: 4px 6px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--paper);
+    font-size: 11px;
+    font-weight: 650;
+  }
+  .selection-strip button.danger {
+    color: #f6b59a;
+  }
+  .selection-strip .quick-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--paper);
+  }
+  /* The strip says what is picked; the part count steps aside. */
+  .workshop-app:has(.selection-strip) .canvas-bottom {
+    display: none;
+  }
+}
+@media (max-width: 380px) {
+  .selection-strip-count {
+    display: none;
+  }
+}
+/* Photo: what you photograph stays in view. Phones get a shorter sheet,
+   tablets a panel only as tall as its controls. */
+@media (max-width: 650px) {
+  .app.mode-photo .mode-card.menu {
+    height: min(40dvh, calc(100dvh - 90px - var(--safe-top)));
+  }
+}
+@media (min-width: 651px) and (max-width: 1100px) {
+  .app.mode-photo .mode-card.menu {
+    bottom: auto;
+    max-height: calc(100% - var(--hud-top-h) - 24px);
   }
 }

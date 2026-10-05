@@ -19,7 +19,7 @@ test("source-guided jaw keeps its receiver, incoming bench and completed pair di
   }, text);
   await openMode(page, "Instructions");
   await page
-    .getByRole("button", { name: "Generate heuristic steps", exact: true })
+    .getByRole("button", { name: "Make steps automatically", exact: true })
     .click();
   await expect(
     page.getByText("Generated plan review", { exact: true }),

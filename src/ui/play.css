@@ -832,12 +832,15 @@
   display: none;
 }
 /* Exit Play stays in reach at the foot of a sheet that scrolls (phones on
-   their side), over a fade of the sheet's own paper. */
+   their side): it sits on a solid band of the sheet's paper that reaches the
+   sheet's edge, under a short fade, so nothing scrolls into view around it. */
 .play-menu .play-exit {
   position: sticky;
-  bottom: 0;
+  bottom: calc(-1 * var(--menu-pad-bottom, 16px));
   z-index: 1;
-  box-shadow: 0 -14px 12px -6px var(--chalk);
+  box-shadow:
+    0 0 0 var(--menu-pad-bottom, 16px) var(--chalk),
+    0 calc(-1 * var(--menu-pad-bottom, 16px) - 10px) 12px -4px var(--chalk);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1333,7 +1336,9 @@
     display: none;
   }
 }
-@media (max-width: 650px) {
+/* Phones, and tablets held upright: the pause sheet rises from the bottom
+   (a 1,000px tall side column left Exit Play far from the thumb). */
+@media (max-width: 650px), (orientation: portrait) and (max-width: 1100px) {
   .play-menu {
     top: auto;
     left: 0;
@@ -1341,7 +1346,8 @@
     bottom: 0;
     width: auto;
     max-height: calc(100% - var(--play-top) - 60px);
-    padding: 10px calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom))
+    --menu-pad-bottom: calc(16px + var(--safe-bottom));
+    padding: 10px calc(16px + var(--safe-right)) var(--menu-pad-bottom)
       calc(16px + var(--safe-left));
     border-radius: var(--r-sheet) var(--r-sheet) 0 0;
     box-shadow: var(--shadow-rise);

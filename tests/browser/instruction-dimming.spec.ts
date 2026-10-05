@@ -21,7 +21,7 @@ for (const viewport of [
       });
       await openMode(page, "Instructions");
       await page
-        .getByRole("button", { name: "Generate layer steps", exact: true })
+        .getByRole("button", { name: "One step per layer", exact: true })
         .click();
       await page
         .getByRole("slider", { name: "Instruction step", exact: true })

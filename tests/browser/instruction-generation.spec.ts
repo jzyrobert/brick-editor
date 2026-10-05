@@ -20,7 +20,7 @@ test("static source workbench keeps seam receivers local and scene placement sep
   }, text);
   await openMode(page, "Instructions");
   await page
-    .getByRole("button", { name: "Generate heuristic steps", exact: true })
+    .getByRole("button", { name: "Make steps automatically", exact: true })
     .click();
   await expect(
     page.getByText("Generated plan review", { exact: true }),
@@ -133,7 +133,7 @@ test("staged crane joint keeps pin preparation separate from vehicle mounting", 
   }, text);
   await openMode(page, "Instructions");
   await page
-    .getByRole("button", { name: "Generate heuristic steps", exact: true })
+    .getByRole("button", { name: "Make steps automatically", exact: true })
     .click();
   await expect(
     page.getByText("Generated plan review", { exact: true }),
@@ -301,7 +301,7 @@ test("figure receiver detail omits scenery while retaining the real prior host i
   }, text);
   await openMode(page, "Instructions");
   await page
-    .getByRole("button", { name: "Generate heuristic steps", exact: true })
+    .getByRole("button", { name: "Make steps automatically", exact: true })
     .click();
   await expect(
     page.getByText("Generated plan review", { exact: true }),
@@ -390,7 +390,7 @@ test("wheel placement shows its receiving pin before installation in the editor,
   });
   await openMode(page, "Instructions");
   await page
-    .getByRole("button", { name: "Generate heuristic steps", exact: true })
+    .getByRole("button", { name: "Make steps automatically", exact: true })
     .click();
   await expect(
     page.getByText("Generated plan review", { exact: true }),
@@ -585,7 +585,7 @@ test("instruction worker keeps the page responsive and cancellation leaves no dr
   });
   await openMode(page, "Instructions");
   await page
-    .getByRole("button", { name: "Generate heuristic steps", exact: true })
+    .getByRole("button", { name: "Make steps automatically", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Cancel instruction generation", exact: true })
@@ -594,13 +594,13 @@ test("instruction worker keeps the page responsive and cancellation leaves no dr
     page.getByText("Generated plan review", { exact: true }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Generate heuristic steps", exact: true }),
+    page.getByRole("button", { name: "Make steps automatically", exact: true }),
   ).toBeEnabled();
   await page.evaluate(() => {
     (window as any).__instructionFrames = 0;
   });
   await page
-    .getByRole("button", { name: "Generate heuristic steps", exact: true })
+    .getByRole("button", { name: "Make steps automatically", exact: true })
     .click();
   await expect(
     page.getByText("Generated plan review", { exact: true }),
@@ -623,7 +623,7 @@ for (const width of [1440, 360])
     });
     await openMode(page, "Instructions");
     await page
-      .getByRole("button", { name: "Generate heuristic steps", exact: true })
+      .getByRole("button", { name: "Make steps automatically", exact: true })
       .click();
     await expect(
       page.getByText("Generated plan review", { exact: true }),

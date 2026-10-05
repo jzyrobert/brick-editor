@@ -1311,7 +1311,7 @@ export function PlayPanel({
           )}
           <div
             className="play-hint play-keys-hint"
-            hidden={remoteOpen || (finePointer && !locked)}
+            hidden={remoteOpen || (finePointer && !locked && !occupied)}
           >
             {riding ? (
               // Driving a train: the lever and the brake.
@@ -1455,13 +1455,26 @@ export function PlayPanel({
               )}
               <button
                 className="play-prompt"
-                onClick={() => {
+                aria-keyshortcuts={bindings.interact || undefined}
+                // A second finger while the other drives fires no click:
+                // a touch lift gets out directly.
+                onPointerUp={(e) => {
+                  if (e.pointerType !== "touch") return;
+                  e.preventDefault();
+                  clear();
+                  attempt(() => play.exitVehicle({}));
+                }}
+                onClick={(e) => {
+                  // Touch already acted on pointerup; keys and mice act here.
+                  if ((e.nativeEvent as PointerEvent).pointerType === "touch")
+                    return;
                   clear();
                   attempt(() => play.exitVehicle({}));
                 }}
               >
                 <Icon name="exit" />
                 Get out
+                {keyHint(bindings.interact)}
               </button>
             </>
           ) : !state.vehicleControl && seatRig ? (

@@ -114,7 +114,13 @@ export function PlayTrainControls({
     },
     ride: () =>
       train &&
-      attempt(() => play.rideTrain({ trainId: riding ? null : train.id })),
+      attempt(() => {
+        play.rideTrain({ trainId: riding ? null : train.id });
+        // From the cab, first person sees only the inside of the engine: a
+        // new rider watches the train from behind (V switches back).
+        if (!riding && play.snapshot().cameraMode === "first-person")
+          play.setCameraMode("third-person");
+      }),
     horn,
     points: () => {
       const s = trains.switches[0];

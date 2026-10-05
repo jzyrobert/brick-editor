@@ -3814,12 +3814,71 @@ export class SceneAdapter {
     this.camera.position.fromArray(conversion(spec.position));
     this.camera.lookAt(this.controls.target);
     this.resize();
+    // A new camera is framed for the whole view: shift it for any sheet.
+    this.appliedInset = 0;
+    this.appliedInsetLeft = 0;
+    this.insetShift.set(0, 0, 0);
+    this.applyViewInset();
+  }
+  /** Pixels of the view covered by a sheet: at the bottom on phones, on the
+   * left on tablets. */
+  private viewInset = 0;
+  private appliedInset = 0;
+  private viewInsetLeft = 0;
+  private appliedInsetLeft = 0;
+  private insetShift = new THREE.Vector3();
+  /**
+   * Keeps the build in the part of the view a bottom sheet leaves visible:
+   * the camera pans up by half the covered height (and back when the sheet
+   * closes), so opening Parts or Photo on a phone never hides the model.
+   */
+  setViewInset(bottom: number, left = 0) {
+    this.viewInset = Math.max(0, Math.round(bottom));
+    this.viewInsetLeft = Math.max(0, Math.round(left));
+    this.applyViewInset();
+  }
+  private applyViewInset() {
+    const delta = this.viewInset - this.appliedInset;
+    const deltaLeft = this.viewInsetLeft - this.appliedInsetLeft;
+    const h = this.element.clientHeight;
+    if (
+      (!delta && !deltaLeft) ||
+      !h ||
+      this.captureActive ||
+      this.playViewActive
+    )
+      return;
+    const camera = this.camera;
+    const distance = camera.position.distanceTo(this.controls.target);
+    const worldPerPixel =
+      camera instanceof THREE.PerspectiveCamera
+        ? (2 * distance * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)) /
+          h
+        : (camera.top - camera.bottom) / camera.zoom / h;
+    // Moving the camera down the screen's up axis lifts the build; moving it
+    // left moves the build right, beside a left-hand sheet.
+    const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+    const shift = up
+      .multiplyScalar((-delta / 2) * worldPerPixel)
+      .addScaledVector(right, (-deltaLeft / 2) * worldPerPixel);
+    camera.position.add(shift);
+    this.controls.target.add(shift);
+    this.insetShift.add(shift);
+    this.appliedInset = this.viewInset;
+    this.appliedInsetLeft = this.viewInsetLeft;
+    this.invalidate({ cameraOnly: true });
   }
   currentCamera(): CameraSpec {
     return {
       ...this.cameraSpec,
-      position: conversion(this.camera.position.toArray() as Vec3),
-      target: conversion(this.controls.target.toArray() as Vec3),
+      // Reported without a sheet's temporary pan (setViewInset).
+      position: conversion(
+        this.camera.position.clone().sub(this.insetShift).toArray() as Vec3,
+      ),
+      target: conversion(
+        this.controls.target.clone().sub(this.insetShift).toArray() as Vec3,
+      ),
       up: conversion(this.camera.up.toArray() as Vec3),
     };
   }
