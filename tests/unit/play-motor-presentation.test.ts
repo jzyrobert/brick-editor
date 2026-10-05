@@ -34,7 +34,7 @@ describe("motor state presentation", () => {
       motorStatusText({ ...motor, input: undefined, status: "holding" }),
     ).toBe("Holding");
     expect(motorStatusText({ ...motor, input: undefined })).toBe(
-      "Running preset",
+      "Running on its own",
     );
   });
 });

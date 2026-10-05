@@ -1,4 +1,5 @@
 import { PlayMemberGeometryCapture } from "./play-member-geometry";
+import { trimPrototypeMetadata } from "./prototype-metadata";
 import {
   bindMotorComponentSources,
   partitionMotorSourcePrototype,
@@ -1172,15 +1173,17 @@ export class SceneAdapter {
       "Part compilation produced no geometry: " + o.node.ref,
     );
     repairFaceNormals(group);
-    return this.finishPrototype(group, forceDoubleSided);
+    return this.finishPrototype(group, forceDoubleSided, o.node.ref);
   }
-  private finishPrototype(group: THREE.Group, forceDoubleSided: boolean) {
+  private finishPrototype(
+    group: THREE.Group,
+    forceDoubleSided: boolean,
+    ref?: string,
+  ) {
+    // Trim expensive occurrence-cloned loader data, retaining TEXMAP and only
+    // the literal source roles required by a reviewed movable shortcut.
+    trimPrototypeMetadata(group, ref);
     group.traverse((object) => {
-      // Loader metadata (file names, categories, building steps) is unused,
-      // and Object3D.clone() JSON-copies user data for every object of every
-      // occurrence handle. `!TEXMAP` tags are kept for texmaps.resolve().
-      const texmap = object.userData.texmap;
-      object.userData = texmap ? { texmap } : {};
       if ((object as THREE.Mesh).isMesh) {
         if (forceDoubleSided) {
           const mesh = object as THREE.Mesh;
@@ -1323,7 +1326,7 @@ export class SceneAdapter {
         "REFERENCE_MISSING",
         "Part compilation produced no geometry: " + o.node.ref,
       );
-      return this.finishPrototype(group, false);
+      return this.finishPrototype(group, false, o.node.ref);
     });
   }
   /** The face, edge and conditional-line materials the loader builds for

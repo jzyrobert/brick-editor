@@ -2,6 +2,10 @@ import { MechanicalQueryWorld } from "./mechanical-query-world";
 import { prepareMechanicalSources } from "./mechanical-solids";
 import { loadReviewedMechanicalProxies } from "./reviewed-mechanical-proxies";
 import { loadArocsBallContacts } from "./arocs-ball-contacts";
+import {
+  hasNativeRestDeclaration,
+  prepareNativeRestSources,
+} from "./native-rest-sources";
 import { loadMotorSourceComponents } from "./motor-source-components";
 import { add, mv } from "../core/math";
 import type { DriverSeatSpec } from "../mechanisms/types";
@@ -904,7 +908,10 @@ export class PlaySession {
     // source identity; missing or changed canonical geometry cannot fall back.
     await Promise.all([
       loadReviewedMechanicalProxies(sources),
-      loadArocsBallContacts(sources),
+      loadArocsBallContacts(
+        sources.filter((source) => !hasNativeRestDeclaration(source)),
+      ),
+      prepareNativeRestSources(sources, request.dynamicRigIds ?? []),
       loadMotorSourceComponents(sources),
     ]);
     validatePlayMechanismSources(sources, snapshot.revision);

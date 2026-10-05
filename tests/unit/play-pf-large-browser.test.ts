@@ -12,6 +12,7 @@ import { BrowserPlay } from "../../src/play/browser";
 import { compileOfficialPart } from "../helpers/compile-part";
 import { addFullSources } from "../../src/catalog/full-library";
 import { exportLDraw } from "../../src/ldraw/io";
+import { physicalPlayEligibility } from "../../src/mechanisms/physical-play";
 
 vi.mock("../../src/play/avatar", async (original) => ({
   ...(await original<typeof import("../../src/play/avatar")>()),
@@ -41,7 +42,17 @@ async function setup() {
   root.rotation.x = Math.PI;
   const handles = new OccurrenceHandles(root);
   for (const o of all) {
-    const h = handles.place(o.id, await compileOfficialPart(o.node.ref));
+    const prototype = (await compileOfficialPart(o.node.ref)).clone();
+    (
+      SceneAdapter.prototype as unknown as {
+        finishPrototype(
+          group: THREE.Group,
+          double: boolean,
+          ref: string,
+        ): THREE.Group;
+      }
+    ).finishPrototype(prototype, false, o.node.ref);
+    const h = handles.place(o.id, prototype);
     const p = o.transform.position,
       b = o.transform.basis;
     h.matrix.set(
@@ -174,6 +185,13 @@ it("enters actual PF-L through Browser capture, renders only its rotor and resto
     parent = handles.get(id)!;
   const rest = parent.matrix.clone();
   try {
+    expect(physicalPlayEligibility(project, rig, all).eligible).toBe(false);
+    const capture = vi.spyOn(adapter, "playMotorComponentGeometry");
+    expect(await play.reviewMotorConnections(project, [rig])).toEqual({});
+    expect(physicalPlayEligibility(project, rig, all).eligible).toBe(true);
+    expect(capture).not.toHaveBeenCalled();
+    expect(play.getState().active).toBe(false);
+    expect(exportLDraw(project)).toBe(before);
     await play.enter({
       rigId: rig.id,
       autoDoors: false,

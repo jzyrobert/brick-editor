@@ -14,6 +14,7 @@ import {
 } from "../../src/render/part-compile-core";
 import { indexPrototypeGeometry } from "../../src/render/geometry-index";
 import { repairFaceNormals } from "../../src/render/raw-primitives";
+import { trimPrototypeMetadata } from "../../src/render/prototype-metadata";
 import {
   cloneTree,
   drawableTemplates,
@@ -125,6 +126,9 @@ describe("literal source motor render components", () => {
     const p = project(),
       o = occurrences(p)[0],
       binding = await bindMotorComponentSources(sources, p);
+    const signature = await sourceComponentGeometrySignature(rebuilt);
+    trimPrototypeMetadata(rebuilt, "99499.dat");
+    expect(await sourceComponentGeometrySignature(rebuilt)).toEqual(signature);
     const partition = await partitionMotorSourcePrototype(
       p,
       o,

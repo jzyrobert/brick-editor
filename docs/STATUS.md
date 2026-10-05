@@ -1430,3 +1430,25 @@ joints retain strict coincidence. Kinematic preview keeps authored rest, refuses
 movement and refuses anchor rebasing. A declaration alone grants no ordinary
 Play control eligibility. Actual native readiness, compound ownership and full
 Arocs suspension integration remain open.
+
+### Source motor entry and native seating (5 October 2026)
+
+The Large motor sample adds the actual 99499 Power Functions L case, two
+source-aligned mounting pins, a keyed red output axle and two retaining collars.
+Its casing and internal output have separate source-derived collision and draw
+components while preserving one motor inventory item. It starts in Dynamic
+mode. Play reviews its loaded source connections before offering entry controls;
+canonical geometry and native collision admission are checked again on entry.
+
+Direct Play entry prepares declared native ball/socket source packets before
+allocating physics and publishes seating, ready or blocked reports, including
+the actual gap and relative pivot speed. A copied, stale or transplanted packet
+cannot be replaced with a fresh packet to bypass the source checks. The actual
+native actors settle through constraints and source contact; saved anchors and
+source placements stay unchanged. This is bounded source construction support,
+not acceptance of the complete Arocs suspension or pneumatic system.
+
+The touch Get out action also works while another finger holds the throttle.
+Releasing control clears vehicle input and restores the explorer beside the
+vehicle's current location. Existing supported-surface and blocked-exit checks
+remain in force.

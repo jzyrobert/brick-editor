@@ -228,6 +228,19 @@ export type PlayDynamicsReport = {
   >;
   /** Read-only free cylindrical coordinates; not scalar actuator controls. */
   bearings?: Record<string, { translationLdu: number; angleDegrees: number }>;
+  /** Source-bound native seating; usable controls require ready. */
+  restAssemblies?: Record<
+    string,
+    {
+      state: "seating" | "ready" | "blocked";
+      ticks: number;
+      stableTicks: number;
+      gapLdu: number;
+      /** Relative pivot speed, metres/second. */
+      relativeSpeed: number;
+      reason?: string;
+    }
+  >;
   wheels?: Record<
     string,
     {

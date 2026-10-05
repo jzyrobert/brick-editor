@@ -5,6 +5,15 @@ its pin supports, retained output shaft and complete fixed carrier have passed
 the sealed drivetrain/source-assembly review. This is a small supported motor
 assembly, not admission for a whole official truck, crane or flexible system.
 
+The production renderer retains only the loader's type/colour roles on the
+motor and its two literal top-level source branches when trimming metadata.
+Both main-thread and worker/cache compilation use that cleanup. The source
+closure, exact complete primitive signatures and one-to-one drawable coverage
+still certify the partition; labels alone cannot grant admission. The adapter
+regression now exercises production cleanup, and the actual worker-record case
+checks that cleanup preserves the complete primitive signature. Other parts
+retain the existing TEXMAP-only metadata policy.
+
 The one authored/inventory motor occurrence retains two internal source paths:
 `99499.dat/10089c01.dat` for the case, and `99499.dat/10095.dat` for the output.
 Canonical compiler triangle/line coverage and dependency closure hashes bind

@@ -1456,6 +1456,19 @@ const playDynamicsReport = obj(
       }),
     ),
     bearings: dictionary(obj({ translationLdu: num, angleDegrees: num })),
+    restAssemblies: dictionary(
+      obj(
+        {
+          state: { enum: ["seating", "ready", "blocked"] },
+          ticks: { type: "integer", minimum: 0 },
+          stableTicks: { type: "integer", minimum: 0 },
+          gapLdu: { type: "number", minimum: 0 },
+          relativeSpeed: { type: "number", minimum: 0 },
+          reason: str,
+        },
+        ["state", "ticks", "stableTicks", "gapLdu", "relativeSpeed"],
+      ),
+    ),
     wheels: dictionary(
       obj({
         contact: { type: "boolean" },

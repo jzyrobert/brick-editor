@@ -90,6 +90,7 @@ for (const viewport of [
         window.brickEditor!.play.enter({
           rigId: "vehicle",
           position: [-90, -0.3, -280],
+          cameraMode: "third-person",
           realtime: false,
         }),
       );
@@ -209,6 +210,45 @@ for (const viewport of [
           (await page.evaluate(() => window.brickEditor!.play.snapshot()))
             .mechanism!.pose.vehicle!.position,
         ).toEqual(touchRight.mechanism!.pose.vehicle!.position);
+        // Lift a second finger on Get out while one thumb still holds the
+        // throttle. Multi-touch supplies no synthetic click for that lift.
+        const exit = (await page
+            .getByRole("button", { name: "Get out" })
+            .boundingBox())!,
+          exitPoint = {
+            id: 6,
+            x: exit.x + exit.width / 2,
+            y: exit.y + exit.height / 2,
+          };
+        await client.send("Input.dispatchTouchEvent", {
+          type: "touchStart",
+          touchPoints: [{ id: 5, ...forward }],
+        });
+        await client.send("Input.dispatchTouchEvent", {
+          type: "touchStart",
+          touchPoints: [{ id: 5, ...forward }, exitPoint],
+        });
+        await client.send("Input.dispatchTouchEvent", {
+          type: "touchEnd",
+          touchPoints: [exitPoint],
+        });
+        await expect
+          .poll(async () => (await snapshot()).vehicleControl)
+          .toBeUndefined();
+        expect((await snapshot()).avatarVisible).toBe(true);
+        await client.send("Input.dispatchTouchEvent", {
+          type: "touchEnd",
+          touchPoints: [],
+        });
+        const released = await snapshot();
+        await page.evaluate(() => window.brickEditor!.play.stepTicks(12));
+        expect((await snapshot()).mechanism!.pose.vehicle!.position).toEqual(
+          released.mechanism!.pose.vehicle!.position,
+        );
+        await page.getByRole("button", { name: "Get in" }).tap();
+        await expect(
+          page.getByRole("button", { name: "Get out" }),
+        ).toBeVisible();
       }
       await page.screenshot({
         path: test

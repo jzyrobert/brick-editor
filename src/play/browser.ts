@@ -67,6 +67,11 @@ import {
   motorComponentPresentation,
 } from "./motor-source-components";
 import { loadArocsBallContacts } from "./arocs-ball-contacts";
+import {
+  hasNativeRestDeclaration,
+  prepareNativeRestSources,
+} from "./native-rest-sources";
+import { requireArocsBallRestConstruction } from "./arocs-ball-rest";
 
 const ZOOM_KEY = "brick-editor-play-zoom-v1";
 /** The follow distance last chosen by zoom in this tab, if valid. */
@@ -177,6 +182,50 @@ export class BrowserPlay {
     const r = this.render();
     ensure(r, "WEBGL_UNAVAILABLE", "Play requires WebGL2");
     return r;
+  }
+  /** Review loaded physical motor mounts for the pre-entry chooser. Canonical
+   * component capture and native collision admission still happen on entry. */
+  async reviewMotorConnections(
+    project: Project,
+    rigs: readonly import("../mechanisms/types").MotionRig[],
+  ) {
+    const candidates = rigs.filter((rig) =>
+      rig.joints.some(
+        (joint) => joint.motor?.binding?.profile === PF_LARGE_MOTOR_PROFILE,
+      ),
+    );
+    if (!candidates.length) return {} as Record<string, string>;
+    await this.renderer().ready(project.revision, true);
+    ensure(
+      project.revision === this.revision(),
+      "REVISION_CONFLICT",
+      "The project changed during connection review.",
+    );
+    const all = occurrences(project);
+    const results = await Promise.allSettled(
+      candidates.map((rig) =>
+        prepareLoadedMotorAssemblies(project, [rig], all),
+      ),
+    );
+    ensure(
+      project.revision === this.revision(),
+      "REVISION_CONFLICT",
+      "The project changed during connection review.",
+    );
+    return Object.fromEntries(
+      results.flatMap((result, i) =>
+        result.status === "rejected"
+          ? [
+              [
+                candidates[i].id,
+                result.reason instanceof Error
+                  ? result.reason.message
+                  : "These motor connections could not be checked.",
+              ],
+            ]
+          : [],
+      ),
+    );
   }
   private current() {
     ensure(this.session, "INVALID_INPUT", "Enter Play first");
@@ -523,15 +572,23 @@ export class BrowserPlay {
       }
       await Promise.all([
         loadMotorSourceComponents(mechanismSources),
-        loadArocsBallContacts(mechanismSources),
+        loadArocsBallContacts(
+          mechanismSources.filter(
+            (source) => !hasNativeRestDeclaration(source),
+          ),
+        ),
+        prepareNativeRestSources(mechanismSources, dynamicRigIds),
       ]);
       ensure(epoch === this.epoch, "INVALID_INPUT", "Play entry cancelled");
       for (const source of mechanismSources) {
         const rig = source.project.motionRigs[source.rigId];
         source.groups = motorComponentGroupMeshes(source);
         this.mechanismViews[rig.id] = mechanismViewGeometry(rig, source.groups);
-        if (authored.some((r) => r.id === rig.id))
-          requirePhysicalPlay(source.project, rig, all, source);
+        if (authored.some((r) => r.id === rig.id)) {
+          if (hasNativeRestDeclaration(source))
+            requireArocsBallRestConstruction(source);
+          else requirePhysicalPlay(source.project, rig, all, source);
+        }
       }
       this.motorComponents = mechanismSources.flatMap(
         motorComponentPresentation,

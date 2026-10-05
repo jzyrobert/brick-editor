@@ -1,5 +1,10 @@
 /** Plain metadata shared by the chooser, Play hints and build scripts. */
 export const MOTION_SAMPLES = {
+  "large-motor": {
+    title: "Large motor",
+    file: "large-motor.mpd",
+    hint: "Open Controls. Change power and direction to turn the red axle.",
+  },
   "twin-drive": {
     title: "Twin motor table",
     file: "twin-drive.mpd",
