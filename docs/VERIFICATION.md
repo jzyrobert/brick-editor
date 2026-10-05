@@ -2057,6 +2057,15 @@ wheel seat, collision allowance or resource cap is bypassed.
   library validation passes, and the generator reproduces the Twin preview.
   The Impeccable origin scan reports 15 app-rendered previews with zero missing
   provenance records.
+- Native source-heading confirmation (5 October) passes 18 checks across eight
+  yaw/car cases, three dynamic-seat regressions and seven shared-ground cases
+  in 55.70 s. Actual 31027/30572 cars drive forward, reverse and steer at
+  37°, 90° and 180° with wheel support and exact source preservation. The
+  correction changes the native speed sign to source forward while preserving
+  cached velocity-norm magnitude and sample time; the unchanged seated head-stop
+  recovery still passes. Reported forward/reverse snapshots remain below
+  170 LDU/s with the existing 160 LDU/s fixed-tick cap; this is not a claim
+  about every intermediate peak. See [native yaw review](reviews/NATIVE-VEHICLE-YAW.md).
 - Actual full public 31027 Blue Racer and 30572 Race Car imports pass four
   production cases on desktop and phone in 59.1 s. The rotated Race Car drives
   and exports all 68 parts; Blue Racer exports 59 car parts while its eight
