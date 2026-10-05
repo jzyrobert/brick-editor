@@ -128,10 +128,9 @@ for (const phone of [false, true])
         "Running reverse",
       );
       await page.getByLabel("Motor 1 power", { exact: true }).fill("0");
-      expect((await report()).motors!["motor-output"]).toMatchObject({
-        input: 0,
-        power: 0,
-      });
+      const off = (await report()).motors!["motor-output"];
+      expect(Math.abs(off.input!)).toBe(0);
+      expect(off.power).toBe(0);
       await expect(page.locator(".play-mechanism")).toContainText("Motor off");
       await page.getByLabel("Motor 1 power", { exact: true }).fill("0.5");
       expect((await report()).motors!["motor-output"]).toMatchObject({

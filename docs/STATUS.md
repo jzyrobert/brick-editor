@@ -1428,8 +1428,9 @@ request without replacing either original anchor. The declaration names distinct
 members on opposite bodies and bounds the construction gap to 2.05 LDU; unmarked
 joints retain strict coincidence. Kinematic preview keeps authored rest, refuses
 movement and refuses anchor rebasing. A declaration alone grants no ordinary
-Play control eligibility. Actual native readiness, compound ownership and full
-Arocs suspension integration remain open.
+Play control eligibility. The bounded native readiness implementation is
+recorded below; broader compound ownership and full Arocs suspension integration
+remain open.
 
 ### Source motor entry and native seating (5 October 2026)
 
