@@ -247,6 +247,7 @@ export function PlayMechanismControls({
       }
     },
   });
+  const multipleMotors = controls.length > 1 && controls.every((j) => j.motor);
   const motorState = motorStatusText(motor);
   const runningOthers = controls.filter((j) => {
     const drive = report.motors?.[j.id];
@@ -290,6 +291,31 @@ export function PlayMechanismControls({
           <Icon name="close" />
         </button>
       </div>
+      <div className="play-mechanism-viewbar">
+        <span>Drag to orbit · pinch or scroll to zoom</span>
+      </div>
+      {multipleMotors ? (
+        <div
+          className="play-motor-picker"
+          role="group"
+          aria-label="Motor controls"
+        >
+          {controls.map((j) => {
+            const drive = report.motors?.[j.id];
+            return (
+              <button
+                key={j.id}
+                type="button"
+                aria-pressed={joint?.id === j.id}
+                onClick={() => setSelected(j.id)}
+              >
+                <strong>{label(j.id)}</strong>
+                <span>{motorStatusText(drive)}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
       <div
         ref={content}
         className="play-mechanism-content"
@@ -315,50 +341,24 @@ export function PlayMechanismControls({
             </select>
           </label>
         )}
-        <div className="play-mechanism-viewbar">
-          <span>Drag to orbit · pinch or scroll to zoom</span>
-        </div>
-        {controls.length > 1 && controls.every((j) => j.motor) ? (
-          <div
-            className="play-motor-picker"
-            role="group"
-            aria-label="Motor controls"
-          >
-            {controls.map((j) => {
-              const drive = report.motors?.[j.id];
-              return (
-                <button
-                  key={j.id}
-                  type="button"
-                  aria-pressed={joint?.id === j.id}
-                  onClick={() => setSelected(j.id)}
-                >
-                  <strong>{label(j.id)}</strong>
-                  <span>{motorStatusText(drive)}</span>
-                </button>
-              );
-            })}
-          </div>
-        ) : (
-          controls.length > 1 && (
-            <label className="play-control-picker">
-              Part control
-              <select
-                aria-label="Part control"
-                value={joint?.id}
-                onChange={(e) => {
-                  cancelQueuedMove();
-                  setSelected(e.target.value);
-                }}
-              >
-                {controls.map((j) => (
-                  <option key={j.id} value={j.id}>
-                    {label(j.id)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )
+        {!multipleMotors && controls.length > 1 && (
+          <label className="play-control-picker">
+            Part control
+            <select
+              aria-label="Part control"
+              value={joint?.id}
+              onChange={(e) => {
+                cancelQueuedMove();
+                setSelected(e.target.value);
+              }}
+            >
+              {controls.map((j) => (
+                <option key={j.id} value={j.id}>
+                  {label(j.id)}
+                </option>
+              ))}
+            </select>
+          </label>
         )}
         {dynamic && report.grippers && (
           <PlayGripperControls
@@ -370,14 +370,16 @@ export function PlayMechanismControls({
         )}
         {joint && (
           <div className="play-joint-control" key={joint.id}>
-            <div className="play-control-reading">
-              <strong>{label(joint.id)}</strong>
-              <output>
-                {motor
-                  ? motorState
-                  : `${position.toFixed(1)} ${joint.kind === "revolute" ? "degrees" : "LDU"}`}
-              </output>
-            </div>
+            {!multipleMotors && (
+              <div className="play-control-reading">
+                <strong>{label(joint.id)}</strong>
+                <output>
+                  {motor
+                    ? motorState
+                    : `${position.toFixed(1)} ${joint.kind === "revolute" ? "degrees" : "LDU"}`}
+                </output>
+              </div>
+            )}
             {motor ? (
               <>
                 <label className="play-motor-power">

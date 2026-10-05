@@ -100,6 +100,19 @@ for (const viewport of [
       );
       expect(start.vehicleControl).toEqual({ rigId: "vehicle" });
       expect(start.avatarVisible).toBe(false);
+      await page.getByRole("button", { name: "Pause", exact: true }).click();
+      await expect(
+        page.getByText("Recover last safe position", { exact: true }),
+      ).toHaveCount(0);
+      await expect(
+        page
+          .locator(".play-menu-note")
+          .filter({ hasText: "Get out returns you beside it" }),
+      ).toBeVisible();
+      await expect(page.locator(".play-menu")).not.toContainText(
+        "You stay on foot",
+      );
+      await page.getByRole("button", { name: "Resume", exact: true }).click();
       await page.keyboard.down("w");
       await page.keyboard.down("a");
       await page.evaluate(() => window.brickEditor!.play.stepTicks(12));

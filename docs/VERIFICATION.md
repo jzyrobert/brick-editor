@@ -20,6 +20,16 @@ desktop/phone viewports (1440 × 1000, 1080 × 1800, 360 × 600, 411 × 685,
 hidden walking sticks during remote motor control, third-person driving and
 safe exit. Full CI and publication remain pending.
 
+The native angular kernel now runs the existing admitted spur rows without
+changing source or collision admission. Twenty-two integrated spur/rack checks
+and the separate rounded-source axis case pass. Fresh UI confirmation passes
+all six sizes in 3.7 minutes after keeping motor tabs/status outside scrolling
+details, removing their duplicate reading, correcting driving help and hiding
+unavailable recovery. A fresh independent Impeccable reviewer returns SHIP at
+this motor/vehicle-control scope, and the surface documenter records the result.
+Eight additional production interaction/twin-motor cases pass in 3.0 minutes,
+including Dynamic on both desktop and phone and the driving pause menu.
+
 Five source-content tests retain exact fallback leaves/caps and world frames,
 reject ambiguous or displaced cap ancestry and conflicting metadata, and keep
 independent placements separate. A private audit reads both unmodified complete

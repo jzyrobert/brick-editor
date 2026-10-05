@@ -7,9 +7,9 @@ related_targets: ["src/ui/PlayPanel.tsx", "src/ui/play.css"]
 
 # Surface brief: Play mechanism controls
 
-Scope: the existing Play mechanism overview and control sheet on desktop and phones. Visitor mode: Operate.
-Audience and job: hobbyists and children inspect a complete Technic mechanism, choose an available motor or moving part, and understand what their input moves.
-Action and proof: show available controls directly in active Play; run independent motors with visible power and direction; keep the complete mechanism in the clear canvas area. Saved settings and linked output details remain disclosures.
+Scope: the existing Play mechanism overview, control sheet and certified-vehicle driving transition on desktop and phones. Visitor mode: Operate.
+Audience and job: hobbyists and children inspect a complete Technic mechanism, choose an available motor or moving part, understand what their input moves, and drive an available vehicle.
+Action and proof: show available controls directly in active Play; run independent motors with visible power, direction and simulated state; keep the complete mechanism in the clear canvas area. Get in controls the vehicle as a whole in third person, with Get out reachable. Saved settings and linked output details remain disclosures.
 Constraints: inherit the current cream workshop DESIGN.md and tokens, navy HUD and burnt-orange actions; preserve 44px targets, safe-area spacing, local assets and existing explorer transitions. This is a scoped extension, with no new visual world or palette.
 
 ## Direction contract
@@ -18,22 +18,38 @@ THESIS: The complete mechanism remains visible while its usable controls sit bes
 
 OWN-WORLD: Inherit DESIGN.md: cream paper controls, navy HUD, burnt-orange active direction and warm pressed motor tabs. Preserve current type, corners, focus rings and touch sizing.
 
-STORY: Open Controls, orbit the mechanism, choose a motor, set Power and tap Forward or Reverse. Independent motors keep running when switching tabs; Brake or Brake all stops them.
+STORY: Open Controls, orbit the mechanism, choose a motor, set Power and tap Forward or Reverse. Independent motors keep running when switching tabs; Brake or Brake all stops them. Get in switches an available certified vehicle to driving; Get out returns the explorer beside its current location.
 
-FIRST VIEWPORT: Desktop places a compact control sheet at the right; upright phones place it at the bottom. Fit build and Close stay in the header, followed by motor choice, state, Power and direction. Secondary settings and outputs scroll below; the clear canvas fits the whole rig.
+FIRST VIEWPORT: Desktop and tablet place a compact control sheet at the right; upright phones place it at the bottom. Fit build and Close stay in the header. Orbit guidance and motor tabs with live status remain outside the scrolling body; Power and direction lead that body. Short landscape hides the orbit caption. Secondary settings and outputs scroll below; the clear canvas fits the whole rig. Driving keeps the model visible with Drive and Get out at opposite bottom corners.
 
 FORM: Extend the existing Play overview and paper sheet. Inherit the established workshop direction; no direction roll or new seed applies to this scoped extension.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 
-## Behavior and asset provenance
+## Current interaction
+
+Motor presentation describes the simulated state with plain labels: Motor off, Motor stalled, At limit, Braking, Holding, Running forward, Running reverse or Running preset. Power is a percentage, and motor state replaces accumulating shaft-angle counters. Manual moving parts retain their position reading and slider.
+
+When all available controls are motors, each tab shows its own live status and selected state. These tabs, the header and the orbit caption remain outside the scrolling control body. The selected motor's name and status are not repeated below its tab. Mixed manual controls retain the Part control select. The sheet shows a scroll cue only while controls remain below the visible body. At viewport heights up to 500px the orbit caption is hidden so the primary Power and Reverse / Brake / Forward controls remain together.
 
 Power changes speed and bounded native motor effort in Dynamic mode. Zero Power retains the chosen direction; Brake clears it. Pausing or window blur stops live inputs. Closing the sheet brakes enabled motors in the current rig, clears live inputs and restores exploration. The rig and orbit survive pause. Availability comes from the active rig reports, with one driver per transmission and passive loop joints omitted.
 
+Get in for an available certified vehicle controls the whole build and selects a third-person vehicle view. The explorer is hidden, its collider is disabled, and its native physics actor is made non-solid while driving. Joystick or movement keys drive and steer; dragging orbits the vehicle. Get out searches for a clear supported standing point beside the vehicle's current location and restores exploration. If every exit is blocked, driving continues with an actionable message to move to a clear space. This transition does not invent a physical seat attachment.
+
+The pause menu says Resume driving while in a vehicle and explains driving, orbiting and the nearby exit. Recover last safe position is hidden while driving or controlling a mechanism, where that explorer action is unavailable.
+
+## Asset provenance
+
 The shipping sample preview `public/templates/twin-drive.webp` is generated by the app's own renderer through `scripts/build-templates.ts` from the original CC0 parts arrangement in `src/mechanisms/twin-drive-fixture.ts`. It is a rendered sample, with no AI image asset. LDraw parts retain their own library licensing.
 
-## Review boundary
+## Evidence and review boundary
 
-Fresh single-motor screenshots cover 1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411, with Dynamic also captured at 360×600. Fresh twin-drive captures cover desktop and phone in Kinematic and Dynamic modes. The bounded visual review reports no findings. Zero-power behavioral verification is tracked separately; this brief does not assert that all browser tests pass.
+Final screenshot evidence is the twelve `motor.png` and `driving.png` captures under `test-results/technic-systems-design/`, covering 1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411. Motor captures show Twin motor table with Motor 1 running forward and Motor 2 running a preset; driving captures show Roadster in third person with Drive and Get out reachable.
+
+The six confirmation cases in `.local/root-play-design-proof.spec.ts` passed in 3.7 minutes. They check the live motor label, hidden explorer joystick during mechanism control, motor tabs and direction button within the viewport with at least 44px targets, third-person vehicle control with a hidden explorer, reachable Get out with a 44px target, successful release, and no page errors. The final `npm run build` passed schema generation, TypeScript and Vite; Vite completed in 38.80 seconds. These are scoped confirmation checks, not a claim that the full browser suite or all mechanical systems have passed.
+
+The fresh finish reviewer accepted all twelve captures and returned SHIP at the UI scope. Its verdict records all three prior material findings as resolved, with no remaining material UI issues. The earlier review that inherited build history was replaced by this fresh review.
+
+Documentation compared the final captures and `PlayMechanismControls.tsx`, `play-motor-presentation.ts`, `PlayPanel.tsx` and `play.css` against `PRODUCT.md`, token-bearing `DESIGN.md`, `.impeccable/design.json` and `tokens.css`. The build reuses cream paper, navy HUD, burnt-orange actions, warm pressed tabs, established type and corners, and the 44px target floor. This ordinary extension preserves the incumbent product and design system files; its interaction details belong in this surface brief.
 
 The older App surface brief still describes a navy/green/gold world. That preexisting drift is outside this extension; current DESIGN.md, tokens and rendered Play controls are the visual authority for this surface.

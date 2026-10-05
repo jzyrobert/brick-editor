@@ -1271,7 +1271,7 @@ export function PlayPanel({
             <p className="play-menu-note">
               {occupied
                 ? "Seated driver: the throttle and steering pads, or the movement keys, drive the vehicle."
-                : "The throttle and steering pads, or the movement keys, drive it. You stay on foot; included walls and other rigs can stop the vehicle."}
+                : "Use the throttle and steering pads, or the movement keys, to drive. Drag to orbit the vehicle. Get out returns you beside it."}
             </p>
           )}
           {!remoteOpen && <PlaySettings play={play} report={report} />}
