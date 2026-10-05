@@ -107,10 +107,23 @@ export async function prepareArocsBallRest(
       !rig.forceLinks?.length &&
       !rig.grippers?.length &&
       rig.vehicle === undefined &&
-      !rig.groups.every((g) => anchoredGroup(rig, g.id)) &&
-      declarations.length === 1 &&
-      rig.joints.length === 1 &&
-      rig.groups.length === 2 &&
+      declarations.every(
+        ({ joint }) =>
+          !anchoredGroup(rig, joint.bodyA) || !anchoredGroup(rig, joint.bodyB),
+      ) &&
+      declarations.length <= 2 &&
+      rig.joints.length === declarations.length &&
+      rig.groups.length === declarations.length + 1 &&
+      new Set(declarations.map((d) => d.declaration.socketOccurrenceId))
+        .size === 1 &&
+      new Set(declarations.map((d) => d.declaration.ballOccurrenceId)).size ===
+        declarations.length &&
+      new Set(declarations.map((d) => d.declaration.socketEndpoint)).size ===
+        declarations.length &&
+      new Set(rig.groups.map((g) => g.id)).size === rig.groups.length &&
+      new Set(rig.groups.flatMap((g) => g.occurrenceIds)).size ===
+        rig.groups.length &&
+      rig.groups.every((g) => g.occurrenceIds.length === 1) &&
       !rig.loopClosures?.length,
     "INVALID_INPUT",
     failure,
@@ -124,7 +137,7 @@ export async function prepareArocsBallRest(
     ),
     used = new Set<string>(),
     result: PreparedArocsBallRest[] = [];
-  let children = 0;
+  const uniqueChildren = new Map<string, number>();
   for (const { joint, declaration: d } of declarations) {
     const members: Member[] = [];
     for (const [id, ref, center] of [
@@ -139,8 +152,8 @@ export async function prepareArocsBallRest(
         o?.namespace === "official" &&
           o.node.ref === ref &&
           group &&
-          // This first native seating package owns complete two-body occurrences.
-          // Compound carriers remain refused until their complete ownership is wired.
+          // Each source part has one physical body. Opposite endpoints may share
+          // the same socket, but compound carriers and arbitrary links remain refused.
           group.occurrenceIds.length === 1 &&
           (group.id === joint.bodyA || group.id === joint.bodyB) &&
           nearlyPhysical(o.transform) &&
@@ -227,9 +240,10 @@ export async function prepareArocsBallRest(
       "The declared source ball assembly is outside the reviewed seating range.",
     );
     const childCount = ball.packet.childCount + socket.packet.childCount;
-    children += childCount;
+    uniqueChildren.set(ball.id, ball.packet.childCount);
+    uniqueChildren.set(socket.id, socket.packet.childCount);
     ensure(
-      children <= 4096,
+      [...uniqueChildren.values()].reduce((n, c) => n + c, 0) <= 4096,
       "LIMIT_EXCEEDED",
       "This mechanism is too complex to check safely. Try fewer moving parts.",
     );

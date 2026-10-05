@@ -339,10 +339,13 @@ export class DynamicRig {
     filterIntersectionPair: () => true,
   };
   contactAllowed(a: number, b: number) {
+    let reviewedPair = false;
     for (const controller of this.restControllers.values()) {
       const allowed = controller.contactAllowed(a, b);
-      if (allowed !== undefined) return !allowed;
+      if (allowed === true) return false;
+      reviewedPair ||= allowed !== undefined;
     }
+    if (reviewedPair) return true;
     const sa = this.contactSolids.get(a),
       sb = this.contactSolids.get(b);
     if (!sa || !sb) return true;

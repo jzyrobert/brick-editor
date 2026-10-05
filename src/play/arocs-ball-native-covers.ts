@@ -22,6 +22,12 @@ type Details = Readonly<{
   points: readonly number[];
 }>;
 const covers = new WeakMap<ArocsBallNativeCover, Details>();
+// Physical occurrences own one canonical roster per source/body convention,
+// even when two prepared joints reference opposite ends of the same socket.
+const rosters = new WeakMap<
+  object,
+  Map<string, readonly ArocsBallNativeCover[]>
+>();
 /** Canonical native shape handoff. World-rest bodies match DynamicRig's
  * identity quaternion convention; source basis is baked into child poses. */
 export function compileArocsBallRestCovers(
@@ -30,7 +36,20 @@ export function compileArocsBallRestCovers(
 ): readonly ArocsBallNativeCover[] {
   const sealed = readPreparedArocsBallRest(prepared),
     result: ArocsBallNativeCover[] = [];
+  let roster = rosters.get(sealed.source);
+  if (!roster) {
+    roster = new Map();
+    rosters.set(sealed.source, roster);
+  }
   for (const [i, m] of [sealed.ball, sealed.socket].entries()) {
+    const key = JSON.stringify([convention, m.id, m.groupId]),
+      cached = roster.get(key);
+    if (cached) {
+      for (const cover of cached) readArocsBallNativeCover(prepared, cover);
+      result.push(...cached);
+      continue;
+    }
+    const memberCovers: ArocsBallNativeCover[] = [];
     const group = sealed.source.project.motionRigs[
         sealed.source.rigId
       ].groups.find((g) => g.id === m.groupId)!,
@@ -121,7 +140,9 @@ export function compileArocsBallRestCovers(
         }),
       );
       result.push(cover);
+      memberCovers.push(cover);
     }
+    roster.set(key, Object.freeze(memberCovers));
   }
   ensure(
     result.reduce((n, c) => n + c.childCount, 0) === prepared.childCount,
@@ -136,12 +157,51 @@ export function readArocsBallNativeCover(
   prepared: PreparedArocsBallRest,
   cover: ArocsBallNativeCover,
 ): Details {
-  const d = covers.get(cover);
+  const d = covers.get(cover),
+    target = readPreparedArocsBallRest(prepared);
   ensure(
-    d?.prepared === prepared,
+    d,
     "INVALID_INPUT",
     "Native seating needs the exact reviewed cover identity.",
   );
-  readPreparedArocsBallRest(prepared);
-  return d;
+  if (d.prepared === prepared) return d;
+  const original = readPreparedArocsBallRest(d.prepared),
+    a = d.member === "ball" ? original.ball : original.socket,
+    b = d.member === "ball" ? target.ball : target.socket;
+  ensure(
+    original.source === target.source &&
+      original.revision === target.revision &&
+      original.state === target.state &&
+      a.id === b.id &&
+      a.groupId === b.groupId &&
+      a.local === b.local &&
+      a.vertices === b.vertices &&
+      a.indices === b.indices &&
+      a.packet === b.packet &&
+      a.authoredFrame === b.authoredFrame,
+    "INVALID_INPUT",
+    "Native seating needs the exact reviewed source/member cover context.",
+  );
+  // Shared geometry does not share a joint anchor: each actual endpoint retains
+  // its own independent serialized source anchor.
+  const group = target.source.project.motionRigs[
+      target.source.rigId
+    ].groups.find((g) => g.id === b.groupId)!,
+    joint = target.source.project.motionRigs[target.source.rigId].joints.find(
+      (j) => j.id === prepared.jointId,
+    )!,
+    groupAnchor = joint.bodyA === group.id ? joint.anchorA : joint.anchorB,
+    world = toPhysics(mv(group.frame.basis, groupAnchor)),
+    anchor = new Vector3(world.x, world.y, world.z).applyQuaternion(
+      frameRotation(d.bodyRest).conjugate(),
+    );
+  return Object.freeze({
+    ...d,
+    prepared,
+    anchor: Object.freeze({
+      x: Math.fround(anchor.x),
+      y: Math.fround(anchor.y),
+      z: Math.fround(anchor.z),
+    }),
+  });
 }

@@ -90,3 +90,53 @@ ground runtime case. The second passed all 16 cases, including that case, in
 not phone frame-rate measurements. The source package still covers one
 isolated declared pair. Complete coupled suspension, full Arocs ownership and
 ordinary full-model mechanical support remain separate work.
+
+## One physical two-ended ball link
+
+The next bounded graph is the actual 32005 occurrence `["n79"]` with its
+original 6628 holders `["n53"]` and `["n75"]` at opposite endpoints. It permits
+up to two declared spherical constraints, one source socket, distinct ball
+occurrences and distinct socket endpoints. Each constraint must have at least
+one movable body; a fixed/fixed pair refuses before native allocation even
+when the other endpoint is mobile. Every occurrence is still a
+singleton physical group; no nearby part, compound carrier, motor, vehicle,
+force link or gripper is admitted by this graph.
+
+The two tokens share exactly the same socket cover objects only when their
+source, revision, rig, member ID, group, canonical buffers, packet and authored
+frame are identical. A copied object or the other ball's cover refuses. The
+shared geometry does not share an anchor: each token retains its actual
+independently serialized endpoint anchor. The physical socket is constructed
+once with three colliders/277 children; each holder has two/330. The graph uses
+three source bodies, seven class colliders, two native constraints and 937
+aggregate children. Default-ground Play adds its existing player and ground,
+so measured native totals are four bodies, nine colliders and two constraints.
+
+Contact allowances union only the two verified paired bearing-core predicates.
+A second ball's neck or exterior remains foreign to the first constraint.
+Readiness likewise recognizes a paired core through a private registry of
+verified native controller closures. Public report objects and copied shapes
+cannot publish such an allowance. Disposing a controller removes its private
+registration. Both constraints must be ready before a control setter can run;
+foreign obstruction or subsequent native drift keeps the whole mechanism
+unavailable.
+
+Focused tests verify fixed and mobile shared sockets, a 37-degree yawed mobile
+source, real default gravity/ground, a native impulse on the shared link,
+foreign obstruction, drift, early control refusal, duplicate endpoint/member
+refusal, exact native roster/counts and unchanged entire project, LDraw export
+and inventory. This extends the isolated single-pair package; complete coupled
+Arocs suspension and full-model source ownership remain separate work.
+
+```sh
+npx vitest run tests/unit/play-arocs-ball-link.test.ts tests/unit/play-arocs-ball-runtime-seating.test.ts tests/unit/play-arocs-ball-native-bridge.test.ts tests/unit/play-arocs-ball-native-rest.test.ts tests/unit/native-rest-sources.test.ts --maxWorkers=1
+```
+
+The combined five-file batch passed 25 cases in 158.04 seconds on the busy
+shared VM, before adding the multi-pair drift assertion. This measures software
+correctness and does not establish phone performance.
+
+The final five coupled-link cases, including deliberate native drift, passed
+in 54.98 seconds. The final source/foreign gates passed two cases in 21.78
+seconds; the added fixed/fixed-pair preflight refusal passed its isolated case
+in 8.61 seconds. TypeScript and scoped formatting/diff checks passed.

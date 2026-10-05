@@ -34,6 +34,12 @@ const perWorld = new WeakMap<
   RAPIER.World,
   WeakMap<PreparedArocsBallRest, RAPIER.ImpulseJoint>
 >();
+// Only verified controller closures are registered; a public state object or
+// copied shape cannot exempt another assembly's contact from readiness checks.
+const activePairs = new WeakMap<
+  RAPIER.World,
+  Set<(a: number, b: number) => boolean | undefined>
+>();
 const sameVector = (a: RAPIER.Vector, b: RAPIER.Vector) =>
   a.x === b.x && a.y === b.y && a.z === b.z;
 function verifyAttachment(
@@ -300,6 +306,13 @@ export function attachArocsBallNativeRest(
             safe = false;
             break;
           }
+          if (
+            [...(activePairs.get(world) ?? [])].some(
+              (allowed) =>
+                allowed(c.entry.collider.handle, foreign.handle) === true,
+            )
+          )
+            continue;
           const contact = c.entry.collider.contactCollider(foreign, 0);
           if (contact && contact.distance < -0.001 * 0.02) {
             safe = false;
@@ -309,36 +322,43 @@ export function attachArocsBallNativeRest(
     });
     return safe;
   };
+  const contactAllowed = (x: number, y: number): boolean | undefined => {
+    const xClass = byHandle.get(x)?.details,
+      yClass = byHandle.get(y)?.details;
+    if (!xClass && !yClass) return;
+    if (!xClass || !yClass || disposed || state === "blocked") return false;
+    const ball =
+        xClass.member === "ball"
+          ? xClass
+          : yClass.member === "ball"
+            ? yClass
+            : undefined,
+      socket =
+        xClass.member === "socket"
+          ? xClass
+          : yClass.member === "socket"
+            ? yClass
+            : undefined;
+    return (
+      !!ball &&
+      !!socket &&
+      ball.role === "ball" &&
+      socket.role === "socket" &&
+      socket.endpoint === v.seal.endpoint &&
+      currentGap <=
+        (state === "seating"
+          ? prepared.initialGapLdu + LIMITS.ordinaryGapLdu
+          : LIMITS.ordinaryGapLdu)
+    );
+  };
+  let peers = activePairs.get(world);
+  if (!peers) {
+    peers = new Set();
+    activePairs.set(world, peers);
+  }
+  peers.add(contactAllowed);
   return {
-    contactAllowed(x: number, y: number): boolean | undefined {
-      const xClass = byHandle.get(x)?.details,
-        yClass = byHandle.get(y)?.details;
-      if (!xClass && !yClass) return;
-      if (!xClass || !yClass || disposed || state === "blocked") return false;
-      const ball =
-          xClass.member === "ball"
-            ? xClass
-            : yClass.member === "ball"
-              ? yClass
-              : undefined,
-        socket =
-          xClass.member === "socket"
-            ? xClass
-            : yClass.member === "socket"
-              ? yClass
-              : undefined;
-      return (
-        !!ball &&
-        !!socket &&
-        ball.role === "ball" &&
-        socket.role === "socket" &&
-        socket.endpoint === v.seal.endpoint &&
-        currentGap <=
-          (state === "seating"
-            ? prepared.initialGapLdu + LIMITS.ordinaryGapLdu
-            : LIMITS.ordinaryGapLdu)
-      );
-    },
+    contactAllowed,
     beforeStep() {
       assertLive();
       currentGap = gap();
@@ -395,6 +415,7 @@ export function attachArocsBallNativeRest(
       });
     },
     dispose() {
+      peers.delete(contactAllowed);
       disposed = true;
     },
   };
