@@ -24,6 +24,7 @@ import {
 import { exportLDraw } from "../../src/ldraw/io";
 import { requirePhysicalPlay } from "../../src/mechanisms/physical-play";
 import { PlaySession } from "../../src/play/session";
+import { surfaceCompoundLocal } from "../../src/play/surface-compound";
 
 beforeAll(async () => {
   expect(registerFullLibraryFromDisk()).toBe(true);
@@ -122,7 +123,7 @@ describe("real PF-L internal collision ownership", () => {
         (s) => s.groupId === "carrier" && isMotorComponentSolid(s),
       ),
       output = prepared.solids.filter(isMotorComponentSolid);
-    expect(casing).toHaveLength(2);
+    expect(casing).toHaveLength(3);
     expect(casing.reduce((n, s) => n + s.childCount, 0)).toBe(2854);
     expect(output).toHaveLength(4);
     expect(
@@ -144,6 +145,82 @@ describe("real PF-L internal collision ownership", () => {
     }
     expect(exportLDraw(project)).toBe(before);
     expect(all).toHaveLength(13);
+  });
+  it("retains every literal casing hull and guards only the bound thrust disc at its source bore mouth", async () => {
+    const { source, rig, all } = await pfLargeSource(),
+      casing = motorComponentSolids(source, rig.groups[0], all[0].id)!,
+      output = motorComponentSolids(source, rig.groups[1])!,
+      frame = Object.fromEntries(rig.groups.map((g) => [g.id, g.frame])),
+      bore = casing.find((s) => s.childCount === 16)!,
+      front = casing.find((s) => s.childCount === 28)!,
+      exterior = casing.find((s) => s.childCount === 2810)!;
+    expect(casing.map((s) => s.childCount).sort((a, b) => a - b)).toEqual([
+      16, 28, 2810,
+    ]);
+    const capture = source.motorComponents![all[0].id].case,
+      relative = compose(inverse(rig.groups[0].frame), capture.frame),
+      original = surfaceCompoundLocal(capture, "pf-large:case");
+    const rows = (points: ArrayLike<number>) => {
+      const result: string[] = [];
+      for (let i = 0; i < points.length; i += 3)
+        result.push(JSON.stringify([points[i], points[i + 1], points[i + 2]]));
+      return result.sort();
+    };
+    const expected = Float32Array.from(
+      original.flatMap((piece) =>
+        piece.flatMap((p) => {
+          const q = toPhysics(add(relative.position, mv(relative.basis, p)));
+          return [q.x, q.y, q.z];
+        }),
+      ),
+    );
+    expect(rows(casing.flatMap((s) => Array.from(s.points)))).toEqual(
+      rows(expected),
+    );
+    const thrust = output.find(
+      (s) =>
+        motorComponentContactAllowed(source, front, s, [frame]) &&
+        !motorComponentContactAllowed(source, exterior, s, [frame]),
+    )!;
+    expect(thrust.childCount).toBe(17);
+    expect(motorComponentContactAllowed(source, bore, thrust, [frame])).toBe(
+      true,
+    );
+    for (const delta of [
+      { position: [0, 0, 0.06], basis: identity().basis },
+      { position: [0, 0, -0.06], basis: identity().basis },
+      { position: [1, 0, 0], basis: identity().basis },
+      { position: [0, 0, 0], basis: axisRotation([1, 0, 0], 1) },
+    ]) {
+      const next = {
+        ...frame,
+        output: compose(
+          frame.output,
+          delta as import("../../src/core/types").Transform,
+        ),
+      };
+      expect(
+        motorComponentContactAllowed(source, bore, thrust, [frame, next]),
+      ).toBe(false);
+    }
+    expect(
+      motorComponentContactAllowed(source, { ...bore }, thrust, [frame]),
+    ).not.toBe(true);
+    expect(
+      motorComponentContactAllowed(source, bore, { ...thrust }, [frame]),
+    ).toBe(false);
+    for (const solid of output.filter((s) => s.childCount === 68))
+      expect(motorComponentContactAllowed(source, bore, solid, [frame])).toBe(
+        false,
+      );
+    const foreign = (await pfLargeSource()).source,
+      other = motorComponentSolids(
+        foreign,
+        foreign.project.motionRigs[foreign.rigId].groups[1],
+      )!.find((s) => s.childCount === 17)!;
+    expect(motorComponentContactAllowed(source, bore, other, [frame])).toBe(
+      false,
+    );
   });
   it("allows only the source bearing fragment and refuses displaced envelopes, rotor disc and foreign members", async () => {
     const { source, rig } = await pfLargeSource();

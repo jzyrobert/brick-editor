@@ -28,7 +28,9 @@ capture with those two source components. Original member captures remain intact
 for source validation. Native collision uses thin inward source surface prisms
 (0.02 LDU simulation skins), including the actual openings. No whole-motor hull
 or whole-case/output collision exemption is used. The current case packet has
-2,854 convex children, separated into exterior and literal front thrust faces.
+2,854 convex children, separated into 2,810 exterior children, 28 literal front
+thrust children and 16 actual casing-bore children. Every original hull and
+Float32 support point remains present.
 
 Ideal bearing permissions are specific to source regions and paired owners:
 
@@ -37,6 +39,11 @@ Ideal bearing permissions are specific to source regions and paired owners:
   in every current and predicted frame.
 - The source 10092 front-plate face and output back-disc face meet at Z22.
   Their thin thrust classes remain separate from the output disc rim and pins.
+  The casing bore ends at that same plane. Only the bound output thrust disc
+  may meet its bore-mouth class, while the complete disc remains inside the
+  existing radius 20.102 / Z22 ± 0.052 envelope in every current and predicted pose.
+  This is an ideal source-interface fit for the thin simulation skins; neither
+  the exterior nor the rotor pins receive that permission.
 - A motor's verified pin-support owner can meet only its thin output base face
   at Z0. This does not exempt foreign or unrelated carrier members.
 - Actual intervening reviewed round bores are derived from the sealed shaft and
@@ -113,13 +120,25 @@ cover every fixture support point, full turns, source guard fallbacks and a real
 foreign obstruction at the rotor pins, including removal and retry. Thirteen
 focused mathematical/source/native cases and TypeScript pass.
 
-Correcting rotor radius exposes additional tight-gap refinement between the
-actual output thrust disc and the source front-case edge. In a loaded diagnostic,
-the thrust class alone made 930 native queries per five ticks against case
-exterior. A smaller initial subdivision count does not establish faster steady
-ticks: further contact refinements remain necessary. Any future improvement must
-prove separation or the precise actual mating interface, preserving source
-geometry and external contacts. There is no whole-case collision exemption.
+Correcting rotor radius exposed additional tight-gap refinement between the
+actual output thrust disc and the source front-case edge. The literal radius-nine
+bore is coplanar-merged across source Z0..22. Separating those 16 complete hulls
+from the casing exterior removes their nominal mouth contact with the verified
+thrust disc without removing geometry or bypassing the other case/rotor contacts.
+The actual-source test compares the complete support-point multiset before and
+after this partition, retains all 2,854 children, and refuses axial withdrawal,
+sideways displacement, tilt, copied components, foreign sources and rotor pins.
+The existing obstruction/removal/retry test still passes.
+
+A fresh private Node probe records 1,002 / 1,320 / 1,320 native contact queries for
+three successive five-tick Kinematic blocks, versus 2,520 / 3,810 / 3,810 in the earlier
+recorded probe. The source disc still queries the 2,810-child casing exterior.
+The fresh blocks measure 76.87 / 61.65 / 66.75 ms per Kinematic tick and
+29.35 / 23.77 / 16.83 ms per Dynamic tick. These separate shared-VM runs do not isolate
+load and are not a controlled speed comparison or a physical-phone benchmark.
+They still exceed a 60 Hz budget. Eight source/contact cases and thirteen motor
+binding, actual-adapter and beside-vehicle regression cases pass; no collision,
+effort, sweep or aggregate resource limit was raised.
 
 This 13-part motor bench establishes source ownership and control behaviour.
 The full source-skin Kinematic contact cost still needs improvement before

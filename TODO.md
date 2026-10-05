@@ -74,7 +74,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 - [ ] Review actual linear-actuator, ball/cylindrical, spring/rope and closed Technic linkage part connections before admitting their engineering rigs to ordinary Play.
 - [ ] Real jaw/contact grasping with attached LEGO/Technic jaws; proximity fixed-joint grippers are engineering fixtures only.
 - [ ] Physically mounted powered rack assembly: verify the guide housing mounting pins and offset carrier before adding motor control.
-- [ ] Additional real motor profiles and output coupling families beyond the source-reviewed Power Functions M motor.
+- [ ] Additional real motor profiles and output coupling families beyond the source-reviewed Power Functions M and L motors.
 - [ ] Further source-reviewed wheel families, tilted/suspended axle layouts and actual passenger attachment. A separately rooted minifigure is not welded to a detected car; full 6503 remains obstructed by its unmounted figure ([vehicle scope](docs/PLAY-VEHICLES.md)).
 
 - [x] Add source-connected Motor & gears, manual Rack guide and Twin motor table showcases with generated previews, desktop/phone controls and fresh offline sample loading ([samples](docs/TEMPLATES.md#ready-to-play-motion-samples)). Unsupported engineering crank/gripper examples stay outside ordinary Play.

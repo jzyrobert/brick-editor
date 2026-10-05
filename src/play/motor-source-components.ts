@@ -115,6 +115,7 @@ type ComponentMetadata = {
   role: "case" | "output";
   aperture: boolean;
   thrust: boolean;
+  bore: boolean;
   mountFace: boolean;
   envelope?: SourceAxialEnvelope;
   axisToGroup?: Transform;
@@ -473,6 +474,15 @@ export function motorComponentSolids(
           (p) =>
             Math.hypot(p[0], p[1]) <= 9.101 && p[2] >= -0.051 && p[2] <= 22.051,
         );
+      // Complete literal radius-nine casing bore prisms. Coplanar source
+      // merging spans Z0..22; preserve each original child and keep this
+      // internal mouth separate from the unrelated casing exterior.
+      const bore =
+        role === "case" &&
+        piece.every(
+          (p) =>
+            Math.hypot(p[0], p[1]) <= 9.101 && p[2] >= -0.051 && p[2] <= 22.051,
+        );
       // Literal 10092 front plate and 10095 back disc share Z22. Keep
       // these source thrust faces separate from hub, disc rim and pin skins.
       const thrust =
@@ -481,13 +491,15 @@ export function motorComponentSolids(
         (role === "case" ||
           piece.every((p) => Math.hypot(p[0], p[1]) <= 20.101));
       const mountFace = aperture && piece.every((p) => Math.abs(p[2]) <= 0.051);
-      const key = mountFace
-        ? "mount-face"
-        : aperture
-          ? "aperture"
-          : thrust
-            ? "thrust"
-            : "exterior";
+      const key = bore
+        ? "bore"
+        : mountFace
+          ? "mount-face"
+          : aperture
+            ? "aperture"
+            : thrust
+              ? "thrust"
+              : "exterior";
       const list = classes.get(key) ?? [];
       list.push(piece);
       classes.set(key, list);
@@ -555,6 +567,7 @@ export function motorComponentSolids(
         role,
         aperture: key === "aperture" || key === "mount-face",
         thrust: key === "thrust",
+        bore: key === "bore",
         mountFace: key === "mount-face",
         envelope:
           role === "output"
@@ -656,7 +669,10 @@ export function motorComponentContactAllowed(
     other.groupId !== proof.outputGroupId ||
     (otherMeta
       ? otherMeta.proof !== proof ||
-        !(otherMeta.aperture || (otherMeta.thrust && casing.meta.thrust))
+        !(
+          otherMeta.aperture ||
+          (otherMeta.thrust && (casing.meta.thrust || casing.meta.bore))
+        )
       : other.memberId !== proof.shaftOccurrenceId)
   )
     return false;

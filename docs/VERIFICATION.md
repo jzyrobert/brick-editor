@@ -2275,3 +2275,22 @@ a second finger releasing Get out while throttle is held, no subsequent vehicle
 movement, restored third-person explorer visibility and successful re-entry.
 The test releases the actual exit finger through Chromium's touch protocol;
 source export and beside-the-current-vehicle assertions remain in force.
+
+### Actual PF-L casing-bore contact partition (5 October 2026)
+
+Eight source/contact cases pass (16.13 seconds including transform/import work,
+13.45 seconds of tests). The complete original casing support-point multiset and
+all 2,854 convex children remain exact after separating exterior 2,810, front 28
+and bore 16. A bound thrust-disc contact permission checks the whole current and
+predicted source envelope; withdrawal, lateral displacement, tilt, copied parts,
+foreign source components and rotor pins refuse that permission. Actual foreign
+obstruction still blocks the motor and removal restores motion. Thirteen motor
+binding, actual Browser/adapter and native beside-vehicle exit cases also pass
+(52.49 seconds including transform/import work, 31.69 seconds of tests).
+
+The private contact diagnostic records 1,320 native queries in each of its later
+five-tick Kinematic blocks versus 3,810 in the earlier recorded run. Fresh Node
+Kinematic ticks measure 61.65–76.87 ms; Dynamic ticks 16.83–29.35 ms. These separate
+shared-VM observations are not a controlled speed ratio or a phone benchmark.
+Geometry, sweep and aggregate contact budgets remain unchanged. See the
+[source-interface scope](reviews/POWER-FUNCTIONS-MOTOR-L-RUNTIME.md#measured-limits).
