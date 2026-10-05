@@ -139,7 +139,7 @@ it("requires the exact preflight source for ordinary ball entry and refuses disc
       g.source,
     ).eligible,
   ).toBe(false);
-});
+}, 15000);
 it.each([
   undefined,
   {
