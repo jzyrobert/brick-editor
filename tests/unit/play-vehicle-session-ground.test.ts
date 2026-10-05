@@ -165,8 +165,8 @@ it("keeps a real included floor and thin foreign wall active after lowering only
   }
   const before = JSON.stringify(project),
     { geometry, sources } = await prepared(project);
-  // Existing source floor remains at Y=24. The wall rises from it, and a
-  // separate lower source surface sets temporary ground beneath that floor.
+  // A real floor at Y=24 and wall retain their own collision geometry. The
+  // foreign triangle at Y=40 cannot move the shared plane below this vehicle.
   geometry.vertices = new Float32Array([
     -500, 24, -500, 500, 24, -500, 500, 24, 500, -500, 24, 500, -100, -80, -220,
     100, -80, -220, 100, 24, -220, -100, 24, -220, 400, 40, 400, 410, 40, 400,
@@ -175,14 +175,16 @@ it("keeps a real included floor and thin foreign wall active after lowering only
   geometry.indices = new Uint32Array([
     0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7, 8, 9, 10,
   ]);
-  expect(sessionGroundY(geometry, sources)).toBe(40);
+  const groundY = sessionGroundY(geometry, sources);
+  expect(groundY).toBeGreaterThan(22);
+  expect(groundY).toBeLessThan(24);
   const play = await PlaySession.create(
     geometry,
     { rigId: "car", position: [300, 23.7, 0] },
     sources,
   );
   try {
-    expect(play.snapshot().position[1]).toBeCloseTo(23.8, 1);
+    expect(play.snapshot().position[1]).toBeCloseTo(groundY - 0.2, 1);
     play.setMechanismVehicleInput({ throttle: 1, steering: 0 }, "car");
     const stopped = play.stepTicks(120).mechanism!;
     expect(stopped.vehicleCollision).toMatchObject({
@@ -200,6 +202,25 @@ it("keeps a real included floor and thin foreign wall active after lowering only
     expect(JSON.stringify(project)).toBe(before);
   } finally {
     play.dispose();
+  }
+  const onActualFloor = await PlaySession.create(
+    geometry,
+    { rigId: "car", ground: false, position: [300, 23.7, 0] },
+    sources,
+  );
+  try {
+    expect(onActualFloor.snapshot().locomotion).toBe("walk");
+    expect(onActualFloor.snapshot().position[1]).toBeCloseTo(23.8, 1);
+    onActualFloor.setMechanismVehicleInput({ throttle: 1, steering: 0 }, "car");
+    expect(
+      onActualFloor.stepTicks(120).mechanism!.vehicleCollision,
+    ).toMatchObject({
+      status: "blocked",
+      obstacle: { sourceId: "included-static-world" },
+    });
+    expect(JSON.stringify(project)).toBe(before);
+  } finally {
+    onActualFloor.dispose();
   }
 }, 30000);
 
@@ -231,6 +252,55 @@ it("finds a bounded far-offset vehicle ground beyond the previous origin-centred
       "ready",
     );
     expect(JSON.stringify(project)).toBe(before);
+  } finally {
+    play.dispose();
+  }
+}, 30000);
+
+it("below-origin foreign bricks keep Roadster ground at zero, allow boarding and retain blocked exits until reversing clear", async () => {
+  const project = carProject();
+  for (const x of [-90, 90])
+    project.models[project.rootModelId].nodes.push({
+      id: `seat-exit-wall-${x}`,
+      kind: "part",
+      ref: "3005.dat",
+      colorCode: "14",
+      transform: { position: [x, 0, -40], basis: [1, 0, 0, 0, 1, 0, 0, 0, 1] },
+    });
+  const before = JSON.stringify(project),
+    source = exportLDraw(project),
+    inventory = partsList(project, occurrences(project)),
+    { geometry, sources } = await prepared(project);
+  expect(
+    Math.max(...Array.from(geometry.vertices).filter((_, i) => i % 3 === 1)),
+  ).toBe(24);
+  expect(sessionGroundY(geometry, sources)).toBe(0);
+  const play = await PlaySession.create(
+    geometry,
+    {
+      rigId: "car",
+      position: [-90, -0.3, 40],
+      yaw: Math.PI / 2,
+    },
+    sources,
+  );
+  try {
+    const seat = { rigId: "car", seatId: "driver" };
+    expect(play.snapshot().position[1]).toBeCloseTo(-0.2, 1);
+    expect(play.vehicleSeatEligibility(seat)).toMatchObject({ eligible: true });
+    play.enterVehicle(seat);
+    play.setInput({ moveZ: 1 });
+    play.stepTicks(30);
+    play.setInput({});
+    expect(() => play.exitVehicle()).toThrow(/Exit blocked/);
+    expect(play.snapshot().occupancy?.seatId).toBe("driver");
+    play.setInput({ moveZ: -1 });
+    play.stepTicks(30);
+    play.setInput({});
+    expect(play.exitVehicle().occupancy).toBeUndefined();
+    expect(JSON.stringify(project)).toBe(before);
+    expect(exportLDraw(project)).toBe(source);
+    expect(partsList(project, occurrences(project))).toEqual(inventory);
   } finally {
     play.dispose();
   }
