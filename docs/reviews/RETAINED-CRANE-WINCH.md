@@ -322,3 +322,31 @@ and project shadows:
 ```sh
 FORCE_COLOR=0 npx vitest run tests/unit/winch-collision.test.ts --maxWorkers=1
 ```
+
+`NativeWinchCapConstraints` now adds four separate unilateral shoulder limits
+between the two rotors and those four actual support owners. Its generic native
+joints lock no radial or angular axes. Lower and upper source faces receive
+opposite one-sided limits; ±1,000,000 m is only the open-side numerical domain.
+The plain shafts, joiner and friction-fit accessories gain no axial grip.
+
+Every step charges complete current and velocity-predicted rotor/support point
+scans to the caller's existing enumeration budget before scanning. Limits release
+when source radial error exceeds 0.05 LDU, axis error exceeds 0.002, or a complete
+separating halfspace exceeds the declared 0.05-LDU native contact envelope.
+This envelope is distinct from the initial 0.000001-LDU source-plane mismatch.
+Failed budget checks release all limits. The helper installs no contact hook;
+all actual source and foreign colliders remain responding. A caller that applies
+impulses must refresh predicted scope before using any paired contact policy.
+
+Three focused native checks retain all 255 actual collision children, verify
+the four source support identities and limits, and refuse current/predicted
+misalignment, source-plane crossing and budget overflow. A separate native
+impulse check isolates the cap law with declared equal masses and proves mobile
+support reaction, linear momentum conservation, free radial motion and free
+rotor rotation. That isolated law check is not full winch-operation evidence.
+Ordinary admission, paired key-region clipping, real fit friction, drum and rope
+operation remain open.
+
+```sh
+FORCE_COLOR=0 npx vitest run tests/unit/winch-cap-native.test.ts --maxWorkers=1
+```
