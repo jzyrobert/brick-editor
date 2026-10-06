@@ -4,6 +4,7 @@ import standaloneCode from "ajv/dist/standalone/index.js";
 import { writeFileSync } from "node:fs";
 import { buildScriptJsonSchema } from "../src/build-script/spec";
 import { RESOURCE_PROFILES } from "../src/core/resource-profile";
+import { PLAYER_SCALE_LIMITS } from "../src/play/player-scale";
 import {
   FIXTURE_TEMPLATES,
   SAMPLE_TEMPLATES,
@@ -1345,6 +1346,13 @@ const playRequest = obj(
     autoDoors: { type: "boolean" },
     trains: { type: "boolean" },
     pneumatics: { type: "boolean" },
+    playerScale: {
+      type: "number",
+      minimum: PLAYER_SCALE_LIMITS.min,
+      maximum: PLAYER_SCALE_LIMITS.max,
+      description:
+        "Player size: times a minifigure (default 1). Scales the explorer, never the world.",
+    },
     locomotion: { enum: ["walk", "fly-noclip"] },
     cameraMode: { enum: ["first-person", "third-person"] },
     position: vec,
@@ -1578,6 +1586,11 @@ const playSnapshot = obj({
     strideLength: num,
     scaleMetresPerLdu: num,
   }),
+  playerScale: {
+    type: "number",
+    minimum: PLAYER_SCALE_LIMITS.min,
+    maximum: PLAYER_SCALE_LIMITS.max,
+  },
   units: { const: "LDU" },
   simulationHz: { const: 60 },
   warnings: arr(str),
@@ -1790,6 +1803,11 @@ const api = {
   oneOf: Object.entries({
     "play.enter": { $ref: "playRequest" },
     "play.configureCamera": { ...playCameraSettings, required: [] },
+    "play.setPlayerScale": {
+      type: "number",
+      minimum: PLAYER_SCALE_LIMITS.min,
+      maximum: PLAYER_SCALE_LIMITS.max,
+    },
     "play.chooseSpawn": playSpawn,
     "play.useSpawn": obj({}),
     "play.setInput": { $ref: "playInput" },

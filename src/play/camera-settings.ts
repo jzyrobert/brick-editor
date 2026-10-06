@@ -44,6 +44,8 @@ export function resolvePlayCameraSettings(
 export function playCameraSafety(
   settings: PlayCameraSettings,
   aspectRatio: number,
+  /** Player size: the near plane and clearance scale with the explorer. */
+  scale = 1,
 ) {
   ensure(
     Number.isFinite(aspectRatio) && aspectRatio > 0 && aspectRatio <= 100000,
@@ -54,10 +56,10 @@ export function playCameraSafety(
   const factor = Math.sqrt(
     1 + tangent * tangent * (1 + aspectRatio * aspectRatio),
   );
-  const effectiveNear = Math.min(settings.near, 7.5 / factor);
+  const effectiveNear = Math.min(settings.near * scale, (7.5 * scale) / factor);
   return {
     aspectRatio,
     effectiveNear,
-    collisionRadius: Math.max(4, effectiveNear * factor),
+    collisionRadius: Math.max(4 * scale, effectiveNear * factor),
   };
 }

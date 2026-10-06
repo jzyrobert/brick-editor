@@ -981,6 +981,7 @@ export class BrowserPlay {
                       (report.mechanisms?.[id] ?? report.mechanism)!
                         .groupFrames,
                       report.position,
+                      report.profile.height,
                     )
                   : undefined,
               ),
@@ -1164,6 +1165,15 @@ export class BrowserPlay {
     this.draw();
     this.emit();
     return session.snapshot();
+  }
+  /** Player size for the rest of this session (0.25–8 × a minifigure). */
+  setPlayerScale(scale: number) {
+    this.assertMutable();
+    const report = this.current().setPlayerScale(scale);
+    this.lastVisual = "";
+    this.draw();
+    this.emit({ report });
+    return report;
   }
   configureCamera(settings: Partial<PlayCameraSettings>) {
     this.assertMutable();

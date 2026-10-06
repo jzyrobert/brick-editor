@@ -338,6 +338,8 @@ export class BrickAvatar {
       state.avatarVisible && state.cameraMode === "third-person";
     this.group.position.fromArray(conversion(view?.position ?? state.position));
     this.group.position.y += pose.bob ?? 0;
+    // Player size: the whole figure (and its joint offsets) scales uniformly.
+    this.group.scale.setScalar(state.playerScale ?? 1);
     if (pose.basis)
       this.group.quaternion
         .copy(frameRotation({ position: [0, 0, 0], basis: pose.basis }))

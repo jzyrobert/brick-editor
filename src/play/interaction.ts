@@ -24,12 +24,17 @@ export type PlayInteraction = {
  * cannot (a blocked door, an obstructed seat) is useful.
  */
 export const PROMPT_REACH = 160;
+/** Hand reach for doors, joints and vehicles at minifigure size (LDU). */
+export const HAND_REACH = 96;
+/** Reaches are given at minifigure size and grow or shrink with the player. */
+const playerScale = (report: Pick<PlaySnapshotReport, "playerScale">) =>
+  report.playerScale ?? 1;
 /** Whether the contextual action is worth showing (see PROMPT_REACH). */
-export function promptVisible(target: PlayInteraction | undefined) {
+export function promptVisible(target: PlayInteraction | undefined, scale = 1) {
   if (!target) return false;
   if (target.available) return true;
   return (
-    target.distance <= PROMPT_REACH &&
+    target.distance <= PROMPT_REACH * scale &&
     !!(target.blockedReason || target.progress)
   );
 }
@@ -48,6 +53,8 @@ export function nearbyTrain(
     report.position[2],
   ];
   let best: PlayInteraction | undefined;
+  const scale = playerScale(report),
+    reach = TRAIN_REACH * scale;
   for (const train of report.trains?.trains ?? []) {
     // Distance to the locomotive: a segment from the head pivot back along
     // the track direction (the report carries the head and heading only).
@@ -64,14 +71,20 @@ export function nearbyTrain(
     const d = Math.hypot(
       ...offset.map((v, i) => v + (train.heading[i] / length) * back),
     );
-    if (d > TRAIN_REACH * 1.6 || (best && d >= best.distance)) continue;
+    if (d > reach * 1.6 || (best && d >= best.distance)) continue;
     best = {
       kind: "train",
       trainId: train.id,
       rigId: "",
       label: "Drive train",
       name: train.name,
-      available: d <= TRAIN_REACH,
+      available: d <= reach && scale === 1,
+      ...(scale !== 1
+        ? {
+            blockedReason:
+              "Train cabs fit a minifigure. Set Player size to Minifigure to drive.",
+          }
+        : {}),
       distance: d,
     };
   }
@@ -84,6 +97,7 @@ export function nearbyPoints(
   report: PlaySnapshotReport,
 ): PlayInteraction | undefined {
   let best: PlayInteraction | undefined;
+  const reach = POINTS_REACH * playerScale(report);
   for (const s of report.trains?.switches ?? []) {
     const d = Math.hypot(
       s.position[0] - report.position[0],
@@ -92,7 +106,7 @@ export function nearbyPoints(
     );
     // Points under a train are left out (the train slab shows them greyed).
     if (s.occupied) continue;
-    if (d > POINTS_REACH * 1.6 || (best && d >= best.distance)) continue;
+    if (d > reach * 1.6 || (best && d >= best.distance)) continue;
     best = {
       kind: "points",
       occurrenceId: s.occurrenceId,
@@ -102,7 +116,7 @@ export function nearbyPoints(
           ? "Switch points to branch"
           : "Switch points to straight",
       name: "Track points",
-      available: d <= POINTS_REACH,
+      available: d <= reach,
       distance: d,
     };
   }
@@ -117,6 +131,7 @@ export function nearbyInteraction(
 ): PlayInteraction | undefined {
   const mechanism = report.mechanisms?.[rig.id] ?? report.mechanism;
   if (!mechanism || mechanism.rigId !== rig.id) return;
+  const reach = HAND_REACH * playerScale(report);
   const distance = (point: Vec3) =>
     Math.hypot(
       point[0] - report.position[0],
@@ -133,7 +148,8 @@ export function nearbyInteraction(
         rigId: rig.id,
         label: "Get in",
         name: rig.name,
-        available: d <= 96 && mechanism.vehicleCollision?.supported !== false,
+        available:
+          d <= reach && mechanism.vehicleCollision?.supported !== false,
         ...(mechanism.vehicleCollision?.supported === false
           ? {
               blockedReason:
@@ -232,7 +248,7 @@ export function nearbyInteraction(
       progress,
       blockedReason: retry ? travel.blockedReason : undefined,
       name: door ? `${rig.name} · ${door.part}` : `${rig.name} · ${joint.id}`,
-      available: d <= 96,
+      available: d <= reach,
       distance: d,
     });
   }

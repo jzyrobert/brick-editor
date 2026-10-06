@@ -93,6 +93,12 @@
     "pneumatics": {
       "type": "boolean"
     },
+    "playerScale": {
+      "type": "number",
+      "minimum": 0.25,
+      "maximum": 8,
+      "description": "Player size: times a minifigure (default 1). Scales the explorer, never the world."
+    },
     "locomotion": {
       "enum": [
         "walk",

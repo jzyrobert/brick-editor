@@ -574,6 +574,9 @@ export class PlayMechanism {
     private readonly source: PlayMechanismSource,
     private actor: () => {
       position: Vec3;
+      /** The explorer's collider (player size); minifigure when absent. */
+      radius?: number;
+      height?: number;
       walk: boolean;
       support?: { rigId: string; groupId: string };
       seat?: {
@@ -786,16 +789,18 @@ export class PlayMechanism {
           }
           continue;
         }
+        const radius = actor.radius ?? P.radius,
+          height = actor.height ?? P.height;
         const inflated = new RAPIER.Capsule(
-          (P.height / 2 - P.radius) * S,
-          (P.radius + distance + 0.05) * S,
+          (height / 2 - radius) * S,
+          (radius + distance + 0.05) * S,
         );
         if (
           proxy.collider.intersectsShape(
             inflated,
             physics([
               actor.position[0],
-              actor.position[1] - P.height / 2,
+              actor.position[1] - height / 2,
               actor.position[2],
             ]),
             { x: 0, y: 0, z: 0, w: 1 },

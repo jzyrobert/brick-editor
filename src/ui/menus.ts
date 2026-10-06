@@ -63,6 +63,7 @@ export const MENUS: Record<MenuKey, MenuEntry[]> = {
     { id: "hint", label: "Start hint", pin: true },
     { id: "enter", label: "Enter Play", pin: true },
     { id: "mechanisms", label: "Mechanisms", tab: "Mechanisms" },
+    { id: "size", label: "Player size", tab: "Size" },
     {
       id: "world",
       label: "World included in Play",
