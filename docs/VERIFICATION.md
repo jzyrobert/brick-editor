@@ -1,5 +1,10 @@
 # Verification — 27 September 2026
 
+## Gallery prompt tabs after Play — 7 October 2026
+
+- Bug: after Explore (Play) and back to Gallery, a prompt tab stepped browser history back to the model, so it opened Play. Choosing a prompt now closes a detail page only when one is open, and closing with none open does nothing.
+- `tests/browser/gallery.spec.ts` "changing the prompt after a trip into Play stays in Gallery" passes with the fix and fails without it (rebuilt both ways); Back from Gallery still returns to the model. All 5 gallery specs, `npx tsc -b` and the format check pass.
+
 ## Gallery: six prompts, two models — 7 October 2026
 
 - Runs: twenty one-shot runs (Opus 5.5 high through Claude Code, GPT-6.1-Sol high through Codex), all accepted with no errors; the table is in [the prompt comparison](samples/creative-prompt-comparison/README.md).

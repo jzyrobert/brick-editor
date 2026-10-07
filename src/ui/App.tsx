@@ -4381,7 +4381,7 @@ function Workspace() {
     if (id) {
       pushNav({ view: "detail", id });
       setGalleryDetail(id);
-    } else navBack(() => setGalleryDetail(undefined));
+    } else if (galleryDetail) navBack(() => setGalleryDetail(undefined));
   };
   const enterMode = (m: typeof mode) => {
     // Leaving Play for a tool ends the walk rather than leaving it hidden.
