@@ -41,6 +41,8 @@ export function galleryIndexEnabled(
 
 export type GalleryPrompt = {
   id: string;
+  /** A short display name ("Pelican on a bicycle"); the brief otherwise. */
+  name?: string;
   brief: string;
   targetParts?: number;
   arena: boolean;
@@ -169,7 +171,11 @@ export function decodeGalleryIndex(raw: unknown): GalleryIndex {
   )
     throw bad();
   const prompts = r.prompts.filter(
-    (p) => p && ID.test(p.id) && typeof p.brief === "string",
+    (p) =>
+      p &&
+      ID.test(p.id) &&
+      typeof p.brief === "string" &&
+      (p.name === undefined || typeof p.name === "string"),
   );
   const agents = r.agents.filter(
     (a) => a && ID.test(a.id) && typeof a.name === "string",
@@ -202,6 +208,7 @@ export function decodeGalleryIndex(raw: unknown): GalleryIndex {
 export type GalleryRow = {
   build_id: string;
   prompt_id: string;
+  prompt_name: string | null;
   brief: string;
   target_parts: number | null;
   arena: number;
@@ -242,6 +249,7 @@ export function galleryIndexFromRows(
     if (!prompts.has(r.prompt_id))
       prompts.set(r.prompt_id, {
         id: r.prompt_id,
+        ...(r.prompt_name ? { name: r.prompt_name } : {}),
         brief: r.brief,
         ...(r.target_parts ? { targetParts: r.target_parts } : {}),
         arena: !!r.arena,

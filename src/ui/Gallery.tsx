@@ -183,11 +183,6 @@ export function Gallery({
   const prompts = source.state === "ready" ? source.prompts : [];
   const [promptId, setPromptId] = useState("");
   const [angle, setAngle] = useState<GalleryAngle>("iso");
-  const [compare, setCompare] = useState(false);
-  const [pair, setPair] = useState<[string, string]>(["", ""]);
-  // Builds hidden by the agent filter (new builds start shown).
-  const [hidden, setHidden] = useState<string[]>([]);
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const page = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -220,33 +215,10 @@ export function Gallery({
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, [detailId]);
-  useEffect(() => {
-    setPair([entries[0]?.id ?? "", entries[1]?.id ?? entries[0]?.id ?? ""]);
-    setHidden([]);
-    setCompare(false);
-  }, [prompt?.id, prompts]);
-  const byId = (id: string) => entries.find((e) => e.id === id);
-  const shown = compare
-    ? pair.map(byId).filter((e): e is GalleryEntry => !!e)
-    : entries.filter((e) => !hidden.includes(e.id));
   const selectPrompt = (value: string) => {
     setPromptId(value);
     onDetail(undefined);
   };
-  // Agent filter: one group per model, one box per reasoning level (repeat
-  // runs at a level share it).
-  const groups = [...new Set(entries.map((e) => e.agent))].map((agent) => {
-    const mine = entries.filter((e) => e.agent === agent);
-    const label = (e: GalleryEntry) =>
-      e.effort ? `${e.effort} effort` : e.title;
-    return {
-      agent,
-      levels: [...new Set(mine.map(label))].map((l) => ({
-        label: l,
-        ids: mine.filter((e) => label(e) === l).map((e) => e.id),
-      })),
-    };
-  });
   const pendingEntry = all.find((x) => x.e.id === pending)?.e;
   const errorBanner = error && (
     <div className="gallery-error" role="alert">
@@ -273,7 +245,7 @@ export function Gallery({
   );
   const footer = (
     <footer className="gallery-footer">
-      <strong>One prompt. Many builds. Step inside.</strong>
+      <strong>Same brief, different models. Step inside.</strong>
       <span>
         {prompts.length
           ? `${count(all.length)} published builds`
@@ -482,186 +454,64 @@ export function Gallery({
               )}
             </div>
             <div className="gallery-controls">
-              <div className="gallery-filter-wrap">
-                <button
-                  className="gallery-quiet"
-                  aria-expanded={filtersOpen}
-                  onClick={() => setFiltersOpen((v) => !v)}
-                >
-                  Agent settings
-                  <Icon name="collapse" size={16} />
-                </button>
-                <span>
-                  {shown.length} of {entries.length} builds
-                </span>
-                {filtersOpen && (
-                  <div className="gallery-filters">
-                    {groups.map((g) => (
-                      <fieldset key={g.agent}>
-                        <legend>
-                          <strong>{g.agent}</strong>
-                        </legend>
-                        <p>Reasoning levels</p>
-                        {g.levels.map((l) => (
-                          <label key={l.label}>
-                            <input
-                              type="checkbox"
-                              checked={
-                                !l.ids.every((id) => hidden.includes(id))
-                              }
-                              onChange={(ev) => {
-                                setCompare(false);
-                                setHidden((h) =>
-                                  ev.target.checked
-                                    ? h.filter((id) => !l.ids.includes(id))
-                                    : [...h, ...l.ids],
-                                );
-                              }}
-                            />
-                            {l.label}
-                          </label>
-                        ))}
-                      </fieldset>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <p className="gallery-sample-note">{prompt.note}</p>
               <Angles value={angle} onChange={setAngle} />
-              <button
-                className="gallery-quiet gallery-compare"
-                aria-label="Compare responses"
-                aria-pressed={compare}
-                disabled={entries.length < 2}
-                onClick={() => {
-                  // Compare starts from the builds the filter shows.
-                  if (!compare) {
-                    const visible = entries.filter(
-                      (e) => !hidden.includes(e.id),
-                    );
-                    const a = visible[0] ?? entries[0];
-                    const b = visible[1] ?? entries.find((e) => e !== a);
-                    if (a && b) setPair([a.id, b.id]);
-                  }
-                  setCompare((v) => !v);
-                  setFiltersOpen(false);
-                }}
-              >
-                <Icon name="columns" size={18} />
-                <span>Compare</span>
-              </button>
             </div>
-            <p className="gallery-sample-note">
-              <span className="gallery-note-full">
-                {groups.length === 1
-                  ? `Every build here comes from ${groups[0].agent}, at several reasoning levels.`
-                  : `${groups.length} models, each at several reasoning levels, answered the same brief.`}
-              </span>
-              <span className="gallery-note-short">
-                {groups.length === 1 ? "One model" : `${groups.length} models`}{" "}
-                · {entries.length} real builds
-              </span>
-            </p>
-            {compare && (
-              <div
-                className="gallery-compare-pickers"
-                aria-label="Choose responses to compare"
-              >
-                {pair.map((id, i) => (
-                  <label key={i}>
-                    Response {i + 1}
-                    <select
-                      aria-label={`Compare response ${i + 1}`}
-                      value={id}
-                      onChange={(e) => {
-                        const next = [...pair] as typeof pair;
-                        const choice = e.target.value;
-                        if (choice === pair[1 - i]) next[1 - i] = pair[i];
-                        next[i] = choice;
-                        setPair(next);
-                      }}
-                    >
-                      {/* What tells builds apart comes first: narrow
-                          pickers cut the end off. */}
-                      {entries
-                        .filter(
-                          (e) => !hidden.includes(e.id) || pair.includes(e.id),
-                        )
-                        .map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.effort ? `${s.effort} effort` : s.title} ·{" "}
-                            {s.agent}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
-                ))}
-              </div>
-            )}
-            {shown.length ? (
-              <section
-                className={`gallery-responses${compare ? " gallery-comparing" : ""}`}
-                aria-label="Responses to the same prompt"
-              >
-                {shown.map((s) => (
-                  <article className="gallery-response" key={s.id}>
-                    <div className={`gallery-stage gallery-tone-${s.tone}`}>
-                      <ModelImage entry={s} angle={angle} />
-                      <div className="gallery-agent">
-                        <Icon name="build" size={18} />
-                        <span>
-                          {s.agent}
-                          {s.effort && <small>{s.effort} effort</small>}
-                        </span>
-                      </div>
-                      {openId === s.id && (
-                        <span className="gallery-open-badge">Open now</span>
-                      )}
-                      <button
-                        className="gallery-fit"
-                        aria-label={`Look closer at ${s.title}`}
-                        onClick={() => onDetail(s.id)}
-                      >
-                        <Icon name="view" size={18} />
-                      </button>
-                    </div>
-                    <h2>{s.title}</h2>
-                    <p>{s.summary}</p>
-                    <div className="gallery-response-actions">
+            <section
+              className={`gallery-responses${entries.length <= 2 ? " gallery-pair" : ""}`}
+              aria-label="Responses to the same prompt"
+            >
+              {entries.map((s) => (
+                <article className="gallery-response" key={s.id}>
+                  <div className={`gallery-stage gallery-tone-${s.tone}`}>
+                    <ModelImage entry={s} angle={angle} />
+                    <div className="gallery-agent">
+                      <Icon name="build" size={18} />
                       <span>
-                        <strong>{count(s.parts)}</strong> parts
+                        {s.agent}
+                        {s.effort && <small>{s.effort} effort</small>}
                       </span>
-                      <button
-                        className="gallery-quiet"
-                        onClick={() => onDetail(s.id)}
-                      >
-                        Look closer
-                      </button>
-                      <button
-                        className="primary"
-                        disabled={!!pending}
-                        onClick={() => onOpen(s, "Play")}
-                      >
-                        <Icon name="resume" size={16} />
-                        {pending === s.id
-                          ? "Opening…"
-                          : openId === s.id
-                            ? "Continue"
-                            : "Explore"}
-                        <span className="sr-only"> {s.title}</span>
-                      </button>
                     </div>
-                  </article>
-                ))}
-              </section>
-            ) : (
-              <div className="gallery-empty">
-                <h2>No responses selected.</h2>
-                <p>Choose a reasoning level to bring its builds back.</p>
-                <button onClick={() => setHidden([])}>
-                  Show all responses
-                </button>
-              </div>
-            )}
+                    {openId === s.id && (
+                      <span className="gallery-open-badge">Open now</span>
+                    )}
+                    <button
+                      className="gallery-fit"
+                      aria-label={`Look closer at ${s.title}`}
+                      onClick={() => onDetail(s.id)}
+                    >
+                      <Icon name="view" size={18} />
+                    </button>
+                  </div>
+                  <h2>{s.title}</h2>
+                  <p>{s.summary}</p>
+                  <div className="gallery-response-actions">
+                    <span>
+                      <strong>{count(s.parts)}</strong> parts
+                    </span>
+                    <button
+                      className="gallery-quiet"
+                      onClick={() => onDetail(s.id)}
+                    >
+                      Look closer
+                    </button>
+                    <button
+                      className="primary"
+                      disabled={!!pending}
+                      onClick={() => onOpen(s, "Play")}
+                    >
+                      <Icon name="resume" size={16} />
+                      {pending === s.id
+                        ? "Opening…"
+                        : openId === s.id
+                          ? "Continue"
+                          : "Explore"}
+                      <span className="sr-only"> {s.title}</span>
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </section>
             {footer}
           </div>
         </>

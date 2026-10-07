@@ -1,0 +1,224 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 3000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 3029,
+  "targetMiss": {
+    "target": 3000,
+    "parts": 3029,
+    "difference": 29,
+    "percent": 1
+  },
+  "seconds": 601,
+  "tokens": {
+    "input": 340633,
+    "cached": 250119,
+    "output": 62071,
+    "reasoning": 42207,
+    "costUsd": 7.4487778
+  },
+  "searches": 5,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "2435",
+      "2437",
+      "24866",
+      "3003",
+      "30136",
+      "3039",
+      "3062b",
+      "3471",
+      "3829c01",
+      "3957a",
+      "3960",
+      "4079",
+      "4286",
+      "4589",
+      "4600",
+      "4740",
+      "54200",
+      "60481a",
+      "6141",
+      "87079p50"
+    ],
+    "notInList": [
+      "2437",
+      "87079p50"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 601,
+      "usage": {
+        "input": 340633,
+        "cached": 250119,
+        "output": 62071,
+        "reasoning": 42207,
+        "costUsd": 7.4487778
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "windscreen",
+            "colour": "trans yellow",
+            "available_in_colour": true
+          },
+          "results": [
+            "6070",
+            "2437",
+            "6152a",
+            "62360",
+            "4474",
+            "6238a",
+            "6238b",
+            "87752",
+            "11289",
+            "92279",
+            "2337",
+            "18729",
+            "30741",
+            "62576",
+            "13252"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "ladder"
+          },
+          "results": [
+            "4175",
+            "4207a",
+            "4207b",
+            "15118",
+            "87913",
+            "420",
+            "421",
+            "4000",
+            "11299",
+            "70646",
+            "850",
+            "851a",
+            "851b",
+            "852",
+            "420c01-f1"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "classic space logo tile"
+          },
+          "results": [
+            "87079p50",
+            "3068bp5e"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "flame"
+          },
+          "results": [
+            "70880",
+            "7727",
+            "64647",
+            "18395",
+            "80519",
+            "6126b",
+            "69858",
+            "6126a",
+            "37775"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "computer slope printed"
+          },
+          "results": [
+            "54200",
+            "3039",
+            "3040b",
+            "11477",
+            "85984",
+            "4286",
+            "3665a",
+            "3298",
+            "15068",
+            "3660b",
+            "60481a",
+            "61678",
+            "50950",
+            "93273",
+            "3678b"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2307,
+          "errors": 1,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 2851,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 3029,
+          "errors": 1,
+          "ok": false
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2435",
+          "2437",
+          "24866",
+          "3003",
+          "30136",
+          "3039",
+          "3062b",
+          "3471",
+          "3829c01",
+          "3957a",
+          "3960",
+          "4079",
+          "4286",
+          "4589",
+          "4600",
+          "4740",
+          "54200",
+          "60481a",
+          "6141",
+          "87079p50"
+        ],
+        "notInList": [
+          "2437",
+          "87079p50"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 3029
+    }
+  ]
+}

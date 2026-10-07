@@ -10,17 +10,30 @@ import {
   mockGallery,
 } from "./helpers/gallery";
 
-test("gallery browsing shows published builds by brief, aligns angles, filters, compares and imports", async ({
+test("gallery browsing pairs the models on each brief, aligns angles and imports", async ({
   page,
 }) => {
   await mockGallery(page);
   await page.goto("./?galleryIndex=1");
   await expect(
-    page.getByRole("heading", { name: "One brief. Two takes." }),
+    page.getByRole("heading", { name: "One brief. Two models." }),
   ).toBeVisible();
+  // Prompts use their short names; the brief is under the heading.
+  const tabs = page.getByRole("group", { name: "Choose a prompt" });
+  await expect(tabs.getByRole("button")).toHaveText([
+    "Japanese temple2",
+    "Lighthouse1",
+  ]);
+  await expect(
+    page.getByText("The brief: “a japanese buddhist temple”"),
+  ).toBeVisible();
+  await expect(page.locator(".gallery-sample-note")).toHaveText(
+    "Claude Opus 5.5 and GPT-6.1-Sol answered this brief.",
+  );
   const responses = page.locator(".gallery-response");
   await expect(responses).toHaveCount(2);
-  // Grouped by model: Claude first, then GPT.
+  await expect(page.locator(".gallery-responses")).toHaveClass(/gallery-pair/);
+  // Ordered by model: Claude first, then GPT.
   await expect(responses.locator("h2")).toHaveText(TITLES.slice(0, 2));
   await expect(responses.first()).toContainText("Claude Opus 5.5High effort");
   await expect(responses.first()).toContainText(
@@ -30,22 +43,15 @@ test("gallery browsing shows published builds by brief, aligns angles, filters, 
   await expect(
     responses.first().locator(".gallery-stage > img"),
   ).toHaveAttribute("src", `${GALLERY_ORIGIN}/r/${RENDER(0, 1)}.webp`);
-  await page.getByRole("button", { name: "Agent settings" }).click();
-  await page.getByLabel("Low effort", { exact: true }).uncheck();
-  await expect(responses).toHaveCount(1);
-  await page.getByLabel("Low effort", { exact: true }).check();
-  await page
-    .getByRole("button", { name: "Compare responses", exact: true })
-    .click();
-  await expect(responses).toHaveCount(2);
-  await page
-    .getByRole("group", { name: "Choose a prompt" })
-    .getByRole("button", { name: /Lighthouse/ })
-    .click();
+  await expect(
+    page.getByRole("button", { name: "Agent settings" }),
+  ).toHaveCount(0);
+  await tabs.getByRole("button", { name: /Lighthouse/ }).click();
   await expect(responses.locator("h2")).toHaveText([TITLES[2]]);
   await expect(
-    page.getByRole("button", { name: "Compare responses", exact: true }),
-  ).toBeDisabled();
+    page.getByRole("heading", { name: "One brief. One model." }),
+  ).toBeVisible();
+  await tabs.getByRole("button", { name: /Japanese temple/ }).click();
   for (const viewport of [
     { width: 360, height: 600 },
     { width: 411, height: 685 },
@@ -60,11 +66,19 @@ test("gallery browsing shows published builds by brief, aligns angles, filters, 
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    const box = await page
-      .getByRole("button", { name: "Compare responses", exact: true })
-      .boundingBox();
-    expect(box!.width).toBeGreaterThanOrEqual(44);
-    expect(box!.height).toBeGreaterThanOrEqual(44);
+    for (const name of ["Three-quarter", "Front", "Back"]) {
+      const box = await page
+        .getByRole("button", { name, exact: true })
+        .boundingBox();
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+    }
+    // Both builds of the pair are side by side, or stacked on phones.
+    const [a, b] = await Promise.all(
+      [0, 1].map((i) => responses.nth(i).boundingBox()),
+    );
+    expect(a!.x + a!.width <= b!.x + 1 || a!.y + a!.height <= b!.y + 1).toBe(
+      true,
+    );
   }
   await page.setViewportSize({ width: 360, height: 600 });
   const chooser = page.waitForEvent("filechooser");

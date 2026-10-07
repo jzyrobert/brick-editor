@@ -348,6 +348,19 @@ source scripts and the licensed display font are local and precached offline.
 See [Gallery](GALLERY.md), [design system](../DESIGN.md) and
 [verification](VERIFICATION.md#cream-gallery-and-play-workshop--3-october-2026).
 
+## Gallery: six prompts, two models — 7 October 2026
+
+Gallery shows six prompts (pelican on a bicycle, Imperial Star Destroyer,
+dragon, Piplup, Japanese temple, Ewok Classic Space), each answered once by
+Claude Opus 5.5 and once by GPT-6.1-Sol at high effort with the creative prompt
+(`prompts/build-agent-creative.md`, `npm run oneshot -- --prompt …`). Each
+prompt is a side-by-side pair with a short name from the index (migration
+`0002_prompt_names.sql`, `gallery:publish --prompt-name`); the reasoning-level
+filter and the Compare picker are gone. The earlier ten temple builds and two
+ewok builds are hidden in D1 (files kept) and their sources are in
+`docs/samples`. See [Gallery](GALLERY.md#what-is-published) and the
+[prompt comparison](samples/creative-prompt-comparison/README.md).
+
 ## Reviewed conditional figure procedures
 
 Automatic v11 preserves supplied lower-body/torso assemblies, orders source-owned

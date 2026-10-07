@@ -23,6 +23,7 @@ async function row(over: Partial<GalleryRow> = {}): Promise<GalleryRow> {
   return {
     build_id: galleryBuildId(sha),
     prompt_id: "japanese-buddhist-temple-2000",
+    prompt_name: "Japanese temple",
     brief: "a japanese buddhist temple",
     target_parts: 2000,
     arena: 1,
@@ -100,6 +101,7 @@ test("index generation from D1 rows round-trips through the decoder", async () =
   expect(index.prompts).toEqual([
     {
       id: "japanese-buddhist-temple-2000",
+      name: "Japanese temple",
       brief: "a japanese buddhist temple",
       targetParts: 2000,
       arena: true,

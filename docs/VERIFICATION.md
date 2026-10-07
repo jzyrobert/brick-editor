@@ -1,5 +1,13 @@
 # Verification — 27 September 2026
 
+## Gallery: six prompts, two models — 7 October 2026
+
+- Runs: twenty one-shot runs (Opus 5.5 high through Claude Code, GPT-6.1-Sol high through Codex), all accepted with no errors; the table is in [the prompt comparison](samples/creative-prompt-comparison/README.md).
+- Publishing: a dry run (`gallery:publish` without `--remote`) applied `0002_prompt_names.sql` to a local D1 and wrote `name` into `index.json`; then six `--remote` publishes added the twelve creative builds and twelve `--hide` calls hid the earlier builds. The live `index.json` lists 6 prompts with their names, 2 agents and 12 builds.
+- Unit: `tests/unit/gallery-view.test.ts` (pairs, notes, names, repeat takes), `gallery-index.test.ts` (prompt names through rows and the decoder), `gallery-publish.test.ts` (prompt in the effort folder; `--prompt-name` inserts and updates). `npm test`, `npx tsc -b` and `npm run format:check` pass.
+- Browser: `tests/browser/gallery.spec.ts`, 4 of 4 on a private config, including the new pair test (names on tabs, the note, the pair side by side or stacked, angle tabs at least 44 px and no horizontal scroll at 360 × 600, 411 × 685, 390 × 844, 1080 × 1800, 686 × 411 and 1440 × 1000).
+- Screenshots of the real index (bucket files proxied into a local preview) at 1440 × 1000, 1080 × 1800, 390 × 844, 360 × 600 and 686 × 411: no horizontal scroll; on phones the note sits above full-width angle tabs. Not checked on a physical phone.
+
 ## Player size in Play — 5 October 2026
 
 `tests/unit/play-player-scale.test.ts` (13 checks) covers the scaling maths

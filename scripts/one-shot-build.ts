@@ -33,12 +33,15 @@ import { isBrickBuild, type BrickBuildCall } from "./brick-build";
 const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file f) --model M
     [--efforts low,medium,high,xhigh,max] [--attempts 5] [--out dir] [--views iso,front,iso-back]
     [--parts-list on|off] [--search on|off] [--check on|off] [--runner codex|claude]
+    [--prompt build-agent.md]
   Runs each reasoning effort in parallel through \`codex exec\` (or, with --runner claude,
   \`claude -p\` with --effort) with its tools turned off;
   --search on (default) lets it search parts by replying {"parts_search": …}. --parts-list on (default) puts the
   224 curated parts and their common colours in the prompt. The reply is a brick.build call
   ({"tool": "brick.build", "input": {"code"}}); --check on (default) lets the model compile up to
   3 drafts per attempt by replying {"check_build": {"code"}} and get back their count and errors.
+  --prompt  the system prompt in prompts/ (default build-agent.md; build-agent-creative.md is the
+  creative variant).
   --out  default ~/brick-builds/oneshot-<name>-<target>; one folder per effort, plus summary.md`;
 
 /** Text below the first "---" line of a prompt file. */
@@ -82,9 +85,14 @@ Before you answer you may compile a draft up to ${CHECKS} times: reply with ONLY
 export function oneShotPrompt(
   brief: string,
   target: number,
-  { partsList = true, search = false, check = false } = {},
+  {
+    partsList = true,
+    search = false,
+    check = false,
+    promptFile = "build-agent.md",
+  } = {},
 ) {
-  let text = below("build-agent.md");
+  let text = below(promptFile);
   const tools = sectionOf(text, "When you can run tools");
   if (!tools)
     throw new Error("prompts/build-agent.md changed: update one-shot-build.ts");
@@ -934,6 +942,7 @@ async function main(argv: string[]) {
         "search",
         "check",
         "runner",
+        "prompt",
       ].includes(key)
     )
       throw new Error(`Unknown flag ${argv[i]}\n${HELP}`);
@@ -973,7 +982,12 @@ async function main(argv: string[]) {
     throw new Error("--runner takes codex or claude");
   registerFullLibraryFromDisk();
   registerAgentData();
-  const prompt = oneShotPrompt(brief, target, { partsList, search, check });
+  const prompt = oneShotPrompt(brief, target, {
+    partsList,
+    search,
+    check,
+    promptFile: flags.get("prompt"),
+  });
   const views = flags.get("views") ?? "iso,front,iso-back";
   const results = await Promise.all(
     efforts.map((e) =>
@@ -1009,6 +1023,7 @@ async function main(argv: string[]) {
         model,
         targetParts: target,
         attempts,
+        prompt: flags.get("prompt") ?? "build-agent.md",
         partsList,
         search,
         check,

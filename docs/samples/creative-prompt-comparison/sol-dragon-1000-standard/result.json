@@ -1,0 +1,148 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1051,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1051,
+    "difference": 51,
+    "percent": 5.1
+  },
+  "seconds": 560,
+  "tokens": {
+    "input": 550913,
+    "cached": 344960,
+    "output": 52182,
+    "reasoning": 27122
+  },
+  "searches": 3,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "3005",
+      "3040b",
+      "3070b",
+      "3665a",
+      "3960",
+      "4460b",
+      "4589",
+      "54200",
+      "6141"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 560,
+      "usage": {
+        "input": 550913,
+        "cached": 344960,
+        "output": 52182,
+        "reasoning": 27122,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "horn",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2142",
+            "64847",
+            "40379",
+            "11089",
+            "67361",
+            "53451"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tooth claw",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "41669",
+            "16770",
+            "48267",
+            "11089"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "6x12",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "3028",
+            "30355",
+            "30356"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1673,
+          "errors": 23,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 1222,
+          "errors": 1,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 1085,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "3005",
+          "3040b",
+          "3070b",
+          "3665a",
+          "3960",
+          "4460b",
+          "4589",
+          "54200",
+          "6141"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1051
+    }
+  ]
+}

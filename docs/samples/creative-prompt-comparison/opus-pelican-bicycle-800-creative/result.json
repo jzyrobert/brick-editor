@@ -1,0 +1,184 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 760,
+  "targetMiss": {
+    "target": 800,
+    "parts": 760,
+    "difference": -40,
+    "percent": -5
+  },
+  "seconds": 941,
+  "tokens": {
+    "input": 416867,
+    "cached": 298588,
+    "output": 91379,
+    "reasoning": 70793,
+    "costUsd": 10.257902199999998
+  },
+  "searches": 5,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "12891",
+      "2039",
+      "2450",
+      "3062b",
+      "35700",
+      "3941",
+      "3942c",
+      "4237",
+      "61780",
+      "64648"
+    ],
+    "notInList": [
+      "12891",
+      "2039",
+      "35700",
+      "4237",
+      "61780",
+      "64648"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 941,
+      "usage": {
+        "input": 416867,
+        "cached": 298588,
+        "output": 91379,
+        "reasoning": 70793,
+        "costUsd": 10.257902199999998
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "fish"
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "seagull bird"
+          },
+          "results": [
+            "12891"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "lamp post"
+          },
+          "results": [
+            "2039",
+            "11062"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "crate"
+          },
+          "results": [
+            "61780",
+            "4237",
+            "35700",
+            "2821",
+            "69066",
+            "956",
+            "3947",
+            "6136",
+            "33340"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bicycle bell"
+          },
+          "results": [
+            "30151a",
+            "4719",
+            "6017",
+            "u608",
+            "92851",
+            "30151b",
+            "u609",
+            "2807",
+            "4720",
+            "64248",
+            "4719c01",
+            "4719c02",
+            "4719c03",
+            "u9163"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1557,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 1280,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 760,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "12891",
+          "2039",
+          "2450",
+          "3062b",
+          "35700",
+          "3941",
+          "3942c",
+          "4237",
+          "61780",
+          "64648"
+        ],
+        "notInList": [
+          "12891",
+          "2039",
+          "35700",
+          "4237",
+          "61780",
+          "64648"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 760
+    }
+  ]
+}

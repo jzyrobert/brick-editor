@@ -116,3 +116,44 @@ test("publish SQL inserts each prompt and agent once, then the builds", () => {
   expect(sql).toContain(", 2.84, 117537, 'run', 'lib', 'h', 1, 1790000000);");
   expect(lines.at(-1)).toContain(", NULL, NULL, 'run', 'lib', 'h', 1,");
 });
+
+test("a run with its prompt in the effort folder still publishes", () => {
+  const nested: Record<string, string> = {
+    ...files,
+    "run/high/prompt.md": files["run/prompt.md"],
+  };
+  delete nested["run/prompt.md"];
+  const { candidates } = oneShotCandidates("run", (p) => nested[p], list, {
+    only: ["high"],
+  });
+  expect(candidates.map((c) => c.brief)).toEqual([
+    "a japanese buddhist temple",
+  ]);
+});
+
+test("a prompt name is inserted and set on a prompt that already exists", () => {
+  const { candidates } = oneShotCandidates("run", read, list, {
+    only: ["high"],
+    promptName: "Japanese temple",
+  });
+  const sql = publishSql(
+    [
+      {
+        candidate: candidates[0],
+        id: "a".repeat(12),
+        mpd: { sha: "a".repeat(64), bytes: 100, gz: new Uint8Array() },
+        script: { sha: "s".repeat(64), bytes: new Uint8Array() },
+        report: { sha: "p".repeat(64), bytes: new Uint8Array() },
+        parts: 1921,
+        warnings: 0,
+        library: { release: "lib", hash: "h" },
+        renders: { iso: "r".repeat(64) },
+      },
+    ],
+    1_790_000_000,
+  );
+  expect(sql).toContain("'Japanese temple'");
+  expect(sql).toContain(
+    "UPDATE prompts SET name = 'Japanese temple' WHERE id = 'japanese-buddhist-temple-2000';",
+  );
+});

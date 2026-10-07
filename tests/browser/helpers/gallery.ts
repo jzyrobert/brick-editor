@@ -42,6 +42,7 @@ export const GALLERY_INDEX = {
   prompts: [
     {
       id: "japanese-buddhist-temple-2000",
+      name: "Japanese temple",
       brief: "a japanese buddhist temple",
       targetParts: 2000,
       arena: true,
