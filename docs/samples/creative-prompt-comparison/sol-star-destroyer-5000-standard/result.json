@@ -1,0 +1,102 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 4947,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 4947,
+    "difference": -53,
+    "percent": -1.1
+  },
+  "seconds": 389,
+  "tokens": {
+    "input": 208188,
+    "cached": 95616,
+    "output": 37598,
+    "reasoning": 19711
+  },
+  "searches": 0,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "2412b",
+      "2877",
+      "3020",
+      "3022",
+      "3023b",
+      "3039",
+      "3069b",
+      "3070b",
+      "3660b",
+      "3710",
+      "3941",
+      "3957a",
+      "54200",
+      "6141",
+      "87087"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 389,
+      "usage": {
+        "input": 208188,
+        "cached": 95616,
+        "output": 37598,
+        "reasoning": 19711,
+        "costUsd": 0
+      },
+      "searches": [],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 6132,
+          "errors": 47,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 4947,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2877",
+          "3020",
+          "3022",
+          "3023b",
+          "3039",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3710",
+          "3941",
+          "3957a",
+          "54200",
+          "6141",
+          "87087"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 4947
+    }
+  ]
+}

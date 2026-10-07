@@ -16,7 +16,10 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Gallery content
 
-- [ ] Publish more prompts and agents (10 temple builds from 2 models are published); see [GALLERY](docs/GALLERY.md).
+- [x] Six prompts answered by Opus 5.5 and GPT-6.1-Sol (high, creative prompt) are published; the earlier temple and ewok builds are hidden and kept in `docs/samples`; see [GALLERY](docs/GALLERY.md).
+- [ ] The creative prompt's scenes can upstage the subject (Opus's Star Destroyer in a drydock, Sol's dragon lair): try "the requested subject stays the hero" and compare ([comparison](docs/samples/creative-prompt-comparison/README.md)).
+- [ ] Let `check_build` return a render of the draft, so models can see blocky organic shapes and fix them.
+- [ ] Label builds by prompt variant in the gallery (the agent id is only runner/model/effort).
 
 ## Rendering and performance
 

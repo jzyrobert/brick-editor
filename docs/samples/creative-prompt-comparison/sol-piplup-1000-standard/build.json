@@ -1,0 +1,2974 @@
+{
+ "buildScript": 1,
+ "title": "Piplup on an ice floe",
+ "description": "A rounded, three-dimensional Piplup with a navy hood, bright eyes, little yellow beak, white belly and outstretched flippers.",
+ "palette": {
+  "hood": "dark blue",
+  "body": "blue",
+  "face": "medium azure",
+  "snow": "white",
+  "ice": "light bluish grey",
+  "beak": "yellow"
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "sections": [
+  {
+   "name": "Ice floe",
+   "ops": [
+    {
+     "op": "baseplate",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      32,
+      32
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      32,
+      32
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      1,
+      6
+     ],
+     "size": [
+      22,
+      3,
+      22
+     ],
+     "colour": "white",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      2,
+      1,
+      3
+     ],
+     "colour": "trans light blue"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      5,
+      1,
+      3
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      8,
+      1,
+      3
+     ],
+     "colour": "trans light blue"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      11,
+      1,
+      3
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      14,
+      1,
+      3
+     ],
+     "colour": "trans light blue"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      17,
+      1,
+      3
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      20,
+      1,
+      3
+     ],
+     "colour": "trans light blue"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      23,
+      1,
+      3
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      2,
+      1,
+      10
+     ],
+     "colour": "trans light blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      2,
+      1,
+      15
+     ],
+     "colour": "trans light blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      2,
+      1,
+      20
+     ],
+     "colour": "trans light blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      29,
+      1,
+      10
+     ],
+     "colour": "trans light blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      29,
+      1,
+      15
+     ],
+     "colour": "trans light blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      29,
+      1,
+      20
+     ],
+     "colour": "trans light blue",
+     "turn": 90
+    }
+   ]
+  },
+  {
+   "name": "Webbed feet",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      8,
+      4,
+      11
+     ],
+     "size": [
+      6,
+      3,
+      10
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      8,
+      4,
+      9
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      4,
+      9
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      4,
+      9
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      8,
+      7,
+      11
+     ],
+     "colour": "yellow",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      10,
+      7,
+      11
+     ],
+     "colour": "yellow",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      12,
+      7,
+      11
+     ],
+     "colour": "yellow",
+     "turn": 90
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      4,
+      11
+     ],
+     "size": [
+      6,
+      3,
+      10
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      18,
+      4,
+      9
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      20,
+      4,
+      9
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      22,
+      4,
+      9
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      18,
+      7,
+      11
+     ],
+     "colour": "yellow",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      20,
+      7,
+      11
+     ],
+     "colour": "yellow",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      22,
+      7,
+      11
+     ],
+     "colour": "yellow",
+     "turn": 90
+    }
+   ]
+  },
+  {
+   "name": "Round body",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      11,
+      7,
+      15
+     ],
+     "size": [
+      10,
+      8
+     ],
+     "colour": "body"
+    },
+    {
+     "op": "wall",
+     "from": [
+      11,
+      22
+     ],
+     "to": [
+      20,
+      22
+     ],
+     "y": 8,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      11,
+      15
+     ],
+     "to": [
+      11,
+      21
+     ],
+     "y": 8,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      20,
+      15
+     ],
+     "to": [
+      20,
+      21
+     ],
+     "y": 8,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      7,
+      15
+     ],
+     "size": [
+      1,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      7,
+      15
+     ],
+     "size": [
+      6,
+      4,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      7,
+      15
+     ],
+     "size": [
+      1,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      9,
+      11,
+      14
+     ],
+     "size": [
+      14,
+      10
+     ],
+     "colour": "body"
+    },
+    {
+     "op": "wall",
+     "from": [
+      9,
+      23
+     ],
+     "to": [
+      22,
+      23
+     ],
+     "y": 12,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      9,
+      14
+     ],
+     "to": [
+      9,
+      22
+     ],
+     "y": 12,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      22,
+      14
+     ],
+     "to": [
+      22,
+      22
+     ],
+     "y": 12,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      11,
+      14
+     ],
+     "size": [
+      2,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      11,
+      14
+     ],
+     "size": [
+      8,
+      4,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      11,
+      14
+     ],
+     "size": [
+      2,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      15,
+      13
+     ],
+     "size": [
+      16,
+      12
+     ],
+     "colour": "body"
+    },
+    {
+     "op": "wall",
+     "from": [
+      8,
+      24
+     ],
+     "to": [
+      23,
+      24
+     ],
+     "y": 16,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      8,
+      13
+     ],
+     "to": [
+      8,
+      23
+     ],
+     "y": 16,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      23,
+      13
+     ],
+     "to": [
+      23,
+      23
+     ],
+     "y": 16,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      15,
+      13
+     ],
+     "size": [
+      2,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      15,
+      13
+     ],
+     "size": [
+      10,
+      4,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      15,
+      13
+     ],
+     "size": [
+      2,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      7,
+      19,
+      12
+     ],
+     "size": [
+      18,
+      14
+     ],
+     "colour": "body"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      25
+     ],
+     "to": [
+      24,
+      25
+     ],
+     "y": 20,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      12
+     ],
+     "to": [
+      7,
+      24
+     ],
+     "y": 20,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      24,
+      12
+     ],
+     "to": [
+      24,
+      24
+     ],
+     "y": 20,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      19,
+      12
+     ],
+     "size": [
+      3,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      19,
+      12
+     ],
+     "size": [
+      10,
+      4,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      19,
+      12
+     ],
+     "size": [
+      3,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      7,
+      23,
+      12
+     ],
+     "size": [
+      18,
+      14
+     ],
+     "colour": "body"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      25
+     ],
+     "to": [
+      24,
+      25
+     ],
+     "y": 24,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      12
+     ],
+     "to": [
+      7,
+      24
+     ],
+     "y": 24,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      24,
+      12
+     ],
+     "to": [
+      24,
+      24
+     ],
+     "y": 24,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      23,
+      12
+     ],
+     "size": [
+      4,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      23,
+      12
+     ],
+     "size": [
+      8,
+      4,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      23,
+      12
+     ],
+     "size": [
+      4,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      7,
+      27,
+      12
+     ],
+     "size": [
+      18,
+      14
+     ],
+     "colour": "body"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      25
+     ],
+     "to": [
+      24,
+      25
+     ],
+     "y": 28,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      12
+     ],
+     "to": [
+      7,
+      24
+     ],
+     "y": 28,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      24,
+      12
+     ],
+     "to": [
+      24,
+      24
+     ],
+     "y": 28,
+     "height": 3,
+     "colour": "body",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      27,
+      12
+     ],
+     "size": [
+      3,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      27,
+      12
+     ],
+     "size": [
+      2,
+      4,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      27,
+      12
+     ],
+     "size": [
+      6,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      27,
+      12
+     ],
+     "size": [
+      2,
+      4,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      27,
+      12
+     ],
+     "size": [
+      3,
+      4,
+      1
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      31,
+      13
+     ],
+     "size": [
+      16,
+      12
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      8,
+      24
+     ],
+     "to": [
+      23,
+      24
+     ],
+     "y": 32,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      8,
+      13
+     ],
+     "to": [
+      8,
+      23
+     ],
+     "y": 32,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      23,
+      13
+     ],
+     "to": [
+      23,
+      23
+     ],
+     "y": 32,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      31,
+      13
+     ],
+     "size": [
+      14,
+      4,
+      1
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      9,
+      35,
+      14
+     ],
+     "size": [
+      14,
+      10
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      9,
+      23
+     ],
+     "to": [
+      22,
+      23
+     ],
+     "y": 36,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      9,
+      14
+     ],
+     "to": [
+      9,
+      22
+     ],
+     "y": 36,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      22,
+      14
+     ],
+     "to": [
+      22,
+      22
+     ],
+     "y": 36,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      35,
+      14
+     ],
+     "size": [
+      12,
+      4,
+      1
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    }
+   ]
+  },
+  {
+   "name": "Flippers",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      3,
+      20,
+      17
+     ],
+     "size": [
+      4,
+      4,
+      7
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      24,
+      17
+     ],
+     "size": [
+      2,
+      8,
+      6
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      31,
+      17
+     ],
+     "size": [
+      4,
+      6
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      3,
+      24,
+      17
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      4,
+      24,
+      17
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      5,
+      24,
+      17
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      6,
+      24,
+      17
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      3,
+      24,
+      22
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      4,
+      24,
+      22
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      5,
+      24,
+      22
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      6,
+      24,
+      22
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      3,
+      24,
+      19
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      5,
+      24,
+      19
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "box",
+     "at": [
+      25,
+      20,
+      17
+     ],
+     "size": [
+      4,
+      4,
+      7
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      25,
+      24,
+      17
+     ],
+     "size": [
+      2,
+      8,
+      6
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      23,
+      31,
+      17
+     ],
+     "size": [
+      4,
+      6
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      25,
+      24,
+      17
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      26,
+      24,
+      17
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      27,
+      24,
+      17
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      28,
+      24,
+      17
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      25,
+      24,
+      22
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      26,
+      24,
+      22
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      27,
+      24,
+      22
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      28,
+      24,
+      22
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      25,
+      24,
+      19
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      27,
+      24,
+      19
+     ],
+     "colour": "medium azure"
+    }
+   ]
+  },
+  {
+   "name": "Large hooded head",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      9,
+      39,
+      13
+     ],
+     "size": [
+      14,
+      12
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      9,
+      24
+     ],
+     "to": [
+      22,
+      24
+     ],
+     "y": 40,
+     "height": 3,
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      9,
+      13
+     ],
+     "to": [
+      9,
+      23
+     ],
+     "y": 40,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      22,
+      13
+     ],
+     "to": [
+      22,
+      23
+     ],
+     "y": 40,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      39,
+      13
+     ],
+     "size": [
+      12,
+      4,
+      1
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      7,
+      43,
+      11
+     ],
+     "size": [
+      18,
+      16
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      26
+     ],
+     "to": [
+      24,
+      26
+     ],
+     "y": 44,
+     "height": 3,
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      11
+     ],
+     "to": [
+      7,
+      25
+     ],
+     "y": 44,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      24,
+      11
+     ],
+     "to": [
+      24,
+      25
+     ],
+     "y": 44,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      43,
+      11
+     ],
+     "size": [
+      16,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      47,
+      10
+     ],
+     "size": [
+      22,
+      18
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      5,
+      27
+     ],
+     "to": [
+      26,
+      27
+     ],
+     "y": 48,
+     "height": 3,
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      5,
+      10
+     ],
+     "to": [
+      5,
+      26
+     ],
+     "y": 48,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      26,
+      10
+     ],
+     "to": [
+      26,
+      26
+     ],
+     "y": 48,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      47,
+      10
+     ],
+     "size": [
+      20,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      51,
+      9
+     ],
+     "size": [
+      24,
+      20
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      28
+     ],
+     "to": [
+      27,
+      28
+     ],
+     "y": 52,
+     "height": 3,
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      9
+     ],
+     "to": [
+      4,
+      27
+     ],
+     "y": 52,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      27,
+      9
+     ],
+     "to": [
+      27,
+      27
+     ],
+     "y": 52,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      51,
+      9
+     ],
+     "size": [
+      22,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      55,
+      9
+     ],
+     "size": [
+      24,
+      20
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      28
+     ],
+     "to": [
+      27,
+      28
+     ],
+     "y": 56,
+     "height": 3,
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      9
+     ],
+     "to": [
+      4,
+      27
+     ],
+     "y": 56,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      27,
+      9
+     ],
+     "to": [
+      27,
+      27
+     ],
+     "y": 56,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      55,
+      9
+     ],
+     "size": [
+      22,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      59,
+      9
+     ],
+     "size": [
+      24,
+      20
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      28
+     ],
+     "to": [
+      27,
+      28
+     ],
+     "y": 60,
+     "height": 3,
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      9
+     ],
+     "to": [
+      4,
+      27
+     ],
+     "y": 60,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      27,
+      9
+     ],
+     "to": [
+      27,
+      27
+     ],
+     "y": 60,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      59,
+      9
+     ],
+     "size": [
+      22,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      63,
+      9
+     ],
+     "size": [
+      24,
+      20
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      28
+     ],
+     "to": [
+      27,
+      28
+     ],
+     "y": 64,
+     "height": 3,
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      9
+     ],
+     "to": [
+      4,
+      27
+     ],
+     "y": 64,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      27,
+      9
+     ],
+     "to": [
+      27,
+      27
+     ],
+     "y": 64,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      63,
+      9
+     ],
+     "size": [
+      22,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      67,
+      9
+     ],
+     "size": [
+      24,
+      20
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      28
+     ],
+     "to": [
+      27,
+      28
+     ],
+     "y": 68,
+     "height": 3,
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      4,
+      9
+     ],
+     "to": [
+      4,
+      27
+     ],
+     "y": 68,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      27,
+      9
+     ],
+     "to": [
+      27,
+      27
+     ],
+     "y": 68,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      67,
+      9
+     ],
+     "size": [
+      9,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      67,
+      9
+     ],
+     "size": [
+      4,
+      4,
+      1
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      67,
+      9
+     ],
+     "size": [
+      9,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      71,
+      10
+     ],
+     "size": [
+      22,
+      18
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      5,
+      27
+     ],
+     "to": [
+      26,
+      27
+     ],
+     "y": 72,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      5,
+      10
+     ],
+     "to": [
+      5,
+      26
+     ],
+     "y": 72,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      26,
+      10
+     ],
+     "to": [
+      26,
+      26
+     ],
+     "y": 72,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      71,
+      10
+     ],
+     "size": [
+      7,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      71,
+      10
+     ],
+     "size": [
+      6,
+      4,
+      1
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      71,
+      10
+     ],
+     "size": [
+      7,
+      4,
+      1
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      6,
+      75,
+      11
+     ],
+     "size": [
+      20,
+      16
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      6,
+      26
+     ],
+     "to": [
+      25,
+      26
+     ],
+     "y": 76,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      6,
+      11
+     ],
+     "to": [
+      6,
+      25
+     ],
+     "y": 76,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      25,
+      11
+     ],
+     "to": [
+      25,
+      25
+     ],
+     "y": 76,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      75,
+      11
+     ],
+     "size": [
+      18,
+      4,
+      1
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      79,
+      13
+     ],
+     "size": [
+      16,
+      12
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      8,
+      24
+     ],
+     "to": [
+      23,
+      24
+     ],
+     "y": 80,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      8,
+      13
+     ],
+     "to": [
+      8,
+      23
+     ],
+     "y": 80,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      23,
+      13
+     ],
+     "to": [
+      23,
+      23
+     ],
+     "y": 80,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      79,
+      13
+     ],
+     "size": [
+      14,
+      4,
+      1
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      10,
+      83,
+      15
+     ],
+     "size": [
+      12,
+      8
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "wall",
+     "from": [
+      10,
+      22
+     ],
+     "to": [
+      21,
+      22
+     ],
+     "y": 84,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      10,
+      15
+     ],
+     "to": [
+      10,
+      21
+     ],
+     "y": 84,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "wall",
+     "from": [
+      21,
+      15
+     ],
+     "to": [
+      21,
+      21
+     ],
+     "y": 84,
+     "height": 3,
+     "colour": "hood",
+     "texture": "grille"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      83,
+      15
+     ],
+     "size": [
+      10,
+      4,
+      1
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    }
+   ]
+  },
+  {
+   "name": "Face",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      7,
+      55,
+      8
+     ],
+     "size": [
+      5,
+      9,
+      2
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      7,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      8,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      9,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      10,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      11,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      8,
+      58,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      9,
+      61,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3024",
+     "at": [
+      8,
+      61,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3024",
+     "at": [
+      8,
+      62,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3024",
+     "at": [
+      8,
+      63,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      55,
+      8
+     ],
+     "size": [
+      5,
+      9,
+      2
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      20,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      21,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      22,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      23,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      24,
+      64,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      21,
+      58,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      22,
+      61,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3024",
+     "at": [
+      21,
+      61,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3024",
+     "at": [
+      21,
+      62,
+      8
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3024",
+     "at": [
+      21,
+      63,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      55,
+      5
+     ],
+     "size": [
+      4,
+      3,
+      5
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      58,
+      5
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      16,
+      58,
+      5
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      14,
+      58,
+      7
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      16,
+      58,
+      7
+     ],
+     "colour": "yellow"
+    }
+   ]
+  },
+  {
+   "name": "Rounded crown",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      10,
+      87,
+      15
+     ],
+     "size": [
+      12,
+      8
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      88,
+      15
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      88,
+      17
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      88,
+      19
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      88,
+      21
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      88,
+      15
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      88,
+      17
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      88,
+      19
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      88,
+      21
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      88,
+      15
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      88,
+      17
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      88,
+      19
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      88,
+      21
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      16,
+      88,
+      15
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      16,
+      88,
+      17
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      16,
+      88,
+      19
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      16,
+      88,
+      21
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      18,
+      88,
+      15
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      18,
+      88,
+      17
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      18,
+      88,
+      19
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      18,
+      88,
+      21
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      20,
+      88,
+      15
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      20,
+      88,
+      17
+     ],
+     "colour": "dark blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      20,
+      88,
+      19
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      20,
+      88,
+      21
+     ],
+     "colour": "dark blue",
+     "turn": 180
+    }
+   ]
+  }
+ ]
+}

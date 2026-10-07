@@ -33,8 +33,8 @@ const DATABASE = "brick-gallery";
 const IMMUTABLE = "public, max-age=31536000, immutable";
 const SHORT = "public, max-age=60, s-maxage=60";
 
-const HELP = `npm run gallery:publish -- <oneshot-dir>... [--prompt-id id] [--only high,max] [--source label] [--remote]
-npm run gallery:publish -- --script build.json --runner R --model M [--effort E] --brief "…" [--target-parts N] [--remote]
+const HELP = `npm run gallery:publish -- <oneshot-dir>... [--prompt-id id] [--prompt-name "…"] [--only high,max] [--source label] [--remote]
+npm run gallery:publish -- --script build.json --runner R --model M [--effort E] --brief "…" [--target-parts N] [--prompt-name "…"] [--remote]
 npm run gallery:publish -- --hide <buildId> [--remote]
 npm run gallery:publish -- --reindex [--remote]
 
@@ -86,6 +86,8 @@ export type Candidate = {
   brief: string;
   targetParts?: number;
   promptId: string;
+  /** The prompt's short display name; set (or changed) when given. */
+  promptName?: string;
   runner: string;
   model: string;
   effort?: string;
@@ -106,9 +108,20 @@ export function oneShotCandidates(
   dir: string,
   read: (path: string) => string | undefined,
   list: (dir: string) => string[],
-  o: { promptId?: string; only?: string[]; source?: string } = {},
+  o: {
+    promptId?: string;
+    promptName?: string;
+    only?: string[];
+    source?: string;
+  } = {},
 ): { candidates: Candidate[]; skipped: string[] } {
-  const prompt = read(join(dir, "prompt.md"));
+  // Newer runs keep the prompt in each effort's folder.
+  const prompt =
+    read(join(dir, "prompt.md")) ??
+    list(dir)
+      .sort()
+      .map((d) => read(join(dir, d, "prompt.md")))
+      .find((p) => p !== undefined);
   ensure(prompt, "INVALID_INPUT", `${dir} has no prompt.md`);
   const brief = briefFromPrompt(prompt);
   ensure(brief, "INVALID_INPUT", `${dir}/prompt.md has no "Build request:"`);
@@ -138,6 +151,7 @@ export function oneShotCandidates(
       brief,
       targetParts: result.targetParts,
       promptId: o.promptId ?? galleryPromptId(brief, result.targetParts),
+      promptName: o.promptName,
       runner,
       model: result.model,
       effort,
@@ -178,10 +192,15 @@ export function publishSql(
           id: c.promptId,
           brief: c.brief,
           target_parts: c.targetParts,
+          name: c.promptName,
           arena: 1,
           created_at: now,
         }),
       );
+      if (c.promptName)
+        out.push(
+          `UPDATE prompts SET name = ${sqlValue(c.promptName)} WHERE id = ${sqlValue(c.promptId)};`,
+        );
     }
     if (!seen.has("a:" + c.agentId)) {
       seen.add("a:" + c.agentId);
@@ -226,7 +245,7 @@ export function publishSql(
   return out.join("\n") + "\n";
 }
 
-export const INDEX_QUERY = `SELECT b.id AS build_id, b.prompt_id, p.brief, p.target_parts, p.arena,
+export const INDEX_QUERY = `SELECT b.id AS build_id, b.prompt_id, p.name AS prompt_name, p.brief, p.target_parts, p.arena,
   b.agent_id, a.display_name, a.model, a.effort, b.title, b.mpd_sha, b.mpd_bytes, b.script_sha, b.report_sha,
   b.renders, b.parts, b.attempts, b.seconds, b.cost_usd, b.output_tokens, b.source,
   b.library_release, b.library_hash, b.warnings, b.created_at
@@ -551,6 +570,7 @@ function parseArgs(argv: string[]) {
     positional: string[] = [];
   const valued = [
     "prompt-id",
+    "prompt-name",
     "only",
     "source",
     "script",
@@ -621,6 +641,7 @@ export async function main(argv: string[]) {
   for (const dir of positional) {
     const r = oneShotCandidates(resolve(dir), read, list, {
       promptId: flags.get("prompt-id"),
+      promptName: flags.get("prompt-name"),
       only: flags.get("only")?.split(","),
       source: flags.get("source"),
     });
@@ -651,6 +672,7 @@ export async function main(argv: string[]) {
       brief,
       targetParts,
       promptId: flags.get("prompt-id") ?? galleryPromptId(brief, targetParts),
+      promptName: flags.get("prompt-name"),
       runner,
       model,
       effort,

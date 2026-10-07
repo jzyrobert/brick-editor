@@ -6,20 +6,52 @@ available through **Tools** for the same open document.
 
 ## Browsing responses
 
-Gallery opens by default. Pick a prompt, change the shared viewing angle, or use
-Compare to choose two responses. Agent settings filter the reasoning levels.
-Phones use a native prompt chooser and a horizontally scrolling response strip;
-comparison places the two selected responses vertically. Look closer opens a
-larger preview with generation notes and direct access to each model tool.
+Gallery opens by default. Each prompt is a head-to-head: the same brief answered
+once by each model (today Claude Opus 5.5 and GPT-6.1-Sol, both at high effort,
+with the [creative prompt](samples/creative-prompt-comparison/README.md)). Pick
+a prompt by its short name, change the shared viewing angle, and compare the
+pair side by side; phones use a native prompt chooser and stack the pair. Look
+closer opens a larger preview with generation notes and direct access to each
+model tool.
 
 Every response is a build published to the
 [agent gallery](GALLERY-PLAN.md), read from `index.json` on
 `https://gallery.bricks.robertj.in` (`src/catalog/gallery-index.ts`, mapped for
-the page by `galleryPrompts` in `src/catalog/gallery.ts`). Responses are grouped
-by model and ordered by reasoning effort; titles are the build scripts' own.
-Agent settings has one box per model and effort (repeat runs at one effort share
-it). Pictures are the published renders (Realistic look, 1,280 × 960 WebP,
-corner, front and back).
+the page by `galleryPrompts` in `src/catalog/gallery.ts`). A prompt's tab shows
+its `name` (set with `gallery:publish --prompt-name`, migration
+`0002_prompt_names.sql`) or, without one, its brief. Builds are ordered by
+model, then reasoning effort; the heading counts the models ("One brief. Two
+models.") or, when one model answered more than once, the takes, and a line
+under the controls says which models answered at what effort. Titles are the
+build scripts' own. Pictures are the published renders (Realistic look,
+1,280 × 960 WebP, corner, front and back).
+
+### What is published
+
+| Prompt (target parts)           | Claude Opus 5.5, high | GPT-6.1-Sol, high |
+| ------------------------------- | --------------------- | ----------------- |
+| Pelican on a bicycle (800)      | 760                   | 852               |
+| Imperial Star Destroyer (5,000) | 4,813                 | 4,844             |
+| Dragon (1,000)                  | 1,064                 | 1,138             |
+| Piplup (1,000)                  | 936                   | 1,056             |
+| Japanese temple (2,000)         | 1,819                 | 2,195             |
+| Ewok Classic Space (3,000)      | 2,680                 | 3,294             |
+
+All twelve are one-shot runs of 7 October 2026 with the creative prompt; their
+sources, renders and the current-prompt runs they were compared with are in
+[docs/samples/creative-prompt-comparison](samples/creative-prompt-comparison/README.md).
+
+Earlier builds were hidden with `gallery:publish -- --hide <id> --remote`
+(`hidden = 1`), not deleted: their files stay in the bucket, and
+`wrangler d1 execute brick-gallery --remote --command "UPDATE builds SET hidden = 0 WHERE id = '<id>'"`
+followed by `gallery:publish -- --reindex --remote` shows one again. Their
+sources are in this repository:
+
+| Build ids                                                                      | Source run                                                                                                      |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `958cde77dd13`, `dde67769d031`, `d7785d3317b1`, `92acccf2e77f`, `76bb0a378a18` | Temple, Opus 5.5 low to max: [run 4's rules](samples/japanese-temple-one-shot-claude-target/README.md)          |
+| `f73a80655c20`, `d31573564fba`, `76b6aa339c11`, `fa0ab5bc241d`, `31238c829501` | Temple, GPT-6.1-Sol low to max: [run 4](samples/japanese-temple-one-shot-target/README.md)                      |
+| `3b95f8e1f971`, `1570abb271a7`                                                 | Ewok Classic Space, Opus 5.5 high, 1,000 and 3,000 parts: [ewok samples](samples/ewok-space-one-shot/README.md) |
 
 ## The detail page and its live view
 

@@ -1,0 +1,85 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 540,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 540,
+    "difference": -460,
+    "percent": -46
+  },
+  "seconds": 279,
+  "tokens": {
+    "input": 65821,
+    "cached": 2908,
+    "output": 28075,
+    "reasoning": 19382,
+    "costUsd": 1.0653696
+  },
+  "searches": 0,
+  "checks": 0,
+  "knowledge": {
+    "named": [
+      "3003",
+      "3005",
+      "3062b",
+      "3070b"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 260,
+      "usage": {
+        "input": 29663,
+        "cached": 1454,
+        "output": 25660,
+        "reasoning": 19184,
+        "costUsd": 0.7391548
+      },
+      "searches": [],
+      "checks": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "no-call",
+      "reason": "The reply was not a brick.build call: answer with ONLY {\"tool\": \"brick.build\", \"input\": {\"code\": \"…\"}}"
+    },
+    {
+      "attempt": 2,
+      "seconds": 19,
+      "usage": {
+        "input": 36158,
+        "cached": 1454,
+        "output": 2415,
+        "reasoning": 198,
+        "costUsd": 0.32621479999999997
+      },
+      "searches": [],
+      "checks": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "3003",
+          "3005",
+          "3062b",
+          "3070b"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 540
+    }
+  ]
+}

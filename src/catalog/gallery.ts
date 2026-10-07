@@ -56,6 +56,9 @@ export type GalleryPromptView = {
   brief: string;
   targetParts?: number;
   heading: string;
+  /** Who answered: "Claude Opus 5.5 and GPT-6.1-Sol, both at high effort,
+   * answered this brief." */
+  note: string;
   entries: GalleryEntry[];
 };
 
@@ -75,12 +78,17 @@ const NUMBER_WORDS = [
   "Eleven",
   "Twelve",
 ];
-const takes = (n: number) =>
-  `${NUMBER_WORDS[n] ?? n.toLocaleString("en")} take${n === 1 ? "" : "s"}.`;
+const counted = (n: number, word: string) =>
+  `${NUMBER_WORDS[n] ?? n.toLocaleString("en")} ${word}${n === 1 ? "" : "s"}`;
+const list = (items: string[]) =>
+  items.length < 2
+    ? (items[0] ?? "")
+    : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
 const EFFORT_ORDER = ["low", "medium", "high", "xhigh", "max"];
 const TONES: GalleryTone[] = ["peach", "sage", "sand"];
 
-/** Published builds per prompt, grouped by model and ordered by effort. */
+/** Published builds per prompt: one or more per model, ordered by model,
+ * then effort. Each prompt is a head-to-head of the models that answered. */
 export function galleryPrompts(index: GalleryIndex): GalleryPromptView[] {
   const agents = new Map(index.agents.map((a) => [a.id, a]));
   return index.prompts
@@ -97,13 +105,30 @@ export function galleryPrompts(index: GalleryIndex): GalleryPromptView[] {
             b.created.localeCompare(a.created)
           );
         });
-      const name = sentenceCase(p.brief.replace(/^(a|an|the)\s+/i, ""));
+      const name =
+        p.name ?? sentenceCase(p.brief.replace(/^(a|an|the)\s+/i, ""));
+      const answered = builds.map((b) => agents.get(b.agent));
+      const models = [
+        ...new Set(answered.map((a, i) => a?.model ?? builds[i].agent)),
+      ];
+      const efforts = [...new Set(answered.map((a) => a?.effort))];
+      const effort =
+        efforts.length === 1 && efforts[0]
+          ? `, ${models.length === 2 ? "both" : "all"} at ${efforts[0]} effort,`
+          : "";
       return {
         id: p.id,
         name,
         brief: p.brief,
         targetParts: p.targetParts,
-        heading: `One brief. ${takes(builds.length)}`,
+        heading:
+          builds.length === models.length
+            ? `One brief. ${counted(models.length, "model")}.`
+            : `One brief. ${counted(builds.length, "take")}.`,
+        note:
+          models.length === 1
+            ? `Every build here comes from ${models[0]}.`
+            : `${list(models)}${effort} answered this brief.`,
         entries: builds.map((b, i) => {
           const a = agents.get(b.agent);
           const facts: [string, string][] = [

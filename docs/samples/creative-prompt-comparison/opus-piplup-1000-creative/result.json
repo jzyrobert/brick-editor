@@ -1,0 +1,186 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 936,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 936,
+    "difference": -64,
+    "percent": -6.4
+  },
+  "seconds": 831,
+  "tokens": {
+    "input": 217880,
+    "cached": 109705,
+    "output": 81764,
+    "reasoning": 70461,
+    "costUsd": 5.7660562
+  },
+  "searches": 5,
+  "checks": 1,
+  "knowledge": {
+    "named": [
+      "2431",
+      "2435",
+      "2453b",
+      "3010",
+      "3021",
+      "3024",
+      "3062b",
+      "3471",
+      "4589",
+      "54200",
+      "60474",
+      "6141",
+      "63864",
+      "64648",
+      "86500",
+      "87081"
+    ],
+    "notInList": [
+      "64648",
+      "86500"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 831,
+      "usage": {
+        "input": 217880,
+        "cached": 109705,
+        "output": 81764,
+        "reasoning": 70461,
+        "costUsd": 5.7660562
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "dome",
+            "size": "4x4",
+            "colour": "red",
+            "available_in_colour": true
+          },
+          "results": [
+            "86500",
+            "49612",
+            "35320",
+            "85834"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "fish",
+            "limit": 8
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope 30 1 x 1",
+            "colour": "bright light blue",
+            "available_in_colour": true
+          },
+          "results": [
+            "54200"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "brick",
+            "colour": "bright light blue",
+            "available_in_colour": true,
+            "limit": 15
+          },
+          "results": [
+            "3005",
+            "3004",
+            "3622",
+            "3010",
+            "3003",
+            "3002",
+            "3001",
+            "2456",
+            "3008",
+            "6091",
+            "3062b",
+            "4070",
+            "87087",
+            "3941",
+            "2453b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope 2 x 2",
+            "colour": "white",
+            "limit": 5
+          },
+          "results": [
+            "15068",
+            "32803",
+            "66956",
+            "30602",
+            "5093"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 936,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2431",
+          "2435",
+          "2453b",
+          "3010",
+          "3021",
+          "3024",
+          "3062b",
+          "3471",
+          "4589",
+          "54200",
+          "60474",
+          "6141",
+          "63864",
+          "64648",
+          "86500",
+          "87081"
+        ],
+        "notInList": [
+          "64648",
+          "86500"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 936
+    }
+  ]
+}
