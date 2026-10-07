@@ -217,7 +217,9 @@ export function Gallery({
   }, [detailId]);
   const selectPrompt = (value: string) => {
     setPromptId(value);
-    onDetail(undefined);
+    // Closing a detail page steps back through history: only when one is
+    // open, or Back lands on the model left for Gallery (Play).
+    if (detailId) onDetail(undefined);
   };
   const pendingEntry = all.find((x) => x.e.id === pending)?.e;
   const errorBanner = error && (

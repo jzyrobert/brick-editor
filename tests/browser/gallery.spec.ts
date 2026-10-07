@@ -252,6 +252,33 @@ test("a gallery model opens in all tools, walks in real Play, and protects edite
   await expect(page.getByLabel("Project title")).toHaveValue("My edited hall");
 });
 
+test("changing the prompt after a trip into Play stays in Gallery", async ({
+  page,
+}) => {
+  await mockGallery(page);
+  await page.goto("./?galleryIndex=1");
+  await page
+    .getByRole("button", { name: `Explore ${TITLES[0]}`, exact: true })
+    .click();
+  await expect(page.locator(".play-entry")).toBeVisible({ timeout: 60000 });
+  await page.getByRole("button", { name: "Gallery", exact: true }).click();
+  await page
+    .getByRole("group", { name: "Choose a prompt" })
+    .getByRole("button", { name: /Lighthouse/ })
+    .click();
+  await expect(page.locator(".gallery-response h2")).toHaveText([TITLES[2]]);
+  await expect(page.locator(".gallery-page")).toBeVisible();
+  await page
+    .getByRole("group", { name: "Choose a prompt" })
+    .getByRole("button", { name: /Japanese temple/ })
+    .click();
+  await expect(page.locator(".gallery-response")).toHaveCount(2);
+  // Back still steps out of Gallery to the model.
+  await page.goBack();
+  await expect(page.locator(".gallery-page")).toHaveCount(0);
+  await expect(page.locator(".play-entry")).toBeVisible();
+});
+
 test("failed or damaged builds keep the current model, and the gallery says when it needs a connection", async ({
   page,
 }) => {
