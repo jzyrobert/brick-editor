@@ -27,14 +27,16 @@ export type StudioPanel = {
 
 /** Studio panels in the camera frame of the framing view: a large key softbox
  * above camera left, a dimmer fill to the right, two strip lights behind for
- * rim highlights, and an overhead soft light. */
+ * rim highlights, and an overhead soft light. The wide key spreads its
+ * reflection across curved ABS without raising the key's irradiance; broad
+ * rim strips remain readable after PMREM filtering on rougher finishes. */
 export const STUDIO_PANELS: readonly StudioPanel[] = [
   {
     direction: [-0.62, 0.7, 0.36],
-    halfWidth: 0.26,
-    halfHeight: 0.2,
-    softness: 0.05,
-    radiance: [16, 15.3, 14.3],
+    halfWidth: 0.4,
+    halfHeight: 0.3,
+    softness: 0.08,
+    radiance: [7.54, 7.42, 7.2],
   },
   {
     direction: [0.85, 0.3, 0.42],
@@ -45,17 +47,17 @@ export const STUDIO_PANELS: readonly StudioPanel[] = [
   },
   {
     direction: [0.72, 0.42, -0.55],
-    halfWidth: 0.08,
+    halfWidth: 0.14,
     halfHeight: 0.5,
-    softness: 0.04,
-    radiance: [5, 5, 5],
+    softness: 0.06,
+    radiance: [4, 4, 4],
   },
   {
     direction: [-0.78, 0.36, -0.52],
-    halfWidth: 0.08,
+    halfWidth: 0.12,
     halfHeight: 0.5,
-    softness: 0.04,
-    radiance: [3.6, 3.6, 3.8],
+    softness: 0.06,
+    radiance: [3.2, 3.2, 3.3],
   },
   {
     direction: [0, 1, 0],

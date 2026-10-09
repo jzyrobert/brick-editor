@@ -244,7 +244,8 @@ describe("photo look: path-traced stills", () => {
       return data[(row * width + column) * 4];
     };
     // Key softbox (camera frame: +Z towards the camera, −X to its left).
-    expect(at(-0.62, 0.7, 0.36)).toBeGreaterThan(10);
+    // The wide panel has a lower peak radiance, while retaining HDR contrast.
+    expect(at(-0.62, 0.7, 0.36)).toBeGreaterThan(5);
     expect(at(-0.62, 0.7, 0.36)).toBeGreaterThan(5 * at(0.62, 0.7, 0.36));
     // Below the horizon is dark.
     expect(at(0, -1, 0)).toBeLessThan(0.1);
@@ -255,8 +256,8 @@ describe("photo look: path-traced stills", () => {
       new THREE.Vector3(0, 1, 0),
       STUDIO_AZIMUTH,
     );
-    expect(at(key.x, key.y, key.z, world)).toBeGreaterThan(10);
-    expect(at(-0.62, 0.7, 0.36, world)).toBeLessThan(10);
+    expect(at(key.x, key.y, key.z, world)).toBeGreaterThan(5);
+    expect(at(-0.62, 0.7, 0.36, world)).toBeLessThan(5);
     const toCamera = new THREE.Vector3(0.8, 0, 0.9).normalize();
     const right = new THREE.Vector3(0, 1, 0).cross(toCamera);
     expect(key.dot(right)).toBeLessThan(-0.3);
@@ -279,7 +280,10 @@ describe("photo look: path-traced stills", () => {
     expect(studio.keyIntensity).toBeCloseTo(
       STUDIO_KEY_SHARE * Math.max(...irradiance),
     );
-    expect(studio.keyIntensity).toBeGreaterThan(1);
+    // Broader reflections retain the previous incident key-light energy,
+    // rather than bleaching the model by raising its exposure.
+    expect(studio.keyIntensity).toBeGreaterThan(2.4);
+    expect(studio.keyIntensity).toBeLessThan(2.6);
     // The raster environment keeps a dimmer key reflection and gains a lit
     // floor below the horizon (the tracer traces its own floor).
     const index = (d: THREE.Vector3) => {

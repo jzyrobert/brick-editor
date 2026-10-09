@@ -11,6 +11,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 - [ ] Loading skeleton: warm city loads were 1–7 s slower with it in all four pairs on a loaded VM; compare against `?skeleton=0` on a quiet machine ([PERFORMANCE-MINEBENCH §6](docs/PERFORMANCE-MINEBENCH.md#6-loading-skeleton)).
 - [ ] Photo time to a clean still and first-still shader compile on a real phone.
+- [ ] Refined Realistic studio and ABS finish on a real phone: verify colour, highlights and orbit cost; software-WebGL comparisons are recorded in [RENDERING](docs/RENDERING.md#one-studio-for-realistic-and-photo).
 - [ ] Backdrop frame times on a real phone.
 - [ ] The spec's performance gates: repeated 5,000-part trials on reference hardware (only single software runs are recorded).
 

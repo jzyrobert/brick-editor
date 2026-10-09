@@ -1,5 +1,40 @@
 # Verification — 27 September 2026
 
+## Realistic studio refinement — 9 October 2026
+
+Compared the baseline at `579d0f7` with the refined studio/ABS parameters using
+the finish fixture (111 parts), House with garden (281 parts) and Off-road jeep.
+Each collection used balanced quality, default Realistic controls, DPR 1,
+desktop 960 × 700 or phone 390 × 844, and ten native-pointer orbit frames per
+scene. A 640 × 480 capture warmed the look before measuring. Desktop draws into
+960 × 622 and phone into 390 × 776. Captures include both resource profiles and
+the full workshop viewport. No page errors appeared.
+
+All six pairs have identical per-frame draw-call and triangle sequences.
+Desktop draws are 34 (finishes), 69 (house), 51 (jeep); phone draws are 26–28,
+66, 48 respectively. Camera movement reuses the shadow map in every trial
+(zero shadow redraws). The renderer keeps the same shaders, five studio panels,
+512 × 256 cached environment and shadow-map sizes; mobile Realistic still needs
+no off-screen targets. The key's integrated irradiance stays about 3.10 and its
+directional intensity about 2.48, with exposure unchanged.
+
+CPU submission medians before → after: desktop 2.05 → 2.15ms, 6.05 → 3.15ms,
+3.15 → 2.15ms; phone 1.55 → 1.40ms, 3.90 → 3.15ms, 1.80 → 1.80ms. Synchronous
+one-pixel readback medians are recorded separately in
+[the report](reports/realistic-studio-refinement.json). These sequential trials
+run on a shared ARM64 VM with SwiftShader, so changing contention explains much
+of the timing variation. This is evidence of unchanged rendering work, not a
+hardware FPS result or a claimed speed-up. Colour/highlight and performance
+acceptance on a physical phone remain open.
+
+Validation: production build and final type check pass; all 24 look/Photo/Play
+look unit checks and four relevant browser cases pass. The browser cases cover
+cached shadows in Play, Standard soft outlines and restoration, shared
+Realistic/Photo lighting, and look switching/persistence/capture restoration
+(including a small path-traced capture). Repository formatting and diff
+whitespace checks pass. The inline Impeccable finish review returned `ship` for
+this parameter-only refinement; DESIGN.md and its sidecar are preserved.
+
 ## Compact phone gallery filters — 9 October 2026
 
 The user's follow-up requested less phone space spent on filters. Phones now

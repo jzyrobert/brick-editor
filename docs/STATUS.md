@@ -1,5 +1,22 @@
 # Implementation status
 
+## Realistic studio refinement — 9 October 2026
+
+Realistic uses a broader key reflection, wider rim strips and a slightly softer
+ABS finish. The wider key lowers its peak radiance to retain the previous
+incident key-light energy, with a more neutral tint. Photo uses the same refined
+studio and retains its separate physical materials. This changes lighting and
+finish parameters only: no additional lights, shader samples, geometry, draw
+passes or runtime assets. Phones keep their direct Realistic draw, with AO and
+vignette off.
+
+Matched finish-fixture, house and jeep orbit trials on desktop and mobile
+profiles have identical draw-call and triangle sequences before and after, with
+zero shadow-map redraws during each orbit. Software timing varies with shared
+machine load; physical-phone performance remains open. See
+[rendering](RENDERING.md#one-studio-for-realistic-and-photo) and the
+[measurements](reports/realistic-studio-refinement.json).
+
 ## The 5540 drives in ordinary Play as one body — 5 October 2026
 
 Opening the Formula 1 Racer 5540 OMR model and entering Play now gives a
