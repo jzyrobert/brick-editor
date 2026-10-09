@@ -62,6 +62,59 @@ export type GalleryPromptView = {
   entries: GalleryEntry[];
 };
 
+export type GalleryFilters = {
+  query: string;
+  prompt: string;
+  model: string;
+  effort: string;
+  sort: "newest" | "prompt";
+};
+export const DEFAULT_GALLERY_FILTERS: GalleryFilters = {
+  query: "",
+  prompt: "",
+  model: "",
+  effort: "",
+  sort: "newest",
+};
+const searchable = (value: string) =>
+  value.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase("en");
+
+/** Filter responses together with their brief, retaining prompt groups. Never
+ * change the published order or source arrays used by model detail pages. */
+export function filterGallery(
+  prompts: GalleryPromptView[],
+  filters: GalleryFilters,
+): GalleryPromptView[] {
+  const terms = searchable(filters.query).trim().split(/\s+/).filter(Boolean);
+  return prompts
+    .filter((p) => !filters.prompt || p.id === filters.prompt)
+    .map((p) => ({
+      ...p,
+      entries: p.entries
+        .filter((e) => {
+          if (filters.model && e.agent !== filters.model) return false;
+          if (filters.effort && e.effort !== filters.effort) return false;
+          const text = searchable(
+            `${p.name} ${p.brief} ${e.title} ${e.agent} ${e.effort ?? ""}`,
+          );
+          return terms.every((term) => text.includes(term));
+        })
+        .sort((a, b) =>
+          filters.sort === "newest"
+            ? b.build.created.localeCompare(a.build.created)
+            : 0,
+        ),
+    }))
+    .filter((p) => p.entries.length)
+    .sort((a, b) => {
+      if (filters.sort === "prompt") return a.name.localeCompare(b.name, "en");
+      return (
+        b.entries[0].build.created.localeCompare(a.entries[0].build.created) ||
+        a.name.localeCompare(b.name, "en")
+      );
+    });
+}
+
 const sentenceCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const NUMBER_WORDS = [
   "No",

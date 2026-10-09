@@ -1,5 +1,9 @@
 import { expect, test } from "vitest";
-import { galleryPrompts } from "../../src/catalog/gallery";
+import {
+  DEFAULT_GALLERY_FILTERS,
+  filterGallery,
+  galleryPrompts,
+} from "../../src/catalog/gallery";
 import type {
   GalleryBuild,
   GalleryIndex,
@@ -83,4 +87,60 @@ test("each prompt is a head-to-head of the models that answered it", () => {
   expect(dragon.heading).toBe("One brief. Two takes.");
   expect(dragon.note).toBe("Every build here comes from Claude Opus 5.5.");
   expect(dragon.entries.map((e) => e.effort)).toEqual(["Medium", "High"]);
+});
+
+test("gallery search combines prompt, title, model and effort without changing the source", () => {
+  const prompts = galleryPrompts(index);
+  const before = JSON.stringify(prompts);
+  expect(
+    filterGallery(prompts, {
+      ...DEFAULT_GALLERY_FILTERS,
+      query: "  PELICAN   gpt high  ",
+    }).flatMap((p) => p.entries.map((e) => e.id)),
+  ).toEqual(["aaaaaaaaaaaa"]);
+  expect(
+    filterGallery(prompts, {
+      ...DEFAULT_GALLERY_FILTERS,
+      prompt: "a-dragon-1000",
+      model: "Claude Opus 5.5",
+      effort: "Medium",
+    }).flatMap((p) => p.entries.map((e) => e.id)),
+  ).toEqual(["dddddddddddd"]);
+  expect(
+    filterGallery(prompts, {
+      ...DEFAULT_GALLERY_FILTERS,
+      prompt: "a-dragon-1000",
+      model: "GPT-6.1-Sol",
+    }),
+  ).toEqual([]);
+  expect(JSON.stringify(prompts)).toBe(before);
+});
+
+test("gallery search reads full briefs and accent-insensitive titles, including missing efforts", () => {
+  const prompts = galleryPrompts(index);
+  prompts[0].entries[0].title = "Café by the sea";
+  prompts[0].entries[0].effort = undefined;
+  const find = (query: string) =>
+    filterGallery(prompts, { ...DEFAULT_GALLERY_FILTERS, query });
+  expect(find("cafe sea")[0].entries[0].title).toBe("Café by the sea");
+  expect(find("riding bicycle")[0].id).toBe(prompts[0].id);
+  expect(find("not published")).toEqual([]);
+  expect(find(" \n ")).toHaveLength(2);
+});
+
+test("gallery sorts prompt groups by their matching builds and offers alphabetical browsing", () => {
+  const prompts = galleryPrompts(index);
+  prompts[0].entries[1].build = {
+    ...prompts[0].entries[1].build,
+    created: "2026-10-09T20:00:00Z",
+  };
+  const latest = filterGallery(prompts, DEFAULT_GALLERY_FILTERS);
+  expect(latest[0].name).toBe("Pelican on a bicycle");
+  expect(latest[0].entries[0].agent).toBe("GPT-6.1-Sol");
+  expect(
+    filterGallery(prompts, { ...DEFAULT_GALLERY_FILTERS, sort: "prompt" }).map(
+      (p) => p.name,
+    ),
+  ).toEqual(["Dragon", "Pelican on a bicycle"]);
+  expect(filterGallery([], DEFAULT_GALLERY_FILTERS)).toEqual([]);
 });

@@ -6,12 +6,16 @@
     "galleryUI": {
       "primaryModes": ["Gallery", "Play"],
       "dataset": "Published agent gallery (index.json on gallery.bricks.robertj.in); read on https pages or with ?galleryIndex=1",
-      "liveDetailPreview": "Realistic look; loads on open on desktop, on request on touch or narrow screens",
+      "liveDetailPreview": "Realistic look; loads on open on every device, on request when the browser asks to save data",
       "sharedAngles": true,
-      "compareResponses": 2,
       "modelTools": ["Build", "Instructions", "Photo", "Project"],
       "opensEditableLocalCopies": true,
-      "automationStartsInBuild": true
+      "automationStartsInBuild": true,
+      "responseGrouping": "Matching builds grouped by prompt",
+      "filters": ["search", "prompt", "model", "effort"],
+      "sorts": ["newest", "prompt"],
+      "promptGroupsPerPage": 6,
+      "retainsBrowsingOnReturn": true
     },
     "ldraw": {
       "parsed": [

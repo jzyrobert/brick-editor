@@ -6,25 +6,40 @@ available through **Tools** for the same open document.
 
 ## Browsing responses
 
-Gallery opens by default. Each prompt is a head-to-head: the same brief answered
-once by each model (today Claude Opus 5.5 and GPT-6.1-Sol, both at high effort,
-with the [creative prompt](samples/creative-prompt-comparison/README.md)). Pick
-a prompt by its short name, change the shared viewing angle, and compare the
-pair side by side; phones use a native prompt chooser and stack the pair. Look
-closer opens a larger preview with generation notes and direct access to each
-model tool.
+Gallery opens on the whole collection, with responses grouped by their prompt.
+Search matches prompt names, full briefs, build titles, AI model names and
+reasoning efforts; it ignores case and accents and matches every entered word.
+Combine **Prompt** and **AI model** to compare one brief or follow one model
+across briefs. **View prompt** narrows directly to a group's prompt. Result
+counts describe the matching collection, and **Clear filters** returns to all
+builds. Empty results keep the controls and offer the same reset.
+
+**More filters** reveals reasoning effort and sorting (newest builds or prompt
+A–Z). The shared viewing angles are always visible on desktop. Phones keep one
+compact search row with **Filters**, which unfolds prompt, model, effort,
+sorting and viewing angles together. Active choices stay visible in a short
+summary with **Clear filters** while folded; the Filters button counts active
+prompt/model/effort choices. Desktop keeps a direct removal control for a folded
+effort filter.
+Prompts show six groups at a time, with **Show more prompts** for the rest;
+filtering or sorting starts from the first six again. Phones stack responses
+vertically, including prompts with more than two builds. **Read the prompt**
+reveals the full brief; its target part count is visible in the disclosure.
 
 Every response is a build published to the
 [agent gallery](GALLERY-PLAN.md), read from `index.json` on
 `https://gallery.bricks.robertj.in` (`src/catalog/gallery-index.ts`, mapped for
-the page by `galleryPrompts` in `src/catalog/gallery.ts`). A prompt's tab shows
-its `name` (set with `gallery:publish --prompt-name`, migration
-`0002_prompt_names.sql`) or, without one, its brief. Builds are ordered by
-model, then reasoning effort; the heading counts the models ("One brief. Two
-models.") or, when one model answered more than once, the takes, and a line
-under the controls says which models answered at what effort. Titles are the
-build scripts' own. Pictures are the published renders (Realistic look,
-1,280 × 960 WebP, corner, front and back).
+the page by `galleryPrompts` in `src/catalog/gallery.ts`). Prompt names come
+from `gallery:publish --prompt-name` (migration `0002_prompt_names.sql`) or,
+without a name, the brief. Newest sorts groups by their newest matching build;
+prompt A–Z retains the original model/effort ordering within each group.
+Titles are the build scripts' own. Pictures are the published renders
+(Realistic look, 1,280 × 960 WebP, corner, front and back). Look closer opens
+the existing detail page with its live preview and model tools.
+
+Search, filters, sort, viewing angle, expanded controls, loaded prompt groups
+and scroll are kept for the current visit when returning from a detail page,
+Play or a model tool. They reset on a fresh page load.
 
 ### What is published
 
