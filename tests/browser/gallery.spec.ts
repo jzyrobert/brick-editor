@@ -4,6 +4,7 @@ import { enterPlay } from "./helpers/play";
 import {
   BUILD_IDS,
   GALLERY_ORIGIN,
+  GALLERY_INDEX,
   MPD_SHAS,
   RENDER,
   TITLES,
@@ -16,25 +17,25 @@ test("gallery browsing pairs the models on each brief, aligns angles and imports
   await mockGallery(page);
   await page.goto("./?galleryIndex=1");
   await expect(
-    page.getByRole("heading", { name: "One brief. Two models." }),
+    page.getByRole("heading", { name: "Build gallery" }),
   ).toBeVisible();
-  // Prompts use their short names; the brief is under the heading.
-  const tabs = page.getByRole("group", { name: "Choose a prompt" });
-  await expect(tabs.getByRole("button")).toHaveText([
-    "Japanese temple2",
-    "Lighthouse1",
-  ]);
-  await expect(
-    page.getByText("The brief: “a japanese buddhist temple”"),
-  ).toBeVisible();
-  await expect(page.locator(".gallery-sample-note")).toHaveText(
-    "Claude Opus 5.5 and GPT-6.1-Sol answered this brief.",
-  );
   const responses = page.locator(".gallery-response");
+  await expect(responses).toHaveCount(3);
+  const chooser = page.getByRole("combobox", { name: "Prompt", exact: true });
+  await expect(chooser.locator("option")).toHaveText([
+    "All prompts (2)",
+    "Japanese temple · 2 builds",
+    "Lighthouse · 1 build",
+  ]);
+  await chooser.selectOption("japanese-buddhist-temple-2000");
   await expect(responses).toHaveCount(2);
   await expect(page.locator(".gallery-responses")).toHaveClass(/gallery-pair/);
+  await page.getByText("Read the prompt", { exact: false }).click();
+  await expect(
+    page.getByText("“a japanese buddhist temple”", { exact: true }),
+  ).toBeVisible();
   // Ordered by model: Claude first, then GPT.
-  await expect(responses.locator("h2")).toHaveText(TITLES.slice(0, 2));
+  await expect(responses.locator("h3")).toHaveText(TITLES.slice(0, 2));
   await expect(responses.first()).toContainText("Claude Opus 5.5High effort");
   await expect(responses.first()).toContainText(
     "Accepted after 2 replies · 19 min",
@@ -46,12 +47,13 @@ test("gallery browsing pairs the models on each brief, aligns angles and imports
   await expect(
     page.getByRole("button", { name: "Agent settings" }),
   ).toHaveCount(0);
-  await tabs.getByRole("button", { name: /Lighthouse/ }).click();
-  await expect(responses.locator("h2")).toHaveText([TITLES[2]]);
+  await chooser.selectOption("lighthouse-500");
+  await expect(responses.locator("h3")).toHaveText([TITLES[2]]);
   await expect(
-    page.getByRole("heading", { name: "One brief. One model." }),
+    page.getByRole("heading", { name: "Lighthouse", exact: true }),
   ).toBeVisible();
-  await tabs.getByRole("button", { name: /Japanese temple/ }).click();
+  await chooser.selectOption("japanese-buddhist-temple-2000");
+  await page.getByRole("button", { name: "More filters" }).click();
   for (const viewport of [
     { width: 360, height: 600 },
     { width: 411, height: 685 },
@@ -61,6 +63,15 @@ test("gallery browsing pairs the models on each brief, aligns angles and imports
     { width: 1440, height: 1000 },
   ]) {
     await page.setViewportSize(viewport);
+    const navigation = await page
+      .getByRole("navigation", { name: "Main modes" })
+      .boundingBox();
+    expect(navigation!.x).toBeGreaterThanOrEqual(0);
+    expect(navigation!.x + navigation!.width).toBeLessThanOrEqual(
+      viewport.width,
+    );
+    if (viewport.width <= 760)
+      await expect(page.locator(".site-open")).toBeHidden();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
@@ -81,12 +92,12 @@ test("gallery browsing pairs the models on each brief, aligns angles and imports
     );
   }
   await page.setViewportSize({ width: 360, height: 600 });
-  const chooser = page.waitForEvent("filechooser");
+  const fileChooser = page.waitForEvent("filechooser");
   await page
     .getByRole("button", { name: "Open your model", exact: true })
     .click();
   await (
-    await chooser
+    await fileChooser
   ).setFiles({
     name: "phone-model.ldr",
     mimeType: "text/plain",
@@ -258,21 +269,36 @@ test("changing the prompt after a trip into Play stays in Gallery", async ({
   await mockGallery(page);
   await page.goto("./?galleryIndex=1");
   await page
+    .getByRole("combobox", { name: "AI model" })
+    .selectOption("Claude Opus 5.5");
+  await page.getByRole("button", { name: "More filters" }).click();
+  await page
+    .getByRole("combobox", { name: "Reasoning effort" })
+    .selectOption("High");
+  await page.getByRole("button", { name: "Front", exact: true }).click();
+  await page
     .getByRole("button", { name: `Explore ${TITLES[0]}`, exact: true })
     .click();
   await expect(page.locator(".play-entry")).toBeVisible({ timeout: 60000 });
   await page.getByRole("button", { name: "Gallery", exact: true }).click();
+  await expect(page.getByRole("combobox", { name: "AI model" })).toHaveValue(
+    "Claude Opus 5.5",
+  );
+  await expect(
+    page.getByRole("combobox", { name: "Reasoning effort" }),
+  ).toHaveValue("High");
+  await expect(
+    page.getByRole("button", { name: "Front", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await page
-    .getByRole("group", { name: "Choose a prompt" })
-    .getByRole("button", { name: /Lighthouse/ })
-    .click();
-  await expect(page.locator(".gallery-response h2")).toHaveText([TITLES[2]]);
+    .getByRole("combobox", { name: "Prompt", exact: true })
+    .selectOption("lighthouse-500");
+  await expect(page.locator(".gallery-response h3")).toHaveText([TITLES[2]]);
   await expect(page.locator(".gallery-page")).toBeVisible();
   await page
-    .getByRole("group", { name: "Choose a prompt" })
-    .getByRole("button", { name: /Japanese temple/ })
-    .click();
-  await expect(page.locator(".gallery-response")).toHaveCount(2);
+    .getByRole("combobox", { name: "Prompt", exact: true })
+    .selectOption("japanese-buddhist-temple-2000");
+  await expect(page.locator(".gallery-response")).toHaveCount(1);
   // Back still steps out of Gallery to the model.
   await page.goBack();
   await expect(page.locator(".gallery-page")).toHaveCount(0);

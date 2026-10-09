@@ -348,6 +348,22 @@ source scripts and the licensed display font are local and precached offline.
 See [Gallery](GALLERY.md), [design system](../DESIGN.md) and
 [verification](VERIFICATION.md#cream-gallery-and-play-workshop--3-october-2026).
 
+## Gallery collection browsing — 9 October 2026
+
+Gallery opens on all prompts and groups their matching responses. Search
+matches names, full briefs, titles, models and efforts. Prompt and AI model
+filters combine with effort and newest/alphabetical sorting; a folded effort
+filter remains removable. Six prompt groups load at a time, with Show more
+for the rest. Phone responses stack vertically. The default phone browsing controls use
+one search row with Filters; all selectors and viewing angles unfold together,
+with active choices summarized when closed. Browsing choices and scroll survive model
+detail and Play/tool round trips for the current visit. Published sources,
+live previews, model tools and connection/error recovery remain in use.
+
+The gallery surface brief records the new composition within the incumbent
+cream system. Evidence and physical-device limits are recorded in
+[verification](VERIFICATION.md#gallery-collection-browsing--9-october-2026).
+
 ## Gallery: six prompts, two models — 7 October 2026
 
 Gallery shows six prompts (pelican on a bicycle, Imperial Star Destroyer,

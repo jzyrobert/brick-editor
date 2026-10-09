@@ -1,5 +1,62 @@
 # Verification — 27 September 2026
 
+## Compact phone gallery filters — 9 October 2026
+
+The user's follow-up requested less phone space spent on filters. Phones now
+keep search and a named Filters button in one row; prompt, model, effort,
+sorting and viewing angles unfold together. Folded active choices retain a
+short summary and a clear action. The redundant phone subtitle/search label
+is hidden while the input retains its accessible name.
+
+The default closed filter section measures 88.44px. On the real published
+collection at 390 × 844, the first stage begins at 366.5px instead of about
+532px (165px earlier); its full image and Explore action fit in the first
+screen. At 360 × 600 its full stage also fits. Captures cover the six supported
+sizes, folded active choices and expanded filters. The desktop/tablet
+composition remains intact.
+
+All 8 gallery browser cases pass on the private production config. The new
+phone case asserts a default filter height below 90px, 44px targets, a first
+stage before 400px, unfolding/reopening and folded reset/summary behavior.
+Build/type checks, repository formatting and diff whitespace checks pass.
+The inline Impeccable fallback review returned `ship` for this refinement;
+no extra polishing round was needed. Documentation preserves DESIGN.md and
+its sidecar and records the composition in the gallery surface brief. These
+are Chromium viewport checks, not physical-phone acceptance.
+
+## Gallery collection browsing — 9 October 2026
+
+- Upstream was fetched and the change built in a fresh worktree from
+  `origin/main` at `ae0bfb1`, on `codex/gallery-model-prompt-browse`.
+- Unit: all 14 checks in `gallery-view.test.ts`, `gallery-index.test.ts` and
+  `gallery-publish.test.ts` pass. New cases cover combined search/model/prompt/
+  effort filtering, full-brief and accent-insensitive search, empty results,
+  sorting by matching timestamps and source-array preservation.
+- Browser: all 7 cases in `gallery.spec.ts` and `gallery-browse.spec.ts` pass
+  against the production build, one worker, private port 4394. They cover
+  combined filters and removal of a folded effort filter, reset, keyboard
+  selection, detail/scroll restoration, retained filters and angle after Play,
+  native import, live preview/data saver, tools, edited-copy protection and
+  damaged/offline sources. The larger synthetic index has 15 prompts and 17
+  builds, including three responses to one prompt, and verifies pagination,
+  alphabetical sorting and vertical phone browsing.
+- Layout: checks pass at 1440 × 1000, 1080 × 1800, 360 × 600, 411 × 685,
+  390 × 844 and 686 × 411. They assert no gallery horizontal overflow,
+  in-bounds navigation/filters and 44px select/angle controls. Screenshots of
+  the existing six-prompt collection use a local mirror of its published
+  renders; no browser test requests the real bucket. Captures also cover a
+  filtered desktop result and expanded phone filters.
+- Build, `npx tsc -b`, repository formatting and `git diff --check` pass.
+  The first capture found a breakpoint block removed during CSS cleanup;
+  the final batch restores it, fits entire renders and compacts the controls.
+  The Impeccable detector ran once: the new select type size was brought back
+  to the existing body token; its remaining advisories concern incumbent
+  incidental values. The inline fallback finish review scored all four listed
+  fixes resolved (`ship` at that scope), since no subagent tool is available.
+- The approved cream palette/type/radius system and sidecar are retained.
+  Gallery composition is documented in its surface brief and [Gallery](GALLERY.md).
+  No physical-phone performance or touch-device acceptance is claimed.
+
 ## Gallery prompt tabs after Play — 7 October 2026
 
 - Bug: after Explore (Play) and back to Gallery, a prompt tab stepped browser history back to the model, so it opened Play. Choosing a prompt now closes a detail page only when one is open, and closing with none open does nothing.

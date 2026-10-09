@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { gzipSync, strToU8 } from "fflate";
+import type { GalleryIndex } from "../../../src/catalog/gallery-index";
 
 // A mocked published gallery (docs/GALLERY-PLAN.md). The real bucket is
 // never reached: every request to its origin is answered here. Test servers
@@ -35,7 +36,7 @@ const WEBP = Buffer.from(
   "base64",
 );
 
-export const GALLERY_INDEX = {
+export const GALLERY_INDEX: GalleryIndex = {
   v: 1,
   generated: "2026-10-03T18:00:00Z",
   files: GALLERY_ORIGIN,
@@ -94,7 +95,11 @@ export const GALLERY_INDEX = {
 
 export async function mockGallery(
   page: Page,
-  o: { index?: "ok" | "offline"; model?: "ok" | "corrupt" | "down" } = {},
+  o: {
+    index?: "ok" | "offline";
+    model?: "ok" | "corrupt" | "down";
+    collection?: GalleryIndex;
+  } = {},
 ) {
   const requests: string[] = [];
   await page.route(`${GALLERY_ORIGIN}/**`, (route) => {
@@ -104,7 +109,7 @@ export async function mockGallery(
     if (path === "/index.json")
       return o.index === "offline"
         ? route.abort("internetdisconnected")
-        : route.fulfill({ json: GALLERY_INDEX, headers: cors });
+        : route.fulfill({ json: o.collection ?? GALLERY_INDEX, headers: cors });
     if (path.startsWith("/r/"))
       return route.fulfill({ body: WEBP, contentType: "image/webp" });
     const i = MPD_SHAS.findIndex((s) => path === `/b/${s}.mpd.gz`);
