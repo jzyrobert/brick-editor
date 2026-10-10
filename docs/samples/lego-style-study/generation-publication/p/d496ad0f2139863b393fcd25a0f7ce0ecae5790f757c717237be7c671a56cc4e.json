@@ -1,0 +1,441 @@
+{
+  "gallery": 1,
+  "source": "f-fresh:text-only",
+  "generation": "f-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/sol-f-destroyer",
+  "prompt": {
+    "id": "imperial-star-destroyer-5000",
+    "brief": "imperial star destroyer",
+    "targetParts": 5000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 5000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 5106,
+    "targetMiss": {
+      "target": 5000,
+      "parts": 5106,
+      "difference": 106,
+      "percent": 2.1
+    },
+    "seconds": 783,
+    "tokens": {
+      "input": 1057139,
+      "cached": 748032,
+      "output": 77676,
+      "reasoning": 43568
+    },
+    "searches": 15,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "2412b",
+        "2877",
+        "3004",
+        "3005",
+        "3010",
+        "30208",
+        "3023b",
+        "3031",
+        "3032",
+        "30363",
+        "3039",
+        "3068b",
+        "3069b",
+        "3297",
+        "3660b",
+        "3666",
+        "3941",
+        "3942c",
+        "3957a",
+        "3960",
+        "4032b",
+        "4740",
+        "6141",
+        "63864",
+        "78443",
+        "78444"
+      ],
+      "notInList": [
+        "30208",
+        "78443",
+        "78444"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 783,
+        "usage": {
+          "input": 1057139,
+          "cached": 748032,
+          "output": 77676,
+          "reasoning": 43568,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "12x3",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "42060",
+              "42061",
+              "47397",
+              "47398"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "16x6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "3027",
+              "6205"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "6x3",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "54383",
+              "54384"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge slope",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "54200",
+              "85984",
+              "93606",
+              "42918",
+              "41748",
+              "41747",
+              "52031",
+              "43720",
+              "43721",
+              "80545",
+              "41764",
+              "41765"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "engine turbine",
+              "limit": 8
+            },
+            "results": [
+              "50943",
+              "43121",
+              "2851",
+              "2853a",
+              "2853b",
+              "2853c",
+              "2854",
+              "4868b"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "Wing 6 x 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "30355",
+              "30356"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge 4 x 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "3029",
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a",
+              "54200",
+              "85984"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "hemisphere",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "30208",
+              "44359",
+              "61287",
+              "86500",
+              "44358"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "engine",
+              "category": "Space",
+              "limit": 12
+            },
+            "results": [],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Cylinder Hemisphere",
+              "limit": 6
+            },
+            "results": [
+              "61287",
+              "1974",
+              "44359",
+              "44358",
+              "30083",
+              "58772"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wing 2 6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "78443",
+              "78444",
+              "47407",
+              "32059",
+              "93541"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "wedge 8 3",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "50304",
+              "50305",
+              "3544",
+              "3545"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "wedge 10 3",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "50955",
+              "50956"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "cone open",
+              "limit": 10
+            },
+            "results": [
+              "14918"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "jet engine",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "43121",
+              "4868b",
+              "4869",
+              "4229"
+            ],
+            "round": 3
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 10274,
+            "errors": 51,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 9584,
+            "errors": 11,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "ok": false,
+            "reason": "INVALID_INPUT: Invalid build script: $.sections[3].ops[0].floor must be a palette key, colour name or LDraw colour code (got false); $.sections[3].ops[2].holes[0].at must be [x, z] integers (studs) (got [36,45,96]); $.sections[3].ops[63].floor must be a palette key, colour name or LDraw colour code (got false); $.sections[3].ops[65].holes[0].at must be [x, z] integers (studs) (got [39,53,110]); $.sections[3].ops[106].floor must be a palette key, colour name or LDraw colour code (got false) (+1 m"
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "2412b",
+            "2877",
+            "3004",
+            "3005",
+            "3010",
+            "30208",
+            "3023b",
+            "3031",
+            "3032",
+            "30363",
+            "3039",
+            "3068b",
+            "3069b",
+            "3297",
+            "3660b",
+            "3666",
+            "3941",
+            "3942c",
+            "3957a",
+            "3960",
+            "4032b",
+            "4740",
+            "6141",
+            "63864",
+            "78443",
+            "78444"
+          ],
+          "notInList": [
+            "30208",
+            "78443",
+            "78444"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 5106
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 5106,
+      "designs": 68,
+      "lots": 139,
+      "massingCells": 86038,
+      "massingParts": 3569,
+      "placedParts": 1537,
+      "sections": 8,
+      "components": 0,
+      "opsRun": 1959,
+      "scriptBytes": 168171,
+      "ldrawBytes": 243486,
+      "partsPerScriptKB": 31.1,
+      "compileMs": 913,
+      "checkMs": 2465
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 79,
+      "covered": 4994,
+      "uncovered": 112,
+      "health": "warning: 4994 parts with verified connectors form 79 separately connected groups; 17 parts are not connected to anything. 112 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 5000,
+      "parts": 5106,
+      "difference": 106,
+      "percent": 2.1
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "462 part(s) in 78 group(s) are not connected to the main structure (largest group: 4532 parts); e.g. 3660b at [33, 83, 118], 3832 at [36, 0, 114], 3005 at [34, 86, 116], 3832 at [39, 0, 36], 3004 at [13, 28, 157], 3004 at [83, 28, 157]",
+        "ops": [
+          "sections[4].ops[1]",
+          "sections[0].ops[5]",
+          "sections[0].ops[0]",
+          "sections[4].ops[82]",
+          "sections[4].ops[80]",
+          "sections[3].ops[137]",
+          "sections[1].ops[1331]",
+          "sections[3].ops[1]",
+          "sections[4].ops[2]",
+          "sections[4].ops[79]",
+          "sections[4].ops[76]",
+          "sections[4].ops[74]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

@@ -1,0 +1,529 @@
+{
+  "gallery": 1,
+  "source": "f-revision:text-only",
+  "generation": "f-revision",
+  "label": "docs/samples/lego-style-study/text-only-economical-destroyer",
+  "prompt": {
+    "id": "imperial-star-destroyer-5000",
+    "brief": "imperial star destroyer",
+    "targetParts": 5000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 5000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 4287,
+    "targetMiss": {
+      "target": 5000,
+      "parts": 4287,
+      "difference": -713,
+      "percent": -14.3
+    },
+    "seconds": 967,
+    "tokens": {
+      "input": 1440803,
+      "cached": 1068800,
+      "output": 95703,
+      "reasoning": 49948
+    },
+    "searches": 20,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "15068",
+        "20953",
+        "2412b",
+        "2431",
+        "2877",
+        "3005",
+        "3009",
+        "30208",
+        "3022",
+        "3023b",
+        "3024",
+        "30363",
+        "3039",
+        "3040b",
+        "3068b",
+        "3069b",
+        "3070b",
+        "3544",
+        "3545",
+        "3660b",
+        "3665a",
+        "3710",
+        "3941",
+        "3957a",
+        "4032b",
+        "42023",
+        "4460b",
+        "4569",
+        "98138"
+      ],
+      "notInList": [
+        "20953",
+        "30208",
+        "3544",
+        "3545",
+        "42023",
+        "4569"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 967,
+        "usage": {
+          "input": 1440803,
+          "cached": 1068800,
+          "output": 95703,
+          "reasoning": 49948,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "12x6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "3028",
+              "6178",
+              "30355",
+              "30356"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "4x8",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "3035",
+              "22888",
+              "3934",
+              "6576",
+              "3933",
+              "73832"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge slope",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "54200",
+              "85984",
+              "93606",
+              "42918",
+              "41748",
+              "41747",
+              "52031",
+              "43720",
+              "43721",
+              "80545"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "30208",
+              "limit": 2
+            },
+            "results": [
+              "30208"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "20953",
+              "limit": 2
+            },
+            "results": [
+              "20953",
+              "37837"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "Wing 8 x 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "47405"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Wedge Plate 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "47405"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Wedge Plate 3 x 6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "54383",
+              "54384"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Wedge 6 x 8",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "41761",
+              "42021",
+              "30036"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Slope 18",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "18759",
+              "30363",
+              "60477",
+              "18862",
+              "61409b",
+              "5404",
+              "43708",
+              "61409"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Wing 4 x 6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "48205",
+              "48208",
+              "47407",
+              "32059"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "Wing 4 x 6",
+              "colour": "dark bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "48205",
+              "48208",
+              "47407",
+              "32059",
+              "6133",
+              "30130"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "Wedge Plate 6 x 4",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "32059",
+              "47407"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "Slope 6 x 1",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "42022",
+              "4569",
+              "42023",
+              "30249",
+              "35164",
+              "2937"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "Tile 6 x 6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "10202",
+              "6881b"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "Wing 4 x 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "3029",
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a",
+              "24299",
+              "24307"
+            ],
+            "round": 4
+          },
+          {
+            "args": {
+              "query": "Wing 3 x 8",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "50304",
+              "50305",
+              "3544",
+              "3545"
+            ],
+            "round": 4
+          },
+          {
+            "args": {
+              "query": "Wing 3 x 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "47397",
+              "47398"
+            ],
+            "round": 4
+          },
+          {
+            "args": {
+              "query": "Wedge 3 x 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "47397",
+              "47398",
+              "42060",
+              "42061"
+            ],
+            "round": 4
+          },
+          {
+            "args": {
+              "query": "Wedge 4 x 10",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "3030",
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a"
+            ],
+            "round": 4
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 4821,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 2,
+            "parts": 4229,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 4287,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "15068",
+            "20953",
+            "2412b",
+            "2431",
+            "2877",
+            "3005",
+            "3009",
+            "30208",
+            "3022",
+            "3023b",
+            "3024",
+            "30363",
+            "3039",
+            "3040b",
+            "3068b",
+            "3069b",
+            "3070b",
+            "3544",
+            "3545",
+            "3660b",
+            "3665a",
+            "3710",
+            "3941",
+            "3957a",
+            "4032b",
+            "42023",
+            "4460b",
+            "4569",
+            "98138"
+          ],
+          "notInList": [
+            "20953",
+            "30208",
+            "3544",
+            "3545",
+            "42023",
+            "4569"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 4287
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 4287,
+      "designs": 73,
+      "lots": 151,
+      "massingCells": 37698,
+      "massingParts": 2286,
+      "placedParts": 2001,
+      "sections": 12,
+      "components": 2,
+      "opsRun": 2043,
+      "scriptBytes": 139574,
+      "ldrawBytes": 204306,
+      "partsPerScriptKB": 31.5,
+      "compileMs": 940,
+      "checkMs": 1311
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 503,
+      "covered": 4018,
+      "uncovered": 269,
+      "health": "warning: 4018 parts with verified connectors form 503 separately connected groups; 409 parts are not connected to anything. 269 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 5000,
+      "parts": 4287,
+      "difference": -713,
+      "percent": -14.3
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1570 part(s) in 502 group(s) are not connected to the main structure (largest group: 2448 parts); e.g. 2877 at [13, 27, 105], 3039 at [24, 36, 108], 3039 at [31, 36, 108], 3039 at [44, 36, 108], 3039 at [51, 36, 108], 3039 at [64, 36, 108]",
+        "ops": [
+          "sections[9].ops[0]",
+          "sections[9].ops[3]",
+          "sections[9].ops[4]",
+          "sections[9].ops[26]",
+          "sections[9].ops[27]",
+          "sections[9].ops[49]",
+          "sections[9].ops[50]",
+          "sections[1].ops[130]",
+          "sections[1].ops[112]",
+          "sections[5].ops[4]",
+          "sections[1].ops[166]",
+          "sections[8].ops[0]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

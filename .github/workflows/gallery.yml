@@ -1,4 +1,4 @@
-name: Publish reviewed E gallery builds
+name: Publish reviewed gallery generations
 on:
   workflow_dispatch:
 permissions:
@@ -32,5 +32,5 @@ jobs:
           node-version: 22.14.0
           cache: npm
       - run: npm ci
-      - name: Publish reviewed replacements
-        run: npx tsx scripts/publish-gallery-bundle.ts docs/samples/lego-style-study/gallery-publication --remote
+      - name: Publish reviewed generations
+        run: npx tsx scripts/publish-gallery-bundle.ts docs/samples/lego-style-study/generation-publication --remote

@@ -1,0 +1,361 @@
+{
+  "gallery": 1,
+  "source": "claude-japanese-temple-2000-creative",
+  "label": "claude-japanese-temple-2000-creative/high",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1819,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 1819,
+      "difference": -181,
+      "percent": -9
+    },
+    "seconds": 995,
+    "tokens": {
+      "input": 413425,
+      "cached": 281918,
+      "output": 101981,
+      "reasoning": 83113,
+      "costUsd": 10.223108
+    },
+    "searches": 10,
+    "checks": 2,
+    "knowledge": {
+      "named": [
+        "11477",
+        "2412b",
+        "2417",
+        "2423",
+        "2435",
+        "24866",
+        "2877",
+        "3001",
+        "3005",
+        "3010",
+        "30136",
+        "3022",
+        "3062b",
+        "3068b",
+        "3185",
+        "32607",
+        "3470",
+        "3665a",
+        "3941",
+        "3942c",
+        "3943b",
+        "3957a",
+        "4032b",
+        "4332",
+        "6141",
+        "93059",
+        "98138"
+      ],
+      "notInList": [
+        "4332",
+        "93059"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 995,
+        "usage": {
+          "input": 413425,
+          "cached": 281918,
+          "output": 101981,
+          "reasoning": 83113,
+          "costUsd": 10.223108
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "minifig",
+              "limit": 15
+            },
+            "results": [
+              "4079",
+              "3816c",
+              "3817c",
+              "3818",
+              "3819",
+              "3820",
+              "3815b",
+              "41879a",
+              "64644",
+              "30124b",
+              "6254",
+              "50231",
+              "2343",
+              "6269",
+              "85975"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "stone lantern"
+            },
+            "results": [
+              "3062b",
+              "4589",
+              "3942c",
+              "4081b"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bell"
+            },
+            "results": [
+              "3942c",
+              "3943b",
+              "30151a",
+              "6017",
+              "u608",
+              "u609",
+              "30151b"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "leaves",
+              "colour": "orange",
+              "available_in_colour": true
+            },
+            "results": [
+              "2423",
+              "32607",
+              "2417",
+              "10884"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "dish 2 x 2",
+              "colour": "pearl gold",
+              "available_in_colour": true
+            },
+            "results": [
+              "4740",
+              "17964",
+              "35395"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "minifig torso",
+              "limit": 5
+            },
+            "results": [
+              "973",
+              "30375",
+              "6260",
+              "17",
+              "54275"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "minifig head",
+              "limit": 5
+            },
+            "results": [
+              "3626c",
+              "28621",
+              "3626b",
+              "3626a",
+              "19729"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "broom",
+              "limit": 3
+            },
+            "results": [
+              "90826",
+              "4332"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "minifig hat conical asian",
+              "limit": 5
+            },
+            "results": [
+              "93059",
+              "26007"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "lantern",
+              "limit": 8
+            },
+            "results": [
+              "4081b",
+              "37776",
+              "65581"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 1588,
+            "errors": 1,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 1819,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "2412b",
+            "2417",
+            "2423",
+            "2435",
+            "24866",
+            "2877",
+            "3001",
+            "3005",
+            "3010",
+            "30136",
+            "3022",
+            "3062b",
+            "3068b",
+            "3185",
+            "32607",
+            "3470",
+            "3665a",
+            "3941",
+            "3942c",
+            "3943b",
+            "3957a",
+            "4032b",
+            "4332",
+            "6141",
+            "93059",
+            "98138"
+          ],
+          "notInList": [
+            "4332",
+            "93059"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1819
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1819,
+      "designs": 84,
+      "lots": 194,
+      "massingCells": 12595,
+      "massingParts": 929,
+      "placedParts": 890,
+      "sections": 8,
+      "components": 0,
+      "opsRun": 494,
+      "scriptBytes": 36630,
+      "ldrawBytes": 85314,
+      "partsPerScriptKB": 50.9,
+      "compileMs": 487,
+      "checkMs": 535
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 3,
+      "groups": 17,
+      "covered": 1783,
+      "uncovered": 36,
+      "health": "warning: 1783 parts with verified connectors form 17 separately connected groups; 14 parts are not connected to anything. 36 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 1819,
+      "difference": -181,
+      "percent": -9
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "3 part(s) are off the stud grid",
+        "ops": [
+          "sections[1].ops[115]",
+          "sections[1].ops[116]",
+          "sections[1].ops[117]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "20 part(s) in 16 group(s) are not connected to the main structure (largest group: 1763 parts); e.g. 11477 at [23, 15, -19], 3040b at [22, 16, -7], 3943b at [4, 12, -16], 3023b at [13, 6, -1], 3023b at [13, 13, -1], 3185 at [-4, 31, 10]",
+        "ops": [
+          "sections[5].ops[3]",
+          "sections[4].ops[8]",
+          "sections[4].ops[5]",
+          "sections[4].ops[10]",
+          "sections[0].ops[79]",
+          "sections[1].ops[78]",
+          "sections[1].ops[84]",
+          "sections[2].ops[4]",
+          "sections[2].ops[7]",
+          "sections[2].ops[10]",
+          "sections[2].ops[13]",
+          "sections[2].ops[16]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

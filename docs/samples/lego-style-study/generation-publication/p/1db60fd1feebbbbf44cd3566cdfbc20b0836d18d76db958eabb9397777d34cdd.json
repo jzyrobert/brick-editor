@@ -1,0 +1,521 @@
+{
+  "gallery": 1,
+  "source": "f-fresh:text-only",
+  "generation": "f-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/sol-f-dragon",
+  "prompt": {
+    "id": "dragon-1000",
+    "brief": "a dragon",
+    "targetParts": 1000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 1000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 934,
+    "targetMiss": {
+      "target": 1000,
+      "parts": 934,
+      "difference": -66,
+      "percent": -6.6
+    },
+    "seconds": 609,
+    "tokens": {
+      "input": 797792,
+      "cached": 391552,
+      "output": 61499,
+      "reasoning": 37558
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "14716",
+        "15068",
+        "24309",
+        "3005",
+        "3039",
+        "3040b",
+        "3678b",
+        "3942c",
+        "4286",
+        "4589",
+        "50950",
+        "60474",
+        "60481a",
+        "61678",
+        "87079",
+        "87081",
+        "93273",
+        "98138"
+      ],
+      "notInList": [],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 609,
+        "usage": {
+          "input": 797792,
+          "cached": 391552,
+          "output": 61499,
+          "reasoning": 37558,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "dragon wing",
+              "limit": 12
+            },
+            "results": [
+              "6133",
+              "5984",
+              "38547",
+              "51342",
+              "30130",
+              "6125",
+              "75174c01",
+              "87685",
+              "87686",
+              "75174p01c01"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "horn curved",
+              "limit": 12
+            },
+            "results": [
+              "67361",
+              "88964",
+              "87747"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge slope",
+              "size": "4x6",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "52031"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope curved",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "11477",
+              "15068",
+              "61678",
+              "50950",
+              "93273",
+              "24309",
+              "24201",
+              "13547",
+              "6091",
+              "30602",
+              "42022",
+              "70681"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tooth claw",
+              "limit": 12
+            },
+            "results": [
+              "41669",
+              "16770",
+              "48267",
+              "11089"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate 12",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "47405"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge plate 6",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "6106",
+              "32059",
+              "54383",
+              "54384",
+              "47407"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "horn",
+              "category": "Animal",
+              "limit": 15
+            },
+            "results": [
+              "2142",
+              "89522",
+              "13564",
+              "64847",
+              "40379",
+              "51342",
+              "51344",
+              "52258",
+              "30460c01"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tooth",
+              "category": "Slope",
+              "limit": 12
+            },
+            "results": [],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "dragon wing 19",
+              "limit": 5
+            },
+            "results": [
+              "51342"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 1227,
+            "errors": 51,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 1146,
+            "errors": 44,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "parts": 924,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "14716",
+            "15068",
+            "24309",
+            "3005",
+            "3039",
+            "3040b",
+            "3678b",
+            "3942c",
+            "4286",
+            "4589",
+            "50950",
+            "60474",
+            "60481a",
+            "61678",
+            "87079",
+            "87081",
+            "93273",
+            "98138"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 934
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 934,
+      "designs": 57,
+      "lots": 81,
+      "massingCells": 10509,
+      "massingParts": 509,
+      "placedParts": 425,
+      "sections": 7,
+      "components": 0,
+      "opsRun": 554,
+      "scriptBytes": 41664,
+      "ldrawBytes": 45943,
+      "partsPerScriptKB": 23,
+      "compileMs": 255,
+      "checkMs": 186
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 75,
+      "covered": 932,
+      "uncovered": 2,
+      "health": "warning: 932 parts with verified connectors form 75 separately connected groups; 50 parts are not connected to anything. 2 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 1000,
+      "parts": 934,
+      "difference": -66,
+      "percent": -6.6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[5]",
+          "sections[1].ops[5]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[6]",
+          "sections[1].ops[5]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[13]",
+          "sections[1].ops[6]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[14]",
+          "sections[1].ops[6]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[5]",
+          "sections[1].ops[7]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[6]",
+          "sections[1].ops[7]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[13]",
+          "sections[1].ops[8]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[14]",
+          "sections[1].ops[8]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[7]",
+          "sections[1].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 93273.dat already is",
+        "ops": [
+          "sections[0].ops[17]",
+          "sections[1].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[8]",
+          "sections[1].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 93273.dat already is",
+        "ops": [
+          "sections[0].ops[18]",
+          "sections[1].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[9]",
+          "sections[1].ops[10]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[10]",
+          "sections[1].ops[10]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 93273.dat already is",
+        "ops": [
+          "sections[0].ops[19]",
+          "sections[1].ops[10]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[11]",
+          "sections[1].ops[11]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 93273.dat already is",
+        "ops": [
+          "sections[0].ops[20]",
+          "sections[1].ops[11]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[0].ops[12]",
+          "sections[1].ops[11]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 93273.dat already is",
+        "ops": [
+          "sections[0].ops[21]",
+          "sections[1].ops[11]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4589.dat is placed where 4589.dat already is",
+        "ops": [
+          "sections[0].ops[59]",
+          "sections[1].ops[25]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "712 part(s) in 74 group(s) are not connected to the main structure (largest group: 220 parts); e.g. 15068 at [28, 33, 24], 60481a at [39, 43, 26], 60481a at [24, 43, 26], 4286 at [37, 1, 19], 4286 at [22, 1, 33], 4286 at [36, 1, 33]",
+        "ops": [
+          "sections[3].ops[32]",
+          "sections[6].ops[3]",
+          "sections[2].ops[1]",
+          "sections[3].ops[53]",
+          "sections[3].ops[75]",
+          "sections[4].ops[10]",
+          "sections[4].ops[0]",
+          "sections[3].ops[31]",
+          "sections[4].ops[20]",
+          "sections[4].ops[28]",
+          "sections[2].ops[10]",
+          "sections[4].ops[36]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "gallery": 1,
+  "source": "japanese-temple-one-shot-target",
+  "label": "japanese-temple-one-shot-target/high",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "model": "gpt-6.1-sol",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 2,
+    "parts": 2031,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2031,
+      "difference": 31,
+      "percent": 1.6
+    },
+    "seconds": 944,
+    "tokens": {
+      "input": 63686,
+      "cached": 0,
+      "output": 31179,
+      "reasoning": 15792
+    },
+    "searches": 0,
+    "knowledge": {
+      "named": [
+        "2431",
+        "2435",
+        "2877",
+        "30176",
+        "3062b",
+        "3069b",
+        "3471",
+        "3660b",
+        "3665a",
+        "3941",
+        "3942c",
+        "3957a",
+        "3960",
+        "4032b",
+        "4589",
+        "98138"
+      ],
+      "notInList": [],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 666,
+        "usage": {
+          "input": 27888,
+          "cached": 0,
+          "output": 22031,
+          "reasoning": 13722
+        },
+        "searches": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "errors",
+        "knowledge": {
+          "named": [
+            "2431",
+            "2435",
+            "2465",
+            "2877",
+            "30176",
+            "3062b",
+            "3069b",
+            "3471",
+            "3660b",
+            "3665a",
+            "3941",
+            "3942c",
+            "3957a",
+            "3960",
+            "4032b",
+            "4589",
+            "98138"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2116,
+        "reason": "The script compiled to 2,116 parts (target 2,000: +116, +5.8%). Errors to fix:\n- overlap: 3660b Inverted Slope 45° 2 × 2 placed at [37, 21, 8] and 2465 Brick 1 × 16 placed at [38, 21, 8] overlap where their bodies meet: x 38–39, y 21–24, z 8–9 [sections[1].ops[0] > components.gatePost.ops[2], sections[1].ops[7]]\n- overlap: 3660b Inverted Slope 45° 2 × 2 placed at [53, 21, 8] and 2465 Brick 1 × 16 placed at [38, 21, 8] overlap where their bodies meet: x 53–54, y 21–24, z 8–9 [sections[1].ops[1] > components.gatePost.ops[2], sections[1].ops[7]]\n- overlap: 3660b Inverted Slope 45° 2 × 2 placed at [37, 21, 12] and 2465 Brick 1 × 16 placed at [38, 21, 13] overlap where their bodies meet: x 38–39, y 21–24, z 13–14 [sections[1].ops[2] > components.gatePost.ops[2], sections[1].ops[8]]\n- overlap: 3660b Inverted Slope 45° 2 × 2 placed at [53, 21, 12] and 2465 Brick 1 × 16 placed at [38, 21, 13] overlap where their bodies meet: x 53–54, y 21–24, z 13–14 [sections[1].ops[3] > components.gatePost.ops[2], sections[1].ops[8]]\n- overlap: 3941 Round Brick 2 × 2 placed at [42, 23, 34] (repeat copy 1/2 > 1/2) and 3037 Slope 45° 2 × 4 placed at [41, 24, 33] overlap where their bodies meet: x 42–44, y 24–26, z 34–35 (2 pairs like this) [sections[2].ops[15].ops[2] > components.verandaPost.ops[0], sections[2].ops[33]]\n- overlap: 3941 Round Brick 2 × 2 placed at [48, 23, 34] (repeat copy 1/2 > 1/2) and 3037 Slope 45° 2 × 4 placed at [45, 24, 33] overlap where their bodies meet: x 48–49, y 24–26, z 34–35 (2 pairs like this) [sections[2].ops[15].ops[3] > components.verandaPost.ops[0], sections[2].ops[33]]\n- overlap: 3941 Round Brick 2 × 2 placed at [48, 23, 34] (repeat copy 1/2 > 1/2) and 3039 Slope 45° 2 × 2 placed at [49, 24, 33] overlap where their bodies meet: x 49–50, y 24–26, z 34–35 (2 pairs like this) [sections[2].ops[15].ops[3] > components.verandaPost.ops[0], sections[2].ops[33]]"
+      },
+      {
+        "attempt": 2,
+        "seconds": 278,
+        "usage": {
+          "input": 35798,
+          "cached": 0,
+          "output": 9148,
+          "reasoning": 2070
+        },
+        "searches": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "2431",
+            "2435",
+            "2877",
+            "30176",
+            "3062b",
+            "3069b",
+            "3471",
+            "3660b",
+            "3665a",
+            "3941",
+            "3942c",
+            "3957a",
+            "3960",
+            "4032b",
+            "4589",
+            "98138"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2031
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2031,
+      "designs": 67,
+      "lots": 141,
+      "massingCells": 12630,
+      "massingParts": 984,
+      "placedParts": 1047,
+      "sections": 4,
+      "components": 8,
+      "opsRun": 398,
+      "scriptBytes": 12924,
+      "ldrawBytes": 86738,
+      "partsPerScriptKB": 160.9,
+      "compileMs": 164,
+      "checkMs": 583
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 115,
+      "covered": 2007,
+      "uncovered": 24,
+      "health": "warning: 2007 parts with verified connectors form 115 separately connected groups; 98 parts are not connected to anything. 24 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2031,
+      "difference": 31,
+      "percent": 1.6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "508 part(s) in 114 group(s) are not connected to the main structure (largest group: 1499 parts); e.g. 3045 at [60, 36, 34], 3045 at [22, 26, 33], 3045 at [20, 48, 35], 3045 at [18, 70, 37], 3665a at [42, 20, 30], 3941 at [14, 88, 42]",
+        "ops": [
+          "sections[2].ops[21]",
+          "sections[3].ops[11]",
+          "sections[3].ops[22]",
+          "sections[3].ops[28]",
+          "sections[2].ops[33]",
+          "sections[1].ops[7].ops[0]",
+          "sections[1].ops[7].ops[1]",
+          "sections[3].ops[10] > components.eaves18.ops[1].ops[0]",
+          "sections[3].ops[10] > components.eaves18.ops[1].ops[1]",
+          "sections[3].ops[10] > components.eaves18.ops[2].ops[0]",
+          "sections[3].ops[10] > components.eaves18.ops[2].ops[1]",
+          "sections[3].ops[21] > components.eaves14.ops[1].ops[0]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

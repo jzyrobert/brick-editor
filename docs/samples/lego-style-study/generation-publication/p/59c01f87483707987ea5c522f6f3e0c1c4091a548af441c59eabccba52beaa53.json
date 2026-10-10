@@ -1,0 +1,361 @@
+{
+  "gallery": 1,
+  "source": "japanese-temple-one-shot-claude-target",
+  "label": "japanese-temple-one-shot-claude-target/xhigh",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/xhigh",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "xhigh"
+  },
+  "run": {
+    "effort": "xhigh",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 2294,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2294,
+      "difference": 294,
+      "percent": 14.7
+    },
+    "seconds": 1587,
+    "tokens": {
+      "input": 146674,
+      "cached": 94830,
+      "output": 108876,
+      "reasoning": 100211,
+      "costUsd": 3.442498
+    },
+    "searches": 10,
+    "knowledge": {
+      "named": [
+        "14769",
+        "15068",
+        "2412b",
+        "2417",
+        "2423",
+        "2435",
+        "24866",
+        "3001",
+        "30151a",
+        "33291",
+        "3471",
+        "3665a",
+        "3941",
+        "3942c",
+        "3943b",
+        "4032b",
+        "60474",
+        "87081",
+        "92947"
+      ],
+      "notInList": [
+        "30151a",
+        "92947"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 1587,
+        "usage": {
+          "input": 146674,
+          "cached": 94830,
+          "output": 108876,
+          "reasoning": 100211,
+          "costUsd": 3.442498
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "lantern"
+            },
+            "results": [
+              "37776",
+              "65581",
+              "3626cpb2",
+              "98138pb7",
+              "6409",
+              "76382pbz",
+              "76382pc0",
+              "98138pb8",
+              "973pbz",
+              "973pc0",
+              "20695p01"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "cherry blossom"
+            },
+            "results": [
+              "4728",
+              "3742",
+              "22667",
+              "51858",
+              "2424",
+              "u9440",
+              "28946",
+              "3068bpfj",
+              "3068bpfb",
+              "76382px2",
+              "4066bp0e",
+              "18603c02p05",
+              "31512p01",
+              "u9440p01"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bell"
+            },
+            "results": [
+              "6017",
+              "30151a",
+              "u608",
+              "u609",
+              "30151b",
+              "101117",
+              "1021704",
+              "25613",
+              "23222",
+              "22385p039",
+              "101117p01",
+              "101117p02",
+              "101117p03",
+              "101117p04",
+              "101117p05"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "roof asian curved"
+            },
+            "results": [
+              "93273pz3"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bonsai tree"
+            },
+            "results": [
+              "3470",
+              "2435",
+              "3471",
+              "2566b",
+              "6135b",
+              "28681",
+              "2563a",
+              "30338",
+              "2536b",
+              "6135a",
+              "2518",
+              "30131",
+              "2536a",
+              "3778",
+              "30339"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope pyramid",
+              "size": "2x2"
+            },
+            "results": [
+              "3039",
+              "15068",
+              "3660b",
+              "3678b",
+              "3045",
+              "3043",
+              "3684a",
+              "3676",
+              "3046",
+              "3049b",
+              "30602",
+              "5093",
+              "5095",
+              "47457",
+              "3684c"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "round brick grille",
+              "size": "2x2"
+            },
+            "results": [
+              "92947",
+              "3068bpxd"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "plant leaves",
+              "colour": "bright pink",
+              "available_in_colour": true
+            },
+            "results": [
+              "2423",
+              "2417",
+              "32607"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "flower",
+              "colour": "bright pink",
+              "available_in_colour": true
+            },
+            "results": [
+              "24866",
+              "3742",
+              "33291",
+              "4728",
+              "18853",
+              "96483",
+              "96487",
+              "5904",
+              "15469",
+              "3742c01",
+              "76382p1z"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "bridge arch"
+            },
+            "results": [
+              "3659",
+              "6182",
+              "3455",
+              "6005",
+              "6183",
+              "3307",
+              "92950",
+              "4490"
+            ],
+            "round": 2
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "14769",
+            "15068",
+            "2412b",
+            "2417",
+            "2423",
+            "2435",
+            "24866",
+            "3001",
+            "30151a",
+            "33291",
+            "3471",
+            "3665a",
+            "3941",
+            "3942c",
+            "3943b",
+            "4032b",
+            "60474",
+            "87081",
+            "92947"
+          ],
+          "notInList": [
+            "30151a",
+            "92947"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2294
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2294,
+      "designs": 69,
+      "lots": 102,
+      "massingCells": 11300,
+      "massingParts": 1188,
+      "placedParts": 1106,
+      "sections": 5,
+      "components": 3,
+      "opsRun": 232,
+      "scriptBytes": 16452,
+      "ldrawBytes": 104831,
+      "partsPerScriptKB": 142.8,
+      "compileMs": 178,
+      "checkMs": 386
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 28,
+      "covered": 2230,
+      "uncovered": 64,
+      "health": "warning: 2230 parts with verified connectors form 28 separately connected groups; 26 parts are not connected to anything. 64 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2294,
+      "difference": 294,
+      "percent": 14.7
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "28 part(s) in 27 group(s) are not connected to the main structure (largest group: 2202 parts); e.g. 3941 at [79, 16, 27], 3943b at [41, 11, 20], 3943b at [55, 11, 20], 3943b at [41, 11, 27], 3943b at [55, 11, 27], 3943b at [38, 11, 31]",
+        "ops": [
+          "sections[4].ops[10]",
+          "sections[4].ops[11]",
+          "sections[0].ops[23] > components.lantern.ops[5]",
+          "sections[0].ops[24] > components.lantern.ops[5]",
+          "sections[0].ops[25] > components.lantern.ops[5]",
+          "sections[0].ops[26] > components.lantern.ops[5]",
+          "sections[0].ops[27] > components.lantern.ops[5]",
+          "sections[0].ops[28] > components.lantern.ops[5]",
+          "sections[0].ops[29] > components.lantern.ops[5]",
+          "sections[0].ops[30] > components.lantern.ops[5]",
+          "sections[0].ops[31] > components.censer.ops[3]",
+          "sections[0].ops[53] > components.sakura.ops[2]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

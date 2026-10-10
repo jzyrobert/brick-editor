@@ -1,0 +1,414 @@
+{
+  "gallery": 1,
+  "source": "c-text:text-only",
+  "generation": "c-text",
+  "label": "docs/samples/lego-style-study/finished-temple",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 2248,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2248,
+      "difference": 248,
+      "percent": 12.4
+    },
+    "seconds": 642,
+    "tokens": {
+      "input": 1153627,
+      "cached": 818176,
+      "output": 102807,
+      "reasoning": 62829
+    },
+    "searches": 13,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "14716",
+        "15068",
+        "2412b",
+        "2431",
+        "2453b",
+        "2454b",
+        "3003",
+        "3005",
+        "3010",
+        "3022",
+        "3024",
+        "3070b",
+        "3185",
+        "3626c",
+        "3633",
+        "3665a",
+        "3943b",
+        "3960",
+        "4032b",
+        "44375b",
+        "4589",
+        "6141",
+        "61678",
+        "6182",
+        "73682",
+        "87081",
+        "90398"
+      ],
+      "notInList": [
+        "3626c",
+        "44375b",
+        "73682",
+        "90398"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 642,
+        "usage": {
+          "input": 1153627,
+          "cached": 818176,
+          "output": 102807,
+          "reasoning": 62829,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "inverted curved slope",
+              "limit": 8
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "54091",
+              "32803",
+              "42023",
+              "11301",
+              "45410"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "1x4",
+              "colour": "black",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "61678",
+              "93273",
+              "13547",
+              "3573",
+              "11153"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "window lattice",
+              "limit": 8
+            },
+            "results": [
+              "60607",
+              "30046",
+              "2529",
+              "38320"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bell",
+              "limit": 6
+            },
+            "results": [
+              "3942c",
+              "3943b",
+              "30151a",
+              "6017",
+              "u608",
+              "u609"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "minifigure statue",
+              "colour": "pearl gold",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "90398"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope curved corner",
+              "colour": "black",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "77180",
+              "77182",
+              "73682"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "round brick dome top",
+              "size": "4x4",
+              "limit": 6
+            },
+            "results": [
+              "49612"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "dish",
+              "size": "6x6",
+              "colour": "pearl gold",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "44375b",
+              "21599",
+              "35327",
+              "38622"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "fence lattice",
+              "colour": "reddish brown",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "3185",
+              "3633",
+              "32932"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tile modified bar handle",
+              "limit": 5
+            },
+            "results": [
+              "2921",
+              "33909",
+              "3070b",
+              "3069b",
+              "2431"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "minifig head plain",
+              "colour": "pearl gold",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "3626c",
+              "28621",
+              "3816c",
+              "3817c",
+              "30480"
+            ],
+            "round": 4
+          },
+          {
+            "args": {
+              "query": "round brick",
+              "size": "2x2",
+              "colour": "pearl gold",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "85080",
+              "5906",
+              "92947",
+              "7037",
+              "4032a"
+            ],
+            "round": 4
+          },
+          {
+            "args": {
+              "query": "tile round bar handle",
+              "colour": "black",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "98138",
+              "14769",
+              "25269",
+              "3070b"
+            ],
+            "round": 4
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 2916,
+            "errors": 15,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 2475,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 2341,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "14716",
+            "15068",
+            "2412b",
+            "2431",
+            "2453b",
+            "2454b",
+            "3003",
+            "3005",
+            "3010",
+            "3022",
+            "3024",
+            "3070b",
+            "3185",
+            "3626c",
+            "3633",
+            "3665a",
+            "3943b",
+            "3960",
+            "4032b",
+            "44375b",
+            "4589",
+            "6141",
+            "61678",
+            "6182",
+            "73682",
+            "87081",
+            "90398"
+          ],
+          "notInList": [
+            "3626c",
+            "44375b",
+            "73682",
+            "90398"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2248
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2248,
+      "designs": 79,
+      "lots": 194,
+      "massingCells": 20536,
+      "massingParts": 1150,
+      "placedParts": 1098,
+      "sections": 8,
+      "components": 0,
+      "opsRun": 708,
+      "scriptBytes": 53366,
+      "ldrawBytes": 104813,
+      "partsPerScriptKB": 43.1,
+      "compileMs": 369,
+      "checkMs": 590
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 72,
+      "covered": 2240,
+      "uncovered": 8,
+      "health": "warning: 2240 parts with verified connectors form 72 separately connected groups; 61 parts are not connected to anything. 8 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2248,
+      "difference": 248,
+      "percent": 12.4
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "412 part(s) in 71 group(s) are not connected to the main structure (largest group: 1828 parts); e.g. 3941 at [50, 7, 14], 3062b at [10, 2, -12], 3007 at [20, 0, -13], 2456 at [54, 0, 7], 11477 at [48, 29, 11], 11477 at [48, 29, 25]",
+        "ops": [
+          "sections[6].ops[9]",
+          "sections[6].ops[0]",
+          "sections[0].ops[6]",
+          "sections[6].ops[1]",
+          "sections[6].ops[2]",
+          "sections[6].ops[8]",
+          "sections[7].ops[3]",
+          "sections[7].ops[5]",
+          "sections[6].ops[3]",
+          "sections[6].ops[6]",
+          "sections[6].ops[4]",
+          "sections[6].ops[5]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

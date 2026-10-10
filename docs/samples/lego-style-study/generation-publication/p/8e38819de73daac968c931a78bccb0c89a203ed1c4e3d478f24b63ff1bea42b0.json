@@ -1,0 +1,423 @@
+{
+  "gallery": 1,
+  "source": "f-fresh:text-only",
+  "generation": "f-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/sol-f-pelican",
+  "prompt": {
+    "id": "pelican-riding-a-bicycle-800",
+    "brief": "a pelican riding a bicycle",
+    "targetParts": 800
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 800,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 916,
+    "targetMiss": {
+      "target": 800,
+      "parts": 916,
+      "difference": 116,
+      "percent": 14.5
+    },
+    "seconds": 727,
+    "tokens": {
+      "input": 754878,
+      "cached": 507520,
+      "output": 63386,
+      "reasoning": 34202
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "13547",
+        "15068",
+        "24201",
+        "24309",
+        "3005",
+        "3039",
+        "3660b",
+        "3678b",
+        "3700",
+        "41747",
+        "41748",
+        "41769a",
+        "41770a",
+        "4460b",
+        "6141",
+        "61678",
+        "6636",
+        "87079",
+        "88930"
+      ],
+      "notInList": [
+        "41747",
+        "41748"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 727,
+        "usage": {
+          "input": 754878,
+          "cached": 507520,
+          "output": 63386,
+          "reasoning": 34202,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wheel motorcycle large",
+              "limit": 8
+            },
+            "results": [
+              "4624",
+              "3641",
+              "6255",
+              "3788",
+              "4600",
+              "3471",
+              "3829c01",
+              "50860"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bicycle wheel",
+              "limit": 6
+            },
+            "results": [
+              "92851",
+              "4720",
+              "64248",
+              "u9163",
+              "28578",
+              "4719c03"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tyre motorcycle",
+              "limit": 8
+            },
+            "results": [
+              "2902",
+              "11957",
+              "67140",
+              "71721",
+              "71722",
+              "80542",
+              "88516",
+              "6596"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope curved wedge",
+              "size": "2x6",
+              "limit": 6
+            },
+            "results": [
+              "41748",
+              "41747",
+              "41764",
+              "41765"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope curved",
+              "size": "2x4",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "88930",
+              "93606",
+              "47456",
+              "61068"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wheel motorcycle 75",
+              "limit": 10
+            },
+            "results": [
+              "84772p01c01"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wheel motorcycle 62",
+              "limit": 10
+            },
+            "results": [
+              "84772"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wheel spoked",
+              "limit": 10
+            },
+            "results": [
+              "50862",
+              "30155",
+              "242c01",
+              "243c01",
+              "50862c01",
+              "244c01",
+              "244c02",
+              "244c03",
+              "242",
+              "243"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "technic axle",
+              "size": "6x1",
+              "limit": 5
+            },
+            "results": [
+              "61800",
+              "3706",
+              "61795",
+              "370626",
+              "u9010"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope curved",
+              "size": "4x6",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "78522",
+              "52031"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 995,
+            "errors": 24,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 924,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 926,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "13547",
+            "15068",
+            "24201",
+            "24309",
+            "3005",
+            "3039",
+            "3660b",
+            "3678b",
+            "3700",
+            "41747",
+            "41748",
+            "41769a",
+            "41770a",
+            "4460b",
+            "6141",
+            "61678",
+            "6636",
+            "87079",
+            "88930"
+          ],
+          "notInList": [
+            "41747",
+            "41748"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 916
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 916,
+      "designs": 65,
+      "lots": 146,
+      "massingCells": 9433,
+      "massingParts": 688,
+      "placedParts": 228,
+      "sections": 8,
+      "components": 0,
+      "opsRun": 513,
+      "scriptBytes": 40117,
+      "ldrawBytes": 44069,
+      "partsPerScriptKB": 23.4,
+      "compileMs": 78,
+      "checkMs": 139
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 12,
+      "groups": 183,
+      "covered": 894,
+      "uncovered": 22,
+      "health": "warning: 894 parts with verified connectors form 183 separately connected groups; 102 parts are not connected to anything. 22 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 800,
+      "parts": 916,
+      "difference": 116,
+      "percent": 14.5
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[6].ops[3]",
+          "sections[6].ops[14]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[6].ops[8]",
+          "sections[6].ops[15]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[6].ops[2]",
+          "sections[6].ops[16]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[6].ops[3]",
+          "sections[6].ops[16]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[6].ops[7]",
+          "sections[6].ops[17]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[6].ops[8]",
+          "sections[6].ops[17]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "12 part(s) are off the stud grid",
+        "ops": [
+          "sections[7].ops[5]",
+          "sections[7].ops[6]",
+          "sections[7].ops[7]",
+          "sections[7].ops[8]",
+          "sections[7].ops[9]",
+          "sections[7].ops[10]",
+          "sections[7].ops[11]",
+          "sections[7].ops[12]",
+          "sections[7].ops[13]",
+          "sections[7].ops[14]",
+          "sections[7].ops[15]",
+          "sections[7].ops[16]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "470 part(s) in 182 group(s) are not connected to the main structure (largest group: 424 parts); e.g. 3039 at [5, 33, 9], 3039 at [16, 33, 9], 3039 at [37, 33, 9], 3039 at [48, 33, 9], 3039 at [7, 36, 9], 3039 at [39, 36, 9]",
+        "ops": [
+          "sections[1].ops[4]",
+          "sections[1].ops[15]",
+          "sections[1].ops[5]",
+          "sections[1].ops[8]",
+          "sections[1].ops[2]",
+          "sections[2].ops[1]",
+          "sections[1].ops[14]",
+          "sections[1].ops[1]",
+          "sections[1].ops[7]",
+          "sections[1].ops[10]",
+          "sections[0].ops[111]",
+          "sections[0].ops[238]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

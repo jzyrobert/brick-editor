@@ -5,6 +5,7 @@ import {
   galleryFileUrl,
   type GalleryBuild,
   type GalleryIndex,
+  type GalleryGeneration,
 } from "./gallery-index";
 
 export type ModelTool = "Build" | "Instructions" | "Photo" | "Project";
@@ -39,6 +40,7 @@ export type GalleryEntry = {
   /** The model ("GPT-6.1-Sol") and its reasoning effort ("High"). */
   agent: string;
   effort?: string;
+  generation?: GalleryGeneration;
   parts: number;
   tone: GalleryTone;
   /** One line for cards: "Accepted after 2 replies · 19 min". */
@@ -67,6 +69,8 @@ export type GalleryFilters = {
   prompt: string;
   model: string;
   effort: string;
+  /** "latest" selects the explicitly featured cohort; empty means history too. */
+  generation: string;
   sort: "newest" | "prompt";
 };
 export const DEFAULT_GALLERY_FILTERS: GalleryFilters = {
@@ -74,6 +78,7 @@ export const DEFAULT_GALLERY_FILTERS: GalleryFilters = {
   prompt: "",
   model: "",
   effort: "",
+  generation: "latest",
   sort: "newest",
 };
 const searchable = (value: string) =>
@@ -86,16 +91,31 @@ export function filterGallery(
   filters: GalleryFilters,
 ): GalleryPromptView[] {
   const terms = searchable(filters.query).trim().split(/\s+/).filter(Boolean);
+  const hasDefault = prompts.some((p) =>
+    p.entries.some((e) => e.generation?.default),
+  );
   return prompts
     .filter((p) => !filters.prompt || p.id === filters.prompt)
     .map((p) => ({
       ...p,
       entries: p.entries
         .filter((e) => {
+          if (
+            filters.generation === "latest" &&
+            hasDefault &&
+            !e.generation?.default
+          )
+            return false;
+          if (
+            filters.generation &&
+            filters.generation !== "latest" &&
+            e.generation?.id !== filters.generation
+          )
+            return false;
           if (filters.model && e.agent !== filters.model) return false;
           if (filters.effort && e.effort !== filters.effort) return false;
           const text = searchable(
-            `${p.name} ${p.brief} ${e.title} ${e.agent} ${e.effort ?? ""}`,
+            `${p.name} ${p.brief} ${e.title} ${e.agent} ${e.effort ?? ""} ${e.generation?.name ?? ""}`,
           );
           return terms.every((term) => text.includes(term));
         })
@@ -144,6 +164,7 @@ const TONES: GalleryTone[] = ["peach", "sage", "sand"];
  * then effort. Each prompt is a head-to-head of the models that answered. */
 export function galleryPrompts(index: GalleryIndex): GalleryPromptView[] {
   const agents = new Map(index.agents.map((a) => [a.id, a]));
+  const generations = new Map(index.generations?.map((g) => [g.id, g]));
   return index.prompts
     .map((p): GalleryPromptView => {
       const builds = index.builds
@@ -184,6 +205,9 @@ export function galleryPrompts(index: GalleryIndex): GalleryPromptView[] {
             : `${list(models)}${effort} answered this brief.`,
         entries: builds.map((b, i) => {
           const a = agents.get(b.agent);
+          const generation = b.generation
+            ? generations.get(b.generation)
+            : undefined;
           const facts: [string, string][] = [
             ["Parts", b.parts.toLocaleString("en")],
           ];
@@ -194,6 +218,7 @@ export function galleryPrompts(index: GalleryIndex): GalleryPromptView[] {
           if (b.attempts !== undefined)
             facts.push(["Replies", String(b.attempts)]);
           facts.push(["Warnings", String(b.warnings)]);
+          if (generation) facts.push(["Prompt generation", generation.name]);
           const summary = [
             b.attempts === undefined
               ? ""
@@ -209,6 +234,7 @@ export function galleryPrompts(index: GalleryIndex): GalleryPromptView[] {
             title: b.title ?? `${a?.model ?? b.agent}’s ${name.toLowerCase()}`,
             agent: a?.model ?? a?.name ?? b.agent,
             effort: a?.effort ? sentenceCase(a.effort) : undefined,
+            generation,
             parts: b.parts,
             tone: TONES[i % TONES.length],
             summary,

@@ -1,0 +1,3081 @@
+{
+ "buildScript": 1,
+ "title": "Endor Outpost: Classic Space meets the Ewok Village",
+ "description": "Three Ewok tree huts in classic-space blue and grey with trans-yellow windows, linked by rope bridges, a comms crow's nest, a log hangar and a blue star glider with tan canvas wings on a grey landing pad.",
+ "palette": {
+  "bark": "reddish brown",
+  "deck": "dark tan",
+  "thatch": {
+   "mix": [
+    "tan",
+    "dark tan",
+    "tan"
+   ]
+  },
+  "leaves": {
+   "mix": [
+    "dark green",
+    "green",
+    "dark green"
+   ]
+  },
+  "space": "blue",
+  "grey": "light bluish grey",
+  "stone": {
+   "mix": [
+    "light bluish grey",
+    "light bluish grey",
+    "light bluish grey",
+    "dark bluish grey"
+   ]
+  }
+ },
+ "components": {
+  "Star Glider": {
+   "size": [
+    18,
+    20
+   ],
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      6,
+      0,
+      5
+     ],
+     "height": 3,
+     "diameter": 2,
+     "colour": "grey"
+    },
+    {
+     "op": "column",
+     "at": [
+      10,
+      0,
+      5
+     ],
+     "height": 3,
+     "diameter": 2,
+     "colour": "grey"
+    },
+    {
+     "op": "column",
+     "at": [
+      6,
+      0,
+      14
+     ],
+     "height": 3,
+     "diameter": 2,
+     "colour": "grey"
+    },
+    {
+     "op": "column",
+     "at": [
+      10,
+      0,
+      14
+     ],
+     "height": 3,
+     "diameter": 2,
+     "colour": "grey"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      3,
+      0
+     ],
+     "size": [
+      6,
+      3,
+      20
+     ],
+     "colour": "space",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      5,
+      7
+     ],
+     "size": [
+      18,
+      8
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      6,
+      6,
+      0
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      8,
+      6,
+      0
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      10,
+      6,
+      0
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      6,
+      2
+     ],
+     "size": [
+      6,
+      3,
+      18
+     ],
+     "colour": "space",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "2437",
+     "at": [
+      7,
+      9,
+      2
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "4286",
+     "at": [
+      6,
+      9,
+      2
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "4286",
+     "at": [
+      11,
+      9,
+      2
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      9,
+      5
+     ],
+     "size": [
+      6,
+      4,
+      7
+     ],
+     "colour": "grey",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      9,
+      12
+     ],
+     "size": [
+      6,
+      3,
+      8
+     ],
+     "colour": "space",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "87079p50",
+     "at": [
+      7,
+      13,
+      6
+     ],
+     "colour": "blue"
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      11,
+      13,
+      11
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      6,
+      13,
+      10
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "column",
+     "at": [
+      6,
+      12,
+      13
+     ],
+     "height": 6,
+     "diameter": 2,
+     "colour": "grey",
+     "cap": "cone"
+    },
+    {
+     "op": "column",
+     "at": [
+      10,
+      12,
+      13
+     ],
+     "height": 6,
+     "diameter": 2,
+     "colour": "grey",
+     "cap": "cone"
+    },
+    {
+     "op": "place",
+     "part": "60481a",
+     "at": [
+      8,
+      12,
+      18
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "place",
+     "part": "60481a",
+     "at": [
+      9,
+      12,
+      18
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      6,
+      7
+     ],
+     "size": [
+      1,
+      8
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      6,
+      7
+     ],
+     "size": [
+      1,
+      8
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "floor",
+     "at": [
+      14,
+      6,
+      7
+     ],
+     "size": [
+      1,
+      8
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "floor",
+     "at": [
+      17,
+      6,
+      7
+     ],
+     "size": [
+      1,
+      8
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      1,
+      6,
+      7
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      2,
+      6,
+      7
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      4,
+      6,
+      7
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      5,
+      6,
+      7
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      12,
+      6,
+      7
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      13,
+      6,
+      7
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      15,
+      6,
+      7
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      16,
+      6,
+      7
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      0,
+      7,
+      7
+     ],
+     "colour": "trans red"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      17,
+      7,
+      7
+     ],
+     "colour": "trans yellow"
+    }
+   ]
+  },
+  "Rover": {
+   "size": [
+    4,
+    6
+   ],
+   "ops": [
+    {
+     "op": "place",
+     "part": "4600",
+     "at": [
+      1,
+      0,
+      0
+     ],
+     "colour": "grey",
+     "wheels": "light bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "4600",
+     "at": [
+      1,
+      0,
+      4
+     ],
+     "colour": "grey",
+     "wheels": "light bluish grey"
+    },
+    {
+     "op": "floor",
+     "at": [
+      1,
+      1,
+      0
+     ],
+     "size": [
+      2,
+      6
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "place",
+     "part": "3829c01",
+     "at": [
+      1,
+      2,
+      0
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "4079",
+     "at": [
+      1,
+      2,
+      1
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      1,
+      2,
+      4
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      2,
+      2,
+      4
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      2,
+      2,
+      5
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      1,
+      2,
+      5
+     ],
+     "colour": "grey"
+    }
+   ]
+  }
+ },
+ "sections": [
+  {
+   "name": "Site",
+   "ops": [
+    {
+     "op": "baseplate",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      64,
+      48
+     ],
+     "colour": "green"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      1
+     ],
+     "size": [
+      12,
+      12
+     ],
+     "colour": "deck"
+    },
+    {
+     "op": "floor",
+     "at": [
+      6,
+      0,
+      13
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "colour": "deck"
+    },
+    {
+     "op": "floor",
+     "at": [
+      12,
+      0,
+      9
+     ],
+     "size": [
+      23,
+      3
+     ],
+     "colour": "deck"
+    },
+    {
+     "op": "place",
+     "part": "3471",
+     "at": [
+      1,
+      0,
+      16
+     ],
+     "colour": "green"
+    },
+    {
+     "op": "place",
+     "part": "2435",
+     "at": [
+      12,
+      0,
+      26
+     ],
+     "colour": "dark green"
+    },
+    {
+     "op": "place",
+     "part": "3471",
+     "at": [
+      20,
+      0,
+      25
+     ],
+     "colour": "green"
+    },
+    {
+     "op": "place",
+     "part": "2435",
+     "at": [
+      30,
+      0,
+      25
+     ],
+     "colour": "dark green"
+    },
+    {
+     "op": "place",
+     "part": "3471",
+     "at": [
+      40,
+      0,
+      25
+     ],
+     "colour": "green"
+    },
+    {
+     "op": "place",
+     "part": "2435",
+     "at": [
+      48,
+      0,
+      26
+     ],
+     "colour": "dark green"
+    },
+    {
+     "op": "place",
+     "part": "3471",
+     "at": [
+      57,
+      0,
+      25
+     ],
+     "colour": "green"
+    }
+   ]
+  },
+  {
+   "name": "Tree huts",
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      1,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      14,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      1,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      14,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      7,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      7,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      1,
+      0,
+      37
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      14,
+      0,
+      37
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "floor",
+     "at": [
+      1,
+      30,
+      31
+     ],
+     "size": [
+      14,
+      14
+     ],
+     "layers": 2,
+     "colour": "deck",
+     "top": "tile"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      4,
+      0,
+      34
+     ],
+     "diameter": 8,
+     "height": 3,
+     "colour": "bark",
+     "texture": "log"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      5,
+      0,
+      35
+     ],
+     "diameter": 6,
+     "height": 68,
+     "colour": "bark",
+     "texture": "log"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       2,
+       31
+      ],
+      [
+       5,
+       31
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       10,
+       31
+      ],
+      [
+       13,
+       31
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       2,
+       44
+      ],
+      [
+       13,
+       44
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       1,
+       32
+      ],
+      [
+       1,
+       43
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       14,
+       32
+      ],
+      [
+       14,
+       35
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       14,
+       40
+      ],
+      [
+       14,
+       43
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      1,
+      32,
+      31
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      1,
+      35,
+      31
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      14,
+      32,
+      31
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      14,
+      35,
+      31
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      1,
+      32,
+      44
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      1,
+      35,
+      44
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      14,
+      32,
+      44
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      14,
+      35,
+      44
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "87079p50",
+     "at": [
+      6,
+      32,
+      31
+     ],
+     "colour": "blue"
+    },
+    {
+     "op": "room",
+     "at": [
+      3,
+      32,
+      33
+     ],
+     "size": [
+      10,
+      18,
+      10
+     ],
+     "colour": "blue",
+     "texture": "log",
+     "quoins": "light bluish grey",
+     "openings": [
+      {
+       "side": "front",
+       "at": 3,
+       "width": 4,
+       "height": 18,
+       "frame": "light bluish grey",
+       "door": "light bluish grey",
+       "opens": "out"
+      },
+      {
+       "side": "left",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "light bluish grey",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "left",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "light bluish grey",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "right",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "light bluish grey",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "right",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "light bluish grey",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "back",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "light bluish grey",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "back",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "light bluish grey",
+       "glass": "trans yellow"
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      3,
+      50,
+      33
+     ],
+     "size": [
+      10,
+      10
+     ],
+     "colour": "thatch",
+     "holes": [
+      {
+       "at": [
+        5,
+        35
+       ],
+       "size": [
+        6,
+        6
+       ]
+      }
+     ]
+    },
+    {
+     "op": "dome",
+     "at": [
+      1,
+      68,
+      31
+     ],
+     "diameter": 14,
+     "colour": "leaves"
+    },
+    {
+     "op": "column",
+     "at": [
+      25,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      38,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      25,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      38,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      31,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      31,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      25,
+      0,
+      37
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      38,
+      0,
+      37
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "floor",
+     "at": [
+      25,
+      30,
+      31
+     ],
+     "size": [
+      14,
+      14
+     ],
+     "layers": 2,
+     "colour": "deck",
+     "top": "tile"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      28,
+      0,
+      34
+     ],
+     "diameter": 8,
+     "height": 3,
+     "colour": "bark",
+     "texture": "log"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      29,
+      0,
+      35
+     ],
+     "diameter": 6,
+     "height": 83,
+     "colour": "bark",
+     "texture": "log"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       26,
+       31
+      ],
+      [
+       29,
+       31
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       34,
+       31
+      ],
+      [
+       37,
+       31
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       26,
+       44
+      ],
+      [
+       37,
+       44
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       25,
+       32
+      ],
+      [
+       25,
+       35
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       25,
+       40
+      ],
+      [
+       25,
+       43
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       38,
+       32
+      ],
+      [
+       38,
+       35
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       38,
+       40
+      ],
+      [
+       38,
+       43
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      25,
+      32,
+      31
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      25,
+      35,
+      31
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      38,
+      32,
+      31
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      38,
+      35,
+      31
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      25,
+      32,
+      44
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      25,
+      35,
+      44
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      38,
+      32,
+      44
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      38,
+      35,
+      44
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "87079p50",
+     "at": [
+      30,
+      32,
+      31
+     ],
+     "colour": "blue"
+    },
+    {
+     "op": "room",
+     "at": [
+      27,
+      32,
+      33
+     ],
+     "size": [
+      10,
+      18,
+      10
+     ],
+     "colour": "dark tan",
+     "texture": "log",
+     "quoins": "blue",
+     "openings": [
+      {
+       "side": "front",
+       "at": 3,
+       "width": 4,
+       "height": 18,
+       "frame": "light bluish grey",
+       "door": "blue",
+       "opens": "out"
+      },
+      {
+       "side": "left",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "left",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "right",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "right",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "back",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "back",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      27,
+      50,
+      33
+     ],
+     "size": [
+      10,
+      10
+     ],
+     "colour": "thatch",
+     "holes": [
+      {
+       "at": [
+        29,
+        35
+       ],
+       "size": [
+        6,
+        6
+       ]
+      }
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      26,
+      68,
+      32
+     ],
+     "size": [
+      12,
+      12
+     ],
+     "layers": 2,
+     "colour": "deck",
+     "top": "tile"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       27,
+       32
+      ],
+      [
+       36,
+       32
+      ]
+     ],
+     "y": 70,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       27,
+       43
+      ],
+      [
+       36,
+       43
+      ]
+     ],
+     "y": 70,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       26,
+       33
+      ],
+      [
+       26,
+       42
+      ]
+     ],
+     "y": 70,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       37,
+       33
+      ],
+      [
+       37,
+       42
+      ]
+     ],
+     "y": 70,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      26,
+      70,
+      32
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      26,
+      73,
+      32
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      37,
+      70,
+      32
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      37,
+      73,
+      32
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      26,
+      70,
+      43
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      26,
+      73,
+      43
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      37,
+      70,
+      43
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      37,
+      73,
+      43
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "dome",
+     "at": [
+      25,
+      83,
+      31
+     ],
+     "diameter": 14,
+     "colour": "leaves"
+    },
+    {
+     "op": "column",
+     "at": [
+      49,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      62,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      49,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      62,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      55,
+      0,
+      31
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      55,
+      0,
+      44
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      49,
+      0,
+      37
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "column",
+     "at": [
+      62,
+      0,
+      37
+     ],
+     "height": 30,
+     "diameter": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "floor",
+     "at": [
+      49,
+      30,
+      31
+     ],
+     "size": [
+      14,
+      14
+     ],
+     "layers": 2,
+     "colour": "deck",
+     "top": "tile"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      52,
+      0,
+      34
+     ],
+     "diameter": 8,
+     "height": 3,
+     "colour": "bark",
+     "texture": "log"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      53,
+      0,
+      35
+     ],
+     "diameter": 6,
+     "height": 68,
+     "colour": "bark",
+     "texture": "log"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       50,
+       31
+      ],
+      [
+       53,
+       31
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       58,
+       31
+      ],
+      [
+       61,
+       31
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       50,
+       44
+      ],
+      [
+       61,
+       44
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       49,
+       32
+      ],
+      [
+       49,
+       35
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       49,
+       40
+      ],
+      [
+       49,
+       43
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       62,
+       32
+      ],
+      [
+       62,
+       43
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      49,
+      32,
+      31
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      49,
+      35,
+      31
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      62,
+      32,
+      31
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      62,
+      35,
+      31
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      49,
+      32,
+      44
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      49,
+      35,
+      44
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      62,
+      32,
+      44
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      62,
+      35,
+      44
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "87079p50",
+     "at": [
+      54,
+      32,
+      31
+     ],
+     "colour": "blue"
+    },
+    {
+     "op": "room",
+     "at": [
+      51,
+      32,
+      33
+     ],
+     "size": [
+      10,
+      18,
+      10
+     ],
+     "colour": "light bluish grey",
+     "texture": "log",
+     "quoins": "blue",
+     "openings": [
+      {
+       "side": "front",
+       "at": 3,
+       "width": 4,
+       "height": 18,
+       "frame": "light bluish grey",
+       "door": "blue",
+       "opens": "out"
+      },
+      {
+       "side": "left",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "left",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "right",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "right",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "back",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "back",
+       "at": 7,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "blue",
+       "glass": "trans yellow"
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      51,
+      50,
+      33
+     ],
+     "size": [
+      10,
+      10
+     ],
+     "colour": "thatch",
+     "holes": [
+      {
+       "at": [
+        53,
+        35
+       ],
+       "size": [
+        6,
+        6
+       ]
+      }
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      51,
+      68,
+      33
+     ],
+     "size": [
+      10,
+      10
+     ],
+     "layers": 2,
+     "colour": "grey",
+     "top": "tile"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       52,
+       33
+      ],
+      [
+       59,
+       33
+      ]
+     ],
+     "y": 70,
+     "colour": "grey",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       52,
+       42
+      ],
+      [
+       59,
+       42
+      ]
+     ],
+     "y": 70,
+     "colour": "grey",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       51,
+       34
+      ],
+      [
+       51,
+       41
+      ]
+     ],
+     "y": 70,
+     "colour": "grey",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       60,
+       34
+      ],
+      [
+       60,
+       41
+      ]
+     ],
+     "y": 70,
+     "colour": "grey",
+     "style": "lattice-low"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      51,
+      70,
+      33
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      51,
+      73,
+      33
+     ],
+     "colour": "trans red"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      60,
+      70,
+      33
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      60,
+      73,
+      33
+     ],
+     "colour": "trans red"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      51,
+      70,
+      42
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      51,
+      73,
+      42
+     ],
+     "colour": "trans red"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      60,
+      70,
+      42
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      60,
+      73,
+      42
+     ],
+     "colour": "trans red"
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      54,
+      70,
+      36
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      52,
+      70,
+      34
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      59,
+      70,
+      41
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "floor",
+     "at": [
+      15,
+      30,
+      36
+     ],
+     "size": [
+      10,
+      4
+     ],
+     "layers": 2,
+     "colour": "deck",
+     "top": "tile"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       15,
+       36
+      ],
+      [
+       24,
+       36
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       15,
+       39
+      ],
+      [
+       24,
+       39
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "floor",
+     "at": [
+      39,
+      30,
+      36
+     ],
+     "size": [
+      10,
+      4
+     ],
+     "layers": 2,
+     "colour": "deck",
+     "top": "tile"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       39,
+       36
+      ],
+      [
+       48,
+       36
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       39,
+       39
+      ],
+      [
+       48,
+       39
+      ]
+     ],
+     "y": 32,
+     "colour": "bark",
+     "style": "lattice-low"
+    },
+    {
+     "op": "stairs",
+     "at": [
+      7,
+      0,
+      15
+     ],
+     "width": 2,
+     "steps": 16,
+     "dir": "+z",
+     "rise": 2,
+     "colour": "bark"
+    }
+   ]
+  },
+  {
+   "name": "Hangar hut",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      13,
+      0,
+      12
+     ],
+     "size": [
+      16,
+      3,
+      12
+     ],
+     "colour": "stone",
+     "texture": "masonry",
+     "interior": "solid"
+    },
+    {
+     "op": "stairs",
+     "at": [
+      19,
+      0,
+      9
+     ],
+     "width": 4,
+     "steps": 3,
+     "dir": "+z",
+     "rise": 1,
+     "colour": "stone"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      18,
+      3,
+      12
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      18,
+      6,
+      12
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      23,
+      3,
+      12
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      23,
+      6,
+      12
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "room",
+     "at": [
+      14,
+      3,
+      13
+     ],
+     "size": [
+      14,
+      21,
+      10
+     ],
+     "colour": "bark",
+     "texture": "log",
+     "quoins": "grey",
+     "openings": [
+      {
+       "side": "front",
+       "at": 5,
+       "width": 4,
+       "height": 18,
+       "frame": "grey",
+       "door": "space",
+       "opens": "out"
+      },
+      {
+       "side": "front",
+       "at": 1,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "space",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "front",
+       "at": 11,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "space",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "left",
+       "at": 4,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "space",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "right",
+       "at": 4,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "space",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "back",
+       "at": 2,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "space",
+       "glass": "trans yellow"
+      },
+      {
+       "side": "back",
+       "at": 10,
+       "width": 2,
+       "y": 6,
+       "height": 6,
+       "frame": "space",
+       "glass": "trans yellow"
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "gable",
+     "at": [
+      14,
+      24,
+      13
+     ],
+     "size": [
+      14,
+      10
+     ],
+     "ridge": "x",
+     "colour": "thatch",
+     "gable": "space"
+    },
+    {
+     "op": "column",
+     "at": [
+      29,
+      0,
+      15
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "grey"
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      29,
+      24,
+      15
+     ],
+     "colour": "grey"
+    }
+   ]
+  },
+  {
+   "name": "Landing pad",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      35,
+      0,
+      1
+     ],
+     "size": [
+      26,
+      23
+     ],
+     "colour": "grey",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      35,
+      1,
+      1
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      60,
+      1,
+      1
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      35,
+      1,
+      23
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      60,
+      1,
+      23
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "87079p50",
+     "at": [
+      45,
+      1,
+      2
+     ],
+     "colour": "blue"
+    },
+    {
+     "op": "place",
+     "part": "3003",
+     "at": [
+      36,
+      1,
+      20
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      36,
+      4,
+      20
+     ],
+     "colour": "grey"
+    },
+    {
+     "op": "instance",
+     "component": "Star Glider",
+     "at": [
+      38,
+      1,
+      5
+     ],
+     "turn": 270
+    },
+    {
+     "op": "instance",
+     "component": "Rover",
+     "at": [
+      15,
+      0,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Campfire",
+   "ops": [
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      3,
+      1,
+      5
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      3,
+      1,
+      6
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      3,
+      1,
+      7
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      3,
+      1,
+      8
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      6,
+      1,
+      5
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      6,
+      1,
+      6
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      6,
+      1,
+      7
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      6,
+      1,
+      8
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      4,
+      1,
+      5
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      5,
+      1,
+      5
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      4,
+      1,
+      8
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      5,
+      1,
+      8
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      4,
+      1,
+      6
+     ],
+     "colour": "trans red"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      5,
+      1,
+      7
+     ],
+     "colour": "trans red"
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      5,
+      1,
+      6
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      4,
+      1,
+      7
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      4,
+      4,
+      6
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      5,
+      4,
+      7
+     ],
+     "colour": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "30136",
+     "at": [
+      0,
+      1,
+      5
+     ],
+     "colour": "bark",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30136",
+     "at": [
+      9,
+      1,
+      6
+     ],
+     "colour": "bark",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30136",
+     "at": [
+      4,
+      1,
+      2
+     ],
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "30136",
+     "at": [
+      4,
+      1,
+      11
+     ],
+     "colour": "bark"
+    }
+   ]
+  },
+  {
+   "name": "Flowers",
+   "ops": [
+    {
+     "op": "scatter",
+     "region": {
+      "at": [
+       20,
+       0
+      ],
+      "size": [
+       14,
+       8
+      ]
+     },
+     "parts": [
+      "24866"
+     ],
+     "colours": [
+      "red",
+      "yellow",
+      "white"
+     ],
+     "density": 0.15,
+     "seed": 1
+    },
+    {
+     "op": "scatter",
+     "region": {
+      "at": [
+       0,
+       22
+      ],
+      "size": [
+       6,
+       6
+      ]
+     },
+     "parts": [
+      "24866"
+     ],
+     "colours": [
+      "red",
+      "yellow",
+      "white"
+     ],
+     "density": 0.15,
+     "seed": 2
+    },
+    {
+     "op": "scatter",
+     "region": {
+      "at": [
+       29,
+       17
+      ],
+      "size": [
+       5,
+       5
+      ]
+     },
+     "parts": [
+      "24866"
+     ],
+     "colours": [
+      "red",
+      "yellow",
+      "white"
+     ],
+     "density": 0.15,
+     "seed": 3
+    },
+    {
+     "op": "scatter",
+     "region": {
+      "at": [
+       61,
+       0
+      ],
+      "size": [
+       3,
+       24
+      ]
+     },
+     "parts": [
+      "24866"
+     ],
+     "colours": [
+      "red",
+      "yellow",
+      "white"
+     ],
+     "density": 0.15,
+     "seed": 4
+    },
+    {
+     "op": "scatter",
+     "region": {
+      "at": [
+       9,
+       16
+      ],
+      "size": [
+       4,
+       8
+      ]
+     },
+     "parts": [
+      "24866"
+     ],
+     "colours": [
+      "red",
+      "yellow",
+      "white"
+     ],
+     "density": 0.15,
+     "seed": 5
+    }
+   ]
+  }
+ ]
+}

@@ -38,6 +38,9 @@ npm run gallery:publish -- --script build.json --runner R --model M [--effort E]
 npm run gallery:publish -- --hide <buildId> [--remote]
 npm run gallery:publish -- --reindex [--remote]
 
+  --generation id assigns a reviewed prompt-generation cohort (create its
+  generations row first). --source remains the original run label.
+
   Compiles each accepted build (refusing any with errors), exports and gzips
   its MPD, renders ${GALLERY_VIEWS.join(", ")} (${GALLERY_RENDER.width} × ${GALLERY_RENDER.height}, ${GALLERY_RENDER.look} look, ${GALLERY_RENDER.backdrop} backdrop, WebP),
   names every file by its SHA-256, uploads the files, inserts the rows and
@@ -94,6 +97,7 @@ export type Candidate = {
   agentId: string;
   agentName: string;
   source?: string;
+  generation?: string;
   result?: OneShotResult;
 };
 
@@ -113,6 +117,7 @@ export function oneShotCandidates(
     promptName?: string;
     only?: string[];
     source?: string;
+    generation?: string;
   } = {},
 ): { candidates: Candidate[]; skipped: string[] } {
   // Newer runs keep the prompt in each effort's folder.
@@ -158,6 +163,7 @@ export function oneShotCandidates(
       agentId: galleryAgentId(runner, result.model, effort),
       agentName: galleryAgentName(result.model, effort),
       source: o.source ?? basename(dir),
+      generation: o.generation,
       result,
     });
   }
@@ -235,6 +241,7 @@ export function publishSql(
             : Math.round(r.tokens.costUsd * 100) / 100,
         output_tokens: r?.tokens?.output,
         source: c.source,
+        generation_id: c.generation,
         library_release: b.library.release,
         library_hash: b.library.hash,
         warnings: b.warnings,
@@ -248,8 +255,11 @@ export function publishSql(
 export const INDEX_QUERY = `SELECT b.id AS build_id, b.prompt_id, p.name AS prompt_name, p.brief, p.target_parts, p.arena,
   b.agent_id, a.display_name, a.model, a.effort, b.title, b.mpd_sha, b.mpd_bytes, b.script_sha, b.report_sha,
   b.renders, b.parts, b.attempts, b.seconds, b.cost_usd, b.output_tokens, b.source,
-  b.library_release, b.library_hash, b.warnings, b.created_at
+  b.library_release, b.library_hash, b.warnings, b.created_at,
+  g.id AS generation_id, g.name AS generation_name, g.description AS generation_description,
+  g.sort_order AS generation_order, g.is_default AS generation_default
 FROM builds b JOIN prompts p ON p.id = b.prompt_id JOIN agents a ON a.id = b.agent_id
+LEFT JOIN generations g ON g.id = b.generation_id
 WHERE b.hidden = 0`;
 
 // ---------------------------------------------------------------------------
@@ -381,7 +391,7 @@ async function store(
   await t.put(key, file, type, cache);
 }
 
-async function prepare(
+export async function prepare(
   c: Candidate,
 ): Promise<Prepared & { project: Project; bounds: any }> {
   const [{ compileBuildScript }, { registerAgentData }, fullNode, full] =
@@ -418,6 +428,7 @@ async function prepare(
       {
         gallery: 1,
         source: c.source,
+        generation: c.generation,
         label: c.label,
         prompt: { id: c.promptId, brief: c.brief, targetParts: c.targetParts },
         agent: {
@@ -463,7 +474,7 @@ async function prepare(
 }
 
 /** Renders every build's views in one headless page. */
-async function renderAll(
+export async function renderAll(
   builds: { id: string; project: Project; bounds: { min: any; max: any } }[],
 ): Promise<Map<string, Record<GalleryRenderKey, Uint8Array>>> {
   const [{ withHeadlessPage }, { viewCamera }, { encodeNative }] =
@@ -573,6 +584,7 @@ function parseArgs(argv: string[]) {
     "prompt-name",
     "only",
     "source",
+    "generation",
     "script",
     "runner",
     "model",
@@ -613,6 +625,18 @@ export async function main(argv: string[]) {
       : `Dry run: files in ${t.outDir}, rows in a local D1 (add --remote to publish)`,
   );
   await migrate(t);
+  if (flags.has("generation")) {
+    const id = flags.get("generation")!;
+    const rows = await d1Query<{ id: string }>(
+      t,
+      `SELECT id FROM generations WHERE id = ${sqlValue(id)}`,
+    );
+    ensure(
+      rows.length === 1,
+      "INVALID_INPUT",
+      `Unknown prompt generation: ${id}. Create its reviewed generations row first.`,
+    );
+  }
 
   if (flags.has("hide")) {
     const id = flags.get("hide")!;
@@ -644,6 +668,7 @@ export async function main(argv: string[]) {
       promptName: flags.get("prompt-name"),
       only: flags.get("only")?.split(","),
       source: flags.get("source"),
+      generation: flags.get("generation"),
     });
     for (const s of r.skipped) console.log(`skip ${s}`);
     candidates.push(...r.candidates);
@@ -679,6 +704,7 @@ export async function main(argv: string[]) {
       agentId: galleryAgentId(runner, model, effort),
       agentName: galleryAgentName(model, effort),
       source: flags.get("source"),
+      generation: flags.get("generation"),
     });
   }
 

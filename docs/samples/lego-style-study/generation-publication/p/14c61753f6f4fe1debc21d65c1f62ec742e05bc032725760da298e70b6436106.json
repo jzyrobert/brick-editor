@@ -1,0 +1,350 @@
+{
+  "gallery": 1,
+  "source": "E:text-only:original-source-revision",
+  "label": "contextual-destroyer/high",
+  "prompt": {
+    "id": "imperial-star-destroyer-5000",
+    "brief": "imperial star destroyer",
+    "targetParts": 5000
+  },
+  "agent": {
+    "id": "codex/gpt-6-astra/high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "targetParts": 5000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 5272,
+    "targetMiss": {
+      "target": 5000,
+      "parts": 5272,
+      "difference": 272,
+      "percent": 5.4
+    },
+    "seconds": 327,
+    "tokens": {
+      "input": 370279,
+      "cached": 214528,
+      "output": 21792,
+      "reasoning": 8466
+    },
+    "searches": 10,
+    "checks": 1,
+    "knowledge": {
+      "named": [
+        "11477",
+        "20953",
+        "2412b",
+        "2431",
+        "2877",
+        "3005",
+        "30208",
+        "3022",
+        "3023b",
+        "3024",
+        "30363",
+        "3039",
+        "3040b",
+        "3068b",
+        "3069b",
+        "3070b",
+        "3298",
+        "3544",
+        "3545",
+        "3660b",
+        "3665a",
+        "3710",
+        "3941",
+        "3957a",
+        "4032b",
+        "4460b",
+        "54200"
+      ],
+      "notInList": [
+        "20953",
+        "30208",
+        "3544",
+        "3545"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 327,
+        "usage": {
+          "input": 370279,
+          "cached": 214528,
+          "output": 21792,
+          "reasoning": 8466,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wedge plate 3 x 6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "54383",
+              "54384"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate 4 x 6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "32059",
+              "47407"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "30208",
+              "limit": 2
+            },
+            "results": [
+              "30208"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "20953",
+              "limit": 2
+            },
+            "results": [
+              "20953",
+              "37837"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope inverted 33 3 x 2",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "3747b",
+              "3747a"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wing 3 x 8",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "50304",
+              "50305",
+              "3544",
+              "3545"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge 3 x 8",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "50304",
+              "50305",
+              "3544",
+              "3545"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge 4 x 10",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "3030",
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge slope",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "54200",
+              "85984",
+              "93606",
+              "42918",
+              "41748",
+              "41747",
+              "52031",
+              "43720"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tile wedge",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "3070b",
+              "3069b",
+              "2431",
+              "3068b",
+              "6636",
+              "98138"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 5272,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "20953",
+            "2412b",
+            "2431",
+            "2877",
+            "3005",
+            "30208",
+            "3022",
+            "3023b",
+            "3024",
+            "30363",
+            "3039",
+            "3040b",
+            "3068b",
+            "3069b",
+            "3070b",
+            "3298",
+            "3544",
+            "3545",
+            "3660b",
+            "3665a",
+            "3710",
+            "3941",
+            "3957a",
+            "4032b",
+            "4460b",
+            "54200"
+          ],
+          "notInList": [
+            "20953",
+            "30208",
+            "3544",
+            "3545"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 5272
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 5272,
+      "designs": 70,
+      "lots": 182,
+      "massingCells": 60240,
+      "massingParts": 2852,
+      "placedParts": 2420,
+      "sections": 12,
+      "components": 2,
+      "opsRun": 2562,
+      "scriptBytes": 184332,
+      "ldrawBytes": 250978,
+      "partsPerScriptKB": 29.3,
+      "compileMs": 545,
+      "checkMs": 1905
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 95,
+      "covered": 5223,
+      "uncovered": 49,
+      "health": "warning: 5223 parts with verified connectors form 95 separately connected groups; 11 parts are not connected to anything. 49 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 5000,
+      "parts": 5272,
+      "difference": 272,
+      "percent": 5.4
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1112 part(s) in 94 group(s) are not connected to the main structure (largest group: 4111 parts); e.g. 3039 at [25, 38, 105], 3039 at [30, 38, 105], 3039 at [45, 38, 105], 3039 at [50, 38, 105], 3039 at [65, 38, 105], 3039 at [70, 38, 105]",
+        "ops": [
+          "sections[9].ops[3]",
+          "sections[9].ops[4]",
+          "sections[9].ops[33]",
+          "sections[9].ops[34]",
+          "sections[9].ops[63]",
+          "sections[9].ops[64]",
+          "sections[0].ops[4]",
+          "sections[9].ops[2]",
+          "sections[9].ops[32]",
+          "sections[9].ops[62]",
+          "sections[9].ops[0]",
+          "sections[0].ops[0]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

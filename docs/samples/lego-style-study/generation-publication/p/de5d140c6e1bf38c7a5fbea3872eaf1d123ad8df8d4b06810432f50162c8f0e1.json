@@ -1,0 +1,294 @@
+{
+  "gallery": 1,
+  "source": "e-fresh:text-only",
+  "generation": "e-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/astra-temple",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "codex/gpt-6-astra/high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 2231,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2231,
+      "difference": 231,
+      "percent": 11.6
+    },
+    "seconds": 415,
+    "tokens": {
+      "input": 563131,
+      "cached": 354944,
+      "output": 51692,
+      "reasoning": 15409
+    },
+    "searches": 5,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "15068",
+        "2417",
+        "2423",
+        "2431",
+        "24866",
+        "3004",
+        "3005",
+        "30151a",
+        "3022",
+        "3039",
+        "3045",
+        "3069b",
+        "3665a",
+        "3710",
+        "3941",
+        "3957a",
+        "3960",
+        "4032b",
+        "4589",
+        "4740",
+        "6141",
+        "61678",
+        "90398"
+      ],
+      "notInList": [
+        "30151a",
+        "90398"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 415,
+        "usage": {
+          "input": 563131,
+          "cached": 354944,
+          "output": 51692,
+          "reasoning": 15409,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "1x4",
+              "colour": "dark bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "61678",
+              "93273",
+              "13547",
+              "11153"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "inverted slope",
+              "size": "1x2",
+              "colour": "reddish brown",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "3665a",
+              "2449",
+              "24201",
+              "3665b"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "dish",
+              "size": "2x2",
+              "colour": "pearl gold",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "4740",
+              "17964",
+              "35395"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "minifigure statuette",
+              "colour": "pearl gold",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "90398"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bell",
+              "limit": 6
+            },
+            "results": [
+              "3942c",
+              "3943b",
+              "30151a",
+              "6017",
+              "u608",
+              "u609"
+            ],
+            "round": 1
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 2386,
+            "errors": 8,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 2351,
+            "errors": 2,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "parts": 2231,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "15068",
+            "2417",
+            "2423",
+            "2431",
+            "24866",
+            "3004",
+            "3005",
+            "30151a",
+            "3022",
+            "3039",
+            "3045",
+            "3069b",
+            "3665a",
+            "3710",
+            "3941",
+            "3957a",
+            "3960",
+            "4032b",
+            "4589",
+            "4740",
+            "6141",
+            "61678",
+            "90398"
+          ],
+          "notInList": [
+            "30151a",
+            "90398"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2231
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2231,
+      "designs": 71,
+      "lots": 207,
+      "massingCells": 13737,
+      "massingParts": 1450,
+      "placedParts": 781,
+      "sections": 8,
+      "components": 0,
+      "opsRun": 585,
+      "scriptBytes": 44268,
+      "ldrawBytes": 104441,
+      "partsPerScriptKB": 51.6,
+      "compileMs": 217,
+      "checkMs": 455
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 312,
+      "covered": 2210,
+      "uncovered": 21,
+      "health": "warning: 2210 parts with verified connectors form 312 separately connected groups; 294 parts are not connected to anything. 21 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2231,
+      "difference": 231,
+      "percent": 11.6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24866.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[7].ops[11]",
+          "sections[7].ops[14]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1107 part(s) in 311 group(s) are not connected to the main structure (largest group: 1103 parts); e.g. 2465 at [40, 0, 16], 15068 at [-11, 1, 20], 3007 at [13, 0, 1], 3027 at [13, 0, -6], 3034 at [13, 0, -1], 3039 at [3, 1, -3]",
+        "ops": [
+          "sections[5].ops[1]",
+          "sections[5].ops[18]",
+          "sections[5].ops[98]",
+          "sections[0].ops[2]",
+          "sections[5].ops[220]",
+          "sections[5].ops[165]",
+          "sections[5].ops[31]",
+          "sections[0].ops[7]",
+          "sections[7].ops[0]",
+          "sections[0].ops[5]",
+          "sections[1].ops[11]",
+          "sections[0].ops[6]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

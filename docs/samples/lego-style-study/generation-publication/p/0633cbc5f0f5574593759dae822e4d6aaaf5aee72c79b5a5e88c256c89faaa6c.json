@@ -1,0 +1,324 @@
+{
+  "gallery": 1,
+  "source": "a-text:text-only",
+  "generation": "a-text",
+  "label": "docs/samples/lego-style-study/object-piplup",
+  "prompt": {
+    "id": "piplup-1000",
+    "brief": "piplup",
+    "targetParts": 1000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 1000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1074,
+    "targetMiss": {
+      "target": 1000,
+      "parts": 1074,
+      "difference": 74,
+      "percent": 7.4
+    },
+    "seconds": 378,
+    "tokens": {
+      "input": 565787,
+      "cached": 356736,
+      "output": 39443,
+      "reasoning": 27036
+    },
+    "searches": 9,
+    "checks": 2,
+    "knowledge": {
+      "named": [
+        "11477",
+        "15068",
+        "3003",
+        "3004",
+        "3660b",
+        "50950",
+        "61678"
+      ],
+      "notInList": [],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 378,
+        "usage": {
+          "input": 565787,
+          "cached": 356736,
+          "output": 39443,
+          "reasoning": 27036,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "curved slope",
+              "colour": "medium azure",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "11477",
+              "15068",
+              "61678",
+              "50950",
+              "93273",
+              "88930",
+              "24201",
+              "13547",
+              "6091",
+              "70681",
+              "80177",
+              "80178"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "colour": "dark azure",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "11477",
+              "15068",
+              "61678",
+              "50950",
+              "93273",
+              "88930",
+              "24309",
+              "24201",
+              "13547",
+              "6091"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope inverted",
+              "colour": "blue",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "3665a",
+              "3660b",
+              "2449",
+              "3676",
+              "4287a",
+              "24201",
+              "3747b",
+              "3665b"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope curved",
+              "colour": "yellow",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "11477",
+              "15068",
+              "61678",
+              "50950",
+              "93273",
+              "88930",
+              "24309",
+              "24201"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "round tile",
+              "colour": "black",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "98138",
+              "14769",
+              "25269",
+              "4150",
+              "27925",
+              "3477",
+              "27507",
+              "79393"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "3660",
+              "colour": "dark azure",
+              "available_in_colour": true,
+              "limit": 3
+            },
+            "results": [
+              "3660b"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "brick 2 x 2",
+              "colour": "dark azure",
+              "available_in_colour": true,
+              "limit": 3
+            },
+            "results": [
+              "3003",
+              "3941",
+              "6143"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope inverted",
+              "colour": "medium azure",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "3665a",
+              "3660b",
+              "24201",
+              "3747b"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope 45",
+              "colour": "dark azure",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "3039",
+              "3040b",
+              "3665a",
+              "3660b",
+              "3665b",
+              "15672"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 1127,
+            "errors": 6,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 1121,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "15068",
+            "3003",
+            "3004",
+            "3660b",
+            "50950",
+            "61678"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1074
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1074,
+      "designs": 28,
+      "lots": 47,
+      "massingCells": 22001,
+      "massingParts": 403,
+      "placedParts": 671,
+      "sections": 8,
+      "components": 0,
+      "opsRun": 778,
+      "scriptBytes": 61159,
+      "ldrawBytes": 52517,
+      "partsPerScriptKB": 18,
+      "compileMs": 78,
+      "checkMs": 255
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 68,
+      "covered": 1074,
+      "uncovered": 0,
+      "health": "warning: 1074 parts with verified connectors form 68 separately connected groups; 58 parts are not connected to anything."
+    },
+    "target": {
+      "target": 1000,
+      "parts": 1074,
+      "difference": 74,
+      "percent": 7.4
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "131 part(s) in 67 group(s) are not connected to the main structure (largest group: 943 parts); e.g. 3003 at [17, 30, 2], 61678 at [-3, 15, 14], 2456 at [0, 51, -10], 3003 at [15, 27, 2], 3003 at [15, 27, 6], 3003 at [13, 27, 2]",
+        "ops": [
+          "sections[7].ops[0]",
+          "sections[7].ops[1]",
+          "sections[6].ops[17]",
+          "sections[6].ops[8]",
+          "sections[4].ops[7]",
+          "sections[6].ops[12]",
+          "sections[6].ops[20]",
+          "sections[6].ops[28]",
+          "sections[6].ops[34]",
+          "sections[6].ops[39]",
+          "sections[6].ops[44]",
+          "sections[6].ops[49]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

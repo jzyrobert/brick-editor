@@ -1,0 +1,337 @@
+{
+  "gallery": 1,
+  "source": "codex-pelican-bicycle-800-creative",
+  "label": "codex-pelican-bicycle-800-creative/high",
+  "prompt": {
+    "id": "pelican-riding-a-bicycle-800",
+    "brief": "a pelican riding a bicycle",
+    "targetParts": 800
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 800,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 852,
+    "targetMiss": {
+      "target": 800,
+      "parts": 852,
+      "difference": 52,
+      "percent": 6.5
+    },
+    "seconds": 648,
+    "tokens": {
+      "input": 715079,
+      "cached": 529664,
+      "output": 55862,
+      "reasoning": 24484
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "14769",
+        "15068",
+        "2431",
+        "3005",
+        "3005pe4",
+        "3069b",
+        "32607",
+        "3788",
+        "3941",
+        "3942c",
+        "4032b",
+        "61678",
+        "64648",
+        "8043",
+        "98138"
+      ],
+      "notInList": [
+        "3005pe4",
+        "64648",
+        "8043"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 648,
+        "usage": {
+          "input": 715079,
+          "cached": 529664,
+          "output": 55862,
+          "reasoning": 24484,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "motorcycle wheel",
+              "limit": 5
+            },
+            "results": [
+              "88517",
+              "2903",
+              "50860",
+              "18895",
+              "52035"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bicycle",
+              "limit": 5
+            },
+            "results": [
+              "4719",
+              "92851",
+              "2807",
+              "4720",
+              "64248"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tile round eye",
+              "limit": 5
+            },
+            "results": [
+              "10238",
+              "98138pz0",
+              "98138pz2",
+              "98138p2d",
+              "98138p07"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "technic wheel large",
+              "limit": 5
+            },
+            "results": [
+              "2741",
+              "2999"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "fish",
+              "limit": 5
+            },
+            "results": [
+              "64648",
+              "30224",
+              "49595e",
+              "8043"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tyre 75 motorcycle",
+              "limit": 5
+            },
+            "results": [
+              "80542"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tyre 62 motorcycle",
+              "limit": 5
+            },
+            "results": [
+              "3641",
+              "6255",
+              "6215",
+              "6259",
+              "6231"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "brick eye pattern",
+              "limit": 5
+            },
+            "results": [
+              "3005pe1",
+              "3005pe4",
+              "3003pe3",
+              "3003pe2",
+              "3005pe2"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "basket",
+              "limit": 5
+            },
+            "results": [
+              "30109",
+              "51858",
+              "2424",
+              "71861",
+              "30492"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "propeller 3 blade",
+              "limit": 3
+            },
+            "results": [
+              "6041",
+              "2421",
+              "50899"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "ok": false,
+            "reason": "INVALID_INPUT: Invalid build script: $.sections[0].ops[1].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"dark blue\",\"medium azure\",\"trans light blue\"]}); $.sections[0].ops[3].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"dark tan\",\"light bluish grey\"]})"
+          },
+          {
+            "round": 2,
+            "parts": 1351,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 852,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "14769",
+            "15068",
+            "2431",
+            "3005",
+            "3005pe4",
+            "3069b",
+            "32607",
+            "3788",
+            "3941",
+            "3942c",
+            "4032b",
+            "61678",
+            "64648",
+            "8043",
+            "98138"
+          ],
+          "notInList": [
+            "3005pe4",
+            "64648",
+            "8043"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 852
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 852,
+      "designs": 63,
+      "lots": 167,
+      "massingCells": 8561,
+      "massingParts": 655,
+      "placedParts": 197,
+      "sections": 9,
+      "components": 0,
+      "opsRun": 304,
+      "scriptBytes": 23357,
+      "ldrawBytes": 41967,
+      "partsPerScriptKB": 37.4,
+      "compileMs": 160,
+      "checkMs": 225
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 5,
+      "groups": 144,
+      "covered": 844,
+      "uncovered": 8,
+      "health": "warning: 844 parts with verified connectors form 144 separately connected groups; 100 parts are not connected to anything. 8 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 800,
+      "parts": 852,
+      "difference": 52,
+      "percent": 6.5
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "5 part(s) are off the stud grid",
+        "ops": [
+          "sections[7].ops[3]",
+          "sections[7].ops[4]",
+          "sections[7].ops[5]",
+          "sections[7].ops[7]",
+          "sections[7].ops[8]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "533 part(s) in 143 group(s) are not connected to the main structure (largest group: 311 parts); e.g. 15068 at [13, 67, 16], 15068 at [23, 81, 13], 3023b at [17, 37, 15], 3811 at [16, 0, 16], 3022 at [32, 38, 15], 3031 at [25, 18, 11]",
+        "ops": [
+          "sections[4].ops[1]",
+          "sections[4].ops[3]",
+          "sections[4].ops[2]",
+          "sections[4].ops[5]",
+          "sections[4].ops[0]",
+          "sections[2].ops[8]",
+          "sections[2].ops[2]",
+          "sections[4].ops[4]",
+          "sections[3].ops[0]",
+          "sections[2].ops[4]",
+          "sections[5].ops[14]",
+          "sections[5].ops[34]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

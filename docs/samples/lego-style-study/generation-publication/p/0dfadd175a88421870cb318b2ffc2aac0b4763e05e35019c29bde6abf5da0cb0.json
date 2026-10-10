@@ -1,0 +1,281 @@
+{
+  "gallery": 1,
+  "source": "claude-star-destroyer-5000-creative",
+  "label": "claude-star-destroyer-5000-creative/high",
+  "prompt": {
+    "id": "imperial-star-destroyer-5000",
+    "brief": "imperial star destroyer",
+    "targetParts": 5000
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 5000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 4813,
+    "targetMiss": {
+      "target": 5000,
+      "parts": 4813,
+      "difference": -187,
+      "percent": -3.7
+    },
+    "seconds": 1235,
+    "tokens": {
+      "input": 315640,
+      "cached": 204221,
+      "output": 83744,
+      "reasoning": 67607,
+      "costUsd": 7.846469399999999
+    },
+    "searches": 5,
+    "checks": 2,
+    "knowledge": {
+      "named": [
+        "3024",
+        "30395",
+        "3062b",
+        "3069b",
+        "3070b",
+        "3941",
+        "3943b",
+        "3957a",
+        "3960",
+        "4345b",
+        "44359",
+        "4589",
+        "4740",
+        "54200",
+        "6141",
+        "86500",
+        "98138"
+      ],
+      "notInList": [
+        "30395",
+        "44359",
+        "86500"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 1235,
+        "usage": {
+          "input": 315640,
+          "cached": 204221,
+          "output": 83744,
+          "reasoning": 67607,
+          "costUsd": 7.846469399999999
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "dome 4x4",
+              "colour": "light bluish grey"
+            },
+            "results": [
+              "86500",
+              "35320",
+              "49612",
+              "8181",
+              "85834"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "hemisphere"
+            },
+            "results": [
+              "30208",
+              "44359",
+              "98107",
+              "24130",
+              "24132",
+              "61287",
+              "1974",
+              "86500",
+              "44358",
+              "20455",
+              "30083",
+              "4412",
+              "57587",
+              "58772",
+              "58773"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "chain",
+              "limit": 5
+            },
+            "results": [
+              "88323",
+              "14696",
+              "57518",
+              "3711",
+              "3873"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "round plate 1x1 with bar",
+              "colour": "dark bluish grey"
+            },
+            "results": [
+              "32828",
+              "79194",
+              "65578",
+              "25893a",
+              "19119c02"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "hook",
+              "limit": 5
+            },
+            "results": [
+              "30395",
+              "3136",
+              "4623",
+              "88072",
+              "2651"
+            ],
+            "round": 1
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 4421,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 2,
+            "parts": 4813,
+            "errors": 1,
+            "ok": false
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "3024",
+            "30395",
+            "3062b",
+            "3069b",
+            "3070b",
+            "3941",
+            "3943b",
+            "3957a",
+            "3960",
+            "4345b",
+            "44359",
+            "4589",
+            "4740",
+            "54200",
+            "6141",
+            "86500",
+            "98138"
+          ],
+          "notInList": [
+            "30395",
+            "44359",
+            "86500"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 4813
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 4813,
+      "designs": 72,
+      "lots": 138,
+      "massingCells": 29004,
+      "massingParts": 4162,
+      "placedParts": 651,
+      "sections": 6,
+      "components": 0,
+      "opsRun": 1358,
+      "scriptBytes": 109518,
+      "ldrawBytes": 223933,
+      "partsPerScriptKB": 45,
+      "compileMs": 1058,
+      "checkMs": 1456
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 2,
+      "groups": 375,
+      "covered": 4770,
+      "uncovered": 43,
+      "health": "warning: 4770 parts with verified connectors form 375 separately connected groups; 47 parts are not connected to anything. 2 groups stand on baseplates laid side by side, which count as one ground. 43 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 5000,
+      "parts": 4813,
+      "difference": -187,
+      "percent": -3.7
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "2 part(s) are off the stud grid",
+        "ops": [
+          "sections[4].ops[83]",
+          "sections[4].ops[86]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "3164 part(s) in 374 group(s) are not connected to the main structure (largest group: 1606 parts); e.g. 3028 at [82, 28, 32], 3021 at [31, 36, 26], 3034 at [92, 30, 21], 3941 at [76, 89, 25], 3020 at [67, 28, 32], 6112 at [76, 69, 29]",
+        "ops": [
+          "sections[1].ops[2]",
+          "sections[2].ops[216]",
+          "sections[1].ops[1]",
+          "sections[1].ops[4]",
+          "sections[1].ops[0]",
+          "sections[1].ops[5]",
+          "sections[1].ops[3]",
+          "sections[1].ops[10]",
+          "sections[1].ops[6]",
+          "sections[1].ops[7]",
+          "sections[0].ops[300]",
+          "sections[0].ops[381]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

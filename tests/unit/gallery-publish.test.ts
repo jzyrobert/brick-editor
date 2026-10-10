@@ -113,8 +113,10 @@ test("publish SQL inserts each prompt and agent once, then the builds", () => {
   expect(lines.filter((l) => l.includes("INTO builds"))).toHaveLength(2);
   expect(lines.indexOf(lines.find((l) => l.includes("INTO builds"))!)).toBe(2);
   // Cost is rounded to cents; unknown values are NULL.
-  expect(sql).toContain(", 2.84, 117537, 'run', 'lib', 'h', 1, 1790000000);");
-  expect(lines.at(-1)).toContain(", NULL, NULL, 'run', 'lib', 'h', 1,");
+  expect(sql).toContain(
+    ", 2.84, 117537, 'run', NULL, 'lib', 'h', 1, 1790000000);",
+  );
+  expect(lines.at(-1)).toContain(", NULL, NULL, 'run', NULL, 'lib', 'h', 1,");
 });
 
 test("a run with its prompt in the effort folder still publishes", () => {

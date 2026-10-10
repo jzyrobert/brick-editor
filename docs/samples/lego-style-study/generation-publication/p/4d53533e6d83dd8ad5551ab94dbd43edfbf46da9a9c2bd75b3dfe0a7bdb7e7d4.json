@@ -1,0 +1,2261 @@
+{
+  "gallery": 1,
+  "source": "e-fresh:text-only",
+  "generation": "e-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/astra-destroyer",
+  "prompt": {
+    "id": "imperial-star-destroyer-5000",
+    "brief": "imperial star destroyer",
+    "targetParts": 5000
+  },
+  "agent": {
+    "id": "codex/gpt-6-astra/high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "targetParts": 5000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 5700,
+    "targetMiss": {
+      "target": 5000,
+      "parts": 5700,
+      "difference": 700,
+      "percent": 14
+    },
+    "seconds": 526,
+    "tokens": {
+      "input": 1062103,
+      "cached": 757120,
+      "output": 56949,
+      "reasoning": 29100
+    },
+    "searches": 13,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "2412b",
+        "2431",
+        "2877",
+        "3003",
+        "3004",
+        "3020",
+        "3022",
+        "3023b",
+        "3024",
+        "3029",
+        "30363",
+        "3037",
+        "3039",
+        "3069b",
+        "3660b",
+        "3941",
+        "3957a",
+        "4070",
+        "41747",
+        "41748",
+        "41764",
+        "41765",
+        "60474",
+        "6141"
+      ],
+      "notInList": [
+        "41747",
+        "41748",
+        "41764",
+        "41765"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 526,
+        "usage": {
+          "input": 1062103,
+          "cached": 757120,
+          "output": 56949,
+          "reasoning": 29100,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wedge plate 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "47405"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate 6 x 12",
+              "limit": 10
+            },
+            "results": [
+              "3028",
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a",
+              "3024",
+              "3023b",
+              "3623",
+              "3710"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "dish",
+              "size": "8x8",
+              "limit": 6
+            },
+            "results": [
+              "3961",
+              "35154",
+              "18859"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope 18",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "18759",
+              "30363",
+              "60477",
+              "18862",
+              "61409b",
+              "5404",
+              "43708",
+              "61409"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "technic engine turbine",
+              "limit": 8
+            },
+            "results": [
+              "3700",
+              "3701",
+              "3709b",
+              "2851",
+              "2853a",
+              "2853b",
+              "2853c",
+              "2854"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "Wedge Plate 3 x 12",
+              "limit": 8
+            },
+            "results": [
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a",
+              "3024",
+              "3023b",
+              "3623"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Wedge Plate 4 x 12",
+              "limit": 8
+            },
+            "results": [
+              "3029",
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a",
+              "3024",
+              "3023b"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Wedge Plate 2 x 6",
+              "limit": 8
+            },
+            "results": [
+              "2336"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Wedge 4 x 4 triple",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "47753",
+              "48933",
+              "4855",
+              "13349"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Slope Inverted 18",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "18759"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge",
+              "category": "Wedge",
+              "limit": 50
+            },
+            "results": [
+              "6564",
+              "6565",
+              "41748",
+              "41747",
+              "64225",
+              "43713",
+              "45677",
+              "43710",
+              "43711",
+              "41764",
+              "41765",
+              "41767",
+              "47753",
+              "98281",
+              "41768",
+              "43712",
+              "48933",
+              "42060",
+              "42061",
+              "43720",
+              "43721",
+              "47759",
+              "50955",
+              "50956",
+              "11291",
+              "41761",
+              "42021",
+              "42862",
+              "47755",
+              "48165",
+              "4855",
+              "45301",
+              "4856",
+              "6153b",
+              "50373",
+              "2399",
+              "3504",
+              "3505",
+              "22391",
+              "64867",
+              "2336",
+              "4858",
+              "6069",
+              "13349",
+              "3388",
+              "3389",
+              "22390",
+              "30382",
+              "6153a",
+              "32084"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "category": "Plate",
+              "limit": 50
+            },
+            "results": [
+              "32059",
+              "26601",
+              "6106",
+              "30503",
+              "30504",
+              "30303",
+              "4607",
+              "6040"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "wing",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 25
+            },
+            "results": [
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a",
+              "24299",
+              "24307",
+              "43719",
+              "90194",
+              "43723b",
+              "41769b",
+              "41770b",
+              "43722b",
+              "48183",
+              "65426",
+              "65429",
+              "14181",
+              "54383",
+              "54384",
+              "50304",
+              "50305",
+              "48205",
+              "48208",
+              "78443",
+              "3934"
+            ],
+            "round": 3
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 7583,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 2,
+            "parts": 6968,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 5700,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "2412b",
+            "2431",
+            "2877",
+            "3003",
+            "3004",
+            "3020",
+            "3022",
+            "3023b",
+            "3024",
+            "3029",
+            "30363",
+            "3037",
+            "3039",
+            "3069b",
+            "3660b",
+            "3941",
+            "3957a",
+            "4070",
+            "41747",
+            "41748",
+            "41764",
+            "41765",
+            "60474",
+            "6141"
+          ],
+          "notInList": [
+            "41747",
+            "41748",
+            "41764",
+            "41765"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 5700
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 5700,
+      "designs": 65,
+      "lots": 126,
+      "massingCells": 45214,
+      "massingParts": 2912,
+      "placedParts": 2788,
+      "sections": 10,
+      "components": 0,
+      "opsRun": 3100,
+      "scriptBytes": 227942,
+      "ldrawBytes": 271158,
+      "partsPerScriptKB": 25.6,
+      "compileMs": 1601,
+      "checkMs": 2299
+    },
+    "check": {
+      "overlaps": 193,
+      "offGrid": 0,
+      "groups": 367,
+      "covered": 5603,
+      "uncovered": 97,
+      "health": "warning: 5603 parts with verified connectors form 367 separately connected groups; 185 parts are not connected to anything. 97 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 5000,
+      "parts": 5700,
+      "difference": 700,
+      "percent": 14
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[1]",
+          "sections[3].ops[3]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[1]",
+          "sections[3].ops[5]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[7]",
+          "sections[3].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[7]",
+          "sections[3].ops[11]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[13]",
+          "sections[3].ops[15]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[13]",
+          "sections[3].ops[17]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[19]",
+          "sections[3].ops[21]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[19]",
+          "sections[3].ops[23]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[25]",
+          "sections[3].ops[27]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[25]",
+          "sections[3].ops[29]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[31]",
+          "sections[3].ops[33]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[31]",
+          "sections[3].ops[35]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[37]",
+          "sections[3].ops[39]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[37]",
+          "sections[3].ops[41]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[43]",
+          "sections[3].ops[45]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[43]",
+          "sections[3].ops[47]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[49]",
+          "sections[3].ops[51]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[49]",
+          "sections[3].ops[53]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[55]",
+          "sections[3].ops[57]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[55]",
+          "sections[3].ops[59]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[61]",
+          "sections[3].ops[63]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[61]",
+          "sections[3].ops[65]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[67]",
+          "sections[3].ops[69]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[67]",
+          "sections[3].ops[71]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[73]",
+          "sections[3].ops[75]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[73]",
+          "sections[3].ops[77]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[79]",
+          "sections[3].ops[81]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[79]",
+          "sections[3].ops[83]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[85]",
+          "sections[3].ops[87]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[85]",
+          "sections[3].ops[89]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[91]",
+          "sections[3].ops[93]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[91]",
+          "sections[3].ops[95]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[97]",
+          "sections[3].ops[99]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[97]",
+          "sections[3].ops[101]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[103]",
+          "sections[3].ops[105]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[103]",
+          "sections[3].ops[107]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[109]",
+          "sections[3].ops[111]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[109]",
+          "sections[3].ops[113]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[115]",
+          "sections[3].ops[117]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[115]",
+          "sections[3].ops[119]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[121]",
+          "sections[3].ops[123]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[121]",
+          "sections[3].ops[125]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[127]",
+          "sections[3].ops[129]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[127]",
+          "sections[3].ops[131]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[133]",
+          "sections[3].ops[135]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[133]",
+          "sections[3].ops[137]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[139]",
+          "sections[3].ops[141]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[139]",
+          "sections[3].ops[143]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[145]",
+          "sections[3].ops[147]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[145]",
+          "sections[3].ops[149]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[151]",
+          "sections[3].ops[153]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[151]",
+          "sections[3].ops[155]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[157]",
+          "sections[3].ops[159]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[157]",
+          "sections[3].ops[161]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[163]",
+          "sections[3].ops[165]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[163]",
+          "sections[3].ops[167]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[169]",
+          "sections[3].ops[171]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[169]",
+          "sections[3].ops[173]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[175]",
+          "sections[3].ops[177]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[175]",
+          "sections[3].ops[179]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[181]",
+          "sections[3].ops[183]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[181]",
+          "sections[3].ops[185]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[187]",
+          "sections[3].ops[189]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[187]",
+          "sections[3].ops[191]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[193]",
+          "sections[3].ops[195]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[193]",
+          "sections[3].ops[197]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[199]",
+          "sections[3].ops[201]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[199]",
+          "sections[3].ops[203]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[205]",
+          "sections[3].ops[207]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[205]",
+          "sections[3].ops[209]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[211]",
+          "sections[3].ops[213]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[211]",
+          "sections[3].ops[215]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[217]",
+          "sections[3].ops[219]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[217]",
+          "sections[3].ops[221]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[223]",
+          "sections[3].ops[225]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[223]",
+          "sections[3].ops[227]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[229]",
+          "sections[3].ops[231]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[229]",
+          "sections[3].ops[233]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[235]",
+          "sections[3].ops[237]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[235]",
+          "sections[3].ops[239]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[241]",
+          "sections[3].ops[243]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[241]",
+          "sections[3].ops[245]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[247]",
+          "sections[3].ops[249]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[247]",
+          "sections[3].ops[251]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[253]",
+          "sections[3].ops[255]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[253]",
+          "sections[3].ops[257]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[259]",
+          "sections[3].ops[261]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[259]",
+          "sections[3].ops[263]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[265]",
+          "sections[3].ops[267]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[265]",
+          "sections[3].ops[269]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[271]",
+          "sections[3].ops[273]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[271]",
+          "sections[3].ops[275]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[277]",
+          "sections[3].ops[279]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41748.dat already is",
+        "ops": [
+          "sections[3].ops[277]",
+          "sections[3].ops[281]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[283]",
+          "sections[3].ops[285]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4070.dat is placed where 41747.dat already is",
+        "ops": [
+          "sections[3].ops[283]",
+          "sections[3].ops[287]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2877.dat is placed where 3660b.dat already is",
+        "ops": [
+          "sections[6].ops[34]",
+          "sections[6].ops[86]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2877.dat is placed where 3660b.dat already is",
+        "ops": [
+          "sections[6].ops[39]",
+          "sections[6].ops[89]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2877.dat is placed where 3660b.dat already is",
+        "ops": [
+          "sections[6].ops[44]",
+          "sections[6].ops[92]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2877.dat is placed where 3660b.dat already is",
+        "ops": [
+          "sections[6].ops[49]",
+          "sections[6].ops[95]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2877.dat is placed where 3660b.dat already is",
+        "ops": [
+          "sections[6].ops[54]",
+          "sections[6].ops[98]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[49]",
+          "sections[9].ops[0]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[50]",
+          "sections[9].ops[0]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[49]",
+          "sections[9].ops[1]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[49]",
+          "sections[9].ops[2]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[50]",
+          "sections[9].ops[4]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[52]",
+          "sections[9].ops[5]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[53]",
+          "sections[9].ops[5]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[52]",
+          "sections[9].ops[6]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[52]",
+          "sections[9].ops[7]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[53]",
+          "sections[9].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[97]",
+          "sections[9].ops[10]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[98]",
+          "sections[9].ops[10]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[97]",
+          "sections[9].ops[11]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[97]",
+          "sections[9].ops[12]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[98]",
+          "sections[9].ops[14]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[100]",
+          "sections[9].ops[15]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[101]",
+          "sections[9].ops[15]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[100]",
+          "sections[9].ops[16]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[100]",
+          "sections[9].ops[17]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[101]",
+          "sections[9].ops[19]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[157]",
+          "sections[9].ops[20]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[158]",
+          "sections[9].ops[20]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[157]",
+          "sections[9].ops[21]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[157]",
+          "sections[9].ops[22]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[158]",
+          "sections[9].ops[24]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[160]",
+          "sections[9].ops[25]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[161]",
+          "sections[9].ops[25]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[160]",
+          "sections[9].ops[26]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[160]",
+          "sections[9].ops[27]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[161]",
+          "sections[9].ops[29]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[229]",
+          "sections[9].ops[30]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[230]",
+          "sections[9].ops[30]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[229]",
+          "sections[9].ops[31]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[229]",
+          "sections[9].ops[32]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[230]",
+          "sections[9].ops[34]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[232]",
+          "sections[9].ops[35]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[233]",
+          "sections[9].ops[35]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[232]",
+          "sections[9].ops[36]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[232]",
+          "sections[9].ops[37]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[233]",
+          "sections[9].ops[39]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[313]",
+          "sections[9].ops[40]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[314]",
+          "sections[9].ops[40]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[313]",
+          "sections[9].ops[41]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[313]",
+          "sections[9].ops[42]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[314]",
+          "sections[9].ops[44]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[316]",
+          "sections[9].ops[45]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[317]",
+          "sections[9].ops[45]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[316]",
+          "sections[9].ops[46]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[316]",
+          "sections[9].ops[47]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[317]",
+          "sections[9].ops[49]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[409]",
+          "sections[9].ops[50]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[410]",
+          "sections[9].ops[50]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[409]",
+          "sections[9].ops[51]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[409]",
+          "sections[9].ops[52]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[410]",
+          "sections[9].ops[54]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[412]",
+          "sections[9].ops[55]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[413]",
+          "sections[9].ops[55]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[412]",
+          "sections[9].ops[56]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[412]",
+          "sections[9].ops[57]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[413]",
+          "sections[9].ops[59]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[517]",
+          "sections[9].ops[60]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[518]",
+          "sections[9].ops[60]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[517]",
+          "sections[9].ops[61]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[517]",
+          "sections[9].ops[62]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[518]",
+          "sections[9].ops[64]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[520]",
+          "sections[9].ops[65]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[521]",
+          "sections[9].ops[65]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[520]",
+          "sections[9].ops[66]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[520]",
+          "sections[9].ops[67]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[521]",
+          "sections[9].ops[69]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[637]",
+          "sections[9].ops[70]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[638]",
+          "sections[9].ops[70]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[637]",
+          "sections[9].ops[71]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[637]",
+          "sections[9].ops[72]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[638]",
+          "sections[9].ops[74]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[640]",
+          "sections[9].ops[75]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[641]",
+          "sections[9].ops[75]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[640]",
+          "sections[9].ops[76]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[640]",
+          "sections[9].ops[77]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[641]",
+          "sections[9].ops[79]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[769]",
+          "sections[9].ops[80]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[770]",
+          "sections[9].ops[80]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[769]",
+          "sections[9].ops[81]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3069b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[769]",
+          "sections[9].ops[82]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[770]",
+          "sections[9].ops[84]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[55]",
+          "sections[9].ops[85]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[56]",
+          "sections[9].ops[85]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[55]",
+          "sections[9].ops[86]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[56]",
+          "sections[9].ops[88]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[58]",
+          "sections[9].ops[90]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[59]",
+          "sections[9].ops[90]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[58]",
+          "sections[9].ops[91]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[59]",
+          "sections[9].ops[93]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[103]",
+          "sections[9].ops[95]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[104]",
+          "sections[9].ops[95]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2412b.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[103]",
+          "sections[9].ops[96]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[104]",
+          "sections[9].ops[98]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[106]",
+          "sections[9].ops[100]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3020.dat is placed where 30363.dat already is",
+        "ops": [
+          "sections[2].ops[107]",
+          "sections[9].ops[100]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

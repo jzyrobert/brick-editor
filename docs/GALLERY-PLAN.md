@@ -407,3 +407,25 @@ Built on 3 October 2026. Meanwhile, a redesign on `main` made Gallery the app's 
 **Refusals.** The first temple run's five builds now fail the colour check added after they were made (for example, 3633 in dark brown), so they are refused. The other 24 accepted temple builds, from 5 runs and 2 models, compile with no errors; each has one or two warnings (floating parts).
 
 What's left for phase 1's "done when": a check on a physical 1,080 × 1,800 phone (the live preview's memory and frame time beside the workspace scene).
+
+### Prompt generations (10 October 2026)
+
+Migration `0003_prompt_generations.sql` adds a `generations` table and nullable
+`builds.generation_id`. The generation stores its display name, starting-condition
+description, sort order and explicit featured flag. A unique partial index permits
+one featured generation. The optional `index.generations` and `build.generation`
+fields preserve v1-index compatibility. Unclassified legacy collections still
+open; new reviewed cohorts keep prompt version separate from runner/model/effort.
+
+The gallery's default **Latest** filter selects the featured cohort, while
+**All generations** or a named cohort exposes earlier text-only builds. The
+current reviewed default is fresh E with three high-effort models. Historical
+image-input and visual-feedback runs are excluded from publication. Cards and
+detail notes name the cohort and starting conditions. See [GALLERY](GALLERY.md).
+
+`gallery:publish --generation <id>` assigns an existing reviewed generation and
+refuses unknown IDs before compiling or rendering. `--source` continues to record
+the original run. Reindexing joins generation metadata from D1. The main-only
+reviewed-bundle workflow checks the roster, exact file/input hashes, featured E
+coverage and zero image inputs before changing visibility. Older reviewed builds
+remain browsable rather than being hidden by every update.

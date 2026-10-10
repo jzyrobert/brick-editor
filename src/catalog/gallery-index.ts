@@ -56,6 +56,15 @@ export type GalleryAgent = {
   effort?: string;
 };
 export type GalleryLibrary = { release: string; hash: string };
+/** A reviewed cohort: prompt version and starting conditions, independent of
+ * the model and subject. The default is chosen explicitly, not by run date. */
+export type GalleryGeneration = {
+  id: string;
+  name: string;
+  description: string;
+  order: number;
+  default?: boolean;
+};
 export type GalleryBuild = {
   id: string;
   prompt: string;
@@ -76,6 +85,7 @@ export type GalleryBuild = {
   outputTokens?: number;
   /** A label for the batch the build came from (e.g. the one-shot run). */
   source?: string;
+  generation?: string;
   library: GalleryLibrary;
   created: string;
 };
@@ -85,6 +95,8 @@ export type GalleryIndex = {
   files: string;
   prompts: GalleryPrompt[];
   agents: GalleryAgent[];
+  /** Optional for indexes published before generation browsing. */
+  generations?: GalleryGeneration[];
   builds: GalleryBuild[];
 };
 
@@ -180,6 +192,25 @@ export function decodeGalleryIndex(raw: unknown): GalleryIndex {
   const agents = r.agents.filter(
     (a) => a && ID.test(a.id) && typeof a.name === "string",
   );
+  const generations = (
+    Array.isArray(r.generations) ? r.generations : []
+  ).filter(
+    (g) =>
+      g &&
+      typeof g.id === "string" &&
+      ID.test(g.id) &&
+      g.id !== "latest" &&
+      typeof g.name === "string" &&
+      typeof g.description === "string" &&
+      Number.isFinite(g.order) &&
+      (g.default === undefined || typeof g.default === "boolean"),
+  );
+  const generationIds = new Set(generations.map((g) => g.id));
+  if (
+    generationIds.size !== generations.length ||
+    generations.filter((g) => g.default).length > 1
+  )
+    throw bad();
   const promptIds = new Set(prompts.map((p) => p.id)),
     agentIds = new Set(agents.map((a) => a.id));
   const builds = r.builds.filter(
@@ -192,6 +223,7 @@ export function decodeGalleryIndex(raw: unknown): GalleryIndex {
       Number.isInteger(b.parts) &&
       promptIds.has(b.prompt) &&
       agentIds.has(b.agent) &&
+      (b.generation === undefined || generationIds.has(b.generation)) &&
       b.renders &&
       Object.values(b.renders).every(
         (s) => typeof s === "string" && SHA.test(s),
@@ -200,7 +232,16 @@ export function decodeGalleryIndex(raw: unknown): GalleryIndex {
       typeof b.library.release === "string" &&
       typeof b.library.hash === "string",
   );
-  return { ...(r as GalleryIndex), prompts, agents, builds };
+  const featured = generations.find((g) => g.default);
+  if (featured && !builds.some((b) => b.generation === featured.id))
+    throw bad();
+  return {
+    ...(r as GalleryIndex),
+    prompts,
+    agents,
+    builds,
+    ...(generations.length ? { generations } : { generations: undefined }),
+  };
 }
 
 /** Index rows → `index.json`. Rows come from D1 (see migrations/), newest
@@ -232,6 +273,11 @@ export type GalleryRow = {
   library_hash: string;
   warnings: number;
   created_at: number;
+  generation_id?: string | null;
+  generation_name?: string | null;
+  generation_description?: string | null;
+  generation_order?: number | null;
+  generation_default?: number | null;
 };
 export function galleryIndexFromRows(
   rows: GalleryRow[],
@@ -243,9 +289,22 @@ export function galleryIndexFromRows(
       b.created_at - a.created_at || a.build_id.localeCompare(b.build_id),
   );
   const prompts = new Map<string, GalleryPrompt>(),
-    agents = new Map<string, GalleryAgent>();
+    agents = new Map<string, GalleryAgent>(),
+    generations = new Map<string, GalleryGeneration>();
   const opt = <T>(v: T | null) => (v === null ? undefined : v);
   const builds = sorted.map((r): GalleryBuild => {
+    if (
+      r.generation_id &&
+      r.generation_name &&
+      !generations.has(r.generation_id)
+    )
+      generations.set(r.generation_id, {
+        id: r.generation_id,
+        name: r.generation_name,
+        description: r.generation_description ?? "",
+        order: r.generation_order ?? 0,
+        ...(r.generation_default ? { default: true } : {}),
+      });
     if (!prompts.has(r.prompt_id))
       prompts.set(r.prompt_id, {
         id: r.prompt_id,
@@ -278,6 +337,7 @@ export function galleryIndexFromRows(
       costUsd: opt(r.cost_usd),
       outputTokens: opt(r.output_tokens),
       source: opt(r.source),
+      generation: r.generation_id ?? undefined,
       library: { release: r.library_release, hash: r.library_hash },
       created: new Date(r.created_at * 1000)
         .toISOString()
@@ -295,6 +355,13 @@ export function galleryIndexFromRows(
     files,
     prompts: byName(prompts),
     agents: byName(agents),
+    ...(generations.size
+      ? {
+          generations: [...generations.values()].sort(
+            (a, b) => b.order - a.order || a.id.localeCompare(b.id),
+          ),
+        }
+      : {}),
     builds,
   };
 }

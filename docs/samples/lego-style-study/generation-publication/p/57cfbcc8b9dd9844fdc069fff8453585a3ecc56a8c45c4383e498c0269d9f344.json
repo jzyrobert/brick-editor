@@ -1,0 +1,277 @@
+{
+  "gallery": 1,
+  "source": "E:text-only:original-source-revision",
+  "label": "contextual-temple/high",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 2200,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2200,
+      "difference": 200,
+      "percent": 10
+    },
+    "seconds": 651,
+    "tokens": {
+      "input": 618659,
+      "cached": 390912,
+      "output": 69966,
+      "reasoning": 23458
+    },
+    "searches": 5,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "14716",
+        "2412b",
+        "2417",
+        "2423",
+        "2453b",
+        "24866",
+        "2877",
+        "3005",
+        "3009",
+        "30151a",
+        "3070b",
+        "32607",
+        "3307",
+        "3659",
+        "3665a",
+        "3941",
+        "3957a",
+        "4032b",
+        "4589",
+        "4740",
+        "54200",
+        "6141",
+        "61678",
+        "90398",
+        "98138"
+      ],
+      "notInList": [
+        "30151a",
+        "90398"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 651,
+        "usage": {
+          "input": 618659,
+          "cached": 390912,
+          "output": 69966,
+          "reasoning": 23458,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "13547",
+              "limit": 2
+            },
+            "results": [
+              "13547",
+              "7688"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "30151a",
+              "limit": 2
+            },
+            "results": [
+              "30151a"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "90398",
+              "limit": 2
+            },
+            "results": [
+              "90398"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "1x4",
+              "colour": "red",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "61678",
+              "93273",
+              "13547",
+              "3573",
+              "11153"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "arch",
+              "size": "1x6",
+              "colour": "reddish brown",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "3455",
+              "6183",
+              "3307",
+              "92950",
+              "15254"
+            ],
+            "round": 1
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 2348,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 2,
+            "parts": 2382,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 2196,
+            "errors": 4,
+            "ok": false
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "14716",
+            "2412b",
+            "2417",
+            "2423",
+            "2453b",
+            "24866",
+            "2877",
+            "3005",
+            "3009",
+            "30151a",
+            "3070b",
+            "32607",
+            "3307",
+            "3659",
+            "3665a",
+            "3941",
+            "3957a",
+            "4032b",
+            "4589",
+            "4740",
+            "54200",
+            "6141",
+            "61678",
+            "90398",
+            "98138"
+          ],
+          "notInList": [
+            "30151a",
+            "90398"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2200
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2200,
+      "designs": 81,
+      "lots": 232,
+      "massingCells": 13582,
+      "massingParts": 1305,
+      "placedParts": 895,
+      "sections": 5,
+      "components": 3,
+      "opsRun": 417,
+      "scriptBytes": 33310,
+      "ldrawBytes": 98193,
+      "partsPerScriptKB": 67.6,
+      "compileMs": 528,
+      "checkMs": 684
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 81,
+      "covered": 2155,
+      "uncovered": 45,
+      "health": "warning: 2155 parts with verified connectors form 81 separately connected groups; 40 parts are not connected to anything. 45 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2200,
+      "difference": 200,
+      "percent": 10
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1365 part(s) in 80 group(s) are not connected to the main structure (largest group: 790 parts); e.g. 92438 at [11, 0, 31], 41539 at [8, 0, 15], 4032b at [21, 2, 7], 3941 at [21, 12, 2], 3941 at [43, 12, 2], 3941 at [19, 12, 23]",
+        "ops": [
+          "sections[0].ops[1]",
+          "sections[2].ops[13]",
+          "sections[2].ops[3]",
+          "sections[2].ops[23]",
+          "sections[2].ops[92]",
+          "sections[2].ops[57]",
+          "sections[2].ops[66]",
+          "sections[4].ops[12]",
+          "sections[2].ops[8]",
+          "sections[2].ops[1]",
+          "sections[2].ops[0]",
+          "sections[2].ops[52]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

@@ -2,7 +2,9 @@
 // Publish an already reviewed gallery bundle; generation never runs in CI.
 import { createHash } from "node:crypto";
 import { execFileSync, spawn } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { isDeepStrictEqual } from "node:util";
 import { join, resolve } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { pathToFileURL } from "node:url";
@@ -10,9 +12,24 @@ import {
   decodeGalleryIndex,
   GALLERY_VIEWS,
   galleryAgentName,
+  galleryIndexFromRows,
+  type GalleryIndex,
+  type GalleryRow,
 } from "../src/catalog/gallery-index";
+import { INDEX_QUERY } from "./gallery-publish";
 
 type Manifest = {
+  v?: 2;
+  defaultGeneration?: string;
+  generations?: { id: string; builds: number }[];
+  indexSha256?: string;
+  inputs?: {
+    folder: string;
+    generation: string;
+    promptSha256: string;
+    scriptSha256: string;
+    images: number;
+  }[];
   before: string[];
   after: string[];
   files: { key: string; sha256: string; bytes: number; contentType: string }[];
@@ -22,6 +39,14 @@ const hash = (b: Uint8Array) => createHash("sha256").update(b).digest("hex");
 const same = (a: string[], b: string[]) =>
   JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
 
+/** The live database must match the reviewed data, not just its visible IDs. */
+export function verifyLiveIndex(actual: GalleryIndex, reviewed: GalleryIndex) {
+  const stable = (index: GalleryIndex) =>
+    JSON.parse(JSON.stringify({ ...index, generated: "" }));
+  if (!isDeepStrictEqual(stable(actual), stable(reviewed)))
+    throw new Error("Live gallery metadata differs from the reviewed index");
+}
+
 export function verifyBundle(dir: string) {
   const manifest: Manifest = JSON.parse(
     readFileSync(join(dir, "manifest.json"), "utf8"),
@@ -29,19 +54,89 @@ export function verifyBundle(dir: string) {
   const index = decodeGalleryIndex(
     JSON.parse(readFileSync(join(dir, "index.json"), "utf8")),
   );
-  if (
-    index.builds.length !== 18 ||
-    index.prompts.length !== 6 ||
-    index.agents.length !== 3 ||
-    !same(
-      index.builds.map((b: { id: string }) => b.id),
-      manifest.after,
-    ) ||
-    new Set(manifest.after).size !== 18 ||
-    new Set(manifest.before).size !== 12 ||
-    ![...manifest.before, ...manifest.after].every((id) =>
-      /^[0-9a-f]{12}$/.test(id),
+  const history = manifest.v === 2;
+  if (history) {
+    if (
+      hash(readFileSync(join(dir, "index.json"))) !== manifest.indexSha256 ||
+      !same(
+        index.builds.map((b) => b.id),
+        manifest.after,
+      ) ||
+      new Set(manifest.after).size !== manifest.after.length ||
+      ![...manifest.before, ...manifest.after].every((id) =>
+        /^[0-9a-f]{12}$/.test(id),
+      ) ||
+      !manifest.before.every((id) => manifest.after.includes(id))
     )
+      throw new Error("Unexpected gallery generation roster");
+    const generations = index.generations ?? [];
+    const featured = generations.filter((g) => g.default);
+    if (
+      featured.length !== 1 ||
+      featured[0].id !== manifest.defaultGeneration ||
+      !same(
+        generations.map((g) => g.id),
+        manifest.generations?.map((g) => g.id) ?? [],
+      ) ||
+      manifest.generations?.some(
+        (g) =>
+          !Number.isInteger(g.builds) ||
+          g.builds < 1 ||
+          index.builds.filter((b) => b.generation === g.id).length !== g.builds,
+      ) ||
+      index.builds.some((b) => !generations.some((g) => g.id === b.generation))
+    )
+      throw new Error("Unexpected prompt generation metadata");
+    const current = index.builds.filter((b) => b.generation === featured[0].id);
+    const expected = [
+      "codex/gpt-6-1-sol/high",
+      "codex/gpt-6-astra/high",
+      "claude/claude-opus-5-5/high",
+    ];
+    const prompts = new Set(current.map((b) => b.prompt));
+    if (
+      prompts.size !== 6 ||
+      current.length !== 18 ||
+      [...prompts].some(
+        (id) =>
+          !same(
+            current.filter((b) => b.prompt === id).map((b) => b.agent),
+            expected,
+          ),
+      )
+    )
+      throw new Error(
+        "Latest E must include three high-effort models for every brief",
+      );
+    if (!manifest.inputs?.length)
+      throw new Error("Missing text-only input provenance");
+    for (const input of manifest.inputs) {
+      if (
+        !/^docs\/samples\/lego-style-study\/[a-z0-9/-]+$/.test(input.folder) ||
+        input.images !== 0 ||
+        !generations.some((g) => g.id === input.generation) ||
+        hash(readFileSync(resolve(input.folder, "prompt.md"))) !==
+          input.promptSha256 ||
+        hash(readFileSync(resolve(input.folder, "build.json"))) !==
+          input.scriptSha256
+      )
+        throw new Error("Text-only input provenance changed");
+    }
+  }
+  if (
+    !history &&
+    (index.builds.length !== 18 ||
+      index.prompts.length !== 6 ||
+      index.agents.length !== 3 ||
+      !same(
+        index.builds.map((b: { id: string }) => b.id),
+        manifest.after,
+      ) ||
+      new Set(manifest.after).size !== 18 ||
+      new Set(manifest.before).size !== 12 ||
+      ![...manifest.before, ...manifest.after].every((id) =>
+        /^[0-9a-f]{12}$/.test(id),
+      ))
   )
     throw new Error("Unexpected gallery replacement roster");
   const expectedAgents = [
@@ -50,17 +145,18 @@ export function verifyBundle(dir: string) {
     "claude/claude-opus-5-5/high",
   ];
   if (
-    !same(
+    !history &&
+    (!same(
       index.agents.map((a) => a.id),
       expectedAgents,
     ) ||
-    index.prompts.some(
-      (p) =>
-        !same(
-          index.builds.filter((b) => b.prompt === p.id).map((b) => b.agent),
-          expectedAgents,
-        ),
-    )
+      index.prompts.some(
+        (p) =>
+          !same(
+            index.builds.filter((b) => b.prompt === p.id).map((b) => b.agent),
+            expectedAgents,
+          ),
+      ))
   )
     throw new Error("Each prompt must have all three high-effort E models");
   if (hash(readFileSync(join(dir, "publish.sql"))) !== manifest.sqlSha256)
@@ -99,8 +195,12 @@ export function verifyBundle(dir: string) {
         index.agents.find((a) => a.id === b.agent)?.model ||
       report.run.model !== report.agent.model ||
       report.compile.stats.parts !== b.parts ||
-      report.source !== "E:text-only:original-source-revision" ||
-      report.agent.effort !== "high" ||
+      (!history &&
+        (report.source !== "E:text-only:original-source-revision" ||
+          report.agent.effort !== "high")) ||
+      (history &&
+        report.generation !== undefined &&
+        report.generation !== b.generation) ||
       report.compile.problems.some(
         (p: { severity: string }) => p.severity === "error",
       )
@@ -116,9 +216,9 @@ export async function main(args: string[]) {
       "Usage: tsx scripts/publish-gallery-bundle.ts <bundle-dir> [--remote]",
     );
   const dir = resolve(args[0]);
-  const { manifest } = verifyBundle(dir);
+  const { manifest, index: reviewed } = verifyBundle(dir);
   console.log(
-    `Verified ${manifest.after.length} replacements and ${manifest.files.length} files`,
+    `Verified ${manifest.after.length} builds and ${manifest.files.length} files`,
   );
   if (!args.includes("--remote")) return;
   if (
@@ -141,6 +241,7 @@ export async function main(args: string[]) {
       encoding: "utf8",
       maxBuffer: 8_000_000,
     });
+  command(["d1", "migrations", "apply", "brick-gallery", "--remote"]);
   const visibleIds = () =>
     JSON.parse(
       command([
@@ -213,21 +314,44 @@ export async function main(args: string[]) {
       "--file",
       join(dir, "publish.sql"),
     ]);
-  execFileSync(
-    process.execPath,
-    [
-      resolve("node_modules/tsx/dist/cli.mjs"),
-      resolve("scripts/gallery-publish.ts"),
-      "--reindex",
+  const rows: GalleryRow[] = JSON.parse(
+    command([
+      "d1",
+      "execute",
+      "brick-gallery",
       "--remote",
-    ],
-    { env, stdio: "inherit" },
-  );
+      "--json",
+      "--command",
+      INDEX_QUERY,
+    ]),
+  ).at(-1).results;
+  const actual = galleryIndexFromRows(rows, reviewed.files, new Date());
+  verifyLiveIndex(actual, reviewed);
+  const temporary = mkdtempSync(join(tmpdir(), "brick-gallery-index-"));
+  try {
+    const file = join(temporary, "index.json");
+    writeFileSync(file, JSON.stringify(actual) + "\n");
+    command([
+      "r2",
+      "object",
+      "put",
+      "brick-gallery/index.json",
+      "--remote",
+      "--file",
+      file,
+      "--content-type",
+      "application/json",
+      "--cache-control",
+      "public, max-age=60, s-maxage=60",
+    ]);
+  } finally {
+    rmSync(temporary, { recursive: true, force: true });
+  }
   const after = visibleIds();
   if (!same(after, manifest.after))
     throw new Error("Published roster does not match the reviewed bundle");
   console.log(
-    "Published 18 E builds; the 12 earlier builds are retained as hidden history",
+    `Published ${manifest.after.length} reviewed builds${manifest.v === 2 ? "; latest E is featured and history remains browsable" : "; the earlier builds are retained as hidden history"}`,
   );
 }
 if (

@@ -68,6 +68,56 @@ test("prompt and agent ids are plain, stable slugs", () => {
   expect(galleryAgentName("mystery")).toBe("mystery");
 });
 
+test("generation metadata round-trips and unknown generations cannot appear as latest", async () => {
+  const r = await row({
+    generation_id: "e-fresh",
+    generation_name: "E · fresh builds",
+    generation_description: "Empty directory",
+    generation_order: 90,
+    generation_default: 1,
+  });
+  const index = galleryIndexFromRows([r], "https://files.example", new Date());
+  expect(decodeGalleryIndex(index).generations).toEqual([
+    {
+      id: "e-fresh",
+      name: "E · fresh builds",
+      description: "Empty directory",
+      order: 90,
+      default: true,
+    },
+  ]);
+  expect(index.builds[0].generation).toBe("e-fresh");
+  expect(() =>
+    decodeGalleryIndex({
+      ...index,
+      builds: [{ ...index.builds[0], generation: "unknown" }],
+    }),
+  ).toThrow("invalid");
+  expect(
+    decodeGalleryIndex({
+      ...index,
+      generations: index.generations!.map((g) => ({ ...g, default: false })),
+      builds: [{ ...index.builds[0], generation: "unknown" }],
+    }).builds,
+  ).toEqual([]);
+  expect(() =>
+    decodeGalleryIndex({
+      ...index,
+      generations: [
+        ...index.generations!,
+        { ...index.generations![0], id: "f-fresh" },
+      ],
+    }),
+  ).toThrow("invalid");
+  const legacy = galleryIndexFromRows(
+    [await row()],
+    "https://files.example",
+    new Date(),
+  );
+  expect(decodeGalleryIndex(legacy).builds).toHaveLength(1);
+  expect(legacy).not.toHaveProperty("generations");
+});
+
 test("index generation from D1 rows round-trips through the decoder", async () => {
   const older = await row(),
     newer = await row({

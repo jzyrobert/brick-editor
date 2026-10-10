@@ -1,0 +1,205 @@
+{
+  "gallery": 1,
+  "source": "japanese-temple-one-shot-target",
+  "label": "japanese-temple-one-shot-target/medium",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/medium",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "medium"
+  },
+  "run": {
+    "effort": "medium",
+    "model": "gpt-6.1-sol",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 2,
+    "parts": 2007,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2007,
+      "difference": 7,
+      "percent": 0.4
+    },
+    "seconds": 452,
+    "tokens": {
+      "input": 60195,
+      "cached": 7040,
+      "output": 14503,
+      "reasoning": 4211
+    },
+    "searches": 0,
+    "knowledge": {
+      "named": [
+        "15068",
+        "2412b",
+        "2431",
+        "2435",
+        "3003",
+        "30176",
+        "3023b",
+        "3068b",
+        "3069b",
+        "3471",
+        "3941",
+        "3942c",
+        "4032b",
+        "4589",
+        "4740",
+        "54200",
+        "6141"
+      ],
+      "notInList": [],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 284,
+        "usage": {
+          "input": 27890,
+          "cached": 7040,
+          "output": 9007,
+          "reasoning": 3624
+        },
+        "searches": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "errors",
+        "knowledge": {
+          "named": [
+            "15068",
+            "2412b",
+            "2431",
+            "2435",
+            "3003",
+            "30176",
+            "3068b",
+            "3471",
+            "3941",
+            "3942c",
+            "4032b",
+            "4589",
+            "4740",
+            "54200",
+            "6141"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1854,
+        "reason": "The script compiled to 1,854 parts (target 2,000: −146, −7.3%). Errors to fix:\n- overlap: 3185 Fence 1 × 4 × 2 Lattice placed at [8, 41, 27] (repeat copy 1/3 > 1/3) and 3185 Fence 1 × 4 × 2 Lattice placed at [8, 41, 27] (repeat copy 1/3 > 1/3) overlap where their bodies meet: x 8–9, y 41–47, z 27–28 (3 pairs like this; repeat copies 1/3 > 1/3 with 1/3 > 1/3, 2/3 > 1/3 with 2/3 > 1/3, 3/3 > 1/3 with 3/3 > 1/3) [sections[2].ops[10].ops[0] > components.pagodaBalcony.ops[1]]"
+      },
+      {
+        "attempt": 2,
+        "seconds": 168,
+        "usage": {
+          "input": 32305,
+          "cached": 0,
+          "output": 5496,
+          "reasoning": 587
+        },
+        "searches": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "15068",
+            "2412b",
+            "2431",
+            "2435",
+            "3003",
+            "30176",
+            "3023b",
+            "3068b",
+            "3069b",
+            "3471",
+            "3941",
+            "3942c",
+            "4032b",
+            "4589",
+            "4740",
+            "54200",
+            "6141"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2007
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2007,
+      "designs": 62,
+      "lots": 103,
+      "massingCells": 9414,
+      "massingParts": 974,
+      "placedParts": 1033,
+      "sections": 3,
+      "components": 2,
+      "opsRun": 419,
+      "scriptBytes": 8960,
+      "ldrawBytes": 89901,
+      "partsPerScriptKB": 229.4,
+      "compileMs": 88,
+      "checkMs": 405
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 114,
+      "covered": 1994,
+      "uncovered": 13,
+      "health": "warning: 1994 parts with verified connectors form 114 separately connected groups; 96 parts are not connected to anything. 13 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2007,
+      "difference": 7,
+      "percent": 0.4
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "208 part(s) in 113 group(s) are not connected to the main structure (largest group: 1786 parts); e.g. 3045 at [18, 49, 26], 3185 at [11, 41, 27], 3185 at [11, 41, 36], 3185 at [11, 62, 27], 3185 at [11, 62, 36], 3185 at [11, 83, 27]",
+        "ops": [
+          "sections[2].ops[13]",
+          "sections[1].ops[14].ops[0]",
+          "sections[1].ops[14].ops[1]",
+          "sections[2].ops[10].ops[0] > components.pagodaBalcony.ops[0]",
+          "sections[2].ops[10].ops[0] > components.pagodaBalcony.ops[5].ops[0]",
+          "sections[2].ops[10].ops[0] > components.pagodaBalcony.ops[5].ops[1]",
+          "sections[2].ops[16]",
+          "sections[2].ops[8].ops[0]",
+          "sections[2].ops[8].ops[1]",
+          "sections[2].ops[12].ops[0]",
+          "sections[2].ops[12].ops[1]",
+          "sections[2].ops[11]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

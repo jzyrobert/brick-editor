@@ -144,3 +144,58 @@ test("gallery sorts prompt groups by their matching builds and offers alphabetic
   ).toEqual(["Dragon", "Pelican on a bicycle"]);
   expect(filterGallery([], DEFAULT_GALLERY_FILTERS)).toEqual([]);
 });
+
+test("latest selects the featured generation even when F is newer; history combines with other filters", () => {
+  const collection: GalleryIndex = {
+    ...index,
+    generations: [
+      {
+        id: "e-fresh",
+        name: "E · fresh builds",
+        description: "Empty directory",
+        order: 3,
+        default: true,
+      },
+      {
+        id: "f-fresh",
+        name: "F · fresh builds",
+        description: "Empty directory",
+        order: 2,
+      },
+      {
+        id: "e-revision",
+        name: "E · source revisions",
+        description: "Supplied source",
+        order: 1,
+      },
+    ],
+    builds: index.builds.map((b, i) => ({
+      ...b,
+      generation: i < 2 ? "e-fresh" : i === 2 ? "f-fresh" : "e-revision",
+      created: i === 2 ? "2026-10-11T20:00:00Z" : b.created,
+    })),
+  };
+  const prompts = galleryPrompts(collection);
+  const ids = (generation: string, extra = {}) =>
+    filterGallery(prompts, {
+      ...DEFAULT_GALLERY_FILTERS,
+      generation,
+      ...extra,
+    }).flatMap((p) => p.entries.map((e) => e.id));
+  expect(ids("latest")).toEqual(["bbbbbbbbbbbb", "aaaaaaaaaaaa"]);
+  expect(ids("")).toHaveLength(4);
+  expect(
+    ids("e-revision", {
+      model: "Claude Opus 5.5",
+      effort: "Medium",
+      query: "source revisions",
+    }),
+  ).toEqual(["dddddddddddd"]);
+  expect(ids("f-fresh", { prompt: "pelican-riding-a-bicycle-800" })).toEqual(
+    [],
+  );
+  expect(prompts[1].entries[0].facts).toContainEqual([
+    "Prompt generation",
+    "E · source revisions",
+  ]);
+});

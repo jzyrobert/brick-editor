@@ -1,0 +1,446 @@
+{
+  "gallery": 1,
+  "source": "E:text-only:original-source-revision",
+  "label": "contextual-ewok/high",
+  "prompt": {
+    "id": "ewok-classic-space-3000",
+    "brief": "ewok inspired version of the classic 1970s lego space sets",
+    "targetParts": 3000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 3000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 3517,
+    "targetMiss": {
+      "target": 3000,
+      "parts": 3517,
+      "difference": 517,
+      "percent": 17.2
+    },
+    "seconds": 823,
+    "tokens": {
+      "input": 1155770,
+      "cached": 898560,
+      "output": 86681,
+      "reasoning": 33614
+    },
+    "searches": 15,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "15068",
+        "2412b",
+        "2417",
+        "2489",
+        "3004p90",
+        "3024",
+        "30357",
+        "3039",
+        "3039p23",
+        "3039p34",
+        "3062b",
+        "3069b",
+        "32607",
+        "3298p90",
+        "3622pz2",
+        "3941",
+        "3942c",
+        "3943b",
+        "3957a",
+        "3960",
+        "3961",
+        "4032b",
+        "4079",
+        "41769a",
+        "41770a",
+        "41879a",
+        "4345b",
+        "43720",
+        "43721",
+        "4460b",
+        "4474",
+        "4589",
+        "54200",
+        "6141",
+        "61678",
+        "64805",
+        "76382p90"
+      ],
+      "notInList": [
+        "2489",
+        "3004p90",
+        "3039p23",
+        "3039p34",
+        "3298p90",
+        "3622pz2",
+        "3961",
+        "41879a",
+        "43720",
+        "43721",
+        "4474",
+        "64805",
+        "76382p90"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 823,
+        "usage": {
+          "input": 1155770,
+          "cached": 898560,
+          "output": 86681,
+          "reasoning": 33614,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "4474",
+              "limit": 2
+            },
+            "results": [
+              "4474",
+              "44740"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "64805",
+              "limit": 2
+            },
+            "results": [
+              "64805"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "76382p90",
+              "limit": 2
+            },
+            "results": [
+              "76382p90"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "41879a",
+              "limit": 2
+            },
+            "results": [
+              "41879a"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge slope",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "54200",
+              "85984",
+              "93606",
+              "42918",
+              "41748",
+              "41747",
+              "52031",
+              "43720",
+              "43721",
+              "80545",
+              "41764",
+              "41765"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "3961",
+              "limit": 1
+            },
+            "results": [
+              "3961"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "3622pz2",
+              "limit": 1
+            },
+            "results": [
+              "3622pz2"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "3039p",
+              "limit": 8
+            },
+            "results": [
+              "3039p05",
+              "3039p23",
+              "3039p32",
+              "3039p34",
+              "3039p04",
+              "3039p12",
+              "3039p16",
+              "3039pc5"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "3004p90",
+              "limit": 1
+            },
+            "results": [
+              "3004p90"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "2489",
+              "limit": 1
+            },
+            "results": [
+              "2489"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "3298p90",
+              "limit": 1
+            },
+            "results": [
+              "3298p90"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "43720",
+              "limit": 1
+            },
+            "results": [
+              "43720"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "43721",
+              "limit": 1
+            },
+            "results": [
+              "43721"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "41769a",
+              "limit": 1
+            },
+            "results": [
+              "41769a"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "41770a",
+              "limit": 1
+            },
+            "results": [
+              "41770a"
+            ],
+            "round": 3
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 3881,
+            "errors": 2,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 3723,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 3590,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "15068",
+            "2412b",
+            "2417",
+            "2489",
+            "3004p90",
+            "3024",
+            "30357",
+            "3039",
+            "3039p23",
+            "3039p34",
+            "3062b",
+            "3069b",
+            "32607",
+            "3298p90",
+            "3622pz2",
+            "3941",
+            "3942c",
+            "3943b",
+            "3957a",
+            "3960",
+            "3961",
+            "4032b",
+            "4079",
+            "41769a",
+            "41770a",
+            "41879a",
+            "4345b",
+            "43720",
+            "43721",
+            "4460b",
+            "4474",
+            "4589",
+            "54200",
+            "6141",
+            "61678",
+            "64805",
+            "76382p90"
+          ],
+          "notInList": [
+            "2489",
+            "3004p90",
+            "3039p23",
+            "3039p34",
+            "3298p90",
+            "3622pz2",
+            "3961",
+            "41879a",
+            "43720",
+            "43721",
+            "4474",
+            "64805",
+            "76382p90"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 3517
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 3517,
+      "designs": 95,
+      "lots": 247,
+      "massingCells": 20269,
+      "massingParts": 2922,
+      "placedParts": 595,
+      "sections": 7,
+      "components": 1,
+      "opsRun": 600,
+      "scriptBytes": 45548,
+      "ldrawBytes": 162657,
+      "partsPerScriptKB": 79.1,
+      "compileMs": 695,
+      "checkMs": 1029
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 10,
+      "groups": 478,
+      "covered": 3342,
+      "uncovered": 175,
+      "health": "warning: 3342 parts with verified connectors form 478 separately connected groups; 188 parts are not connected to anything. 175 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 3000,
+      "parts": 3517,
+      "difference": 517,
+      "percent": 17.2
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[92] > components.space-ewok.ops[1]",
+          "sections[0].ops[92] > components.space-ewok.ops[2]",
+          "sections[0].ops[93] > components.space-ewok.ops[1]",
+          "sections[0].ops[93] > components.space-ewok.ops[2]",
+          "sections[2].ops[48] > components.space-ewok.ops[1]",
+          "sections[2].ops[48] > components.space-ewok.ops[2]",
+          "sections[4].ops[100] > components.space-ewok.ops[1]",
+          "sections[4].ops[100] > components.space-ewok.ops[2]",
+          "sections[6].ops[15] > components.space-ewok.ops[1]",
+          "sections[6].ops[15] > components.space-ewok.ops[2]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "2715 part(s) in 477 group(s) are not connected to the main structure (largest group: 627 parts); e.g. 3622pz2 at [47, 12, 29], 3039p23 at [17, 10, 4], 3622pz2 at [58, 12, 11], 3941 at [46, 4, 7], 3024 at [4, 58, 42], 3832 at [61, 0, 5]",
+        "ops": [
+          "sections[1].ops[11]",
+          "sections[5].ops[2]",
+          "sections[4].ops[1]",
+          "sections[1].ops[19]",
+          "sections[0].ops[14]",
+          "sections[1].ops[0]",
+          "sections[1].ops[10]",
+          "sections[5].ops[0]",
+          "sections[1].ops[34]",
+          "sections[1].ops[40]",
+          "sections[4].ops[52]",
+          "sections[6].ops[7]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

@@ -1,0 +1,391 @@
+{
+  "gallery": 1,
+  "source": "e-fresh:text-only",
+  "generation": "e-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/astra-dragon",
+  "prompt": {
+    "id": "dragon-1000",
+    "brief": "a dragon",
+    "targetParts": 1000
+  },
+  "agent": {
+    "id": "codex/gpt-6-astra/high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "targetParts": 1000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1220,
+    "targetMiss": {
+      "target": 1000,
+      "parts": 1220,
+      "difference": 220,
+      "percent": 22
+    },
+    "seconds": 473,
+    "tokens": {
+      "input": 789545,
+      "cached": 558208,
+      "output": 48478,
+      "reasoning": 25899
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "15068",
+        "3003",
+        "3004",
+        "3005",
+        "3023b",
+        "3039",
+        "3069b",
+        "3660b",
+        "3684a",
+        "3710",
+        "3941",
+        "3942c",
+        "4286",
+        "4589",
+        "54200",
+        "6141",
+        "61678",
+        "64847",
+        "93606"
+      ],
+      "notInList": [
+        "64847",
+        "93606"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 473,
+        "usage": {
+          "input": 789545,
+          "cached": 558208,
+          "output": 48478,
+          "reasoning": 25899,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "dragon horn",
+              "limit": 8
+            },
+            "results": [
+              "51342",
+              "51344",
+              "52258",
+              "51352",
+              "51353"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tooth claw",
+              "limit": 8
+            },
+            "results": [
+              "41669",
+              "16770",
+              "48267",
+              "11089"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "6x3",
+              "limit": 6
+            },
+            "results": [
+              "54383",
+              "54384"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "eye tile",
+              "limit": 6
+            },
+            "results": [
+              "10238",
+              "98138pz0",
+              "98138pz2",
+              "98138p2d",
+              "98138p07",
+              "98138pz4"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "2x4",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "93606",
+              "47456"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "horn",
+              "limit": 10
+            },
+            "results": [
+              "2142",
+              "89522",
+              "13564",
+              "64847",
+              "40379",
+              "11089",
+              "67361",
+              "112",
+              "6135b",
+              "1997"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope inverted curved",
+              "limit": 6
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "54091",
+              "32803",
+              "42023"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope 75",
+              "size": "2x2",
+              "limit": 4
+            },
+            "results": [
+              "3684a",
+              "3684c",
+              "3685",
+              "3688"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "dinosaur tail",
+              "limit": 5
+            },
+            "results": [
+              "40395",
+              "40379",
+              "40396",
+              "40378",
+              "30456"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope curved",
+              "size": "3x6",
+              "limit": 4
+            },
+            "results": [
+              "3939",
+              "35299",
+              "58181",
+              "62360"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "ok": false,
+            "reason": "INVALID_INPUT: Invalid build script: $.sections[3].ops[89].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [2,-3,2]); $.sections[3].ops[92].ops[0].ops[87].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [2,-3,2])"
+          },
+          {
+            "round": 2,
+            "parts": 1317,
+            "errors": 44,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "parts": 1473,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "15068",
+            "3003",
+            "3004",
+            "3005",
+            "3023b",
+            "3039",
+            "3069b",
+            "3660b",
+            "3684a",
+            "3710",
+            "3941",
+            "3942c",
+            "4286",
+            "4589",
+            "54200",
+            "6141",
+            "61678",
+            "64847",
+            "93606"
+          ],
+          "notInList": [
+            "64847",
+            "93606"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1220
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1220,
+      "designs": 51,
+      "lots": 94,
+      "massingCells": 12607,
+      "massingParts": 920,
+      "placedParts": 300,
+      "sections": 7,
+      "components": 0,
+      "opsRun": 374,
+      "scriptBytes": 29516,
+      "ldrawBytes": 59225,
+      "partsPerScriptKB": 42.3,
+      "compileMs": 85,
+      "checkMs": 198
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 2,
+      "groups": 96,
+      "covered": 1208,
+      "uncovered": 12,
+      "health": "warning: 1208 parts with verified connectors form 96 separately connected groups; 55 parts are not connected to anything. 12 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 1000,
+      "parts": 1220,
+      "difference": 220,
+      "percent": 22
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[0].ops[41]",
+          "sections[0].ops[48]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[0].ops[52]",
+          "sections[0].ops[59]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[1]",
+          "sections[2].ops[21]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[2]",
+          "sections[2].ops[25]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "2 part(s) are off the stud grid",
+        "ops": [
+          "sections[5].ops[31]",
+          "sections[5].ops[34]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "771 part(s) in 95 group(s) are not connected to the main structure (largest group: 437 parts); e.g. 3660b at [-9, 24, 10], 3660b at [8, 21, 9], 3005 at [-2, 5, -11], 15068 at [-1, 11, 23], 2456 at [-9, 0, -2], 2456 at [7, 0, -2]",
+        "ops": [
+          "sections[0].ops[0]",
+          "sections[0].ops[13]",
+          "sections[0].ops[26]",
+          "sections[0].ops[33]",
+          "sections[5].ops[0]",
+          "sections[3].ops[24]",
+          "sections[3].ops[70]",
+          "sections[6].ops[2]",
+          "sections[6].ops[3]",
+          "sections[0].ops[46]",
+          "sections[0].ops[47]",
+          "sections[3].ops[66]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}
