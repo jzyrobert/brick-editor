@@ -1,0 +1,404 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 898,
+      "targetMiss": {
+        "target": 800,
+        "parts": 898,
+        "difference": 98,
+        "percent": 12.3
+      },
+      "seconds": 381,
+      "tokens": {
+        "input": 792460,
+        "cached": 540416,
+        "output": 39149,
+        "reasoning": 20750
+      },
+      "searches": 15,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "14769",
+          "15068",
+          "2431",
+          "2903c01",
+          "3003",
+          "3004",
+          "3005pe4",
+          "3022",
+          "3068b",
+          "3069b",
+          "3070b",
+          "32803",
+          "3684a",
+          "3710",
+          "3941",
+          "4032b",
+          "41769a",
+          "41770a",
+          "42022",
+          "42918",
+          "45410",
+          "4740",
+          "51739",
+          "54200",
+          "61678",
+          "64648",
+          "6636",
+          "88930"
+        ],
+        "notInList": [
+          "2903c01",
+          "3005pe4",
+          "32803",
+          "42022",
+          "42918",
+          "45410",
+          "64648"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 381,
+          "usage": {
+            "input": 792460,
+            "cached": 540416,
+            "output": 39149,
+            "reasoning": 20750,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wheel bicycle",
+                "limit": 8
+              },
+              "results": [
+                "92851",
+                "4720",
+                "64248",
+                "u9163",
+                "28578",
+                "4719c03"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel motorcycle",
+                "limit": 6
+              },
+              "results": [
+                "88517",
+                "2903",
+                "50860",
+                "18895",
+                "52035",
+                "85983"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x4",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456",
+                "61068"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "limit": 6
+              },
+              "results": [
+                "41669",
+                "48267",
+                "4592",
+                "7768",
+                "4257"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tyre 88517",
+                "limit": 5
+              },
+              "results": [
+                "88517c01",
+                "88517c02",
+                "88517c03"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel tyre motorcycle",
+                "limit": 10
+              },
+              "results": [
+                "46334c01",
+                "71720c01",
+                "71720c02",
+                "88517c01",
+                "88517c02",
+                "88517c03",
+                "2903c01",
+                "2903c02",
+                "51378"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dish vertical",
+                "limit": 5
+              },
+              "results": [
+                "4740",
+                "3960",
+                "4085c",
+                "2654a",
+                "43898"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "eye printed brick",
+                "limit": 8
+              },
+              "results": [
+                "3005",
+                "3004",
+                "3622",
+                "3010",
+                "3009",
+                "3003",
+                "3002",
+                "3001"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 8
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "brick eye pattern",
+                "limit": 10
+              },
+              "results": [
+                "3005pe1",
+                "3005pe4",
+                "3003pe3",
+                "3003pe2",
+                "3005pe2",
+                "3005pe3",
+                "3437pe1",
+                "3003pe1",
+                "3003pe7",
+                "3010pzf"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope inverted curved",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023",
+                "11301",
+                "45410"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope curved 6",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "42022",
+                "44126",
+                "42023",
+                "78522",
+                "45410",
+                "45411",
+                "56204",
+                "52031"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "wedge 3 6",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "54383",
+                "54384"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "bar curved",
+                "limit": 8
+              },
+              "results": [
+                "4042",
+                "30359b",
+                "30359a",
+                "88964",
+                "95229",
+                "7534",
+                "28588",
+                "115551"
+              ],
+              "round": 3
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 883,
+              "errors": 15,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 894,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "13547",
+              "14769",
+              "15068",
+              "2431",
+              "2903c01",
+              "3003",
+              "3004",
+              "3005pe4",
+              "3022",
+              "3068b",
+              "3069b",
+              "3070b",
+              "32803",
+              "3684a",
+              "3710",
+              "3941",
+              "4032b",
+              "41769a",
+              "41770a",
+              "42022",
+              "42918",
+              "45410",
+              "4740",
+              "51739",
+              "54200",
+              "61678",
+              "64648",
+              "6636",
+              "88930"
+            ],
+            "notInList": [
+              "2903c01",
+              "3005pe4",
+              "32803",
+              "42022",
+              "42918",
+              "45410",
+              "64648"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 898
+        }
+      ]
+    }
+  ]
+}

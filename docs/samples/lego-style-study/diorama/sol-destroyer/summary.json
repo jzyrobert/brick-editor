@@ -1,0 +1,519 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 5000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 5282,
+      "targetMiss": {
+        "target": 5000,
+        "parts": 5282,
+        "difference": 282,
+        "percent": 5.6
+      },
+      "seconds": 593,
+      "tokens": {
+        "input": 1528943,
+        "cached": 1132672,
+        "output": 82076,
+        "reasoning": 46097
+      },
+      "searches": 20,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2412b",
+          "2431",
+          "2921",
+          "3004",
+          "3005",
+          "3022",
+          "3023b",
+          "30363",
+          "3039",
+          "3068b",
+          "3069b",
+          "3660b",
+          "3684a",
+          "3941",
+          "3957a",
+          "3960",
+          "4032b",
+          "4070",
+          "41747",
+          "41748",
+          "41764",
+          "41765",
+          "43121",
+          "44359",
+          "4740",
+          "4868b",
+          "6141",
+          "78443",
+          "78444",
+          "86500",
+          "98138"
+        ],
+        "notInList": [
+          "41747",
+          "41748",
+          "41764",
+          "41765",
+          "43121",
+          "44359",
+          "4868b",
+          "78443",
+          "78444",
+          "86500"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 593,
+          "usage": {
+            "input": 1528943,
+            "cached": 1132672,
+            "output": 82076,
+            "reasoning": 46097,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "6x12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3028",
+                "6178",
+                "30355",
+                "30356"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "3x12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "42060",
+                "42061",
+                "47397",
+                "47398"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720",
+                "43721",
+                "80545",
+                "41764",
+                "41765"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "engine cylinder",
+                "limit": 8
+              },
+              "results": [
+                "2851",
+                "2850a",
+                "2850b",
+                "6608",
+                "32061"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "4x4",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3960",
+                "35394"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "engine",
+                "category": "Aircraft",
+                "limit": 15
+              },
+              "results": [],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Engine 4",
+                "limit": 12
+              },
+              "results": [
+                "43121",
+                "3475b",
+                "6797",
+                "4229",
+                "4746",
+                "4869",
+                "6611",
+                "3475a",
+                "4616a",
+                "30535",
+                "98302",
+                "u608"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved 8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "42918",
+                "41766",
+                "54091",
+                "54095",
+                "11290",
+                "15625",
+                "11301",
+                "45410"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "ball",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "32474",
+                "54821",
+                "22119",
+                "53585",
+                "44359",
+                "48170",
+                "48171",
+                "2907"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge plate 8 x 16",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "92438",
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge plate 2 x 6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "3795",
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "3024",
+                "3023b",
+                "3623",
+                "3710"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "engine rear",
+                "limit": 8
+              },
+              "results": [
+                "50943",
+                "43121",
+                "87616",
+                "2851",
+                "2853a",
+                "2853b",
+                "2853c",
+                "2854"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "43121",
+                "limit": 1
+              },
+              "results": [
+                "43121"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "hemisphere",
+                "size": "4x4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "86500"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "tile wedge",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "3070b",
+                "3069b",
+                "2431",
+                "3068b",
+                "6636",
+                "98138",
+                "2412b",
+                "4162",
+                "87079",
+                "63864"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "jet engine",
+                "limit": 30
+              },
+              "results": [
+                "43121",
+                "4868b",
+                "46667",
+                "4868a",
+                "3475b",
+                "4869",
+                "4229",
+                "3475a",
+                "98302",
+                "61801",
+                "43122",
+                "4746"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "wedge",
+                "category": "Wing",
+                "size": "2x6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "78443",
+                "78444"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "radar",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4740",
+                "3960",
+                "2440",
+                "43898",
+                "44375b",
+                "3961",
+                "4285b",
+                "44375a"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "bar 4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "30374",
+                "87618",
+                "6187",
+                "4424",
+                "41531",
+                "64951",
+                "3484",
+                "4083"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "tile triangular",
+                "category": "Tile",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "35787",
+                "7975"
+              ],
+              "round": 4
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[0].ops[17].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"tan\",\"dark tan\"]})"
+            },
+            {
+              "round": 2,
+              "parts": 5330,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 5282,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "2412b",
+              "2431",
+              "2921",
+              "3004",
+              "3005",
+              "3022",
+              "3023b",
+              "30363",
+              "3039",
+              "3068b",
+              "3069b",
+              "3660b",
+              "3684a",
+              "3941",
+              "3957a",
+              "3960",
+              "4032b",
+              "4070",
+              "41747",
+              "41748",
+              "41764",
+              "41765",
+              "43121",
+              "44359",
+              "4740",
+              "4868b",
+              "6141",
+              "78443",
+              "78444",
+              "86500",
+              "98138"
+            ],
+            "notInList": [
+              "41747",
+              "41748",
+              "41764",
+              "41765",
+              "43121",
+              "44359",
+              "4868b",
+              "78443",
+              "78444",
+              "86500"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 5282
+        }
+      ]
+    }
+  ]
+}

@@ -423,3 +423,38 @@ npx tsx scripts/evaluate-build-style.ts --model gpt-6.1-sol --cases diorama-temp
 ```
 
 The `diorama` variant rejects supplied sources, reference images and image-feedback mode. The baseline is `b82f390`; the pilot adds only experimental guidance, harness registration, regression checks and comparison artifacts. Compilation/rendering remains the existing CLI. Input/source hashes and the archived sources permit the accepted builds to be re-rendered without another model call.
+
+## Diorama: all six briefs — Sol 6.1 high
+
+The remaining four gallery briefs now have clean-start diorama builds using **GPT-6.1-Sol (`gpt-6.1-sol`), high** and the byte-identical frozen pilot system/reply prompts. Temple and Ewok retain their pilot outputs. The [comparison preview](diorama/index.html) covers all six subjects, with Original, fresh E and updated Diorama side by side; [the four new builds](diorama/remaining-overview.png) also have an overview. Every subject has front, three-quarter, back and top views, including the less flattering angles.
+
+Each new build starts in a separate verified-empty directory and fresh native session. Only its original brief, original part target, frozen prompt and catalogue are supplied. The same ten search-reply, three draft-check and five attempt limits apply. No other generated build, source revision, image, repository instruction or render feedback reaches the model. Part searches and compiler counts/errors are the only feedback; construction warnings are retained for subsequent human review. Native turn records verify the requested model/high effort and zero native tool events. [Provenance](diorama/provenance.json) records six distinct generation sessions, exact input reconstruction, source hashes and starting conditions.
+
+| Subject   | Target | Original creative | Fresh E | Updated diorama | Checks | New warning records                   | Generation/check time |
+| --------- | -----: | ----------------: | ------: | --------------: | -----: | ------------------------------------- | --------------------: |
+| Pelican   |    800 |               852 |     889 |             898 |      2 | 53 part-clash, 1 off-grid, 1 floating |                 381 s |
+| Piplup    |  1,000 |             1,056 |   1,204 |           1,095 |      3 | 4 part-clash, 1 off-grid, 1 floating  |                 489 s |
+| Dragon    |  1,000 |             1,138 |   1,017 |           1,100 |      3 | 17 part-clash, 1 off-grid, 1 floating |                 667 s |
+| Destroyer |  5,000 |             4,844 |   5,630 |           5,282 |      3 | 1 floating                            |                 593 s |
+
+All four accept in one attempt with zero final compiler errors, no manually authored repairs, and four rendered views. Final counts fall within the prompt's soft ±15% target range. Pelican checks progress from 15 overlap errors to zero; Piplup from one to zero to zero; dragon from two to zero to zero; all three Destroyer checks pass. Piplup's checks reduce its oversized first draft from 1,354 parts to 1,159 and then 1,095. Final submissions can refine a checked draft: the pelican increases from 894 to 898 parts. Timing excludes final rendering. Original/E controls are re-rendered only, preserving their sources and part counts. All 18 comparison models use matching Standard look, 1,280 × 960 images and world-coordinate camera presets.
+
+### Preferences after viewing the four angles
+
+**Pelican:** I prefer the updated diorama overall. Its tiled timber pier, alternating wood tones, smooth water, fish hamper and clearer spoked bicycle make a coherent delivery scene. The bird's back and bill use more deliberate smooth surfaces than the original. E's scarf and freestanding composition remain appealing, but the new display better joins the subject and setting. The 53 clash warnings prevent treating this visual preference as a construction endorsement. [Comparison](diorama/pelican-iso.png) · [Back](diorama/pelican-iso-back.png) · [Compiler report](diorama/sol-pelican/compile.json).
+
+**Piplup:** I still prefer the original's character proportions and rounder silhouette, despite its exposed studs and stepped surfaces. The new lagoon, ice shelf, bubbles and tiled feet form a more polished display, and the head has smoother cladding. However, its oversized rectangular head and small body lose some of the original's recognizable penguin shape. E also compresses the head into a broad, flattened form. Surface finishing alone does not improve the subject. [Comparison](diorama/piplup-iso.png) · [Front](diorama/piplup-front.png) · [Compiler report](diorama/sol-piplup/compile.json).
+
+**Dragon:** I prefer the updated diorama to the original display. The green body, contrasting belly, curled tail, ember nest, ruined arch and water edge establish a more readable guardian scene. Body and tail surfaces are more deliberate than the original's stacked blocks. I prefer E's creature silhouette and curved wing shapes, but its detached wings remain a serious limitation; the new brick-built wings are also visibly separate and very flat. The new display is the stronger diorama candidate, with 17 clash warnings and attachment questions still unresolved. [Comparison](diorama/dragon-iso.png) · [Back](diorama/dragon-iso-back.png) · [Compiler report](diorama/sol-dragon/compile.json).
+
+**Destroyer:** I still prefer the original's broad triangular hull overall. The new build provides a capture scene, tiled starfield, Tatooine, a small Tantive IV and TIE patrol, with more intentional hull panels and bridge detailing. Its long narrow forebody and abrupt wide rear section read less like a continuous wedge, most clearly from above. E retains a cleaner continuous taper, although its surface machinery is busy. Scene direction helps the display but does not fix the ship's proportions. [Comparison](diorama/destroyer-iso.png) · [Top](diorama/destroyer-top.png) · [Compiler report](diorama/sol-destroyer/compile.json).
+
+All six updated dioramas use plate-built display bases and zero baseplate parts. Environments have a real part cost: the new pelican's tidal display alone uses 332 parts, and the Destroyer's starfield display uses 1,664. Diorama style is a composition direction rather than a specific baseplate inventory rule. Smoother surfaces and scenes help some outputs, while silhouettes, proportions, flat wings and construction warnings remain inconsistent. These are single samples, so generation variance remains a plausible explanation for differences. Together with the retained pilot preferences (new Ewok, original temple), this supports offering a diorama direction without claiming it reliably improves every build. Other models and repeated independent trials remain unmeasured. E defaults and the published website are unchanged.
+
+```sh
+npx tsx scripts/evaluate-build-style.ts --model gpt-6.1-sol \
+  --cases diorama-pelican,diorama-piplup,diorama-dragon,diorama-destroyer \
+  --out .local/diorama/remaining-runs --concurrency 4
+```
+
+Use a new output directory for another independent trial. The viewer loads all 72 images across four presets, with no horizontal overflow at six supported phone/desktop sizes and a 44 px view selector. Exact hashes confirm all 54 previously committed pilot model/control/image artifacts remain unchanged.

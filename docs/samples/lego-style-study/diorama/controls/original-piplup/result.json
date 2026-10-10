@@ -1,0 +1,140 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1056,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1056,
+    "difference": 56,
+    "percent": 5.6
+  },
+  "seconds": 658,
+  "tokens": {
+    "input": 546941,
+    "cached": 345984,
+    "output": 55987,
+    "reasoning": 36620
+  },
+  "searches": 3,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "14769",
+      "3039",
+      "3069b",
+      "4740",
+      "54200",
+      "54821",
+      "61678",
+      "64648"
+    ],
+    "notInList": [
+      "54821",
+      "64648"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 658,
+      "usage": {
+        "input": 546941,
+        "cached": 345984,
+        "output": 55987,
+        "reasoning": 36620,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "sphere ball",
+            "colour": "trans light blue",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "54821"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "round brick 2 x 2",
+            "colour": "trans-clear",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "3941",
+            "3063b",
+            "6143",
+            "3063a"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "fish",
+            "colour": "flat silver",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "64648"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1024,
+          "errors": 2,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 2097,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 1056,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "14769",
+          "3039",
+          "3069b",
+          "4740",
+          "54200",
+          "54821",
+          "61678",
+          "64648"
+        ],
+        "notInList": [
+          "54821",
+          "64648"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1056
+    }
+  ]
+}

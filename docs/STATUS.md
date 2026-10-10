@@ -1,5 +1,11 @@
 # Implementation status
 
+## All six diorama briefs — 10 October 2026
+
+The frozen diorama prompt now covers all six gallery briefs with clean-start Sol 6.1 high. The [four additional builds](samples/lego-style-study/README.md#diorama-all-six-briefs--sol-61-high) accept in one attempt at 898/1,095/1,100/5,282 parts with zero final errors; temple/Ewok pilot artifacts are unchanged. Six distinct native sessions, empty directories, exact reconstructed inputs and zero source/image/native-tool input are verified. The comparison retains all 18 Original/E/Diorama builds, 72 matching views and 24 comparison sheets; six-size browser checks pass.
+
+Visual preferences favour the new pelican and dragon dioramas, while the original Piplup proportions and Destroyer wedge remain preferred. Construction warnings remain (55/6/19/1 records in the four new builds), including detached dragon wings. All six dioramas use plate-built displays without baseplate parts. One trial per subject does not establish a reliable prompt improvement; other models/repeated trials remain open. E defaults, gallery publication and application runtime are unchanged.
+
 ## Diorama prompt pilot — 10 October 2026
 
 The [two-brief pilot](samples/lego-style-study/README.md#diorama-pilot--sol-61-high) tests an E-derived construction prompt with required scene/story direction and a shared display base. Sol 6.1 high starts temple and Ewok independently in empty directories, with no supplied sources/images or visual feedback. Both accept in one attempt after three automatic draft checks, at 2,279/2,955 parts, with zero final errors and four rendered views. Native metadata verifies actual model/effort, distinct sessions and no tool events. All guidance remains build agnostic; E stays the default and gallery content is unchanged.
