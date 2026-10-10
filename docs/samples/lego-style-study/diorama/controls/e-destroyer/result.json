@@ -1,0 +1,632 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 5630,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 5630,
+    "difference": 630,
+    "percent": 12.6
+  },
+  "seconds": 1016,
+  "tokens": {
+    "input": 2399025,
+    "cached": 1875456,
+    "output": 102563,
+    "reasoning": 63917
+  },
+  "searches": 27,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2412b",
+      "2431",
+      "2877",
+      "3004",
+      "3020",
+      "30208",
+      "3024",
+      "3032",
+      "3034",
+      "30342",
+      "30359b",
+      "30360",
+      "30363",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3544",
+      "3545",
+      "3660b",
+      "3957a",
+      "3960",
+      "42918",
+      "4868b",
+      "6141",
+      "98138"
+    ],
+    "notInList": [
+      "30208",
+      "30342",
+      "30359b",
+      "30360",
+      "3544",
+      "3545",
+      "42918",
+      "4868b"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1016,
+      "usage": {
+        "input": 2399025,
+        "cached": 1875456,
+        "output": 102563,
+        "reasoning": 63917,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "12x6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "3028",
+            "6178",
+            "30355",
+            "30356"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "6x3",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "54383",
+            "54384"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "42918",
+            "41748",
+            "41747",
+            "52031",
+            "43720",
+            "43721",
+            "80545",
+            "41764",
+            "41765"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "colour": "trans light blue",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "4740",
+            "3960",
+            "2654a",
+            "43898",
+            "44375b",
+            "3961",
+            "4285b",
+            "35394"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "hemisphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "30208",
+            "44359",
+            "61287",
+            "86500",
+            "44358"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "engine",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 18
+          },
+          "results": [
+            "50943",
+            "43121",
+            "2853a",
+            "2853b",
+            "2853c",
+            "2854",
+            "4868b",
+            "2852",
+            "30358",
+            "2850a",
+            "2850b",
+            "4229",
+            "6608",
+            "4869",
+            "15547",
+            "6614",
+            "32333",
+            "6611"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "cylinder horizontal",
+            "limit": 12
+          },
+          "results": [
+            "30360",
+            "93168",
+            "26047",
+            "7508",
+            "25893"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge plate 16",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "62743"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tile triangular",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "35787",
+            "7975"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "bar cannon",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "30359b"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge",
+            "size": "4x12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "wing",
+            "size": "4x12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "wing",
+            "size": "4x8",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "3934",
+            "3933"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "wedge",
+            "size": "3x12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "42060",
+            "42061",
+            "47397",
+            "47398"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "cannon",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "30359b"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "wing",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 60
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "24299",
+            "24307",
+            "43719",
+            "90194",
+            "43723b",
+            "41769b",
+            "41770b",
+            "43722b",
+            "48183",
+            "65426",
+            "65429",
+            "14181",
+            "54383",
+            "54384",
+            "50304",
+            "50305",
+            "48205",
+            "48208",
+            "78443",
+            "3934",
+            "4859",
+            "47397",
+            "47398",
+            "78444",
+            "2413",
+            "3933",
+            "47407",
+            "30355",
+            "30356",
+            "50303",
+            "3935",
+            "3936",
+            "3544",
+            "3545",
+            "30036",
+            "11100",
+            "2744",
+            "43979",
+            "2743",
+            "32059",
+            "54093",
+            "26601",
+            "93541",
+            "6106",
+            "30503"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "wedge slope 12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 15
+          },
+          "results": [
+            "54200",
+            "85984",
+            "3039",
+            "3040b",
+            "11477",
+            "4286",
+            "3665a",
+            "3298",
+            "15068",
+            "3660b",
+            "60481a",
+            "61678",
+            "50950",
+            "93273",
+            "3678b"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "tile",
+            "size": "8x16",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "window 1 x 2 x 1",
+            "colour": "trans black",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "4865b",
+            "60601",
+            "60602",
+            "3823",
+            "57895",
+            "3065"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "sphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 20
+          },
+          "results": [
+            "20953",
+            "15395",
+            "5906",
+            "54821",
+            "86500",
+            "30208",
+            "24947",
+            "53585",
+            "22119",
+            "30342",
+            "37837",
+            "35320",
+            "51930"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "bar",
+            "size": "1x4",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "6187",
+            "4083",
+            "7307",
+            "60621",
+            "42448",
+            "92589"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "tile 2 x 2 grille",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "3068bpxd"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "wedge tile",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "3070b",
+            "3069b",
+            "2431",
+            "3068b",
+            "6636",
+            "98138",
+            "2412b",
+            "4162",
+            "87079",
+            "63864"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "globe",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "30106",
+            "30342",
+            "4770"
+          ],
+          "round": 6
+        },
+        {
+          "args": {
+            "query": "rock arctic",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "30342"
+          ],
+          "round": 6
+        },
+        {
+          "args": {
+            "query": "dome inverted",
+            "size": "4x4",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "3960",
+            "86500",
+            "4855",
+            "35394",
+            "4854",
+            "49612",
+            "13349",
+            "35320"
+          ],
+          "round": 6
+        },
+        {
+          "args": {
+            "query": "sphere",
+            "size": "4x4",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "86500",
+            "30342",
+            "35320"
+          ],
+          "round": 6
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 6383,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 6839,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 6418,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "2877",
+          "3004",
+          "3020",
+          "30208",
+          "3024",
+          "3032",
+          "3034",
+          "30342",
+          "30359b",
+          "30360",
+          "30363",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3544",
+          "3545",
+          "3660b",
+          "3957a",
+          "3960",
+          "42918",
+          "4868b",
+          "6141",
+          "98138"
+        ],
+        "notInList": [
+          "30208",
+          "30342",
+          "30359b",
+          "30360",
+          "3544",
+          "3545",
+          "42918",
+          "4868b"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 5630
+    }
+  ]
+}

@@ -1,0 +1,342 @@
+{
+  "brief": "a dragon",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1100,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1100,
+        "difference": 100,
+        "percent": 10
+      },
+      "seconds": 667,
+      "tokens": {
+        "input": 876673,
+        "cached": 585600,
+        "output": 91963,
+        "reasoning": 60045
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11089",
+          "11477",
+          "15068",
+          "15070",
+          "2431",
+          "3004",
+          "3023b",
+          "3039",
+          "3062b",
+          "3069b",
+          "3307",
+          "3660b",
+          "3678b",
+          "3710",
+          "3942c",
+          "4032b",
+          "41747",
+          "41748",
+          "42918",
+          "4589",
+          "49668",
+          "54200",
+          "61678",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "11089",
+          "15070",
+          "41747",
+          "41748",
+          "42918",
+          "49668",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 667,
+          "usage": {
+            "input": 876673,
+            "cached": 585600,
+            "output": 91963,
+            "reasoning": 60045,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "horn tooth claw",
+                "limit": 12
+              },
+              "results": [
+                "11089"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720",
+                "43721",
+                "80545",
+                "41764",
+                "41765"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24201",
+                "6091",
+                "30602",
+                "42022",
+                "70681",
+                "80177"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dragon wing",
+                "limit": 8
+              },
+              "results": [
+                "6133",
+                "5984",
+                "38547",
+                "51342",
+                "30130",
+                "6125",
+                "75174c01",
+                "87685"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "limit": 10
+              },
+              "results": [
+                "41669",
+                "48267",
+                "4592",
+                "7768",
+                "4257"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "horn",
+                "colour": "tan",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "2142",
+                "64847",
+                "40379",
+                "11089",
+                "67361",
+                "53451",
+                "11437",
+                "87747"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "tooth",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "41669",
+                "48267",
+                "49668",
+                "15070",
+                "3647",
+                "3649",
+                "3648b",
+                "4019",
+                "6589",
+                "6573"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "tile eye",
+                "limit": 8
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07",
+                "98138pz4",
+                "3069bpm0",
+                "3070bp0e"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "colour": "dark red",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "2450",
+                "43719",
+                "32059",
+                "90194",
+                "43723b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "flame",
+                "limit": 8
+              },
+              "results": [
+                "70880",
+                "7727",
+                "64647",
+                "18395",
+                "80519",
+                "6126b",
+                "69858",
+                "6126a"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1206,
+              "errors": 2,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 1128,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 1100,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11089",
+              "11477",
+              "15068",
+              "15070",
+              "2431",
+              "3004",
+              "3023b",
+              "3039",
+              "3062b",
+              "3069b",
+              "3307",
+              "3660b",
+              "3678b",
+              "3710",
+              "3942c",
+              "4032b",
+              "41747",
+              "41748",
+              "42918",
+              "4589",
+              "49668",
+              "54200",
+              "61678",
+              "93606",
+              "98138"
+            ],
+            "notInList": [
+              "11089",
+              "15070",
+              "41747",
+              "41748",
+              "42918",
+              "49668",
+              "93606"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1100
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,12 @@
 # Verification — 27 September 2026
 
+## All six diorama briefs — 10 October 2026
+
+- The four remaining cases use frozen diorama system/reply hashes and original briefs/targets with `gpt-6.1-sol`, high. Native sessions verify separate empty directories, actual model/effort, no repository instructions and zero tool events. All six filled inputs reconstruct exactly, with no supplied sources/images or visual feedback. All 54 pilot source/control/image artifacts retain their hashes.
+- All four case processes report `FINISH exit=0`, accepted first-attempt results and complete summaries: pelican 898 parts / 381 s, Piplup 1,095 / 489 s, dragon 1,100 / 667 s, Destroyer 5,282 / 593 s. Each has zero final errors and four final views; draft checks remain compiler-only. The outer logged command returned 143 after all four successful completion records; accepted results, summaries and all 16 renders are complete, with no rerun or manual source repairs. The execution record is retained in [provenance](samples/lego-style-study/diorama/provenance.json).
+- Retained warnings are 53/4/17 part-clash records for pelican/Piplup/dragon plus one off-grid and one floating each; Destroyer has one floating warning. The six updated builds use zero baseplate parts, with plate-built display composition. These are visual experiments, not verified physical assemblies.
+- The standalone viewer loads 18 builds × four presets (72 images), checks angle mapping, preserves historical source/counts and passes no-overflow/44 px selector checks at 1440 × 1000, 1080 × 1800, 360 × 600, 411 × 685, 390 × 844 and 686 × 411. Sources remain unchanged after rendering. The generation harness, prompts, application runtime and publication are unchanged from the pilot; its 23 focused unit checks/type-check evidence still applies. Formatting and whitespace checks pass for the extension.
+
 ## Diorama prompt pilot — 10 October 2026
 
 Private worktree `codex/diorama-prompt`, based on `b82f390`. The [report and comparisons](samples/lego-style-study/README.md#diorama-pilot--sol-61-high) retain two clean-start GPT-6.1-Sol high runs, exact filled prompts, accepted JS/JSON/MPD, reports and four views. [Provenance](samples/lego-style-study/diorama/provenance.json) verifies distinct native sessions/directories, actual model/effort, empty directory contents, zero native tools and no supplied sources/images. Filled inputs match the original briefs/targets and the frozen experimental prompts exactly; E geometry/counting/catalogue/reference sections are unchanged.
