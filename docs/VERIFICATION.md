@@ -1,5 +1,11 @@
 # Verification — 27 September 2026
 
+## Browser CI timing races — 10 October 2026
+
+- PR #13's failed shards timed out waiting for the train's transient look-hint geometry at 800 × 360 and for the expired fallback checksum to resume. Both original cases pass in isolation (two tests, one worker, 1.2 minutes), confirming timing-sensitive failures.
+- The revised train checks explicitly advance only the six-second hint callbacks, retain real rendering/input clocks, capture simultaneous running-train/hint geometry and verify the hint disappears after expiry. The storage check waits for its deliberately blocked checksum before expiring coordination; the saved baseline and newer in-memory revision assertions remain intact.
+- All four revised checks pass with two workers (2.6 minutes): train layout at 360 × 600, 600 × 360 and 800 × 360, plus expired fallback coordination. Production build, type-check, repository formatting and diff whitespace checks pass.
+
 ## Default E adoption — 10 October 2026
 
 - Default one-shot input is byte-identical to the frozen E system/reply combination. The default JSON and JavaScript examples match and compile with no warnings; legacy defaults are preserved explicitly. Generation still receives only text search results, part counts and errors.

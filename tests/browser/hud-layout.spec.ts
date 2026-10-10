@@ -408,8 +408,39 @@ for (const viewport of [
       expect(await collisions(page, slots), state).toEqual([]);
     };
     await openMode(page, "Play");
-    // Observe before entry and the train tap: browser actions can resolve after
-    // the real six-second hint has disappeared on a busy software renderer.
+    // Control only the two six-second hint timers. Rendering, physics and
+    // input keep their real clocks, so a busy renderer cannot skip the state
+    // whose geometry this test checks.
+    await page.evaluate(() => {
+      const w = window as typeof window & { advanceTrainHint?: () => void },
+        schedule = window.setTimeout.bind(window),
+        cancel = window.clearTimeout.bind(window),
+        hints = new Map<number, () => void>();
+      window.setTimeout = ((
+        handler: TimerHandler,
+        delay?: number,
+        ...args: any[]
+      ) => {
+        if (delay !== 6000) return schedule(handler, delay, ...args);
+        if (typeof handler !== "function")
+          throw new Error("Expected a Play hint timeout callback.");
+        const id = schedule(() => {}, 2147483647);
+        hints.set(id, () => handler(...args));
+        return id;
+      }) as typeof window.setTimeout;
+      window.clearTimeout = (id) => {
+        hints.delete(id!);
+        cancel(id);
+      };
+      w.advanceTrainHint = () => {
+        const next = hints.entries().next().value;
+        if (!next) throw new Error("No Play hint timeout is pending.");
+        hints.delete(next[0]);
+        cancel(next[0]);
+        next[1]();
+      };
+    });
+    // Capture both rectangles in one visible frame with Stop available.
     await page.evaluate(() => {
       const observed = window as typeof window & {
         trainLookHintGeometry?: { x: number; y: number };
@@ -447,11 +478,13 @@ for (const viewport of [
     // At rest the train is one chip (status and Go); the rest is a drawer.
     await expect(page.locator(".play-train-drawer")).toHaveCount(0);
     await check("train stopped");
-    // The sample hint gives way to Drag to look after six seconds. Exercise
-    // that real timed state before its own six-second lifetime can expire.
+    // Advance the sample hint's timeout only once the train is running.
     await page.getByRole("button", { name: "Start the train" }).tap();
-    // The saved rectangles came from one visible frame with Stop available,
-    // even if the protocol returns from the tap after that frame's hint expires.
+    await page.evaluate(() =>
+      (
+        window as typeof window & { advanceTrainHint: () => void }
+      ).advanceTrainHint(),
+    );
     const hintGeometry = await (
       await page.waitForFunction(
         () =>
@@ -471,6 +504,12 @@ for (const viewport of [
       "train running with the visible timed look hint",
     ).toBeLessThanOrEqual(1);
     await check("train running with the timed look hint");
+    await page.evaluate(() =>
+      (
+        window as typeof window & { advanceTrainHint: () => void }
+      ).advanceTrainHint(),
+    );
+    await expect(page.locator(".play-look-hint")).toHaveCount(0);
     await page.getByRole("button", { name: "Stop the train" }).tap();
     const chip = page.locator("button.play-train-chip");
     await chip.tap();
