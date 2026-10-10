@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Diorama prompt comparison</title
+  ><style>
+    body {
+      margin: 0;
+      background: #faf8f4;
+      color: #242424;
+      font: 16px system-ui;
+    }
+    main {
+      max-width: 1800px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 28px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    article {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px;
+      min-width: 0;
+    }
+    img {
+      width: 100%;
+      height: auto;
+    }
+    select {
+      min-height: 44px;
+      font: inherit;
+    }
+    a {
+      color: #254c7f;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .meta {
+      color: #555;
+      font-size: 14px;
+    }
+    @media (max-width: 720px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      main {
+        padding: 12px;
+      }
+    }
+  </style>
+  <main>
+    <h1>Diorama prompt comparison</h1>
+    <p>
+      Sol 6.1 · high. The new diorama builds start from the original briefs in
+      separate empty directories and new sessions. No existing sources, images
+      or visual feedback. Original and E sources are retained unchanged and
+      re-rendered using the same four camera presets and Standard look.
+    </p>
+    <p>
+      Compare scene cohesion, subject readability, surface finish and support.
+      One sample per prompt and brief; generation variance remains.
+    </p>
+    <label
+      >View
+      <select id="view">
+        <option value="iso">Three-quarter</option>
+        <option value="front">Front</option>
+        <option value="iso-back">Back</option>
+        <option value="top">Top</option>
+      </select></label
+    >
+    <nav>
+      <a href="#temple">Temple</a><a href="#ewok">Ewok</a
+      ><a href="../README.md#diorama-pilot--sol-61-high">Report</a
+      ><a href="provenance.json">Starting conditions</a>
+    </nav>
+    <section id="temple">
+      <h2>Temple</h2>
+      <p><a href="temple-iso.png">Export comparison image</a></p>
+      <div class="grid">
+        <article>
+          <h3>Original · creative</h3>
+          <img
+            data-model="controls/original-temple"
+            src="controls/original-temple/iso.webp"
+            alt="temple: Original · creative"
+          />
+          <p>Moonwater Temple — The Evening Bell</p>
+          <p class="meta">2,195 parts · 1 compiler warnings</p>
+          <a href="controls/original-temple/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>E · Lego-style</h3>
+          <img
+            data-model="controls/e-temple"
+            src="controls/e-temple/iso.webp"
+            alt="temple: E · Lego-style"
+          />
+          <p>Temple of the Nine Rings</p>
+          <p class="meta">2,258 parts · 1 compiler warnings</p>
+          <a href="controls/e-temple/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>Updated · Diorama</h3>
+          <img
+            data-model="sol-temple"
+            src="sol-temple/iso.webp"
+            alt="temple: Updated · Diorama"
+          />
+          <p>The Autumn Bell — Koyo-ji Buddhist Temple</p>
+          <p class="meta">2,279 parts · 2 compiler warnings</p>
+          <a href="sol-temple/compile.json">Compiler report</a> ·
+          <a href="sol-temple/build.js">Source</a> ·
+          <a href="sol-temple/prompt.md">Exact input</a>
+        </article>
+      </div>
+    </section>
+    <section id="ewok">
+      <h2>Ewok</h2>
+      <p><a href="ewok-iso.png">Export comparison image</a></p>
+      <div class="grid">
+        <article>
+          <h3>Original · creative</h3>
+          <img
+            data-model="controls/original-ewok"
+            src="controls/original-ewok/iso.webp"
+            alt="ewok: Original · creative"
+          />
+          <p>Yub-Nub 1978: Moonwood Space Village</p>
+          <p class="meta">3,294 parts · 2 compiler warnings</p>
+          <a href="controls/original-ewok/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>E · Lego-style</h3>
+          <img
+            data-model="controls/e-ewok"
+            src="controls/e-ewok/iso.webp"
+            alt="ewok: E · Lego-style"
+          />
+          <p>Moonbranch Outpost — Ewok Classic Space</p>
+          <p class="meta">3,278 parts · 30 compiler warnings</p>
+          <a href="controls/e-ewok/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>Updated · Diorama</h3>
+          <img
+            data-model="sol-ewok"
+            src="sol-ewok/iso.webp"
+            alt="ewok: Updated · Diorama"
+          />
+          <p>LL-979 • The Moonwood Treeport</p>
+          <p class="meta">2,955 parts · 12 compiler warnings</p>
+          <a href="sol-ewok/compile.json">Compiler report</a> ·
+          <a href="sol-ewok/build.js">Source</a> ·
+          <a href="sol-ewok/prompt.md">Exact input</a>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    document.querySelector("#view").addEventListener("change", (event) => {
+      for (const img of document.querySelectorAll("[data-model]"))
+        img.src = img.dataset.model + "/" + event.target.value + ".webp";
+    });
+  </script>
+</html>

@@ -1,0 +1,604 @@
+{
+  "brief": "ewok inspired version of the classic 1970s lego space sets",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 3000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 2955,
+      "targetMiss": {
+        "target": 3000,
+        "parts": 2955,
+        "difference": -45,
+        "percent": -1.5
+      },
+      "seconds": 760,
+      "tokens": {
+        "input": 1789844,
+        "cached": 1360000,
+        "output": 118737,
+        "reasoning": 66000
+      },
+      "searches": 25,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2340",
+          "2340p90",
+          "2412b",
+          "2417",
+          "2423",
+          "2431",
+          "27328",
+          "3004p90",
+          "3039",
+          "3039p23",
+          "3039p34",
+          "3039pc5",
+          "3062b",
+          "3068b",
+          "3069b",
+          "32607",
+          "3298p90",
+          "3659",
+          "3678b",
+          "3710",
+          "3941",
+          "3942c",
+          "3957a",
+          "3960",
+          "3961",
+          "4032b",
+          "41769a",
+          "41770a",
+          "41879a",
+          "4345b",
+          "43712",
+          "43713",
+          "4474",
+          "4600",
+          "4616b",
+          "4740",
+          "4746",
+          "50950",
+          "60481a",
+          "6141",
+          "6238b",
+          "63864",
+          "64805",
+          "76382p90",
+          "76382p91",
+          "87079p50"
+        ],
+        "notInList": [
+          "2340",
+          "2340p90",
+          "27328",
+          "3004p90",
+          "3039p23",
+          "3039p34",
+          "3039pc5",
+          "3298p90",
+          "3961",
+          "41879a",
+          "43712",
+          "43713",
+          "4474",
+          "4616b",
+          "4746",
+          "6238b",
+          "64805",
+          "76382p90",
+          "76382p91",
+          "87079p50"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 760,
+          "usage": {
+            "input": 1789844,
+            "cached": 1360000,
+            "output": 118737,
+            "reasoning": 66000,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "windscreen space",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "6070",
+                "2437",
+                "6152a",
+                "62360",
+                "4474",
+                "6238a",
+                "6238b",
+                "87752"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Ewok",
+                "limit": 12
+              },
+              "results": [
+                "3622pz2",
+                "64805",
+                "6047615a",
+                "6047615b",
+                "11203d01",
+                "11203d02"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "brick eye",
+                "limit": 8
+              },
+              "results": [
+                "41669",
+                "48267"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "8x8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3961"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "54200",
+                "85984",
+                "2450"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Minifig Head Ewok",
+                "limit": 20
+              },
+              "results": [
+                "64805"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Torso Space Classic",
+                "limit": 12
+              },
+              "results": [
+                "199013a",
+                "199014a",
+                "973p6m",
+                "63208p91",
+                "76382p6g",
+                "76382p6j",
+                "76382p6m",
+                "76382p0024",
+                "76382p90",
+                "76382p91",
+                "76382p97",
+                "973p90"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Minifig Hips Short Legs",
+                "limit": 6
+              },
+              "results": [
+                "41879a",
+                "16709",
+                "41879b",
+                "16709p01",
+                "16709p04",
+                "16709p06"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "space logo",
+                "limit": 12
+              },
+              "results": [
+                "3004p90",
+                "3298p90",
+                "3068bp53",
+                "3068bp5e",
+                "4490p90",
+                "9460",
+                "59349p50",
+                "80123",
+                "87079p50",
+                "2336p90",
+                "2340p90",
+                "18603c02p0b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wedge 6",
+                "category": "Slope",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "52031"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "rocket engine",
+                "limit": 10
+              },
+              "results": [
+                "4746",
+                "61801"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "ladder",
+                "limit": 6
+              },
+              "results": [
+                "4175",
+                "4207a",
+                "4207b",
+                "15118",
+                "87913",
+                "420"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "space computer slope",
+                "limit": 8
+              },
+              "results": [
+                "905c01",
+                "905",
+                "3039pc5",
+                "3039pc3",
+                "3040p58",
+                "906"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "tail",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "40379",
+                "6239",
+                "2340",
+                "44661",
+                "43892",
+                "3587",
+                "87614",
+                "3479"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "hose flexible",
+                "limit": 5
+              },
+              "results": [
+                "57539",
+                "73590a",
+                "73590b",
+                "14301",
+                "27328"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "engine",
+                "category": "Brick",
+                "limit": 10
+              },
+              "results": [
+                "4616a",
+                "30535",
+                "u608",
+                "4616b",
+                "u609",
+                "4616ac01"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "wedge 6",
+                "limit": 12
+              },
+              "results": [
+                "43713",
+                "98281",
+                "43712",
+                "41761",
+                "42021",
+                "4856",
+                "30355",
+                "30356",
+                "6153b",
+                "22390",
+                "6153a",
+                "32084"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "plate tree leaves",
+                "limit": 8
+              },
+              "results": [
+                "3470",
+                "2435",
+                "3471",
+                "32607",
+                "3024",
+                "3023b",
+                "3623",
+                "3710"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "LL 928",
+                "limit": 6
+              },
+              "results": [
+                "92842",
+                "92832",
+                "92851",
+                "3144",
+                "92814"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Minifig Air Tanks",
+                "limit": 6
+              },
+              "results": [
+                "100662"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Wicket",
+                "limit": 10
+              },
+              "results": [],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Ewok Hood",
+                "limit": 8
+              },
+              "results": [
+                "41855",
+                "93668"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Slope computer",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3039p23",
+                "3039p34",
+                "3660bp01"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "antenna dish",
+                "limit": 8
+              },
+              "results": [
+                "3957a",
+                "4740",
+                "3960",
+                "2654a",
+                "43898",
+                "44375b",
+                "3961",
+                "2569"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Minifig Space Airtanks",
+                "limit": 4
+              },
+              "results": [
+                "4079",
+                "30124b",
+                "3816c",
+                "3817c"
+              ],
+              "round": 5
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 2905,
+              "errors": 47,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 2931,
+              "errors": 20,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 2955,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "2340",
+              "2340p90",
+              "2412b",
+              "2417",
+              "2423",
+              "2431",
+              "27328",
+              "3004p90",
+              "3039",
+              "3039p23",
+              "3039p34",
+              "3039pc5",
+              "3062b",
+              "3068b",
+              "3069b",
+              "32607",
+              "3298p90",
+              "3659",
+              "3678b",
+              "3710",
+              "3941",
+              "3942c",
+              "3957a",
+              "3960",
+              "3961",
+              "4032b",
+              "41769a",
+              "41770a",
+              "41879a",
+              "4345b",
+              "43712",
+              "43713",
+              "4474",
+              "4600",
+              "4616b",
+              "4740",
+              "4746",
+              "50950",
+              "60481a",
+              "6141",
+              "6238b",
+              "63864",
+              "64805",
+              "76382p90",
+              "76382p91",
+              "87079p50"
+            ],
+            "notInList": [
+              "2340",
+              "2340p90",
+              "27328",
+              "3004p90",
+              "3039p23",
+              "3039p34",
+              "3039pc5",
+              "3298p90",
+              "3961",
+              "41879a",
+              "43712",
+              "43713",
+              "4474",
+              "4616b",
+              "4746",
+              "6238b",
+              "64805",
+              "76382p90",
+              "76382p91",
+              "87079p50"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 2955
+        }
+      ]
+    }
+  ]
+}

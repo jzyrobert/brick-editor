@@ -1,0 +1,125 @@
+{
+  "design": "Fresh diorama generation; no source-conditioned revisions. Historical sources re-rendered only for human comparisons.",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "feedback": "Text part search and compiler counts/errors only. No visual feedback or construction warnings.",
+  "cases": [
+    {
+      "id": "sol-temple",
+      "sessionIds": ["01a12770-253c-7f41-8ff5-d55363170726"],
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/runs/diorama-temple/high/empty",
+      "workingDirectoryContents": [],
+      "suppliedSources": [],
+      "inputImages": [],
+      "nativeToolEvents": [],
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "brief": "a japanese buddhist temple",
+      "target": 2000,
+      "promptSha256": "af4f31c5264dda62ff8049d50212a8a0d76fbcef8334f155c92c8bb3e5ed013c",
+      "sourceSha256": "847a06def34138fea277559faffdda6a4fa3cddff9d5acc056d3d25c075609c5",
+      "compilerErrors": 0
+    },
+    {
+      "id": "original-temple",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/original-temple/build.json",
+      "sourceSha256": "922ae3fd3552ebac24b5c8fed4e73047a4bf4094972521a339a540ad934ba939",
+      "parts": 2195,
+      "compilerErrors": 0
+    },
+    {
+      "id": "e-temple",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/fresh-e/sol-temple/build.json",
+      "sourceSha256": "1fb65d023d380fa88db86701a839622dd6c4b2a8416a32d50dee89f4d4daa21c",
+      "parts": 2258,
+      "compilerErrors": 0
+    },
+    {
+      "id": "sol-ewok",
+      "sessionIds": ["01a12770-252e-7983-80f9-86d2639ca198"],
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/runs/diorama-ewok/high/empty",
+      "workingDirectoryContents": [],
+      "suppliedSources": [],
+      "inputImages": [],
+      "nativeToolEvents": [],
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "brief": "ewok inspired version of the classic 1970s lego space sets",
+      "target": 3000,
+      "promptSha256": "2e12500519f361a0fd59c547f4dad7b14f62e09393597f83e1186d53d626b502",
+      "sourceSha256": "edfdf61285cf212410fccc274fbd607d7d40d7d85712b5795bfd96d7d3c498a3",
+      "compilerErrors": 0
+    },
+    {
+      "id": "original-ewok",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/original-ewok/build.json",
+      "sourceSha256": "523381ba93031ddf64545a091e37c26ec539f1a080e4a84da8bc0653a251b248",
+      "parts": 3294,
+      "compilerErrors": 0
+    },
+    {
+      "id": "e-ewok",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/fresh-e/sol-ewok/build.json",
+      "sourceSha256": "2371755c4ce1fee6a2c29081b6c050400d67280f3e381debd6534cca167faa2c",
+      "parts": 3278,
+      "compilerErrors": 0
+    }
+  ],
+  "independentGenerationSessions": 2,
+  "systemPromptSha256": "63eadf606a208d165e8095f43789df617b70137bb2293a889daf4888e1d2ad6b",
+  "replyPromptSha256": "2d728a55ca06d642fb146ce1fdd5baf025270b511da9e445172fbc033c9652af",
+  "parentCommit": "b82f39083bb4ac42d62e002739380dc90014c68a",
+  "recorded": "2026-10-10T20:25:59.902587+00:00",
+  "unchangedESections": [
+    "Size",
+    "Geometry rules",
+    "Ops (one object per op, `\"op\"` names it)",
+    "Colours",
+    "Theme first",
+    "Look like a LEGO design",
+    "Part cheat sheet",
+    "Parts"
+  ],
+  "previewVerification": {
+    "builds": 6,
+    "views": 4,
+    "images": 24,
+    "sizes": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "noOverflow": true
+      },
+      {
+        "width": 1080,
+        "height": 1800,
+        "noOverflow": true
+      },
+      {
+        "width": 360,
+        "height": 600,
+        "noOverflow": true
+      },
+      {
+        "width": 411,
+        "height": 685,
+        "noOverflow": true
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "noOverflow": true
+      },
+      {
+        "width": 686,
+        "height": 411,
+        "noOverflow": true
+      }
+    ]
+  },
+  "nativeModelEffortVerifiedFromTurnContexts": true
+}

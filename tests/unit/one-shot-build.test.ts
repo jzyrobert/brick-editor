@@ -13,6 +13,27 @@ import {
 import { searchForAgent } from "../../src/build-script/part-list";
 
 describe("one-shot build runs", () => {
+  it("pairs diorama composition with E construction and text-only feedback", () => {
+    const text = oneShotPrompt("a playground", 2000, {
+      partsList: false,
+      search: true,
+      check: true,
+      promptFile: "build-agent-diorama.md",
+      replyPromptFile: "brick-build-diorama.md",
+    });
+    expect(text).toContain("one cohesive diorama on a shared display base");
+    expect(text).toContain(
+      "Use a shared baseplate or connected plate-built display base",
+    );
+    expect(text).toContain("Finish the subject's visible skin intentionally");
+    expect(text).toContain("## Checking a draft");
+    expect(text).toContain("You cannot render or run commands");
+    expect(text).toContain("baseplate({");
+    expect(text).not.toMatch(
+      /standalone object is complete|stand on the table|When you can run tools|\{\{/,
+    );
+    expect(text.trimEnd()).toMatch(/Build request: a playground$/);
+  });
   it("uses the exact E construction guidance and reply contract by default", () => {
     const options = { partsList: false, search: true, check: true };
     const text = oneShotPrompt("a playground", 2000, options);

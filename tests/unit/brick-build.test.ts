@@ -27,9 +27,12 @@ describe("brick.build", () => {
     expect(isBrickBuild({ tool: "brick.build", input: {} })).toBe(false);
   });
 
-  it("makes the same script as the JSON example from the code example", () => {
-    const code = block("brick-build.md", "Example", "js");
-    const json = JSON.parse(block("build-agent.md", "Example", "json"));
+  it.each([
+    ["brick-build.md", "build-agent.md"],
+    ["brick-build-diorama.md", "build-agent-diorama.md"],
+  ])("makes %s match the paired JSON example", (reply, system) => {
+    const code = block(reply, "Example", "js");
+    const json = JSON.parse(block(system, "Example", "json"));
     const { script } = runBrickBuild(code);
     expect(script).toEqual(json);
     expect(validateBuildScript(script)).toEqual([]);
