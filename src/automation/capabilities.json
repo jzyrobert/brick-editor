@@ -129,7 +129,7 @@
       "interruptedCaptureRefusal": true,
       "looks": ["standard", "realistic", "photo"],
       "lookApi": "render.look.get() / render.look.set(name, controls?); render.image({ look?, lookControls? }) defaults to standard",
-      "lookFeatures": "Procedural studio IBL shared with the path tracer (generated, no asset; `environment: \"room\"` for three's RoomEnvironment), soft outlines for Standard (`edges: \"soft\"`), tuned LDraw finishes incl. procedural glitter/speckle, depth-based GTAO, fitted soft shadows on a shadow-catcher ground, hidden outlines, PBR Neutral tone mapping, jittered still accumulation (photo); phones drop AO and vignette",
+      "lookFeatures": "Procedural studio IBL shared with the path tracer (generated, no asset; broad key reflections with preserved key-light energy and wider rim strips; `environment: \"room\"` for three's RoomEnvironment), soft outlines for Standard (`edges: \"soft\"`), tuned LDraw finishes incl. softer ABS gloss and procedural glitter/speckle, depth-based GTAO, fitted soft shadows on a shadow-catcher ground, hidden outlines, PBR Neutral tone mapping, jittered still accumulation (photo); phones drop AO and vignette and Realistic draws directly, with a lighter shadow catcher on backdrops without their own ground",
       "backdrops": ["blank", "grass", "street", "beach", "night", "studio"],
       "backdropApi": "render.backdrop.get() / render.backdrop.set({ name?, grid? }); name is saved in the project (scene.set command); render.image({ backdrop? }) defaults to the project's backdrop; manifest.backdrop records it"
     },

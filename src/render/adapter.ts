@@ -2601,6 +2601,10 @@ export class SceneAdapter {
    * a backdrop's textured ground receives the shadows itself. */
   private applyGroundTreatment() {
     const look = this.look;
+    this.shadowGround.material.opacity =
+      look.name === "realistic" && look.resourceProfile === "mobile"
+        ? 0.2
+        : 0.3;
     this.shadowGround.visible =
       look.ground === "shadow" && !this.environment.hasGround;
     const gridMaterial = this.grid.material as THREE.LineBasicMaterial;

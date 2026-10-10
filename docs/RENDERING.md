@@ -25,6 +25,32 @@ Side-by-side captures (Realistic left, Photo at 16 samples right, 400×300 each,
 
 **Cost.** The studio costs nothing per frame beyond the previous room environment: the same one PMREM map sampled per pixel, one directional light with the same fitted shadow map, one fewer light (fill off). Generating it is a one-off on first use of a realistic look: the CPU image and its prefilter took 407 ms against 153 ms for `RoomEnvironment` on the loaded test VM (5,000-part village, mobile profile; the sky-light integral was then cut to a 128×64 image, saving about 100 ms); a second backdrop colour adds one more prefilter. Measured orbit frames on that build (phone 390×844 at DPR 3, mobile profile, SwiftShader, median of 8): Realistic with the studio 602 draws and 15.9 ms CPU per frame, with the room 602 draws and 16.8 ms. Wall times (12–16 s per frame on software WebGL under a load average of 20) are dominated by rasterisation and vary more between runs than between the two.
 
+**Studio refinement (9 October 2026).** The key panel is wider (half extents
+0.4 × 0.3 instead of 0.26 × 0.2), with a softer edge and lower peak radiance.
+Its integrated red-channel irradiance stays at about 3.10, so broad reflections
+do not raise the directional key's intensity or the look's exposure. The light
+is slightly more neutral, and wider rim strips make curved surfaces easier to
+read after environment-map filtering. ABS roughness is 0.28 instead of 0.24,
+softening its sharp highlights while keeping its glossy finish. Both looks use
+the refined studio; Photo retains its separate clear-coated physical material.
+This is parameter tuning: five panels, the same cached 512 × 256 environment,
+the same materials and shaders, and the same shadow maps. Phone Realistic still
+draws directly with AO and vignette off. Verification and measured comparisons
+are in [the verification record](VERIFICATION.md#realistic-studio-refinement--9-october-2026).
+
+**Five critic/audit rounds (9–10 October 2026).** A fixed 936-part public gallery
+Piplup build was compared against physical LEGO photographs. Four trials of
+light splitting, AO/denoising, ABS roughness and fill-panel placement were
+rejected. The retained change lowers phone Realistic's shadow-catcher opacity
+from 0.3 to 0.2 on backdrops without their own ground; desktop and Photo keep
+0.3. The auditor accepted a modest shadow-density gain, while the critic found
+no demonstrated realism-score gain. Shadow edges are still hard on phones;
+ABS reflection shape, transparency and geometry limitations remain. There are
+no additional passes, samples, geometry or assets. Both agents’ full reviews,
+physical-photo sources and matched counters/timings are in
+[the five-round report](reports/realistic-five-rounds.json). Physical-phone
+colour/performance remain unverified.
+
 **Contact shadow and reflective floor (not kept).** The other site's realistic mode lays a blurred contact shadow and a reflective floor under the model. A contact shadow was prototyped for Realistic (the model drawn once from below into a 256² depth-alpha texture, blurred twice, on a plane under the model, redrawn only after scene changes like the cached shadow map) and removed: Realistic already has a fitted soft shadow on its shadow-catcher plane plus GTAO, so the difference in captures was faint, while the extra pass is another full draw of the model after every edit, as costly as the shadow-map pass, and the prototype misdrew with the batched draws in the viewport. A reflective floor needs the model drawn a second time, mirrored, every frame, which doubles the draw calls on the phone budget, so it was not attempted; Photo's traced sweep already carries a faint reflection.
 
 ## Soft outlines (Standard)
@@ -202,7 +228,7 @@ All templates fit the phone budget (the largest, the lighthouse and castle, are 
 
   | Finish                       | Roughness | Metalness | Env. intensity |
   | ---------------------------- | --------- | --------- | -------------- |
-  | Plastic (ABS)                | 0.24      | 0         | 1              |
+  | Plastic (ABS)                | 0.28      | 0         | 1              |
   | Transparent                  | 0.04      | 0         | 1.6            |
   | Chrome                       | 0.06      | 1         | 1.2            |
   | Pearlescent                  | 0.32      | 0.55      | 1.1            |

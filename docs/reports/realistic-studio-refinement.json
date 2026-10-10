@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-09",
+  "baselineCommit": "579d0f7fc81a7a86984818080785c61a4ed9fb13",
+  "environment": "Chromium / SwiftShader software WebGL2 on the shared ARM64 development VM",
+  "method": "10 native-pointer orbit frames per scene, DPR 1, balanced quality, Realistic defaults for each resource profile. CPU submission time and a synchronous one-pixel GPU readback are reported separately. Each look is warmed by a 640x480 capture before orbiting. Baseline then refined, same cameras and inputs.",
+  "limitations": "Sequential single-run software measurements, not hardware FPS or physical-phone performance. CPU contention varies between runs. No scene/geometry/pass change; no performance gain is claimed.",
+  "measurements": [
+    {
+      "profile": "desktop",
+      "scene": "finishes",
+      "buffer": {
+        "width": 960,
+        "height": 622
+      },
+      "baseline": {
+        "setupMs": 164.5,
+        "drawsRange": [34, 34],
+        "trianglesRange": [44745, 44745],
+        "cpuMedianMs": 2.05,
+        "gpuDrainMedianMs": 469.05,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "refined": {
+        "setupMs": 158.7,
+        "drawsRange": [34, 34],
+        "trianglesRange": [44745, 44745],
+        "cpuMedianMs": 2.15,
+        "gpuDrainMedianMs": 460.6,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "sameDrawsAndTriangles": true
+    },
+    {
+      "profile": "desktop",
+      "scene": "house",
+      "buffer": {
+        "width": 960,
+        "height": 622
+      },
+      "baseline": {
+        "setupMs": 74,
+        "drawsRange": [69, 69],
+        "trianglesRange": [219406, 219406],
+        "cpuMedianMs": 6.05,
+        "gpuDrainMedianMs": 1198.25,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "refined": {
+        "setupMs": 66.1,
+        "drawsRange": [69, 69],
+        "trianglesRange": [219406, 219406],
+        "cpuMedianMs": 3.15,
+        "gpuDrainMedianMs": 641.7,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "sameDrawsAndTriangles": true
+    },
+    {
+      "profile": "desktop",
+      "scene": "jeep",
+      "buffer": {
+        "width": 960,
+        "height": 622
+      },
+      "baseline": {
+        "setupMs": 75.8,
+        "drawsRange": [51, 51],
+        "trianglesRange": [48409, 48409],
+        "cpuMedianMs": 3.15,
+        "gpuDrainMedianMs": 620.4,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "refined": {
+        "setupMs": 68.2,
+        "drawsRange": [51, 51],
+        "trianglesRange": [48409, 48409],
+        "cpuMedianMs": 2.15,
+        "gpuDrainMedianMs": 450.75,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "sameDrawsAndTriangles": true
+    },
+    {
+      "profile": "mobile",
+      "scene": "finishes",
+      "buffer": {
+        "width": 390,
+        "height": 776
+      },
+      "baseline": {
+        "setupMs": 167.4,
+        "drawsRange": [26, 28],
+        "trianglesRange": [43162, 43794],
+        "cpuMedianMs": 1.55,
+        "gpuDrainMedianMs": 270.15,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "refined": {
+        "setupMs": 168.7,
+        "drawsRange": [26, 28],
+        "trianglesRange": [43162, 43794],
+        "cpuMedianMs": 1.4,
+        "gpuDrainMedianMs": 187.25,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "sameDrawsAndTriangles": true
+    },
+    {
+      "profile": "mobile",
+      "scene": "house",
+      "buffer": {
+        "width": 390,
+        "height": 776
+      },
+      "baseline": {
+        "setupMs": 48.2,
+        "drawsRange": [66, 66],
+        "trianglesRange": [219403, 219403],
+        "cpuMedianMs": 3.9,
+        "gpuDrainMedianMs": 499.45,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "refined": {
+        "setupMs": 62.3,
+        "drawsRange": [66, 66],
+        "trianglesRange": [219403, 219403],
+        "cpuMedianMs": 3.15,
+        "gpuDrainMedianMs": 327.05,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "sameDrawsAndTriangles": true
+    },
+    {
+      "profile": "mobile",
+      "scene": "jeep",
+      "buffer": {
+        "width": 390,
+        "height": 776
+      },
+      "baseline": {
+        "setupMs": 81.5,
+        "drawsRange": [48, 48],
+        "trianglesRange": [48406, 48406],
+        "cpuMedianMs": 1.8,
+        "gpuDrainMedianMs": 233.7,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "refined": {
+        "setupMs": 48.4,
+        "drawsRange": [48, 48],
+        "trianglesRange": [48406, 48406],
+        "cpuMedianMs": 1.8,
+        "gpuDrainMedianMs": 183.25,
+        "orbitShadowPasses": 0,
+        "pageErrors": []
+      },
+      "sameDrawsAndTriangles": true
+    }
+  ]
+}

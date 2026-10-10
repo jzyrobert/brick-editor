@@ -240,7 +240,7 @@ export const FINISH_PARAMETERS: Record<
   Finish,
   { roughness: number; metalness: number; envMapIntensity: number }
 > = {
-  plastic: { roughness: 0.24, metalness: 0, envMapIntensity: 1 },
+  plastic: { roughness: 0.28, metalness: 0, envMapIntensity: 1 },
   transparent: { roughness: 0.04, metalness: 0, envMapIntensity: 1.6 },
   chrome: { roughness: 0.06, metalness: 1, envMapIntensity: 1.2 },
   pearlescent: { roughness: 0.32, metalness: 0.55, envMapIntensity: 1.1 },

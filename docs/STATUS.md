@@ -1,5 +1,43 @@
 # Implementation status
 
+## Five Realistic critic and photo-audit rounds — 9–10 October 2026
+
+Five candidate rounds used the same published 936-part gallery build,
+“Piplup’s Big Catch at Lake Acuity” (`256416f99469`), with independent critic
+and audit agents comparing previous/current desktop and mobile canvas views.
+The audit compared physical LEGO assembly/review photographs. Four lighting,
+AO and roughness trials were rejected and restored. The retained change is
+phone Realistic shadow-catcher opacity 0.3 → 0.2 on backdrops without their own
+ground. Desktop and Photo keep 0.3.
+
+The auditor accepted a modest reduction in phone-shadow dominance; the critic
+found no demonstrated realism-score gain. This is not consensus or a general
+photorealism improvement. Hard shadow edges, weak ABS reflection shapes,
+transparent-part limitations and authored geometry remain. No new render
+passes, shader samples, geometry or runtime assets are introduced.
+
+All six measurement packets (baseline plus five candidates) preserve orbit
+draws/triangles and cached shadows. Physical-phone acceptance remains open.
+See the [rounds and both agents’ reviews](reports/realistic-five-rounds.json)
+and [verification](VERIFICATION.md#five-realistic-critic-and-photo-audit-rounds--910-october-2026).
+
+## Realistic studio refinement — 9 October 2026
+
+Realistic uses a broader key reflection, wider rim strips and a slightly softer
+ABS finish. The wider key lowers its peak radiance to retain the previous
+incident key-light energy, with a more neutral tint. Photo uses the same refined
+studio and retains its separate physical materials. This changes lighting and
+finish parameters only: no additional lights, shader samples, geometry, draw
+passes or runtime assets. Phones keep their direct Realistic draw, with AO and
+vignette off.
+
+Matched finish-fixture, house and jeep orbit trials on desktop and mobile
+profiles have identical draw-call and triangle sequences before and after, with
+zero shadow-map redraws during each orbit. Software timing varies with shared
+machine load; physical-phone performance remains open. See
+[rendering](RENDERING.md#one-studio-for-realistic-and-photo) and the
+[measurements](reports/realistic-studio-refinement.json).
+
 ## The 5540 drives in ordinary Play as one body — 5 October 2026
 
 Opening the Formula 1 Racer 5540 OMR model and entering Play now gives a
