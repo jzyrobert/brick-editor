@@ -1,0 +1,194 @@
+{
+  "gallery": 1,
+  "source": "japanese-temple-one-shot-target",
+  "label": "japanese-temple-one-shot-target/max",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/max",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "max"
+  },
+  "run": {
+    "effort": "max",
+    "model": "gpt-6.1-sol",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 2060,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2060,
+      "difference": 60,
+      "percent": 3
+    },
+    "seconds": 1839,
+    "tokens": {
+      "input": 27888,
+      "cached": 0,
+      "output": 61166,
+      "reasoning": 50861
+    },
+    "searches": 0,
+    "knowledge": {
+      "named": [
+        "14716",
+        "2417",
+        "2423",
+        "2431",
+        "2453b",
+        "3005",
+        "3008",
+        "30176",
+        "3022",
+        "3045",
+        "3062b",
+        "3069b",
+        "3633",
+        "3660b",
+        "3665a",
+        "3676",
+        "3741a",
+        "3742",
+        "3941",
+        "3942c",
+        "3960",
+        "4032b",
+        "4589",
+        "6141",
+        "63864",
+        "87079",
+        "98138"
+      ],
+      "notInList": [],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 1839,
+        "usage": {
+          "input": 27888,
+          "cached": 0,
+          "output": 61166,
+          "reasoning": 50861
+        },
+        "searches": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "14716",
+            "2417",
+            "2423",
+            "2431",
+            "2453b",
+            "3005",
+            "3008",
+            "30176",
+            "3022",
+            "3045",
+            "3062b",
+            "3069b",
+            "3633",
+            "3660b",
+            "3665a",
+            "3676",
+            "3741a",
+            "3742",
+            "3941",
+            "3942c",
+            "3960",
+            "4032b",
+            "4589",
+            "6141",
+            "63864",
+            "87079",
+            "98138"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2060
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2060,
+      "designs": 73,
+      "lots": 144,
+      "massingCells": 16504,
+      "massingParts": 1003,
+      "placedParts": 1057,
+      "sections": 6,
+      "components": 13,
+      "opsRun": 454,
+      "scriptBytes": 18436,
+      "ldrawBytes": 87430,
+      "partsPerScriptKB": 114.4,
+      "compileMs": 237,
+      "checkMs": 572
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 4,
+      "groups": 14,
+      "covered": 2010,
+      "uncovered": 50,
+      "health": "warning: 2010 parts with verified connectors form 14 separately connected groups; 4 parts are not connected to anything. 50 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2060,
+      "difference": 60,
+      "percent": 3
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[5].ops[5].ops[1]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "22 part(s) in 13 group(s) are not connected to the main structure (largest group: 1988 parts); e.g. 3062b at [31, 19, 39], 4589 at [26, 25, 1], 4589 at [36, 25, 1], 4589 at [23, 25, 25], 4589 at [39, 25, 25], 3062b at [3, 17, 22]",
+        "ops": [
+          "sections[5].ops[0] > components.gardenPine.ops[3]",
+          "sections[5].ops[1] > components.gardenPine.ops[3]",
+          "sections[5].ops[2] > components.gardenPine.ops[3]",
+          "sections[5].ops[3] > components.gardenPine.ops[3]",
+          "sections[2].ops[16]",
+          "sections[2].ops[17]",
+          "sections[4].ops[0] > components.stoneLantern.ops[8]",
+          "sections[4].ops[0] > components.stoneLantern.ops[9]",
+          "sections[4].ops[1] > components.stoneLantern.ops[8]",
+          "sections[4].ops[1] > components.stoneLantern.ops[9]",
+          "sections[4].ops[2] > components.stoneLantern.ops[8]",
+          "sections[4].ops[2] > components.stoneLantern.ops[9]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

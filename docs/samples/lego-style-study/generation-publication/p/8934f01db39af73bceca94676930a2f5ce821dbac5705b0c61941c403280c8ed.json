@@ -1,0 +1,530 @@
+{
+  "gallery": 1,
+  "source": "e-fresh:text-only",
+  "generation": "e-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/sol-dragon",
+  "prompt": {
+    "id": "dragon-1000",
+    "brief": "a dragon",
+    "targetParts": 1000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 1000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1017,
+    "targetMiss": {
+      "target": 1000,
+      "parts": 1017,
+      "difference": 17,
+      "percent": 1.7
+    },
+    "seconds": 1009,
+    "tokens": {
+      "input": 1430895,
+      "cached": 1056768,
+      "output": 115920,
+      "reasoning": 86011
+    },
+    "searches": 18,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "10238",
+        "11089",
+        "11477",
+        "15068",
+        "24309",
+        "3005",
+        "3020",
+        "3023b",
+        "3062b",
+        "3069b",
+        "4085c",
+        "43723a",
+        "4460b",
+        "4589",
+        "51342",
+        "54200",
+        "93606",
+        "98138"
+      ],
+      "notInList": [
+        "10238",
+        "11089",
+        "51342",
+        "93606"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 1009,
+        "usage": {
+          "input": 1430895,
+          "cached": 1056768,
+          "output": 115920,
+          "reasoning": 86011,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "dragon wing",
+              "limit": 8
+            },
+            "results": [
+              "6133",
+              "5984",
+              "38547",
+              "51342",
+              "30130",
+              "6125",
+              "75174c01",
+              "87685"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "horn curved",
+              "limit": 8
+            },
+            "results": [
+              "67361",
+              "88964",
+              "87747"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "eye tile",
+              "limit": 8
+            },
+            "results": [
+              "10238",
+              "98138pz0",
+              "98138pz2",
+              "98138p2d",
+              "98138p07",
+              "98138pz4",
+              "3069bpm0",
+              "3070bp0e"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "2x4",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "93606",
+              "47456"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge slope",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "54200",
+              "85984",
+              "93606",
+              "42918",
+              "41748",
+              "41747",
+              "52031",
+              "43720"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "dragon tail",
+              "limit": 6
+            },
+            "results": [
+              "6028",
+              "45106",
+              "51874",
+              "35756"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "horn",
+              "category": "Animal",
+              "limit": 8
+            },
+            "results": [
+              "2142",
+              "89522",
+              "13564",
+              "64847",
+              "40379",
+              "51342",
+              "51344",
+              "52258"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "egg",
+              "limit": 8
+            },
+            "results": [
+              "24946",
+              "24130",
+              "24132"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope inverted curved",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "32803",
+              "42023",
+              "45410"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "dragon wing 19",
+              "limit": 3
+            },
+            "results": [
+              "51342"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "12x6",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "3028",
+              "30355",
+              "30356"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "4x8",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "3035",
+              "3934",
+              "3933",
+              "68297"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "3x6",
+              "colour": "black",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "54383",
+              "54384"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "6x4",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "52031"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "tooth",
+              "limit": 6
+            },
+            "results": [
+              "41669",
+              "48267",
+              "49668",
+              "15070",
+              "3647",
+              "3649"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "horn 1 x 1",
+              "limit": 8
+            },
+            "results": [
+              "64847",
+              "11089",
+              "6135b",
+              "6135a",
+              "88695",
+              "6135",
+              "51342",
+              "87747"
+            ],
+            "round": 4
+          },
+          {
+            "args": {
+              "query": "cone curved",
+              "limit": 8
+            },
+            "results": [
+              "4589",
+              "3942c",
+              "3943b",
+              "11477",
+              "15068",
+              "61678",
+              "50950",
+              "93273"
+            ],
+            "round": 4
+          },
+          {
+            "args": {
+              "query": "plate tooth",
+              "colour": "tan",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "49668",
+              "15070",
+              "35162",
+              "61406p09"
+            ],
+            "round": 4
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 1701,
+            "errors": 1,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 1865,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 1017,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "10238",
+            "11089",
+            "11477",
+            "15068",
+            "24309",
+            "3005",
+            "3020",
+            "3023b",
+            "3062b",
+            "3069b",
+            "4085c",
+            "43723a",
+            "4460b",
+            "4589",
+            "51342",
+            "54200",
+            "93606",
+            "98138"
+          ],
+          "notInList": [
+            "10238",
+            "11089",
+            "51342",
+            "93606"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1017
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1017,
+      "designs": 56,
+      "lots": 100,
+      "massingCells": 10487,
+      "massingParts": 719,
+      "placedParts": 298,
+      "sections": 6,
+      "components": 0,
+      "opsRun": 347,
+      "scriptBytes": 27176,
+      "ldrawBytes": 49245,
+      "partsPerScriptKB": 38.3,
+      "compileMs": 74,
+      "checkMs": 198
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 4,
+      "groups": 238,
+      "covered": 1012,
+      "uncovered": 5,
+      "health": "warning: 1012 parts with verified connectors form 238 separately connected groups; 184 parts are not connected to anything. 5 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 1000,
+      "parts": 1017,
+      "difference": 17,
+      "percent": 1.7
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[78]",
+          "sections[1].ops[87]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[78]",
+          "sections[1].ops[89]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[78]",
+          "sections[1].ops[91]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "93606.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[2].ops[17]",
+          "sections[2].ops[42]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "93606.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[2].ops[18]",
+          "sections[2].ops[45]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[2].ops[47]",
+          "sections[2].ops[49]",
+          "sections[4].ops[13]",
+          "sections[4].ops[27]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "762 part(s) in 237 group(s) are not connected to the main structure (largest group: 250 parts); e.g. 15068 at [-2, 10, 19], 54200 at [1, 2, -23], 11477 at [-10, 1, 5], 11477 at [4, 1, 6], 11477 at [-9, 1, -15], 11477 at [4, 1, -14]",
+        "ops": [
+          "sections[0].ops[54]",
+          "sections[2].ops[4]",
+          "sections[3].ops[11]",
+          "sections[0].ops[77]",
+          "sections[5].ops[2]",
+          "sections[3].ops[57]",
+          "sections[3].ops[0]",
+          "sections[5].ops[3]",
+          "sections[0].ops[2]",
+          "sections[4].ops[0]",
+          "sections[5].ops[1]",
+          "sections[0].ops[20]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

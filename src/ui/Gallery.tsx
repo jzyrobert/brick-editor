@@ -239,6 +239,29 @@ export function Gallery({
       ),
     ),
   ];
+  const generations = [
+    ...new Map(
+      prompts.flatMap((p) =>
+        p.entries.flatMap((e) =>
+          e.generation ? [[e.generation.id, e.generation] as const] : [],
+        ),
+      ),
+    ).values(),
+  ].sort((a, b) => b.order - a.order || a.name.localeCompare(b.name));
+  const featured = generations.find((g) => g.default);
+  const generationPrompts = filterGallery(prompts, {
+    ...DEFAULT_GALLERY_FILTERS,
+    generation: filters.generation,
+  });
+  const promptOptions = prompts.filter(
+    (p) =>
+      p.id === filters.prompt || generationPrompts.some((g) => g.id === p.id),
+  );
+  const generationLabel =
+    filters.generation === "latest"
+      ? (featured?.name ?? "")
+      : (generations.find((g) => g.id === filters.generation)?.name ??
+        (generations.length ? "All generations" : ""));
   const matching = groups.reduce((n, p) => n + p.entries.length, 0);
   const shown = groups.slice(0, visible);
   const shownBuilds = shown.reduce((n, p) => n + p.entries.length, 0);
@@ -246,15 +269,20 @@ export function Gallery({
     filters.query ||
     filters.prompt ||
     filters.model ||
-    filters.effort
+    filters.effort ||
+    filters.generation !== "latest"
   );
-  const filterCount = [filters.prompt, filters.model, filters.effort].filter(
-    Boolean,
-  ).length;
+  const filterCount = [
+    filters.prompt,
+    filters.model,
+    filters.effort,
+    filters.generation !== "latest",
+  ].filter(Boolean).length;
   const filterSummary = [
     prompts.find((p) => p.id === filters.prompt)?.name,
     filters.model,
     filters.effort ? `${filters.effort} effort` : "",
+    generationLabel,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -439,6 +467,12 @@ export function Gallery({
                     ? ` Source run: ${detail.e.build.source}.`
                     : ""}
                 </p>
+                {detail.e.generation && (
+                  <p>
+                    <strong>{detail.e.generation.name}.</strong>{" "}
+                    {detail.e.generation.description}
+                  </p>
+                )}
                 <p>
                   Titles are the models’ own. Models open as editable local
                   copies; the gallery originals stay intact.
@@ -503,7 +537,7 @@ export function Gallery({
                     className="gallery-filter-toggle"
                     aria-label={`Filters${filterCount ? `, ${filterCount} active` : ""}`}
                     aria-expanded={more}
-                    aria-controls="gallery-prompt-filter gallery-model-filter gallery-more-filters"
+                    aria-controls="gallery-prompt-filter gallery-model-filter gallery-generation-filter gallery-more-filters"
                     data-active={filterCount > 0}
                     onClick={() => setMore(!more)}
                   >
@@ -524,14 +558,21 @@ export function Gallery({
                     onChange={(e) => changeFilters({ prompt: e.target.value })}
                   >
                     <option value="">
-                      All prompts ({count(prompts.length)})
+                      All prompts ({count(generationPrompts.length)})
                     </option>
-                    {[...prompts]
+                    {[...promptOptions]
                       .sort((a, b) => a.name.localeCompare(b.name, "en"))
                       .map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.name} · {count(p.entries.length)}{" "}
-                          {p.entries.length === 1 ? "build" : "builds"}
+                          {p.name} ·{" "}
+                          {count(
+                            generationPrompts.find((g) => g.id === p.id)
+                              ?.entries.length ?? 0,
+                          )}{" "}
+                          {generationPrompts.find((g) => g.id === p.id)?.entries
+                            .length === 1
+                            ? "build"
+                            : "builds"}
                         </option>
                       ))}
                   </select>
@@ -555,6 +596,37 @@ export function Gallery({
                     ))}
                   </select>
                 </label>
+                {generations.length > 0 && (
+                  <label
+                    className="gallery-select-field"
+                    id="gallery-generation-filter"
+                  >
+                    <span>Prompt generation</span>
+                    <select
+                      value={filters.generation}
+                      onChange={(e) =>
+                        changeFilters({ generation: e.target.value })
+                      }
+                    >
+                      <option value="latest">
+                        {featured
+                          ? `Latest · ${featured.name}`
+                          : "Latest collection"}
+                      </option>
+                      <option value="">All generations</option>
+                      {generations.map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.name} ·{" "}
+                          {count(
+                            all.filter(({ e }) => e.generation?.id === g.id)
+                              .length,
+                          )}{" "}
+                          builds
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
               </div>
               <div className="gallery-browse-bottom">
                 <p
@@ -571,7 +643,7 @@ export function Gallery({
                   )}
                   {filterSummary && (
                     <span
-                      className="gallery-mobile-filter-summary"
+                      className={`gallery-mobile-filter-summary${!activeFilters ? " gallery-featured-generation" : ""}`}
                       title={filterSummary}
                     >
                       {filterSummary}
@@ -722,6 +794,11 @@ export function Gallery({
                             </button>
                           </div>
                           <h3>{s.title}</h3>
+                          {s.generation && (
+                            <p className="gallery-generation">
+                              {s.generation.name}
+                            </p>
+                          )}
                           <p>{s.summary}</p>
                           <div className="gallery-response-actions">
                             <span>

@@ -1,0 +1,283 @@
+{
+  "gallery": 1,
+  "source": "e-fresh:text-only",
+  "generation": "e-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/opus-destroyer",
+  "prompt": {
+    "id": "imperial-star-destroyer-5000",
+    "brief": "imperial star destroyer",
+    "targetParts": 5000
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 5000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 5404,
+    "targetMiss": {
+      "target": 5000,
+      "parts": 5404,
+      "difference": 404,
+      "percent": 8.1
+    },
+    "seconds": 777,
+    "tokens": {
+      "input": 307574,
+      "cached": 200620,
+      "output": 72988,
+      "reasoning": 62473,
+      "costUsd": 7.0952924
+    },
+    "searches": 5,
+    "checks": 2,
+    "knowledge": {
+      "named": [
+        "15068",
+        "3004",
+        "3039",
+        "3062b",
+        "3941",
+        "3957a",
+        "4032b",
+        "4740",
+        "48336",
+        "60474",
+        "86500",
+        "87079"
+      ],
+      "notInList": [
+        "86500"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 777,
+        "usage": {
+          "input": 307574,
+          "cached": 200620,
+          "output": 72988,
+          "reasoning": 62473,
+          "costUsd": 7.0952924
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "2x6"
+            },
+            "results": [
+              "2336"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "limit": 30
+            },
+            "results": [
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a",
+              "2450",
+              "62743",
+              "43719",
+              "32059",
+              "90194",
+              "43723b",
+              "26601",
+              "41769b",
+              "41770b",
+              "43722b",
+              "2336",
+              "48183",
+              "6106",
+              "30503",
+              "54383",
+              "54384",
+              "30504",
+              "50304",
+              "50305",
+              "4859",
+              "2413",
+              "47407",
+              "4596",
+              "50303",
+              "92584"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "dome",
+              "limit": 15
+            },
+            "results": [
+              "4740",
+              "3262",
+              "6908",
+              "15395",
+              "86500",
+              "30367c",
+              "49308",
+              "88293",
+              "24947",
+              "20952",
+              "1744",
+              "30367b",
+              "30151a",
+              "5848",
+              "50747"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "sphere",
+              "limit": 10
+            },
+            "results": [
+              "33176",
+              "20953",
+              "6908",
+              "15395",
+              "5906",
+              "54821",
+              "18990",
+              "86500",
+              "30208",
+              "24947"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tile wedge",
+              "limit": 15
+            },
+            "results": [
+              "3388",
+              "3389"
+            ],
+            "round": 1
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 6588,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 2,
+            "parts": 5404,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "15068",
+            "3004",
+            "3039",
+            "3062b",
+            "3941",
+            "3957a",
+            "4032b",
+            "4740",
+            "48336",
+            "60474",
+            "86500",
+            "87079"
+          ],
+          "notInList": [
+            "86500"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 5404
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 5404,
+      "designs": 61,
+      "lots": 163,
+      "massingCells": 39650,
+      "massingParts": 5033,
+      "placedParts": 371,
+      "sections": 6,
+      "components": 0,
+      "opsRun": 1622,
+      "scriptBytes": 103053,
+      "ldrawBytes": 255237,
+      "partsPerScriptKB": 53.7,
+      "compileMs": 919,
+      "checkMs": 1667
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 329,
+      "covered": 5363,
+      "uncovered": 41,
+      "health": "warning: 5363 parts with verified connectors form 329 separately connected groups; 284 parts are not connected to anything. 41 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 5000,
+      "parts": 5404,
+      "difference": 404,
+      "percent": 8.1
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "2199 part(s) in 328 group(s) are not connected to the main structure (largest group: 3164 parts); e.g. 3039 at [-14, 106, 107], 3021 at [-32, 41, 115], 3710 at [12, 51, 85], 3795 at [0, 40, 30], 3021 at [-26, 39, 115], 3795 at [0, 38, 48]",
+        "ops": [
+          "sections[1].ops[138]",
+          "sections[1].ops[141]",
+          "sections[3].ops[1]",
+          "sections[3].ops[0]",
+          "sections[1].ops[139]",
+          "sections[4].ops[2]",
+          "sections[4].ops[4]",
+          "sections[1].ops[115]",
+          "sections[0].ops[1132]",
+          "sections[4].ops[3]",
+          "sections[4].ops[23]",
+          "sections[0].ops[1130]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

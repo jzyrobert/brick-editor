@@ -1,0 +1,308 @@
+{
+  "gallery": 1,
+  "source": "E:text-only:original-source-revision",
+  "label": "contextual-pelican/high",
+  "prompt": {
+    "id": "pelican-riding-a-bicycle-800",
+    "brief": "a pelican riding a bicycle",
+    "targetParts": 800
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 800,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 871,
+    "targetMiss": {
+      "target": 800,
+      "parts": 871,
+      "difference": 71,
+      "percent": 8.9
+    },
+    "seconds": 482,
+    "tokens": {
+      "input": 245299,
+      "cached": 159644,
+      "output": 49488,
+      "reasoning": 36082,
+      "costUsd": 4.694407399999999
+    },
+    "searches": 5,
+    "checks": 2,
+    "knowledge": {
+      "named": [
+        "11477",
+        "13547",
+        "14769",
+        "15068",
+        "24201",
+        "2431",
+        "3005",
+        "3005pe4",
+        "3068b",
+        "3070b",
+        "32607",
+        "3665a",
+        "3788",
+        "3941",
+        "3942c",
+        "4032b",
+        "61678",
+        "64648",
+        "8043",
+        "98138"
+      ],
+      "notInList": [
+        "3005pe4",
+        "64648",
+        "8043"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 482,
+        "usage": {
+          "input": 245299,
+          "cached": 159644,
+          "output": 49488,
+          "reasoning": 36082,
+          "costUsd": 4.694407399999999
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "fish",
+              "limit": 6
+            },
+            "results": [
+              "64648",
+              "30224",
+              "49595e",
+              "8043"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "brick 1 x 1 with eye",
+              "limit": 6
+            },
+            "results": [
+              "3005pe1",
+              "3005pe4",
+              "3005pe2",
+              "3005pe3",
+              "3005pe5",
+              "3005pe6"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope inverted",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "54091",
+              "32803",
+              "42023",
+              "11301",
+              "45410",
+              "41764",
+              "41765"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope 6 x 1",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "42022",
+              "42023",
+              "35164"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge curved",
+              "colour": "yellow",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "45677",
+              "64225",
+              "43713",
+              "47753",
+              "98281",
+              "43712",
+              "45301",
+              "41748"
+            ],
+            "round": 1
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 1012,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 2,
+            "parts": 871,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "13547",
+            "14769",
+            "15068",
+            "24201",
+            "2431",
+            "3005",
+            "3005pe4",
+            "3068b",
+            "3070b",
+            "32607",
+            "3665a",
+            "3788",
+            "3941",
+            "3942c",
+            "4032b",
+            "61678",
+            "64648",
+            "8043",
+            "98138"
+          ],
+          "notInList": [
+            "3005pe4",
+            "64648",
+            "8043"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 871
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 871,
+      "designs": 66,
+      "lots": 176,
+      "massingCells": 7734,
+      "massingParts": 640,
+      "placedParts": 231,
+      "sections": 9,
+      "components": 0,
+      "opsRun": 342,
+      "scriptBytes": 26154,
+      "ldrawBytes": 43071,
+      "partsPerScriptKB": 34.1,
+      "compileMs": 197,
+      "checkMs": 257
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 49,
+      "groups": 131,
+      "covered": 805,
+      "uncovered": 66,
+      "health": "warning: 805 parts with verified connectors form 131 separately connected groups; 81 parts are not connected to anything. 66 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 800,
+      "parts": 871,
+      "difference": 71,
+      "percent": 8.9
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "49 part(s) are off the stud grid",
+        "ops": [
+          "sections[4].ops[6]",
+          "sections[4].ops[7]",
+          "sections[4].ops[8]",
+          "sections[4].ops[9]",
+          "sections[4].ops[10]",
+          "sections[4].ops[11]",
+          "sections[4].ops[12]",
+          "sections[4].ops[13]",
+          "sections[4].ops[14]",
+          "sections[4].ops[15]",
+          "sections[4].ops[16]",
+          "sections[4].ops[17]",
+          "sections[4].ops[18]",
+          "sections[4].ops[19]",
+          "sections[4].ops[20]",
+          "sections[4].ops[21]",
+          "sections[4].ops[22]",
+          "sections[4].ops[23]",
+          "sections[4].ops[24]",
+          "sections[4].ops[25]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "514 part(s) in 130 group(s) are not connected to the main structure (largest group: 291 parts); e.g. 15068 at [10, 61, 12], 15068 at [23, 81, 13], 3023b at [17, 37, 15], 3022 at [32, 38, 15], 2431 at [10, 1, 4], 3031 at [25, 18, 11]",
+        "ops": [
+          "sections[4].ops[1]",
+          "sections[4].ops[3]",
+          "sections[4].ops[2]",
+          "sections[4].ops[0]",
+          "sections[4].ops[5]",
+          "sections[6].ops[18]",
+          "sections[2].ops[8]",
+          "sections[2].ops[2]",
+          "sections[6].ops[1]",
+          "sections[3].ops[0]",
+          "sections[6].ops[3]",
+          "sections[5].ops[34]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

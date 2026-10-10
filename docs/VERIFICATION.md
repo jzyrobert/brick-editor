@@ -1,10 +1,25 @@
 # Verification — 27 September 2026
 
+## Gallery prompt generations — 10 October 2026
+
+- The latest selector uses explicit featured-generation metadata rather than publication date. Unit checks cover legacy-index compatibility, invalid or duplicated generation metadata, an F run newer than E, combined filters and retained source arrays.
+- A production build passes schema/type checks. All nine relevant browser checks pass with one worker (2.3 minutes), including generation selection, recoverable empty results, detail/Play selection retention, imports, edited-copy protection and offline/corrupt download recovery. Layout checks cover 360 × 600, 411 × 685, 390 × 844, 1080 × 1800, 686 × 411 and 1440 × 1000 with 44 px controls and no horizontal overflow. An earlier test incorrectly expected the detail page after the main Gallery navigation from Play; it was corrected to assert the restored list, and the final nine checks pass.
+- Migration `0003_prompt_generations.sql` applies to a local copy of the 42-row production baseline (18 visible), preserving the existing rows and passing foreign-key checks. The 80-build publication SQL, idempotent replay, rollback to 18 visible builds and re-publication all pass on that copy. Actual migrated database rows match the reviewed index, including generation assignments and the E default. The bundle verifies all 480 immutable file hashes and 38 exact input/script/MPD sources; all fresh E inputs match across models.
+- The full-collection preview confirms 18 fresh E defaults, six results per model, all nine cohorts and 80 history entries, plus all three default-collection image angles. It passes all six supported sizes with no horizontal overflow and 44 px selectors. The first visual check found a 112.2 px closed phone filter area; moving the featured label onto the count line reduces it to 88.8 px at all four narrow widths. One confirmation pass covers desktop/mobile and expanded controls. Live publication follows successful main validation.
+- The UI detector reports only pre-existing advisory CSS findings. The new filter and generation labels use existing design tokens; prompts, the generation harness and feedback protocol are unchanged.
+
+## Fresh E/F independent generation — 10 October 2026
+
+- All 24 fresh runs verify accepted source/input hashes, separate sessions and empty working directories, zero supplied sources/images and zero native tool events. All E inputs match byte for byte across Sol/Astra/Opus for each subject. Codex session records verify requested models/high effort and absence of repository AGENTS instructions; Claude initialization verifies model, working directory and empty tools/MCP/skills, with high effort recorded by invocation/results.
+- All 24 accept in one attempt with zero final compiler errors and no baseplate parts. Compiler checks repair some colour/overlap errors; warnings remain. Sources are retained unchanged, and 96 final views use matching Standard look/resolution/camera presets. [Provenance and metrics](samples/lego-style-study/fresh-e/README.md) distinguish this experiment from historical source revisions.
+- The viewer displays 24 distinct models in 30 comparison cells. All four views load at 360 × 600, 411 × 685, 390 × 844, 1080 × 1800, 686 × 411 and 1440 × 1000 without horizontal overflow. Exported E three-model and Sol E/F comparison sheets cover all six subjects. The application runtime, generation harness and default prompts are unchanged; repository formatting and diff whitespace checks pass.
+
 ## Browser CI timing races — 10 October 2026
 
 - PR #13's failed shards timed out waiting for the train's transient look-hint geometry at 800 × 360 and for the expired fallback checksum to resume. Both original cases pass in isolation (two tests, one worker, 1.2 minutes), confirming timing-sensitive failures.
 - The revised train checks explicitly advance only the six-second hint callbacks, retain real rendering/input clocks, capture simultaneous running-train/hint geometry and verify the hint disappears after expiry. The storage check waits for its deliberately blocked checksum before expiring coordination; the saved baseline and newer in-memory revision assertions remain intact.
 - All four revised checks pass with two workers (2.6 minutes): train layout at 360 × 600, 600 × 360 and 800 × 360, plus expired fallback coordination. Production build, type-check, repository formatting and diff whitespace checks pass.
+- [PR #13 validation](https://github.com/jzyrobert/brick-editor/actions/runs/38069119723) passed every job before merge. Main commit `ed5eda6` then passed [all validation and automatic deployment jobs](https://github.com/jzyrobert/brick-editor/actions/runs/38069999576) without a failed-job rerun.
 
 ## Default E adoption — 10 October 2026
 

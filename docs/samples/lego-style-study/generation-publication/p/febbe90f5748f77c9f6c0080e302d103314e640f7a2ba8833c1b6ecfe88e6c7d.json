@@ -1,0 +1,142 @@
+{
+  "gallery": 1,
+  "source": "japanese-temple-one-shot-claude-target",
+  "label": "japanese-temple-one-shot-claude-target/low",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/low",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "low"
+  },
+  "run": {
+    "effort": "low",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1358,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 1358,
+      "difference": -642,
+      "percent": -32.1
+    },
+    "seconds": 117,
+    "tokens": {
+      "input": 28208,
+      "cached": 1467,
+      "output": 10663,
+      "reasoning": 7691,
+      "costUsd": 0.4274734
+    },
+    "searches": 0,
+    "knowledge": {
+      "named": [
+        "24866",
+        "3062b",
+        "32607",
+        "3470",
+        "3471",
+        "3942c"
+      ],
+      "notInList": [],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 117,
+        "usage": {
+          "input": 28208,
+          "cached": 1467,
+          "output": 10663,
+          "reasoning": 7691,
+          "costUsd": 0.4274734
+        },
+        "searches": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "24866",
+            "3062b",
+            "32607",
+            "3470",
+            "3471",
+            "3942c"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1358
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1358,
+      "designs": 47,
+      "lots": 72,
+      "massingCells": 6274,
+      "massingParts": 786,
+      "placedParts": 572,
+      "sections": 7,
+      "components": 2,
+      "opsRun": 69,
+      "scriptBytes": 5719,
+      "ldrawBytes": 56697,
+      "partsPerScriptKB": 243.2,
+      "compileMs": 39,
+      "checkMs": 272
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 6,
+      "covered": 1323,
+      "uncovered": 35,
+      "health": "warning: 1323 parts with verified connectors form 6 separately connected groups; 0 parts are not connected to anything. 35 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 1358,
+      "difference": -642,
+      "percent": -32.1
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "377 part(s) in 5 group(s) are not connected to the main structure (largest group: 946 parts); e.g. 60593 at [17, 29, 29], 60592 at [38, 51, 7], 60592 at [38, 15, 7], 60592 at [38, 27, 7], 60592 at [38, 39, 7]",
+        "ops": [
+          "sections[3].ops[13]",
+          "sections[4].ops[1].ops[0] > components.tier.ops[0]",
+          "sections[3].ops[14]",
+          "sections[4].ops[1].ops[0] > components.tier.ops[3]",
+          "sections[4].ops[1].ops[0] > components.tier.ops[2]",
+          "sections[4].ops[1].ops[0] > components.tier.ops[1]",
+          "sections[4].ops[2]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

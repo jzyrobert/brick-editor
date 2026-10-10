@@ -1,0 +1,320 @@
+{
+  "brief": "piplup",
+  "runner": "codex",
+  "model": "gpt-6-astra",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "build-agent-contextual.md",
+  "replyPrompt": "brick-build-object.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6-astra",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1160,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1160,
+        "difference": 160,
+        "percent": 16
+      },
+      "seconds": 336,
+      "tokens": {
+        "input": 559411,
+        "cached": 352384,
+        "output": 31966,
+        "reasoning": 16819
+      },
+      "searches": 10,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "24309",
+          "3004",
+          "3022",
+          "30286",
+          "30342",
+          "30363",
+          "3045",
+          "3660b",
+          "3665a",
+          "3675",
+          "3676",
+          "3678b",
+          "50950",
+          "61678"
+        ],
+        "notInList": [
+          "30286",
+          "30342",
+          "3675"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 336,
+          "usage": {
+            "input": 559411,
+            "cached": 352384,
+            "output": 31966,
+            "reasoning": 16819,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24201",
+                "13547",
+                "6091",
+                "70681",
+                "80177",
+                "80178",
+                "93606",
+                "47457",
+                "93604"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "6091",
+                "30602",
+                "42022",
+                "70681",
+                "80177",
+                "80178",
+                "93606"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "inverted slope",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "3665a",
+                "3660b",
+                "24201",
+                "3747b",
+                "13547",
+                "3665b",
+                "70681",
+                "2310",
+                "54091",
+                "42023"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "limit": 12
+              },
+              "results": [
+                "41669",
+                "48267",
+                "4592",
+                "7768",
+                "4257"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547",
+                "6091"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope convex",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "3045",
+                "3676",
+                "3675",
+                "3685",
+                "13548",
+                "7826",
+                "3688",
+                "962"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved corner",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "77180",
+                "77182",
+                "73682"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved 6",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "42023",
+                "52031",
+                "5847",
+                "11344"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "sphere",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "54821",
+                "18990",
+                "86500",
+                "30208",
+                "30342",
+                "87375",
+                "30286",
+                "35320"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope 65",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "60481a",
+                "3678b",
+                "3678a",
+                "78886",
+                "30373",
+                "3678bp4x"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1183,
+              "errors": 21,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 1115,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "24309",
+              "3004",
+              "3022",
+              "30286",
+              "30342",
+              "30363",
+              "3045",
+              "3660b",
+              "3665a",
+              "3675",
+              "3676",
+              "3678b",
+              "50950",
+              "61678"
+            ],
+            "notInList": [
+              "30286",
+              "30342",
+              "3675"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1160
+        }
+      ]
+    }
+  ]
+}

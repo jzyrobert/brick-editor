@@ -1,0 +1,348 @@
+{
+  "gallery": 1,
+  "source": "codex-star-destroyer-5000-creative",
+  "label": "codex-star-destroyer-5000-creative/high",
+  "prompt": {
+    "id": "imperial-star-destroyer-5000",
+    "brief": "imperial star destroyer",
+    "targetParts": 5000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 5000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 4844,
+    "targetMiss": {
+      "target": 5000,
+      "parts": 4844,
+      "difference": -156,
+      "percent": -3.1
+    },
+    "seconds": 927,
+    "tokens": {
+      "input": 769267,
+      "cached": 511872,
+      "output": 78934,
+      "reasoning": 39677
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "20953",
+        "2412b",
+        "2431",
+        "2877",
+        "3005",
+        "30208",
+        "3022",
+        "3023b",
+        "3024",
+        "3039",
+        "3040b",
+        "3068b",
+        "3069b",
+        "3070b",
+        "3660b",
+        "3710",
+        "3941",
+        "3957a",
+        "4032b",
+        "4460b",
+        "54200",
+        "98138"
+      ],
+      "notInList": [
+        "20953",
+        "30208"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 927,
+        "usage": {
+          "input": 769267,
+          "cached": 511872,
+          "output": 78934,
+          "reasoning": 39677,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wedge plate 12",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "47405"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope 18 4",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "18759",
+              "30363",
+              "60477",
+              "43708"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "sphere",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "20953",
+              "15395",
+              "5906",
+              "54821",
+              "86500",
+              "30208"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "engine",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "50943",
+              "43121",
+              "2853a",
+              "2853b",
+              "2853c",
+              "2854"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "dish 6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "44375b",
+              "4285b",
+              "44375a",
+              "18675"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "4x8",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "3035",
+              "22888",
+              "3934",
+              "6576",
+              "3933",
+              "73832"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "3x6",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "54383",
+              "54384"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "hemisphere inverted",
+              "colour": "light bluish grey",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "3665a",
+              "3660b",
+              "2449",
+              "3676"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "engine",
+              "category": "Space",
+              "limit": 8
+            },
+            "results": [],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "technic turbine",
+              "limit": 6
+            },
+            "results": [
+              "41531"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 5276,
+            "errors": 6,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 4770,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 4844,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "20953",
+            "2412b",
+            "2431",
+            "2877",
+            "3005",
+            "30208",
+            "3022",
+            "3023b",
+            "3024",
+            "3039",
+            "3040b",
+            "3068b",
+            "3069b",
+            "3070b",
+            "3660b",
+            "3710",
+            "3941",
+            "3957a",
+            "4032b",
+            "4460b",
+            "54200",
+            "98138"
+          ],
+          "notInList": [
+            "20953",
+            "30208"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 4844
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 4844,
+      "designs": 66,
+      "lots": 151,
+      "massingCells": 82084,
+      "massingParts": 2658,
+      "placedParts": 2186,
+      "sections": 12,
+      "components": 2,
+      "opsRun": 3061,
+      "scriptBytes": 235119,
+      "ldrawBytes": 230766,
+      "partsPerScriptKB": 21.1,
+      "compileMs": 610,
+      "checkMs": 2202
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 68,
+      "covered": 4839,
+      "uncovered": 5,
+      "health": "warning: 4839 parts with verified connectors form 68 separately connected groups; 16 parts are not connected to anything. 5 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 5000,
+      "parts": 4844,
+      "difference": -156,
+      "percent": -3.1
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "634 part(s) in 67 group(s) are not connected to the main structure (largest group: 4205 parts); e.g. 3039 at [25, 38, 105], 3039 at [30, 38, 105], 3039 at [45, 38, 105], 3039 at [50, 38, 105], 3039 at [65, 38, 105], 3039 at [70, 38, 105]",
+        "ops": [
+          "sections[9].ops[3]",
+          "sections[9].ops[4]",
+          "sections[9].ops[29]",
+          "sections[9].ops[30]",
+          "sections[9].ops[55]",
+          "sections[9].ops[56]",
+          "sections[10].ops[1] > components.Tantive IV.ops[10]",
+          "sections[8].ops[40]",
+          "sections[8].ops[0]",
+          "sections[8].ops[10]",
+          "sections[11].ops[1] > components.TIE escort.ops[1]",
+          "sections[11].ops[1] > components.TIE escort.ops[0]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

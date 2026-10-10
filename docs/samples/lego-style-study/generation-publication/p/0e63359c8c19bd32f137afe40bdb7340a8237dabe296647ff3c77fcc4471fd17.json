@@ -1,0 +1,190 @@
+{
+  "gallery": 1,
+  "source": "japanese-temple-one-shot-target",
+  "label": "japanese-temple-one-shot-target/low",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/low",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "low"
+  },
+  "run": {
+    "effort": "low",
+    "model": "gpt-6.1-sol",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 2,
+    "parts": 2088,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2088,
+      "difference": 88,
+      "percent": 4.4
+    },
+    "seconds": 329,
+    "tokens": {
+      "input": 60175,
+      "cached": 2816,
+      "output": 10697,
+      "reasoning": 1214
+    },
+    "searches": 0,
+    "knowledge": {
+      "named": [
+        "2435",
+        "3003",
+        "30176",
+        "3031",
+        "3062b",
+        "3070b",
+        "3660b",
+        "3941",
+        "3942c",
+        "4032b",
+        "4589",
+        "6141"
+      ],
+      "notInList": [],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 186,
+        "usage": {
+          "input": 27890,
+          "cached": 0,
+          "output": 6078,
+          "reasoning": 1034
+        },
+        "searches": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "errors",
+        "knowledge": {
+          "named": [
+            "2435",
+            "3003",
+            "30176",
+            "3031",
+            "3062b",
+            "3660b",
+            "3942c",
+            "4032b",
+            "4589",
+            "6141"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1950,
+        "reason": "The script compiled to 1,950 parts (target 2,000: −50, −2.5%). Errors to fix:\n- overlap: 3633 Fence 1 × 4 × 1 Lattice placed at [27, 8, 23] and 3941 Round Brick 2 × 2 placed at [27, 8, 23] (repeat copy 1/6 > 1/6) overlap where their bodies meet: x 27–29, y 8–11, z 23–24 (2 pairs like this; repeat copies 1/6 > 1/6, 2/6 > 1/6) [sections[1].ops[11], sections[1].ops[5].ops[0] > components.verandaPost.ops[0]]\n- overlap: 3633 Fence 1 × 4 × 1 Lattice placed at [48, 8, 23] and 3941 Round Brick 2 × 2 placed at [51, 8, 23] (repeat copy 5/6 > 1/6) overlap where their bodies meet: x 51–52, y 8–11, z 23–24 (2 pairs like this) [sections[1].ops[12], sections[1].ops[5].ops[0] > components.verandaPost.ops[0]]\n- overlap: 4865b Panel 1 × 2 × 1 placed at [56, 8, 23] and 3941 Round Brick 2 × 2 placed at [57, 8, 23] (repeat copy 6/6 > 1/6) overlap where their bodies meet: x 57–58, y 8–11, z 23–24 [sections[1].ops[12], sections[1].ops[5].ops[0] > components.verandaPost.ops[0]]\n- overlap: 3941 Round Brick 2 × 2 placed at [13, 134, 35] and 4032b Round Plate 2 × 2 placed at [13, 134, 35] (repeat copy 1/5) overlap where their bodies meet: x 13–15, y 134–135, z 35–37 (5 pairs like this; repeat copies 1/5, 2/5, 3/5, 4/5, 5/5) [sections[2].ops[19], sections[2].ops[20].ops[0]]"
+      },
+      {
+        "attempt": 2,
+        "seconds": 143,
+        "usage": {
+          "input": 32285,
+          "cached": 2816,
+          "output": 4619,
+          "reasoning": 180
+        },
+        "searches": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "2435",
+            "3003",
+            "30176",
+            "3031",
+            "3062b",
+            "3070b",
+            "3660b",
+            "3941",
+            "3942c",
+            "4032b",
+            "4589",
+            "6141"
+          ],
+          "notInList": [],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2088
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2088,
+      "designs": 68,
+      "lots": 129,
+      "massingCells": 12385,
+      "massingParts": 1314,
+      "placedParts": 774,
+      "sections": 3,
+      "components": 2,
+      "opsRun": 173,
+      "scriptBytes": 8384,
+      "ldrawBytes": 89516,
+      "partsPerScriptKB": 255,
+      "compileMs": 411,
+      "checkMs": 505
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 23,
+      "covered": 2068,
+      "uncovered": 20,
+      "health": "warning: 2068 parts with verified connectors form 23 separately connected groups; 12 parts are not connected to anything. 20 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2088,
+      "difference": 88,
+      "percent": 4.4
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1288 part(s) in 22 group(s) are not connected to the main structure (largest group: 780 parts); e.g. 60594 at [34, 14, 27], 60593 at [9, 13, 36], 60593 at [14, 100, 33], 60593 at [14, 55, 32], 3941 at [8, 7, 30], 3045 at [20, 73, 29]",
+        "ops": [
+          "sections[1].ops[10]",
+          "sections[2].ops[3]",
+          "sections[1].ops[3]",
+          "sections[2].ops[9]",
+          "sections[2].ops[7]",
+          "sections[2].ops[13]",
+          "sections[1].ops[5].ops[1] > components.verandaPost.ops[0]",
+          "sections[1].ops[5].ops[0] > components.verandaPost.ops[0]",
+          "sections[2].ops[15]",
+          "sections[2].ops[11]",
+          "sections[2].ops[8]",
+          "sections[1].ops[6].ops[1] > components.verandaPost.ops[0]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

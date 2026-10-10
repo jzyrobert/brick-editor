@@ -4780,7 +4780,7 @@ function Workspace() {
                     ? builds.find((e) => e.id === galleryDetail)
                     : occurrences(editor.project).length
                       ? undefined
-                      : builds[0]
+                      : (builds.find((e) => e.generation?.default) ?? builds[0])
                   : undefined;
                 if (target) await openGalleryModel(target, "Play");
                 else enterMode("Play");

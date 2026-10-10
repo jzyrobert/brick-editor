@@ -1,0 +1,372 @@
+{
+  "gallery": 1,
+  "source": "e-fresh:text-only",
+  "generation": "e-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/opus-ewok",
+  "prompt": {
+    "id": "ewok-classic-space-3000",
+    "brief": "ewok inspired version of the classic 1970s lego space sets",
+    "targetParts": 3000
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 3000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 2803,
+    "targetMiss": {
+      "target": 3000,
+      "parts": 2803,
+      "difference": -197,
+      "percent": -6.6
+    },
+    "seconds": 920,
+    "tokens": {
+      "input": 374728,
+      "cached": 253685,
+      "output": 90287,
+      "reasoning": 72003,
+      "costUsd": 8.720198400000001
+    },
+    "searches": 10,
+    "checks": 2,
+    "knowledge": {
+      "named": [
+        "14769",
+        "2417",
+        "2423",
+        "2431",
+        "2449",
+        "24866",
+        "2549",
+        "2877",
+        "3003",
+        "3004",
+        "3023b",
+        "3039",
+        "3040b",
+        "3068b",
+        "3069b",
+        "3070b",
+        "3660b",
+        "3665a",
+        "3666",
+        "3678b",
+        "3710",
+        "3941",
+        "3957a",
+        "3960",
+        "4032b",
+        "4070",
+        "4079",
+        "4345b",
+        "4474",
+        "4589",
+        "4600",
+        "4740",
+        "54200",
+        "6141",
+        "6255",
+        "63864",
+        "98138"
+      ],
+      "notInList": [
+        "2549",
+        "4474"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 920,
+        "usage": {
+          "input": 374728,
+          "cached": 253685,
+          "output": 90287,
+          "reasoning": 72003,
+          "costUsd": 8.720198400000001
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "windscreen canopy",
+              "colour": "trans yellow",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "4474",
+              "11289",
+              "87752",
+              "2337",
+              "98102",
+              "92580"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "dish 2x2",
+              "colour": "blue",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "4740",
+              "2654a",
+              "17964",
+              "35395"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "rope bridge",
+              "limit": 6
+            },
+            "results": [
+              "2549"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "palm leaf",
+              "colour": "dark green",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "3565",
+              "6148"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge 4x2 slope",
+              "colour": "blue",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "93606",
+              "43720",
+              "43721"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "ladder",
+              "limit": 6
+            },
+            "results": [
+              "4175",
+              "4207a",
+              "4207b",
+              "15118",
+              "87913",
+              "420"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "flame",
+              "limit": 4
+            },
+            "results": [
+              "70880",
+              "7727",
+              "64647",
+              "18395"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "minifig ewok",
+              "limit": 4
+            },
+            "results": [
+              "64805"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "bar 1 x 4",
+              "colour": "reddish brown",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "4083",
+              "62113",
+              "42448"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "round brick 2x2 dome top",
+              "limit": 4
+            },
+            "results": [
+              "76776",
+              "5906"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 2450,
+            "errors": 12,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 2803,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "14769",
+            "2417",
+            "2423",
+            "2431",
+            "2449",
+            "24866",
+            "2549",
+            "2877",
+            "3003",
+            "3004",
+            "3023b",
+            "3039",
+            "3040b",
+            "3068b",
+            "3069b",
+            "3070b",
+            "3660b",
+            "3665a",
+            "3666",
+            "3678b",
+            "3710",
+            "3941",
+            "3957a",
+            "3960",
+            "4032b",
+            "4070",
+            "4079",
+            "4345b",
+            "4474",
+            "4589",
+            "4600",
+            "4740",
+            "54200",
+            "6141",
+            "6255",
+            "63864",
+            "98138"
+          ],
+          "notInList": [
+            "2549",
+            "4474"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2803
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2803,
+      "designs": 80,
+      "lots": 190,
+      "massingCells": 12875,
+      "massingParts": 2433,
+      "placedParts": 370,
+      "sections": 5,
+      "components": 0,
+      "opsRun": 291,
+      "scriptBytes": 21355,
+      "ldrawBytes": 130305,
+      "partsPerScriptKB": 134.4,
+      "compileMs": 168,
+      "checkMs": 502
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 1,
+      "groups": 532,
+      "covered": 2742,
+      "uncovered": 61,
+      "health": "warning: 2742 parts with verified connectors form 532 separately connected groups; 477 parts are not connected to anything. 1 car stands on its wheels. 61 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 3000,
+      "parts": 2803,
+      "difference": -197,
+      "percent": -6.6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "1 part(s) are off the stud grid",
+        "ops": [
+          "sections[2].ops[36]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1571 part(s) in 531 group(s) are not connected to the main structure (largest group: 1130 parts); e.g. 2449 at [6, 19, 29], 4032b at [11, 3, 9], 3069b at [15, 14, 6], 3069b at [13, 14, 14], 2449 at [46, 43, 26], 3941 at [14, 34, 23]",
+        "ops": [
+          "sections[2].ops[2]",
+          "sections[2].ops[33]",
+          "sections[3].ops[0]",
+          "sections[2].ops[1]",
+          "sections[1].ops[1]",
+          "sections[1].ops[2]",
+          "sections[3].ops[28]",
+          "sections[2].ops[34]",
+          "sections[3].ops[63]",
+          "sections[2].ops[27]",
+          "sections[2].ops[0]",
+          "sections[1].ops[0]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

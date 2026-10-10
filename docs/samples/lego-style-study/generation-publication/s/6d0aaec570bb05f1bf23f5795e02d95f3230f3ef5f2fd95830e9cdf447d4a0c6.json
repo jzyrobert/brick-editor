@@ -1,0 +1,11552 @@
+{
+ "buildScript": 1,
+ "title": "Piplup's Bubble-Berg",
+ "description": "A big, bright-eyed Piplup captains a drifting ice floe, waving one flipper as an orange fish escapes through a trail of rising bubbles. Sculpted cheeks, a golden beak, webbed feet, a scalloped navy collar and a little curved tail make the penguin recognisable from every angle.",
+ "palette": {
+  "water": "trans light blue",
+  "ice": "white",
+  "penguin": "medium azure",
+  "hood": "dark blue",
+  "beak": "yellow"
+ },
+ "sections": [
+  {
+   "name": "The drifting iceberg",
+   "ops": [
+    {
+     "op": "baseplate",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      32,
+      32
+     ],
+     "colour": "blue"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      32,
+      32
+     ],
+     "colour": "water",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      1,
+      10
+     ],
+     "size": [
+      20,
+      3,
+      19
+     ],
+     "colour": "ice"
+    },
+    {
+     "op": "floor",
+     "at": [
+      6,
+      4,
+      10
+     ],
+     "size": [
+      20,
+      19
+     ],
+     "colour": "ice",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      1,
+      7
+     ],
+     "size": [
+      13,
+      3,
+      3
+     ],
+     "colour": "ice"
+    },
+    {
+     "op": "floor",
+     "at": [
+      9,
+      4,
+      7
+     ],
+     "size": [
+      13,
+      3
+     ],
+     "colour": "ice",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      1,
+      14
+     ],
+     "size": [
+      3,
+      3,
+      10
+     ],
+     "colour": "ice"
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      4,
+      14
+     ],
+     "size": [
+      3,
+      10
+     ],
+     "colour": "ice",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      26,
+      1,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      8
+     ],
+     "colour": "ice"
+    },
+    {
+     "op": "floor",
+     "at": [
+      26,
+      4,
+      16
+     ],
+     "size": [
+      3,
+      8
+     ],
+     "colour": "ice",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      1,
+      29
+     ],
+     "size": [
+      12,
+      3,
+      2
+     ],
+     "colour": "ice"
+    },
+    {
+     "op": "floor",
+     "at": [
+      10,
+      4,
+      29
+     ],
+     "size": [
+      12,
+      2
+     ],
+     "colour": "ice",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      10,
+      1,
+      6
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      13,
+      1,
+      6
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      16,
+      1,
+      6
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      19,
+      1,
+      6
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      10,
+      5,
+      8
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      12,
+      5,
+      9
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      23,
+      5,
+      12
+     ],
+     "colour": "blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      25,
+      5,
+      24
+     ],
+     "colour": "blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      8,
+      5,
+      26
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      5,
+      25
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      7,
+      5,
+      25
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      24,
+      5,
+      25
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      25,
+      5,
+      25
+     ],
+     "colour": "white",
+     "turn": 180
+    }
+   ]
+  },
+  {
+   "name": "Piplup — waving captain",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      11,
+      5,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      5,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      5,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      5,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      5,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      5,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      5,
+      16
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      5,
+      16
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      5,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      5,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      5,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      5,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      5,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      5,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      5,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      5,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      8,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      8,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      8,
+      13
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      8,
+      13
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      8,
+      14
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      8,
+      14
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      8,
+      15
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      8,
+      15
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      8,
+      16
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      8,
+      16
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      8,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      8,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      8,
+      18
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      8,
+      18
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      8,
+      19
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      8,
+      19
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      8,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      8,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      8,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      8,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      11,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      11,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      11,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      11,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      11,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      11,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      11,
+      16
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      11,
+      16
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      11,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      11,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      11,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      11,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      11,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      11,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      11,
+      19
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      11,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      11,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      11,
+      20
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      11,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      11,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      14,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      14,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      14,
+      18
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      14,
+      19
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      14,
+      20
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      14,
+      21
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      14,
+      22
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      14,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      17,
+      15
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      17,
+      16
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      17,
+      17
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      17,
+      18
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      17,
+      19
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      27,
+      17,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      17,
+      20
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      27,
+      17,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      17,
+      21
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      17,
+      22
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      17,
+      23
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      17,
+      24
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      20,
+      15
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      20,
+      16
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      20,
+      17
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      20,
+      17
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      20,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      20,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      20,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      26,
+      20,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      20,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      20,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      20,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      25,
+      20,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      20,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      20,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      20,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      25,
+      20,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      20,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      20,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      20,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      26,
+      20,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      20,
+      22
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      20,
+      22
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      20,
+      23
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      20,
+      24
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      23,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      23,
+      15
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      23,
+      16
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      23,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      23,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      23,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      23,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      23,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      25,
+      23,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      23,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      23,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      23,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      23,
+      19
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      23,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      23,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      23,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      23,
+      20
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      23,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      23,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      23,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      25,
+      23,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      23,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      23,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      23,
+      23
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      23,
+      24
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      23,
+      25
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      26,
+      14
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      26,
+      15
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      26,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      26,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      26,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      26,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      26,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      26,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      26,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      26,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      26,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      26,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      26,
+      19
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      26,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      26,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      26,
+      20
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      26,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      26,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      26,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      26,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      26,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      26,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      26,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      26,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      26,
+      24
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      26,
+      25
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      29,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      29,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      29,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      29,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      29,
+      15
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      29,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      29,
+      15
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      29,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      29,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      29,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      29,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      29,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      29,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      29,
+      17
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      29,
+      18
+     ],
+     "size": [
+      18,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      29,
+      19
+     ],
+     "size": [
+      22,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      29,
+      20
+     ],
+     "size": [
+      22,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      29,
+      21
+     ],
+     "size": [
+      18,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      29,
+      22
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      29,
+      23
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      29,
+      24
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      29,
+      25
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      32,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      32,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      32,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      32,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      32,
+      15
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      32,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      32,
+      15
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      32,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      32,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      32,
+      16
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      32,
+      16
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      32,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      32,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      32,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      32,
+      18
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      32,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      32,
+      18
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      32,
+      19
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      32,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      32,
+      19
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      32,
+      20
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      32,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      32,
+      20
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      32,
+      21
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      32,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      32,
+      21
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      32,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      32,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      32,
+      23
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      32,
+      23
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      32,
+      24
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      32,
+      25
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      35,
+      14
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      35,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      35,
+      15
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      35,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      35,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      35,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      35,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      35,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      35,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      35,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      35,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      35,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      35,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      35,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      35,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      35,
+      19
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      35,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      35,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      35,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      35,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      35,
+      20
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      35,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      35,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      35,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      35,
+      20
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      35,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      35,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      35,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      35,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      35,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      35,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      35,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      35,
+      23
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      35,
+      23
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      35,
+      23
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      35,
+      23
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      35,
+      24
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      35,
+      24
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      35,
+      24
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      35,
+      25
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      38,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      38,
+      15
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      38,
+      16
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      38,
+      16
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      38,
+      16
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      38,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      38,
+      17
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      38,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      38,
+      17
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      38,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      38,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      38,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      38,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      38,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      38,
+      19
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      38,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      38,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      38,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      38,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      38,
+      20
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      38,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      38,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      38,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      38,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      38,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      38,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      38,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      38,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      38,
+      22
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      38,
+      22
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      38,
+      22
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      38,
+      22
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      38,
+      23
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      38,
+      23
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      38,
+      23
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      38,
+      24
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      38,
+      25
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      41,
+      15
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      41,
+      16
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      41,
+      17
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      41,
+      17
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      41,
+      17
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      41,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      41,
+      18
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      41,
+      18
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      41,
+      18
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      41,
+      19
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      41,
+      19
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      41,
+      19
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      41,
+      19
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      41,
+      20
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      41,
+      20
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      41,
+      20
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      41,
+      20
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      41,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      41,
+      21
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      41,
+      21
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      41,
+      21
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      41,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      41,
+      22
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      41,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      41,
+      23
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      41,
+      24
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      44,
+      13
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      44,
+      14
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      44,
+      15
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      44,
+      16
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      44,
+      17
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      44,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      44,
+      18
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      44,
+      19
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      44,
+      19
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      44,
+      20
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      44,
+      20
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      44,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      44,
+      21
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      44,
+      22
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      44,
+      23
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      44,
+      24
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      47,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      47,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      47,
+      13
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      47,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      47,
+      14
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      47,
+      14
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      47,
+      14
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      47,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      47,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      47,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      47,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      47,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      47,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      47,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      47,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      47,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      47,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      47,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      47,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      47,
+      18
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      47,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      47,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      47,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      47,
+      19
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      47,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      47,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      47,
+      20
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      47,
+      20
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      47,
+      20
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      47,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      47,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      47,
+      21
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      47,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      47,
+      22
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      47,
+      22
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      47,
+      22
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      47,
+      23
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      47,
+      24
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      47,
+      25
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      50,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      50,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      50,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      50,
+      13
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      50,
+      13
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      50,
+      13
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      50,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      50,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      50,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      50,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      50,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      50,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      50,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      50,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      50,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      50,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      50,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      50,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      50,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      50,
+      19
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      50,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      50,
+      20
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      50,
+      20
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      50,
+      20
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      50,
+      20
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      50,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      50,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      50,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      50,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      50,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      50,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      50,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      50,
+      24
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      50,
+      25
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      53,
+      11
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      53,
+      11
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      53,
+      11
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      53,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      53,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      53,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      53,
+      13
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      53,
+      13
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      53,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      53,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      53,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      53,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      53,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      53,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      53,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      53,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      53,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      53,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      53,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      53,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      53,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      53,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      53,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      53,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      53,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      53,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      53,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      53,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      53,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      53,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      53,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      53,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      53,
+      24
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      53,
+      24
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      53,
+      25
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      53,
+      26
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      56,
+      11
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      56,
+      11
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      56,
+      11
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      56,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      56,
+      12
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      56,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      17,
+      56,
+      12
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      56,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      56,
+      13
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      56,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      56,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      56,
+      13
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      56,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      56,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      56,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      56,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      56,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      56,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      56,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      56,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      56,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      56,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      56,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      56,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      56,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      56,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      56,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      56,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      56,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      56,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      56,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      56,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      56,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      56,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      56,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      56,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      56,
+      23
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      56,
+      23
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      56,
+      24
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      56,
+      24
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      56,
+      25
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      56,
+      26
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      59,
+      11
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      59,
+      11
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      59,
+      11
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      59,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      59,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      59,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      59,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      59,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      59,
+      13
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      59,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      59,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      59,
+      13
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      59,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      59,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      59,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      59,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      59,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      59,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      59,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      59,
+      16
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      59,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      59,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      59,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      59,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      59,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      59,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      59,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      59,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      59,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      59,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      59,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      59,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      59,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      59,
+      21
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      59,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      59,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      59,
+      23
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      59,
+      23
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      59,
+      24
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      59,
+      24
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      59,
+      25
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      59,
+      26
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      62,
+      11
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      62,
+      11
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      62,
+      11
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      62,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      62,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      62,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      62,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      62,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      62,
+      13
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      62,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      62,
+      13
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      62,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      62,
+      13
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      62,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      62,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      62,
+      14
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      62,
+      14
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      62,
+      14
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      62,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      62,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      62,
+      15
+     ],
+     "size": [
+      7,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      62,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      62,
+      15
+     ],
+     "size": [
+      7,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      62,
+      16
+     ],
+     "size": [
+      7,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      62,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      62,
+      16
+     ],
+     "size": [
+      7,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      62,
+      17
+     ],
+     "size": [
+      7,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      62,
+      17
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      62,
+      17
+     ],
+     "size": [
+      7,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      62,
+      18
+     ],
+     "size": [
+      7,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      62,
+      18
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      62,
+      18
+     ],
+     "size": [
+      7,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      62,
+      19
+     ],
+     "size": [
+      20,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      62,
+      20
+     ],
+     "size": [
+      20,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      62,
+      21
+     ],
+     "size": [
+      18,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      62,
+      22
+     ],
+     "size": [
+      18,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      62,
+      23
+     ],
+     "size": [
+      16,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      62,
+      24
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      62,
+      25
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      62,
+      26
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      65,
+      11
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      65,
+      12
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      65,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      65,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      65,
+      12
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      65,
+      12
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      65,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      65,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      65,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      65,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      65,
+      13
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      65,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      65,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      65,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      65,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      65,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      65,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      65,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      65,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      65,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      65,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      65,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      65,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      65,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      65,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      65,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      65,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      65,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      65,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      65,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      65,
+      17
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      65,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      65,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      65,
+      18
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      65,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      65,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      65,
+      19
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      65,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      65,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      23,
+      65,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      65,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      65,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      65,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      65,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      65,
+      22
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      65,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      65,
+      23
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      65,
+      24
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      65,
+      25
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      65,
+      26
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      68,
+      12
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      68,
+      12
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      68,
+      12
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      68,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      68,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      68,
+      13
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      68,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      68,
+      13
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      68,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      68,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      68,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      68,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      68,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      68,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      68,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      68,
+      14
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      68,
+      15
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      68,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      68,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      68,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      68,
+      15
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      68,
+      15
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      68,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      68,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      68,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      68,
+      17
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      68,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      68,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      68,
+      18
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      68,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      68,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      68,
+      19
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      68,
+      20
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      68,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      68,
+      20
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      68,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      68,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      21,
+      68,
+      21
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      68,
+      22
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      68,
+      22
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      68,
+      23
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      68,
+      23
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      68,
+      24
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      68,
+      25
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      71,
+      13
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      71,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      71,
+      14
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      71,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      71,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      71,
+      15
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      71,
+      15
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      71,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      71,
+      16
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      71,
+      16
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      71,
+      16
+     ],
+     "size": [
+      3,
+      3,
+      1
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      71,
+      17
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      71,
+      17
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      71,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      71,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      71,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      71,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      71,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      71,
+      19
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      71,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      71,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      71,
+      20
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      71,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      71,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      71,
+      21
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      71,
+      22
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      71,
+      23
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      71,
+      24
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      74,
+      14
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      74,
+      15
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      74,
+      16
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      74,
+      17
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      74,
+      18
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      74,
+      19
+     ],
+     "size": [
+      14,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      74,
+      20
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      74,
+      21
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      74,
+      22
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      74,
+      23
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      77,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      77,
+      16
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      77,
+      17
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      77,
+      18
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark blue",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      77,
+      19
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      77,
+      20
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      77,
+      21
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      77,
+      22
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "medium azure",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      47,
+      8
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      47,
+      9
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      47,
+      10
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      47,
+      11
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      50,
+      6
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      50,
+      7
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      50,
+      8
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      50,
+      9
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      50,
+      10
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      50,
+      11
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      50,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      50,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "bright light orange",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      53,
+      6
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      53,
+      7
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      53,
+      8
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      53,
+      9
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      53,
+      10
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      53,
+      11
+     ],
+     "size": [
+      6,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      53,
+      12
+     ],
+     "size": [
+      4,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      53,
+      13
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      56,
+      8
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      56,
+      9
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      56,
+      10
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      56,
+      11
+     ],
+     "size": [
+      2,
+      3,
+      1
+     ],
+     "colour": "yellow",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      10,
+      5,
+      13
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      12,
+      5,
+      12
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      14,
+      5,
+      13
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      18,
+      5,
+      13
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      20,
+      5,
+      12
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      22,
+      5,
+      13
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      14,
+      26,
+      25
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      26,
+      25
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      26,
+      25
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      26,
+      25
+     ],
+     "colour": "medium azure",
+     "turn": 180
+    },
+    {
+     "op": "smooth",
+     "region": {
+      "at": [
+       2,
+       18
+      ],
+      "size": [
+       4,
+       4
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "name": "The fish and the bubbling wake",
+   "ops": [
+    {
+     "op": "group",
+     "at": [
+      25,
+      1,
+      4
+     ],
+     "turn": 0,
+     "ops": [
+      {
+       "op": "column",
+       "at": [
+        0,
+        0,
+        0
+       ],
+       "diameter": 2,
+       "height": 6,
+       "colour": "trans-clear"
+      },
+      {
+       "op": "place",
+       "part": "4740",
+       "at": [
+        0,
+        6,
+        0
+       ],
+       "colour": "trans-clear"
+      },
+      {
+       "op": "place",
+       "part": "54821",
+       "at": [
+        0,
+        7,
+        0
+       ],
+       "colour": "trans light blue"
+      }
+     ]
+    },
+    {
+     "op": "group",
+     "at": [
+      28,
+      1,
+      8
+     ],
+     "turn": 0,
+     "ops": [
+      {
+       "op": "column",
+       "at": [
+        0,
+        0,
+        0
+       ],
+       "diameter": 2,
+       "height": 12,
+       "colour": "trans-clear"
+      },
+      {
+       "op": "place",
+       "part": "4740",
+       "at": [
+        0,
+        12,
+        0
+       ],
+       "colour": "trans-clear"
+      },
+      {
+       "op": "place",
+       "part": "54821",
+       "at": [
+        0,
+        13,
+        0
+       ],
+       "colour": "trans light blue"
+      }
+     ]
+    },
+    {
+     "op": "group",
+     "at": [
+      29,
+      1,
+      12
+     ],
+     "turn": 0,
+     "ops": [
+      {
+       "op": "column",
+       "at": [
+        0,
+        0,
+        0
+       ],
+       "diameter": 2,
+       "height": 18,
+       "colour": "trans-clear"
+      },
+      {
+       "op": "place",
+       "part": "4740",
+       "at": [
+        0,
+        18,
+        0
+       ],
+       "colour": "trans-clear"
+      },
+      {
+       "op": "place",
+       "part": "54821",
+       "at": [
+        0,
+        19,
+        0
+       ],
+       "colour": "trans light blue"
+      }
+     ]
+    },
+    {
+     "op": "place",
+     "part": "64648",
+     "at": [
+      23,
+      1,
+      3
+     ],
+     "colour": "orange"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      20,
+      1,
+      2
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      27,
+      1,
+      2
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      22,
+      1,
+      7
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      2,
+      1,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      2,
+      1,
+      27
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      28,
+      1,
+      28
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      5,
+      1,
+      5
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      17,
+      1,
+      3
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      6,
+      5,
+      11
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      4,
+      5,
+      17
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      27,
+      5,
+      18
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      11,
+      5,
+      29
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      23,
+      5,
+      28
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    }
+   ]
+  }
+ ]
+}

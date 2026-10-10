@@ -1,0 +1,301 @@
+{
+  "brief": "ewok inspired version of the classic 1970s lego space sets",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 3000,
+  "attempts": 5,
+  "prompt": "build-agent-contextual.md",
+  "replyPrompt": "brick-build-object.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "claude",
+      "model": "claude-opus-5-5",
+      "targetParts": 3000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 2803,
+      "targetMiss": {
+        "target": 3000,
+        "parts": 2803,
+        "difference": -197,
+        "percent": -6.6
+      },
+      "seconds": 920,
+      "tokens": {
+        "input": 374728,
+        "cached": 253685,
+        "output": 90287,
+        "reasoning": 72003,
+        "costUsd": 8.720198400000001
+      },
+      "searches": 10,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "14769",
+          "2417",
+          "2423",
+          "2431",
+          "2449",
+          "24866",
+          "2549",
+          "2877",
+          "3003",
+          "3004",
+          "3023b",
+          "3039",
+          "3040b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3665a",
+          "3666",
+          "3678b",
+          "3710",
+          "3941",
+          "3957a",
+          "3960",
+          "4032b",
+          "4070",
+          "4079",
+          "4345b",
+          "4474",
+          "4589",
+          "4600",
+          "4740",
+          "54200",
+          "6141",
+          "6255",
+          "63864",
+          "98138"
+        ],
+        "notInList": [
+          "2549",
+          "4474"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 920,
+          "usage": {
+            "input": 374728,
+            "cached": 253685,
+            "output": 90287,
+            "reasoning": 72003,
+            "costUsd": 8.720198400000001
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "windscreen canopy",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4474",
+                "11289",
+                "87752",
+                "2337",
+                "98102",
+                "92580"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish 2x2",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "4740",
+                "2654a",
+                "17964",
+                "35395"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "rope bridge",
+                "limit": 6
+              },
+              "results": [
+                "2549"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "palm leaf",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "3565",
+                "6148"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge 4x2 slope",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "93606",
+                "43720",
+                "43721"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "ladder",
+                "limit": 6
+              },
+              "results": [
+                "4175",
+                "4207a",
+                "4207b",
+                "15118",
+                "87913",
+                "420"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "flame",
+                "limit": 4
+              },
+              "results": [
+                "70880",
+                "7727",
+                "64647",
+                "18395"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig ewok",
+                "limit": 4
+              },
+              "results": [
+                "64805"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "bar 1 x 4",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "4083",
+                "62113",
+                "42448"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "round brick 2x2 dome top",
+                "limit": 4
+              },
+              "results": [
+                "76776",
+                "5906"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 2450,
+              "errors": 12,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 2803,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "14769",
+              "2417",
+              "2423",
+              "2431",
+              "2449",
+              "24866",
+              "2549",
+              "2877",
+              "3003",
+              "3004",
+              "3023b",
+              "3039",
+              "3040b",
+              "3068b",
+              "3069b",
+              "3070b",
+              "3660b",
+              "3665a",
+              "3666",
+              "3678b",
+              "3710",
+              "3941",
+              "3957a",
+              "3960",
+              "4032b",
+              "4070",
+              "4079",
+              "4345b",
+              "4474",
+              "4589",
+              "4600",
+              "4740",
+              "54200",
+              "6141",
+              "6255",
+              "63864",
+              "98138"
+            ],
+            "notInList": [
+              "2549",
+              "4474"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 2803
+        }
+      ]
+    }
+  ]
+}

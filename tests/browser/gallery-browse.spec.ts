@@ -1,6 +1,134 @@
 import { expect, test } from "@playwright/test";
 import { GALLERY_INDEX, TITLES, mockGallery } from "./helpers/gallery";
 
+test("prompt generations feature E and keep text-only history browsable across detail and Play", async ({
+  page,
+}) => {
+  const collection = {
+    ...GALLERY_INDEX,
+    generations: [
+      {
+        id: "e-fresh",
+        name: "E · fresh builds",
+        description:
+          "Empty working directory. No previous source, images or visual feedback.",
+        order: 3,
+        default: true,
+      },
+      {
+        id: "f-fresh",
+        name: "F · fresh builds",
+        description: "Fresh F comparison.",
+        order: 2,
+      },
+      {
+        id: "e-revision",
+        name: "E · source revisions",
+        description:
+          "Previous build source supplied. No images or visual feedback.",
+        order: 1,
+      },
+    ],
+    builds: GALLERY_INDEX.builds.map((b, i) => ({
+      ...b,
+      generation: i === 0 ? "e-fresh" : i === 1 ? "e-revision" : "f-fresh",
+      created: i === 2 ? "2026-10-11T18:00:00Z" : b.created,
+    })),
+  };
+  await mockGallery(page, { collection });
+  await page.addInitScript(() =>
+    Object.defineProperty(navigator, "connection", {
+      value: { saveData: true },
+    }),
+  );
+  await page.goto("./?galleryIndex=1");
+  const responses = page.locator(".gallery-response");
+  const generation = page.getByRole("combobox", {
+    name: "Prompt generation",
+    exact: true,
+  });
+  await expect(generation).toHaveValue("latest");
+  await expect(responses.locator("h3")).toHaveText([TITLES[0]]);
+  for (const viewport of [
+    { width: 360, height: 600 },
+    { width: 411, height: 685 },
+    { width: 390, height: 844 },
+    { width: 686, height: 411 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(generation).toBeHidden();
+    expect(
+      (await page.locator(".gallery-browse").boundingBox())!.height,
+    ).toBeLessThan(90);
+    await expect(page.locator(".gallery-mobile-filter-summary")).toHaveText(
+      "E · fresh builds",
+    );
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await generation.selectOption("e-revision");
+  await expect(responses.locator("h3")).toHaveText([TITLES[1]]);
+  await page
+    .getByRole("combobox", { name: "AI model" })
+    .selectOption("Claude Opus 5.5");
+  await expect(
+    page.getByRole("heading", { name: "No matching builds" }),
+  ).toBeVisible();
+  await page.getByRole("combobox", { name: "AI model" }).selectOption("");
+  await page
+    .getByRole("button", { name: `Look closer at ${TITLES[1]}`, exact: true })
+    .click();
+  await page.getByText("Prompt & generation notes", { exact: true }).click();
+  await expect(page.locator(".gallery-notes")).toContainText(
+    "Previous build source supplied",
+  );
+  await page
+    .getByRole("button", { name: "Explore this model", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Enter Play", exact: true }),
+  ).toBeVisible();
+  await page
+    .locator(".primary-modes")
+    .getByRole("button", { name: "Gallery", exact: true })
+    .click();
+  await expect(generation).toHaveValue("e-revision");
+  await expect(responses.locator("h3")).toHaveText([TITLES[1]]);
+  await generation.selectOption("");
+  await expect(responses).toHaveCount(3);
+  for (const viewport of [
+    { width: 360, height: 600 },
+    { width: 411, height: 685 },
+    { width: 390, height: 844 },
+    { width: 1080, height: 1800 },
+    { width: 686, height: 411 },
+    { width: 1440, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport);
+    const toggle = page.getByRole("button", { name: /^Filters/ });
+    if (
+      viewport.width <= 760 &&
+      (await toggle.getAttribute("aria-expanded")) === "false"
+    )
+      await toggle.click();
+    const box = await generation.boundingBox();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width);
+    expect(
+      await page
+        .locator(".gallery-page")
+        .evaluate((el) => el.scrollWidth <= el.clientWidth),
+    ).toBe(true);
+  }
+  await page
+    .getByRole("button", { name: "Clear filters", exact: true })
+    .click();
+  await expect(generation).toHaveValue("latest");
+  await expect(responses.locator("h3")).toHaveText([TITLES[0]]);
+  await generation.selectOption("f-fresh");
+  await expect(responses.locator("h3")).toHaveText([TITLES[2]]);
+});
+
 test("gallery combines search, prompt, model and effort with recoverable empty results", async ({
   page,
 }) => {

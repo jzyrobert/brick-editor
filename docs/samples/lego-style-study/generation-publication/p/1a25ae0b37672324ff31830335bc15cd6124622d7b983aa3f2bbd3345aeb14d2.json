@@ -1,0 +1,621 @@
+{
+  "gallery": 1,
+  "source": "b-text:text-only",
+  "generation": "b-text",
+  "label": "docs/samples/lego-style-study/studied-pelican",
+  "prompt": {
+    "id": "pelican-riding-a-bicycle-800",
+    "brief": "a pelican riding a bicycle",
+    "targetParts": 800
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 800,
+    "accepted": true,
+    "attemptsUsed": 2,
+    "parts": 889,
+    "targetMiss": {
+      "target": 800,
+      "parts": 889,
+      "difference": 89,
+      "percent": 11.1
+    },
+    "seconds": 572,
+    "tokens": {
+      "input": 878361,
+      "cached": 631296,
+      "output": 61980,
+      "reasoning": 29244
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "13547",
+        "15068",
+        "2431",
+        "3004",
+        "3005",
+        "3039",
+        "3069b",
+        "3622",
+        "3660b",
+        "4032b",
+        "42022",
+        "4740",
+        "50950",
+        "54200",
+        "61678",
+        "87087",
+        "88517"
+      ],
+      "notInList": [
+        "42022",
+        "88517"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 518,
+        "usage": {
+          "input": 844261,
+          "cached": 631296,
+          "output": 58719,
+          "reasoning": 28960,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "motorcycle wheel",
+              "limit": 6
+            },
+            "results": [
+              "88517",
+              "2903",
+              "50860",
+              "18895",
+              "52035",
+              "85983"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bicycle",
+              "limit": 6
+            },
+            "results": [
+              "4719",
+              "92851",
+              "2807",
+              "4720",
+              "64248",
+              "4719c01"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope inverted",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "54091",
+              "32803",
+              "42023"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope curved 6",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "42022",
+              "44126",
+              "42023",
+              "78522",
+              "45410",
+              "45411"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "eye",
+              "limit": 6
+            },
+            "results": [
+              "41669",
+              "48267",
+              "4592",
+              "7768",
+              "4257"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tyre 75",
+              "limit": 5
+            },
+            "results": [
+              "75545",
+              "7860",
+              "51011",
+              "4084",
+              "92409"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tyre 62",
+              "limit": 5
+            },
+            "results": [
+              "6230",
+              "6292",
+              "32020c01"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope curved double",
+              "size": "8x8",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "54091",
+              "54095",
+              "54096"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope curved",
+              "colour": "yellow",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "11477",
+              "15068",
+              "61678",
+              "50950",
+              "93273",
+              "88930"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "technic axle",
+              "size": "1x2",
+              "limit": 5
+            },
+            "results": [
+              "3700",
+              "59443",
+              "6538b",
+              "32039",
+              "22961"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 1334,
+            "errors": 28,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 1142,
+            "errors": 8,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "parts": 969,
+            "errors": 5,
+            "ok": false
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "errors",
+        "knowledge": {
+          "named": [
+            "11477",
+            "13547",
+            "15068",
+            "2431",
+            "3004",
+            "3005",
+            "3039",
+            "3069b",
+            "3622",
+            "3660b",
+            "4032b",
+            "42022",
+            "4740",
+            "50950",
+            "54200",
+            "61678",
+            "87087",
+            "88517"
+          ],
+          "notInList": [
+            "42022",
+            "88517"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 890,
+        "reason": "The script compiled to 890 parts (target 800: +90, +11.3%). Errors to fix:\n- overlap: 87087 Brick 1 × 1 with Stud on Side placed at [-1, 34, -4] and 54200 Slope 30° 1 × 1 × ⅔ placed at [-1, 33, -4] overlap where their bodies meet: x -1–0, y 34–35, z -4–-3 [sections[0].ops[185] (code line 2), sections[2].ops[35] (code line 2)]"
+      },
+      {
+        "attempt": 2,
+        "seconds": 54,
+        "usage": {
+          "input": 34100,
+          "cached": 0,
+          "output": 3261,
+          "reasoning": 284,
+          "costUsd": 0
+        },
+        "searches": [],
+        "checks": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "13547",
+            "15068",
+            "2431",
+            "3004",
+            "3005",
+            "3039",
+            "3069b",
+            "3622",
+            "3660b",
+            "4032b",
+            "42022",
+            "4740",
+            "50950",
+            "54200",
+            "61678",
+            "87087",
+            "88517"
+          ],
+          "notInList": [
+            "42022",
+            "88517"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 889
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 889,
+      "designs": 51,
+      "lots": 132,
+      "massingCells": 3940,
+      "massingParts": 300,
+      "placedParts": 589,
+      "sections": 8,
+      "components": 0,
+      "opsRun": 619,
+      "scriptBytes": 45790,
+      "ldrawBytes": 43221,
+      "partsPerScriptKB": 19.9,
+      "compileMs": 84,
+      "checkMs": 127
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 1,
+      "groups": 268,
+      "covered": 823,
+      "uncovered": 66,
+      "health": "warning: 823 parts with verified connectors form 268 separately connected groups; 202 parts are not connected to anything. 66 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 800,
+      "parts": 889,
+      "difference": 89,
+      "percent": 11.1
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60]",
+          "sections[3].ops[85]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64]",
+          "sections[3].ops[85]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60]",
+          "sections[3].ops[86]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64]",
+          "sections[3].ops[86]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60]",
+          "sections[3].ops[87]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64]",
+          "sections[3].ops[87]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61]",
+          "sections[3].ops[88]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65]",
+          "sections[3].ops[88]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61]",
+          "sections[3].ops[89]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65]",
+          "sections[3].ops[89]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61]",
+          "sections[3].ops[90]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65]",
+          "sections[3].ops[90]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[63]",
+          "sections[4].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[64]",
+          "sections[4].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[66]",
+          "sections[4].ops[30]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[67]",
+          "sections[4].ops[30]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[4]",
+          "sections[5].ops[5]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[5]",
+          "sections[5].ops[6]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[8]",
+          "sections[5].ops[7]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[9]",
+          "sections[5].ops[8]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[4]",
+          "sections[5].ops[15]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[5]",
+          "sections[5].ops[16]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[8]",
+          "sections[5].ops[17]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[9]",
+          "sections[5].ops[18]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "1 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[187]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "739 part(s) in 267 group(s) are not connected to the main structure (largest group: 84 parts); e.g. 3005 at [0, 7, -2], 3024 at [0, 108, -3], 15068 at [3, 115, -2], 3660b at [-10, 9, 0], 3660b at [9, 9, 0], 3023b at [12, 76, -3]",
+        "ops": [
+          "sections[1].ops[70]",
+          "sections[1].ops[71]",
+          "sections[5].ops[0]",
+          "sections[0].ops[184]",
+          "sections[6].ops[2]",
+          "sections[0].ops[183]",
+          "sections[0].ops[181]",
+          "sections[5].ops[81]",
+          "sections[4].ops[27]",
+          "sections[1].ops[50]",
+          "sections[1].ops[48]",
+          "sections[6].ops[0]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

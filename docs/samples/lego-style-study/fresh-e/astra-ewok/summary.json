@@ -1,0 +1,338 @@
+{
+  "brief": "ewok inspired version of the classic 1970s lego space sets",
+  "runner": "codex",
+  "model": "gpt-6-astra",
+  "targetParts": 3000,
+  "attempts": 5,
+  "prompt": "build-agent-contextual.md",
+  "replyPrompt": "brick-build-object.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6-astra",
+      "targetParts": 3000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 3128,
+      "targetMiss": {
+        "target": 3000,
+        "parts": 3128,
+        "difference": 128,
+        "percent": 4.3
+      },
+      "seconds": 432,
+      "tokens": {
+        "input": 534231,
+        "cached": 338432,
+        "output": 37587,
+        "reasoning": 17357
+      },
+      "searches": 10,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "2412b",
+          "2417",
+          "2423",
+          "2431",
+          "2437",
+          "2489",
+          "3004p90",
+          "3005",
+          "30355",
+          "30356",
+          "30363",
+          "3040b",
+          "3068b",
+          "3070b",
+          "3298",
+          "3298p90",
+          "3622pz2",
+          "3666",
+          "3684a",
+          "3710",
+          "3941",
+          "3957a",
+          "3960",
+          "4032b",
+          "4079",
+          "4285b",
+          "4474",
+          "6141",
+          "61678",
+          "64805",
+          "78522",
+          "93273"
+        ],
+        "notInList": [
+          "2437",
+          "2489",
+          "3004p90",
+          "30355",
+          "30356",
+          "3298p90",
+          "3622pz2",
+          "4285b",
+          "4474",
+          "64805",
+          "78522"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 432,
+          "usage": {
+            "input": 534231,
+            "cached": 338432,
+            "output": 37587,
+            "reasoning": 17357,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "windscreen space",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "6070",
+                "2437",
+                "6152a",
+                "62360",
+                "4474",
+                "6238a",
+                "6238b",
+                "87752"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge",
+                "category": "Bricks Sloped",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "6x6",
+                "limit": 6
+              },
+              "results": [
+                "44375b",
+                "4285b",
+                "44375a",
+                "4285a",
+                "21599",
+                "35327"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "plant leaves",
+                "limit": 6
+              },
+              "results": [
+                "2423",
+                "2417",
+                "4727",
+                "32607",
+                "6255",
+                "10884"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Ewok",
+                "limit": 10
+              },
+              "results": [
+                "3622pz2",
+                "64805",
+                "6047615a",
+                "6047615b",
+                "11203d01",
+                "11203d02"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "space logo",
+                "limit": 8
+              },
+              "results": [
+                "3004p90",
+                "3298p90",
+                "3068bp53",
+                "3068bp5e",
+                "4490p90",
+                "9460",
+                "59349p50",
+                "80123"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "6x12",
+                "limit": 6
+              },
+              "results": [
+                "3028",
+                "6178",
+                "30355",
+                "30356",
+                "42607",
+                "98088"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope",
+                "size": "4x6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "52031",
+                "32083",
+                "32739",
+                "78522",
+                "60219",
+                "30183"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "barrel",
+                "limit": 5
+              },
+              "results": [
+                "2489",
+                "4424",
+                "64951",
+                "30139",
+                "98585"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 3199,
+              "errors": 52,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 3088,
+              "errors": 1,
+              "ok": false
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "2412b",
+              "2417",
+              "2423",
+              "2431",
+              "2437",
+              "2489",
+              "3004p90",
+              "3005",
+              "30355",
+              "30356",
+              "30363",
+              "3040b",
+              "3068b",
+              "3070b",
+              "3298",
+              "3298p90",
+              "3622pz2",
+              "3666",
+              "3684a",
+              "3710",
+              "3941",
+              "3957a",
+              "3960",
+              "4032b",
+              "4079",
+              "4285b",
+              "4474",
+              "6141",
+              "61678",
+              "64805",
+              "78522",
+              "93273"
+            ],
+            "notInList": [
+              "2437",
+              "2489",
+              "3004p90",
+              "30355",
+              "30356",
+              "3298p90",
+              "3622pz2",
+              "4285b",
+              "4474",
+              "64805",
+              "78522"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 3128
+        }
+      ]
+    }
+  ]
+}

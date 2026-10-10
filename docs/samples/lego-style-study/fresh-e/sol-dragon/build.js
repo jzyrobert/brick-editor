@@ -1,0 +1,29 @@
+script({title:'The Last Ember',description:'A crimson, ivory-horned dragon shelters a glowing egg beneath immense black bat wings. Her curved neck lowers a watchful, open-jawed face over the clutch, and her long armoured tail curls around its cradle.',palette:{hide:'dark red',bone:'black',ivory:'tan',ember:'orange'}});
+const p=(part,x,y,z,colour,turn=0)=>place({part,at:[x,y,z],colour,turn});
+const b=(x,y,z,w,h,d,colour='dark red')=>box({at:[x,y,z],size:[w,h,d],colour,interior:'solid',top:'tile'});
+function leg(x,z,hind,out){const a=[floor({at:[x,0,z],size:[6,10],layers:2,colour:'dark red'}),b(x,2,z+2,6,4,8),b(x+1,6,z+5,4,12,hind?5:4)];for(let i=0;i<6;i++)a.push(p('11477',x+i,2,z,i%2===0?'tan':'dark red'));for(let i=0;i<3;i++)a.push(p('93606',x+2*i,6,z+2,'dark red'));for(let j=0;j<2;j++)a.push(p('93606',out<0?x-1:x+3,11,z+5+2*j,'dark red',out<0?90:270));for(let i=0;i<2;i++)for(let j=0;j<2;j++)a.push(p('15068',x+1+2*i,18,z+5+2*j,'dark red',j?180:0));if(!hind){a.push(b(x+2,17,z+8,4,12,6));for(let i=0;i<2;i++){a.push(p('93606',x+2+2*i,29,z+8,'dark red'));a.push(p('15068',x+2+2*i,29,z+12,'dark red',180));}}return a;}
+section('Four sculpted legs and hooked talons',[leg(-10,4,true,-1),leg(4,5,true,1),leg(-9,-16,false,-1),leg(4,-15,false,1),floor({at:[-8,15,10],size:[16,4],layers:2,colour:'dark red'}),b(3,24,-3,5,8,6)]);
+const body=[b(-5,9,4,10,15,10),b(-4,12,-1,8,21,11),b(-3,27,-3,6,9,5),b(-3,30,-4,6,9,8),b(-3,36,-7,6,9,7),b(-3,42,-10,6,9,7),floor({at:[-10,30,7],size:[20,4],layers:2,colour:'black'})];
+for(let y=12;y<=28;y+=4)for(let z=0;z<=6;z+=2)body.push(p('93606',-7,y,z,'dark red',90),p('93606',3,y,z,'dark red',270));
+for(let k=0;k<6;k++){let w=k<3?8:6;for(let x=-Math.round(w/2);x<Math.round(w/2);x+=2)body.push(p('15068',x,12+3*k,-2,k%2?'dark tan':'tan'));}
+for(let x=-4;x<4;x+=2)body.push(p('93606',x,24,10,'dark red',180),p('93606',x,33,4,'dark red'));
+body.push(p('93606',-4,33,0,'dark red'),p('93606',2,33,0,'dark red'));
+for(let k=0;k<3;k++)for(let x=-3;x<3;x+=2)body.push(p(x===-3?'93606':'24309',x,33+6*k,-6-3*k,x===-3?'dark red':'tan'));
+for(let y=36;y<=42;y+=3)for(let z=-5;z<=-3;z++)body.push(p('11477',-4,y,z,'dark red',90),p('11477',2,y,z,'dark red',270));
+body.push(p('4460b',0,33,8,'tan',180),p('4460b',0,39,2,'tan',180),p('4460b',0,45,-2,'tan',180));
+section('Arched neck and segmented breast armour',body);
+const head=[b(-4,48,-12,8,9,7),b(-3,44,-11,6,8,4),b(-3,44,-18,6,2,9),floor({at:[-3,46,-18],size:[6,9],colour:'tan',top:'tile'}),b(-3,52,-18,6,3,6),b(-5,49,-13,2,3,1),b(3,49,-13,2,3,1),b(-5,52,-12,2,3,2),b(3,52,-12,2,3,2),p('93606',-5,48,-12,'dark red'),p('93606',3,48,-12,'dark red'),p('3005',-5,52,-13,'yellow'),p('3005',-4,52,-13,'black'),p('3005',3,52,-13,'black'),p('3005',4,52,-13,'yellow'),p('10238',-5,55,-13,'white'),p('10238',4,55,-13,'white'),p('11477',-5,55,-12,'dark red',270),p('11477',3,55,-12,'dark red',90),p('3020',-2,47,-16,'black'),p('3020',-2,47,-14,'black'),p('3069b',-1,48,-15,'red')];
+for(let x=-3;x<3;x++)head.push(p('11477',x,55,-18,'dark red'),p('11477',x,55,-15,'dark red'));
+head.push(p('98138',-2,55,-16,'black'),p('98138',1,55,-16,'black'));
+for(const x of [-3,2])for(const z of [-17,-14])head.push(p('4589',x,47,z,'white'));
+for(const x of [-3,2])head.push(p('54200',x,50,-18,'white'));
+for(let x=-4;x<4;x+=2)head.push(p('93606',x,57,-12,'dark red'));
+for(const x of [-4,3])head.push(p('3062b',x,57,-7,'tan'),p('11089',x,60,-7,'tan',180));
+head.push(p('4460b',0,57,-7,'tan',180));
+section('Watchful face, open jaws and curved ivory horns',head);
+const tailData=[[-3,14,6,6,14,0],[-1,20,6,4,11,0],[5,20,8,6,9,270],[13,16,6,10,8,0],[16,8,4,8,7,0],[16,0,4,8,6,0],[14,-8,6,8,5,0],[12,-16,6,8,4,0],[8,-22,8,6,3,90],[5,-24,6,2,2,90]];
+function tailSegment(t,k){const [x,z,w,d,h,turn]=t;const a=[b(x,0,z,w,h,d)];const horizontal=turn===90||turn===270;let sx=x+Math.floor(w/2),sz=z+1,sw=1,sd=2;if(horizontal){sx=x+1;sz=z+Math.floor(d/2);sw=2;sd=1;}const hit=(px,pz,pw,pd)=>k<8&&px<sx+sw&&px+pw>sx&&pz<sz+sd&&pz+pd>sz;const cw=horizontal?4:2,cd=horizontal?2:4;for(let ix=0;ix+cw<=w;ix+=cw)for(let iz=0;iz+cd<=d;iz+=cd)if(h>=5&&!hit(x+ix,z+iz,cw,cd))a.push(p('93606',x+ix,h-4,z+iz,'dark red',turn));if(!horizontal&&d%4===2&&h>=5)for(let ix=0;ix+2<=w;ix+=2)if(!hit(x+ix,z+d-2,2,2))a.push(p('15068',x+ix,h-3,z+d-2,'dark red',turn));if(h===4)for(let ix=0;ix+2<=w;ix+=2)for(let iz=0;iz+2<=d;iz+=2)if(!hit(x+ix,z+iz,2,2))a.push(p('15068',x+ix,1,z+iz,'dark red',turn));if(k<8)a.push(p('4460b',sx,h,sz,'tan',horizontal?turn:180));else a.push(p('54200',x,h,z+1,'tan',90));return a;}
+section('Long tail enclosing the clutch',[tailData.map(tailSegment),floor({at:[-3,12,12],size:[6,4],layers:2,colour:'dark red'}),p('43723a',3,0,-25,'dark red'),p('3023b',4,1,-23,'dark red')]);
+function wingMount(s){const x=s<0?-8:5,y=s<0?30:30,z=s<0?7:8,h=s<0?13:10;const a=[b(x,y,z,3,h,3,'dark red')];for(let j=0;j<3;j++)for(let k=0;k<3;k++)a.push(p('11477',s<0?-9:7,(s<0?33:30)+3*j,z+k,'dark red',s<0?90:270));const cx=s<0?-6:5,cy=y+h;a.push(p('11477',cx,cy,z,'dark red'),p('4589',cx,cy+3,z+1,'pearl gold'),p('4085c',s<0?-8:7,cy,z+2,'black'));a.push(p('51342',s<0?-25:7,cy+1,z+2,'black',s<0?180:0));return a;}
+section('Immense swept wings on curved shoulder mounts',[wingMount(-1),wingMount(1)]);
+section('The last glowing egg',[floor({at:[0,0,-22],size:[6,6],layers:2,colour:'dark bluish grey',top:'tile'}),floor({at:[1,0,-23],size:[4,8],layers:2,colour:'black',top:'tile'}),cylinder({at:[1,2,-21],diameter:4,height:6,colour:'orange'}),dome({at:[1,8,-21],diameter:4,colour:'bright light orange'}),...[0,5].flatMap(x=>[-21,-19,-17].map(z=>p('54200',x,2,z,'black',x<1?90:270))),p('54200',1,2,-23,'trans yellow'),p('54200',4,2,-23,'trans yellow')]);

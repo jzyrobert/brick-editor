@@ -1,0 +1,192 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "build-agent-contextual.md",
+  "replyPrompt": "brick-build-object.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "claude",
+      "model": "claude-opus-5-5",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 828,
+      "targetMiss": {
+        "target": 800,
+        "parts": 828,
+        "difference": 28,
+        "percent": 3.5
+      },
+      "seconds": 733,
+      "tokens": {
+        "input": 397211,
+        "cached": 293464,
+        "output": 74363,
+        "reasoning": 56381,
+        "costUsd": 9.2055562
+      },
+      "searches": 5,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "3004",
+          "3005",
+          "3021",
+          "3023b",
+          "3062b",
+          "3941",
+          "4070",
+          "54200",
+          "6141",
+          "64648",
+          "98138"
+        ],
+        "notInList": [
+          "64648"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 733,
+          "usage": {
+            "input": 397211,
+            "cached": 293464,
+            "output": 74363,
+            "reasoning": 56381,
+            "costUsd": 9.2055562
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "fish"
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bicycle wheel"
+              },
+              "results": [
+                "92851",
+                "4720",
+                "64248",
+                "u9163",
+                "28578",
+                "4719c03"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "size": "1x1"
+              },
+              "results": [
+                "4592",
+                "7768"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "headlight brick",
+                "colour": "black"
+              },
+              "results": [
+                "4070",
+                "87087",
+                "35388",
+                "u609",
+                "30069",
+                "407026",
+                "4211044",
+                "7688"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "grille brick",
+                "colour": "tan",
+                "available_in_colour": true
+              },
+              "results": [
+                "2877",
+                "61409b",
+                "92947",
+                "71752",
+                "61409",
+                "15561",
+                "35248"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1229,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 2,
+              "parts": 1338,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 1022,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "3004",
+              "3005",
+              "3021",
+              "3023b",
+              "3062b",
+              "3941",
+              "4070",
+              "54200",
+              "6141",
+              "64648",
+              "98138"
+            ],
+            "notInList": [
+              "64648"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 828
+        }
+      ]
+    }
+  ]
+}

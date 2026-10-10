@@ -1,0 +1,229 @@
+{
+  "gallery": 1,
+  "source": "codex-piplup-1000-creative",
+  "label": "codex-piplup-1000-creative/high",
+  "prompt": {
+    "id": "piplup-1000",
+    "brief": "piplup",
+    "targetParts": 1000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 1000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1056,
+    "targetMiss": {
+      "target": 1000,
+      "parts": 1056,
+      "difference": 56,
+      "percent": 5.6
+    },
+    "seconds": 658,
+    "tokens": {
+      "input": 546941,
+      "cached": 345984,
+      "output": 55987,
+      "reasoning": 36620
+    },
+    "searches": 3,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "14769",
+        "3039",
+        "3069b",
+        "4740",
+        "54200",
+        "54821",
+        "61678",
+        "64648"
+      ],
+      "notInList": [
+        "54821",
+        "64648"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 658,
+        "usage": {
+          "input": 546941,
+          "cached": 345984,
+          "output": 55987,
+          "reasoning": 36620,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "sphere ball",
+              "colour": "trans light blue",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "54821"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "round brick 2 x 2",
+              "colour": "trans-clear",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "3941",
+              "3063b",
+              "6143",
+              "3063a"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "fish",
+              "colour": "flat silver",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "64648"
+            ],
+            "round": 1
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 1024,
+            "errors": 2,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 2097,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 1056,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "14769",
+            "3039",
+            "3069b",
+            "4740",
+            "54200",
+            "54821",
+            "61678",
+            "64648"
+          ],
+          "notInList": [
+            "54821",
+            "64648"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1056
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1056,
+      "designs": 43,
+      "lots": 106,
+      "massingCells": 12096,
+      "massingParts": 1000,
+      "placedParts": 56,
+      "sections": 3,
+      "components": 0,
+      "opsRun": 784,
+      "scriptBytes": 65767,
+      "ldrawBytes": 49033,
+      "partsPerScriptKB": 16.4,
+      "compileMs": 158,
+      "checkMs": 244
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 4,
+      "groups": 5,
+      "covered": 1049,
+      "uncovered": 7,
+      "health": "warning: 1049 parts with verified connectors form 5 separately connected groups; 4 parts are not connected to anything. 7 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 1000,
+      "parts": 1056,
+      "difference": 56,
+      "percent": 5.6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3069b.dat already is",
+        "ops": [
+          "sections[0].ops[19]",
+          "sections[0].ops[24]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[2].ops[0].ops[2]",
+          "sections[2].ops[1].ops[2]",
+          "sections[2].ops[2].ops[2]",
+          "sections[2].ops[3]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "4 part(s) in 4 group(s) are not connected to the main structure (largest group: 1045 parts); e.g. 61678 at [14, 26, 27], 61678 at [15, 26, 27], 61678 at [16, 26, 27], 61678 at [17, 26, 27]",
+        "ops": [
+          "sections[1].ops[728]",
+          "sections[1].ops[729]",
+          "sections[1].ops[730]",
+          "sections[1].ops[731]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

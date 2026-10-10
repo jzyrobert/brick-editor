@@ -1,0 +1,353 @@
+{
+  "gallery": 1,
+  "source": "e-fresh:text-only",
+  "generation": "e-fresh",
+  "label": "docs/samples/lego-style-study/fresh-e/sol-temple",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 2258,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 2258,
+      "difference": 258,
+      "percent": 12.9
+    },
+    "seconds": 1023,
+    "tokens": {
+      "input": 907050,
+      "cached": 605568,
+      "output": 116435,
+      "reasoning": 77510
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "13547",
+        "15068",
+        "20952",
+        "2417",
+        "2423",
+        "2453b",
+        "24866",
+        "3005",
+        "30151a",
+        "3022",
+        "3045",
+        "3626c",
+        "3633",
+        "3665a",
+        "3941",
+        "3942c",
+        "4032b",
+        "4589",
+        "4740",
+        "54200",
+        "60474",
+        "60598",
+        "6141",
+        "98138"
+      ],
+      "notInList": [
+        "20952",
+        "30151a",
+        "3626c"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 1023,
+        "usage": {
+          "input": 907050,
+          "cached": 605568,
+          "output": 116435,
+          "reasoning": 77510,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "curved slope inverted",
+              "limit": 10
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "54091",
+              "32803",
+              "42023",
+              "11301",
+              "45410",
+              "73682",
+              "41764"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bell",
+              "limit": 10
+            },
+            "results": [
+              "3942c",
+              "3943b",
+              "30151a",
+              "6017",
+              "u608",
+              "u609",
+              "30151b"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "lotus",
+              "limit": 8
+            },
+            "results": [
+              "76382pne",
+              "973pne"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "dragon ornament",
+              "limit": 8
+            },
+            "results": [
+              "91884p03"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bar fence",
+              "limit": 8
+            },
+            "results": [
+              "2583",
+              "23444",
+              "95229",
+              "99061",
+              "42448"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "minifig head plain",
+              "colour": "pearl gold",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "3626c",
+              "28621",
+              "3816c",
+              "3817c",
+              "30480"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "leaf",
+              "colour": "dark orange",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "19203p01"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "round brick dome",
+              "colour": "pearl gold",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "88293",
+              "20952",
+              "5906"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tile round 4 x 4",
+              "limit": 5
+            },
+            "results": [
+              "3477",
+              "27507",
+              "68869",
+              "1939"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "minifig body statue",
+              "limit": 5
+            },
+            "results": [
+              "4079",
+              "90398",
+              "3816c",
+              "3817c",
+              "15396"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "ok": false,
+            "reason": "INVALID_INPUT: sections[1].ops[2].part: unknown part alias @post"
+          },
+          {
+            "round": 2,
+            "parts": 2332,
+            "errors": 0,
+            "ok": true
+          },
+          {
+            "round": 3,
+            "parts": 2258,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "13547",
+            "15068",
+            "20952",
+            "2417",
+            "2423",
+            "2453b",
+            "24866",
+            "3005",
+            "30151a",
+            "3022",
+            "3045",
+            "3626c",
+            "3633",
+            "3665a",
+            "3941",
+            "3942c",
+            "4032b",
+            "4589",
+            "4740",
+            "54200",
+            "60474",
+            "60598",
+            "6141",
+            "98138"
+          ],
+          "notInList": [
+            "20952",
+            "30151a",
+            "3626c"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 2258
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 2258,
+      "designs": 80,
+      "lots": 186,
+      "massingCells": 14772,
+      "massingParts": 1173,
+      "placedParts": 1085,
+      "sections": 9,
+      "components": 1,
+      "opsRun": 558,
+      "scriptBytes": 42165,
+      "ldrawBytes": 105615,
+      "partsPerScriptKB": 54.8,
+      "compileMs": 601,
+      "checkMs": 557
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 58,
+      "covered": 2143,
+      "uncovered": 115,
+      "health": "warning: 2143 parts with verified connectors form 58 separately connected groups; 37 parts are not connected to anything. 115 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 2258,
+      "difference": 258,
+      "percent": 12.9
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "206 part(s) in 57 group(s) are not connected to the main structure (largest group: 1937 parts); e.g. 11477 at [8, 1, 8], 60479 at [9, 0, 4], 3022 at [26, 0, 7], 15068 at [7, 83, 40], 15068 at [21, 83, 26], 15068 at [62, 36, 16]",
+        "ops": [
+          "sections[7].ops[0]",
+          "sections[8].ops[0]",
+          "sections[8].ops[1]",
+          "sections[7].ops[4]",
+          "sections[0].ops[13]",
+          "sections[0].ops[14]",
+          "sections[7].ops[1]",
+          "sections[8].ops[2]",
+          "sections[8].ops[3]",
+          "sections[7].ops[3]",
+          "sections[7].ops[2]",
+          "sections[1].ops[214]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

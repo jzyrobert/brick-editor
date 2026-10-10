@@ -6,20 +6,19 @@ available through **Tools** for the same open document.
 
 ## Browsing responses
 
-Gallery opens on the whole collection, with responses grouped by their prompt.
+Gallery opens on the latest fresh **E** generation, with responses grouped by their prompt. Earlier text-only generations remain available through **Prompt generation**; **All generations** includes the full published history. Fresh E is selected explicitly, even when an F experiment ran later.
 Search matches prompt names, full briefs, build titles, AI model names and
 reasoning efforts; it ignores case and accents and matches every entered word.
 Combine **Prompt** and **AI model** to compare one brief or follow one model
-across briefs. **View prompt** narrows directly to a group's prompt. Result
-counts describe the matching collection, and **Clear filters** returns to all
-builds. Empty results keep the controls and offer the same reset.
+across briefs. Combine **Prompt generation** with either filter to compare versions. **View prompt** narrows directly to a group's prompt. Result
+counts describe the matching collection, and **Clear filters** returns to the latest E builds. Empty results keep the controls and offer the same reset.
 
 **More filters** reveals reasoning effort and sorting (newest builds or prompt
 A–Z). The shared viewing angles are always visible on desktop. Phones keep one
-compact search row with **Filters**, which unfolds prompt, model, effort,
+compact search row with **Filters**, which unfolds prompt, model, generation, effort,
 sorting and viewing angles together. Active choices stay visible in a short
 summary with **Clear filters** while folded; the Filters button counts active
-prompt/model/effort choices. Desktop keeps a direct removal control for a folded
+prompt/model/effort choices and a non-default generation. Desktop keeps a direct removal control for a folded
 effort filter.
 Prompts show six groups at a time, with **Show more prompts** for the rest;
 filtering or sorting starts from the first six again. Phones stack responses
@@ -41,54 +40,56 @@ Search, filters, sort, viewing angle, expanded controls, loaded prompt groups
 and scroll are kept for the current visit when returning from a detail page,
 Play or a model tool. They reset on a fresh page load.
 
-### E comparison collection
+### Prompt generations
 
-The reviewed E collection contains six prompts and three high-effort responses
-per prompt. Sol and Astra reuse the existing text-only E builds; Opus revises
-the same original Sol sources with matching E input. Generation receives no
-images or render feedback. These are source-conditioned revisions rather than
-fresh generations from the briefs alone.
+The default **E · fresh builds** collection contains six briefs with Sol 6.1,
+Astra 6 and Opus 5.5, all at high effort. Each build starts in its own empty
+directory/session with the same E input for that brief, no prior model source,
+and no images or visual feedback. The [fresh comparison](samples/lego-style-study/fresh-e/README.md)
+retains the exact inputs, sources and provenance. Sources are unchanged; the
+published images use the shared Realistic settings.
 
-| Prompt (target parts)           | GPT-6.1-Sol, high | GPT-6-Astra, high | Claude Opus 5.5, high |
-| ------------------------------- | ----------------: | ----------------: | --------------------: |
-| Pelican on a bicycle (800)      |               918 |               884 |                   871 |
-| Imperial Star Destroyer (5,000) |             5,334 |             5,272 |                 5,434 |
-| Dragon (1,000)                  |             1,146 |             1,072 |                 1,108 |
-| Piplup (1,000)                  |             1,007 |             1,037 |                 1,028 |
-| Japanese temple (2,000)         |             2,200 |             2,297 |                 2,190 |
-| Ewok Classic Space (3,000)      |             3,517 |             3,181 |                 3,347 |
+The generation filter separates prompt version from starting conditions:
 
-[The study](samples/lego-style-study/README.md#e-with-opus-55-high-and-gallery-replacement)
-retains all inputs, sources, warnings and comparison previews. All omit
-baseplate parts, while allowing local plate-built supports. Compiler
-acceptance does not certify physical buildability.
+| Generation                 | Builds | Starting conditions                                |
+| -------------------------- | -----: | -------------------------------------------------- |
+| E · fresh builds (default) |     18 | Brief only; three models                           |
+| F · fresh builds           |      6 | Brief only; Sol                                    |
+| E · source revisions       |     18 | Original Sol creative build supplied; three models |
+| F · source revisions       |      6 | Original Sol creative build supplied; Sol          |
+| C · fresh builds           |      4 | Brief only; Sol; excludes image-assisted bird runs |
+| B · fresh builds           |      2 | Brief only; Sol                                    |
+| A · fresh builds           |      2 | Brief only; Sol                                    |
+| Original · creative prompt |     12 | Previous gallery collection; Sol and Opus          |
+| Earlier · original rules   |     12 | Earlier temple/effort and Ewok/target experiments  |
 
-The [publication manifest](samples/lego-style-study/gallery-publication/manifest.json)
-records the 18 replacement IDs, the 12 previous creative-prompt IDs and all
-108 immutable files. The main-only **Publish reviewed E gallery builds**
-workflow requires successful validation of that main commit, verifies the
-bundle and live roster, uploads assets, hides those exact older entries and
-rebuilds the index. The 7 October creative runs remain in
-[the previous comparison](samples/creative-prompt-comparison/README.md), and
-are retained as hidden history by the replacement SQL. The collection is live,
-and all 108 public files and cache headers are verified. The first gallery
-workflow run stopped at its initial D1 read; publication used the authenticated
-owner connection after successful main validation/deployment. Gallery CI
-access remains an open TODO. Two gallery-only Cache Response Rules preserve
-immutable files and the one-minute index lifetime independently of the upload
-client. See [the publication receipt](reports/e-gallery-publication.json).
+All **80** published entries are text-only runs. Historical image-input and
+visual-feedback studies remain in the repository but are excluded from the
+site. **All generations** has seven prompt groups because the earlier Ewok
+1,000-part brief differs from the current 3,000-part target. Older experiments
+use different rules or conditions and are labelled accordingly; a single run
+per model/brief does not separate prompt effects from variation between runs.
 
-Earlier builds were hidden with `gallery:publish -- --hide <id> --remote`
-(`hidden = 1`), not deleted: their files stay in the bucket, and
-`wrangler d1 execute brick-gallery --remote --command "UPDATE builds SET hidden = 0 WHERE id = '<id>'"`
-followed by `gallery:publish -- --reindex --remote` shows one again. Their
-sources are in this repository:
+Cards and detail facts identify the generation. Generation notes explain the
+starting conditions. The selection survives detail and Play round trips for
+the current visit, and resets to latest E on a fresh page load. The header's
+Play shortcut chooses a featured E build when the workspace is empty.
 
-| Build ids                                                                      | Source run                                                                                                      |
-| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `958cde77dd13`, `dde67769d031`, `d7785d3317b1`, `92acccf2e77f`, `76bb0a378a18` | Temple, Opus 5.5 low to max: [run 4's rules](samples/japanese-temple-one-shot-claude-target/README.md)          |
-| `f73a80655c20`, `d31573564fba`, `76b6aa339c11`, `fa0ab5bc241d`, `31238c829501` | Temple, GPT-6.1-Sol low to max: [run 4](samples/japanese-temple-one-shot-target/README.md)                      |
-| `3b95f8e1f971`, `1570abb271a7`                                                 | Ewok Classic Space, Opus 5.5 high, 1,000 and 3,000 parts: [ewok samples](samples/ewok-space-one-shot/README.md) |
+The [reviewed publication bundle](samples/lego-style-study/generation-publication/README.md)
+contains the complete index, content-addressed files, exact input hashes,
+generation metadata and allowlisted SQL. Migration `0003_prompt_generations.sql`
+stores the generation independently of the agent ID. Index additions are
+optional for compatibility with older data; an index without a featured
+generation displays its existing collection. Publishing checks the reviewed
+live roster before changing visibility. Older sources and files are retained,
+and new builds do not overwrite an edited local copy.
+
+The previous [source-revision publication receipt](reports/e-gallery-publication.json)
+remains an historical record. Its first workflow stopped at the initial D1
+read; gallery CI credential access remains an open TODO. The authenticated
+owner connection can publish a reviewed bundle after main validation. Existing
+gallery-only cache rules retain immutable asset lifetimes and the one-minute
+index lifetime.
 
 ## The detail page and its live view
 

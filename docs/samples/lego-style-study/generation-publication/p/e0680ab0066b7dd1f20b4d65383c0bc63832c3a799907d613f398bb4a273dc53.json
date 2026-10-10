@@ -1,0 +1,245 @@
+{
+  "gallery": 1,
+  "source": "claude-dragon-1000-creative",
+  "label": "claude-dragon-1000-creative/high",
+  "prompt": {
+    "id": "dragon-1000",
+    "brief": "a dragon",
+    "targetParts": 1000
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 1000,
+    "accepted": true,
+    "attemptsUsed": 3,
+    "parts": 1064,
+    "targetMiss": {
+      "target": 1000,
+      "parts": 1064,
+      "difference": 64,
+      "percent": 6.4
+    },
+    "seconds": 823,
+    "tokens": {
+      "input": 116110,
+      "cached": 4362,
+      "output": 88241,
+      "reasoning": 58074,
+      "costUsd": 2.6596523999999997
+    },
+    "searches": 0,
+    "checks": 0,
+    "knowledge": {
+      "named": [
+        "2435",
+        "24866",
+        "2489",
+        "3039",
+        "3040b",
+        "3043",
+        "3062b",
+        "3470",
+        "3471",
+        "3660b",
+        "3665a",
+        "3666",
+        "4345b",
+        "4589",
+        "4600",
+        "54200",
+        "6141",
+        "6255",
+        "98138"
+      ],
+      "notInList": [
+        "2489"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 705,
+        "usage": {
+          "input": 30951,
+          "cached": 1454,
+          "output": 71529,
+          "reasoning": 56572,
+          "costUsd": 1.6668387999999998
+        },
+        "searches": [],
+        "checks": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "no-call",
+        "reason": "The reply was not a brick.build call: answer with ONLY {\"tool\": \"brick.build\", \"input\": {\"code\": \"…\"}}"
+      },
+      {
+        "attempt": 2,
+        "seconds": 57,
+        "usage": {
+          "input": 45911,
+          "cached": 1454,
+          "output": 8231,
+          "reasoning": 632,
+          "costUsd": 0.5205588000000001
+        },
+        "searches": [],
+        "checks": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "errors",
+        "knowledge": {
+          "named": [
+            "2435",
+            "24866",
+            "2489",
+            "3039",
+            "3040b",
+            "3043",
+            "3062b",
+            "3470",
+            "3471",
+            "3660b",
+            "3665a",
+            "3666",
+            "4345b",
+            "4589",
+            "4600",
+            "54200",
+            "6141",
+            "6255",
+            "98138"
+          ],
+          "notInList": [
+            "2489"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": [
+            "Round Brick 1 × 1 (3062b) is not made in trans orange (1×); it comes in white, black, red, blue, yellow, green, dark green, tan and more"
+          ]
+        },
+        "parts": 1064,
+        "reason": "The script compiled to 1,064 parts (target 1,000: +64, +6.4%). Errors to fix:\n- colour-unavailable: Round Brick 1 × 1 (3062b) is not made in trans orange (1×); it comes in white, black, red, blue, yellow, green, dark green, tan and more [sections[4].ops[15] (code line 108)]\n- overlap: 3033 Plate 6 × 10 placed at [24, 0, 0] and 3641 Tyre 6/50 × 8 Offset Tread placed at [28, 0, 9] overlap where their bodies meet: x 28–30, y 0–1, z 9–10 [sections[0].ops[1] (code line 15), sections[3].ops[0] (code line 85)]\n- overlap: 3029 Plate 4 × 12 placed at [30, 0, 8] and 3641 Tyre 6/50 × 8 Offset Tread placed at [32, 0, 12] overlap where their bodies meet: x 32–34, y 0–1, z 12–13 (2 pairs like this) [sections[0].ops[2] (code line 16), sections[3].ops[1] (code line 86)]\n- overlap: 3034 Plate 2 × 8 placed at [27, 0, 10] and 3641 Tyre 6/50 × 8 Offset Tread placed at [28, 0, 12] overlap where their bodies meet: x 28–29, y 0–1, z 12–13 [sections[0].ops[2] (code line 16), sections[3].ops[0] (code line 85)]\n- overlap: 3460 Plate 1 × 8 placed at [29, 0, 10] and 3641 Tyre 6/50 × 8 Offset Tread placed at [28, 0, 12] overlap where their bodies meet: x 29–30, y 0–1, z 12–13 [sections[0].ops[2] (code line 16), sections[3].ops[0] (code line 85)]"
+      },
+      {
+        "attempt": 3,
+        "seconds": 61,
+        "usage": {
+          "input": 39248,
+          "cached": 1454,
+          "output": 8481,
+          "reasoning": 870,
+          "costUsd": 0.47225480000000003
+        },
+        "searches": [],
+        "checks": [],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "2435",
+            "24866",
+            "2489",
+            "3039",
+            "3040b",
+            "3043",
+            "3062b",
+            "3470",
+            "3471",
+            "3660b",
+            "3665a",
+            "3666",
+            "4345b",
+            "4589",
+            "4600",
+            "54200",
+            "6141",
+            "6255",
+            "98138"
+          ],
+          "notInList": [
+            "2489"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1064
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1064,
+      "designs": 67,
+      "lots": 185,
+      "massingCells": 8315,
+      "massingParts": 805,
+      "placedParts": 259,
+      "sections": 9,
+      "components": 0,
+      "opsRun": 440,
+      "scriptBytes": 33159,
+      "ldrawBytes": 50658,
+      "partsPerScriptKB": 32.9,
+      "compileMs": 210,
+      "checkMs": 342
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 12,
+      "covered": 1048,
+      "uncovered": 16,
+      "health": "warning: 1048 parts with verified connectors form 12 separately connected groups; 7 parts are not connected to anything. 1 car stands on its wheels. 16 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 1000,
+      "parts": 1064,
+      "difference": 64,
+      "percent": 6.4
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "137 part(s) in 11 group(s) are not connected to the main structure (largest group: 877 parts); e.g. 4589 at [35, 57, 21], 4589 at [37, 60, 39], 3005 at [9, 31, 23], 3005 at [51, 14, 32], 3035 at [36, 17, 31], 3710 at [40, 17, 31]",
+        "ops": [
+          "sections[8].ops[3]",
+          "sections[8].ops[1]",
+          "sections[7].ops[63]",
+          "sections[7].ops[55]",
+          "sections[7].ops[35]",
+          "sections[7].ops[28]",
+          "sections[7].ops[13]",
+          "sections[7].ops[21]",
+          "sections[7].ops[15]",
+          "sections[7].ops[9]",
+          "sections[7].ops[4]",
+          "sections[7].ops[155]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

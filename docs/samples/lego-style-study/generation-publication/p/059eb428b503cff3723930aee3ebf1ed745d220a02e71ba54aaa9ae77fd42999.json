@@ -1,0 +1,491 @@
+{
+  "gallery": 1,
+  "source": "c-text:text-only",
+  "generation": "c-text",
+  "label": "docs/samples/lego-style-study/finished-dragon",
+  "prompt": {
+    "id": "dragon-1000",
+    "brief": "a dragon",
+    "targetParts": 1000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 1000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1146,
+    "targetMiss": {
+      "target": 1000,
+      "parts": 1146,
+      "difference": 146,
+      "percent": 14.6
+    },
+    "seconds": 476,
+    "tokens": {
+      "input": 848280,
+      "cached": 573312,
+      "output": 55862,
+      "reasoning": 36981
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "13547",
+        "15068",
+        "24309",
+        "3038",
+        "3040b",
+        "3062b",
+        "3660b",
+        "3942c",
+        "40379",
+        "44126",
+        "4589",
+        "50950",
+        "6141",
+        "61678",
+        "98138pz4"
+      ],
+      "notInList": [
+        "40379",
+        "44126",
+        "98138pz4"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 476,
+        "usage": {
+          "input": 848280,
+          "cached": 573312,
+          "output": 55862,
+          "reasoning": 36981,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "2x6",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "44126",
+              "41748",
+              "41747",
+              "41764",
+              "41765"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "51739",
+              "41769a",
+              "41770a",
+              "43723a",
+              "43722a",
+              "2450",
+              "43719",
+              "32059",
+              "90194",
+              "43723b"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "horn",
+              "colour": "tan",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "2142",
+              "64847",
+              "40379",
+              "11089",
+              "67361",
+              "53451",
+              "11437",
+              "87747"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tile eye",
+              "limit": 8
+            },
+            "results": [
+              "10238",
+              "98138pz0",
+              "98138pz2",
+              "98138p2d",
+              "98138p07",
+              "98138pz4",
+              "3069bpm0",
+              "3070bp0e"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope curved",
+              "size": "4x4",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "66955",
+              "93589"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope eye pattern",
+              "limit": 12
+            },
+            "results": [
+              "3039p50",
+              "4286p01",
+              "4286p02",
+              "3298p02",
+              "3678bpk0",
+              "15068p0i",
+              "15068p01",
+              "15068px0",
+              "78522ph0",
+              "78522ph1",
+              "93604pk0"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge",
+              "size": "4x6",
+              "colour": "tan",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "43713",
+              "43712",
+              "48205",
+              "48208",
+              "47407",
+              "4856",
+              "32059",
+              "52031"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 15
+            },
+            "results": [
+              "11477",
+              "15068",
+              "61678",
+              "50950",
+              "93273",
+              "24309",
+              "24201",
+              "13547",
+              "6091",
+              "30602",
+              "42022",
+              "70681",
+              "80177",
+              "80178",
+              "93606"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "dragon wing",
+              "limit": 6
+            },
+            "results": [
+              "6133",
+              "5984",
+              "38547",
+              "51342",
+              "30130",
+              "6125"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tooth",
+              "colour": "tan",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "49668",
+              "15070",
+              "3647",
+              "3649",
+              "3648b",
+              "4019",
+              "6589",
+              "6573"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 1580,
+            "errors": 36,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 1274,
+            "errors": 1,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "parts": 1178,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "13547",
+            "15068",
+            "24309",
+            "3038",
+            "3040b",
+            "3062b",
+            "3660b",
+            "3942c",
+            "40379",
+            "44126",
+            "4589",
+            "50950",
+            "6141",
+            "61678",
+            "98138pz4"
+          ],
+          "notInList": [
+            "40379",
+            "44126",
+            "98138pz4"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1146
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1146,
+      "designs": 49,
+      "lots": 64,
+      "massingCells": 9552,
+      "massingParts": 699,
+      "placedParts": 447,
+      "sections": 7,
+      "components": 0,
+      "opsRun": 518,
+      "scriptBytes": 29977,
+      "ldrawBytes": 55945,
+      "partsPerScriptKB": 39.1,
+      "compileMs": 81,
+      "checkMs": 201
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 80,
+      "covered": 1100,
+      "uncovered": 46,
+      "health": "warning: 1100 parts with verified connectors form 80 separately connected groups; 64 parts are not connected to anything. 46 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 1000,
+      "parts": 1146,
+      "difference": 146,
+      "percent": 14.6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[9]",
+          "sections[1].ops[13]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[9]",
+          "sections[1].ops[14]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[32]",
+          "sections[1].ops[15]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[32]",
+          "sections[1].ops[16]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[22]",
+          "sections[1].ops[33]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[22]",
+          "sections[1].ops[34]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[45]",
+          "sections[1].ops[35]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[45]",
+          "sections[1].ops[36]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[97]",
+          "sections[1].ops[53]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[97]",
+          "sections[1].ops[54]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[108]",
+          "sections[1].ops[73]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[108]",
+          "sections[1].ops[74]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "365 part(s) in 79 group(s) are not connected to the main structure (largest group: 735 parts); e.g. 2456 at [-1, 0, -7], 61678 at [-12, 2, -1], 61678 at [6, 2, 1], 61678 at [-12, 2, 20], 61678 at [6, 2, 22], 61678 at [14, 12, 52]",
+        "ops": [
+          "sections[6].ops[1]",
+          "sections[1].ops[2]",
+          "sections[1].ops[42]",
+          "sections[1].ops[62]",
+          "sections[1].ops[22]",
+          "sections[5].ops[10]",
+          "sections[5].ops[19]",
+          "sections[5].ops[27]",
+          "sections[5].ops[34]",
+          "sections[5].ops[40]",
+          "sections[1].ops[23]",
+          "sections[5].ops[53]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

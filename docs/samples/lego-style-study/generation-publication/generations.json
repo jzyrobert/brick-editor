@@ -1,0 +1,57 @@
+[
+  {
+    "id": "e-fresh",
+    "name": "E · fresh builds",
+    "description": "Each build starts from its brief in an empty working directory. Sol 6.1, Astra 6 and Opus 5.5 receive the same E prompt, at high effort. No previous build source, images or visual feedback.",
+    "order": 90,
+    "default": true
+  },
+  {
+    "id": "f-fresh",
+    "name": "F · fresh builds",
+    "description": "Sol 6.1 at high effort starts from each brief in an empty working directory with prompt F. No previous build source, images or visual feedback. One run per brief; differences can include prompt variance.",
+    "order": 80
+  },
+  {
+    "id": "e-revision",
+    "name": "E · source revisions",
+    "description": "Sol 6.1, Astra 6 and Opus 5.5 at high effort revise the original Sol creative builds with prompt E. Previous build source is supplied. No images or visual feedback.",
+    "order": 70
+  },
+  {
+    "id": "f-revision",
+    "name": "F · source revisions",
+    "description": "Sol 6.1 at high effort revises the original Sol creative builds with prompt F. Previous build source is supplied. No images or visual feedback.",
+    "order": 60
+  },
+  {
+    "id": "c-text",
+    "name": "C · fresh builds",
+    "description": "Sol 6.1 at high effort generates four builds from their briefs using the finished-object prompt C. These four runs receive no previous build source, images or visual feedback. The image-assisted bird experiments are excluded.",
+    "order": 50
+  },
+  {
+    "id": "b-text",
+    "name": "B · fresh builds",
+    "description": "Sol 6.1 at high effort generates the two bird briefs with prompt B, informed by studying public LDraw models. The agent receives no previous build source, images or visual feedback.",
+    "order": 40
+  },
+  {
+    "id": "a-text",
+    "name": "A · fresh builds",
+    "description": "Sol 6.1 at high effort generates the two bird briefs with the object-first prompt A. No previous build source, images or visual feedback.",
+    "order": 30
+  },
+  {
+    "id": "creative",
+    "name": "Original · creative prompt",
+    "description": "The previous gallery collection: Sol 6.1 and Opus 5.5 at high effort generate all six briefs with the original creative prompt. No previous build source, images or visual feedback.",
+    "order": 20
+  },
+  {
+    "id": "earlier",
+    "name": "Earlier · original rules",
+    "description": "Earlier text-only gallery runs: temple builds across reasoning efforts and two Ewok briefs with different part targets. These use earlier building rules and are not a controlled comparison with E.",
+    "order": 10
+  }
+]

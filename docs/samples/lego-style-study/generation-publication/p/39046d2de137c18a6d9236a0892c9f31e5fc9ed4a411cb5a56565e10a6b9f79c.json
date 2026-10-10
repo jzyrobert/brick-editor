@@ -1,0 +1,378 @@
+{
+  "gallery": 1,
+  "source": "japanese-temple-one-shot-claude-target",
+  "label": "japanese-temple-one-shot-claude-target/max",
+  "prompt": {
+    "id": "japanese-buddhist-temple-2000",
+    "brief": "a japanese buddhist temple",
+    "targetParts": 2000
+  },
+  "agent": {
+    "id": "claude/claude-opus-5-5/max",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "max"
+  },
+  "run": {
+    "effort": "max",
+    "runner": "claude",
+    "model": "claude-opus-5-5",
+    "targetParts": 2000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1668,
+    "targetMiss": {
+      "target": 2000,
+      "parts": 1668,
+      "difference": -332,
+      "percent": -16.6
+    },
+    "seconds": 2056,
+    "tokens": {
+      "input": 284751,
+      "cached": 104115,
+      "output": 221532,
+      "reasoning": 211661,
+      "costUsd": 10.4589714
+    },
+    "searches": 10,
+    "knowledge": {
+      "named": [
+        "11477",
+        "2412b",
+        "2417",
+        "2423",
+        "2435",
+        "24866",
+        "30151a",
+        "33291",
+        "3470",
+        "3471",
+        "3941",
+        "3942c",
+        "3943b",
+        "3960",
+        "4032b",
+        "42291",
+        "60474",
+        "6183",
+        "64648",
+        "87081"
+      ],
+      "notInList": [
+        "30151a",
+        "42291",
+        "64648"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 2056,
+        "usage": {
+          "input": 284751,
+          "cached": 104115,
+          "output": 221532,
+          "reasoning": 211661,
+          "costUsd": 10.4589714
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "lantern"
+            },
+            "results": [
+              "37776",
+              "65581",
+              "3626cpb2",
+              "98138pb7",
+              "6409",
+              "76382pbz",
+              "76382pc0",
+              "98138pb8",
+              "973pbz",
+              "973pc0",
+              "20695p01"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "bell"
+            },
+            "results": [
+              "6017",
+              "30151a",
+              "u608",
+              "u609",
+              "30151b",
+              "101117",
+              "1021704",
+              "25613",
+              "23222",
+              "22385p039",
+              "101117p01",
+              "101117p02",
+              "101117p03",
+              "101117p04",
+              "101117p05"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "plant leaves",
+              "colour": "bright pink",
+              "available_in_colour": true
+            },
+            "results": [
+              "2423",
+              "2417",
+              "32607"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "fish"
+            },
+            "results": [
+              "64648",
+              "30224",
+              "49595e",
+              "8043",
+              "2614",
+              "51283",
+              "93222",
+              "93223",
+              "96858",
+              "4327",
+              "4650852b",
+              "4650852d",
+              "4650852h",
+              "4650852i",
+              "3005pf4"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope quadruple convex"
+            },
+            "results": [
+              "3688",
+              "47757",
+              "30373"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "rock"
+            },
+            "results": [
+              "30385",
+              "30153",
+              "42284",
+              "42291",
+              "10178",
+              "47847",
+              "70880",
+              "36451a",
+              "6083",
+              "30342",
+              "6082",
+              "30286",
+              "11127",
+              "15745",
+              "35646"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "round brick 2 x 2",
+              "colour": "trans yellow",
+              "available_in_colour": true
+            },
+            "results": [
+              "3941",
+              "6143",
+              "4588",
+              "79850",
+              "2654a"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "flower",
+              "colour": "bright pink",
+              "available_in_colour": true
+            },
+            "results": [
+              "24866",
+              "3742",
+              "33291",
+              "4728",
+              "18853",
+              "96483",
+              "96487",
+              "5904",
+              "15469",
+              "3742c01",
+              "76382p1z"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "dish 4 x 4"
+            },
+            "results": [
+              "3960",
+              "35394",
+              "30209",
+              "30065",
+              "56641",
+              "4270181",
+              "3960ps1",
+              "3960ps2",
+              "3960p0a",
+              "3960p0b",
+              "3960p0c",
+              "3960p0d",
+              "3960p0e",
+              "3960p0f",
+              "3960p0g"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "cylinder dome top",
+              "colour": "black",
+              "available_in_colour": true
+            },
+            "results": [
+              "3262",
+              "30367c",
+              "49308",
+              "30367b",
+              "88293",
+              "30151a",
+              "30367a",
+              "5848",
+              "1871",
+              "49612",
+              "5906",
+              "30367bps5"
+            ],
+            "round": 2
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "2412b",
+            "2417",
+            "2423",
+            "2435",
+            "24866",
+            "30151a",
+            "33291",
+            "3470",
+            "3471",
+            "3941",
+            "3942c",
+            "3943b",
+            "3960",
+            "4032b",
+            "42291",
+            "60474",
+            "6183",
+            "64648",
+            "87081"
+          ],
+          "notInList": [
+            "30151a",
+            "42291",
+            "64648"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1668
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1668,
+      "designs": 90,
+      "lots": 157,
+      "massingCells": 14608,
+      "massingParts": 827,
+      "placedParts": 841,
+      "sections": 8,
+      "components": 3,
+      "opsRun": 206,
+      "scriptBytes": 18849,
+      "ldrawBytes": 76092,
+      "partsPerScriptKB": 90.6,
+      "compileMs": 212,
+      "checkMs": 468
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 3,
+      "groups": 4,
+      "covered": 1568,
+      "uncovered": 100,
+      "health": "warning: 1568 parts with verified connectors form 4 separately connected groups; 0 parts are not connected to anything. 100 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 2000,
+      "parts": 1668,
+      "difference": -332,
+      "percent": -16.6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "3 part(s) are off the stud grid",
+        "ops": [
+          "sections[7].ops[2]",
+          "sections[7].ops[3]",
+          "sections[7].ops[4]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "6 part(s) in 3 group(s) are not connected to the main structure (largest group: 1562 parts); e.g. 3062b at [8, 11, 17], 3062b at [4, 11, 50], 3062b at [46, 11, 58]",
+        "ops": [
+          "sections[7].ops[8] > components.matsu.ops[2]",
+          "sections[7].ops[12] > components.matsu.ops[2]",
+          "sections[7].ops[13] > components.matsu.ops[2]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}
