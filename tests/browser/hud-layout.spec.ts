@@ -429,7 +429,7 @@ for (const viewport of [
         return id;
       }) as typeof window.setTimeout;
       window.clearTimeout = (id) => {
-        hints.delete(id!);
+        if (typeof id === "number") hints.delete(id);
         cancel(id);
       };
       w.advanceTrainHint = () => {
