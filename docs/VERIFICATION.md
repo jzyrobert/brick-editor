@@ -1,5 +1,64 @@
 # Verification — 27 September 2026
 
+## Five Realistic critic and photo-audit rounds — 9–10 October 2026
+
+Baseline `75ff771` and five candidates use one unchanged public gallery MPD:
+936-part Piplup `256416f99469`, SHA-256
+`256416f99469c6161aca23f05821f256ee72125e4b48d308ba034ea3f4a1a024`.
+Independent critic and audit agents reviewed previous/current images in every
+round; the audit compared photographed physical LEGO builds, not promotional
+CGI. Source links, complete reviews, scores and measurements are preserved in
+[the report](reports/realistic-five-rounds.json).
+
+| Round | Trial                                       | Selection                                                                              |
+| ----- | ------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 1     | Key share 0.8 → 0.65; panel energy held     | Both reject: no convincing reflection gain                                             |
+| 2     | Desktop AO radius 14 → 8, denoiser 6 → 3    | Both reject: more conspicuous patterned ground shadow                                  |
+| 3     | Phone shadow-catcher opacity 0.3 → 0.2      | Retain: audit accepts modest grounding gain; critic finds no demonstrated realism gain |
+| 4     | ABS roughness 0.28 → 0.22                   | Both reject: tighter highlights without better reflection shapes                       |
+| 5     | Existing fill azimuth 15° towards the front | Both reject: no convincing ABS gain                                                    |
+
+Final selection is round 3; other experiments are restored. Auditor totals
+before → final are desktop 23 → 23/50 and mobile 20 → 21/50; critic overall
+scores remain desktop 5.5/10 and mobile 5/10. These are independent subjective
+rubrics, not calibrated measurements or a percentage of realism. The retained
+change reduces phone shadow density; it does not create physical softness,
+refraction, moulded bevels, seams or stud lettering.
+
+Images are actual live canvas screenshots with DOM visibility hidden while
+layout remains intact. Both resource profiles use a 960 × 700 viewport,
+960 × 622 canvas, DPR 1, balanced quality, Blank backdrop/grid off and matched
+fit/zoom views. These are profile comparisons, not simulated physical phone
+GPUs. Direct mobile API captures are not tone-mapped and were excluded from
+visual judgement. Tight matched close-ups supplement full/detail views in
+the final two rounds.
+
+An unchanged-desktop discrepancy was traced to three.js GTAOPass creating its
+denoiser texture from random Simplex noise. Later review captures fix randomness
+in the private harness only. All three desktop full/detail/material plates
+from frozen baseline and round 3 then match byte-for-byte. Production randomness
+is unchanged; early desktop pixel attribution retains this limitation.
+
+Twelve native-pointer orbit samples per profile/candidate on Chromium
+153.0.8010.12 with SwiftShader: every packet preserves 110 desktop / 107 mobile
+calls and 304,197 / 304,194 triangles, zero orbit shadow redraws, no page errors
+and no reduced-quality fallback. All Standard captures share the same SHA-256.
+Baseline → retained round 3 CPU medians: desktop 4.05 → 5.05ms, mobile
+3.95 → 3.50ms; synchronous GPU-drain medians: 752.90 → 741.10ms and
+570.15 → 561.90ms. Shared-machine timing variation supports neither speed-up
+nor a causal regression; unchanged counts do not prove exact zero GPU cost.
+Real-phone colour and performance acceptance remain open.
+
+Final production build (schema generation, TypeScript and Vite) passes, as do
+all 24 focused look/Photo/Play unit checks and four relevant browser cases
+(3.1 minutes on the private production config). Browser coverage includes
+cached Play shadows, Standard soft outlines/restoration, shared studio lighting,
+and look switching/persistence/capture restoration with a small path-traced
+capture. Repository formatting and diff whitespace checks pass. No review
+photos, gallery MPDs or private capture assets are added to the product.
+All six final seeded desktop/mobile full/detail/material plates match retained
+round 3 byte-for-byte. A 390 × 844 workshop phone preview was also captured.
+
 ## Realistic studio refinement — 9 October 2026
 
 Compared the baseline at `579d0f7` with the refined studio/ABS parameters using

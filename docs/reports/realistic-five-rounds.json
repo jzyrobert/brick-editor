@@ -1,0 +1,436 @@
+{
+  "datesUTC": ["2026-10-09", "2026-10-10"],
+  "baselineCommit": "75ff771",
+  "upstreamBase": "579d0f7",
+  "build": {
+    "galleryId": "256416f99469",
+    "title": "Piplup\u2019s Big Catch at Lake Acuity",
+    "model": "Claude Opus 5.5 high",
+    "parts": 936,
+    "mpdSha256": "256416f99469c6161aca23f05821f256ee72125e4b48d308ba034ea3f4a1a024",
+    "source": "https://gallery.bricks.robertj.in/b/256416f99469c6161aca23f05821f256ee72125e4b48d308ba034ea3f4a1a024.mpd.gz",
+    "unchangedAcrossTrials": true
+  },
+  "protocol": {
+    "browser": "153.0.8010.12",
+    "backend": "Chromium SwiftShader on shared ARM64 VM",
+    "viewport": [960, 700],
+    "canvas": [960, 622],
+    "devicePixelRatio": 1,
+    "resourceProfiles": ["desktop", "mobile"],
+    "quality": "balanced",
+    "backdrop": "blank, grid off",
+    "camera": "camera.fit; full view, native wheel -240 detail; tight plates native wheel cumulative -1400",
+    "orbitSamplesPerProfile": 12,
+    "timings": "native pointer orbit; adapter CPU submission and synchronous one-pixel readPixels GPU drain separately. Sequential noisy trials, not hardware FPS.",
+    "reviewImages": "Actual live canvas screenshots with DOM visibility hidden but layout unchanged. Direct mobile render.image is not tone-mapped; auxiliary API captures excluded from visual judgement.",
+    "noiseControl": "Initial rounds1\u20133 unseeded GTAO denoiser initialization; matched seeded full/detail/material plates for rounds4\u20135. Private harness Math.random fixed only; production unchanged.",
+    "limits": [
+      "Physical phone GPU/color acceptance remains open",
+      "One generated model and fixed studio angle; geometry, absent bevels/logos, refraction and transmission unchanged",
+      "Early desktop fine-grained pixel attribution limited by random denoiser texture; later byte-identical desktop0/3 controls establish cause",
+      "Reviewer scores subjective and different rubrics; do not combine them or claim percent realism improvement"
+    ]
+  },
+  "reproducibility": {
+    "noiseSource": "three r174 GTAOPass.generateNoise() constructs SimplexNoise() with Math.random",
+    "harnessSeed": "0x1b71c, LCG 1664525/1013904223; private QA only; production unchanged",
+    "desktopControls": [
+      {
+        "file": "desktop.png",
+        "sha256": "2d59d88332675df03fbef2622fd0a05cbdeae30d2c529485a68756a5bd182045",
+        "exactMatch": true
+      },
+      {
+        "file": "desktop-detail.png",
+        "sha256": "08a0967a0d24167b25b953fe73ccde8d4de03b752f3b702fd29c65f66092ade1",
+        "exactMatch": true
+      },
+      {
+        "file": "desktop-material.png",
+        "sha256": "030ecbe114bb46f53756c7a307153d2c4bba1019df9609bc4c9f4673d1da0ef6",
+        "exactMatch": true
+      }
+    ]
+  },
+  "decisions": [
+    {
+      "round": 1,
+      "previous": 0,
+      "change": "Raster key share 0.8 to 0.65; panel energy unchanged",
+      "status": "rejected",
+      "reason": "Both reviewers found no convincing visible realism gain; retain baseline split",
+      "criticDesktopOverall": [5.5, 5.5],
+      "criticMobileOverall": [5, 5],
+      "auditDesktopTotal": [23, 23],
+      "auditMobileTotal": [20, 20]
+    },
+    {
+      "round": 2,
+      "previous": 0,
+      "change": "Desktop GTAO radius14\u21928, denoiser6\u21923; samples unchanged, mobile unchanged",
+      "status": "rejected",
+      "reason": "Both reviewers found a more conspicuous patterned detached shadow; AO restored14/6",
+      "criticDesktopOverall": [5.5, 5],
+      "criticMobileOverall": [5, 5],
+      "auditDesktopTotal": [23, 22],
+      "auditMobileTotal": [20, 20]
+    },
+    {
+      "round": 3,
+      "previous": 0,
+      "change": "Phone Realistic shadow-catcher opacity0.3\u21920.2; desktop settings unchanged",
+      "status": "retained provisionally",
+      "reason": "Auditor accepts modest phone grounding gain/no new floating contact; critic sees no sufficient realism gain. Explicit disagreement, not unanimous acceptance. Unseeded desktop noise discrepancy requires matched seeded controls for later rounds.",
+      "criticDesktopOverall": [5.5, 5.5],
+      "criticMobileOverall": [5, 5],
+      "auditDesktopTotal": [23, 23],
+      "auditMobileTotal": [20, 21]
+    },
+    {
+      "round": 4,
+      "previous": 3,
+      "change": "ABS roughness0.28\u21920.22 with phoneopacity0.2 held; matched seeded full/detail/closeups",
+      "status": "rejected",
+      "reason": "Both reviewers see tighter small highlights but no convincing gain in broad ABS reflection shape. Restore0.28.",
+      "criticDesktopOverall": [5.5, 5.5],
+      "criticMobileOverall": [5, 5],
+      "auditDesktopTotal": [23, 23],
+      "auditMobileTotal": [21, 21]
+    },
+    {
+      "round": 5,
+      "previous": 3,
+      "change": "Restore ABS0.28; rotate existing fill15 degrees toward front, with size/radiance/key unchanged; seeded paired images",
+      "status": "rejected",
+      "reason": "Both reviewers found no convincing improvement in ABS reflection shape; restore original fill direction. All five critic and audit rounds completed.",
+      "criticDesktopOverall": [5.5, 5.5],
+      "criticMobileOverall": [5, 5],
+      "auditDesktopTotal": [23, 23],
+      "auditMobileTotal": [21, 21]
+    }
+  ],
+  "measurements": [
+    {
+      "round": 0,
+      "profiles": [
+        {
+          "profile": "desktop",
+          "cpuMedianMs": 4.049999952316284,
+          "gpuDrainMedianMs": 752.8999999761581,
+          "calls": [110],
+          "triangles": [304197],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3.6000001430511475, 6.200000047683716],
+          "gpuDrainRangeMs": [738.3999998569489, 900],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        },
+        {
+          "profile": "mobile",
+          "cpuMedianMs": 3.950000047683716,
+          "gpuDrainMedianMs": 570.1499999761581,
+          "calls": [107],
+          "triangles": [304194],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3, 6.799999952316284],
+          "gpuDrainRangeMs": [545.7000000476837, 590.7999999523163],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "profiles": [
+        {
+          "profile": "desktop",
+          "cpuMedianMs": 4.0000001192092896,
+          "gpuDrainMedianMs": 731.2000000476837,
+          "calls": [110],
+          "triangles": [304197],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3.5, 7.099999904632568],
+          "gpuDrainRangeMs": [651.5999999046326, 765.2000000476837],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        },
+        {
+          "profile": "mobile",
+          "cpuMedianMs": 4,
+          "gpuDrainMedianMs": 564.9000000953674,
+          "calls": [107],
+          "triangles": [304194],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [2.5999999046325684, 6.8999998569488525],
+          "gpuDrainRangeMs": [553.7999999523163, 604.2000000476837],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "profiles": [
+        {
+          "profile": "desktop",
+          "cpuMedianMs": 4.649999976158142,
+          "gpuDrainMedianMs": 749.9500000476837,
+          "calls": [110],
+          "triangles": [304197],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3.299999952316284, 8.200000047683716],
+          "gpuDrainRangeMs": [715.8999998569489, 840.4000000953674],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        },
+        {
+          "profile": "mobile",
+          "cpuMedianMs": 3.799999952316284,
+          "gpuDrainMedianMs": 568.6499999761581,
+          "calls": [107],
+          "triangles": [304194],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [2.8999998569488525, 8.099999904632568],
+          "gpuDrainRangeMs": [562.4000000953674, 588.8000001907349],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "profiles": [
+        {
+          "profile": "desktop",
+          "cpuMedianMs": 5.050000071525574,
+          "gpuDrainMedianMs": 741.1000001430511,
+          "calls": [110],
+          "triangles": [304197],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3.5, 9.299999952316284],
+          "gpuDrainRangeMs": [717, 988.8999998569489],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        },
+        {
+          "profile": "mobile",
+          "cpuMedianMs": 3.5000001192092896,
+          "gpuDrainMedianMs": 561.8999998569489,
+          "calls": [107],
+          "triangles": [304194],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3, 4.5],
+          "gpuDrainRangeMs": [538.7000000476837, 594.9000000953674],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "profiles": [
+        {
+          "profile": "desktop",
+          "cpuMedianMs": 4.25,
+          "gpuDrainMedianMs": 746.6000000238419,
+          "calls": [110],
+          "triangles": [304197],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3.6000001430511475, 10.5],
+          "gpuDrainRangeMs": [721.4000000953674, 839.1999998092651],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        },
+        {
+          "profile": "mobile",
+          "cpuMedianMs": 3.5,
+          "gpuDrainMedianMs": 564.5,
+          "calls": [107],
+          "triangles": [304194],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [2.9000000953674316, 6.200000047683716],
+          "gpuDrainRangeMs": [550.4000000953674, 611.3999998569489],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "profiles": [
+        {
+          "profile": "desktop",
+          "cpuMedianMs": 4.400000095367432,
+          "gpuDrainMedianMs": 737,
+          "calls": [110],
+          "triangles": [304197],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3.4000000953674316, 8.200000047683716],
+          "gpuDrainRangeMs": [674.2000000476837, 768.2000000476837],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        },
+        {
+          "profile": "mobile",
+          "cpuMedianMs": 3.9999998807907104,
+          "gpuDrainMedianMs": 565.75,
+          "calls": [107],
+          "triangles": [304194],
+          "orbitShadowPasses": 0,
+          "cpuRangeMs": [3, 6.1000001430511475],
+          "gpuDrainRangeMs": [534.3000001907349, 597.7999999523163],
+          "standardSha256": "cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de",
+          "errors": []
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "name": "The Rambling Brick physical 40498 assembly/review photographs",
+      "url": "https://ramblingbrick.com/2021/10/22/just-go-with-the-floe-40498-christmas-penguin-hands-on-review/",
+      "cues": "Broad restrained plastic reflections, white curvature, narrow seams and localized directional contact shadows; opalescent tiles not clear-plastic calibration"
+    },
+    {
+      "name": "Callie\u2019s Bricks tabletop 40498 build photographs",
+      "url": "https://calliesbricks.com/2022/10/23/lego-review-christmas-penguin-40498/",
+      "cues": "Room reflections, black recesses, tight seams and restrained support shadows"
+    },
+    {
+      "name": "Jay\u2019s Brick Blog physical 10497 review photographs",
+      "url": "https://jaysbrickblog.com/reviews/review-lego-10497-galaxy-explorer-2022/",
+      "cues": "Blue pigment retention and transparent yellow canopy edges, reflection and background visibility; qualitative only, not water/color calibration"
+    }
+  ],
+  "finalSelection": {
+    "round": 3,
+    "productionChange": "Phone Realistic shadow-catcher opacity0.3\u21920.2; all experiment lighting/material/AO changes rejected/restored",
+    "criticOverallOriginalToFinal": {
+      "desktop": [5.5, 5.5],
+      "mobile": [5, 5]
+    },
+    "auditorTotalOriginalToFinal": {
+      "desktop": [23, 23],
+      "mobile": [20, 21]
+    },
+    "conclusion": "Modest phone-shadow aesthetic improvement accepted by auditor, no demonstrated realism gain per critic. No consensus or general photorealism claim. Physical softness/transmission/refraction/geometry unchanged.",
+    "futurePriorities": [
+      "Diagnose environment-specular contribution, normals and finish classification across matched camera angles before further constants",
+      "Investigate localized contact and penumbra separately on desktop and phone; require measured GPU/edit costs if adding filters/passes",
+      "Inspect transparent tint, overlap and sorting against physical transparent samples; validate on real phone"
+    ]
+  },
+  "reviews": [
+    {
+      "round": 1,
+      "role": "critic",
+      "review": "# Critic \u2014 round 1\n\nVerdict: **Not accepted as a demonstrated photorealism improvement.** The visual benefit is inconclusive at the supplied viewing scale; this is not a finding of material regression. The proposed key-share experiment did not establish the intended improvement in broad ABS reflections.\n\nPrimary evidence: all eight actual canvas full/detail plates in rounds 0 and 1, 960 \u00d7 622, identical paired cameras, desktop viewport half-resolution AO and mobile AO off. API captures are auxiliary and were not scored. Model: unchanged published 936-part Piplup 256416f99469. UI visibility changes are excluded from judgement.\n\n## Fixed rubric\n\n| Criterion /10 | Desktop previous | Desktop current | Mobile previous | Mobile current |\n| --- | ---: | ---: | ---: | ---: |\n| Material gloss | 5.0 | 5.0 | 5.0 | 5.0 |\n| Illumination | 6.0 | 6.0 | 5.5 | 5.5 |\n| Contact depth | 6.0 | 6.0 | 4.5 | 4.5 |\n| Colour fidelity | 7.0 | 7.0 | 7.0 | 7.0 |\n| Realism overall | 5.5 | 5.5 | 5.0 | 5.0 |\n\nAnchors retained: 0 severely broken; 5 readable PBR with conspicuous rendering artifacts; 8 convincing photographed bricks with minor flaws; 10 photograph-like within the supplied geometry. Overall is independently judged. Colour fidelity is preservation/plausibility, not calibrated accuracy. Differences too small to support a half-point change receive no score increase.\n\n## Visible evidence and physical references\n\nThe images do change. Small highlight/brightness shifts are visible around the red ball and model surfaces, but the dominant blue slopes and pale chest still read mostly diffuse. Neither profile convincingly gains the restrained surface and edge reflections needed to make the central build read as moulded ABS. No confident colour improvement or contact regression is visible.\n\nI re-inspected Kenny Louie's four-brick photograph, credited at [AllAboutLean](https://www.allaboutlean.com/maybach/lego-bricks/), and the physical brick close-up used by [Henley](https://www.henley.ac.uk/events/greenlands-masterclass-unlock-the-lego-code-the-ultimate-guide-to-building-high-performing-teams). In Louie's image, saturated upper surfaces, darker vertical faces, narrow edge reflections and localized contact shadows work together. Henley's image shows small curved stud reflections and an edge glint on red plastic, without making the whole brick mirror-like. Both render versions lack comparable readable surface reflections on much of Piplup. The ball already carries a gloss cue in both versions. Photograph illumination, scale, wear and depth of field differ, so these are qualitative cues rather than exact targets.\n\nDesktop retains a broad grey haze around the base, whereas mobile retains abrupt cast shadows and weak small contacts. Neither is resolved by the key-share change. Stepped head silhouette, angular rocks and absent moulded bevels/logos are immutable model/library geometry for this review, not evidence of a shading regression.\n\nRead-only pixel comparison confirms nonidentical imagery: mean absolute 8-bit channel differences across the whole plates are 0.374 desktop full, 0.473 desktop detail, 0.214 mobile full and 0.282 mobile detail. These measurements establish change only; they do not measure realism.\n\n## Performance\n\nMetrics independently read from both packets: desktop CPU median 4.05 \u2192 4.00 ms and synchronous GPU-drain median 752.90 \u2192 731.20 ms; mobile CPU median 3.95 \u2192 4.00 ms and GPU-drain median 570.15 \u2192 564.90 ms. Twelve samples per profile. Calls remain 110/107; triangles remain 304197/304194; orbit shadow redraws remain zero; recorded errors are empty. Standard hash unchanged is supplied by the packet owner. SwiftShader variability prevents a speedup claim. No measured drawing-budget regression is established.\n\n## Next lowest-cost priority\n\nTest desktop GTAO radius **14 \u2192 10 LDU only**, keeping intensity, samples, half resolution and all passes fixed. The clean plates make the broad base haze an explicit target: retain narrow stud/foot contact darkening while reducing spread outside the base. This is a parameter change in the existing pipeline and adds no geometry or passes. Risk: weaker contact depth without removing the haze; reject if that occurs. Mobile remains AO off and direct drawing; this experiment does not claim to repair its missing local occlusion. Keep the key share fixed during the next comparison rather than combining material and contact experiments.\n"
+    },
+    {
+      "round": 1,
+      "role": "auditor",
+      "review": "# Independent photorealism audit \u2014 round 1\n\nVerdict: REJECT as a demonstrated photorealism improvement. The visible benefit is inconclusive at the supplied 960 \u00d7 622 scale; no clear regression is established. This does not assert that the parameter change is technically invalid or demand a rollback. A changed source constant or key intensity is not visual proof.\n\nReviewed: frozen round-0 and round-1 full desktop/mobile plates from .impeccable/review/realistic-rounds/, plus all four supplied detail plates. Reopened the physical photographs rambling-penguin-front.jpg, callie-penguin.jpg and jay-transparent-canopy.jpg in .local/realistic-rounds/refs. Ignored DOM/UI. No product files changed; only this review written.\n\n## Fixed rubric scores (0\u201310 per category)\n\n| Criterion | Desktop before | Desktop current | Mobile before | Mobile current |\n| --- | ---: | ---: | ---: | ---: |\n| ABS/specular plausibility | 4 | 4 | 4 | 4 |\n| Seams/stud contact | 5 | 5 | 4 | 4 |\n| Palette/tonal separation | 6 | 6 | 6 | 6 |\n| Transparent water/ice | 3 | 3 | 3 | 3 |\n| Grounding/photographic plausibility | 5 | 5 | 3 | 3 |\n| Total /50 | 23 | 23 | 20 | 20 |\n\nScores remain anchored to the baseline rubric; subtle changes below a defensible one-point difference do not earn an increase. Black material has too little visible area for a detailed standalone finish verdict. Neither detail view is a true material macro, so fine seam and transmission judgments remain limited.\n\n## Photo evidence and pair comparison\n\nThe Rambling Brick physical 40498 photographs show broad grey-blue reflected patches on black slopes, shaded white curvature, thin joints, and ground shadows strongest near support with softer falloff away from it.\nhttps://ramblingbrick.com/2021/10/22/just-go-with-the-floe-40498-christmas-penguin-hands-on-review/\nBoth render versions retain relatively flat blue/white facets and a broad desktop grounding haze. Round 1 does not visibly localize that haze or provide convincingly clearer softbox reflection structure on crown/breast. At most there is subtle tonal redistribution, not a demonstrable material-category improvement.\n\nCallie's household assembly photographs show room-shaped grey reflections in glossy black, a long soft highlight on the white belly, narrow seams, modest stud-base shadows and localized table contact shading.\nhttps://calliesbricks.com/2022/10/23/lego-review-christmas-penguin-40498/\nIn both rounds the red sphere advertises gloss more clearly than Piplup's ABS surfaces. White plate detail is legible, but a clear comparable glossy response on the main subject is not established. Mobile still has the same hard, uniform grey cast-shadow silhouette; desktop still appears hazy around the platform. No persuasive contact gain or palette regression is visible.\n\nJay Ong's scratched physical transparent-yellow canopy shows tinted background visibility, stronger edge/wall color, bright rim reflections and faint broad reflections across panes.\nhttps://jaysbrickblog.com/reviews/review-lego-10497-galaxy-explorer-2022/\nBoth rendered water regions remain pale cyan studded plastic with weak visible distinction between transmitted interior and reflective edges. No demonstrated transparency gain. The canopy is a different color/shape/background, so this compares qualitative material cues, not exact RGB or brightness. The Rambling Brick's opalescent cyan tiles are not clear-plastic calibration samples.\n\nGeometry is unchanged in the apparent silhouettes: the crown's stair steps, projecting face plates and rock gaps are authored construction, not defects that a lighting constant can erase. Do not award geometry credit for a lighting-only change.\n\n## Performance and packet evidence\n\nModel 256416f99469, 936 parts, same browser 153.0.8010.12; full manifest cameras and look controls match across rounds. Key intensity changes from 2.4831117575 to 2.0175283030, consistent with the stated share change. The Standard capture SHA-256 is identical in all packets: cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de. Document hashes differ across independently restored sessions, so they are not an identity-equality proof; common model/count, camera, Standard hash and geometry counters support the controlled comparison.\n\n| Metric | Desktop before \u2192 current | Mobile before \u2192 current |\n| --- | --- | --- |\n| CPU median ms | 4.05 \u2192 4.00 | 3.95 \u2192 4.00 |\n| GPU-drain median ms | 752.9 \u2192 731.2 | 570.15 \u2192 564.9 |\n| Draw calls | 110 \u2192 110 | 107 \u2192 107 |\n| Triangles | 304197 \u2192 304197 | 304194 \u2192 304194 |\n| Orbit shadow redraws | 0 \u2192 0 | 0 \u2192 0 |\n\nTwelve timing samples per profile/round; CPU and drain ranges overlap. No recorded errors. Structural workload is unchanged; timing is consistent with shared-machine SwiftShader variation. Speedup, proven zero runtime cost, and physical-phone performance are unsupported. Performance regression is not established either. Small offscreen capture timings are not substituted for the supplied live-canvas review plates.\n\n## Next lowest-cost priority\n\nLocalize desktop contact shading with the existing GTAO pass: trial radius 8 instead of 14 LDU and denoise radius 3 instead of 6, leaving sample counts, resolution, lighting, exposure and geometry fixed. Judge whether the broad platform haze decreases while foot/stud contact remains readable. Parameter-only workload expectation still requires matched measurement. This trial does not improve AO-off mobile; retain its independent score rather than claiming cross-profile success. No additional passes, bevel geometry or sample increases proposed.\n"
+    },
+    {
+      "round": 2,
+      "role": "critic",
+      "review": "# Critic \u2014 round 2\n\n**Verdict: reject.** Compared with the previous best round 0, desktop makes the repeated bands/stud-like pattern in the ground shadow more conspicuous without clearly eliminating its broad spread. Some local definition is crisper, but the foreground shadow reads less like a physical contact shadow. Mobile is unchanged: both full and detail PNG files are byte-identical to round 0.\n\nEvidence is bounded to the paired full/detail actual canvas plates and matched metrics in rounds 0 and 2, at 960 \u00d7 622. The key-share restoration earns no credit by itself. API captures and source constants are not scored.\n\n| Fixed criterion /10 | Desktop round 0 | Desktop round 2 | Mobile round 0 | Mobile round 2 |\n| --- | ---: | ---: | ---: | ---: |\n| Material gloss | 5.0 | 5.0 | 5.0 | 5.0 |\n| Illumination | 6.0 | 6.0 | 5.5 | 5.5 |\n| Contact depth | 6.0 | 5.5 | 4.5 | 4.5 |\n| Colour fidelity | 7.0 | 7.0 | 7.0 | 7.0 |\n| Realism overall | 5.5 | 5.0 | 5.0 | 5.0 |\n\nRubric anchors and geometry allowance are unchanged. Overall is independent of the category average. Confidence is moderate at this viewing scale.\n\n## Image evidence and physical-photo comparison\n\nDesktop detail: inspect the ground immediately below the front/right base corner and outside the left edge near the pool. Round 0 has a broad soft haze; round 2 has more visible repeated light/dark bands within that spread. Narrower-looking local definition is not enough to compensate for this pattern on the surrounding ground. The ball remains glossy, while much of Piplup's blue slopes and pale chest still looks predominantly diffuse. No convincing gloss or colour gain is visible.\n\nCompared again with the already collected [Kenny Louie four-brick photograph](https://www.allaboutlean.com/maybach/lego-bricks/), both desktop versions lack its combination of restrained surface/edge reflections and tight, continuous contact darkening. Round 2's more explicit patterned foreground shadow moves away from that cue. The collected [Henley close-up](https://www.henley.ac.uk/events/greenlands-masterclass-unlock-the-lego-code-the-ultimate-guide-to-building-high-performing-teams) shows curved stud reflections and a restrained red edge glint; neither raster version adds a comparable readable material cue to the main blue build. These photographs are qualitative material/contact references, not matched lighting or colour standards; no new broad research was performed.\n\nPiplup's stair-stepped head, angular rock silhouettes and absent moulded bevels/logos remain geometry limits. Their shape is not charged to the AO experiment. The newly emphasized shadow pattern is a rendering issue; no normal or geometry diagnosis is claimed from these views.\n\n## Performance\n\nMatched metrics: desktop CPU median 4.05 \u2192 4.65 ms, synchronous GPU-drain median 752.90 \u2192 749.95 ms; mobile CPU median 3.95 \u2192 3.80 ms, GPU-drain median 570.15 \u2192 568.65 ms. Calls remain 110 desktop / 107 mobile; triangles 304197 / 304194; orbit shadow redraws zero; errors empty. No speedup or material GPU-cost change is established under SwiftShader variability.\n\n## Next lowest-cost priority\n\nThe proposed tighter light-space shadow-map fit is justified **as a bounded phone experiment**, not as a proven solution. Mobile has weak narrow contacts at feet, rocks and stud bases, and it is worth testing whether better use of the existing map improves them. Retain map sizes, bias, filtering and caching; include caster floor projections and padding; compute bounds only after model edits. Inspect local contacts and receiver-edge coverage in the paired views. Reject if it merely sharpens already abrupt cast-shadow silhouettes, introduces acne, or crops shadows. It cannot create missing ambient occlusion or area-light penumbrae. Use the previous best round 0 as the starting comparison, since round 2 is rejected.\n"
+    },
+    {
+      "round": 2,
+      "role": "auditor",
+      "review": "# Independent photorealism audit \u2014 round 2\n\nVerdict: REJECT. My proposed GTAO reductions do not improve these plates. Desktop's broad haze becomes a darker, more sharply patterned detached shadow, particularly beneath/in front of the platform. Some haze is reduced, but the stronger repeated pale stud/stripe pattern and projected platform outline make grounding less photographic. Mobile is unchanged: both full and detail PNG SHA-256 values exactly match round 0.\n\nInspected supplied desktop/mobile detail pairs and local round-0/round-2 full desktop and current full mobile plates. Used the already collected physical photo evidence; no new broad research, servers or code edits. Only this permitted review file written.\n\n| Fixed rubric /10 | Desktop round 0 | Desktop round 2 | Mobile round 0 | Mobile round 2 |\n| --- | ---: | ---: | ---: | ---: |\n| ABS/specular plausibility | 4 | 4 | 4 | 4 |\n| Seams/stud contact | 5 | 5 | 4 | 4 |\n| Palette/tonal separation | 6 | 6 | 6 | 6 |\n| Transparent water/ice | 3 | 3 | 3 | 3 |\n| Grounding/photographic plausibility | 5 | 4 | 3 | 3 |\n| Total /50 | 23 | 22 | 20 | 20 |\n\nScores are visual judgments anchored to the baseline, not quantitative photorealism metrics. Fine seams and the small black eye areas remain difficult to assess at this scale. No new ABS, palette, transparency or geometry credit.\n\n## Comparison with physical LEGO photographs\n\nThe Rambling Brick's studio penguin photograph has localized support shadows with softer falloff farther from contact, shaded white curves, thin seams and broad grey-blue glossy reflections on black plastic. Round 0's haze was excessive; round 2 substitutes a more legible detached patterned silhouette rather than reproducing that contact/falloff behavior.\nhttps://ramblingbrick.com/2021/10/22/just-go-with-the-floe-40498-christmas-penguin-hands-on-review/\nLocal evidence: .local/realistic-rounds/refs/rambling-penguin-front.jpg.\n\nCallie's indoor penguin photographs show restrained stud-base shadows and room-shaped plastic reflections. Shadows are naturally directional in that setting, so hardness alone is not proof of CGI. The defect here is the conspicuous uniform detached platform projection and repeated washed-out stud/stripe impressions; neither pair demonstrates better glossy response on Piplup's crown/breast. The red sphere still communicates gloss more strongly than the main ABS subject.\nhttps://calliesbricks.com/2022/10/23/lego-review-christmas-penguin-40498/\nLocal evidence: .local/realistic-rounds/refs/callie-penguin.jpg and callie-build-closeup.jpg.\n\nJay Ong's transparent-yellow canopy has tinted background visibility, distinct edges/walls and reflection structure across its panes. Both render versions retain pale cyan water with weak transmission-versus-reflection distinction. Comparing qualitative cues only: a yellow canopy is not a blue-water calibration target. The opalescent cyan penguin-set tiles are also not a clear-plastic standard.\nhttps://jaysbrickblog.com/reviews/review-lego-10497-galaxy-explorer-2022/\nLocal evidence: .local/realistic-rounds/refs/jay-transparent-canopy.jpg.\n\nCrown steps, projecting face plates and gaps in the rock assembly remain authored geometry. Altering the AO radius does not change or repair those shapes. The packet does not isolate whether radius or denoiser adjustment caused the grounding loss, since both changed together.\n\n## Matched metrics\n\nModel 256416f99469, 936 parts, browser 153.0.8010.12; full cameras, look controls and 2.4831117575 key intensity match. Standard hash unchanged. Twelve timing samples per profile/round; no recorded errors.\n\n| Metric | Desktop round 0 \u2192 round 2 | Mobile round 0 \u2192 round 2 |\n| --- | --- | --- |\n| CPU median ms | 4.05 \u2192 4.65 | 3.95 \u2192 3.80 |\n| GPU-drain median ms | 752.90 \u2192 749.95 | 570.15 \u2192 568.65 |\n| Draw calls | 110 \u2192 110 | 107 \u2192 107 |\n| Triangles | 304197 \u2192 304197 | 304194 \u2192 304194 |\n| Orbit shadow redraws | 0 \u2192 0 | 0 \u2192 0 |\n\nStructural workload unchanged. Desktop CPU median is higher, but this single noisy SwiftShader packet does not establish a performance regression. No speedup, physical-phone performance or exact zero-cost claim is supported.\n\n## Next priority and proposed phone shadow fit\n\nPhone grounding is a justified next target: the hard uniform grey cast silhouette is plainly visible and remains unchanged. A tighter light-space fit including caster floor projections is a reasonable resolution/coverage experiment, not an image-supported promise of better softness. These images do not establish that insufficient texel density is the dominant defect. At fixed filter/map size, tighter fitting can reduce the world-space filter footprint and sharpen shadows further; improved coverage/contact would have to outweigh that. Judge clipping, contact placement and aliasing separately from photographic falloff. Keep bounds off the orbit path and verify no new orbit redraws; fixed map size/pass count alone does not prove zero GPU or edit-time cost.\n\nLowest-cost directly relevant trial: restore desktop round-0 AO and try mobile shadow-ground opacity 0.3 \u2192 0.2 only, with map, bias/filter, lighting and geometry fixed. This targets the dense grey silhouette, not its edge softness, and may weaken contact; accept only if grounding improves without a floating appearance. Prefer one variable per packet so causality is reviewable. If the shadow-fit experiment is chosen first, treat it as a resolution hypothesis with independent accept/reject criteria, not a presumed photorealism improvement.\n"
+    },
+    {
+      "round": 3,
+      "role": "critic",
+      "review": "# Critic \u2014 round 3\n\n**Verdict: reject as a photorealism improvement.** Mobile's displaced cast-shadow silhouette is lighter, but its abrupt boundary and weak localized grounding remain. I do not see a clear new floating gap at this viewing scale, and do not claim a contact regression solely from lower opacity. The candidate nevertheless does not establish better physical grounding or material realism.\n\nEvidence: paired round-0 and round-3 full/detail actual canvas PNGs at 960 \u00d7 622 and finalized matched metrics. No code inspection or new research was performed. Scores do not follow source constants.\n\n| Fixed criterion /10 | Desktop before | Desktop current | Mobile before | Mobile current |\n| --- | ---: | ---: | ---: | ---: |\n| Material gloss | 5.0 | 5.0 | 5.0 | 5.0 |\n| Illumination | 6.0 | 6.0 | 5.5 | 5.5 |\n| Contact depth | 6.0 | 6.0 | 4.5 | 4.5 |\n| Colour fidelity | 7.0 | 7.0 | 7.0 | 7.0 |\n| Realism overall | 5.5 | 5.5 | 5.0 | 5.0 |\n\nRubric anchors and geometry allowance remain fixed. Overall is independent of the category average. Fine-detail material improvement is not awarded from these moderately distant views.\n\n## Visible evidence and physical-photo cues\n\nMobile detail: the grey silhouette extending beyond the right/rear base edge becomes paler. Its outline remains equally abrupt; contact beneath the base rim does not become more legible. Feet, rocks and the ball do not gain localized contact depth. A less prominent remote silhouette is an aesthetic softening of contrast, not evidence of a softer physical shadow or stronger grounding.\n\nCompared again against the collected [Kenny Louie brick photograph](https://www.allaboutlean.com/maybach/lego-bricks/), both mobile versions still lack its concentrated continuous darkening where objects touch their support. The collected [Henley close-up](https://www.henley.ac.uk/events/greenlands-masterclass-unlock-the-lego-code-the-ultimate-guide-to-building-high-performing-teams) also provides restrained edge and curved-stud reflection cues that neither version improves. Lighting and scale differ, so these comparisons are qualitative rather than matched targets. The candidate does not solve the relationship between the visible cast silhouette and the under-base contact.\n\nDesktop retains the broad base haze and mostly diffuse blue surfaces. The desktop files are not byte-identical: mean absolute channel difference is 0.241 full / 0.302 detail on the 8-bit scale. Small differences occur within model regions as well; I see no consistent desktop realism change and make no attribution to the stated phone-only experiment. These pixel differences are not a realism metric.\n\nThe model's stepped head, angular rocks and absent moulded detail remain geometry limitations. Cast-shadow silhouettes legitimately reflect that geometry; their position and softness cannot be repaired by opacity alone. No geometry change is requested.\n\n## Performance\n\nFinalized medians: desktop CPU 4.05 \u2192 5.05 ms, synchronous GPU-drain 752.90 \u2192 741.10 ms; mobile CPU 3.95 \u2192 3.50 ms, GPU-drain 570.15 \u2192 561.90 ms. Draw calls 110/107 and triangles 304197/304194 are unchanged; orbit shadow redraws remain zero; errors empty. No speedup claim or material GPU-cost regression is supported under SwiftShader variability.\n\n## Next priority\n\nA single ABS roughness 0.28 \u2192 0.22 experiment at the fixed studio is justified for testing, not adoption. Start from previous best round 0 and supply matched tight material closeups in addition to the full plates. Inspect blue curved/sloped parts, pale studs, the red ball and red rectangular bricks. Accept only if reflections become legible on the main build without pin highlights, clipped hotspots, glittering stud edges or harsher ball reflections. No new drawing pass, geometry, lighting or exposure change should accompany that test. This will not remedy missing bevels or weak ambient contact depth.\n"
+    },
+    {
+      "round": 3,
+      "role": "auditor",
+      "review": "# Independent photorealism audit \u2014 round 3\n\nVerdict: ACCEPT the phone opacity change visually as a modest grounding improvement. No new floating contact is apparent in full or detail views. This is not a physical-soft-shadow fix. Desktop equivalence remains INCONCLUSIVE: its plates are visually similar but have real decoded pixel differences, not merely PNG metadata changes. Resolve that discrepancy before claiming desktop is unchanged or giving unrestricted packet-equivalence approval.\n\nInspected round-0/round-3 attached desktop and mobile detail pairs, local full mobile pair and current full desktop plate. Used collected photo evidence; no new research, servers or product edits. Only this permitted review file written.\n\n| Fixed rubric /10 | Desktop round 0 | Desktop round 3 | Mobile round 0 | Mobile round 3 |\n| --- | ---: | ---: | ---: | ---: |\n| ABS/specular plausibility | 4 | 4 | 4 | 4 |\n| Seams/stud contact | 5 | 5 | 4 | 4 |\n| Palette/tonal separation | 6 | 6 | 6 | 6 |\n| Transparent water/ice | 3 | 3 | 3 | 3 |\n| Grounding/photographic plausibility | 5 | 5 | 3 | 4 |\n| Total /50 | 23 | 23 | 20 | 21 |\n\nMobile's hard grey shadow to the rear/right is lighter and less dominant. The base still reads as resting on the surface; no newly visible bright gap or loss of support is apparent. Its edge remains abrupt and its density does not become a physically varying penumbra. This earns one grounding point, not seam/contact or material points. Desktop's broad haze remains. Crown stepping, projecting face plates and rock gaps remain authored geometry. Current fine seams/black finish and transmission remain resolution-limited; no positive fine-detail inference.\n\n## Physical-photo evidence\n\nThe Rambling Brick's studio penguin photo shows localized support shadow and softer falloff away from contact. Baseline phone had an overly heavy, uniform detached silhouette. Candidate reduces that dominance and is a modest move toward restrained grounding, while still lacking the photograph's contact-to-distance falloff. Do not call the lighter unchanged silhouette softer.\nhttps://ramblingbrick.com/2021/10/22/just-go-with-the-floe-40498-christmas-penguin-hands-on-review/\nLocal reference: .local/realistic-rounds/refs/rambling-penguin-front.jpg.\n\nCallie's tabletop photographs have restrained shadows at the supporting base and feet, with the surrounding table remaining readable. Candidate phone retains a readable supporting footprint and has no demonstrable new floating appearance. Both versions still lack comparable broad glossy reflection shapes on the main ABS subject; changing ground opacity supplies no material evidence.\nhttps://calliesbricks.com/2022/10/23/lego-review-christmas-penguin-40498/\nLocal references: .local/realistic-rounds/refs/callie-penguin.jpg and callie-build-closeup.jpg.\n\nJay Ong's physical transparent canopy demonstrates distinct tinted transmission, bright edges and broad reflection structure. Both packets' cyan water retain weak comparable distinction; transparency score unchanged. Different colors/backgrounds preclude direct RGB calibration, and opalescent penguin-set tiles are not clear-plastic standards.\nhttps://jaysbrickblog.com/reviews/review-lego-10497-galaxy-explorer-2022/\nLocal reference: .local/realistic-rounds/refs/jay-transparent-canopy.jpg.\n\n## Packet and performance limits\n\nSame model 256416f99469, 936 parts, browser 153.0.8010.12, full manifest camera and look controls. Standard SHA-256 remains cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de. Twelve timing samples per profile/round; no recorded errors.\n\n| Metric | Desktop round 0 \u2192 round 3 | Mobile round 0 \u2192 round 3 |\n| --- | --- | --- |\n| CPU median ms | 4.05 \u2192 5.05 | 3.95 \u2192 3.50 |\n| GPU-drain median ms | 752.90 \u2192 741.10 | 570.15 \u2192 561.90 |\n| Draw calls | 110 \u2192 110 | 107 \u2192 107 |\n| Triangles | 304197 \u2192 304197 | 304194 \u2192 304194 |\n| Orbit shadow redraws | 0 \u2192 0 | 0 \u2192 0 |\n\nUnchanged structural counters; no speedup or exact zero-runtime-cost claim. Desktop CPU increased despite intended phone-only change; a noisy packet cannot establish causality or a regression. No physical-phone performance evidence.\n\nDesktop full/detail decoded pixels differ in 73,712 / 94,646 pixels out of 597,120, with maximum channel differences 26 / 32 (8-bit); mean absolute channel differences, including unchanged alpha, are 0.241 / 0.302. Mobile changed pixels are 3,233 / 3,868 with maximum difference 24. Pixel differences are not a photorealism metric. Desktop discrepancy may reflect capture/pipeline state, but its cause was not established. It prevents an assertion of exact desktop equivalence even though the supplied views show no clear score-level difference. No product or artifact files were modified during decoding.\n\n## Specific next priority\n\nBefore round 4, establish why intended unchanged desktop plates differ, or obtain a reproducible matched desktop baseline. Then trial ABS roughness 0.28 \u2192 0.22 only under the fixed studio, with matched tight closeups of blue crown slopes/studs, white breast, yellow beak/feet and red sphere, plus these whole-model views. The real photos justify testing reflection readability, not presuming lower roughness improves realism. Require coherent reflection bands following curvature and improved ABS recognition, with no isolated white stud pinpricks, lost pigment, excessively glossy sphere, seam alteration or geometry credit. Keep the accepted phone opacity fixed in both material packets and retain independent desktop/mobile scores. One static angle cannot establish all-view reflection behavior; an additional matched angle is useful if available.\n"
+    },
+    {
+      "round": 4,
+      "role": "critic",
+      "review": "# Critic \u2014 round 4\n\n**Verdict: reject as a demonstrated photorealism improvement.** The seeded material closeups establish a controlled comparison, but the main build does not acquire convincingly more readable ABS reflections. Slightly tighter small highlights are not enough to improve the whole-model judgement. No major colour or contact regression is established.\n\nEvidence: matched seeded round-3 and round-4 desktop/mobile material, detail and full actual canvas plates at 960 \u00d7 622; separate native unseeded timing packets. The retained round-3 phone opacity is fixed in both. Private seeding is a QA control, not a production rendering feature. No code inspection, code edits or new research was performed.\n\n| Fixed criterion /10 | Desktop prior | Desktop current | Mobile prior | Mobile current |\n| --- | ---: | ---: | ---: | ---: |\n| Material gloss | 5.0 | 5.0 | 5.0 | 5.0 |\n| Illumination | 6.0 | 6.0 | 5.5 | 5.5 |\n| Contact depth | 6.0 | 6.0 | 4.5 | 4.5 |\n| Colour fidelity | 7.0 | 7.0 | 7.0 | 7.0 |\n| Realism overall | 5.5 | 5.5 | 5.0 | 5.0 |\n\nThe critic's earlier round-3 scores remain the prior scores despite the parent's provisional retention and the auditor's different verdict. Overall is independent of the category average. A parameter change does not itself warrant a score increase.\n\n## Paired image evidence and physical references\n\nMaterial closeups: the front blue head slopes, pale chest/side pieces and red rectangular build still read predominantly as evenly shaded planes. The candidate does not introduce a clearly shaped softbox reflection on the main build. Small stud and curved-ball highlights tighten, but this is a limited gloss change rather than a convincing improvement to the principal ABS surfaces.\n\nThe ball is cropped in the material framing, so its whole appearance was judged from both full/detail pairs. It remains glossy in both versions; the candidate's more concentrated small glints do not supply a whole-ball realism gain. There is no obvious broad highlight clipping or meaningful hue improvement in these views. Still images cannot establish temporal sparkle or shimmer.\n\nAgainst the collected [Kenny Louie four-brick photograph](https://www.allaboutlean.com/maybach/lego-bricks/), both versions still lack its readable restrained surface/edge reflection cues working with saturated tops and darker vertical faces. Against the collected [Henley close-up](https://www.henley.ac.uk/events/greenlands-masterclass-unlock-the-lego-code-the-ultimate-guide-to-building-high-performing-teams), tighter tiny glints alone do not reproduce its controlled curved-stud reflections and edge glint. These remain qualitative references with different lighting and scale; neither photograph warrants indiscriminately making every part shinier.\n\nGrounding is essentially unchanged: desktop's broad base haze remains, and mobile's weak localized contacts remain. The stepped head is assembled from planar pieces; absent rounded moulding edges cannot be restored by lowering roughness. Faceted silhouettes, angular rocks and missing logos remain library/model geometry limits, not regressions caused by this trial.\n\n## Performance\n\nNative medians: desktop CPU 5.05 \u2192 4.25 ms, synchronous GPU-drain 741.10 \u2192 746.60 ms; mobile CPU 3.50 \u2192 3.50 ms, GPU-drain 561.90 \u2192 564.50 ms. Calls 110/107, triangles 304197/304194 and zero orbit shadow redraws remain unchanged; recorded errors are empty. Standard hash unchanged is supplied by the packet owner. The small drain differences establish neither speedup nor meaningful GPU regression under SwiftShader variability.\n\n## Fifth-round recommendation\n\nReturn ABS roughness to 0.28 and test **one existing fill-panel direction change only**: a small, approximately 15-degree azimuth rotation toward the viewing side, preserving panel elevation, dimensions and radiance. The target is a readable broad reflection on visible blue slopes and pale side pieces, rather than smaller point-like highlights. Use the same seeded three-view pairs and native timing workload; retain key direction, key share, exposure, phone opacity and all passes. Existing PMREM generation remains one-off, with no new light, shader sample or scene pass.\n\nThis is a placement hypothesis, not a promised improvement. Risk: the cool fill may wash out plane contrast or tint pale parts, or simply miss their reflection directions. Reject unless the matched images show a convincing reflection-shape improvement without those costs. The single static viewing direction limits any adoption claim.\n"
+    },
+    {
+      "round": 4,
+      "role": "auditor",
+      "review": "# Independent photorealism audit \u2014 round 4\n\nVerdict: REJECT as a demonstrated photorealism improvement. The matched seeded closeups do not show a convincing gain in recognizable ABS reflection shape on Piplup. Differences are subtle, with a somewhat more concentrated glossy response on the red ball; no clear score-level gain or regression is established. A lower roughness constant and different PNG hashes do not earn realism credit.\n\nReviewed attached seeded desktop/mobile material pairs plus local seeded full desktop and desktop/mobile detail pairs. Whole ball assessed in full/detail, since the material plate crops it. Used existing physical photograph evidence only. No code, servers, new research or other-file changes; only this review written.\n\n| Fixed rubric /10 | Desktop round 3 | Desktop round 4 | Mobile round 3 | Mobile round 4 |\n| --- | ---: | ---: | ---: | ---: |\n| ABS/specular plausibility | 4 | 4 | 4 | 4 |\n| Seams/stud contact | 5 | 5 | 4 | 4 |\n| Palette/tonal separation | 6 | 6 | 6 | 6 |\n| Transparent water/ice | 3 | 3 | 3 | 3 |\n| Grounding/photographic plausibility | 5 | 5 | 4 | 4 |\n| Total /50 | 23 | 23 | 21 | 21 |\n\n## Visible evidence and photo comparison\n\nBoth material closeups show the crown/breast dominated by largely uniform planar shading and construction steps. Candidate does not establish a more readable broad reflected band or surface sheen on those main ABS faces. Blue, white and yellow remain separated; no obvious new pigment clipping or field of white stud pinpricks. Thus hot spots are an experiment risk, not a demonstrated widespread defect in these plates. The red sphere still reads glossier than the subject; its more concentrated reflection does not establish improved whole-model photography. Whole-ball appearance shows no decisive plastic-to-metal or other categorical regression.\n\nThe Rambling Brick's photographed penguin has broad subdued grey-blue reflected patches following black slopes, light/shade across the white belly, and fine joins. Both rendered versions lack comparably legible reflection structure on the main subject. Roughness alone has not solved that photographic cue.\nhttps://ramblingbrick.com/2021/10/22/just-go-with-the-floe-40498-christmas-penguin-hands-on-review/\nReference: .local/realistic-rounds/refs/rambling-penguin-front.jpg.\n\nCallie's tabletop photographs show long soft white reflections and distinct grey room reflections on glossy black, with localized support shading. Both render versions retain the same weaker main-subject reflection readability and the same grounding limitations: desktop haze; restrained but abrupt mobile cast shadow. Candidate earns no contact or grounding increase.\nhttps://calliesbricks.com/2022/10/23/lego-review-christmas-penguin-40498/\nReference: .local/realistic-rounds/refs/callie-penguin.jpg.\n\nMike Nieves' likely physical Piplup photograph shows localized glossy streaks on the blue base and tight assembled tile joins. Its palette, construction and harsh lighting differ from this gallery build, and its photographic provenance confidence is lower than the hands-on reviews. It supports looking for readable reflection structure, not demanding its exact flash appearance or copying its geometry. Neither render demonstrates a corresponding qualitative gain.\nhttps://www.brothers-brick.com/2019/12/12/lego-piplup-will-catch-your-heart/\nReference: .local/realistic-rounds/refs/mike-nieves-piplup.jpg.\n\nJay Ong's actual transparent canopy distinguishes tinted transmission from edge/wall reflections. Both water regions remain weak in that distinction; changing ABS roughness does not establish an improvement to another finish.\nhttps://jaysbrickblog.com/reviews/review-lego-10497-galaxy-explorer-2022/\nReference: .local/realistic-rounds/refs/jay-transparent-canopy.jpg.\n\nAuthored steps, rock gaps and flat library surfaces remain geometry, not roughness defects. Material closeups improve observability but do not themselves improve the product. Fine seam defects cannot be confidently assigned to shader versus geometry without other evidence. One fixed viewing direction does not establish all-angle realism.\n\n## Reproducibility and performance\n\nIndependently confirmed frozen seeded0/seeded3 desktop full, detail and material PNGs are byte-identical. Round 3's desktop reproducibility caveat is resolved for this controlled seeded protocol. Original round1\u20133 unseeded evidence retains its historical limitations. Round 4 PNGs differ from seeded3, but hashes measure change, not quality. QA seeding is not credited as a production rendering improvement.\n\nUnseeded orbit metrics: model 256416f99469, 936 parts, browser 153.0.8010.12, twelve samples per profile/round, unchanged Standard SHA-256, no recorded errors.\n\n| Metric | Desktop round 3 \u2192 round 4 | Mobile round 3 \u2192 round 4 |\n| --- | --- | --- |\n| CPU median ms | 5.05 \u2192 4.25 | 3.50 \u2192 3.50 |\n| GPU-drain median ms | 741.10 \u2192 746.60 | 561.90 \u2192 564.50 |\n| Draw calls | 110 \u2192 110 | 107 \u2192 107 |\n| Triangles | 304197 \u2192 304197 | 304194 \u2192 304194 |\n| Orbit shadow redraws | 0 \u2192 0 | 0 \u2192 0 |\n\nStructural workload unchanged; timings establish neither a speedup nor a causal regression. No exact zero-GPU-cost or physical-phone performance claim is supported. Image protocol and native orbit measurement are correctly treated separately.\n\n## Final fifth-round lowest-cost recommendation\n\nReturn ABS to retained round3's 0.28. Test the placement of one existing studio strip reflection rather than lowering roughness further: rotate one strip panel about 15 degrees toward the front viewing direction, keeping its size/integrated energy, the key direction/intensity, other lighting, exposure, all finishes and phone opacity fixed. Preserve existing cached environment generation and draw/sample counts; no new light or pass. This is a single panel-placement hypothesis, not a promised gain. Seek a broad readable reflected patch on blue slopes/white ABS while preserving color and avoiding a newly blown-out ball. Use seeded matched full/detail/material plates; a second matched viewing angle would strengthen reflection-shape evidence if available. If no existing strip can land a useful reflection without harming the ball/palette, reject the trial rather than forcing the fifth round to improve. Keep reviewer disagreement about retained round3 explicit.\n"
+    },
+    {
+      "round": 5,
+      "role": "critic",
+      "review": "# Critic \u2014 final round 5\n\n**Verdict: reject round 5 as a demonstrated photorealism improvement.** The proposed fill placement experiment produces small changes in plane brightness, but does not establish a convincing broad ABS reflection on the main build. No clear colour, whole-ball or contact-depth improvement warrants a rubric increase. No major visual regression is established either.\n\nEvidence: matched seeded round-3 and round-5 desktop/mobile full, detail and material canvas plates, plus original round-0 seeded plates for the cumulative assessment. Actual canvas drawing buffers are 960 \u00d7 622. Separate native unseeded metrics were read for rounds 0, 3 and 5. No code inspection, new research or production edits were performed.\n\n## Fixed rubric\n\n| Criterion /10 | Desktop prior 3 | Desktop candidate 5 | Mobile prior 3 | Mobile candidate 5 |\n| --- | ---: | ---: | ---: | ---: |\n| Material gloss | 5.0 | 5.0 | 5.0 | 5.0 |\n| Illumination | 6.0 | 6.0 | 5.5 | 5.5 |\n| Contact depth | 6.0 | 6.0 | 4.5 | 4.5 |\n| Colour fidelity | 7.0 | 7.0 | 7.0 | 7.0 |\n| Realism overall | 5.5 | 5.5 | 5.0 | 5.0 |\n\nOriginal round-0 scores equal these prior and candidate scores. Overall remains independently judged. The rubric anchors and allowance for immutable model geometry are unchanged. Parameter changes, numerical pixel differences and better QA controls do not themselves earn photorealism points.\n\n## Previous/current image findings\n\nIn the material pairs, the front blue slopes and pale side pieces remain predominantly shaded planes. Their small brightness changes do not resolve a clearly shaped softbox reflection. Red rectangular parts also retain the same broad material impression. The whole red ball, checked in full/detail pairs because it is cropped in the material plates, remains convincingly glossy in both versions but shows no persuasive new realism cue. No meaningful colour improvement or broad clipping change is visible.\n\nDesktop's diffuse ground haze persists; mobile's low-contrast displaced shadow silhouette and weak narrow contact cues persist. The candidate does not clearly improve the connection between the base edge and its support. I do not see a new floating gap and do not invent a contact regression. One static orientation cannot establish reflection behaviour or highlight stability during orbiting.\n\n## Physical LEGO reference comparison\n\nCompared again against the collected [Kenny Louie four-brick photograph](https://www.allaboutlean.com/maybach/lego-bricks/), both previous and current renderings lack its combination of readable restrained surface/edge reflections and concentrated continuous contact darkening. Round 5's minor plane relighting does not materially close that gap. Against the collected [Henley close-up](https://www.henley.ac.uk/events/greenlands-masterclass-unlock-the-lego-code-the-ultimate-guide-to-building-high-performing-teams), both versions still lack similarly controlled curved-stud reflections on much of the build; the already glossy ball is not sufficient evidence for the remaining ABS surfaces. These are qualitative comparisons, not calibrated targets: photographed lighting, scale, wear and depth of field differ.\n\nThe stepped head consists largely of planar pieces. Its silhouette, angular rocks and absent moulded bevels/logos remain geometry/library limitations. Uniform or faceted appearance alone does not prove incorrect normals. No geometry increase is proposed within this five-round task.\n\n## Cumulative original 0 \u2192 candidate 5\n\n**No demonstrated cumulative photorealism score gain.** The confirmed visible cumulative change is a less prominent phone ground-shadow silhouette, with minor fill-light relighting. The original material and local-contact limitations remain.\n\nDisagreement is explicit: the auditor accepted round 3 as a modest phone-shadow aesthetic gain; the parent provisionally retained its opacity change. The critic found no demonstrated improvement to physical grounding or overall realism and rejected it as a realism improvement. That distinction remains unchanged here. My rejection of round 5 concerns the added fill rotation; it does not override the parent's retained round-3 decision.\n\nI verified that seeded original-0 and retained-3 desktop full/detail/material files are byte-identical. This resolves the earlier desktop-control discrepancy for these captures. Reproducible QA evidence is a verified process improvement; no production realism score is assigned for it.\n\n## Native performance\n\nRound 3 \u2192 5: desktop CPU median 5.05 \u2192 4.40 ms, synchronous GPU-drain 741.10 \u2192 737.00 ms; mobile CPU 3.50 \u2192 4.00 ms, GPU-drain 561.90 \u2192 565.75 ms. Original 0 \u2192 5 GPU-drain medians are 752.90 \u2192 737.00 ms desktop and 570.15 \u2192 565.75 ms mobile. Calls remain 110/107; triangles 304197/304194; orbit shadow redraws zero; errors empty. Standard hash unchanged is supplied by the packet owner. These small timing shifts under SwiftShader do not establish an attributable speedup or material cost change, nor real-phone performance.\n\n## Future recommendations \u2014 no sixth round performed\n\n1. Calibrate material behaviour on ordinary curved studs and simple ABS bricks with matched physical-photo lighting and several camera angles. Audit smoothing normals and reflection-map orientation before adding stronger gloss or geometry. Use same-origin/offline fixtures, preserve shared materials and record actual-phone frame cost.\n2. If that calibration confirms reflection-shape mismatch, investigate separate control of the existing directional key's specular contribution and broad IBL specular response in the current material shader. Preserve dielectric response and diffuse energy, batch keys and ghost treatments. Require a visible benefit across angles, no extra scene pass, and measured phone shader/frame cost before adoption. The five scalar/placement trials do not validate this more involved mechanism.\n3. Treat phone contact depth separately from shadow opacity. A tighter cached shadow frustum remains a bounded option for small contacts, with existing map size/filter/bias, caster floor projections and edit-only fitting. Retain it only if it improves local grounding without merely sharpening silhouettes, acne, cropped receiver coverage or extra orbit shadow redraws. Desktop AO needs localized contacts without the observed haze/banding; increasing pass count is outside the constraints.\n\nThe five requested critic rounds are complete. These are recommendations only; no additional implementation, capture round or research was started.\n"
+    },
+    {
+      "round": 5,
+      "role": "auditor",
+      "review": "# Independent photorealism audit \u2014 final round 5\n\nVerdict: REJECT round5's fill-placement change as a demonstrated photorealism improvement. Its visible benefit is inconclusive in matched seeded full/detail/material plates. No clear score-level regression either. Recommendation: retained round3 remains the best supported state for this auditor; retain its phone opacity only provisionally, with reviewer disagreement explicit. This audit does not modify/revert code.\n\nCompleted the fifth of five requested rounds. Inspected supplied seeded material pairs for desktop/mobile and original0, local seeded full plates for 0/3/5, current detail plates, and prior seeded detail evidence reviewed in round4. Checked native unseeded metrics 0/3/5. Existing physical photo evidence only; no new broad research, servers, delegation or product edits. Only this permitted review file written. Future items below are suggestions, not a sixth round.\n\n## Fixed rubric: previous/current and cumulative\n\n| Criterion /10 | Desktop original0 | Desktop retained3 | Desktop candidate5 | Mobile original0 | Mobile retained3 | Mobile candidate5 |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n| ABS/specular plausibility | 4 | 4 | 4 | 4 | 4 | 4 |\n| Seams/stud contact | 5 | 5 | 5 | 4 | 4 | 4 |\n| Palette/tonal separation | 6 | 6 | 6 | 6 | 6 | 6 |\n| Transparent water/ice | 3 | 3 | 3 | 3 | 3 | 3 |\n| Grounding/photographic plausibility | 5 | 5 | 5 | 3 | 4 | 4 |\n| Total /50 | 23 | 23 | 23 | 20 | 21 | 21 |\n\nThe candidate's blue crown/white breast remain dominated by uniform face shading, stepped construction and projecting plates. The changed fill does not supply a clearly readable broad reflection patch or substantially better plastic recognition. Any slight tonal redistribution is below a defensible rubric point. No obvious new widespread stud hot spots or loss of saturated blue/yellow/red is established. The red sphere still shows gloss more readily than Piplup; whole-ball shape and highlight distribution in full/detail do not establish a worthwhile gain or decisive regression. Material plates crop the ball, so they were not used alone for that judgment.\n\nGrounding from retained3 to candidate5 is effectively unchanged at the visual scoring level: desktop broad grey haze, phone lighter but still abrupt cast silhouette. No new floating support gap is apparent. Water's pale cyan surface does not gain convincing transmission-versus-reflection distinction. No seam/contact or geometry credit from rotating a fill panel. Fine black-eye finish, tiny molded detail and interior transmission remain incompletely observable.\n\n## Explicit comparison with collected actual LEGO photos\n\nThe Rambling Brick's actual penguin photos show broad subdued grey-blue reflections on black slopes, shaded white curvature, fine seams and support shading concentrated near contact with softer falloff away from it. Both retained3 and candidate5 lack comparable readable reflection shape on the main subject. Original0 desktop has the same weakness. Original0 phone's heavy hard silhouette becomes less dominant in 3 and remains so in 5, a modest aesthetic grounding benefit rather than a physically varying soft shadow.\nhttps://ramblingbrick.com/2021/10/22/just-go-with-the-floe-40498-christmas-penguin-hands-on-review/\nLocal evidence: .local/realistic-rounds/refs/rambling-penguin-front.jpg and rambling-ice-base.jpg.\n\nCallie's household photos show long soft reflections on white ABS, distinct room-shaped grey reflections on black, restrained stud shadows and localized base/table support. Both versions retain weaker reflection recognition and the same contact limitations. Phone candidate5 keeps the lighter supporting shadow without a newly obvious floating appearance; this modest gain originates in round3, not the round5 fill rotation. Real indoor photos can have hard shadows, so hardness by itself is not proof of CGI; these plates still lack the more convincing local contact/ground relationship.\nhttps://calliesbricks.com/2022/10/23/lego-review-christmas-penguin-40498/\nLocal evidence: .local/realistic-rounds/refs/callie-penguin.jpg and callie-build-closeup.jpg.\n\nJay Ong's photographed transparent canopy separates tinted background visibility from stronger edge/wall reflections and broad surface reflections. Both retained3/current5 cyan water regions remain weak in that qualitative distinction. Its yellow color, different thickness and dark background prevent direct quantitative comparison; the penguin set's opalescent cyan tiles are not clear-plastic calibration samples.\nhttps://jaysbrickblog.com/reviews/review-lego-10497-galaxy-explorer-2022/\nLocal evidence: .local/realistic-rounds/refs/jay-transparent-canopy.jpg.\n\nMike Nieves' Piplup reference has localized glossy streaks on the blue base and tight assembled joins, but lower photographic-provenance confidence than the hands-on reviews. It supports looking for readable plastic reflections; it is not a matching model/color/lighting standard. Its water appears opaque and cannot validate transparent water. Neither retained3 nor candidate5 earns a material gain by that comparison.\nhttps://www.brothers-brick.com/2019/12/12/lego-piplup-will-catch-your-heart/\nLocal evidence: .local/realistic-rounds/refs/mike-nieves-piplup.jpg.\n\n## Cumulative outcome and disagreement\n\nIndependent auditor outcome original0 \u2192 candidate5: desktop 23 \u2192 23; mobile 20 \u2192 21. The sole demonstrated visual gain I credit is the less dominant phone cast-shadow density introduced in round3, without a newly visible floating contact. No convincing ABS, seam, palette or transparency gain. This is a modest subjective improvement, not general photorealism, physical-soft-shadow behavior or consensus.\n\nParent reports that the critic gave round3 no demonstrated realism-score increase, while this auditor accepted it and gave mobile grounding 3 \u2192 4. That disagreement remains explicitly unresolved. It must not be reported as both reviewers accepting a realism gain. Both rejected rounds2 and4; round1 was rejected/restored. This final audit independently rejects round5; no claim is made about the critic's final round5 verdict, which has not been supplied here.\n\nFive-round sequence for this auditor: round1 no demonstrated gain; round2 worse desktop grounding; round3 modest phone grounding gain; round4 no demonstrated material gain; round5 no demonstrated placement gain. Rejected intermediate experiments are not counted as cumulative shipped improvements. Retained3 is the supported recommendation, subject to the recorded disagreement.\n\n## Reproducibility, metrics and limits\n\nVerified seeded0/seeded3 desktop full/detail/material SHA-256 equality again; original round3 desktop drift caveat is resolved for seeded evidence. Candidate5 hashes differ but that proves change only, not improvement. Private QA seeding controls initialization noise; it is not a production visual technique or runtime optimization. Native unseeded orbit harness assessed separately.\n\nSame model 256416f99469, 936 parts, browser 153.0.8010.12, twelve timing samples per profile/round. Standard SHA-256 unchanged: cf7ff0a1e707d195becc8650b13df94e97fa51e0c445148378ec7ed49b7b82de. No recorded errors.\n\n| Metric | Desktop 0 \u2192 3 \u2192 5 | Mobile 0 \u2192 3 \u2192 5 |\n| --- | --- | --- |\n| CPU median ms | 4.05 \u2192 5.05 \u2192 4.40 | 3.95 \u2192 3.50 \u2192 4.00 |\n| GPU-drain median ms | 752.90 \u2192 741.10 \u2192 737.00 | 570.15 \u2192 561.90 \u2192 565.75 |\n| Draw calls | 110 \u2192 110 \u2192 110 | 107 \u2192 107 \u2192 107 |\n| Triangles | 304197 \u2192 304197 \u2192 304197 | 304194 \u2192 304194 \u2192 304194 |\n| Orbit shadow redraws | 0 \u2192 0 \u2192 0 | 0 \u2192 0 \u2192 0 |\n\nThis supports unchanged structural workload, not proven zero GPU cost. Shared-machine SwiftShader timings establish neither a speedup nor a causal regression; CPU medians are not total interactive frame times. No physical-phone GPU, thermal, battery, edit/startup or sustained performance guarantee. Generated environment updates could have one-time cost not resolved by orbit counters.\n\nEvidence covers one build, one viewing direction at several scales, synthetic studio lighting and library geometry. It does not establish orbit-wide realism, other models/materials, actual phone rendering, correct refraction or manufacturing-detail fidelity. Reference photos use different lighting, color balance, parts and construction and are not calibrated material measurements. Their scratches/marks verify physical objects but do not mandate adding noise to pristine bricks. Gallery crown steps and rock gaps are authored geometry and will not be removed by shading constants.\n\n## Future improvements, outside these five rounds\n\n1. Diagnose why the main subject's reflections remain weak before more arbitrary constant sweeps: use matched diagnostic direct/environment contributions, check material normals/finish classification and cached environment reflections on representative blue/white slopes and curved ABS, and include a second matched view. Keep diagnostics out of product UI and performance results separate. Parameter-only fixes should preserve batching/passes and still be measured for startup/edit/orbit cost.\n2. Grounding: investigate true contact placement, shadow bias/coverage and controlled penumbra behavior independently. Desktop haze and phone's uniform hard silhouette are different defects. A sharper fitted map is not automatically a photographic improvement. Any extra pass, filter taps or changed redraw policy requires demonstrated benefit plus measured edit-time, GPU frame-time and physical-phone cost; do not add phone AO by default.\n3. Transparent water: inspect overlapping surfaces, tint, opacity/sorting and visible underlying geometry against a genuinely transparent physical sample. Improving alpha cannot be called physical refraction. Transmission/thickness or screen-space techniques need explicit GPU/bandwidth/overdraw and phone budget evaluation, with graceful raster limitations stated.\n4. Separate source geometry/assembly gaps from shading; review genuine part bevels/normals and seating before claiming molded-ABS fidelity. Extra triangles, shader-normal tricks and logos have measurable costs and should not be blanket additions to large scenes. Broaden validation to other models and real phones before production performance/photorealism claims.\n\nNo sixth round started; five-round auditor task complete.\n"
+    }
+  ],
+  "validation": {
+    "productionBuild": "passed: schemas, tsc -b, Vite",
+    "focusedUnitTests": {
+      "files": 3,
+      "passed": 24
+    },
+    "browserTests": {
+      "passed": 4,
+      "duration": "3.1m",
+      "privatePort": 4397,
+      "workers": 1,
+      "cases": [
+        "cached shadows while moving camera in Play",
+        "Standard soft outlines and restoration",
+        "shared raster/Photo studio lighting",
+        "look switching/persistence/capture restoration with small path-traced capture"
+      ]
+    },
+    "format": "repository check passed",
+    "diffWhitespace": "passed",
+    "published": false,
+    "finalSeededPlateControls": [
+      {
+        "file": "desktop.png",
+        "sha256": "2d59d88332675df03fbef2622fd0a05cbdeae30d2c529485a68756a5bd182045",
+        "matchesRetainedRound3": true
+      },
+      {
+        "file": "desktop-detail.png",
+        "sha256": "08a0967a0d24167b25b953fe73ccde8d4de03b752f3b702fd29c65f66092ade1",
+        "matchesRetainedRound3": true
+      },
+      {
+        "file": "desktop-material.png",
+        "sha256": "030ecbe114bb46f53756c7a307153d2c4bba1019df9609bc4c9f4673d1da0ef6",
+        "matchesRetainedRound3": true
+      },
+      {
+        "file": "mobile.png",
+        "sha256": "55bca1d9417cff0bb5b89aa7469c3a6621393261c53ae2ad9e1dc73762edbc0d",
+        "matchesRetainedRound3": true
+      },
+      {
+        "file": "mobile-detail.png",
+        "sha256": "32d6e468417a4c85315c40c5468a4e90cb864118741d3860d745023ddc2d8c04",
+        "matchesRetainedRound3": true
+      },
+      {
+        "file": "mobile-material.png",
+        "sha256": "91a792b48cf26a35a74e3f89954a8d1db568a0f1aa340a48be58b6623f46325e",
+        "matchesRetainedRound3": true
+      }
+    ],
+    "phonePreview": {
+      "viewport": [390, 844],
+      "profile": "mobile",
+      "actualCanvasWithWorkshopUI": true,
+      "physicalDevice": false
+    }
+  }
+}

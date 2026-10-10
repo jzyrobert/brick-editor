@@ -2,7 +2,7 @@
 version: 1
 slug: "src-render-studio-lighting-ts"
 primary_target: "src/render/studio-lighting.ts"
-related_targets: ["src/render/look.ts"]
+related_targets: ["src/render/look.ts", "src/render/adapter.ts"]
 ---
 
 # Realistic studio refinement
@@ -25,3 +25,13 @@ and jeep. Check draw calls, triangles, shadow-map reuse and frame costs. Phone
 Realistic retains its direct draw, with AO and vignette off. No additional scene
 passes, runtime assets, shader sampling or path tracing. Real-device performance
 remains unverified on this software-WebGL development machine.
+
+User-authorized follow-up: five candidate rounds against independent critic
+and audit agents, using the unchanged published 936-part gallery Piplup build.
+Audit previous/current actual canvas views against physical LEGO photographs.
+Four material/lighting/AO hypotheses were rejected; retain only phone Realistic
+shadow-catcher opacity 0.2 rather than 0.3. The auditor credits modest grounding;
+the critic finds no demonstrated realism gain. Record disagreement, geometry
+limits and unchanged drawing work without claiming consensus or photorealism.
+Private seeded capture controls resolve random desktop denoiser noise; this
+does not modify production randomness. Phone acceptance remains open.

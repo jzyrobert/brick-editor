@@ -38,6 +38,19 @@ the same materials and shaders, and the same shadow maps. Phone Realistic still
 draws directly with AO and vignette off. Verification and measured comparisons
 are in [the verification record](VERIFICATION.md#realistic-studio-refinement--9-october-2026).
 
+**Five critic/audit rounds (9–10 October 2026).** A fixed 936-part public gallery
+Piplup build was compared against physical LEGO photographs. Four trials of
+light splitting, AO/denoising, ABS roughness and fill-panel placement were
+rejected. The retained change lowers phone Realistic's shadow-catcher opacity
+from 0.3 to 0.2 on backdrops without their own ground; desktop and Photo keep
+0.3. The auditor accepted a modest shadow-density gain, while the critic found
+no demonstrated realism-score gain. Shadow edges are still hard on phones;
+ABS reflection shape, transparency and geometry limitations remain. There are
+no additional passes, samples, geometry or assets. Both agents’ full reviews,
+physical-photo sources and matched counters/timings are in
+[the five-round report](reports/realistic-five-rounds.json). Physical-phone
+colour/performance remain unverified.
+
 **Contact shadow and reflective floor (not kept).** The other site's realistic mode lays a blurred contact shadow and a reflective floor under the model. A contact shadow was prototyped for Realistic (the model drawn once from below into a 256² depth-alpha texture, blurred twice, on a plane under the model, redrawn only after scene changes like the cached shadow map) and removed: Realistic already has a fitted soft shadow on its shadow-catcher plane plus GTAO, so the difference in captures was faint, while the extra pass is another full draw of the model after every edit, as costly as the shadow-map pass, and the prototype misdrew with the batched draws in the viewport. A reflective floor needs the model drawn a second time, mirrored, every frame, which doubles the draw calls on the phone budget, so it was not attempted; Photo's traced sweep already carries a faint reflection.
 
 ## Soft outlines (Standard)

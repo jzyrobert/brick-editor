@@ -1,5 +1,26 @@
 # Implementation status
 
+## Five Realistic critic and photo-audit rounds — 9–10 October 2026
+
+Five candidate rounds used the same published 936-part gallery build,
+“Piplup’s Big Catch at Lake Acuity” (`256416f99469`), with independent critic
+and audit agents comparing previous/current desktop and mobile canvas views.
+The audit compared physical LEGO assembly/review photographs. Four lighting,
+AO and roughness trials were rejected and restored. The retained change is
+phone Realistic shadow-catcher opacity 0.3 → 0.2 on backdrops without their own
+ground. Desktop and Photo keep 0.3.
+
+The auditor accepted a modest reduction in phone-shadow dominance; the critic
+found no demonstrated realism-score gain. This is not consensus or a general
+photorealism improvement. Hard shadow edges, weak ABS reflection shapes,
+transparent-part limitations and authored geometry remain. No new render
+passes, shader samples, geometry or runtime assets are introduced.
+
+All six measurement packets (baseline plus five candidates) preserve orbit
+draws/triangles and cached shadows. Physical-phone acceptance remains open.
+See the [rounds and both agents’ reviews](reports/realistic-five-rounds.json)
+and [verification](VERIFICATION.md#five-realistic-critic-and-photo-audit-rounds--910-october-2026).
+
 ## Realistic studio refinement — 9 October 2026
 
 Realistic uses a broader key reflection, wider rim strips and a slightly softer
