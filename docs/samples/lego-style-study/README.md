@@ -386,3 +386,40 @@ gh workflow run gallery.yml --ref main
 The 18-build collection is live at [Brick Editor](https://bricks.robertj.in). Main validation and deployment passed on `4f1adba`; one transient skeleton/parts frame-polling assertion passed in isolation and on the failed-shard rerun, with no code or budget changes. The dedicated gallery workflow stopped at its initial D1 read before changing anything. The authenticated owner connection then uploaded the exact reviewed files, applied the reviewed SQL and rebuilt the index from live rows. The previous 12 entries are hidden and their files retained.
 
 Every public asset matches its committed checksum. Two gallery-only Cache Response Rules preserve one-year immutable files and a one-minute index lifetime; the existing cache eligibility rule is unchanged. The live app shows 18 responses, each model filter gives six, and all six supported phone/desktop sizes have no horizontal overflow. [The publication receipt](../../reports/e-gallery-publication.json) records the exact workflow attempts, visibility audit and rules. CI gallery access remains an open TODO; model generation and requested publication are complete.
+
+## Diorama pilot — Sol 6.1 high
+
+The [four-view comparison preview](diorama/index.html) puts the original creative builds, fresh E controls and new diorama builds side by side. [Temple](diorama/temple-iso.png) and [Ewok](diorama/ewok-iso.png) comparison images are also available independently.
+
+The owner proposed two public styles, Lego-style and Diorama style, and authorized a clean-start diorama pilot on the temple and Ewok briefs. [The experimental system prompt](../../../prompts/build-agent-diorama.md) keeps E's geometry, part-counting, parts, architectural references and construction guidance. It restores required scene/story direction and a shared baseplate or connected plate-built display base. Composition, support planning, judging criteria, losing patterns and [the reply example](../../../prompts/brick-build-diorama.md) agree on that direction. Added guidance contains no temple/Ewok-specific instructions. E remains the default; this pilot makes no website or publication changes.
+
+Both runs use **GPT-6.1-Sol (`gpt-6.1-sol`), high**, the identical original briefs/targets and the existing one-shot harness. Each begins in its own empty working directory and fresh session. No original model, other generated source, preservation request, repository instructions, reference image or render feedback reaches either model. The allowed feedback is unchanged: up to ten text part-search replies, three draft checks per attempt and five attempts. Checks return counts and compiler errors, without construction warnings or images. [Exact inputs, sources, compiler reports and model/effort provenance](diorama/provenance.json) are retained. Actual model/effort and distinct working directories are verified against native Codex turn/session metadata, with zero native tool events. Accepted outputs are unchanged after rendering.
+
+All six comparison sources are rendered with the same Standard look, 1,280 × 960 resolution and front/three-quarter/back/top camera presets. Historical original and fresh E sources are re-rendered only, with their exact part counts preserved. They were not rerun or supplied to the new generations. Camera labels denote world-coordinate presets rather than normalized subject poses.
+
+| Subject              | Target | Original creative | Fresh E | Updated diorama | New warnings                          | Generation/check time |
+| -------------------- | -----: | ----------------: | ------: | --------------: | ------------------------------------- | --------------------: |
+| Temple               |  2,000 |             2,195 |   2,258 |  2,279 (+14.0%) | 1 off-grid, 1 floating                |                 815 s |
+| Ewok / Classic Space |  3,000 |             3,294 |   3,278 |   2,955 (−1.5%) | 10 part-clash, 1 off-grid, 1 floating |                 760 s |
+
+Both accept in one attempt with zero final compiler errors and four views. Each uses three draft checks: temple progresses from 12 errors to zero and then zero; Ewok from 47 to 20 to zero. Temple's final submission reduces the third draft's 2,324 parts to 2,279 and compiles without errors. All repairs come from the model and the existing automatic text protocol, with no manually authored geometry fixes. Timing excludes the final render and historical comparison renders.
+
+### Visual assessment
+
+**Temple:** the new model restores a unified garden with a canal, red bridge, lanterns, maple, hall and pagoda. Timber detailing and continuous tiled paving make it read as a finished display, while terrain studs remain intentional. Its hall has shaped eaves, but the pagoda's roof profiles are less graceful than the original's, and its long straight canal and broad front paving make the layout more regular. I still slightly prefer the original's richer three-structure arrangement and roof shapes overall. The new model is a useful diorama candidate, rather than a demonstrated replacement for that preferred original.
+
+**Ewok:** I prefer the new treeport in this comparison. The spacecraft and defined landing pad give the scene a clearer focal activity, while the elevated hut, stair, suspended bridge, radar nest, timber ship elements and blue/yellow palette blend forest life with Classic Space. Its roof and paved landing surface are deliberate smooth zones; foliage and ground retain studs. The original has a fuller village, with an additional hut and rocket, and remains the better choice for someone prioritizing a richer forest settlement. New foliage still forms broad horizontal layers, and the ten part-clash warnings need attention.
+
+Both new models have **zero baseplate parts**, but shared connected plate-built display bases. Diorama style describes composition and support intent; baseplate inventory alone cannot classify it. Scene coherence and material-specific finishing can coexist without removing the environment.
+
+This is one new sample per brief and prompt. It supports keeping a separate diorama direction for further testing, but does not establish consistent superiority over the original or E. Repeated independent trials and other models/briefs remain unmeasured. Compiler acceptance is not proof of physical buildability; off-grid/floating/clash warnings remain in the reports. The evaluation uses fixed criteria and comparisons rather than treating an individual attractive output as a reliable prompt improvement, consistent with [OpenAI's evaluation guidance](https://developers.openai.com/api/docs/guides/evaluation-best-practices).
+
+### Reproduce
+
+Use a new output directory so accepted results cannot be reused:
+
+```sh
+npx tsx scripts/evaluate-build-style.ts --model gpt-6.1-sol --cases diorama-temple,diorama-ewok --out .local/diorama-rerun --concurrency 2
+```
+
+The `diorama` variant rejects supplied sources, reference images and image-feedback mode. The baseline is `b82f390`; the pilot adds only experimental guidance, harness registration, regression checks and comparison artifacts. Compilation/rendering remains the existing CLI. Input/source hashes and the archived sources permit the accepted builds to be re-rendered without another model call.

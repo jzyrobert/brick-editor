@@ -1,5 +1,13 @@
 # Verification — 27 September 2026
 
+## Diorama prompt pilot — 10 October 2026
+
+Private worktree `codex/diorama-prompt`, based on `b82f390`. The [report and comparisons](samples/lego-style-study/README.md#diorama-pilot--sol-61-high) retain two clean-start GPT-6.1-Sol high runs, exact filled prompts, accepted JS/JSON/MPD, reports and four views. [Provenance](samples/lego-style-study/diorama/provenance.json) verifies distinct native sessions/directories, actual model/effort, empty directory contents, zero native tools and no supplied sources/images. Filled inputs match the original briefs/targets and the frozen experimental prompts exactly; E geometry/counting/catalogue/reference sections are unchanged.
+
+Both accept in one attempt with zero final errors: temple 2,279/2,000 parts (815 s), Ewok 2,955/3,000 (760 s). Each uses three compiler-only draft checks; no manual fixes or render feedback. Remaining warnings: temple off-grid/floating; Ewok ten part-clash plus off-grid/floating. Both use zero baseplate parts with a shared plate-built display. This is exploratory visual evidence, not physical buildability or a repeated prompt-effect measurement.
+
+Verification: 23 checks in `one-shot-build.test.ts` / `brick-build.test.ts`; JSON/JS diorama examples are identical and compile to 181 parts without problems; `tsc -b`, focused Prettier and diff checks pass. Three harness probes reject source revisions, reference images and image-feedback mode before generation. Original/E comparison sources are unchanged and re-render to their exact recorded part counts. The standalone viewer loads all 24 images across four camera presets, with a 44 px selector and no horizontal overflow at 1440 × 1000, 1080 × 1800, 360 × 600, 411 × 685, 390 × 844 and 686 × 411. E/default/gallery publishing is untouched.
+
 ## Gallery prompt generations — 10 October 2026
 
 - The latest selector uses explicit featured-generation metadata rather than publication date. Unit checks cover legacy-index compatibility, invalid or duplicated generation metadata, an F run newer than E, combined filters and retained source arrays.

@@ -1,0 +1,198 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2195,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2195,
+    "difference": 195,
+    "percent": 9.8
+  },
+  "seconds": 734,
+  "tokens": {
+    "input": 615657,
+    "cached": 379264,
+    "output": 90941,
+    "reasoning": 49398
+  },
+  "searches": 5,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "13547",
+      "2412b",
+      "2417",
+      "2423",
+      "24866",
+      "3009",
+      "30151a",
+      "3070b",
+      "32607",
+      "3307",
+      "3659",
+      "3665a",
+      "3941",
+      "3957a",
+      "4032b",
+      "4589",
+      "4740",
+      "54200",
+      "6141",
+      "90398"
+    ],
+    "notInList": [
+      "30151a",
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 734,
+      "usage": {
+        "input": 615657,
+        "cached": 379264,
+        "output": 90941,
+        "reasoning": 49398,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bell",
+            "limit": 8
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609",
+            "30151b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "plant leaves",
+            "colour": "orange",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2423",
+            "2417",
+            "32607",
+            "10884"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "size": "3x3",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statue",
+            "limit": 6
+          },
+          "results": [
+            "90398",
+            "93562",
+            "12890",
+            "35699",
+            "5785",
+            "13784"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope inverted",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "ok": false,
+          "reason": "INVALID_INPUT: Invalid build script: $.sections[0].ops[3].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"dark tan\",\"tan\",\"dark tan\"]})"
+        },
+        {
+          "round": 2,
+          "parts": 2363,
+          "errors": 8,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 2195,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "13547",
+          "2412b",
+          "2417",
+          "2423",
+          "24866",
+          "3009",
+          "30151a",
+          "3070b",
+          "32607",
+          "3307",
+          "3659",
+          "3665a",
+          "3941",
+          "3957a",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "90398"
+        ],
+        "notInList": [
+          "30151a",
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2195
+    }
+  ]
+}
