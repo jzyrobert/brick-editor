@@ -1,0 +1,28 @@
+script({title:"Piplup's Bubble-Berg",description:"A bright-eyed Piplup waves from a drifting ice floe, watching an orange fish escape through three rising bubbles. Rounded cheeks, a golden bill and webbed feet, a scalloped navy collar and a curved tail preserve the captain's character; shaped skin and a compact irregular wake refine the construction.",palette:{water:"trans light blue",ice:"white",penguin:"medium azure",hood:"dark blue",beak:"yellow"}});
+const S=0.75,lift=4,span=24;
+section("The drifting iceberg and its shaped wake",[
+ ...[[14,0,9,3],[4,3,20,5],[1,8,23,11],[3,19,20,4],[8,23,10,1]].map(([x,z,w,d])=>floor({at:[x,0,z],size:[w,d],colour:"water",top:"tile"})),
+ ...[[5,8,15,14],[7,5,10,3],[2,11,3,8],[20,12,2,6],[8,22,9,1]].map(([x,z,w,d])=>box({at:[x,1,z],size:[w,3,d],colour:"ice",top:"tile"})),
+ ...range(5).map(i=>place({part:"15068",at:[7+i*2,1,3],colour:"white"})),
+ ...[[7,6,0],[9,7,0],[20,16,90],[19,18,90],[6,20,0]].map(([x,z,t])=>place({part:"3069b",at:[x,4,z],colour:"blue",turn:t})),
+ ...[5,6,18,19].map(x=>place({part:"61678",at:[x,4,19],colour:"white",turn:180}))
+]);
+function ell(x,y,z,cx,cy,cz,rx,ry,rz){return ((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2<=1;}
+function headColour(x,y,z){let c="medium azure";if(z<19&&(y>=61||(y>=51&&Math.abs(x-16)<2+(y-51)*0.13)))c="dark blue";if(z<17&&[10.5,21.5].some(ex=>((x-ex)/5)**2+((y-55)/13)**2<=1))c="white";if(z<19&&y>=53&&Math.abs(x-16)<1.3+(y-53)*0.13)c="dark blue";for(const ex of [10.5,21.5]){const front=19-8*Math.sqrt(Math.max(0,1-((x-16)/10)**2-((y-55)/21)**2));if(((x-ex)/1.6)**2+((y-58)/7.5)**2<=1&&z<front+2.2){c="black";if(Math.abs(x-ex)<0.6&&y>=60&&y<63&&z<front+1.5)c="white";}}return c;}
+function bodyColour(x,y,z){let c="medium azure";if(y>=37||(y>=31&&(x<12||x>20)))c="dark blue";if(z<17&&[13,19].some(ex=>((x-ex)/1.5)**2+((y-27)/4)**2<=1))c="white";return c;}
+function sample(ix,h,iz){return [(ix+0.5)/S,(h+1.5)/S,(iz+0.5)/S];}
+function shape(ix,h,iz){const [x,y,z]=sample(ix,h,iz);return ell(x,y,z,16,55,19,10,21,8)||ell(x,y,z,16,27,20,7.5,21,6)||ell(x,y,z,8-0.22*(y-25),36,20,2.7,13,2.3)||ell(x,y,z,24+0.2*(32-y),24,20,2.7,12,2.3)||[12,20].some(cx=>ell(x,y,z,cx,4.5,17,3.5,4.5,5));}
+function colourAt(ix,h,iz){const [x,y,z]=sample(ix,h,iz);const head=ell(x,y,z,16,55,19,10,21,8),body=ell(x,y,z,16,27,20,7.5,21,6),diaphragm=h===18||h===30||h===42;if(head&&(!ell(x,y,z,16,55,19,8,15,6)||diaphragm))return headColour(x,y,z);if(body&&(!ell(x,y,z,16,27,20,5.5,15,4)||diaphragm))return bodyColour(x,y,z);if(ell(x,y,z,8-0.22*(y-25),36,20,2.7,13,2.3)||ell(x,y,z,24+0.2*(32-y),24,20,2.7,12,2.3))return "medium azure";if([12,20].some(cx=>ell(x,y,z,cx,4.5,17,3.5,4.5,5)))return "yellow";if(h>=6&&h<51&&ix>=11&&ix<14&&iz>=14&&iz<17)return "medium azure";return null;}
+const sculpture=[];
+for(let h=0;h<60;h+=3){for(let z=4;z<23;z++){let start=0,last=null;for(let x=0;x<=span;x++){const c=x<span?colourAt(x,h,z):null;if(c!==last){if(last)sculpture.push(wall({from:[start,z],to:[x-1,z],y:lift+h,height:3,colour:last}));start=x;last=c;}}}}
+// Outward-facing curves replace terraces; inverted slopes join the expanding underside to the core.
+function boundary(h,a,axis,back){let cells=[];for(let b=0;b<span;b++){const x=axis==="z"?a:b,z=axis==="z"?b:a;if(shape(x,h,z))cells.push(b);}return cells.length?(back?cells[cells.length-1]:cells[0]):null;}
+for(let h=3;h<57;h+=3){const used=new Set();function skin(a,axis,back){const b=boundary(h,a,axis,back);if(b===null)return;const above=boundary(h+3,a,axis,back),below=boundary(h-3,a,axis,back),sign=back?-1:1;let part=null,len=2;if(above!==null&&(above-b)*sign>0){part=(above-b)*sign>1?"61678":"11477";len=part==="61678"?4:2;}else if(below!==null&&(below-b)*sign>0)part="3665a";if(!part)return;const start=back?b-len+1:b,x=axis==="z"?a:start,z=axis==="z"?start:a;if(x<0||z<0)return;const cells=range(len).map(k=>axis==="z"?[x,z+k]:[x+k,z]);if(cells.some(([xx,zz])=>used.has(xx+","+zz)||!shape(xx,h,zz)))return;const c=colourAt(axis==="z"?a:b,h,axis==="z"?b:a);if(!c)return;cells.forEach(([xx,zz])=>used.add(xx+","+zz));sculpture.push(place({part,at:[x,lift+h,z],colour:c,turn:axis==="z"?(back?180:0):(back?270:90)}));}for(let x=0;x<span;x++){skin(x,"z",false);skin(x,"z",true);}for(let z=0;z<span;z++){skin(z,"x",false);skin(z,"x",true);}}
+// Rolled upper bill and the smaller orange lower lip connect through the cheek shell.
+sculpture.push(box({at:[10,37,6],size:[4,3,5],colour:"yellow",interior:"solid"}),box({at:[10,34,8],size:[4,3,3],colour:"bright light orange",interior:"solid"}));
+sculpture.push(...range(4).map(i=>place({part:"61678",at:[10+i,40,5],colour:"yellow"})),...range(2).map(i=>place({part:"11477",at:[11+i,31,7],colour:"bright light orange"})));
+function toes(cx){return range(3).map(i=>place({part:"11477",at:[cx-2+i*2,lift,i===1?8:9],colour:"yellow"}));}
+sculpture.push(...[9,15].flatMap(toes),...range(3).map(i=>place({part:"61678",at:[11+i,22,19],colour:"medium azure",turn:180})),smooth({region:{at:[0,4],size:[24,19]}}));
+section("Piplup — waving captain",sculpture);
+function bubble(x,z,h){return group({at:[x,1,z],turn:0,ops:[column({at:[0,0,0],diameter:2,height:h,colour:"trans-clear"}),place({part:"4740",at:[0,h,0],colour:"trans-clear"}),place({part:"54821",at:[0,h+1,0],colour:"trans light blue"})]});}
+section("The fish and the bubbling wake",[bubble(19,3,6),bubble(21,6,9),bubble(22,9,12),place({part:"64648",at:[17,1,2],colour:"orange"}),...[[15,1],[20,1],[17,6],[1,9],[3,20],[21,21],[4,4],[12,1]].map(([x,z],i)=>place({part:"14769",at:[x,1,z],colour:i%3===0?"white":"medium azure"})),...[[5,9],[3,13],[20,13],[8,22],[17,21]].map(([x,z],i)=>place({part:"54200",at:[x,4,z],colour:i%2?"white":"trans light blue",turn:i%2?180:0}))]);

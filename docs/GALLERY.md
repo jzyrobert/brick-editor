@@ -41,20 +41,36 @@ Search, filters, sort, viewing angle, expanded controls, loaded prompt groups
 and scroll are kept for the current visit when returning from a detail page,
 Play or a model tool. They reset on a fresh page load.
 
-### What is published
+### E comparison collection
 
-| Prompt (target parts)           | Claude Opus 5.5, high | GPT-6.1-Sol, high |
-| ------------------------------- | --------------------- | ----------------- |
-| Pelican on a bicycle (800)      | 760                   | 852               |
-| Imperial Star Destroyer (5,000) | 4,813                 | 4,844             |
-| Dragon (1,000)                  | 1,064                 | 1,138             |
-| Piplup (1,000)                  | 936                   | 1,056             |
-| Japanese temple (2,000)         | 1,819                 | 2,195             |
-| Ewok Classic Space (3,000)      | 2,680                 | 3,294             |
+The reviewed E collection contains six prompts and three high-effort responses
+per prompt. Sol and Astra reuse the existing text-only E builds; Opus revises
+the same original Sol sources with matching E input. Generation receives no
+images or render feedback. These are source-conditioned revisions rather than
+fresh generations from the briefs alone.
 
-All twelve are one-shot runs of 7 October 2026 with the creative prompt; their
-sources, renders and the current-prompt runs they were compared with are in
-[docs/samples/creative-prompt-comparison](samples/creative-prompt-comparison/README.md).
+| Prompt (target parts)           | GPT-6.1-Sol, high | GPT-6-Astra, high | Claude Opus 5.5, high |
+| ------------------------------- | ----------------: | ----------------: | --------------------: |
+| Pelican on a bicycle (800)      |               918 |               884 |                   871 |
+| Imperial Star Destroyer (5,000) |             5,334 |             5,272 |                 5,434 |
+| Dragon (1,000)                  |             1,146 |             1,072 |                 1,108 |
+| Piplup (1,000)                  |             1,007 |             1,037 |                 1,028 |
+| Japanese temple (2,000)         |             2,200 |             2,297 |                 2,190 |
+| Ewok Classic Space (3,000)      |             3,517 |             3,181 |                 3,347 |
+
+[The study](samples/lego-style-study/README.md#e-with-opus-55-high-and-gallery-replacement)
+retains all inputs, sources, warnings and comparison previews. All omit
+baseplate parts, while allowing local plate-built supports. Compiler
+acceptance does not certify physical buildability.
+
+The [publication manifest](samples/lego-style-study/gallery-publication/manifest.json)
+records the 18 replacement IDs, the 12 previous creative-prompt IDs and all
+108 immutable files. The main-only **Publish reviewed E gallery builds**
+workflow requires successful validation of that main commit, verifies the
+bundle and live roster, uploads assets, hides those exact older entries and
+rebuilds the index. The 7 October creative runs remain in
+[the previous comparison](samples/creative-prompt-comparison/README.md), and
+are retained as hidden history by the replacement SQL.
 
 Earlier builds were hidden with `gallery:publish -- --hide <id> --remote`
 (`hidden = 1`), not deleted: their files stay in the bucket, and

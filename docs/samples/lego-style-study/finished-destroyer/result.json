@@ -1,0 +1,338 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 5705,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 5705,
+    "difference": 705,
+    "percent": 14.1
+  },
+  "seconds": 459,
+  "tokens": {
+    "input": 790321,
+    "cached": 537344,
+    "output": 57979,
+    "reasoning": 26529
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2412b",
+      "2431",
+      "2877",
+      "3004",
+      "3005",
+      "30208",
+      "3023b",
+      "3031",
+      "30363",
+      "3039",
+      "3040b",
+      "3062b",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3298",
+      "3710",
+      "3941",
+      "3957a",
+      "4032b",
+      "41747",
+      "41748",
+      "41764",
+      "41765",
+      "44772",
+      "4589",
+      "4624",
+      "60208",
+      "6141",
+      "87079"
+    ],
+    "notInList": [
+      "30208",
+      "41747",
+      "41748",
+      "41764",
+      "41765",
+      "44772",
+      "60208"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 459,
+      "usage": {
+        "input": 790321,
+        "cached": 537344,
+        "output": 57979,
+        "reasoning": 26529,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wedge plate 12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "47405"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "6106",
+            "32059",
+            "30303",
+            "54383",
+            "54384",
+            "47407",
+            "50303",
+            "2625"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "42918",
+            "41748",
+            "41747",
+            "52031",
+            "43720",
+            "43721",
+            "80545",
+            "41764",
+            "41765"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "hemisphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "30208",
+            "44359",
+            "61287",
+            "86500",
+            "44358"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wheel rim",
+            "size": "4x2",
+            "limit": 8
+          },
+          "results": [
+            "2695",
+            "60208",
+            "56904",
+            "715",
+            "55981c01",
+            "3482c04",
+            "3482c05",
+            "30155c01"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "category": "Wing",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 25
+          },
+          "results": [
+            "43719",
+            "90194",
+            "43723b",
+            "41769b",
+            "41770b",
+            "43722b",
+            "48183",
+            "54383",
+            "54384",
+            "50304",
+            "50305",
+            "4859",
+            "2413",
+            "47407",
+            "4596",
+            "50303",
+            "3544",
+            "3545"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wheel rim",
+            "size": "8x4",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "44772",
+            "49294"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wheel rim",
+            "size": "6x2",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "32020",
+            "86652"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "technic axle",
+            "size": "1x4",
+            "limit": 6
+          },
+          "results": [
+            "3701",
+            "3705",
+            "5713",
+            "87083",
+            "99008",
+            "6615"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "bar 4",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "30374",
+            "87618",
+            "6187",
+            "4424",
+            "41531",
+            "64951",
+            "3484",
+            "4083"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 6801,
+          "errors": 2,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 5723,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 5705,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "2877",
+          "3004",
+          "3005",
+          "30208",
+          "3023b",
+          "3031",
+          "30363",
+          "3039",
+          "3040b",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3298",
+          "3710",
+          "3941",
+          "3957a",
+          "4032b",
+          "41747",
+          "41748",
+          "41764",
+          "41765",
+          "44772",
+          "4589",
+          "4624",
+          "60208",
+          "6141",
+          "87079"
+        ],
+        "notInList": [
+          "30208",
+          "41747",
+          "41748",
+          "41764",
+          "41765",
+          "44772",
+          "60208"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 5705
+    }
+  ]
+}

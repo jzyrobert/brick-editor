@@ -1,0 +1,5154 @@
+[
+  {
+    "id": "original-pelican",
+    "subject": "pelican",
+    "variant": "Original",
+    "model": "gpt-6.1-sol",
+    "title": "The Fish Pedal Express",
+    "target": 800,
+    "parts": 852,
+    "baseplates": 2,
+    "tiles": 86,
+    "slopes": 97,
+    "categories": {
+      "Plate": 396,
+      "Slope": 97,
+      "Brick": 258,
+      "Tile": 86,
+      "Plant": 5,
+      "Car": 2,
+      "Animal": 5,
+      "Baseplate": 2,
+      "Cone": 1
+    },
+    "seconds": 648,
+    "outputTokens": 55862,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "5 part(s) are off the stud grid",
+        "ops": [
+          "sections[7].ops[3]",
+          "sections[7].ops[4]",
+          "sections[7].ops[5]",
+          "sections[7].ops[7]",
+          "sections[7].ops[8]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "533 part(s) in 143 group(s) are not connected to the main structure (largest group: 311 parts); e.g. 15068 at [13, 67, 16], 15068 at [23, 81, 13], 3023b at [17, 37, 15], 3811 at [16, 0, 16], 3022 at [32, 38, 15], 3031 at [25, 18, 11]",
+        "ops": [
+          "sections[4].ops[1]",
+          "sections[4].ops[3]",
+          "sections[4].ops[2]",
+          "sections[4].ops[5]",
+          "sections[4].ops[0]",
+          "sections[2].ops[8]",
+          "sections[2].ops[2]",
+          "sections[4].ops[4]",
+          "sections[3].ops[0]",
+          "sections[2].ops[4]",
+          "sections[5].ops[14]",
+          "sections[5].ops[34]"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "e79941509a400e010e80b389b38f08952b4c7d82aa67811639b17e3ea0e7003d"
+  },
+  {
+    "id": "original-piplup",
+    "subject": "piplup",
+    "variant": "Original",
+    "model": "gpt-6.1-sol",
+    "title": "Piplup's Bubble-Berg",
+    "target": 1000,
+    "parts": 1056,
+    "baseplates": 1,
+    "tiles": 187,
+    "slopes": 23,
+    "categories": {
+      "Brick": 727,
+      "Tile": 187,
+      "Plate": 111,
+      "Slope": 23,
+      "Dish": 3,
+      "Technic": 3,
+      "Baseplate": 1,
+      "Animal": 1
+    },
+    "seconds": 658,
+    "outputTokens": 55987,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3069b.dat already is",
+        "ops": [
+          "sections[0].ops[19]",
+          "sections[0].ops[24]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[2].ops[0].ops[2]",
+          "sections[2].ops[1].ops[2]",
+          "sections[2].ops[2].ops[2]",
+          "sections[2].ops[3]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "4 part(s) in 4 group(s) are not connected to the main structure (largest group: 1045 parts); e.g. 61678 at [14, 26, 27], 61678 at [15, 26, 27], 61678 at [16, 26, 27], 61678 at [17, 26, 27]",
+        "ops": [
+          "sections[1].ops[728]",
+          "sections[1].ops[729]",
+          "sections[1].ops[730]",
+          "sections[1].ops[731]"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "e770913a708dc271c6929853f696b8a20578ff63e71dc2d34c9c86dc5712be1c"
+  },
+  {
+    "id": "original-temple",
+    "subject": "temple",
+    "variant": "Original",
+    "model": "gpt-6.1-sol",
+    "title": "Moonwater Temple \u2014 The Evening Bell",
+    "target": 2000,
+    "parts": 2195,
+    "baseplates": 1,
+    "tiles": 209,
+    "slopes": 447,
+    "categories": {
+      "Brick": 810,
+      "Slope": 447,
+      "Plate": 633,
+      "Tile": 209,
+      "Fence": 21,
+      "Window": 21,
+      "Glass": 21,
+      "Dish": 11,
+      "Plant": 11,
+      "Cone": 5,
+      "Cylinder": 1,
+      "Arch": 2,
+      "Antenna": 1,
+      "Baseplate": 1,
+      "Minifig Accessory": 1
+    },
+    "seconds": 734,
+    "outputTokens": 90941,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "97 part(s) in 54 group(s) are not connected to the main structure (largest group: 2037 parts); e.g. 3005 at [29, 12, 43], 3005 at [38, 12, 43], 3005 at [8, 16, 6], 3005 at [38, 17, 15], 3024 at [4, 13, 8], 3024 at [42, 14, 13]",
+        "ops": [
+          "sections[3].ops[25]",
+          "sections[3].ops[27]",
+          "sections[0].ops[22] > components.autumn maple.ops[1]",
+          "sections[0].ops[23] > components.autumn maple.ops[1]",
+          "sections[0].ops[22] > components.autumn maple.ops[3]",
+          "sections[0].ops[23] > components.autumn maple.ops[3]",
+          "sections[0].ops[22] > components.autumn maple.ops[2]",
+          "sections[0].ops[23] > components.autumn maple.ops[2]",
+          "sections[2].ops[69]",
+          "sections[2].ops[72]",
+          "sections[2].ops[70]",
+          "sections[2].ops[73]"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "bc5868e7f582e30df54877880ad7bcf218777b76ba51150e5ca6197db76eb97d"
+  },
+  {
+    "id": "original-dragon",
+    "subject": "dragon",
+    "variant": "Original",
+    "model": "gpt-6.1-sol",
+    "title": "Cinderkeeper \u2014 The Last Egg",
+    "target": 1000,
+    "parts": 1138,
+    "baseplates": 1,
+    "tiles": 80,
+    "slopes": 136,
+    "categories": {
+      "Plate": 474,
+      "Brick": 423,
+      "Slope": 136,
+      "Tile": 80,
+      "Cone": 14,
+      "Bar": 9,
+      "Animal": 1,
+      "Baseplate": 1
+    },
+    "seconds": 1047,
+    "outputTokens": 81234,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "93606.dat is placed where 54200.dat already is",
+        "ops": [
+          "sections[0].ops[54]",
+          "sections[4].ops[10]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "2 part(s) are off the stud grid",
+        "ops": [
+          "sections[5].ops[23]",
+          "sections[5].ops[27]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "73 part(s) in 59 group(s) are not connected to the main structure (largest group: 1043 parts); e.g. 3666 at [24, 19, 32], 11477 at [3, 59, 31], 11477 at [45, 62, 31], 93606 at [14, 21, 31], 93606 at [18, 21, 32], 93606 at [30, 21, 32]",
+        "ops": [
+          "sections[2].ops[0]",
+          "sections[2].ops[1]",
+          "sections[3].ops[39]",
+          "sections[3].ops[81]",
+          "sections[3].ops[40]",
+          "sections[3].ops[38]",
+          "sections[3].ops[41]",
+          "sections[3].ops[82]",
+          "sections[3].ops[80]",
+          "sections[3].ops[83]",
+          "sections[1].ops[38]",
+          "sections[1].ops[39]"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "21050cff88a8a68bad103afc4aa7eab0639d4b93f5676fe1d86ac721f2756159"
+  },
+  {
+    "id": "original-destroyer",
+    "subject": "destroyer",
+    "variant": "Original",
+    "model": "gpt-6.1-sol",
+    "title": "Devastator \u2014 The Capture of Tantive IV",
+    "target": 5000,
+    "parts": 4844,
+    "baseplates": 7,
+    "tiles": 1405,
+    "slopes": 184,
+    "categories": {
+      "Tile": 1405,
+      "Brick": 1592,
+      "Plate": 1653,
+      "Slope": 184,
+      "Baseplate": 7,
+      "Sphere": 2,
+      "Antenna": 1
+    },
+    "seconds": 927,
+    "outputTokens": 78934,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "634 part(s) in 67 group(s) are not connected to the main structure (largest group: 4205 parts); e.g. 3039 at [25, 38, 105], 3039 at [30, 38, 105], 3039 at [45, 38, 105], 3039 at [50, 38, 105], 3039 at [65, 38, 105], 3039 at [70, 38, 105]",
+        "ops": [
+          "sections[9].ops[3]",
+          "sections[9].ops[4]",
+          "sections[9].ops[29]",
+          "sections[9].ops[30]",
+          "sections[9].ops[55]",
+          "sections[9].ops[56]",
+          "sections[10].ops[1] > components.Tantive IV.ops[10]",
+          "sections[8].ops[40]",
+          "sections[8].ops[0]",
+          "sections[8].ops[10]",
+          "sections[11].ops[1] > components.TIE escort.ops[1]",
+          "sections[11].ops[1] > components.TIE escort.ops[0]"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "58fad22643d669583da5532137f55e54290ceb88f6536c84feecbb487b4fa4fa"
+  },
+  {
+    "id": "original-ewok",
+    "subject": "ewok",
+    "variant": "Original",
+    "model": "gpt-6.1-sol",
+    "title": "Yub-Nub 1978: Moonwood Space Village",
+    "target": 3000,
+    "parts": 3294,
+    "baseplates": 3,
+    "tiles": 225,
+    "slopes": 162,
+    "categories": {
+      "Brick": 1336,
+      "Plate": 1382,
+      "Plant": 127,
+      "Slope": 162,
+      "Tile": 225,
+      "Window": 7,
+      "Glass": 7,
+      "Cone": 9,
+      "Antenna": 5,
+      "Minifig": 15,
+      "Container": 8,
+      "Dish": 4,
+      "Baseplate": 3,
+      "Minifig Accessory": 1,
+      "Windscreen": 1,
+      "Door": 2
+    },
+    "seconds": 830,
+    "outputTokens": 103558,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[80] > components.space-ewok.ops[1]",
+          "sections[0].ops[80] > components.space-ewok.ops[2]",
+          "sections[0].ops[81] > components.space-ewok.ops[1]",
+          "sections[0].ops[81] > components.space-ewok.ops[2]",
+          "sections[2].ops[47] > components.space-ewok.ops[1]",
+          "sections[2].ops[47] > components.space-ewok.ops[2]",
+          "sections[4].ops[86] > components.space-ewok.ops[1]",
+          "sections[4].ops[86] > components.space-ewok.ops[2]",
+          "sections[6].ops[15] > components.space-ewok.ops[1]",
+          "sections[6].ops[15] > components.space-ewok.ops[2]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "702 part(s) in 261 group(s) are not connected to the main structure (largest group: 2451 parts); e.g. 3023b at [4, 58, 42], 3023b at [22, 59, 41], 3023b at [61, 46, 19], 2412b at [36, 60, 30], 3795 at [12, 10, 33], 3795 at [46, 10, 33]",
+        "ops": [
+          "sections[1].ops[51]",
+          "sections[1].ops[56]",
+          "sections[1].ops[66]",
+          "sections[1].ops[52]",
+          "sections[4].ops[46]",
+          "sections[1].ops[45]",
+          "sections[1].ops[41]",
+          "sections[1].ops[38]",
+          "sections[1].ops[39]",
+          "sections[1].ops[35]",
+          "sections[1].ops[57]",
+          "sections[1].ops[40]"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "d80998b2aaab182d56b36defb6353492d69ca21c5452ad2080ca1e6f7f5b4249"
+  },
+  {
+    "id": "object-pelican",
+    "subject": "pelican",
+    "variant": "Object",
+    "model": "gpt-6.1-sol",
+    "title": "The Fish Express",
+    "target": 800,
+    "parts": 873,
+    "baseplates": 0,
+    "tiles": 16,
+    "slopes": 253,
+    "categories": {
+      "Slope": 253,
+      "Brick": 387,
+      "Plate": 214,
+      "Tile": 16,
+      "Wheel": 2,
+      "Animal": 1
+    },
+    "seconds": 581,
+    "outputTokens": 110699,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[2].ops[89] (code line 2)",
+          "sections[4].ops[15] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[2].ops[117] (code line 2)",
+          "sections[4].ops[15] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[2].ops[113] (code line 2)",
+          "sections[4].ops[38] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[2].ops[141] (code line 2)",
+          "sections[4].ops[38] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "3 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[0] (code line 2)",
+          "sections[0].ops[2] (code line 2)",
+          "sections[7].ops[45] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "520 part(s) in 202 group(s) are not connected to the main structure (largest group: 324 parts); e.g. 42918 at [-30, 89, 0], 3010 at [1, 19, -5], 3023b at [12, 43, 0], 3005 at [3, 27, 4], 3004 at [-9, 35, -3], 61678 at [-14, 51, -6]",
+        "ops": [
+          "sections[0].ops[1] (code line 3)",
+          "sections[0].ops[3] (code line 3)",
+          "sections[7].ops[2] (code line 3)",
+          "sections[7].ops[5] (code line 3)",
+          "sections[1].ops[4] (code line 4)",
+          "sections[1].ops[32] (code line 3)",
+          "sections[1].ops[61] (code line 4)",
+          "sections[7].ops[25] (code line 3)",
+          "sections[3].ops[0] (code line 4)",
+          "sections[1].ops[60] (code line 4)",
+          "sections[7].ops[18] (code line 3)",
+          "sections[1].ops[49] (code line 3)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "73cac0b4853438bcbf5900deace1f2c41eecd1824fc78208952ff48dd9a03174"
+  },
+  {
+    "id": "object-piplup",
+    "subject": "piplup",
+    "variant": "Object",
+    "model": "gpt-6.1-sol",
+    "title": "Piplup \u2014 A Little Royal Wave",
+    "target": 1000,
+    "parts": 1074,
+    "baseplates": 0,
+    "tiles": 2,
+    "slopes": 294,
+    "categories": {
+      "Brick": 759,
+      "Slope": 294,
+      "Plate": 19,
+      "Tile": 2
+    },
+    "seconds": 378,
+    "outputTokens": 39443,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "131 part(s) in 67 group(s) are not connected to the main structure (largest group: 943 parts); e.g. 3003 at [17, 30, 2], 61678 at [-3, 15, 14], 2456 at [0, 51, -10], 3003 at [15, 27, 2], 3003 at [15, 27, 6], 3003 at [13, 27, 2]",
+        "ops": [
+          "sections[7].ops[0] (code line 50)",
+          "sections[7].ops[1] (code line 50)",
+          "sections[6].ops[17] (code line 42)",
+          "sections[6].ops[8] (code line 42)",
+          "sections[4].ops[7] (code line 40)",
+          "sections[6].ops[12] (code line 2)",
+          "sections[6].ops[20] (code line 2)",
+          "sections[6].ops[28] (code line 2)",
+          "sections[6].ops[34] (code line 2)",
+          "sections[6].ops[39] (code line 2)",
+          "sections[6].ops[44] (code line 2)",
+          "sections[6].ops[49] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "408ee036f6294ab895efaf8f183b896b42955c4d1cf8c129fef16dc9af938b6a"
+  },
+  {
+    "id": "studied-pelican",
+    "subject": "pelican",
+    "variant": "Studied",
+    "model": "gpt-6.1-sol",
+    "title": "The Penny-fishthing",
+    "target": 800,
+    "parts": 889,
+    "baseplates": 0,
+    "tiles": 14,
+    "slopes": 336,
+    "categories": {
+      "Brick": 333,
+      "Slope": 336,
+      "Plate": 204,
+      "Tile": 14,
+      "Dish": 1,
+      "Wheel": 1
+    },
+    "seconds": 572,
+    "outputTokens": 61980,
+    "attempts": 2,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60] (code line 2)",
+          "sections[3].ops[85] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64] (code line 2)",
+          "sections[3].ops[85] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60] (code line 2)",
+          "sections[3].ops[86] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64] (code line 2)",
+          "sections[3].ops[86] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60] (code line 2)",
+          "sections[3].ops[87] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64] (code line 2)",
+          "sections[3].ops[87] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61] (code line 2)",
+          "sections[3].ops[88] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65] (code line 2)",
+          "sections[3].ops[88] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61] (code line 2)",
+          "sections[3].ops[89] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65] (code line 2)",
+          "sections[3].ops[89] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61] (code line 2)",
+          "sections[3].ops[90] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65] (code line 2)",
+          "sections[3].ops[90] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[63] (code line 2)",
+          "sections[4].ops[9] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[64] (code line 2)",
+          "sections[4].ops[9] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[66] (code line 2)",
+          "sections[4].ops[30] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[67] (code line 2)",
+          "sections[4].ops[30] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[4] (code line 2)",
+          "sections[5].ops[5] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[5] (code line 2)",
+          "sections[5].ops[6] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[8] (code line 2)",
+          "sections[5].ops[7] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[9] (code line 2)",
+          "sections[5].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[4] (code line 2)",
+          "sections[5].ops[15] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[5] (code line 2)",
+          "sections[5].ops[16] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[8] (code line 2)",
+          "sections[5].ops[17] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[9] (code line 2)",
+          "sections[5].ops[18] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "1 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[187] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "739 part(s) in 267 group(s) are not connected to the main structure (largest group: 84 parts); e.g. 3005 at [0, 7, -2], 3024 at [0, 108, -3], 15068 at [3, 115, -2], 3660b at [-10, 9, 0], 3660b at [9, 9, 0], 3023b at [12, 76, -3]",
+        "ops": [
+          "sections[1].ops[70] (code line 18)",
+          "sections[1].ops[71] (code line 18)",
+          "sections[5].ops[0] (code line 3)",
+          "sections[0].ops[184] (code line 3)",
+          "sections[6].ops[2] (code line 3)",
+          "sections[0].ops[183] (code line 4)",
+          "sections[0].ops[181] (code line 4)",
+          "sections[5].ops[81] (code line 3)",
+          "sections[4].ops[27] (code line 4)",
+          "sections[1].ops[50] (code line 14)",
+          "sections[1].ops[48] (code line 3)",
+          "sections[6].ops[0] (code line 3)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "35c79605a94166d5096f2f2c95e206e7ddcfdd70bd305795a0776ab621b1ea62"
+  },
+  {
+    "id": "studied-piplup",
+    "subject": "piplup",
+    "variant": "Studied",
+    "model": "gpt-6.1-sol",
+    "title": "Piplup \u2014 A Very Proud Little Wave",
+    "target": 1000,
+    "parts": 1096,
+    "baseplates": 0,
+    "tiles": 16,
+    "slopes": 512,
+    "categories": {
+      "Slope": 512,
+      "Brick": 377,
+      "Plate": 191,
+      "Tile": 16
+    },
+    "seconds": 725,
+    "outputTokens": 93504,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3010.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[94] (code line 2)",
+          "sections[2].ops[1] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3010.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[98] (code line 2)",
+          "sections[2].ops[1] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3024.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[94] (code line 2)",
+          "sections[2].ops[3] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "54200.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[98] (code line 2)",
+          "sections[2].ops[5] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3010.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[95] (code line 2)",
+          "sections[2].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3010.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[99] (code line 2)",
+          "sections[2].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3024.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[95] (code line 2)",
+          "sections[2].ops[11] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "54200.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[99] (code line 2)",
+          "sections[2].ops[13] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 3045.dat already is",
+        "ops": [
+          "sections[1].ops[166] (code line 2)",
+          "sections[5].ops[2] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[1].ops[145] (code line 2)",
+          "sections[5].ops[4] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[1].ops[147] (code line 2)",
+          "sections[5].ops[6] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[1].ops[149] (code line 2)",
+          "sections[5].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[1].ops[151] (code line 2)",
+          "sections[5].ops[10] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[1].ops[153] (code line 2)",
+          "sections[5].ops[12] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[1].ops[155] (code line 2)",
+          "sections[5].ops[14] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 3045.dat already is",
+        "ops": [
+          "sections[1].ops[167] (code line 2)",
+          "sections[5].ops[16] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "5 part(s) are off the stud grid",
+        "ops": [
+          "sections[3].ops[19] (code line 2)",
+          "sections[3].ops[22] (code line 2)",
+          "sections[3].ops[25] (code line 2)",
+          "sections[3].ops[28] (code line 2)",
+          "sections[3].ops[31] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "69 part(s) in 33 group(s) are not connected to the main structure (largest group: 1022 parts); e.g. 61678 at [11, 35, -1], 3665a at [-19, 35, 0], 3034 at [1, 11, 4], 3034 at [4, 26, 0], 3795 at [-6, 26, 1], 3795 at [6, 26, 1]",
+        "ops": [
+          "sections[3].ops[17] (code line 16)",
+          "sections[5].ops[112] (code line 22)",
+          "sections[3].ops[18] (code line 16)",
+          "sections[1].ops[80] (code line 7)",
+          "sections[3].ops[3] (code line 13)",
+          "sections[5].ops[0] (code line 3)",
+          "sections[3].ops[16] (code line 16)",
+          "sections[5].ops[201] (code line 3)",
+          "sections[3].ops[21] (code line 2)",
+          "sections[3].ops[33] (code line 2)",
+          "sections[3].ops[30] (code line 2)",
+          "sections[3].ops[27] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "d2ec8b2434e5c64ab852ed1b17240b85a5fd26ef20d3717a1c52720707029cce"
+  },
+  {
+    "id": "visual-finished-piplup",
+    "subject": "piplup",
+    "variant": "Visual",
+    "model": "gpt-6.1-sol",
+    "title": "Piplup \u2014 A Very Proud Little Wave",
+    "target": 1000,
+    "parts": 1143,
+    "baseplates": 0,
+    "tiles": 172,
+    "slopes": 436,
+    "categories": {
+      "Slope": 436,
+      "Tile": 172,
+      "Brick": 398,
+      "Plate": 137
+    },
+    "seconds": 240,
+    "outputTokens": 18481,
+    "attempts": 1,
+    "checks": 1,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3010.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[94] (code line 2)",
+          "sections[2].ops[1] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3010.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[98] (code line 2)",
+          "sections[2].ops[1] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3024.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[94] (code line 2)",
+          "sections[2].ops[3] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "54200.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[98] (code line 2)",
+          "sections[2].ops[5] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3010.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[95] (code line 2)",
+          "sections[2].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3010.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[99] (code line 2)",
+          "sections[2].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3024.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[95] (code line 2)",
+          "sections[2].ops[11] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "54200.dat is placed where 48092.dat already is",
+        "ops": [
+          "sections[1].ops[99] (code line 2)",
+          "sections[2].ops[13] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[9] (code line 2)",
+          "sections[3].ops[28] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[15] (code line 2)",
+          "sections[3].ops[28] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[21] (code line 2)",
+          "sections[3].ops[29] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[27] (code line 2)",
+          "sections[3].ops[29] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3573.dat already is",
+        "ops": [
+          "sections[5].ops[214] (code line 2)",
+          "sections[6].ops[35] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3573.dat already is",
+        "ops": [
+          "sections[5].ops[216] (code line 2)",
+          "sections[6].ops[36] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3573.dat already is",
+        "ops": [
+          "sections[5].ops[218] (code line 2)",
+          "sections[6].ops[37] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3573.dat already is",
+        "ops": [
+          "sections[5].ops[220] (code line 2)",
+          "sections[6].ops[38] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3573.dat already is",
+        "ops": [
+          "sections[5].ops[222] (code line 2)",
+          "sections[6].ops[39] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3573.dat already is",
+        "ops": [
+          "sections[5].ops[224] (code line 2)",
+          "sections[6].ops[40] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "141 part(s) are off the stud grid",
+        "ops": [
+          "sections[3].ops[35] (code line 2)",
+          "sections[3].ops[38] (code line 2)",
+          "sections[3].ops[41] (code line 2)",
+          "sections[3].ops[44] (code line 2)",
+          "sections[3].ops[47] (code line 2)",
+          "sections[5].ops[1] (code line 2)",
+          "sections[5].ops[2] (code line 2)",
+          "sections[5].ops[3] (code line 2)",
+          "sections[5].ops[4] (code line 2)",
+          "sections[5].ops[5] (code line 2)",
+          "sections[5].ops[6] (code line 2)",
+          "sections[5].ops[7] (code line 2)",
+          "sections[5].ops[8] (code line 2)",
+          "sections[5].ops[9] (code line 2)",
+          "sections[5].ops[10] (code line 2)",
+          "sections[5].ops[11] (code line 2)",
+          "sections[5].ops[12] (code line 2)",
+          "sections[5].ops[13] (code line 2)",
+          "sections[5].ops[14] (code line 2)",
+          "sections[5].ops[15] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "521 part(s) in 144 group(s) are not connected to the main structure (largest group: 469 parts); e.g. 3660b at [-9, 53, -11], 3676 at [-12, 47, -9], 3573 at [-10, 82, -6], 3573 at [10, 82, -6], 60481a at [-17, 38, 0], 3573 at [-8, 82, 8]",
+        "ops": [
+          "sections[5].ops[73] (code line 5)",
+          "sections[5].ops[156] (code line 24)",
+          "sections[6].ops[6] (code line 29)",
+          "sections[5].ops[158] (code line 24)",
+          "sections[5].ops[159] (code line 24)",
+          "sections[6].ops[22] (code line 29)",
+          "sections[5].ops[154] (code line 24)",
+          "sections[5].ops[157] (code line 24)",
+          "sections[3].ops[33] (code line 18)",
+          "sections[6].ops[32] (code line 30)",
+          "sections[5].ops[0] (code line 5)",
+          "sections[3].ops[2] (code line 15)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "b72b4ee062c529c4e5785e895dea1b9f4392f5578edde99694b73e4c66fc7dc7"
+  },
+  {
+    "id": "visual-finished-pelican",
+    "subject": "pelican",
+    "variant": "Visual",
+    "model": "gpt-6.1-sol",
+    "title": "The Penny-fishthing",
+    "target": 800,
+    "parts": 867,
+    "baseplates": 0,
+    "tiles": 28,
+    "slopes": 334,
+    "categories": {
+      "Brick": 287,
+      "Slope": 334,
+      "Plate": 216,
+      "Tile": 28,
+      "Dish": 1,
+      "Wheel": 1
+    },
+    "seconds": 489,
+    "outputTokens": 60097,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[2].ops[14] (code line 2)",
+          "sections[3].ops[14] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[2].ops[14] (code line 2)",
+          "sections[3].ops[18] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[2].ops[25] (code line 2)",
+          "sections[3].ops[27] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[2].ops[25] (code line 2)",
+          "sections[3].ops[31] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60] (code line 2)",
+          "sections[3].ops[85] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64] (code line 2)",
+          "sections[3].ops[85] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60] (code line 2)",
+          "sections[3].ops[86] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64] (code line 2)",
+          "sections[3].ops[86] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[60] (code line 2)",
+          "sections[3].ops[87] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[64] (code line 2)",
+          "sections[3].ops[87] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61] (code line 2)",
+          "sections[3].ops[88] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65] (code line 2)",
+          "sections[3].ops[88] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61] (code line 2)",
+          "sections[3].ops[89] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65] (code line 2)",
+          "sections[3].ops[89] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[61] (code line 2)",
+          "sections[3].ops[90] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[3].ops[65] (code line 2)",
+          "sections[3].ops[90] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "1 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[191] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "606 part(s) in 189 group(s) are not connected to the main structure (largest group: 195 parts); e.g. 3005 at [0, 7, -2], 3024 at [0, 108, -3], 3660b at [-10, 9, 0], 3660b at [9, 9, 0], 3040b at [14, 63, -4], 3020 at [-3, 29, -5]",
+        "ops": [
+          "sections[4].ops[13] (code line 31)",
+          "sections[0].ops[188] (code line 3)",
+          "sections[6].ops[2] (code line 3)",
+          "sections[0].ops[183] (code line 4)",
+          "sections[0].ops[186] (code line 4)",
+          "sections[1].ops[39] (code line 13)",
+          "sections[0].ops[181] (code line 4)",
+          "sections[0].ops[185] (code line 4)",
+          "sections[0].ops[187] (code line 4)",
+          "sections[0].ops[182] (code line 4)",
+          "sections[1].ops[37] (code line 3)",
+          "sections[5].ops[50] (code line 3)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "1e1774b1cd9aa498e5324a630e3e00ead4f93face8b0adbe0c2baf8048dba108"
+  },
+  {
+    "id": "finished-destroyer",
+    "subject": "destroyer",
+    "variant": "Transfer",
+    "model": "gpt-6.1-sol",
+    "title": "Devastator \u2014 The Capture of the Tantive IV",
+    "target": 5000,
+    "parts": 5705,
+    "baseplates": 0,
+    "tiles": 1839,
+    "slopes": 269,
+    "categories": {
+      "Tile": 1839,
+      "Brick": 1530,
+      "Plate": 1953,
+      "Slope": 269,
+      "Wedge": 92,
+      "Wheel": 18,
+      "Sphere": 2,
+      "Antenna": 1,
+      "Cone": 1
+    },
+    "seconds": 459,
+    "outputTokens": 57979,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3039.dat is placed where 87079.dat already is",
+        "ops": [
+          "sections[1].ops[881] (code line 3)",
+          "sections[7].ops[72] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3039.dat is placed where 87079.dat already is",
+        "ops": [
+          "sections[1].ops[890] (code line 3)",
+          "sections[7].ops[73] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3039.dat is placed where 87079.dat already is",
+        "ops": [
+          "sections[1].ops[899] (code line 3)",
+          "sections[7].ops[74] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3039.dat is placed where 87079.dat already is",
+        "ops": [
+          "sections[1].ops[914] (code line 3)",
+          "sections[7].ops[75] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3039.dat is placed where 87079.dat already is",
+        "ops": [
+          "sections[1].ops[929] (code line 3)",
+          "sections[7].ops[76] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3039.dat is placed where 87079.dat already is",
+        "ops": [
+          "sections[1].ops[938] (code line 3)",
+          "sections[7].ops[77] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "7 part(s) are off the stud grid",
+        "ops": [
+          "sections[7].ops[2] (code line 3)",
+          "sections[7].ops[11] (code line 3)",
+          "sections[7].ops[20] (code line 3)",
+          "sections[7].ops[29] (code line 3)",
+          "sections[7].ops[35] (code line 3)",
+          "sections[7].ops[41] (code line 3)",
+          "sections[7].ops[47] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "2782 part(s) in 794 group(s) are not connected to the main structure (largest group: 2810 parts); e.g. 30363 at [-9, 42, 69], 30363 at [-5, 40, 57], 3039 at [-3, 11, 46], 3009 at [0, 6, 67], 15068 at [0, 11, 57], 2412b at [-14, 39, 61]",
+        "ops": [
+          "sections[4].ops[0] (code line 4)",
+          "sections[3].ops[166] (code line 4)",
+          "sections[4].ops[1] (code line 4)",
+          "sections[3].ops[167] (code line 4)",
+          "sections[3].ops[100] (code line 4)",
+          "sections[3].ops[69] (code line 4)",
+          "sections[3].ops[133] (code line 4)",
+          "sections[3].ops[42] (code line 4)",
+          "sections[4].ops[2] (code line 46)",
+          "sections[3].ops[19] (code line 4)",
+          "sections[1].ops[793] (code line 9)",
+          "sections[1].ops[724] (code line 9)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "f34568bcaf1881ffc3ff6778b4fe8e2d33d5b315b3b72aa19d43876bb8f167f7"
+  },
+  {
+    "id": "finished-temple",
+    "subject": "temple",
+    "variant": "Transfer",
+    "model": "gpt-6.1-sol",
+    "title": "Komyo-ji: Hall of the Evening Bell",
+    "target": 2000,
+    "parts": 2248,
+    "baseplates": 0,
+    "tiles": 260,
+    "slopes": 627,
+    "categories": {
+      "Slope": 627,
+      "Brick": 685,
+      "Tile": 260,
+      "Plate": 586,
+      "Fence": 78,
+      "Cone": 5,
+      "Minifig Accessory": 2,
+      "Minifig": 1,
+      "Dish": 2,
+      "Arch": 2
+    },
+    "seconds": 642,
+    "outputTokens": 102807,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "412 part(s) in 71 group(s) are not connected to the main structure (largest group: 1828 parts); e.g. 3941 at [50, 7, 14], 3062b at [10, 2, -12], 3007 at [20, 0, -13], 2456 at [54, 0, 7], 11477 at [48, 29, 11], 11477 at [48, 29, 25]",
+        "ops": [
+          "sections[6].ops[9] (code line 35)",
+          "sections[6].ops[0] (code line 35)",
+          "sections[0].ops[6] (code line 9)",
+          "sections[6].ops[1] (code line 35)",
+          "sections[6].ops[2] (code line 35)",
+          "sections[6].ops[8] (code line 35)",
+          "sections[7].ops[3] (code line 37)",
+          "sections[7].ops[5] (code line 37)",
+          "sections[6].ops[3] (code line 35)",
+          "sections[6].ops[6] (code line 35)",
+          "sections[6].ops[4] (code line 35)",
+          "sections[6].ops[5] (code line 35)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "7f43fcc303279ae54356f7604573a84f95aae9201753c52346dc851649d3ebdd"
+  },
+  {
+    "id": "finished-ewok",
+    "subject": "ewok",
+    "variant": "Transfer",
+    "model": "gpt-6.1-sol",
+    "title": "YUB-928: Ewok Galaxy Forager",
+    "target": 3000,
+    "parts": 3179,
+    "baseplates": 0,
+    "tiles": 1016,
+    "slopes": 556,
+    "categories": {
+      "Brick": 828,
+      "Tile": 1016,
+      "Slope": 556,
+      "Plate": 702,
+      "Wing": 56,
+      "Panel": 4,
+      "Windscreen": 2,
+      "Container": 4,
+      "Dish": 4,
+      "Minifig Accessory": 3,
+      "Antenna": 1,
+      "Wedge": 2,
+      "Cone": 1
+    },
+    "seconds": 719,
+    "outputTokens": 79200,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[204] (code line 2)",
+          "sections[5].ops[129] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[228] (code line 2)",
+          "sections[5].ops[129] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[253] (code line 2)",
+          "sections[5].ops[131] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[277] (code line 2)",
+          "sections[5].ops[131] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[204] (code line 2)",
+          "sections[5].ops[133] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[228] (code line 2)",
+          "sections[5].ops[133] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[253] (code line 2)",
+          "sections[5].ops[135] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[3].ops[277] (code line 2)",
+          "sections[5].ops[135] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "1 part(s) are off the stud grid",
+        "ops": [
+          "sections[8].ops[15] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "714 part(s) in 51 group(s) are not connected to the main structure (largest group: 2399 parts); e.g. 3039 at [71, 3, 73], 2456 at [28, 18, 32], 3006 at [41, 0, 93], 2449 at [31, 23, 14], 2456 at [62, 18, 32], 2449 at [56, 23, 14]",
+        "ops": [
+          "sections[4].ops[4] (code line 13)",
+          "sections[6].ops[2] (code line 22)",
+          "sections[6].ops[9] (code line 22)",
+          "sections[6].ops[0] (code line 22)",
+          "sections[5].ops[31] (code line 15)",
+          "sections[6].ops[1] (code line 22)",
+          "sections[6].ops[7] (code line 22)",
+          "sections[0].ops[3] > components.landing-paw.ops[0] (code line 3)",
+          "sections[2].ops[571] (code line 8)",
+          "sections[6].ops[8] (code line 22)",
+          "sections[5].ops[32] (code line 15)",
+          "sections[2].ops[435] (code line 8)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "424210d9e5d34ebb514659a08e29ec52a64711477654935ff52fd69574edd89b"
+  },
+  {
+    "id": "finished-dragon",
+    "subject": "dragon",
+    "variant": "Transfer",
+    "model": "gpt-6.1-sol",
+    "title": "Emberwing \u2014 Keeper of the Last Egg",
+    "target": 1000,
+    "parts": 1146,
+    "baseplates": 0,
+    "tiles": 18,
+    "slopes": 422,
+    "categories": {
+      "Slope": 422,
+      "Plate": 403,
+      "Brick": 286,
+      "Tile": 18,
+      "Cone": 14,
+      "Animal": 3
+    },
+    "seconds": 476,
+    "outputTokens": 55862,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[9] (code line 2)",
+          "sections[1].ops[13] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[9] (code line 2)",
+          "sections[1].ops[14] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[32] (code line 2)",
+          "sections[1].ops[15] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[32] (code line 2)",
+          "sections[1].ops[16] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[22] (code line 2)",
+          "sections[1].ops[33] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[22] (code line 2)",
+          "sections[1].ops[34] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[45] (code line 2)",
+          "sections[1].ops[35] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[45] (code line 2)",
+          "sections[1].ops[36] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[97] (code line 2)",
+          "sections[1].ops[53] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[97] (code line 2)",
+          "sections[1].ops[54] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[108] (code line 2)",
+          "sections[1].ops[73] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[0].ops[108] (code line 2)",
+          "sections[1].ops[74] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "365 part(s) in 79 group(s) are not connected to the main structure (largest group: 735 parts); e.g. 2456 at [-1, 0, -7], 61678 at [-12, 2, -1], 61678 at [6, 2, 1], 61678 at [-12, 2, 20], 61678 at [6, 2, 22], 61678 at [14, 12, 52]",
+        "ops": [
+          "sections[6].ops[1] (code line 29)",
+          "sections[1].ops[2] (code line 3)",
+          "sections[1].ops[42] (code line 3)",
+          "sections[1].ops[62] (code line 3)",
+          "sections[1].ops[22] (code line 3)",
+          "sections[5].ops[10] (code line 3)",
+          "sections[5].ops[19] (code line 3)",
+          "sections[5].ops[27] (code line 3)",
+          "sections[5].ops[34] (code line 3)",
+          "sections[5].ops[40] (code line 3)",
+          "sections[1].ops[23] (code line 3)",
+          "sections[5].ops[53] (code line 3)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "55995159876d9e51c28f0f19ee36220a128553f26c0d0b58b9fecff0e283ed04"
+  },
+  {
+    "id": "reference-finished-piplup",
+    "subject": "piplup",
+    "variant": "Reference",
+    "model": "gpt-6.1-sol",
+    "title": "Piplup \u2014 A Proud Little Wave",
+    "target": 1000,
+    "parts": 1135,
+    "baseplates": 0,
+    "tiles": 14,
+    "slopes": 309,
+    "categories": {
+      "Brick": 595,
+      "Slope": 309,
+      "Plate": 209,
+      "Tile": 14,
+      "Wedge": 8
+    },
+    "seconds": 468,
+    "outputTokens": 56690,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[2].ops[126] (code line 2)",
+          "sections[11].ops[21] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[2].ops[128] (code line 2)",
+          "sections[11].ops[21] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[2].ops[130] (code line 2)",
+          "sections[11].ops[21] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[3].ops[1] (code line 2)",
+          "sections[3].ops[2] (code line 2)",
+          "sections[3].ops[5] (code line 2)",
+          "sections[3].ops[6] (code line 2)",
+          "sections[10].ops[15] (code line 2)",
+          "sections[10].ops[16] (code line 2)",
+          "sections[10].ops[17] (code line 2)",
+          "sections[10].ops[18] (code line 2)",
+          "sections[10].ops[19] (code line 2)",
+          "sections[10].ops[20] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "726 part(s) in 112 group(s) are not connected to the main structure (largest group: 334 parts); e.g. 3660b at [-6, 11, -6], 3004 at [-10, 50, -9], 3035 at [-11, 33, 0], 3004 at [-6, 53, -11], 3004 at [4, 53, -11], 61678 at [9, 36, 0]",
+        "ops": [
+          "sections[2].ops[84] (code line 9)",
+          "sections[5].ops[5] (code line 12)",
+          "sections[10].ops[0] (code line 17)",
+          "sections[8].ops[146] (code line 15)",
+          "sections[7].ops[25] (code line 14)",
+          "sections[11].ops[0] (code line 18)",
+          "sections[12].ops[0] (code line 19)",
+          "sections[3].ops[4] (code line 10)",
+          "sections[3].ops[0] (code line 10)",
+          "sections[10].ops[1] (code line 17)",
+          "sections[11].ops[1] (code line 18)",
+          "sections[5].ops[4] (code line 12)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "d7e1499f929895026207da47123195c3c734f5b67856492e165b0282f6995270"
+  },
+  {
+    "id": "reference-finished-pelican",
+    "subject": "pelican",
+    "variant": "Reference",
+    "model": "gpt-6.1-sol",
+    "title": "Special Delivery: The Pedalling Pelican",
+    "target": 800,
+    "parts": 890,
+    "baseplates": 0,
+    "tiles": 37,
+    "slopes": 278,
+    "categories": {
+      "Plate": 387,
+      "Slope": 278,
+      "Brick": 183,
+      "Tile": 37,
+      "Wheel": 2,
+      "Dish": 1,
+      "Animal": 2
+    },
+    "seconds": 331,
+    "outputTokens": 37657,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[3].ops[31] (code line 2)",
+          "sections[3].ops[34] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[3].ops[31] (code line 2)",
+          "sections[3].ops[36] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[3].ops[31] (code line 2)",
+          "sections[3].ops[38] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[3].ops[31] (code line 2)",
+          "sections[3].ops[40] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[3].ops[32] (code line 2)",
+          "sections[3].ops[46] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[3].ops[32] (code line 2)",
+          "sections[3].ops[48] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[3].ops[32] (code line 2)",
+          "sections[3].ops[50] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "13547.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[3].ops[32] (code line 2)",
+          "sections[3].ops[52] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[1] (code line 2)",
+          "sections[4].ops[18] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[5] (code line 2)",
+          "sections[4].ops[22] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[9] (code line 2)",
+          "sections[4].ops[26] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[13] (code line 2)",
+          "sections[4].ops[30] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[17] (code line 2)",
+          "sections[4].ops[34] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[21] (code line 2)",
+          "sections[4].ops[38] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[25] (code line 2)",
+          "sections[4].ops[42] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[29] (code line 2)",
+          "sections[4].ops[46] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[33] (code line 2)",
+          "sections[4].ops[50] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[37] (code line 2)",
+          "sections[4].ops[54] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "50950.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[3].ops[53] (code line 2)",
+          "sections[4].ops[83] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "50950.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[3].ops[53] (code line 2)",
+          "sections[4].ops[85] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[88] (code line 2)",
+          "sections[4].ops[105] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[92] (code line 2)",
+          "sections[4].ops[109] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[96] (code line 2)",
+          "sections[4].ops[113] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[100] (code line 2)",
+          "sections[4].ops[117] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[104] (code line 2)",
+          "sections[4].ops[121] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[108] (code line 2)",
+          "sections[4].ops[125] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[112] (code line 2)",
+          "sections[4].ops[129] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[116] (code line 2)",
+          "sections[4].ops[133] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[120] (code line 2)",
+          "sections[4].ops[137] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3666.dat is placed where 42022.dat already is",
+        "ops": [
+          "sections[4].ops[124] (code line 2)",
+          "sections[4].ops[141] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "50950.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[3].ops[54] (code line 2)",
+          "sections[4].ops[168] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "50950.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[3].ops[54] (code line 2)",
+          "sections[4].ops[170] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "44126.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[3].ops[81] (code line 2)",
+          "sections[7].ops[6] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "44126.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[3].ops[82] (code line 2)",
+          "sections[7].ops[6] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "44126.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[3].ops[83] (code line 2)",
+          "sections[7].ops[6] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "44126.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[3].ops[81] (code line 2)",
+          "sections[7].ops[7] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "44126.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[3].ops[82] (code line 2)",
+          "sections[7].ops[7] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "44126.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[3].ops[83] (code line 2)",
+          "sections[7].ops[7] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "44126.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[3].ops[84] (code line 2)",
+          "sections[7].ops[7] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "14 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[0] (code line 2)",
+          "sections[0].ops[1] (code line 2)",
+          "sections[3].ops[81] (code line 2)",
+          "sections[3].ops[82] (code line 2)",
+          "sections[3].ops[83] (code line 2)",
+          "sections[3].ops[84] (code line 2)",
+          "sections[3].ops[85] (code line 2)",
+          "sections[3].ops[86] (code line 2)",
+          "sections[3].ops[87] (code line 2)",
+          "sections[5].ops[73] (code line 2)",
+          "sections[5].ops[74] (code line 2)",
+          "sections[6].ops[0] (code line 2)",
+          "sections[8].ops[5] (code line 2)",
+          "sections[8].ops[6] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "597 part(s) in 225 group(s) are not connected to the main structure (largest group: 228 parts); e.g. 30136 at [-2, 31, -18], 4460b at [-3, 61, 1], 6636 at [-3, 77, -20], 44126 at [-2, 55, 6], 88930 at [-2, 34, 11], 3024 at [4, 31, 16]",
+        "ops": [
+          "sections[8].ops[2] (code line 3)",
+          "sections[5].ops[0] (code line 3)",
+          "sections[2].ops[12] (code line 3)",
+          "sections[2].ops[13] (code line 3)",
+          "sections[3].ops[0] (code line 3)",
+          "sections[1].ops[4] (code line 5)",
+          "sections[1].ops[0] (code line 5)",
+          "sections[8].ops[4] (code line 4)",
+          "sections[1].ops[12] (code line 5)",
+          "sections[1].ops[8] (code line 5)",
+          "sections[1].ops[29] (code line 4)",
+          "sections[2].ops[10] (code line 5)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "ace05b64327cebca055bd4a600c7784aa16a3e37a518e66a9668fff4b6b61ba6"
+  },
+  {
+    "id": "contextual-ewok",
+    "subject": "ewok",
+    "variant": "Contextual",
+    "model": "gpt-6.1-sol",
+    "title": "Yub-Nub 1978: Moonwood Space Village",
+    "target": 3000,
+    "parts": 3367,
+    "baseplates": 0,
+    "tiles": 363,
+    "slopes": 186,
+    "categories": {
+      "Brick": 1062,
+      "Plate": 1573,
+      "Plant": 112,
+      "Slope": 186,
+      "Tile": 363,
+      "Window": 7,
+      "Glass": 7,
+      "Cone": 9,
+      "Wing": 12,
+      "Antenna": 5,
+      "Minifig": 15,
+      "Container": 8,
+      "Dish": 4,
+      "Minifig Accessory": 1,
+      "Windscreen": 1,
+      "Door": 2
+    },
+    "seconds": 630,
+    "outputTokens": 59340,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[94] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[94] > components.space-ewok.ops[2] (code line 2)",
+          "sections[0].ops[95] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[95] > components.space-ewok.ops[2] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[1] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[2] (code line 2)",
+          "sections[4].ops[99] > components.space-ewok.ops[1] (code line 2)",
+          "sections[4].ops[99] > components.space-ewok.ops[2] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[1] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[2] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1473 part(s) in 333 group(s) are not connected to the main structure (largest group: 1740 parts); e.g. 3941 at [46, 4, 7], 3039 at [9, 3, 10], 3004 at [4, 58, 42], 3005 at [22, 59, 41], 3023b at [61, 46, 19], 15068 at [36, 56, 30]",
+        "ops": [
+          "sections[1].ops[33] (code line 5)",
+          "sections[0].ops[30] (code line 15)",
+          "sections[1].ops[63] (code line 26)",
+          "sections[6].ops[7] (code line 65)",
+          "sections[1].ops[68] (code line 27)",
+          "sections[6].ops[11] (code line 65)",
+          "sections[1].ops[32] (code line 5)",
+          "sections[1].ops[78] (code line 29)",
+          "sections[0].ops[85] (code line 17)",
+          "sections[3].ops[57] (code line 40)",
+          "sections[3].ops[56] (code line 40)",
+          "sections[0].ops[6] (code line 9)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "53873c0d42f96b0c37a52bbc163184ae78296b0b97861ec143cf56b195381772"
+  },
+  {
+    "id": "contextual-pelican",
+    "subject": "pelican",
+    "variant": "Contextual",
+    "model": "gpt-6.1-sol",
+    "title": "The Fish Pedal Express",
+    "target": 800,
+    "parts": 882,
+    "baseplates": 0,
+    "tiles": 210,
+    "slopes": 118,
+    "categories": {
+      "Plate": 343,
+      "Brick": 200,
+      "Tile": 210,
+      "Slope": 118,
+      "Plant": 3,
+      "Car": 2,
+      "Animal": 5,
+      "Cone": 1
+    },
+    "seconds": 476,
+    "outputTokens": 38063,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3788.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[1].ops[1] (code line 2)",
+          "sections[2].ops[0].ops[20] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3788.dat is placed where 11290.dat already is",
+        "ops": [
+          "sections[1].ops[23] (code line 2)",
+          "sections[2].ops[0].ops[21] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "42022.dat is placed where 42023.dat already is",
+        "ops": [
+          "sections[5].ops[0].ops[44] (code line 2)",
+          "sections[5].ops[0].ops[49] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "11 part(s) are off the stud grid",
+        "ops": [
+          "sections[1].ops[1] (code line 2)",
+          "sections[1].ops[23] (code line 2)",
+          "sections[4].ops[0].ops[1] (code line 2)",
+          "sections[4].ops[0].ops[2] (code line 2)",
+          "sections[4].ops[0].ops[3] (code line 2)",
+          "sections[4].ops[0].ops[4] (code line 2)",
+          "sections[7].ops[0].ops[3] (code line 2)",
+          "sections[7].ops[0].ops[4] (code line 2)",
+          "sections[7].ops[0].ops[5] (code line 2)",
+          "sections[8].ops[15] (code line 2)",
+          "sections[8].ops[16] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "642 part(s) in 185 group(s) are not connected to the main structure (largest group: 194 parts); e.g. 60481a at [23, 65, 13], 3023b at [39, 35, 17], 15068 at [23, 78, 13], 3022 at [32, 35, 15], 2456 at [30, 68, 16], 3031 at [25, 15, 11]",
+        "ops": [
+          "sections[0].ops[1] (code line 3)",
+          "sections[4].ops[0].ops[0] (code line 2)",
+          "sections[7].ops[0].ops[1] (code line 2)",
+          "sections[4].ops[0].ops[5] (code line 2)",
+          "sections[4].ops[0].ops[14] (code line 2)",
+          "sections[2].ops[0].ops[8] (code line 2)",
+          "sections[2].ops[0].ops[2] (code line 2)",
+          "sections[6].ops[0].ops[14] (code line 2)",
+          "sections[3].ops[0].ops[0] (code line 2)",
+          "sections[4].ops[0].ops[33] (code line 2)",
+          "sections[2].ops[0].ops[16] (code line 2)",
+          "sections[6].ops[0].ops[6] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "b26fcdfeefcbb8108b9ce359d3ff04fba0936b50bfa2c8b646c73a1abb5cab82"
+  },
+  {
+    "id": "contextual-dragon",
+    "subject": "dragon",
+    "variant": "Contextual",
+    "model": "gpt-6.1-sol",
+    "title": "Cinderkeeper \u2014 The Last Egg",
+    "target": 1000,
+    "parts": 1144,
+    "baseplates": 0,
+    "tiles": 78,
+    "slopes": 229,
+    "categories": {
+      "Brick": 438,
+      "Plate": 375,
+      "Slope": 229,
+      "Tile": 78,
+      "Cone": 14,
+      "Bar": 9,
+      "Animal": 1
+    },
+    "seconds": 1255,
+    "outputTokens": 112470,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15070.dat is placed where 3069b.dat already is",
+        "ops": [
+          "sections[5].ops[10] (code line 2)",
+          "sections[5].ops[17] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "38 part(s) are off the stud grid",
+        "ops": [
+          "sections[3].ops[1] (code line 2)",
+          "sections[3].ops[2] (code line 2)",
+          "sections[3].ops[5] (code line 2)",
+          "sections[3].ops[6] (code line 2)",
+          "sections[3].ops[9] (code line 2)",
+          "sections[3].ops[10] (code line 2)",
+          "sections[3].ops[13] (code line 2)",
+          "sections[3].ops[14] (code line 2)",
+          "sections[3].ops[18] (code line 2)",
+          "sections[3].ops[19] (code line 2)",
+          "sections[3].ops[22] (code line 2)",
+          "sections[3].ops[23] (code line 2)",
+          "sections[3].ops[29] (code line 2)",
+          "sections[3].ops[30] (code line 2)",
+          "sections[3].ops[33] (code line 2)",
+          "sections[3].ops[34] (code line 2)",
+          "sections[3].ops[37] (code line 2)",
+          "sections[3].ops[38] (code line 2)",
+          "sections[3].ops[41] (code line 2)",
+          "sections[3].ops[42] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "503 part(s) in 92 group(s) are not connected to the main structure (largest group: 571 parts); e.g. 3005 at [21, 43, 19], 15068 at [39, 77, 27], 15068 at [9, 74, 27], 15068 at [13, 65, 27], 15068 at [35, 65, 27], 15068 at [19, 47, 26]",
+        "ops": [
+          "sections[5].ops[23] (code line 30)",
+          "sections[5].ops[25] (code line 30)",
+          "sections[2].ops[3] (code line 17)",
+          "sections[2].ops[4] (code line 17)",
+          "sections[3].ops[61] (code line 22)",
+          "sections[3].ops[52] (code line 22)",
+          "sections[3].ops[21] (code line 22)",
+          "sections[1].ops[10] (code line 11)",
+          "sections[1].ops[29] (code line 11)",
+          "sections[3].ops[12] (code line 22)",
+          "sections[3].ops[65] (code line 22)",
+          "sections[3].ops[66] (code line 22)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "449d12178704fadee38452518e3d2a54fa6dd97d6428d3cdcba240892e193867"
+  },
+  {
+    "id": "contextual-piplup",
+    "subject": "piplup",
+    "variant": "Contextual",
+    "model": "gpt-6.1-sol",
+    "title": "Piplup's Bubble-Berg",
+    "target": 1000,
+    "parts": 1228,
+    "baseplates": 0,
+    "tiles": 98,
+    "slopes": 266,
+    "categories": {
+      "Brick": 521,
+      "Slope": 266,
+      "Plate": 336,
+      "Tile": 98,
+      "Dish": 3,
+      "Technic": 3,
+      "Animal": 1
+    },
+    "seconds": 556,
+    "outputTokens": 45899,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[2].ops[0].ops[2] (code line 42)",
+          "sections[2].ops[1].ops[2] (code line 42)",
+          "sections[2].ops[2].ops[2] (code line 42)",
+          "sections[2].ops[3] (code line 43)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "275 part(s) in 227 group(s) are not connected to the main structure (largest group: 926 parts); e.g. 3024 at [29, 0, 12], 11477 at [22, 68, 15], 3024 at [28, 0, 8], 3666 at [16, 48, 9], 3020 at [16, 57, 13], 3024 at [25, 0, 4]",
+        "ops": [
+          "sections[0].ops[2] (code line 4)",
+          "sections[0].ops[5] (code line 4)",
+          "sections[0].ops[6] (code line 4)",
+          "sections[0].ops[3] (code line 4)",
+          "sections[2].ops[2].ops[0] (code line 42)",
+          "sections[0].ops[1] (code line 4)",
+          "sections[1].ops[735] (code line 37)",
+          "sections[2].ops[1].ops[0] (code line 42)",
+          "sections[1].ops[831] (code line 38)",
+          "sections[1].ops[841] (code line 40)",
+          "sections[0].ops[0] (code line 4)",
+          "sections[2].ops[0].ops[0] (code line 42)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "486e4b11f1353b55356a7c1582e12f3358a3ebfa356cd7ff51e62837dff8e4a9"
+  },
+  {
+    "id": "contextual-temple",
+    "subject": "temple",
+    "variant": "Contextual",
+    "model": "gpt-6.1-sol",
+    "title": "Moonwater Temple \u2014 The Evening Bell",
+    "target": 2000,
+    "parts": 2220,
+    "baseplates": 0,
+    "tiles": 278,
+    "slopes": 443,
+    "categories": {
+      "Brick": 746,
+      "Slope": 443,
+      "Plate": 658,
+      "Tile": 278,
+      "Fence": 21,
+      "Window": 21,
+      "Glass": 21,
+      "Dish": 11,
+      "Cone": 5,
+      "Plant": 11,
+      "Cylinder": 1,
+      "Arch": 2,
+      "Antenna": 1,
+      "Minifig Accessory": 1
+    },
+    "seconds": 585,
+    "outputTokens": 54413,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "32607.dat is placed where 54200.dat already is",
+        "ops": [
+          "sections[0].ops[63] (code line 2)",
+          "sections[0].ops[64] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "583 part(s) in 79 group(s) are not connected to the main structure (largest group: 1572 parts); e.g. 41539 at [8, 0, 15], 4032b at [21, 2, 7], 3941 at [21, 14, 2], 3941 at [43, 14, 2], 2431 at [30, 12, 11], 2431 at [37, 12, 11]",
+        "ops": [
+          "sections[0].ops[1] (code line 8)",
+          "sections[4].ops[12] (code line 17)",
+          "sections[4].ops[1] (code line 17)",
+          "sections[4].ops[0] (code line 17)",
+          "sections[0].ops[22] (code line 8)",
+          "sections[4].ops[7] (code line 17)",
+          "sections[0].ops[13] (code line 8)",
+          "sections[0].ops[3] (code line 8)",
+          "sections[4].ops[2] (code line 17)",
+          "sections[2].ops[2] (code line 12)",
+          "sections[0].ops[0] (code line 8)",
+          "sections[0].ops[37] > components.stone lantern.ops[1] (code line 5)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "d60d475fc8eb761debca1664cb3350f20354cdb66add08ac5f7a44f9970e0803"
+  },
+  {
+    "id": "contextual-destroyer",
+    "subject": "destroyer",
+    "variant": "Contextual",
+    "model": "gpt-6.1-sol",
+    "title": "Devastator \u2014 The Capture of Tantive IV",
+    "target": 5000,
+    "parts": 5287,
+    "baseplates": 0,
+    "tiles": 806,
+    "slopes": 513,
+    "categories": {
+      "Plate": 1970,
+      "Brick": 1775,
+      "Slope": 513,
+      "Tile": 806,
+      "Wing": 220,
+      "Sphere": 2,
+      "Antenna": 1
+    },
+    "seconds": 594,
+    "outputTokens": 44400,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1035 part(s) in 91 group(s) are not connected to the main structure (largest group: 4027 parts); e.g. 2877 at [13, 27, 101], 3039 at [23, 38, 105], 3039 at [30, 38, 105], 3039 at [44, 38, 105], 3039 at [51, 38, 105], 3039 at [65, 38, 105]",
+        "ops": [
+          "sections[9].ops[0] (code line 59)",
+          "sections[9].ops[3] (code line 58)",
+          "sections[9].ops[4] (code line 58)",
+          "sections[9].ops[25] (code line 58)",
+          "sections[9].ops[26] (code line 58)",
+          "sections[9].ops[47] (code line 58)",
+          "sections[9].ops[48] (code line 58)",
+          "sections[10].ops[0] > components.Tantive IV.ops[10] (code line 60)",
+          "sections[8].ops[0] (code line 57)",
+          "sections[8].ops[40] (code line 57)",
+          "sections[11].ops[3] (code line 63)",
+          "sections[11].ops[0] (code line 63)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "4a246fe940cce135815b841b8a873021ba269f4adc7226d8dfbb213a0ef088e0"
+  },
+  {
+    "id": "text-only-contextual-ewok",
+    "subject": "ewok",
+    "variant": "Text E",
+    "model": "gpt-6.1-sol",
+    "title": "Yub-Nub 1978: Moonwood Space Village",
+    "target": 3000,
+    "parts": 3517,
+    "baseplates": 0,
+    "tiles": 375,
+    "slopes": 178,
+    "categories": {
+      "Brick": 1316,
+      "Plate": 1455,
+      "Plant": 121,
+      "Tile": 375,
+      "Slope": 178,
+      "Window": 7,
+      "Glass": 7,
+      "Antenna": 5,
+      "Minifig": 15,
+      "Wing": 8,
+      "Container": 8,
+      "Wedge": 8,
+      "Dish": 4,
+      "Cone": 6,
+      "Minifig Accessory": 1,
+      "Windscreen": 1,
+      "Door": 2
+    },
+    "seconds": 823,
+    "outputTokens": 86681,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[92] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[92] > components.space-ewok.ops[2] (code line 2)",
+          "sections[0].ops[93] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[93] > components.space-ewok.ops[2] (code line 2)",
+          "sections[2].ops[48] > components.space-ewok.ops[1] (code line 2)",
+          "sections[2].ops[48] > components.space-ewok.ops[2] (code line 2)",
+          "sections[4].ops[100] > components.space-ewok.ops[1] (code line 2)",
+          "sections[4].ops[100] > components.space-ewok.ops[2] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[1] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[2] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "2715 part(s) in 477 group(s) are not connected to the main structure (largest group: 627 parts); e.g. 3622pz2 at [47, 12, 29], 3039p23 at [17, 10, 4], 3622pz2 at [58, 12, 11], 3941 at [46, 4, 7], 3024 at [4, 58, 42], 3832 at [61, 0, 5]",
+        "ops": [
+          "sections[1].ops[11] (code line 5)",
+          "sections[5].ops[2] (code line 31)",
+          "sections[4].ops[1] (code line 27)",
+          "sections[1].ops[19] (code line 5)",
+          "sections[0].ops[14] (code line 13)",
+          "sections[1].ops[0] (code line 5)",
+          "sections[1].ops[10] (code line 5)",
+          "sections[5].ops[0] (code line 31)",
+          "sections[1].ops[34] (code line 18)",
+          "sections[1].ops[40] (code line 18)",
+          "sections[4].ops[52] (code line 29)",
+          "sections[6].ops[7] (code line 33)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "3670ddca273af8d6339dd329522e679ff46904d39a40309efad9961e954ef3f5"
+  },
+  {
+    "id": "text-only-contextual-pelican",
+    "subject": "pelican",
+    "variant": "Text E",
+    "model": "gpt-6.1-sol",
+    "title": "The Fish Pedal Express",
+    "target": 800,
+    "parts": 918,
+    "baseplates": 0,
+    "tiles": 217,
+    "slopes": 192,
+    "categories": {
+      "Plate": 325,
+      "Slope": 192,
+      "Brick": 172,
+      "Tile": 217,
+      "Plant": 4,
+      "Wheel": 2,
+      "Animal": 5,
+      "Cone": 1
+    },
+    "seconds": 528,
+    "outputTokens": 56171,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24201.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[4].ops[4] (code line 2)",
+          "sections[4].ops[24] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24201.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[4].ops[14] (code line 2)",
+          "sections[4].ops[35] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24201.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[4].ops[13] (code line 2)",
+          "sections[4].ops[36] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24201.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[4].ops[23] (code line 2)",
+          "sections[4].ops[47] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[30] (code line 2)",
+          "sections[5].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[31] (code line 2)",
+          "sections[5].ops[9] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[32] (code line 2)",
+          "sections[5].ops[10] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[33] (code line 2)",
+          "sections[5].ops[11] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[34] (code line 2)",
+          "sections[5].ops[12] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[35] (code line 2)",
+          "sections[5].ops[13] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[42] (code line 2)",
+          "sections[5].ops[28] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[43] (code line 2)",
+          "sections[5].ops[29] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[44] (code line 2)",
+          "sections[5].ops[30] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[45] (code line 2)",
+          "sections[5].ops[31] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[46] (code line 2)",
+          "sections[5].ops[32] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[47] (code line 2)",
+          "sections[5].ops[33] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "31 part(s) are off the stud grid",
+        "ops": [
+          "sections[1].ops[0] (code line 2)",
+          "sections[1].ops[1] (code line 2)",
+          "sections[4].ops[24] (code line 2)",
+          "sections[4].ops[25] (code line 2)",
+          "sections[4].ops[26] (code line 2)",
+          "sections[4].ops[27] (code line 2)",
+          "sections[4].ops[28] (code line 2)",
+          "sections[4].ops[29] (code line 2)",
+          "sections[4].ops[30] (code line 2)",
+          "sections[4].ops[31] (code line 2)",
+          "sections[4].ops[32] (code line 2)",
+          "sections[4].ops[33] (code line 2)",
+          "sections[4].ops[34] (code line 2)",
+          "sections[4].ops[35] (code line 2)",
+          "sections[4].ops[36] (code line 2)",
+          "sections[4].ops[37] (code line 2)",
+          "sections[4].ops[38] (code line 2)",
+          "sections[4].ops[39] (code line 2)",
+          "sections[4].ops[40] (code line 2)",
+          "sections[4].ops[41] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "687 part(s) in 236 group(s) are not connected to the main structure (largest group: 161 parts); e.g. 42022 at [13, 58, 12], 3069b at [6, 4, 8], 3023b at [18, 35, 15], 2431 at [37, 50, 13], 3022 at [32, 34, 15], 3010 at [29, 67, 16]",
+        "ops": [
+          "sections[4].ops[99] (code line 2)",
+          "sections[0].ops[10] (code line 4)",
+          "sections[7].ops[1] (code line 2)",
+          "sections[0].ops[13] (code line 4)",
+          "sections[0].ops[8] (code line 4)",
+          "sections[4].ops[1] (code line 2)",
+          "sections[0].ops[6] (code line 4)",
+          "sections[4].ops[0] (code line 2)",
+          "sections[0].ops[7] (code line 4)",
+          "sections[2].ops[8] (code line 2)",
+          "sections[0].ops[9] (code line 4)",
+          "sections[2].ops[2] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "ed563cc95c0cc1c17c3b147a9ad98a4bbd28f167e3d4915d4d7fb02e8ab112a6"
+  },
+  {
+    "id": "text-only-contextual-dragon",
+    "subject": "dragon",
+    "variant": "Text E",
+    "model": "gpt-6.1-sol",
+    "title": "Cinderkeeper \u2014 The Last Egg",
+    "target": 1000,
+    "parts": 1146,
+    "baseplates": 0,
+    "tiles": 105,
+    "slopes": 259,
+    "categories": {
+      "Brick": 536,
+      "Slope": 259,
+      "Plate": 221,
+      "Tile": 105,
+      "Cone": 14,
+      "Bar": 10,
+      "Animal": 1
+    },
+    "seconds": 564,
+    "outputTokens": 56812,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[9] (code line 2)",
+          "sections[2].ops[25] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[12] (code line 2)",
+          "sections[2].ops[26] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[13] (code line 2)",
+          "sections[2].ops[33] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[16] (code line 2)",
+          "sections[2].ops[34] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[55] (code line 2)",
+          "sections[2].ops[39] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[56] (code line 2)",
+          "sections[2].ops[40] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[17] (code line 2)",
+          "sections[2].ops[41] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[20] (code line 2)",
+          "sections[2].ops[42] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[55] (code line 2)",
+          "sections[2].ops[47] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[56] (code line 2)",
+          "sections[2].ops[48] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "50950.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[2].ops[77] (code line 2)",
+          "sections[2].ops[105] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "93606.dat is placed where 54200.dat already is",
+        "ops": [
+          "sections[0].ops[53] (code line 2)",
+          "sections[4].ops[12] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "93606.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[4].ops[9] (code line 2)",
+          "sections[4].ops[17] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "2 part(s) are off the stud grid",
+        "ops": [
+          "sections[5].ops[31] (code line 2)",
+          "sections[5].ops[35] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "424 part(s) in 181 group(s) are not connected to the main structure (largest group: 667 parts); e.g. 61678 at [18, 48, 24], 61678 at [30, 51, 24], 3070b at [13, 9, 31], 4589 at [20, 52, 8], 3005 at [13, 10, 31], 3005 at [15, 10, 31]",
+        "ops": [
+          "sections[1].ops[52] (code line 3)",
+          "sections[5].ops[0] (code line 53)",
+          "sections[5].ops[1] (code line 53)",
+          "sections[1].ops[53] (code line 3)",
+          "sections[3].ops[23] (code line 39)",
+          "sections[3].ops[78] (code line 39)",
+          "sections[3].ops[30] (code line 39)",
+          "sections[3].ops[85] (code line 39)",
+          "sections[1].ops[30] (code line 18)",
+          "sections[3].ops[16] (code line 39)",
+          "sections[3].ops[9] (code line 39)",
+          "sections[3].ops[37] (code line 39)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "c704c2d039d11cbfe7fe7b7b609b80995bd8fc72cd9db802459fccd2ac785571"
+  },
+  {
+    "id": "text-only-contextual-piplup",
+    "subject": "piplup",
+    "variant": "Text E",
+    "model": "gpt-6.1-sol",
+    "title": "Piplup's Bubble-Berg",
+    "target": 1000,
+    "parts": 1007,
+    "baseplates": 0,
+    "tiles": 193,
+    "slopes": 247,
+    "categories": {
+      "Slope": 247,
+      "Plate": 327,
+      "Brick": 233,
+      "Tile": 193,
+      "Dish": 3,
+      "Technic": 3,
+      "Animal": 1
+    },
+    "seconds": 390,
+    "outputTokens": 42478,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3069b.dat already is",
+        "ops": [
+          "sections[0].ops[19] (code line 7)",
+          "sections[0].ops[21] (code line 8)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3069b.dat already is",
+        "ops": [
+          "sections[0].ops[18] (code line 7)",
+          "sections[0].ops[23] (code line 8)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3665a.dat already is",
+        "ops": [
+          "sections[1].ops[498] (code line 20)",
+          "sections[1].ops[586] (code line 23)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3665a.dat already is",
+        "ops": [
+          "sections[1].ops[499] (code line 20)",
+          "sections[1].ops[587] (code line 23)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[2].ops[0].ops[2] (code line 27)",
+          "sections[2].ops[1].ops[2] (code line 27)",
+          "sections[2].ops[2].ops[2] (code line 27)",
+          "sections[2].ops[3] (code line 28)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "449 part(s) in 144 group(s) are not connected to the main structure (largest group: 551 parts); e.g. 3665a at [16, 34, 15], 3022 at [12, 22, 13], 3020 at [10, 46, 16], 3665a at [6, 37, 15], 3665a at [4, 25, 14], 3665a at [8, 34, 11]",
+        "ops": [
+          "sections[0].ops[1] (code line 4)",
+          "sections[0].ops[2] (code line 4)",
+          "sections[1].ops[94] (code line 17)",
+          "sections[0].ops[0] (code line 4)",
+          "sections[1].ops[358] (code line 17)",
+          "sections[1].ops[296] (code line 17)",
+          "sections[1].ops[356] (code line 17)",
+          "sections[1].ops[92] (code line 17)",
+          "sections[1].ops[290] (code line 17)",
+          "sections[0].ops[3] (code line 4)",
+          "sections[1].ops[292] (code line 17)",
+          "sections[1].ops[353] (code line 17)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "c428e275cfad0d39208a5cf97d80d62a89bd194a0817c1ebf6edea0eb810093a"
+  },
+  {
+    "id": "text-only-economical-temple",
+    "subject": "temple",
+    "variant": "Text F",
+    "model": "gpt-6.1-sol",
+    "title": "Moonwater Temple \u2014 The Evening Bell",
+    "target": 2000,
+    "parts": 2049,
+    "baseplates": 0,
+    "tiles": 239,
+    "slopes": 441,
+    "categories": {
+      "Slope": 441,
+      "Brick": 721,
+      "Plate": 553,
+      "Tile": 239,
+      "Fence": 21,
+      "Window": 21,
+      "Glass": 21,
+      "Dish": 11,
+      "Cone": 5,
+      "Plant": 9,
+      "Arch": 4,
+      "Cylinder": 1,
+      "Antenna": 1,
+      "Minifig Accessory": 1
+    },
+    "seconds": 838,
+    "outputTokens": 44637,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1318 part(s) in 81 group(s) are not connected to the main structure (largest group: 670 parts); e.g. 60592 at [6, 18, 35], 3062b at [5, 7, 12], 54200 at [41, 2, 16], 4032b at [21, 2, 7], 2412b at [20, 3, 30], 54200 at [5, 2, 5]",
+        "ops": [
+          "sections[2].ops[19] (code line 12)",
+          "sections[0].ops[1] (code line 8)",
+          "sections[2].ops[13] (code line 12)",
+          "sections[2].ops[44] (code line 12)",
+          "sections[2].ops[34] (code line 12)",
+          "sections[2].ops[3] (code line 12)",
+          "sections[2].ops[29] (code line 12)",
+          "sections[2].ops[0] (code line 13)",
+          "sections[4].ops[13] (code line 17)",
+          "sections[2].ops[1] (code line 13)",
+          "sections[2].ops[8] (code line 12)",
+          "sections[4].ops[0] (code line 17)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "efece96e588454fe5edd4d0fcb5320a988d7eea473221564c998accbf8296711"
+  },
+  {
+    "id": "text-only-economical-ewok",
+    "subject": "ewok",
+    "variant": "Text F",
+    "model": "gpt-6.1-sol",
+    "title": "Yub-Nub 1978: Moonwood Space Village",
+    "target": 3000,
+    "parts": 3337,
+    "baseplates": 0,
+    "tiles": 267,
+    "slopes": 169,
+    "categories": {
+      "Brick": 1200,
+      "Plate": 1547,
+      "Slope": 169,
+      "Tile": 267,
+      "Plant": 79,
+      "Wing": 20,
+      "Window": 7,
+      "Glass": 7,
+      "Antenna": 5,
+      "Minifig": 15,
+      "Container": 8,
+      "Dish": 4,
+      "Cone": 5,
+      "Minifig Accessory": 1,
+      "Windscreen": 1,
+      "Door": 2
+    },
+    "seconds": 687,
+    "outputTokens": 77746,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[85] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[85] > components.space-ewok.ops[2] (code line 2)",
+          "sections[0].ops[87] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[87] > components.space-ewok.ops[2] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[1] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[2] (code line 2)",
+          "sections[4].ops[114] > components.space-ewok.ops[1] (code line 2)",
+          "sections[4].ops[114] > components.space-ewok.ops[2] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[1] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[2] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "2342 part(s) in 376 group(s) are not connected to the main structure (largest group: 873 parts); e.g. 3622pz2 at [47, 12, 29], 3941 at [46, 4, 7], 3003 at [37, 0, 15], 3023b at [62, 44, 20], 3039 at [9, 9, 11], 3039p23 at [17, 10, 4]",
+        "ops": [
+          "sections[1].ops[27] (code line 6)",
+          "sections[5].ops[2] (code line 42)",
+          "sections[1].ops[26] (code line 6)",
+          "sections[4].ops[1] (code line 37)",
+          "sections[1].ops[41] (code line 6)",
+          "sections[5].ops[0] (code line 42)",
+          "sections[0].ops[19] (code line 14)",
+          "sections[1].ops[40] (code line 6)",
+          "sections[4].ops[68] (code line 38)",
+          "sections[1].ops[56] (code line 11)",
+          "sections[6].ops[7] (code line 45)",
+          "sections[1].ops[59] (code line 11)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "df45b8ab4b7e08a61abd3d5cb81b5d6d528af529d83368a9a39be2cb127cdd1b"
+  },
+  {
+    "id": "text-only-economical-destroyer",
+    "subject": "destroyer",
+    "variant": "Text F",
+    "model": "gpt-6.1-sol",
+    "title": "Devastator \u2014 The Capture of Tantive IV",
+    "target": 5000,
+    "parts": 4287,
+    "baseplates": 0,
+    "tiles": 844,
+    "slopes": 740,
+    "categories": {
+      "Slope": 740,
+      "Brick": 1311,
+      "Tile": 844,
+      "Plate": 1285,
+      "Wing": 104,
+      "Sphere": 2,
+      "Antenna": 1
+    },
+    "seconds": 967,
+    "outputTokens": 95703,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1570 part(s) in 502 group(s) are not connected to the main structure (largest group: 2448 parts); e.g. 2877 at [13, 27, 105], 3039 at [24, 36, 108], 3039 at [31, 36, 108], 3039 at [44, 36, 108], 3039 at [51, 36, 108], 3039 at [64, 36, 108]",
+        "ops": [
+          "sections[9].ops[0] (code line 38)",
+          "sections[9].ops[3] (code line 37)",
+          "sections[9].ops[4] (code line 37)",
+          "sections[9].ops[26] (code line 37)",
+          "sections[9].ops[27] (code line 37)",
+          "sections[9].ops[49] (code line 37)",
+          "sections[9].ops[50] (code line 37)",
+          "sections[1].ops[130] (code line 9)",
+          "sections[1].ops[112] (code line 9)",
+          "sections[5].ops[4] (code line 19)",
+          "sections[1].ops[166] (code line 9)",
+          "sections[8].ops[0] (code line 35)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "5ecbe2d006eeea58e361cdd4abd6267406d8c033466ddd1219ed9c5024bd941e"
+  },
+  {
+    "id": "text-only-economical-dragon",
+    "subject": "dragon",
+    "variant": "Text F",
+    "model": "gpt-6.1-sol",
+    "title": "Cinderkeeper \u2014 The Last Egg",
+    "target": 1000,
+    "parts": 1144,
+    "baseplates": 0,
+    "tiles": 69,
+    "slopes": 206,
+    "categories": {
+      "Brick": 469,
+      "Plate": 380,
+      "Slope": 206,
+      "Tile": 69,
+      "Bar": 9,
+      "Cone": 8,
+      "Animal": 1,
+      "Wedge": 2
+    },
+    "seconds": 1152,
+    "outputTokens": 109985,
+    "attempts": 2,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4460b.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[17] (code line 2)",
+          "sections[2].ops[0].ops[64] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "44126.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[49] (code line 2)",
+          "sections[4].ops[0].ops[15] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "6141.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[49] (code line 2)",
+          "sections[4].ops[0].ops[29] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4589.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[49] (code line 2)",
+          "sections[4].ops[0].ops[30] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4589.dat is placed where 3039.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[52] (code line 2)",
+          "sections[4].ops[0].ops[30] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3070b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[2].ops[0].ops[62] (code line 2)",
+          "sections[5].ops[0].ops[37] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3070b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[2].ops[0].ops[62] (code line 2)",
+          "sections[5].ops[0].ops[38] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3070b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[2].ops[0].ops[63] (code line 2)",
+          "sections[5].ops[0].ops[40] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3070b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[2].ops[0].ops[63] (code line 2)",
+          "sections[5].ops[0].ops[41] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "2 part(s) are off the stud grid",
+        "ops": [
+          "sections[5].ops[0].ops[29] (code line 2)",
+          "sections[5].ops[0].ops[33] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "463 part(s) in 43 group(s) are not connected to the main structure (largest group: 657 parts); e.g. 3039 at [37, 12, 26], 3039 at [11, 3, 11], 3006 at [15, 0, 13], 3039 at [30, 3, 14], 98138 at [20, 3, 0], 98138 at [42, 3, 21]",
+        "ops": [
+          "sections[6].ops[0].ops[1] (code line 55)",
+          "sections[6].ops[0].ops[18] (code line 57)",
+          "sections[0].ops[56] (code line 3)",
+          "sections[1].ops[0].ops[75] (code line 3)",
+          "sections[1].ops[0].ops[62] (code line 15)",
+          "sections[0].ops[59] (code line 3)",
+          "sections[0].ops[10] (code line 8)",
+          "sections[0].ops[48] (code line 10)",
+          "sections[0].ops[53] (code line 3)",
+          "sections[1].ops[0].ops[9] (code line 15)",
+          "sections[1].ops[0].ops[74] (code line 3)",
+          "sections[0].ops[50] (code line 10)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "985409758afeb2d0d9c1389fb1bb9cb2b1c103baf072d90a1344c89779f3b51a"
+  },
+  {
+    "id": "text-only-contextual-temple",
+    "subject": "temple",
+    "variant": "Text E",
+    "model": "gpt-6.1-sol",
+    "title": "Moonwater Temple \u2014 The Evening Bell",
+    "target": 2000,
+    "parts": 2200,
+    "baseplates": 0,
+    "tiles": 357,
+    "slopes": 440,
+    "categories": {
+      "Slope": 440,
+      "Brick": 752,
+      "Tile": 357,
+      "Plate": 550,
+      "Window": 25,
+      "Glass": 25,
+      "Fence": 21,
+      "Dish": 11,
+      "Cone": 5,
+      "Plant": 9,
+      "Cylinder": 1,
+      "Arch": 2,
+      "Antenna": 1,
+      "Minifig Accessory": 1
+    },
+    "seconds": 651,
+    "outputTokens": 69966,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1365 part(s) in 80 group(s) are not connected to the main structure (largest group: 790 parts); e.g. 92438 at [11, 0, 31], 41539 at [8, 0, 15], 4032b at [21, 2, 7], 3941 at [21, 12, 2], 3941 at [43, 12, 2], 3941 at [19, 12, 23]",
+        "ops": [
+          "sections[0].ops[1] (code line 9)",
+          "sections[2].ops[13] (code line 13)",
+          "sections[2].ops[3] (code line 13)",
+          "sections[2].ops[23] (code line 13)",
+          "sections[2].ops[92] (code line 13)",
+          "sections[2].ops[57] (code line 13)",
+          "sections[2].ops[66] (code line 13)",
+          "sections[4].ops[12] (code line 18)",
+          "sections[2].ops[8] (code line 13)",
+          "sections[2].ops[1] (code line 14)",
+          "sections[2].ops[0] (code line 14)",
+          "sections[2].ops[52] (code line 13)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "010fa2bd22b5117c386abaac43814a4c0aaab4a5cd1fe1a03f09d25d186e91b9"
+  },
+  {
+    "id": "text-only-contextual-destroyer",
+    "subject": "destroyer",
+    "variant": "Text E",
+    "model": "gpt-6.1-sol",
+    "title": "Devastator \u2014 The Capture of Tantive IV",
+    "target": 5000,
+    "parts": 5334,
+    "baseplates": 0,
+    "tiles": 1113,
+    "slopes": 306,
+    "categories": {
+      "Plate": 2346,
+      "Tile": 1113,
+      "Brick": 1464,
+      "Slope": 306,
+      "Wedge": 102,
+      "Sphere": 2,
+      "Antenna": 1
+    },
+    "seconds": 536,
+    "outputTokens": 45911,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1598 part(s) in 100 group(s) are not connected to the main structure (largest group: 3629 parts); e.g. 3039 at [40, 54, 79], 2877 at [15, 27, 103], 3039 at [25, 38, 105], 3039 at [30, 38, 105], 3039 at [45, 38, 105], 3039 at [50, 38, 105]",
+        "ops": [
+          "sections[9].ops[0] (code line 77)",
+          "sections[6].ops[23] (code line 54)",
+          "sections[6].ops[20] (code line 53)",
+          "sections[6].ops[21] (code line 53)",
+          "sections[6].ops[27] (code line 54)",
+          "sections[9].ops[3] (code line 75)",
+          "sections[9].ops[4] (code line 75)",
+          "sections[9].ops[25] (code line 75)",
+          "sections[9].ops[26] (code line 75)",
+          "sections[9].ops[47] (code line 75)",
+          "sections[9].ops[48] (code line 75)",
+          "sections[6].ops[25] (code line 53)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "7fe5a446542a6b4519673137db4929aa089a2b3fd62497faea04e7d062ddfbc2"
+  },
+  {
+    "id": "text-only-economical-piplup",
+    "subject": "piplup",
+    "variant": "Text F",
+    "model": "gpt-6.1-sol",
+    "title": "Piplup's Bubble-Berg",
+    "target": 1000,
+    "parts": 949,
+    "baseplates": 0,
+    "tiles": 76,
+    "slopes": 482,
+    "categories": {
+      "Slope": 482,
+      "Brick": 195,
+      "Plate": 189,
+      "Tile": 76,
+      "Dish": 3,
+      "Sphere": 3,
+      "Animal": 1
+    },
+    "seconds": 1221,
+    "outputTokens": 164321,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "1 part(s) are off the stud grid",
+        "ops": [
+          "sections[5].ops[3] (code line 70)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "258 part(s) in 145 group(s) are not connected to the main structure (largest group: 616 parts); e.g. 3032 at [25, 0, 3], 3660b at [14, 12, 23], 2456 at [16, 49, 11], 3020 at [27, 10, 3], 3020 at [31, 16, 8], 3020 at [31, 22, 14]",
+        "ops": [
+          "sections[0].ops[0] (code line 16)",
+          "sections[0].ops[1] (code line 16)",
+          "sections[0].ops[2] (code line 16)",
+          "sections[0].ops[3] (code line 16)",
+          "sections[1].ops[96] (code line 33)",
+          "sections[5].ops[2].ops[0] (code line 68)",
+          "sections[5].ops[1].ops[0] (code line 68)",
+          "sections[4].ops[0] (code line 64)",
+          "sections[1].ops[109] (code line 35)",
+          "sections[5].ops[0].ops[0] (code line 68)",
+          "sections[3].ops[309] (code line 61)",
+          "sections[3].ops[308] (code line 61)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "2fb6dbcab5a62cbc2949b17a5f1f6317bcc33d35f027d0577485086fcc7d684d"
+  },
+  {
+    "id": "text-only-economical-pelican",
+    "subject": "pelican",
+    "variant": "Text F",
+    "model": "gpt-6.1-sol",
+    "title": "The Fish Pedal Express",
+    "target": 800,
+    "parts": 867,
+    "baseplates": 0,
+    "tiles": 84,
+    "slopes": 141,
+    "categories": {
+      "Plate": 402,
+      "Slope": 141,
+      "Brick": 227,
+      "Tile": 84,
+      "Arch": 4,
+      "Plant": 3,
+      "Animal": 5,
+      "Cone": 1
+    },
+    "seconds": 658,
+    "outputTokens": 62529,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "32803.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[2].ops[19] (code line 3)",
+          "sections[4].ops[18] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "32803.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[2].ops[23] (code line 3)",
+          "sections[4].ops[26] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[4].ops[7] (code line 3)",
+          "sections[5].ops[0] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[4].ops[7] (code line 3)",
+          "sections[5].ops[1] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[4].ops[11] (code line 3)",
+          "sections[5].ops[2] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[4].ops[11] (code line 3)",
+          "sections[5].ops[3] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[4].ops[8] (code line 3)",
+          "sections[5].ops[20] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[4].ops[8] (code line 3)",
+          "sections[5].ops[21] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[4].ops[12] (code line 3)",
+          "sections[5].ops[22] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 44126.dat already is",
+        "ops": [
+          "sections[4].ops[12] (code line 3)",
+          "sections[5].ops[23] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "31 part(s) are off the stud grid",
+        "ops": [
+          "sections[1].ops[2] (code line 3)",
+          "sections[1].ops[3] (code line 3)",
+          "sections[1].ops[9] (code line 3)",
+          "sections[1].ops[10] (code line 3)",
+          "sections[1].ops[28] (code line 3)",
+          "sections[1].ops[29] (code line 3)",
+          "sections[1].ops[35] (code line 3)",
+          "sections[1].ops[36] (code line 3)",
+          "sections[4].ops[5] (code line 3)",
+          "sections[4].ops[6] (code line 3)",
+          "sections[4].ops[9] (code line 3)",
+          "sections[4].ops[10] (code line 3)",
+          "sections[4].ops[13] (code line 3)",
+          "sections[4].ops[14] (code line 3)",
+          "sections[4].ops[17] (code line 3)",
+          "sections[4].ops[18] (code line 3)",
+          "sections[4].ops[21] (code line 3)",
+          "sections[4].ops[22] (code line 3)",
+          "sections[4].ops[25] (code line 3)",
+          "sections[4].ops[26] (code line 3)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "575 part(s) in 124 group(s) are not connected to the main structure (largest group: 251 parts); e.g. 3023b at [19, 48, 13], 15068 at [23, 81, 13], 3795 at [37, 39, 14], 3660b at [38, 74, 14], 3022 at [32, 38, 15], 2431 at [7, 1, 7]",
+        "ops": [
+          "sections[4].ops[2] (code line 2)",
+          "sections[4].ops[29] (code line 2)",
+          "sections[7].ops[1] (code line 2)",
+          "sections[4].ops[36] (code line 2)",
+          "sections[4].ops[0] (code line 2)",
+          "sections[4].ops[30] (code line 2)",
+          "sections[4].ops[4] (code line 2)",
+          "sections[2].ops[8] (code line 4)",
+          "sections[2].ops[2] (code line 4)",
+          "sections[6].ops[0] (code line 2)",
+          "sections[5].ops[14] (code line 2)",
+          "sections[3].ops[2] (code line 4)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "14667fe8841d02dca9c50ba994eba0895cb85f0a92755bde95ddaabad09476e4"
+  },
+  {
+    "id": "astra-text-only-contextual-ewok",
+    "subject": "ewok",
+    "variant": "Astra E",
+    "model": "gpt-6-astra",
+    "title": "Yub-Nub 1978: Moonwood Space Village",
+    "target": 3000,
+    "parts": 3181,
+    "baseplates": 0,
+    "tiles": 353,
+    "slopes": 180,
+    "categories": {
+      "Brick": 1182,
+      "Plate": 1289,
+      "Plant": 114,
+      "Slope": 180,
+      "Tile": 353,
+      "Window": 7,
+      "Glass": 7,
+      "Cone": 9,
+      "Antenna": 5,
+      "Minifig": 15,
+      "Container": 8,
+      "Dish": 4,
+      "Wing": 4,
+      "Minifig Accessory": 1,
+      "Windscreen": 1,
+      "Door": 2
+    },
+    "seconds": 556,
+    "outputTokens": 69437,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[81] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[81] > components.space-ewok.ops[2] (code line 2)",
+          "sections[0].ops[82] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[82] > components.space-ewok.ops[2] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[1] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[2] (code line 2)",
+          "sections[4].ops[81] > components.space-ewok.ops[1] (code line 2)",
+          "sections[4].ops[81] > components.space-ewok.ops[2] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[1] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[2] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "2083 part(s) in 161 group(s) are not connected to the main structure (largest group: 949 parts); e.g. 3024 at [41, 3, 28], 3941 at [49, 4, 7], 3622pz2 at [31, 17, 8], 3024 at [22, 3, 9], 3032 at [62, 0, 3], 3460 at [58, 0, 9]",
+        "ops": [
+          "sections[1].ops[39] (code line 5)",
+          "sections[0].ops[35] (code line 10)",
+          "sections[4].ops[1] (code line 24)",
+          "sections[5].ops[2] (code line 27)",
+          "sections[5].ops[0] (code line 27)",
+          "sections[1].ops[38] (code line 5)",
+          "sections[1].ops[75] (code line 5)",
+          "sections[6].ops[7] (code line 30)",
+          "sections[1].ops[74] (code line 5)",
+          "sections[4].ops[36] (code line 24)",
+          "sections[6].ops[11] (code line 30)",
+          "sections[0].ops[34] (code line 10)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "2dd20cd586f56ca1120bfe376991d932599c3565a631898c9bea2e26d8a1e538"
+  },
+  {
+    "id": "astra-text-only-contextual-pelican",
+    "subject": "pelican",
+    "variant": "Astra E",
+    "model": "gpt-6-astra",
+    "title": "The Fish Pedal Express",
+    "target": 800,
+    "parts": 884,
+    "baseplates": 0,
+    "tiles": 226,
+    "slopes": 125,
+    "categories": {
+      "Plate": 330,
+      "Slope": 125,
+      "Brick": 187,
+      "Tile": 226,
+      "Technic": 4,
+      "Arch": 4,
+      "Animal": 5,
+      "Wheel": 2,
+      "Cone": 1
+    },
+    "seconds": 340,
+    "outputTokens": 32757,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[4].ops[22] (code line 2)",
+          "sections[4].ops[34] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[4].ops[25] (code line 2)",
+          "sections[4].ops[35] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[4].ops[28] (code line 2)",
+          "sections[4].ops[36] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[4].ops[31] (code line 2)",
+          "sections[4].ops[37] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[4].ops[7] (code line 2)",
+          "sections[5].ops[0] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 45410.dat already is",
+        "ops": [
+          "sections[4].ops[2] (code line 2)",
+          "sections[5].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 45410.dat already is",
+        "ops": [
+          "sections[4].ops[2] (code line 2)",
+          "sections[5].ops[9] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 45410.dat already is",
+        "ops": [
+          "sections[4].ops[2] (code line 2)",
+          "sections[5].ops[10] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 45410.dat already is",
+        "ops": [
+          "sections[4].ops[2] (code line 2)",
+          "sections[5].ops[11] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "11 part(s) are off the stud grid",
+        "ops": [
+          "sections[1].ops[0] (code line 2)",
+          "sections[1].ops[8] (code line 2)",
+          "sections[4].ops[1] (code line 2)",
+          "sections[4].ops[2] (code line 2)",
+          "sections[4].ops[5] (code line 2)",
+          "sections[4].ops[6] (code line 2)",
+          "sections[7].ops[3] (code line 2)",
+          "sections[7].ops[4] (code line 2)",
+          "sections[7].ops[5] (code line 2)",
+          "sections[7].ops[17] (code line 2)",
+          "sections[7].ops[18] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "657 part(s) in 229 group(s) are not connected to the main structure (largest group: 197 parts); e.g. 3678b at [24, 60, 13], 3022 at [32, 33, 13], 3010 at [31, 66, 14], 15068 at [27, 76, 13], 3023b at [17, 33, 13], 3031 at [25, 13, 11]",
+        "ops": [
+          "sections[4].ops[3] (code line 2)",
+          "sections[0].ops[2] (code line 3)",
+          "sections[7].ops[1] (code line 2)",
+          "sections[4].ops[12] (code line 2)",
+          "sections[4].ops[19] (code line 2)",
+          "sections[4].ops[4] (code line 2)",
+          "sections[0].ops[1] (code line 3)",
+          "sections[4].ops[13] (code line 2)",
+          "sections[2].ops[2] (code line 2)",
+          "sections[2].ops[15] (code line 2)",
+          "sections[4].ops[18] (code line 2)",
+          "sections[2].ops[8] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "e04977e4f62d364e1df4f873e91b0de7a649e4a0a148ee71588db06f7e27df39"
+  },
+  {
+    "id": "astra-text-only-contextual-dragon",
+    "subject": "dragon",
+    "variant": "Astra E",
+    "model": "gpt-6-astra",
+    "title": "Cinderkeeper \u2014 The Last Egg",
+    "target": 1000,
+    "parts": 1072,
+    "baseplates": 0,
+    "tiles": 86,
+    "slopes": 302,
+    "categories": {
+      "Plate": 318,
+      "Slope": 302,
+      "Brick": 342,
+      "Tile": 86,
+      "Cone": 14,
+      "Bar": 9,
+      "Animal": 1
+    },
+    "seconds": 694,
+    "outputTokens": 107064,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[62] (code line 2)",
+          "sections[2].ops[0].ops[17] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[62] (code line 2)",
+          "sections[2].ops[0].ops[21] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[63] (code line 2)",
+          "sections[2].ops[0].ops[22] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[62] (code line 2)",
+          "sections[2].ops[0].ops[25] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[63] (code line 2)",
+          "sections[2].ops[0].ops[26] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[73] (code line 2)",
+          "sections[2].ops[0].ops[88] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[74] (code line 2)",
+          "sections[2].ops[0].ops[89] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[73] (code line 2)",
+          "sections[2].ops[0].ops[90] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[74] (code line 2)",
+          "sections[2].ops[0].ops[91] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[74] (code line 2)",
+          "sections[2].ops[0].ops[93] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[60] (code line 2)",
+          "sections[3].ops[0].ops[22] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3660b.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[0].ops[61] (code line 2)",
+          "sections[3].ops[0].ops[22] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[2] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[2] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 2449.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[5] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[4] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[6] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[6] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 2449.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[9] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[8] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[10] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[10] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[13] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[13] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[16] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[16] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "2449.dat is placed where 2449.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[19] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[18] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[20] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[20] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[23] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[23] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[26] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[26] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[29] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[29] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "3678b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[32] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[32] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4460b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[13] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[37] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "4460b.dat is placed where 3678b.dat already is",
+        "ops": [
+          "sections[3].ops[0].ops[10] (code line 2)",
+          "sections[3].ops[0].ops[43].ops[0].ops[42] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "2 part(s) are off the stud grid",
+        "ops": [
+          "sections[5].ops[0].ops[37] (code line 2)",
+          "sections[5].ops[0].ops[41] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "463 part(s) in 76 group(s) are not connected to the main structure (largest group: 584 parts); e.g. 24309 at [22, 43, 24], 3660b at [3, 43, 30], 3678b at [20, 28, 24], 15068 at [23, 27, 30], 24309 at [21, 28, 21], 2449 at [5, 34, 29]",
+        "ops": [
+          "sections[2].ops[0].ops[6] (code line 23)",
+          "sections[2].ops[0].ops[5] (code line 23)",
+          "sections[5].ops[0].ops[2] (code line 50)",
+          "sections[2].ops[0].ops[4] (code line 23)",
+          "sections[2].ops[0].ops[2] (code line 23)",
+          "sections[5].ops[0].ops[4] (code line 50)",
+          "sections[3].ops[0].ops[43].ops[0].ops[11] (code line 37)",
+          "sections[3].ops[0].ops[43].ops[0].ops[17] (code line 37)",
+          "sections[3].ops[0].ops[43].ops[0].ops[21] (code line 37)",
+          "sections[3].ops[0].ops[43].ops[0].ops[14] (code line 37)",
+          "sections[3].ops[0].ops[43].ops[0].ops[7] (code line 37)",
+          "sections[3].ops[0].ops[43].ops[0].ops[34] (code line 38)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "62339c5d7433ed5d01aac770c8ce4f934c606d1fe4f6dc562f2d791b6efc9822"
+  },
+  {
+    "id": "astra-text-only-contextual-piplup",
+    "subject": "piplup",
+    "variant": "Astra E",
+    "model": "gpt-6-astra",
+    "title": "Piplup's Bubble-Berg",
+    "target": 1000,
+    "parts": 1037,
+    "baseplates": 0,
+    "tiles": 85,
+    "slopes": 399,
+    "categories": {
+      "Brick": 376,
+      "Slope": 399,
+      "Plate": 170,
+      "Tile": 85,
+      "Dish": 3,
+      "Technic": 3,
+      "Animal": 1
+    },
+    "seconds": 518,
+    "outputTokens": 63994,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[1].ops[254] (code line 22)",
+          "sections[3].ops[6] (code line 31)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[1].ops[262] (code line 22)",
+          "sections[3].ops[12] (code line 31)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3665a.dat already is",
+        "ops": [
+          "sections[1].ops[186] (code line 22)",
+          "sections[3].ops[23] (code line 32)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3660b.dat already is",
+        "ops": [
+          "sections[1].ops[188] (code line 22)",
+          "sections[3].ops[24] (code line 32)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3660b.dat already is",
+        "ops": [
+          "sections[1].ops[188] (code line 22)",
+          "sections[3].ops[25] (code line 32)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3665a.dat already is",
+        "ops": [
+          "sections[1].ops[190] (code line 22)",
+          "sections[3].ops[26] (code line 32)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 3665a.dat already is",
+        "ops": [
+          "sections[1].ops[186] (code line 22)",
+          "sections[3].ops[28] (code line 32)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 3660b.dat already is",
+        "ops": [
+          "sections[1].ops[188] (code line 22)",
+          "sections[3].ops[29] (code line 32)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "15068.dat is placed where 3665a.dat already is",
+        "ops": [
+          "sections[1].ops[190] (code line 22)",
+          "sections[3].ops[30] (code line 32)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[4].ops[0].ops[2] (code line 33)",
+          "sections[4].ops[1].ops[2] (code line 33)",
+          "sections[4].ops[2].ops[2] (code line 33)",
+          "sections[4].ops[3] (code line 34)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "738 part(s) in 165 group(s) are not connected to the main structure (largest group: 248 parts); e.g. 3039 at [21, 2, 9], 3660b at [14, 17, 17], 3660b at [19, 17, 22], 3660b at [26, 23, 19], 3660b at [7, 32, 19], 3660b at [14, 17, 22]",
+        "ops": [
+          "sections[0].ops[0] (code line 4)",
+          "sections[3].ops[0] (code line 31)",
+          "sections[0].ops[6] (code line 5)",
+          "sections[0].ops[8] (code line 5)",
+          "sections[2].ops[14] (code line 29)",
+          "sections[2].ops[0] (code line 29)",
+          "sections[0].ops[10] (code line 5)",
+          "sections[0].ops[2] (code line 4)",
+          "sections[0].ops[1] (code line 4)",
+          "sections[0].ops[4] (code line 4)",
+          "sections[2].ops[28] (code line 30)",
+          "sections[0].ops[12] (code line 5)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "744533190e1e6f3ea8f0f2fb8ad17655a0a8c37ac4eac8a2412a1ef76d98b975"
+  },
+  {
+    "id": "astra-text-only-contextual-temple",
+    "subject": "temple",
+    "variant": "Astra E",
+    "model": "gpt-6-astra",
+    "title": "Moonwater Temple \u2014 The Evening Bell",
+    "target": 2000,
+    "parts": 2297,
+    "baseplates": 0,
+    "tiles": 330,
+    "slopes": 424,
+    "categories": {
+      "Slope": 424,
+      "Brick": 752,
+      "Plate": 701,
+      "Tile": 330,
+      "Fence": 21,
+      "Window": 21,
+      "Glass": 21,
+      "Dish": 11,
+      "Cone": 5,
+      "Plant": 6,
+      "Cylinder": 1,
+      "Arch": 2,
+      "Antenna": 1,
+      "Minifig Accessory": 1
+    },
+    "seconds": 547,
+    "outputTokens": 67229,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1509 part(s) in 234 group(s) are not connected to the main structure (largest group: 727 parts); e.g. 60592 at [6, 18, 35], 3062b at [5, 7, 12], 3666 at [32, 0, 11], 2412b at [20, 3, 30], 3941 at [21, 12, 2], 3941 at [43, 12, 2]",
+        "ops": [
+          "sections[2].ops[27] (code line 12)",
+          "sections[2].ops[24] (code line 12)",
+          "sections[0].ops[0] (code line 9)",
+          "sections[2].ops[49] (code line 12)",
+          "sections[2].ops[69] (code line 12)",
+          "sections[2].ops[47] (code line 12)",
+          "sections[2].ops[4] (code line 12)",
+          "sections[2].ops[70] (code line 13)",
+          "sections[2].ops[0] (code line 13)",
+          "sections[4].ops[22] (code line 17)",
+          "sections[2].ops[1] (code line 13)",
+          "sections[2].ops[10] (code line 5)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "9321d8dbdbd904bcd873c5a9abe30114cfd858b6969ec506c8fa2200b885e95c"
+  },
+  {
+    "id": "astra-text-only-contextual-destroyer",
+    "subject": "destroyer",
+    "variant": "Astra E",
+    "model": "gpt-6-astra",
+    "title": "Devastator \u2014 The Capture of Tantive IV",
+    "target": 5000,
+    "parts": 5272,
+    "baseplates": 0,
+    "tiles": 1341,
+    "slopes": 402,
+    "categories": {
+      "Plate": 2092,
+      "Tile": 1341,
+      "Brick": 1390,
+      "Slope": 402,
+      "Wing": 44,
+      "Sphere": 2,
+      "Antenna": 1
+    },
+    "seconds": 327,
+    "outputTokens": 21792,
+    "attempts": 1,
+    "checks": 1,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1112 part(s) in 94 group(s) are not connected to the main structure (largest group: 4111 parts); e.g. 3039 at [25, 38, 105], 3039 at [30, 38, 105], 3039 at [45, 38, 105], 3039 at [50, 38, 105], 3039 at [65, 38, 105], 3039 at [70, 38, 105]",
+        "ops": [
+          "sections[9].ops[3] (code line 49)",
+          "sections[9].ops[4] (code line 49)",
+          "sections[9].ops[33] (code line 49)",
+          "sections[9].ops[34] (code line 49)",
+          "sections[9].ops[63] (code line 49)",
+          "sections[9].ops[64] (code line 49)",
+          "sections[0].ops[4] (code line 3)",
+          "sections[9].ops[2] (code line 49)",
+          "sections[9].ops[32] (code line 49)",
+          "sections[9].ops[62] (code line 49)",
+          "sections[9].ops[0] (code line 51)",
+          "sections[0].ops[0] (code line 3)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "832069f8e3dd9549d0851f14f92d0d0f3fed135bfcfe24e82d917f99e9885f10"
+  },
+  {
+    "id": "opus-text-only-contextual-ewok",
+    "subject": "ewok",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Yub-Nub 1978: Moonwood Space Village",
+    "target": 3000,
+    "parts": 3347,
+    "baseplates": 0,
+    "tiles": 208,
+    "slopes": 169,
+    "categories": {
+      "Brick": 1313,
+      "Plate": 1467,
+      "Plant": 125,
+      "Slope": 169,
+      "Tile": 208,
+      "Window": 7,
+      "Glass": 7,
+      "Cone": 9,
+      "Antenna": 5,
+      "Minifig": 15,
+      "Container": 8,
+      "Dish": 4,
+      "Wing": 8,
+      "Door": 2
+    },
+    "seconds": 506,
+    "outputTokens": 53548,
+    "attempts": 1,
+    "checks": 1,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[122] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[122] > components.space-ewok.ops[2] (code line 2)",
+          "sections[0].ops[123] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[123] > components.space-ewok.ops[2] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[1] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[2] (code line 2)",
+          "sections[4].ops[94] > components.space-ewok.ops[1] (code line 2)",
+          "sections[4].ops[94] > components.space-ewok.ops[2] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[1] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[2] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1936 part(s) in 290 group(s) are not connected to the main structure (largest group: 1263 parts); e.g. 3941 at [46, 4, 7], 3023b at [4, 58, 42], 3023b at [22, 59, 41], 3023b at [61, 46, 19], 3795 at [12, 10, 33], 3795 at [46, 10, 33]",
+        "ops": [
+          "sections[1].ops[14] (code line 5)",
+          "sections[1].ops[13] (code line 5)",
+          "sections[1].ops[25] (code line 5)",
+          "sections[0].ops[54] (code line 17)",
+          "sections[1].ops[51] (code line 29)",
+          "sections[4].ops[1] (code line 51)",
+          "sections[3].ops[83] (code line 48)",
+          "sections[3].ops[0] (code line 44)",
+          "sections[1].ops[24] (code line 5)",
+          "sections[1].ops[56] (code line 30)",
+          "sections[1].ops[61] (code line 31)",
+          "sections[6].ops[7] (code line 68)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "1071f2b3a1c66917d01905fab3989cc2c72a73d5440b33b4681ee8fed74d54c2"
+  },
+  {
+    "id": "opus-text-only-contextual-pelican",
+    "subject": "pelican",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "The Fish Pedal Express",
+    "target": 800,
+    "parts": 871,
+    "baseplates": 0,
+    "tiles": 67,
+    "slopes": 164,
+    "categories": {
+      "Slope": 164,
+      "Plate": 383,
+      "Brick": 245,
+      "Tile": 67,
+      "Plant": 4,
+      "Car": 2,
+      "Animal": 5,
+      "Cone": 1
+    },
+    "seconds": 482,
+    "outputTokens": 49488,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "49 part(s) are off the stud grid",
+        "ops": [
+          "sections[4].ops[6] (code line 2)",
+          "sections[4].ops[7] (code line 2)",
+          "sections[4].ops[8] (code line 2)",
+          "sections[4].ops[9] (code line 2)",
+          "sections[4].ops[10] (code line 2)",
+          "sections[4].ops[11] (code line 2)",
+          "sections[4].ops[12] (code line 2)",
+          "sections[4].ops[13] (code line 2)",
+          "sections[4].ops[14] (code line 2)",
+          "sections[4].ops[15] (code line 2)",
+          "sections[4].ops[16] (code line 2)",
+          "sections[4].ops[17] (code line 2)",
+          "sections[4].ops[18] (code line 2)",
+          "sections[4].ops[19] (code line 2)",
+          "sections[4].ops[20] (code line 2)",
+          "sections[4].ops[21] (code line 2)",
+          "sections[4].ops[22] (code line 2)",
+          "sections[4].ops[23] (code line 2)",
+          "sections[4].ops[24] (code line 2)",
+          "sections[4].ops[25] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "514 part(s) in 130 group(s) are not connected to the main structure (largest group: 291 parts); e.g. 15068 at [10, 61, 12], 15068 at [23, 81, 13], 3023b at [17, 37, 15], 3022 at [32, 38, 15], 2431 at [10, 1, 4], 3031 at [25, 18, 11]",
+        "ops": [
+          "sections[4].ops[1] (code line 2)",
+          "sections[4].ops[3] (code line 2)",
+          "sections[4].ops[2] (code line 2)",
+          "sections[4].ops[0] (code line 2)",
+          "sections[4].ops[5] (code line 2)",
+          "sections[6].ops[18] (code line 2)",
+          "sections[2].ops[8] (code line 2)",
+          "sections[2].ops[2] (code line 2)",
+          "sections[6].ops[1] (code line 2)",
+          "sections[3].ops[0] (code line 2)",
+          "sections[6].ops[3] (code line 2)",
+          "sections[5].ops[34] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "1f6bb30cea4b702f94a974416e80edcbc91c36cebd0460844edbe072b43f9755"
+  },
+  {
+    "id": "opus-text-only-contextual-dragon",
+    "subject": "dragon",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Cinderkeeper \u2014 The Last Egg",
+    "target": 1000,
+    "parts": 1108,
+    "baseplates": 0,
+    "tiles": 104,
+    "slopes": 200,
+    "categories": {
+      "Slope": 200,
+      "Brick": 359,
+      "Plate": 413,
+      "Tile": 104,
+      "Cone": 18,
+      "Bar": 12,
+      "Wing": 2
+    },
+    "seconds": 1099,
+    "outputTokens": 111962,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[4].ops[56] (code line 2)",
+          "sections[4].ops[58] (code line 2)",
+          "sections[5].ops[78] (code line 2)",
+          "sections[5].ops[157] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "95 part(s) in 7 group(s) are not connected to the main structure (largest group: 985 parts); e.g. 15068 at [23, 14, 5], 98138 at [3, 2, 6], 98138 at [40, 2, 35], 60479 at [19, 0, 44], 93606 at [22, 39, 5], 93606 at [24, 39, 5]",
+        "ops": [
+          "sections[1].ops[11] (code line 28)",
+          "sections[0].ops[7] (code line 11)",
+          "sections[0].ops[5] (code line 11)",
+          "sections[0].ops[6] (code line 11)",
+          "sections[0].ops[4] (code line 10)",
+          "sections[1].ops[12] (code line 2)",
+          "sections[1].ops[21] (code line 2)",
+          "sections[1].ops[18] (code line 2)",
+          "sections[1].ops[17] (code line 2)",
+          "sections[1].ops[16] (code line 2)",
+          "sections[1].ops[19] (code line 2)",
+          "sections[1].ops[20] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "e1ef51a60e5f150afcd83ece796974eb2e3c5fcb6f696cbb33b9f8c38969c7a8"
+  },
+  {
+    "id": "opus-text-only-contextual-piplup",
+    "subject": "piplup",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Piplup's Bubble-Berg",
+    "target": 1000,
+    "parts": 1028,
+    "baseplates": 0,
+    "tiles": 136,
+    "slopes": 64,
+    "categories": {
+      "Brick": 643,
+      "Plate": 178,
+      "Slope": 64,
+      "Tile": 136,
+      "Dish": 3,
+      "Technic": 3,
+      "Animal": 1
+    },
+    "seconds": 366,
+    "outputTokens": 37504,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3069b.dat already is",
+        "ops": [
+          "sections[0].ops[50] (code line 12)",
+          "sections[0].ops[55] (code line 13)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[2].ops[0].ops[2] (code line 80)",
+          "sections[2].ops[1].ops[2] (code line 80)",
+          "sections[2].ops[2].ops[2] (code line 80)",
+          "sections[2].ops[3] (code line 83)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "328 part(s) in 113 group(s) are not connected to the main structure (largest group: 693 parts); e.g. 3660b at [15, 49, 10], 3003 at [28, 16, 20], 3010 at [9, 22, 20], 3004 at [12, 46, 13], 3004 at [20, 46, 13], 3004 at [16, 22, 14]",
+        "ops": [
+          "sections[0].ops[4] (code line 9)",
+          "sections[0].ops[2] (code line 9)",
+          "sections[0].ops[3] (code line 9)",
+          "sections[0].ops[1] (code line 9)",
+          "sections[2].ops[2].ops[0] (code line 80)",
+          "sections[0].ops[0] (code line 9)",
+          "sections[2].ops[1].ops[0] (code line 80)",
+          "sections[1].ops[446] (code line 62)",
+          "sections[1].ops[364] (code line 62)",
+          "sections[1].ops[121] (code line 62)",
+          "sections[1].ops[119] (code line 62)",
+          "sections[1].ops[187] (code line 62)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "cca43b7f24488035300693700cfe8675c47e4eb5ce5cca71060d10f51e7126f4"
+  },
+  {
+    "id": "opus-text-only-contextual-temple",
+    "subject": "temple",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Moonwater Temple \u2014 The Evening Bell",
+    "target": 2000,
+    "parts": 2190,
+    "baseplates": 0,
+    "tiles": 203,
+    "slopes": 411,
+    "categories": {
+      "Brick": 809,
+      "Slope": 411,
+      "Plate": 650,
+      "Tile": 203,
+      "Fence": 39,
+      "Window": 21,
+      "Glass": 21,
+      "Dish": 11,
+      "Plant": 11,
+      "Cone": 5,
+      "Panel": 4,
+      "Cylinder": 1,
+      "Arch": 2,
+      "Antenna": 1,
+      "Minifig Accessory": 1
+    },
+    "seconds": 728,
+    "outputTokens": 74966,
+    "attempts": 1,
+    "checks": 1,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1251 part(s) in 145 group(s) are not connected to the main structure (largest group: 878 parts); e.g. 60592 at [6, 18, 35], 54200 at [5, 1, 5], 3666 at [32, 0, 10], 3666 at [32, 0, 16], 54200 at [41, 2, 16], 3941 at [43, 13, 2]",
+        "ops": [
+          "sections[0].ops[1] (code line 8)",
+          "sections[2].ops[40] (code line 13)",
+          "sections[2].ops[3] (code line 13)",
+          "sections[2].ops[0] (code line 14)",
+          "sections[2].ops[72] (code line 13)",
+          "sections[2].ops[90] (code line 13)",
+          "sections[2].ops[1] (code line 14)",
+          "sections[2].ops[29] (code line 13)",
+          "sections[2].ops[30] (code line 13)",
+          "sections[2].ops[62] (code line 13)",
+          "sections[0].ops[0] (code line 8)",
+          "sections[2].ops[63] (code line 13)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "70b0328f550f99a33c1177f1b20acb583acf2b162bbcb3a6fc98bf7a7b738773"
+  },
+  {
+    "id": "opus-text-only-contextual-destroyer",
+    "subject": "destroyer",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Devastator \u2014 The Capture of Tantive IV",
+    "target": 5000,
+    "parts": 5434,
+    "baseplates": 0,
+    "tiles": 305,
+    "slopes": 1130,
+    "categories": {
+      "Plate": 2991,
+      "Slope": 1130,
+      "Brick": 1003,
+      "Tile": 305,
+      "Dish": 2,
+      "Sphere": 2,
+      "Antenna": 1
+    },
+    "seconds": 945,
+    "outputTokens": 94213,
+    "attempts": 1,
+    "checks": 1,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "957 part(s) in 10 group(s) are not connected to the main structure (largest group: 4050 parts); e.g. 3023b at [17, 36, 103], 3068b at [48, 18, 48], 60474 at [84, 0, 51], 60474 at [14, 0, 28], 3795 at [48, 0, 29], 3039 at [44, 18, 44]",
+        "ops": [
+          "sections[8].ops[0] (code line 48)",
+          "sections[8].ops[29] (code line 43)",
+          "sections[8].ops[28] (code line 43)",
+          "sections[8].ops[5] (code line 43)",
+          "sections[8].ops[6] (code line 43)",
+          "sections[8].ops[52] (code line 43)",
+          "sections[8].ops[51] (code line 43)",
+          "sections[9].ops[0] > components.Tantive IV.ops[16] (code line 51)",
+          "sections[10].ops[6] (code line 57)",
+          "sections[8].ops[4] (code line 42)",
+          "sections[8].ops[50] (code line 42)",
+          "sections[11].ops[4] (code line 59)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "67c743be656531ba626c046e7ca2782d7be8f487eb980d5344182c05c18f8498"
+  }
+]

@@ -1,0 +1,319 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 889,
+  "targetMiss": {
+    "target": 800,
+    "parts": 889,
+    "difference": 89,
+    "percent": 11.1
+  },
+  "seconds": 572,
+  "tokens": {
+    "input": 878361,
+    "cached": 631296,
+    "output": 61980,
+    "reasoning": 29244
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "15068",
+      "2431",
+      "3004",
+      "3005",
+      "3039",
+      "3069b",
+      "3622",
+      "3660b",
+      "4032b",
+      "42022",
+      "4740",
+      "50950",
+      "54200",
+      "61678",
+      "87087",
+      "88517"
+    ],
+    "notInList": [
+      "42022",
+      "88517"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 518,
+      "usage": {
+        "input": 844261,
+        "cached": 631296,
+        "output": 58719,
+        "reasoning": 28960,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "motorcycle wheel",
+            "limit": 6
+          },
+          "results": [
+            "88517",
+            "2903",
+            "50860",
+            "18895",
+            "52035",
+            "85983"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bicycle",
+            "limit": 6
+          },
+          "results": [
+            "4719",
+            "92851",
+            "2807",
+            "4720",
+            "64248",
+            "4719c01"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope inverted",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved 6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "42022",
+            "44126",
+            "42023",
+            "78522",
+            "45410",
+            "45411"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye",
+            "limit": 6
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tyre 75",
+            "limit": 5
+          },
+          "results": [
+            "75545",
+            "7860",
+            "51011",
+            "4084",
+            "92409"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tyre 62",
+            "limit": 5
+          },
+          "results": [
+            "6230",
+            "6292",
+            "32020c01"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved double",
+            "size": "8x8",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "54091",
+            "54095",
+            "54096"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "colour": "yellow",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "technic axle",
+            "size": "1x2",
+            "limit": 5
+          },
+          "results": [
+            "3700",
+            "59443",
+            "6538b",
+            "32039",
+            "22961"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1334,
+          "errors": 28,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 1142,
+          "errors": 8,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 969,
+          "errors": 5,
+          "ok": false
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "2431",
+          "3004",
+          "3005",
+          "3039",
+          "3069b",
+          "3622",
+          "3660b",
+          "4032b",
+          "42022",
+          "4740",
+          "50950",
+          "54200",
+          "61678",
+          "87087",
+          "88517"
+        ],
+        "notInList": [
+          "42022",
+          "88517"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 890,
+      "reason": "The script compiled to 890 parts (target 800: +90, +11.3%). Errors to fix:\n- overlap: 87087 Brick 1 × 1 with Stud on Side placed at [-1, 34, -4] and 54200 Slope 30° 1 × 1 × ⅔ placed at [-1, 33, -4] overlap where their bodies meet: x -1–0, y 34–35, z -4–-3 [sections[0].ops[185] (code line 2), sections[2].ops[35] (code line 2)]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 54,
+      "usage": {
+        "input": 34100,
+        "cached": 0,
+        "output": 3261,
+        "reasoning": 284,
+        "costUsd": 0
+      },
+      "searches": [],
+      "checks": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "2431",
+          "3004",
+          "3005",
+          "3039",
+          "3069b",
+          "3622",
+          "3660b",
+          "4032b",
+          "42022",
+          "4740",
+          "50950",
+          "54200",
+          "61678",
+          "87087",
+          "88517"
+        ],
+        "notInList": [
+          "42022",
+          "88517"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 889
+    }
+  ]
+}

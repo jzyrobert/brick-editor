@@ -1,0 +1,294 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1108,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1108,
+    "difference": 108,
+    "percent": 10.8
+  },
+  "seconds": 1099,
+  "tokens": {
+    "input": 550168,
+    "cached": 399022,
+    "output": 111962,
+    "reasoning": 92945,
+    "costUsd": 12.608667599999999
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11089",
+      "11477",
+      "15068",
+      "15070",
+      "24482",
+      "3004",
+      "30136",
+      "3024",
+      "3037",
+      "3039",
+      "3040b",
+      "3062b",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3660b",
+      "3665a",
+      "3941",
+      "41769a",
+      "41770a",
+      "4589",
+      "49668",
+      "54200",
+      "93606",
+      "98138"
+    ],
+    "notInList": [
+      "11089",
+      "15070",
+      "24482",
+      "49668",
+      "93606"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1099,
+      "usage": {
+        "input": 550168,
+        "cached": 399022,
+        "output": 111962,
+        "reasoning": 92945,
+        "costUsd": 12.608667599999999
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "93606"
+          },
+          "results": [
+            "93606"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "24482"
+          },
+          "results": [
+            "24482"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "15070"
+          },
+          "results": [
+            "15070"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "40379"
+          },
+          "results": [
+            "40379"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "11089"
+          },
+          "results": [
+            "11089"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wing",
+            "colour": "dark red",
+            "available_in_colour": true
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "24299",
+            "24307",
+            "43719",
+            "90194",
+            "43723b",
+            "41769b",
+            "41770b",
+            "43722b",
+            "48183",
+            "54383"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge curved",
+            "colour": "black",
+            "available_in_colour": true
+          },
+          "results": [
+            "45677",
+            "64225",
+            "43713",
+            "47753",
+            "98281",
+            "47755",
+            "43712",
+            "45301",
+            "41748",
+            "93606",
+            "41747",
+            "41764",
+            "41765",
+            "42918",
+            "42021"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "inverted curved slope",
+            "colour": "dark red",
+            "available_in_colour": true
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "32803",
+            "42023",
+            "45410",
+            "73682",
+            "41764",
+            "41765"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "eye",
+            "limit": 8
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tooth",
+            "colour": "tan",
+            "available_in_colour": true
+          },
+          "results": [
+            "49668",
+            "15070",
+            "3647",
+            "3649",
+            "3648b",
+            "4019",
+            "6589",
+            "6573",
+            "32269",
+            "32311",
+            "16770",
+            "32198a",
+            "32198b",
+            "4143",
+            "11089"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "ok": false,
+          "reason": "INVALID_INPUT: Invalid build script: $.sections[2].ops[3].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"dark tan\"]})"
+        },
+        {
+          "round": 2,
+          "parts": 1303,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 1108,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11089",
+          "11477",
+          "15068",
+          "15070",
+          "24482",
+          "3004",
+          "30136",
+          "3024",
+          "3037",
+          "3039",
+          "3040b",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3665a",
+          "3941",
+          "41769a",
+          "41770a",
+          "4589",
+          "49668",
+          "54200",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "11089",
+          "15070",
+          "24482",
+          "49668",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1108
+    }
+  ]
+}

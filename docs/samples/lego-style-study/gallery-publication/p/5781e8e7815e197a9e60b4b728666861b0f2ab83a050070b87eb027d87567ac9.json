@@ -1,0 +1,471 @@
+{
+  "gallery": 1,
+  "source": "E:text-only:original-source-revision",
+  "label": "contextual-ewok/high",
+  "prompt": {
+    "id": "ewok-classic-space-3000",
+    "brief": "ewok inspired version of the classic 1970s lego space sets",
+    "targetParts": 3000
+  },
+  "agent": {
+    "id": "codex/gpt-6-astra/high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "targetParts": 3000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 3181,
+    "targetMiss": {
+      "target": 3000,
+      "parts": 3181,
+      "difference": 181,
+      "percent": 6
+    },
+    "seconds": 556,
+    "tokens": {
+      "input": 1132791,
+      "cached": 815232,
+      "output": 69437,
+      "reasoning": 17411
+    },
+    "searches": 15,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "15068",
+        "2412b",
+        "2417",
+        "24309",
+        "2431",
+        "2489",
+        "3004p90",
+        "3024",
+        "30355",
+        "30356",
+        "3039",
+        "3039p23",
+        "3039p34",
+        "3062b",
+        "3069b",
+        "32607",
+        "3298",
+        "3298p90",
+        "3622pz2",
+        "3747b",
+        "3933",
+        "3934",
+        "3941",
+        "3942c",
+        "3943b",
+        "3957a",
+        "3960",
+        "3961",
+        "4032b",
+        "4079",
+        "41879a",
+        "4345b",
+        "4460b",
+        "4474",
+        "4589",
+        "54200",
+        "6141",
+        "64805",
+        "76382p90"
+      ],
+      "notInList": [
+        "2489",
+        "3004p90",
+        "30355",
+        "30356",
+        "3039p23",
+        "3039p34",
+        "3298p90",
+        "3622pz2",
+        "3933",
+        "3934",
+        "3961",
+        "41879a",
+        "4474",
+        "64805",
+        "76382p90"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 556,
+        "usage": {
+          "input": 1132791,
+          "cached": 815232,
+          "output": 69437,
+          "reasoning": 17411,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "4474",
+              "limit": 1
+            },
+            "results": [
+              "4474"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "4x8",
+              "limit": 12
+            },
+            "results": [
+              "3035",
+              "22888",
+              "3934",
+              "6576",
+              "3933",
+              "68297",
+              "u8202",
+              "73832",
+              "967",
+              "3474",
+              "30118",
+              "30119"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "3622pz2",
+              "limit": 1
+            },
+            "results": [
+              "3622pz2"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "64805",
+              "limit": 1
+            },
+            "results": [
+              "64805"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "3961",
+              "limit": 1
+            },
+            "results": [
+              "3961"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "41879a",
+              "limit": 1
+            },
+            "results": [
+              "41879a"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "76382p90",
+              "limit": 1
+            },
+            "results": [
+              "76382p90"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "3039p",
+              "limit": 12
+            },
+            "results": [
+              "3039p05",
+              "3039p23",
+              "3039p32",
+              "3039p34",
+              "3039p04",
+              "3039p12",
+              "3039p16",
+              "3039pc5",
+              "3039pce",
+              "3039pcg",
+              "3039pch",
+              "3039ps2"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "3004p90",
+              "limit": 1
+            },
+            "results": [
+              "3004p90"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "2x3",
+              "colour": "blue",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "24309",
+              "80177",
+              "80178"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Wing",
+              "size": "8x16",
+              "limit": 8
+            },
+            "results": [
+              "90498d02",
+              "90498d03",
+              "90498d06"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "wedge",
+              "size": "6x12",
+              "limit": 8
+            },
+            "results": [
+              "30355",
+              "30356",
+              "42607",
+              "98088",
+              "98089"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "3298p90",
+              "limit": 1
+            },
+            "results": [
+              "3298p90"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "2489",
+              "limit": 1
+            },
+            "results": [
+              "2489"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "wedge plate",
+              "size": "3x6",
+              "limit": 8
+            },
+            "results": [
+              "54383",
+              "54384"
+            ],
+            "round": 3
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 3985,
+            "errors": 11,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 3621,
+            "errors": 5,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "parts": 3181,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "15068",
+            "2412b",
+            "2417",
+            "24309",
+            "2431",
+            "2489",
+            "3004p90",
+            "3024",
+            "30355",
+            "30356",
+            "3039",
+            "3039p23",
+            "3039p34",
+            "3062b",
+            "3069b",
+            "32607",
+            "3298",
+            "3298p90",
+            "3622pz2",
+            "3747b",
+            "3933",
+            "3934",
+            "3941",
+            "3942c",
+            "3943b",
+            "3957a",
+            "3960",
+            "3961",
+            "4032b",
+            "4079",
+            "41879a",
+            "4345b",
+            "4460b",
+            "4474",
+            "4589",
+            "54200",
+            "6141",
+            "64805",
+            "76382p90"
+          ],
+          "notInList": [
+            "2489",
+            "3004p90",
+            "30355",
+            "30356",
+            "3039p23",
+            "3039p34",
+            "3298p90",
+            "3622pz2",
+            "3933",
+            "3934",
+            "3961",
+            "41879a",
+            "4474",
+            "64805",
+            "76382p90"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 3181
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 3181,
+      "designs": 96,
+      "lots": 247,
+      "massingCells": 19897,
+      "massingParts": 2557,
+      "placedParts": 624,
+      "sections": 7,
+      "components": 1,
+      "opsRun": 782,
+      "scriptBytes": 60585,
+      "ldrawBytes": 147595,
+      "partsPerScriptKB": 53.8,
+      "compileMs": 461,
+      "checkMs": 712
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 10,
+      "groups": 162,
+      "covered": 3032,
+      "uncovered": 149,
+      "health": "warning: 3032 parts with verified connectors form 162 separately connected groups; 80 parts are not connected to anything. 149 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 3000,
+      "parts": 3181,
+      "difference": 181,
+      "percent": 6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[81] > components.space-ewok.ops[1]",
+          "sections[0].ops[81] > components.space-ewok.ops[2]",
+          "sections[0].ops[82] > components.space-ewok.ops[1]",
+          "sections[0].ops[82] > components.space-ewok.ops[2]",
+          "sections[2].ops[47] > components.space-ewok.ops[1]",
+          "sections[2].ops[47] > components.space-ewok.ops[2]",
+          "sections[4].ops[81] > components.space-ewok.ops[1]",
+          "sections[4].ops[81] > components.space-ewok.ops[2]",
+          "sections[6].ops[15] > components.space-ewok.ops[1]",
+          "sections[6].ops[15] > components.space-ewok.ops[2]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "2083 part(s) in 161 group(s) are not connected to the main structure (largest group: 949 parts); e.g. 3024 at [41, 3, 28], 3941 at [49, 4, 7], 3622pz2 at [31, 17, 8], 3024 at [22, 3, 9], 3032 at [62, 0, 3], 3460 at [58, 0, 9]",
+        "ops": [
+          "sections[1].ops[39]",
+          "sections[0].ops[35]",
+          "sections[4].ops[1]",
+          "sections[5].ops[2]",
+          "sections[5].ops[0]",
+          "sections[1].ops[38]",
+          "sections[1].ops[75]",
+          "sections[6].ops[7]",
+          "sections[1].ops[74]",
+          "sections[4].ops[36]",
+          "sections[6].ops[11]",
+          "sections[0].ops[34]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

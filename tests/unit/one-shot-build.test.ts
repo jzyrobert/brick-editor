@@ -13,6 +13,89 @@ import {
 import { searchForAgent } from "../../src/build-script/part-list";
 
 describe("one-shot build runs", () => {
+  it("uses the exact E construction guidance and reply contract by default", () => {
+    const options = { partsList: false, search: true, check: true };
+    const text = oneShotPrompt("a playground", 2000, options);
+    expect(text).toBe(
+      oneShotPrompt("a playground", 2000, {
+        ...options,
+        promptFile: "build-agent-contextual.md",
+        replyPromptFile: "brick-build-object.md",
+      }),
+    );
+    expect(text).not.toContain("baseplate({");
+    expect(text).toContain("Choose support separately from composition");
+  });
+  it("assembles the text-only economical prompt with the actual reply and check protocols", () => {
+    const text = oneShotPrompt("a playground", 2000, {
+      partsList: false,
+      search: true,
+      check: true,
+      promptFile: "build-agent-economical.md",
+      replyPromptFile: "brick-build-economical.md",
+    });
+    expect(text).toContain('"tool": "brick.build"');
+    expect(text).toContain("## Checking a draft");
+    expect(text).toContain(
+      "No images or render feedback are available".toLowerCase(),
+    );
+    expect(text).toContain('component("module", {');
+    expect(text).not.toMatch(
+      /\{\{|brick-cli|Fisherman|Three-part facades|"buildScript": 1/,
+    );
+    expect(text.trimEnd()).toMatch(/Build request: a playground$/);
+  });
+  it("allows meaningful settings and preserves a supplied concept with general construction guidance", () => {
+    const text = oneShotPrompt("a playground", 2000, {
+      partsList: false,
+      promptFile: "build-agent-contextual.md",
+      replyPromptFile: "brick-build-object.md",
+    });
+    expect(text).toContain("Choose support separately from composition");
+    expect(text).toContain(
+      "preserve its concept, meaningful components, spatial relationships and distinctive palette",
+    );
+    expect(text).toContain(
+      "Context that establishes the theme, activity or relationships is part of the design",
+    );
+    expect(text).toContain("## General construction principles");
+    expect(text).not.toMatch(
+      /Creator Parrot|Creator Bird|Lakeside Lodge|Midi Star Destroyer|Tranquil Garden/,
+    );
+    expect(text).not.toContain("Default to a freestanding set");
+    expect(text).not.toContain("**Scene**: a baseplate");
+    expect(text).toContain("Build request: a playground");
+  });
+  it("uses the selected reply example without reintroducing the baseplate site", () => {
+    const text = oneShotPrompt("a pelican riding a bicycle", 800, {
+      partsList: false,
+      promptFile: "build-agent-studied.md",
+      replyPromptFile: "brick-build-object.md",
+    });
+    expect(text).toContain("Default to a freestanding set");
+    expect(text).toContain("Construction lessons from public LDraw sets");
+    expect(text).toContain('section("Foundation", [');
+    expect(text).not.toContain("baseplate({");
+    expect(text).not.toContain("Keep the build inside its baseplates");
+    expect(text).toContain("Build request: a pelican riding a bicycle");
+    expect(text).not.toMatch(/\{\{/);
+  });
+
+  it("keeps the finished workflow coherent with freestanding objects and deliberate surfaces", () => {
+    const text = oneShotPrompt("piplup", 1000, {
+      partsList: false,
+      promptFile: "build-agent-finished.md",
+      replyPromptFile: "brick-build-object.md",
+    });
+    expect(text).toContain("Structure → shaped shell → focal details");
+    expect(text).toContain("Surface audit");
+    expect(text).not.toContain("**Scene**: a baseplate");
+    expect(text).not.toContain("**A subject on its own.**");
+    expect(text).not.toContain("Leave flat roofs studded");
+    expect(text).not.toContain("baseplate({");
+    expect(text).toContain("Build request: piplup");
+  });
+
   it("asks for a brick.build call alone, without the tools section", () => {
     const text = oneShotPrompt("a japanese buddhist temple", 2000);
     expect(text).not.toMatch(

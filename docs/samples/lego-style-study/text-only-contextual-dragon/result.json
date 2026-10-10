@@ -1,0 +1,258 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1146,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1146,
+    "difference": 146,
+    "percent": 14.6
+  },
+  "seconds": 564,
+  "tokens": {
+    "input": 831553,
+    "cached": 565120,
+    "output": 56812,
+    "reasoning": 22280
+  },
+  "searches": 9,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11089",
+      "11477",
+      "13547",
+      "15068",
+      "15070",
+      "24309",
+      "24482",
+      "3005",
+      "3039",
+      "3062b",
+      "3069b",
+      "3070b",
+      "3678b",
+      "3941",
+      "4032b",
+      "40379",
+      "4589",
+      "50950",
+      "54200",
+      "61678",
+      "93606",
+      "98138"
+    ],
+    "notInList": [
+      "11089",
+      "15070",
+      "24482",
+      "40379",
+      "93606"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 564,
+      "usage": {
+        "input": 831553,
+        "cached": 565120,
+        "output": 56812,
+        "reasoning": 22280,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope",
+            "limit": 12
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "13547",
+            "6091",
+            "30602",
+            "42022"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "15070",
+            "limit": 1
+          },
+          "results": [
+            "15070"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "93606",
+            "limit": 1
+          },
+          "results": [
+            "93606"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "24482",
+            "limit": 1
+          },
+          "results": [
+            "24482"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "11089",
+            "limit": 1
+          },
+          "results": [
+            "11089"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "40379",
+            "limit": 1
+          },
+          "results": [
+            "40379"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved inverted",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "42918",
+            "41748",
+            "41747",
+            "52031",
+            "43720"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tooth",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "49668",
+            "15070",
+            "3647",
+            "3649",
+            "3648b",
+            "4019"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "ok": false,
+          "reason": "INVALID_INPUT: Invalid build script: $.sections[3].ops[58].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [4,0,2]); $.sections[3].ops[121].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [4,0,2])"
+        },
+        {
+          "round": 2,
+          "parts": 1723,
+          "errors": 5,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 1194,
+          "errors": 1,
+          "ok": false
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11089",
+          "11477",
+          "13547",
+          "15068",
+          "15070",
+          "24309",
+          "24482",
+          "3005",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "3678b",
+          "3941",
+          "4032b",
+          "40379",
+          "4589",
+          "50950",
+          "54200",
+          "61678",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "11089",
+          "15070",
+          "24482",
+          "40379",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1146
+    }
+  ]
+}

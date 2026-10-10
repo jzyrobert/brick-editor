@@ -1,0 +1,523 @@
+{
+  "gallery": 1,
+  "source": "E:text-only:original-source-revision",
+  "label": "contextual-pelican/high",
+  "prompt": {
+    "id": "pelican-riding-a-bicycle-800",
+    "brief": "a pelican riding a bicycle",
+    "targetParts": 800
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 800,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 918,
+    "targetMiss": {
+      "target": 800,
+      "parts": 918,
+      "difference": 118,
+      "percent": 14.8
+    },
+    "seconds": 528,
+    "tokens": {
+      "input": 816842,
+      "cached": 559488,
+      "output": 56171,
+      "reasoning": 21900
+    },
+    "searches": 10,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11477",
+        "13547",
+        "14769",
+        "15068",
+        "24201",
+        "2431",
+        "3005",
+        "3005pe4",
+        "3069b",
+        "32607",
+        "3941",
+        "3942c",
+        "4032b",
+        "42022",
+        "42023",
+        "4460b",
+        "46334c01",
+        "50950",
+        "61678",
+        "64648",
+        "8043",
+        "98138"
+      ],
+      "notInList": [
+        "3005pe4",
+        "42022",
+        "42023",
+        "46334c01",
+        "64648",
+        "8043"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 528,
+        "usage": {
+          "input": 816842,
+          "cached": 559488,
+          "output": 56171,
+          "reasoning": 21900,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wheel motorcycle tyre",
+              "limit": 5
+            },
+            "results": [
+              "46334c01",
+              "71720c01",
+              "71720c02",
+              "88517c01",
+              "88517c02"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope inverted",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "54091",
+              "32803",
+              "42023"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "eye brick",
+              "limit": 5
+            },
+            "results": [
+              "41669",
+              "48267"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "fish",
+              "limit": 5
+            },
+            "results": [
+              "64648",
+              "30224",
+              "49595e",
+              "8043"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "2x4",
+              "colour": "tan",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "47456"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "3005pe4",
+              "limit": 3
+            },
+            "results": [
+              "3005pe4"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "brick eye pattern",
+              "limit": 6
+            },
+            "results": [
+              "3005pe1",
+              "3005pe4",
+              "3003pe3",
+              "3003pe2",
+              "3005pe2",
+              "3005pe3"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "curved slope",
+              "size": "2x2",
+              "colour": "tan",
+              "available_in_colour": true,
+              "limit": 4
+            },
+            "results": [
+              "15068",
+              "30602",
+              "5093",
+              "5095"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope curved",
+              "size": "1x6",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 5
+            },
+            "results": [
+              "42022",
+              "42023",
+              "35164"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tile round eye",
+              "limit": 5
+            },
+            "results": [
+              "10238",
+              "98138pz0",
+              "98138pz2",
+              "98138p2d",
+              "98138p07"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 937,
+            "errors": 2,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 949,
+            "errors": 6,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "parts": 918,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "13547",
+            "14769",
+            "15068",
+            "24201",
+            "2431",
+            "3005",
+            "3005pe4",
+            "3069b",
+            "32607",
+            "3941",
+            "3942c",
+            "4032b",
+            "42022",
+            "42023",
+            "4460b",
+            "46334c01",
+            "50950",
+            "61678",
+            "64648",
+            "8043",
+            "98138"
+          ],
+          "notInList": [
+            "3005pe4",
+            "42022",
+            "42023",
+            "46334c01",
+            "64648",
+            "8043"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 918
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 918,
+      "designs": 70,
+      "lots": 213,
+      "massingCells": 6443,
+      "massingParts": 650,
+      "placedParts": 268,
+      "sections": 9,
+      "components": 0,
+      "opsRun": 335,
+      "scriptBytes": 25575,
+      "ldrawBytes": 45347,
+      "partsPerScriptKB": 36.8,
+      "compileMs": 371,
+      "checkMs": 409
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 31,
+      "groups": 237,
+      "covered": 848,
+      "uncovered": 70,
+      "health": "warning: 848 parts with verified connectors form 237 separately connected groups; 160 parts are not connected to anything. 70 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 800,
+      "parts": 918,
+      "difference": 118,
+      "percent": 14.8
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24201.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[4].ops[4]",
+          "sections[4].ops[24]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24201.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[4].ops[14]",
+          "sections[4].ops[35]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24201.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[4].ops[13]",
+          "sections[4].ops[36]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24201.dat is placed where 13547.dat already is",
+        "ops": [
+          "sections[4].ops[23]",
+          "sections[4].ops[47]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[30]",
+          "sections[5].ops[8]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[31]",
+          "sections[5].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[32]",
+          "sections[5].ops[10]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[33]",
+          "sections[5].ops[11]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[34]",
+          "sections[5].ops[12]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[35]",
+          "sections[5].ops[13]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[42]",
+          "sections[5].ops[28]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[43]",
+          "sections[5].ops[29]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[44]",
+          "sections[5].ops[30]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[45]",
+          "sections[5].ops[31]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[46]",
+          "sections[5].ops[32]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 24201.dat already is",
+        "ops": [
+          "sections[4].ops[47]",
+          "sections[5].ops[33]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "31 part(s) are off the stud grid",
+        "ops": [
+          "sections[1].ops[0]",
+          "sections[1].ops[1]",
+          "sections[4].ops[24]",
+          "sections[4].ops[25]",
+          "sections[4].ops[26]",
+          "sections[4].ops[27]",
+          "sections[4].ops[28]",
+          "sections[4].ops[29]",
+          "sections[4].ops[30]",
+          "sections[4].ops[31]",
+          "sections[4].ops[32]",
+          "sections[4].ops[33]",
+          "sections[4].ops[34]",
+          "sections[4].ops[35]",
+          "sections[4].ops[36]",
+          "sections[4].ops[37]",
+          "sections[4].ops[38]",
+          "sections[4].ops[39]",
+          "sections[4].ops[40]",
+          "sections[4].ops[41]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "687 part(s) in 236 group(s) are not connected to the main structure (largest group: 161 parts); e.g. 42022 at [13, 58, 12], 3069b at [6, 4, 8], 3023b at [18, 35, 15], 2431 at [37, 50, 13], 3022 at [32, 34, 15], 3010 at [29, 67, 16]",
+        "ops": [
+          "sections[4].ops[99]",
+          "sections[0].ops[10]",
+          "sections[7].ops[1]",
+          "sections[0].ops[13]",
+          "sections[0].ops[8]",
+          "sections[4].ops[1]",
+          "sections[0].ops[6]",
+          "sections[4].ops[0]",
+          "sections[0].ops[7]",
+          "sections[2].ops[8]",
+          "sections[0].ops[9]",
+          "sections[2].ops[2]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

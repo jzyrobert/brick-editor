@@ -1,0 +1,273 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6-astra",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 5272,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 5272,
+    "difference": 272,
+    "percent": 5.4
+  },
+  "seconds": 327,
+  "tokens": {
+    "input": 370279,
+    "cached": 214528,
+    "output": 21792,
+    "reasoning": 8466
+  },
+  "searches": 10,
+  "checks": 1,
+  "knowledge": {
+    "named": [
+      "11477",
+      "20953",
+      "2412b",
+      "2431",
+      "2877",
+      "3005",
+      "30208",
+      "3022",
+      "3023b",
+      "3024",
+      "30363",
+      "3039",
+      "3040b",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3298",
+      "3544",
+      "3545",
+      "3660b",
+      "3665a",
+      "3710",
+      "3941",
+      "3957a",
+      "4032b",
+      "4460b",
+      "54200"
+    ],
+    "notInList": [
+      "20953",
+      "30208",
+      "3544",
+      "3545"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 327,
+      "usage": {
+        "input": 370279,
+        "cached": 214528,
+        "output": 21792,
+        "reasoning": 8466,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wedge plate 3 x 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "54383",
+            "54384"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate 4 x 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "32059",
+            "47407"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "30208",
+            "limit": 2
+          },
+          "results": [
+            "30208"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "20953",
+            "limit": 2
+          },
+          "results": [
+            "20953",
+            "37837"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope inverted 33 3 x 2",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "3747b",
+            "3747a"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wing 3 x 8",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "50304",
+            "50305",
+            "3544",
+            "3545"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge 3 x 8",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "50304",
+            "50305",
+            "3544",
+            "3545"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge 4 x 10",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "3030",
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "42918",
+            "41748",
+            "41747",
+            "52031",
+            "43720"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tile wedge",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "3070b",
+            "3069b",
+            "2431",
+            "3068b",
+            "6636",
+            "98138"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 5272,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "20953",
+          "2412b",
+          "2431",
+          "2877",
+          "3005",
+          "30208",
+          "3022",
+          "3023b",
+          "3024",
+          "30363",
+          "3039",
+          "3040b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3298",
+          "3544",
+          "3545",
+          "3660b",
+          "3665a",
+          "3710",
+          "3941",
+          "3957a",
+          "4032b",
+          "4460b",
+          "54200"
+        ],
+        "notInList": [
+          "20953",
+          "30208",
+          "3544",
+          "3545"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 5272
+    }
+  ]
+}

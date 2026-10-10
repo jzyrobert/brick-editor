@@ -1,0 +1,288 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 5287,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 5287,
+    "difference": 287,
+    "percent": 5.7
+  },
+  "seconds": 594,
+  "tokens": {
+    "input": 674551,
+    "cached": 430976,
+    "output": 44400,
+    "reasoning": 17306
+  },
+  "searches": 10,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "20953",
+      "2412b",
+      "2431",
+      "2877",
+      "3005",
+      "3020",
+      "30208",
+      "3022",
+      "3023b",
+      "30363",
+      "3039",
+      "3040b",
+      "3048b",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3298",
+      "3544",
+      "3545",
+      "3660b",
+      "3710",
+      "3941",
+      "3957a",
+      "4032b",
+      "4460b",
+      "4569"
+    ],
+    "notInList": [
+      "20953",
+      "30208",
+      "3544",
+      "3545",
+      "4569"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 594,
+      "usage": {
+        "input": 674551,
+        "cached": 430976,
+        "output": 44400,
+        "reasoning": 17306,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wedge plate 12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "47405"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope 6 8",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "4515",
+            "45410",
+            "45411",
+            "56204",
+            "42021",
+            "33215"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dome hemisphere 4",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "86500"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "engine cylinder",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "2850a",
+            "2850b",
+            "6608"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "20953",
+            "limit": 2
+          },
+          "results": [
+            "20953",
+            "37837"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 14
+          },
+          "results": [
+            "6106",
+            "32059",
+            "30303",
+            "54383",
+            "54384",
+            "47407",
+            "50303",
+            "2625"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge plate 8",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "30504",
+            "41769b",
+            "50304",
+            "50305",
+            "3544",
+            "3545",
+            "47405"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge 4 2 triple",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "3048b",
+            "3039",
+            "3040b",
+            "43723a",
+            "43722a"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "30208",
+            "limit": 2
+          },
+          "results": [
+            "30208"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope 10",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "4515",
+            "4569",
+            "30180",
+            "85970",
+            "76795",
+            "7821",
+            "13731",
+            "47846"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 5253,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 5287,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "20953",
+          "2412b",
+          "2431",
+          "2877",
+          "3005",
+          "3020",
+          "30208",
+          "3022",
+          "3023b",
+          "30363",
+          "3039",
+          "3040b",
+          "3048b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3298",
+          "3544",
+          "3545",
+          "3660b",
+          "3710",
+          "3941",
+          "3957a",
+          "4032b",
+          "4460b",
+          "4569"
+        ],
+        "notInList": [
+          "20953",
+          "30208",
+          "3544",
+          "3545",
+          "4569"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 5287
+    }
+  ]
+}

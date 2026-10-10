@@ -1,0 +1,275 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 918,
+  "targetMiss": {
+    "target": 800,
+    "parts": 918,
+    "difference": 118,
+    "percent": 14.8
+  },
+  "seconds": 528,
+  "tokens": {
+    "input": 816842,
+    "cached": 559488,
+    "output": 56171,
+    "reasoning": 21900
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "14769",
+      "15068",
+      "24201",
+      "2431",
+      "3005",
+      "3005pe4",
+      "3069b",
+      "32607",
+      "3941",
+      "3942c",
+      "4032b",
+      "42022",
+      "42023",
+      "4460b",
+      "46334c01",
+      "50950",
+      "61678",
+      "64648",
+      "8043",
+      "98138"
+    ],
+    "notInList": [
+      "3005pe4",
+      "42022",
+      "42023",
+      "46334c01",
+      "64648",
+      "8043"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 528,
+      "usage": {
+        "input": 816842,
+        "cached": 559488,
+        "output": 56171,
+        "reasoning": 21900,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wheel motorcycle tyre",
+            "limit": 5
+          },
+          "results": [
+            "46334c01",
+            "71720c01",
+            "71720c02",
+            "88517c01",
+            "88517c02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope inverted",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye brick",
+            "limit": 5
+          },
+          "results": [
+            "41669",
+            "48267"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "fish",
+            "limit": 5
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x4",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "47456"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "3005pe4",
+            "limit": 3
+          },
+          "results": [
+            "3005pe4"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "brick eye pattern",
+            "limit": 6
+          },
+          "results": [
+            "3005pe1",
+            "3005pe4",
+            "3003pe3",
+            "3003pe2",
+            "3005pe2",
+            "3005pe3"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x2",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "15068",
+            "30602",
+            "5093",
+            "5095"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "1x6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "42022",
+            "42023",
+            "35164"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tile round eye",
+            "limit": 5
+          },
+          "results": [
+            "10238",
+            "98138pz0",
+            "98138pz2",
+            "98138p2d",
+            "98138p07"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 937,
+          "errors": 2,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 949,
+          "errors": 6,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 918,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "14769",
+          "15068",
+          "24201",
+          "2431",
+          "3005",
+          "3005pe4",
+          "3069b",
+          "32607",
+          "3941",
+          "3942c",
+          "4032b",
+          "42022",
+          "42023",
+          "4460b",
+          "46334c01",
+          "50950",
+          "61678",
+          "64648",
+          "8043",
+          "98138"
+        ],
+        "notInList": [
+          "3005pe4",
+          "42022",
+          "42023",
+          "46334c01",
+          "64648",
+          "8043"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 918
+    }
+  ]
+}

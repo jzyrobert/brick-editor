@@ -1,0 +1,309 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6-astra",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1072,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1072,
+    "difference": 72,
+    "percent": 7.2
+  },
+  "seconds": 694,
+  "tokens": {
+    "input": 1196304,
+    "cached": 856448,
+    "output": 107064,
+    "reasoning": 61483
+  },
+  "searches": 12,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11089",
+      "11477",
+      "15068",
+      "15070",
+      "24309",
+      "2431",
+      "24482",
+      "2449",
+      "3005",
+      "3039",
+      "3045",
+      "3062b",
+      "3069b",
+      "3070b",
+      "3660b",
+      "3678b",
+      "3747b",
+      "3941",
+      "4032b",
+      "40379",
+      "4460b",
+      "4589",
+      "61678",
+      "85861",
+      "93606",
+      "98138"
+    ],
+    "notInList": [
+      "11089",
+      "15070",
+      "24482",
+      "40379",
+      "85861",
+      "93606"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 694,
+      "usage": {
+        "input": 1196304,
+        "cached": 856448,
+        "output": 107064,
+        "reasoning": 61483,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x4",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "88930",
+            "93606",
+            "47456",
+            "61068"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "2450",
+            "43719",
+            "32059",
+            "90194",
+            "43723b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "horn",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "2142",
+            "64847",
+            "40379",
+            "11089",
+            "67361",
+            "53451",
+            "11437",
+            "87747"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "15070",
+            "limit": 2
+          },
+          "results": [
+            "15070"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "24482",
+            "limit": 2
+          },
+          "results": [
+            "24482"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye",
+            "colour": "yellow",
+            "limit": 6
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved inverted",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023",
+            "11301",
+            "73682"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope 75 inverted",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "2449"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "40379",
+            "limit": 2
+          },
+          "results": [
+            "40379"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "11089",
+            "limit": 2
+          },
+          "results": [
+            "11089"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "round plate open stud",
+            "size": "1x1",
+            "limit": 5
+          },
+          "results": [
+            "85861",
+            "3386"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "85861",
+            "limit": 2
+          },
+          "results": [
+            "85861"
+          ],
+          "round": 5
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1820,
+          "errors": 4,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 1075,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 1072,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11089",
+          "11477",
+          "15068",
+          "15070",
+          "24309",
+          "2431",
+          "24482",
+          "2449",
+          "3005",
+          "3039",
+          "3045",
+          "3062b",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3678b",
+          "3747b",
+          "3941",
+          "4032b",
+          "40379",
+          "4460b",
+          "4589",
+          "61678",
+          "85861",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "11089",
+          "15070",
+          "24482",
+          "40379",
+          "85861",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1072
+    }
+  ]
+}

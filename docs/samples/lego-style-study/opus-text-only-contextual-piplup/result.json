@@ -1,0 +1,113 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1028,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1028,
+    "difference": 28,
+    "percent": 2.8
+  },
+  "seconds": 366,
+  "tokens": {
+    "input": 230642,
+    "cached": 160425,
+    "output": 37504,
+    "reasoning": 25116,
+    "costUsd": 4.3174168
+  },
+  "searches": 0,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "14769",
+      "15068",
+      "2456",
+      "3009",
+      "3010",
+      "3039",
+      "3069b",
+      "3660b",
+      "4740",
+      "54200",
+      "54821",
+      "61678",
+      "64648",
+      "85984"
+    ],
+    "notInList": [
+      "54821",
+      "64648"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 366,
+      "usage": {
+        "input": 230642,
+        "cached": 160425,
+        "output": 37504,
+        "reasoning": 25116,
+        "costUsd": 4.3174168
+      },
+      "searches": [],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2133,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 2083,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 2083,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "14769",
+          "15068",
+          "2456",
+          "3009",
+          "3010",
+          "3039",
+          "3069b",
+          "3660b",
+          "4740",
+          "54200",
+          "54821",
+          "61678",
+          "64648",
+          "85984"
+        ],
+        "notInList": [
+          "54821",
+          "64648"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1028
+    }
+  ]
+}

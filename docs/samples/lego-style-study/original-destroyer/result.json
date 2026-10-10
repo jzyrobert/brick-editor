@@ -1,0 +1,271 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 4844,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 4844,
+    "difference": -156,
+    "percent": -3.1
+  },
+  "seconds": 927,
+  "tokens": {
+    "input": 769267,
+    "cached": 511872,
+    "output": 78934,
+    "reasoning": 39677
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "20953",
+      "2412b",
+      "2431",
+      "2877",
+      "3005",
+      "30208",
+      "3022",
+      "3023b",
+      "3024",
+      "3039",
+      "3040b",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3660b",
+      "3710",
+      "3941",
+      "3957a",
+      "4032b",
+      "4460b",
+      "54200",
+      "98138"
+    ],
+    "notInList": [
+      "20953",
+      "30208"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 927,
+      "usage": {
+        "input": 769267,
+        "cached": 511872,
+        "output": 78934,
+        "reasoning": 39677,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wedge plate 12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "47405"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope 18 4",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "18759",
+            "30363",
+            "60477",
+            "43708"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "sphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "20953",
+            "15395",
+            "5906",
+            "54821",
+            "86500",
+            "30208"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "engine",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "50943",
+            "43121",
+            "2853a",
+            "2853b",
+            "2853c",
+            "2854"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "44375b",
+            "4285b",
+            "44375a",
+            "18675"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "4x8",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "3035",
+            "22888",
+            "3934",
+            "6576",
+            "3933",
+            "73832"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "3x6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "54383",
+            "54384"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "hemisphere inverted",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "3665a",
+            "3660b",
+            "2449",
+            "3676"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "engine",
+            "category": "Space",
+            "limit": 8
+          },
+          "results": [],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "technic turbine",
+            "limit": 6
+          },
+          "results": [
+            "41531"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 5276,
+          "errors": 6,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 4770,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 4844,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "20953",
+          "2412b",
+          "2431",
+          "2877",
+          "3005",
+          "30208",
+          "3022",
+          "3023b",
+          "3024",
+          "3039",
+          "3040b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3710",
+          "3941",
+          "3957a",
+          "4032b",
+          "4460b",
+          "54200",
+          "98138"
+        ],
+        "notInList": [
+          "20953",
+          "30208"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 4844
+    }
+  ]
+}

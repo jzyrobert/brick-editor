@@ -1,0 +1,192 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2220,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2220,
+    "difference": 220,
+    "percent": 11
+  },
+  "seconds": 585,
+  "tokens": {
+    "input": 460356,
+    "cached": 259968,
+    "output": 54413,
+    "reasoning": 24521
+  },
+  "searches": 5,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "13547",
+      "2412b",
+      "2417",
+      "2423",
+      "2431",
+      "24866",
+      "3009",
+      "30151a",
+      "3070b",
+      "32607",
+      "3307",
+      "3659",
+      "3665a",
+      "3941",
+      "3957a",
+      "4032b",
+      "4589",
+      "4740",
+      "54200",
+      "6141",
+      "61678",
+      "90398"
+    ],
+    "notInList": [
+      "30151a",
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 585,
+      "usage": {
+        "input": 460356,
+        "cached": 259968,
+        "output": 54413,
+        "reasoning": 24521,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "inverted curved slope",
+            "size": "1x4",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "13547"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "plant leaves",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "2423",
+            "2417",
+            "32607",
+            "37695"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell",
+            "limit": 5
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "size": "2x2",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "4740",
+            "17964",
+            "35395"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2616,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 2220,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "13547",
+          "2412b",
+          "2417",
+          "2423",
+          "2431",
+          "24866",
+          "3009",
+          "30151a",
+          "3070b",
+          "32607",
+          "3307",
+          "3659",
+          "3665a",
+          "3941",
+          "3957a",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "61678",
+          "90398"
+        ],
+        "notInList": [
+          "30151a",
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2220
+    }
+  ]
+}

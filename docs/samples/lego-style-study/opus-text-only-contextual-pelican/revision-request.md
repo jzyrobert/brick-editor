@@ -1,0 +1,45 @@
+a pelican riding a bicycle
+
+This is a construction revision of an accepted draft, not a new concept contest.
+No images are supplied. Reason spatially from the source, coordinates and part metadata; no visual feedback is available during generation.
+Internally identify the three most important construction defects, then revise
+the supplied source to address them.
+Keep the subject recognizable and improve its existing concept. Judge its
+silhouette, proportions, support footprint and surface construction in all
+views. Remove unnecessary scenery slabs; keep compact supports only where
+needed. Finish visible skin with coherent shaping parts and selective tiles;
+retain purposeful texture and connection studs. A smooth staircase remains
+a stepped silhouette, so improve the transitions rather than merely hiding
+studs. Check the revised code for overlaps, colour availability and part count.
+Do not add disconnected decorative parts just to approach the part target.
+Reply through the same parts_search, check_build and brick.build protocols.
+
+The supplied draft's concept is preferred. Preserve its meaningful components,
+distinctive palette, overall arrangement, theme and interactions. Improve the
+construction of that concept; do not substitute a new type of model or simplify
+away its setting. Internally list the features that must survive before editing.
+Support decisions are separate from composition: a meaningful environment may
+use local plate-built patches, paths and foundations, with independent coherent
+modules where appropriate. Remove or reshape only generic ground/support mass
+that is unnecessary, preserving terrain/water/routes that establish the scene.
+Finish smooth manufactured surfaces while retaining intended natural texture.
+
+
+Accepted draft source:
+```js
+script({title:"The Fish Pedal Express",description:"A great white pelican pedals a turquoise beach cruiser along a harbour quay: a golden scooping pouch, swept feather wings gripping the bars, webbed feet working opposing pedals, and a basket of freshly caught fish.",palette:{bird:"white",bike:"medium azure",pouch:"tan",bill:"yellow",sea:{mix:["dark blue","medium azure","trans light blue"]},cobbles:{mix:["tan","dark tan","light bluish grey"]},stone:{mix:["light bluish grey","light bluish grey","light bluish grey","dark bluish grey"]}}});
+const B=(at,size,colour,extra={})=>box({at,size,colour,...extra});const P=(part,at,colour,turn=0)=>place({part,at,colour,turn});const L=(from,to,colour)=>line({from,to,colour});
+section("Harbour water and cobbled quay",[baseplate({at:[0,0],size:[48,32],colour:"blue"}),floor({at:[0,0,0],size:[48,8],colour:"sea"}),floor({at:[0,0,24],size:[48,8],colour:"sea"}),B([0,1,8],[48,6,16],"stone"),floor({at:[1,7,9],size:[46,14],colour:"cobbles"}),floor({at:[0,7,8],size:[48,2],colour:"tan",top:"tile"}),floor({at:[0,7,22],size:[48,2],colour:"dark tan",top:"tile"}),...range(12).map(i=>P("3069b",[i*4,8,8],"white")),...range(9).map(i=>P("2431",[3+i*5,1,3+(i%2)],"trans light blue")),...range(6).map(i=>P("3069b",[4+i*7,1,28],"white"))]);
+function wheel(cx){const y=8,z=16,outer=[6,10,12,12,12,12,12,12,10,6],inner=[0,4,8,8,8,8,8,8,4,0],ops=[];for(let r=0;r<10;r++){const w=outer[r],gap=inner[r],x=cx-w/2;if(!gap)ops.push(B([x,y+r*3,z],[w,3,2],"black",{interior:"solid"}));else{const t=(w-gap)/2;ops.push(B([x,y+r*3,z],[t,3,2],"black",{interior:"solid"}),B([cx+gap/2,y+r*3,z],[t,3,2],"black",{interior:"solid"}));}}const hub=[cx,23,16];for(const end of [[cx,11,16],[cx,34,16],[cx-4,23,16],[cx+4,23,16],[cx-3,14,16],[cx+3,14,16],[cx-3,31,16],[cx+3,31,16]])ops.push(L(hub,end,"light bluish grey"));ops.push(B([cx-1,20,14],[2,6,6],"dark bluish grey",{interior:"solid"}),P("3005",[cx,21,13],"pearl gold"));return ops;}
+section("Two open spoked bicycle wheels",[...wheel(10),...wheel(35)]);
+function tube(a,b,colour="bike"){return [L(a,b,colour),L([a[0],a[1],a[2]+1],[b[0],b[1],b[2]+1],colour)];}
+section("Turquoise diamond frame and controls",[...tube([10,23,14],[22,23,14]),...tube([10,23,14],[18,40,14]),...tube([18,40,14],[22,23,14]),...tube([18,40,14],[32,40,14]),...tube([32,40,14],[22,23,14]),...tube([32,40,14],[35,23,14]),...tube([32,40,19],[35,23,19]),B([18,40,14],[2,5,6],"light bluish grey",{interior:"solid"}),B([16,45,13],[7,2,8],"black"),B([31,40,14],[2,5,6],"light bluish grey",{interior:"solid"}),B([31,45,10],[2,2,14],"light bluish grey",{interior:"solid"}),B([30,47,10],[3,2,2],"black"),B([30,47,22],[3,2,2],"black"),P("3788",[8,38,16],"white"),P("3788",[33,38,16],"white"),L([22,23,11],[22,23,21],"dark bluish grey"),L([22,23,11],[24,19,11],"dark bluish grey"),L([22,23,21],[20,29,21],"dark bluish grey"),B([23,18,9],[4,2,4],"black",{interior:"solid"}),B([18,28,20],[4,2,4],"black",{interior:"solid"}),...tube([32,38,16],[39,38,16],"light bluish grey")]);
+section("Webbed feet working the pedals",[...tube([19,48,11],[25,34,11],"orange"),...tube([25,34,11],[24,20,11],"orange"),B([23,20,9],[4,3,4],"orange",{interior:"solid"}),...range(4).map(i=>P("11477",[25,20,9+i],"orange",270)),...tube([18,48,21],[14,37,21],"orange"),...tube([14,37,21],[19,30,21],"orange"),B([18,30,20],[4,3,4],"orange",{interior:"solid"}),...range(4).map(i=>P("11477",[20,30,20+i],"orange",270))]);
+section("Rounded white pelican and long neck",[B([11,47,13],[12,6,8],"bird"),B([9,53,11],[16,9,12],"bird"),B([12,62,12],[12,6,10],"bird"),B([21,59,13],[6,12,7],"bird"),B([23,71,13],[4,8,6],"bird"),B([22,76,12],[7,6,8],"bird"),...range(6).map(i=>P("15068",[12+i*2,62,10],"white")),...range(6).map(i=>P("15068",[12+i*2,62,22],"white",180)),...range(3).map(i=>P("15068",[12+i*2,68,15],"white",90)),...range(3).map(i=>P("15068",[22+i*2,82,12],"white")),...range(3).map(i=>P("15068",[22+i*2,82,14],"white")),...range(3).map(i=>P("15068",[22+i*2,82,16],"white",180)),...range(3).map(i=>P("15068",[22+i*2,82,18],"white",180)),P("3005pe4",[26,79,12],"white"),P("3005pe4",[26,79,19],"white",180),B([5,53,14],[6,2,6],"white"),...range(6).map(i=>P("61678",[3,55,14+i],i===0||i===5?"light bluish grey":"white",90))]);
+function wing(back){const z=back?21:9,t=back?180:0,ops=[];for(let i=0;i<14;i++){const x=10+i,y=59-Math.floor(i/4)*3;ops.push(P("61678",[x,y,z],"white",t));}ops.push(B([20,49,back?20:11],[8,2,3],"white"),...tube([23,52,back?23:10],[31,49,back?23:10],"white"));for(let i=0;i<3;i++)ops.push(P("11477",[27+i*2,49,back?22:10],"white",270));return ops;}
+section("Swept feather wings holding the bars",[...wing(false),...wing(true)]);
+section("Long bill and hanging pouch",[B([29,68,14],[5,3,4],"pouch",{interior:"solid"}),B([28,71,13],[8,3,6],"pouch",{interior:"solid"}),B([28,74,13],[11,3,6],"pouch",{interior:"solid"}),B([29,77,13],[13,3,6],"pouch",{interior:"solid"}),...range(4).map(i=>P("11477",[32,68,14+i],"tan",270)),...range(6).map(i=>P("11477",[34,71,13+i],"tan",270)),...range(6).map(i=>P("11477",[37,74,13+i],"tan",270)),B([29,80,13],[12,2,6],"bill",{interior:"solid"}),...range(6).map(i=>P("61678",[41,80,13+i],i===2||i===3?"orange":"yellow",270)),...range(6).map(i=>P("3069b",[29+i*2,82,13],"yellow")),...range(6).map(i=>P("3069b",[29+i*2,82,18],"yellow"))]);
+section("Fish delivery basket and quay crate",[floor({at:[34,39,13],size:[6,6],colour:"tan"}),B([34,40,13],[6,9,6],"tan",{texture:"log",open:["top"]}),floor({at:[34,45,13],size:[6,6],colour:"tan"}),P("64648",[35,46,14],"medium azure"),P("64648",[37,46,14],"orange"),P("8043",[36,46,15],"white"),B([42,8,19],[4,6,4],"reddish brown",{texture:"log"}),P("64648",[43,14,19],"medium azure"),P("8043",[44,14,19],"white")]);
+function bollard(x,z){return [P("4032b",[x,8,z],"dark bluish grey"),column({at:[x,9,z],diameter:2,height:6,colour:"black"}),P("14769",[x,15,z],"black")];}
+section("Harbour furniture, seaweed and foam",[...bollard(2,10),...bollard(44,10),...bollard(2,21),B([2,8,16],[2,2,2],"dark bluish grey"),column({at:[2,10,16],height:24,diameter:1,colour:"black"}),P("3941",[1,34,15],"black"),P("3941",[1,37,15],"trans yellow"),P("3942c",[1,40,15],"black"),...range(5).map(i=>P("32607",[3+i*9,1,30],"green",180)),...range(7).map(i=>P("98138",[5+i*6,1,6],"white")),...range(6).map(i=>P("3069b",[3+i*7,1,25],"trans light blue")),B([43,8,13],[3,2,3],"tan"),column({at:[44,10,14],height:15,colour:"reddish brown"}),B([42,25,14],[5,6,1],"dark blue"),P("3005",[43,27,13],"white"),P("3005",[45,27,13],"white")]);
+```

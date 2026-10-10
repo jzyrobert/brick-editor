@@ -1,0 +1,36 @@
+name: Publish reviewed E gallery builds
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: gallery-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      GH_TOKEN: ${{ github.token }}
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v6
+      - name: Require successful main validation
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/cloudflare.yml/runs?branch=main&event=push&per_page=20" > /tmp/main-runs.json
+          python3 - <<'PY'
+          import json, os
+          runs = [r for r in json.load(open('/tmp/main-runs.json'))['workflow_runs'] if r['head_sha'] == os.environ['GITHUB_SHA']]
+          assert runs and runs[0]['status'] == 'completed' and runs[0]['conclusion'] == 'success', 'Main validation must pass before gallery publication'
+          PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - run: npm ci
+      - name: Publish reviewed replacements
+        run: npx tsx scripts/publish-gallery-bundle.ts docs/samples/lego-style-study/gallery-publication --remote

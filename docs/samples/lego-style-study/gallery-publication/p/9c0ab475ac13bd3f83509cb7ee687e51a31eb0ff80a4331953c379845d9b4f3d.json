@@ -1,0 +1,516 @@
+{
+  "gallery": 1,
+  "source": "E:text-only:original-source-revision",
+  "label": "contextual-pelican/high",
+  "prompt": {
+    "id": "pelican-riding-a-bicycle-800",
+    "brief": "a pelican riding a bicycle",
+    "targetParts": 800
+  },
+  "agent": {
+    "id": "codex/gpt-6-astra/high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6-astra",
+    "targetParts": 800,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 884,
+    "targetMiss": {
+      "target": 800,
+      "parts": 884,
+      "difference": 84,
+      "percent": 10.5
+    },
+    "seconds": 340,
+    "tokens": {
+      "input": 794471,
+      "cached": 549504,
+      "output": 32757,
+      "reasoning": 13049
+    },
+    "searches": 15,
+    "checks": 2,
+    "knowledge": {
+      "named": [
+        "11477",
+        "13547",
+        "14769",
+        "15068",
+        "2431",
+        "3005",
+        "3005pe4",
+        "3068b",
+        "3069b",
+        "3070b",
+        "3678b",
+        "3700",
+        "3941",
+        "3942c",
+        "4032b",
+        "45410",
+        "45411",
+        "61678",
+        "6184",
+        "64648",
+        "71720",
+        "8043",
+        "87079",
+        "98138"
+      ],
+      "notInList": [
+        "3005pe4",
+        "45410",
+        "45411",
+        "6184",
+        "64648",
+        "71720",
+        "8043"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 340,
+        "usage": {
+          "input": 794471,
+          "cached": 549504,
+          "output": 32757,
+          "reasoning": 13049,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "wheel motorcycle",
+              "limit": 8
+            },
+            "results": [
+              "88517",
+              "2903",
+              "50860",
+              "18895",
+              "52035",
+              "85983",
+              "46334",
+              "71720"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "arch 1 x 12",
+              "limit": 5
+            },
+            "results": [
+              "6108",
+              "6184",
+              "18838",
+              "14707",
+              "30938"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "slope curved inverted",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 12
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "54091",
+              "32803",
+              "42023",
+              "11301",
+              "45410",
+              "41764",
+              "41765",
+              "1750",
+              "42021"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "3005pe4",
+              "limit": 2
+            },
+            "results": [
+              "3005pe4"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "64648",
+              "limit": 2
+            },
+            "results": [
+              "64648"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "tyre motorcycle 107",
+              "limit": 4
+            },
+            "results": [
+              "3641",
+              "50860",
+              "2902",
+              "11957"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tyre motorcycle 75",
+              "limit": 6
+            },
+            "results": [
+              "80542"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope curved 6",
+              "colour": "white",
+              "available_in_colour": true,
+              "limit": 10
+            },
+            "results": [
+              "42022",
+              "44126",
+              "42023",
+              "78522",
+              "45410",
+              "45411",
+              "56204",
+              "52031",
+              "35164",
+              "61484"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope curved 4",
+              "colour": "tan",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "61678",
+              "93273",
+              "13547",
+              "3573",
+              "52031",
+              "93604",
+              "66955",
+              "47456"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "8043",
+              "limit": 2
+            },
+            "results": [
+              "8043",
+              "80431"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "Technic Axle 6",
+              "limit": 4
+            },
+            "results": [
+              "3706",
+              "59443",
+              "2994",
+              "32167"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "Technic Pin",
+              "limit": 3
+            },
+            "results": [
+              "3700",
+              "3701",
+              "3709b"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "71720",
+              "limit": 1
+            },
+            "results": [
+              "71720"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "13547",
+              "limit": 1
+            },
+            "results": [
+              "13547"
+            ],
+            "round": 3
+          },
+          {
+            "args": {
+              "query": "6184",
+              "limit": 1
+            },
+            "results": [
+              "6184"
+            ],
+            "round": 3
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "parts": 870,
+            "errors": 4,
+            "ok": false
+          },
+          {
+            "round": 2,
+            "parts": 884,
+            "errors": 0,
+            "ok": true
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11477",
+            "13547",
+            "14769",
+            "15068",
+            "2431",
+            "3005",
+            "3005pe4",
+            "3068b",
+            "3069b",
+            "3070b",
+            "3678b",
+            "3700",
+            "3941",
+            "3942c",
+            "4032b",
+            "45410",
+            "45411",
+            "61678",
+            "6184",
+            "64648",
+            "71720",
+            "8043",
+            "87079",
+            "98138"
+          ],
+          "notInList": [
+            "3005pe4",
+            "45410",
+            "45411",
+            "6184",
+            "64648",
+            "71720",
+            "8043"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 884
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 884,
+      "designs": 63,
+      "lots": 186,
+      "massingCells": 5717,
+      "massingParts": 636,
+      "placedParts": 248,
+      "sections": 9,
+      "components": 0,
+      "opsRun": 312,
+      "scriptBytes": 23698,
+      "ldrawBytes": 43533,
+      "partsPerScriptKB": 38.2,
+      "compileMs": 246,
+      "checkMs": 268
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 11,
+      "groups": 230,
+      "covered": 854,
+      "uncovered": 30,
+      "health": "warning: 854 parts with verified connectors form 230 separately connected groups; 151 parts are not connected to anything. 30 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 800,
+      "parts": 884,
+      "difference": 84,
+      "percent": 10.5
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[4].ops[22]",
+          "sections[4].ops[34]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[4].ops[25]",
+          "sections[4].ops[35]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[4].ops[28]",
+          "sections[4].ops[36]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "11477.dat is placed where 15068.dat already is",
+        "ops": [
+          "sections[4].ops[31]",
+          "sections[4].ops[37]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 61678.dat already is",
+        "ops": [
+          "sections[4].ops[7]",
+          "sections[5].ops[0]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 45410.dat already is",
+        "ops": [
+          "sections[4].ops[2]",
+          "sections[5].ops[8]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 45410.dat already is",
+        "ops": [
+          "sections[4].ops[2]",
+          "sections[5].ops[9]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 45410.dat already is",
+        "ops": [
+          "sections[4].ops[2]",
+          "sections[5].ops[10]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 45410.dat already is",
+        "ops": [
+          "sections[4].ops[2]",
+          "sections[5].ops[11]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "11 part(s) are off the stud grid",
+        "ops": [
+          "sections[1].ops[0]",
+          "sections[1].ops[8]",
+          "sections[4].ops[1]",
+          "sections[4].ops[2]",
+          "sections[4].ops[5]",
+          "sections[4].ops[6]",
+          "sections[7].ops[3]",
+          "sections[7].ops[4]",
+          "sections[7].ops[5]",
+          "sections[7].ops[17]",
+          "sections[7].ops[18]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "657 part(s) in 229 group(s) are not connected to the main structure (largest group: 197 parts); e.g. 3678b at [24, 60, 13], 3022 at [32, 33, 13], 3010 at [31, 66, 14], 15068 at [27, 76, 13], 3023b at [17, 33, 13], 3031 at [25, 13, 11]",
+        "ops": [
+          "sections[4].ops[3]",
+          "sections[0].ops[2]",
+          "sections[7].ops[1]",
+          "sections[4].ops[12]",
+          "sections[4].ops[19]",
+          "sections[4].ops[4]",
+          "sections[0].ops[1]",
+          "sections[4].ops[13]",
+          "sections[2].ops[2]",
+          "sections[2].ops[15]",
+          "sections[4].ops[18]",
+          "sections[2].ops[8]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

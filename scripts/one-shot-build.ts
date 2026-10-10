@@ -33,7 +33,7 @@ import { isBrickBuild, type BrickBuildCall } from "./brick-build";
 const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file f) --model M
     [--efforts low,medium,high,xhigh,max] [--attempts 5] [--out dir] [--views iso,front,iso-back]
     [--parts-list on|off] [--search on|off] [--check on|off] [--runner codex|claude]
-    [--prompt build-agent.md]
+    [--prompt build-agent.md] [--reply-prompt brick-build.md] [--images a.png,b.png]
   Runs each reasoning effort in parallel through \`codex exec\` (or, with --runner claude,
   \`claude -p\` with --effort) with its tools turned off;
   --search on (default) lets it search parts by replying {"parts_search": …}. --parts-list on (default) puts the
@@ -42,6 +42,8 @@ const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file 
   3 drafts per attempt by replying {"check_build": {"code"}} and get back their count and errors.
   --prompt  the system prompt in prompts/ (default build-agent.md; build-agent-creative.md is the
   creative variant).
+  --reply-prompt  the output/example prompt (default brick-build.md).
+  --images  comma-separated input images for a Codex visual revision; recorded in summary.json.
   --out  default ~/brick-builds/oneshot-<name>-<target>; one folder per effort, plus summary.md`;
 
 /** Text below the first "---" line of a prompt file. */
@@ -90,6 +92,7 @@ export function oneShotPrompt(
     search = false,
     check = false,
     promptFile = "build-agent.md",
+    replyPromptFile = "brick-build.md",
   } = {},
 ) {
   let text = below(promptFile);
@@ -97,7 +100,7 @@ export function oneShotPrompt(
   if (!tools)
     throw new Error("prompts/build-agent.md changed: update one-shot-build.ts");
   text = text.slice(0, tools.at) + text.slice(tools.end);
-  const code = below("brick-build.md");
+  const code = below(replyPromptFile);
   const output = sectionOf(`\n${code}`, "Output")!,
     example = sectionOf(`\n${code}`, "Example")!;
   text = replaceSection(
@@ -413,6 +416,7 @@ function codexRunner(
   effort: string,
   cwd: string,
   reply: string,
+  images: string[] = [],
 ) {
   const common = [
     "--ignore-user-config",
@@ -423,6 +427,8 @@ function codexRunner(
     `model_reasoning_effort="${effort}"`,
     "-c",
     'web_search="disabled"',
+    "-c",
+    "project_doc_max_bytes=0",
     "-c",
     'sandbox_mode="read-only"',
     ...NO_TOOLS,
@@ -439,7 +445,12 @@ function codexRunner(
         "codex",
         thread
           ? ["exec", "resume", thread, ...common, message]
-          : ["exec", ...common, message],
+          : [
+              "exec",
+              ...images.flatMap((file) => ["--image", file]),
+              ...common,
+              message,
+            ],
         cwd,
         3 * 60 * 60 * 1000,
       );
@@ -547,6 +558,7 @@ async function askAgent(
   dir: string,
   n: number,
   search: boolean,
+  images: string[],
   check?: (
     input: BrickBuildCall["input"],
     k: number,
@@ -558,7 +570,13 @@ async function askAgent(
   const agent =
     runner === "claude"
       ? claudeRunner(model, effort, empty)
-      : codexRunner(model, effort, empty, join(dir, `attempt-${n}.reply.md`));
+      : codexRunner(
+          model,
+          effort,
+          empty,
+          join(dir, `attempt-${n}.reply.md`),
+          images,
+        );
   const usage: Usage = {
     input: 0,
     cached: 0,
@@ -769,6 +787,7 @@ async function runEffort(
     search: boolean;
     check: boolean;
     runner: "codex" | "claude";
+    images: string[];
   },
 ) {
   const dir = join(o.out, effort);
@@ -786,6 +805,7 @@ async function runEffort(
       dir,
       n,
       o.search,
+      o.images,
       o.check
         ? async (input, k) => {
             const name = `attempt-${n}.check-${k}`;
@@ -943,6 +963,8 @@ async function main(argv: string[]) {
         "check",
         "runner",
         "prompt",
+        "reply-prompt",
+        "images",
       ].includes(key)
     )
       throw new Error(`Unknown flag ${argv[i]}\n${HELP}`);
@@ -980,6 +1002,14 @@ async function main(argv: string[]) {
   const runner = flags.get("runner") ?? "codex";
   if (runner !== "codex" && runner !== "claude")
     throw new Error("--runner takes codex or claude");
+  const images = (flags.get("images") ?? "")
+    .split(",")
+    .filter(Boolean)
+    .map((file) => resolve(file));
+  if (images.length && runner !== "codex")
+    throw new Error("--images is supported by the codex runner only");
+  for (const file of images)
+    if (!existsSync(file)) throw new Error(`Image does not exist: ${file}`);
   registerFullLibraryFromDisk();
   registerAgentData();
   const prompt = oneShotPrompt(brief, target, {
@@ -987,6 +1017,7 @@ async function main(argv: string[]) {
     search,
     check,
     promptFile: flags.get("prompt"),
+    replyPromptFile: flags.get("reply-prompt"),
   });
   const views = flags.get("views") ?? "iso,front,iso-back";
   const results = await Promise.all(
@@ -1001,6 +1032,7 @@ async function main(argv: string[]) {
         search,
         check,
         runner,
+        images,
       }),
     ),
   );
@@ -1024,6 +1056,8 @@ async function main(argv: string[]) {
         targetParts: target,
         attempts,
         prompt: flags.get("prompt") ?? "build-agent.md",
+        replyPrompt: flags.get("reply-prompt") ?? "brick-build.md",
+        images,
         partsList,
         search,
         check,
