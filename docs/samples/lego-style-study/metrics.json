@@ -4771,5 +4771,384 @@
     ],
     "errors": [],
     "sourceSha256": "832069f8e3dd9549d0851f14f92d0d0f3fed135bfcfe24e82d917f99e9885f10"
+  },
+  {
+    "id": "opus-text-only-contextual-ewok",
+    "subject": "ewok",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Yub-Nub 1978: Moonwood Space Village",
+    "target": 3000,
+    "parts": 3347,
+    "baseplates": 0,
+    "tiles": 208,
+    "slopes": 169,
+    "categories": {
+      "Brick": 1313,
+      "Plate": 1467,
+      "Plant": 125,
+      "Slope": 169,
+      "Tile": 208,
+      "Window": 7,
+      "Glass": 7,
+      "Cone": 9,
+      "Antenna": 5,
+      "Minifig": 15,
+      "Container": 8,
+      "Dish": 4,
+      "Wing": 8,
+      "Door": 2
+    },
+    "seconds": 506,
+    "outputTokens": 53548,
+    "attempts": 1,
+    "checks": 1,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "10 part(s) are off the stud grid",
+        "ops": [
+          "sections[0].ops[122] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[122] > components.space-ewok.ops[2] (code line 2)",
+          "sections[0].ops[123] > components.space-ewok.ops[1] (code line 2)",
+          "sections[0].ops[123] > components.space-ewok.ops[2] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[1] (code line 2)",
+          "sections[2].ops[47] > components.space-ewok.ops[2] (code line 2)",
+          "sections[4].ops[94] > components.space-ewok.ops[1] (code line 2)",
+          "sections[4].ops[94] > components.space-ewok.ops[2] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[1] (code line 2)",
+          "sections[6].ops[15] > components.space-ewok.ops[2] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1936 part(s) in 290 group(s) are not connected to the main structure (largest group: 1263 parts); e.g. 3941 at [46, 4, 7], 3023b at [4, 58, 42], 3023b at [22, 59, 41], 3023b at [61, 46, 19], 3795 at [12, 10, 33], 3795 at [46, 10, 33]",
+        "ops": [
+          "sections[1].ops[14] (code line 5)",
+          "sections[1].ops[13] (code line 5)",
+          "sections[1].ops[25] (code line 5)",
+          "sections[0].ops[54] (code line 17)",
+          "sections[1].ops[51] (code line 29)",
+          "sections[4].ops[1] (code line 51)",
+          "sections[3].ops[83] (code line 48)",
+          "sections[3].ops[0] (code line 44)",
+          "sections[1].ops[24] (code line 5)",
+          "sections[1].ops[56] (code line 30)",
+          "sections[1].ops[61] (code line 31)",
+          "sections[6].ops[7] (code line 68)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "1071f2b3a1c66917d01905fab3989cc2c72a73d5440b33b4681ee8fed74d54c2"
+  },
+  {
+    "id": "opus-text-only-contextual-pelican",
+    "subject": "pelican",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "The Fish Pedal Express",
+    "target": 800,
+    "parts": 871,
+    "baseplates": 0,
+    "tiles": 67,
+    "slopes": 164,
+    "categories": {
+      "Slope": 164,
+      "Plate": 383,
+      "Brick": 245,
+      "Tile": 67,
+      "Plant": 4,
+      "Car": 2,
+      "Animal": 5,
+      "Cone": 1
+    },
+    "seconds": 482,
+    "outputTokens": 49488,
+    "attempts": 1,
+    "checks": 2,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "49 part(s) are off the stud grid",
+        "ops": [
+          "sections[4].ops[6] (code line 2)",
+          "sections[4].ops[7] (code line 2)",
+          "sections[4].ops[8] (code line 2)",
+          "sections[4].ops[9] (code line 2)",
+          "sections[4].ops[10] (code line 2)",
+          "sections[4].ops[11] (code line 2)",
+          "sections[4].ops[12] (code line 2)",
+          "sections[4].ops[13] (code line 2)",
+          "sections[4].ops[14] (code line 2)",
+          "sections[4].ops[15] (code line 2)",
+          "sections[4].ops[16] (code line 2)",
+          "sections[4].ops[17] (code line 2)",
+          "sections[4].ops[18] (code line 2)",
+          "sections[4].ops[19] (code line 2)",
+          "sections[4].ops[20] (code line 2)",
+          "sections[4].ops[21] (code line 2)",
+          "sections[4].ops[22] (code line 2)",
+          "sections[4].ops[23] (code line 2)",
+          "sections[4].ops[24] (code line 2)",
+          "sections[4].ops[25] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "514 part(s) in 130 group(s) are not connected to the main structure (largest group: 291 parts); e.g. 15068 at [10, 61, 12], 15068 at [23, 81, 13], 3023b at [17, 37, 15], 3022 at [32, 38, 15], 2431 at [10, 1, 4], 3031 at [25, 18, 11]",
+        "ops": [
+          "sections[4].ops[1] (code line 2)",
+          "sections[4].ops[3] (code line 2)",
+          "sections[4].ops[2] (code line 2)",
+          "sections[4].ops[0] (code line 2)",
+          "sections[4].ops[5] (code line 2)",
+          "sections[6].ops[18] (code line 2)",
+          "sections[2].ops[8] (code line 2)",
+          "sections[2].ops[2] (code line 2)",
+          "sections[6].ops[1] (code line 2)",
+          "sections[3].ops[0] (code line 2)",
+          "sections[6].ops[3] (code line 2)",
+          "sections[5].ops[34] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "1f6bb30cea4b702f94a974416e80edcbc91c36cebd0460844edbe072b43f9755"
+  },
+  {
+    "id": "opus-text-only-contextual-dragon",
+    "subject": "dragon",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Cinderkeeper \u2014 The Last Egg",
+    "target": 1000,
+    "parts": 1108,
+    "baseplates": 0,
+    "tiles": 104,
+    "slopes": 200,
+    "categories": {
+      "Slope": 200,
+      "Brick": 359,
+      "Plate": 413,
+      "Tile": 104,
+      "Cone": 18,
+      "Bar": 12,
+      "Wing": 2
+    },
+    "seconds": 1099,
+    "outputTokens": 111962,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[4].ops[56] (code line 2)",
+          "sections[4].ops[58] (code line 2)",
+          "sections[5].ops[78] (code line 2)",
+          "sections[5].ops[157] (code line 2)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "95 part(s) in 7 group(s) are not connected to the main structure (largest group: 985 parts); e.g. 15068 at [23, 14, 5], 98138 at [3, 2, 6], 98138 at [40, 2, 35], 60479 at [19, 0, 44], 93606 at [22, 39, 5], 93606 at [24, 39, 5]",
+        "ops": [
+          "sections[1].ops[11] (code line 28)",
+          "sections[0].ops[7] (code line 11)",
+          "sections[0].ops[5] (code line 11)",
+          "sections[0].ops[6] (code line 11)",
+          "sections[0].ops[4] (code line 10)",
+          "sections[1].ops[12] (code line 2)",
+          "sections[1].ops[21] (code line 2)",
+          "sections[1].ops[18] (code line 2)",
+          "sections[1].ops[17] (code line 2)",
+          "sections[1].ops[16] (code line 2)",
+          "sections[1].ops[19] (code line 2)",
+          "sections[1].ops[20] (code line 2)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "e1ef51a60e5f150afcd83ece796974eb2e3c5fcb6f696cbb33b9f8c38969c7a8"
+  },
+  {
+    "id": "opus-text-only-contextual-piplup",
+    "subject": "piplup",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Piplup's Bubble-Berg",
+    "target": 1000,
+    "parts": 1028,
+    "baseplates": 0,
+    "tiles": 136,
+    "slopes": 64,
+    "categories": {
+      "Brick": 643,
+      "Plate": 178,
+      "Slope": 64,
+      "Tile": 136,
+      "Dish": 3,
+      "Technic": 3,
+      "Animal": 1
+    },
+    "seconds": 366,
+    "outputTokens": 37504,
+    "attempts": 1,
+    "checks": 3,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "61678.dat is placed where 3069b.dat already is",
+        "ops": [
+          "sections[0].ops[50] (code line 12)",
+          "sections[0].ops[55] (code line 13)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "4 part(s) are off the stud grid",
+        "ops": [
+          "sections[2].ops[0].ops[2] (code line 80)",
+          "sections[2].ops[1].ops[2] (code line 80)",
+          "sections[2].ops[2].ops[2] (code line 80)",
+          "sections[2].ops[3] (code line 83)"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "328 part(s) in 113 group(s) are not connected to the main structure (largest group: 693 parts); e.g. 3660b at [15, 49, 10], 3003 at [28, 16, 20], 3010 at [9, 22, 20], 3004 at [12, 46, 13], 3004 at [20, 46, 13], 3004 at [16, 22, 14]",
+        "ops": [
+          "sections[0].ops[4] (code line 9)",
+          "sections[0].ops[2] (code line 9)",
+          "sections[0].ops[3] (code line 9)",
+          "sections[0].ops[1] (code line 9)",
+          "sections[2].ops[2].ops[0] (code line 80)",
+          "sections[0].ops[0] (code line 9)",
+          "sections[2].ops[1].ops[0] (code line 80)",
+          "sections[1].ops[446] (code line 62)",
+          "sections[1].ops[364] (code line 62)",
+          "sections[1].ops[121] (code line 62)",
+          "sections[1].ops[119] (code line 62)",
+          "sections[1].ops[187] (code line 62)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "cca43b7f24488035300693700cfe8675c47e4eb5ce5cca71060d10f51e7126f4"
+  },
+  {
+    "id": "opus-text-only-contextual-temple",
+    "subject": "temple",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Moonwater Temple \u2014 The Evening Bell",
+    "target": 2000,
+    "parts": 2190,
+    "baseplates": 0,
+    "tiles": 203,
+    "slopes": 411,
+    "categories": {
+      "Brick": 809,
+      "Slope": 411,
+      "Plate": 650,
+      "Tile": 203,
+      "Fence": 39,
+      "Window": 21,
+      "Glass": 21,
+      "Dish": 11,
+      "Plant": 11,
+      "Cone": 5,
+      "Panel": 4,
+      "Cylinder": 1,
+      "Arch": 2,
+      "Antenna": 1,
+      "Minifig Accessory": 1
+    },
+    "seconds": 728,
+    "outputTokens": 74966,
+    "attempts": 1,
+    "checks": 1,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1251 part(s) in 145 group(s) are not connected to the main structure (largest group: 878 parts); e.g. 60592 at [6, 18, 35], 54200 at [5, 1, 5], 3666 at [32, 0, 10], 3666 at [32, 0, 16], 54200 at [41, 2, 16], 3941 at [43, 13, 2]",
+        "ops": [
+          "sections[0].ops[1] (code line 8)",
+          "sections[2].ops[40] (code line 13)",
+          "sections[2].ops[3] (code line 13)",
+          "sections[2].ops[0] (code line 14)",
+          "sections[2].ops[72] (code line 13)",
+          "sections[2].ops[90] (code line 13)",
+          "sections[2].ops[1] (code line 14)",
+          "sections[2].ops[29] (code line 13)",
+          "sections[2].ops[30] (code line 13)",
+          "sections[2].ops[62] (code line 13)",
+          "sections[0].ops[0] (code line 8)",
+          "sections[2].ops[63] (code line 13)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "70b0328f550f99a33c1177f1b20acb583acf2b162bbcb3a6fc98bf7a7b738773"
+  },
+  {
+    "id": "opus-text-only-contextual-destroyer",
+    "subject": "destroyer",
+    "variant": "Opus E",
+    "model": "claude-opus-5-5",
+    "title": "Devastator \u2014 The Capture of Tantive IV",
+    "target": 5000,
+    "parts": 5434,
+    "baseplates": 0,
+    "tiles": 305,
+    "slopes": 1130,
+    "categories": {
+      "Plate": 2991,
+      "Slope": 1130,
+      "Brick": 1003,
+      "Tile": 305,
+      "Dish": 2,
+      "Sphere": 2,
+      "Antenna": 1
+    },
+    "seconds": 945,
+    "outputTokens": 94213,
+    "attempts": 1,
+    "checks": 1,
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "957 part(s) in 10 group(s) are not connected to the main structure (largest group: 4050 parts); e.g. 3023b at [17, 36, 103], 3068b at [48, 18, 48], 60474 at [84, 0, 51], 60474 at [14, 0, 28], 3795 at [48, 0, 29], 3039 at [44, 18, 44]",
+        "ops": [
+          "sections[8].ops[0] (code line 48)",
+          "sections[8].ops[29] (code line 43)",
+          "sections[8].ops[28] (code line 43)",
+          "sections[8].ops[5] (code line 43)",
+          "sections[8].ops[6] (code line 43)",
+          "sections[8].ops[52] (code line 43)",
+          "sections[8].ops[51] (code line 43)",
+          "sections[9].ops[0] > components.Tantive IV.ops[16] (code line 51)",
+          "sections[10].ops[6] (code line 57)",
+          "sections[8].ops[4] (code line 42)",
+          "sections[8].ops[50] (code line 42)",
+          "sections[11].ops[4] (code line 59)"
+        ]
+      }
+    ],
+    "errors": [],
+    "sourceSha256": "67c743be656531ba626c046e7ca2782d7be8f487eb980d5344182c05c18f8498"
   }
 ]

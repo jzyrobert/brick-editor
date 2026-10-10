@@ -1,6 +1,6 @@
 # LEGO construction and surface experiment
 
-This study compares the six current gallery briefs with experimental prompting and visual revision, using **GPT-6.1-Sol and GPT-6-Astra, high**. The initial twelve trials are followed by six concept-preserving E revisions. The paired E/F follow-up tests revisions from source alone, preserving the text-only spatial reasoning challenge; the latest comparison reruns identical E inputs with Astra. The first two E runs respond to the owner’s preference for the original temple and Ewok compositions; the other four complete the gallery comparison. Worktree branch: `codex/lego-generation-study`, based on `origin/main` at `579d0f7`. Nothing is published to the gallery.
+This study compares the six current gallery briefs with experimental prompting and visual revision, using **GPT-6.1-Sol, GPT-6-Astra and Claude Opus 5.5, high**. The initial twelve trials are followed by six concept-preserving E revisions. The paired E/F follow-up tests revisions from source alone, preserving the text-only spatial reasoning challenge; the latest comparison reruns identical E inputs with Astra and Opus. The first two E runs respond to the owner’s preference for the original temple and Ewok compositions; the other four complete the gallery comparison. Worktree branch: `codex/lego-generation-study`, initially based on `origin/main` at `579d0f7`; default adoption and publication were rebased on `96c50c5`. E is now the default prompt. The reviewed [gallery replacement bundle](gallery-publication/manifest.json) contains the text-only E builds for all three models; the earlier visual-input experiments remain study artifacts.
 
 The original creative prompt encourages a scene for every subject, calls a freestanding subject a losing pattern, defines ground as the baseplate top, asks to keep builds inside baseplates and tells models to leave flat roofs studded. The runner also inserts a cottage-on-a-baseplate JavaScript example. Those are concrete sources of bias; simply appending “no baseplate” leaves contradictory instructions and examples. The early A/B trials corrected the main coordinate/finish rules and example but retained the legacy scene workflow. The final C prompt removes that contradiction too; exact filled input snapshots are saved per build.
 
@@ -346,3 +346,35 @@ npx tsx scripts/evaluate-build-style.ts \
 ```
 
 The harness defaults to GPT-6.1-Sol high and now accepts `--model`; effort remains high. An existing result from another model is rejected rather than silently reused. Experimental prompts, gallery defaults and published builds are unchanged. Accepted sources, MPDs, exact prompts, revision provenance, measurements and four views are retained beside each build.
+
+## E with Opus 5.5 high and gallery replacement
+
+Claude Opus 5.5 (`claude-opus-5-5`, high) revises the same six original **Sol gallery sources**, using byte-identical filled E inputs, generic requests and source provenance as the existing Sol/Astra E runs. This changes the model and CLI runner; their built-in system prompts differ. There are no input images or render feedback. Claude runs in an empty directory with tools disabled, safe mode, strict MCP configuration and slash commands disabled. Session records confirm the requested model, zero available tools/MCP servers/skills and no tool events. Effort is recorded by the CLI invocation and results. Installed plugin metadata in the initialization log is not evidence of tools being available. Limits remain ten search replies, three compiler checks per attempt and five attempts; the compiler returns counts and errors. No construction warnings or images are fed back.
+
+All six accept in one attempt, with zero compiler errors, zero baseplate parts and four final views. The viewer now includes 48 builds: six originals and 42 completed new runs. The six Opus runs take 68.8 minutes of summed generation/check time (parallel elapsed time is shorter) and report $35.99 in CLI usage. Rendering is additional. Timing, token accounting and built-in agent scaffolding differ between runners, so these costs are not a controlled efficiency benchmark.
+
+| Subject   | Sol E parts | Astra E parts | Opus E parts | Opus time | Checks | Warning records |
+| --------- | ----------: | ------------: | -----------: | --------: | -----: | --------------: |
+| Pelican   |         918 |           884 |          871 |   8.0 min |      2 |               2 |
+| Piplup    |       1,007 |         1,037 |        1,028 |   6.1 min |      3 |               3 |
+| Temple    |       2,200 |         2,297 |        2,190 |  12.1 min |      1 |               1 |
+| Dragon    |       1,146 |         1,072 |        1,108 |  18.3 min |      3 |               2 |
+| Destroyer |       5,334 |         5,272 |        5,434 |  15.8 min |      1 |               1 |
+| Ewok      |       3,517 |         3,181 |        3,347 |   8.4 min |      1 |               2 |
+
+![E comparison across Sol, Astra and Opus](three-model-overview.png)
+
+My visual preference is Opus for Piplup's rounder crown and the Destroyer's more continuous triangular hull, Sol for the pelican, and Astra for the dragon and Ewok. The temples are close; Opus preserves a clearer red pagoda body but does not establish an overall improvement. Opus's pelican remains flat and layered, and its Ewok adds broad plate-built ground. Zero baseplate parts therefore does not mean no slab-like foundations. These are preferences among single outputs, not a model ranking. [Opus in three views](opus-three-view-overview.png) and the viewer retain the less flattering angles.
+
+Fewer warning records do not establish sound construction: Opus reports 514 pelican parts in 130 groups, 328 Piplup parts in 113 groups, 1,251 temple parts in 145 groups and 1,936 Ewok parts in 290 groups outside their largest structure. Some separate assemblies are intentional and connector coverage is incomplete; these diagnostics still prevent a physical-buildability claim. Piplup also has one coincident-placement warning. All warnings remain in the compiler reports and public gallery reports.
+
+The replacement uses the **existing text-only E Sol/Astra runs** and these matching Opus revisions, as requested. It includes six prompts × three high-effort models (18 builds), all rendered with the current production Realistic look at 1,280 × 960 from three shared gallery angles. The manifest records the 12 previous visible IDs, the 18 replacements, 108 content-addressed assets and checksums. The publication SQL inserts the new builds and hides those exact 12 earlier entries; their sources and bucket files remain available.
+
+`scripts/publish-gallery-bundle.ts` verifies the complete reviewed bundle before any upload and refuses a changed live roster. Immutable files are uploaded before visibility changes; the index is rebuilt last with the existing cache policy. The main-only `gallery.yml` workflow uses the repository credential and requires successful validation of the exact main commit. It supports an idempotent rerun after a partial publication. It does not generate models in CI.
+
+```sh
+npx tsx scripts/evaluate-build-style.ts --runner claude --model claude-opus-5-5 --cases contextual-pelican,contextual-piplup,contextual-temple,contextual-dragon,contextual-destroyer,contextual-ewok --revise-from docs/samples/lego-style-study --source-variant original --revision-feedback text --out .local/lego-study/opus-text-only --concurrency 3
+npx tsx scripts/publish-gallery-bundle.ts docs/samples/lego-style-study/gallery-publication
+# After this commit is on main and every validation/deployment job passes:
+gh workflow run gallery.yml --ref main
+```

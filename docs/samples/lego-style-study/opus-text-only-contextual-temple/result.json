@@ -1,0 +1,190 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2190,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2190,
+    "difference": 190,
+    "percent": 9.5
+  },
+  "seconds": 728,
+  "tokens": {
+    "input": 211772,
+    "cached": 101372,
+    "output": 74966,
+    "reasoning": 62351,
+    "costUsd": 4.970072
+  },
+  "searches": 5,
+  "checks": 1,
+  "knowledge": {
+    "named": [
+      "13547",
+      "2412b",
+      "2417",
+      "2423",
+      "24866",
+      "3010",
+      "30151a",
+      "3031",
+      "3068b",
+      "3070b",
+      "32607",
+      "3307",
+      "3659",
+      "3665a",
+      "3941",
+      "3957a",
+      "4032b",
+      "4589",
+      "4740",
+      "54200",
+      "6141",
+      "85984",
+      "90398"
+    ],
+    "notInList": [
+      "30151a",
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 728,
+      "usage": {
+        "input": 211772,
+        "cached": 101372,
+        "output": 74966,
+        "reasoning": 62351,
+        "costUsd": 4.970072
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "slope 18 corner",
+            "colour": "black"
+          },
+          "results": [
+            "43708"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope corner",
+            "size": "4x4"
+          },
+          "results": [
+            "30565",
+            "43708",
+            "66955",
+            "7249",
+            "48092",
+            "61487",
+            "93589",
+            "3477",
+            "27507",
+            "5651",
+            "45677",
+            "4041",
+            "30562",
+            "47757",
+            "30503"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell"
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609",
+            "30151b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope 33 double convex",
+            "colour": "black"
+          },
+          "results": [
+            "3675"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope 18 4 x 4",
+            "colour": "black"
+          },
+          "results": [
+            "43708",
+            "18814"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2190,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "13547",
+          "2412b",
+          "2417",
+          "2423",
+          "24866",
+          "3010",
+          "30151a",
+          "3031",
+          "3068b",
+          "3070b",
+          "32607",
+          "3307",
+          "3659",
+          "3665a",
+          "3941",
+          "3957a",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "85984",
+          "90398"
+        ],
+        "notInList": [
+          "30151a",
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2190
+    }
+  ]
+}

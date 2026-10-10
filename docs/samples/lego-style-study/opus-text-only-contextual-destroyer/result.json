@@ -1,0 +1,190 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 5434,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 5434,
+    "difference": 434,
+    "percent": 8.7
+  },
+  "seconds": 945,
+  "tokens": {
+    "input": 247410,
+    "cached": 119502,
+    "output": 94213,
+    "reasoning": 82964,
+    "costUsd": 6.4000702
+  },
+  "searches": 5,
+  "checks": 1,
+  "knowledge": {
+    "named": [
+      "20953",
+      "2412b",
+      "2877",
+      "3005",
+      "3022",
+      "3023b",
+      "3037",
+      "3039",
+      "3040b",
+      "3062b",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3660b",
+      "3665a",
+      "3710",
+      "3941",
+      "3957a",
+      "3960",
+      "4032b",
+      "4287a",
+      "4460b",
+      "60474",
+      "60477",
+      "86500"
+    ],
+    "notInList": [
+      "20953",
+      "86500"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 945,
+      "usage": {
+        "input": 247410,
+        "cached": 119502,
+        "output": 94213,
+        "reasoning": 82964,
+        "costUsd": 6.4000702
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "30208"
+          },
+          "results": [
+            "30208"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dome hemisphere 4 x 4",
+            "colour": "light bluish grey",
+            "available_in_colour": true
+          },
+          "results": [
+            "86500"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "20953"
+          },
+          "results": [
+            "20953",
+            "37837"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate pointed nose",
+            "colour": "light bluish grey",
+            "available_in_colour": true
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "3024",
+            "3023b",
+            "3623",
+            "3710",
+            "3022",
+            "3021",
+            "3020",
+            "3666",
+            "3795",
+            "6141"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope 18 4 x 1",
+            "colour": "light bluish grey",
+            "available_in_colour": true
+          },
+          "results": [
+            "60477"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 5434,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "20953",
+          "2412b",
+          "2877",
+          "3005",
+          "3022",
+          "3023b",
+          "3037",
+          "3039",
+          "3040b",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3665a",
+          "3710",
+          "3941",
+          "3957a",
+          "3960",
+          "4032b",
+          "4287a",
+          "4460b",
+          "60474",
+          "60477",
+          "86500"
+        ],
+        "notInList": [
+          "20953",
+          "86500"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 5434
+    }
+  ]
+}

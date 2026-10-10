@@ -1,6 +1,6 @@
 # Plan: a gallery, arena and leaderboard of agent builds
 
-Status: **phase 1 built and published.** Written 3 October 2026. The publish script, D1 and the R2 bucket on `gallery.bricks.robertj.in` are live with 10 temple builds (the two run-4 runs, GPT-6.1-Sol and Opus 5.5). The app's Gallery shows only published builds, with a live 3D view on each detail page ([§12](#12-phase-1-as-built)). Votes, the arena and the leaderboard (phases 2 and 3) are not built.
+Status: **phase 1 built and published.** Written 3 October 2026; collection notes updated 10 October. The gallery uses D1 and a public R2 bucket on `gallery.bricks.robertj.in`. The reviewed E replacement collection covers six briefs with Sol, Astra and Opus at high effort; see [GALLERY](GALLERY.md) for the collection and guarded publication workflow. The app shows published builds with a live 3D view on each detail page ([§12](#12-phase-1-as-built)). Votes, the arena and the leaderboard (phases 2 and 3) are not built.
 
 The idea comes from [Minebench](https://github.com/Ammaar-Alam/minebench) (see also [PERFORMANCE-MINEBENCH.md](PERFORMANCE-MINEBENCH.md)): people browse builds that models made from the same prompt, vote blind between two of them, and models are ranked from the votes.
 

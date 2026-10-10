@@ -1,0 +1,461 @@
+{
+  "gallery": 1,
+  "source": "E:text-only:original-source-revision",
+  "label": "contextual-dragon/high",
+  "prompt": {
+    "id": "dragon-1000",
+    "brief": "a dragon",
+    "targetParts": 1000
+  },
+  "agent": {
+    "id": "codex/gpt-6-1-sol/high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "run": {
+    "effort": "high",
+    "runner": "codex",
+    "model": "gpt-6.1-sol",
+    "targetParts": 1000,
+    "accepted": true,
+    "attemptsUsed": 1,
+    "parts": 1146,
+    "targetMiss": {
+      "target": 1000,
+      "parts": 1146,
+      "difference": 146,
+      "percent": 14.6
+    },
+    "seconds": 564,
+    "tokens": {
+      "input": 831553,
+      "cached": 565120,
+      "output": 56812,
+      "reasoning": 22280
+    },
+    "searches": 9,
+    "checks": 3,
+    "knowledge": {
+      "named": [
+        "11089",
+        "11477",
+        "13547",
+        "15068",
+        "15070",
+        "24309",
+        "24482",
+        "3005",
+        "3039",
+        "3062b",
+        "3069b",
+        "3070b",
+        "3678b",
+        "3941",
+        "4032b",
+        "40379",
+        "4589",
+        "50950",
+        "54200",
+        "61678",
+        "93606",
+        "98138"
+      ],
+      "notInList": [
+        "11089",
+        "15070",
+        "24482",
+        "40379",
+        "93606"
+      ],
+      "finds": [],
+      "moved": [],
+      "colourErrors": []
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "seconds": 564,
+        "usage": {
+          "input": 831553,
+          "cached": 565120,
+          "output": 56812,
+          "reasoning": 22280,
+          "costUsd": 0
+        },
+        "searches": [
+          {
+            "args": {
+              "query": "curved slope",
+              "limit": 12
+            },
+            "results": [
+              "11477",
+              "15068",
+              "61678",
+              "50950",
+              "93273",
+              "88930",
+              "24309",
+              "24201",
+              "13547",
+              "6091",
+              "30602",
+              "42022"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "15070",
+              "limit": 1
+            },
+            "results": [
+              "15070"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "93606",
+              "limit": 1
+            },
+            "results": [
+              "93606"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "24482",
+              "limit": 1
+            },
+            "results": [
+              "24482"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "11089",
+              "limit": 1
+            },
+            "results": [
+              "11089"
+            ],
+            "round": 1
+          },
+          {
+            "args": {
+              "query": "40379",
+              "limit": 1
+            },
+            "results": [
+              "40379"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "slope curved inverted",
+              "colour": "black",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "24201",
+              "13547",
+              "70681",
+              "54091",
+              "32803",
+              "42023"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "wedge slope",
+              "colour": "dark red",
+              "available_in_colour": true,
+              "limit": 8
+            },
+            "results": [
+              "54200",
+              "85984",
+              "93606",
+              "42918",
+              "41748",
+              "41747",
+              "52031",
+              "43720"
+            ],
+            "round": 2
+          },
+          {
+            "args": {
+              "query": "tooth",
+              "colour": "tan",
+              "available_in_colour": true,
+              "limit": 6
+            },
+            "results": [
+              "49668",
+              "15070",
+              "3647",
+              "3649",
+              "3648b",
+              "4019"
+            ],
+            "round": 2
+          }
+        ],
+        "checks": [
+          {
+            "round": 1,
+            "ok": false,
+            "reason": "INVALID_INPUT: Invalid build script: $.sections[3].ops[58].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [4,0,2]); $.sections[3].ops[121].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [4,0,2])"
+          },
+          {
+            "round": 2,
+            "parts": 1723,
+            "errors": 5,
+            "ok": false
+          },
+          {
+            "round": 3,
+            "parts": 1194,
+            "errors": 1,
+            "ok": false
+          }
+        ],
+        "toolEvents": [],
+        "providerRetries": [],
+        "outcome": "accepted",
+        "knowledge": {
+          "named": [
+            "11089",
+            "11477",
+            "13547",
+            "15068",
+            "15070",
+            "24309",
+            "24482",
+            "3005",
+            "3039",
+            "3062b",
+            "3069b",
+            "3070b",
+            "3678b",
+            "3941",
+            "4032b",
+            "40379",
+            "4589",
+            "50950",
+            "54200",
+            "61678",
+            "93606",
+            "98138"
+          ],
+          "notInList": [
+            "11089",
+            "15070",
+            "24482",
+            "40379",
+            "93606"
+          ],
+          "finds": [],
+          "moved": [],
+          "colourErrors": []
+        },
+        "parts": 1146
+      }
+    ]
+  },
+  "compile": {
+    "stats": {
+      "parts": 1146,
+      "designs": 72,
+      "lots": 134,
+      "massingCells": 13708,
+      "massingParts": 796,
+      "placedParts": 350,
+      "sections": 7,
+      "components": 0,
+      "opsRun": 451,
+      "scriptBytes": 33843,
+      "ldrawBytes": 53786,
+      "partsPerScriptKB": 34.7,
+      "compileMs": 310,
+      "checkMs": 405
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 2,
+      "groups": 182,
+      "covered": 1091,
+      "uncovered": 55,
+      "health": "warning: 1091 parts with verified connectors form 182 separately connected groups; 160 parts are not connected to anything. 55 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 1000,
+      "parts": 1146,
+      "difference": 146,
+      "percent": 14.6
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[9]",
+          "sections[2].ops[25]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[12]",
+          "sections[2].ops[26]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[13]",
+          "sections[2].ops[33]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[16]",
+          "sections[2].ops[34]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[55]",
+          "sections[2].ops[39]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[56]",
+          "sections[2].ops[40]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[17]",
+          "sections[2].ops[41]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 24309.dat already is",
+        "ops": [
+          "sections[2].ops[20]",
+          "sections[2].ops[42]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[55]",
+          "sections[2].ops[47]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "24309.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[1].ops[56]",
+          "sections[2].ops[48]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "50950.dat is placed where 11477.dat already is",
+        "ops": [
+          "sections[2].ops[77]",
+          "sections[2].ops[105]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "93606.dat is placed where 54200.dat already is",
+        "ops": [
+          "sections[0].ops[53]",
+          "sections[4].ops[12]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "part-clash",
+        "message": "93606.dat is placed where 93606.dat already is",
+        "ops": [
+          "sections[4].ops[9]",
+          "sections[4].ops[17]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "off-grid",
+        "message": "2 part(s) are off the stud grid",
+        "ops": [
+          "sections[5].ops[31]",
+          "sections[5].ops[35]"
+        ]
+      },
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "424 part(s) in 181 group(s) are not connected to the main structure (largest group: 667 parts); e.g. 61678 at [18, 48, 24], 61678 at [30, 51, 24], 3070b at [13, 9, 31], 4589 at [20, 52, 8], 3005 at [13, 10, 31], 3005 at [15, 10, 31]",
+        "ops": [
+          "sections[1].ops[52]",
+          "sections[5].ops[0]",
+          "sections[5].ops[1]",
+          "sections[1].ops[53]",
+          "sections[3].ops[23]",
+          "sections[3].ops[78]",
+          "sections[3].ops[30]",
+          "sections[3].ops[85]",
+          "sections[1].ops[30]",
+          "sections[3].ops[16]",
+          "sections[3].ops[9]",
+          "sections[3].ops[37]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

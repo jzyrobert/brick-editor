@@ -1,0 +1,204 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 871,
+  "targetMiss": {
+    "target": 800,
+    "parts": 871,
+    "difference": 71,
+    "percent": 8.9
+  },
+  "seconds": 482,
+  "tokens": {
+    "input": 245299,
+    "cached": 159644,
+    "output": 49488,
+    "reasoning": 36082,
+    "costUsd": 4.694407399999999
+  },
+  "searches": 5,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "14769",
+      "15068",
+      "24201",
+      "2431",
+      "3005",
+      "3005pe4",
+      "3068b",
+      "3070b",
+      "32607",
+      "3665a",
+      "3788",
+      "3941",
+      "3942c",
+      "4032b",
+      "61678",
+      "64648",
+      "8043",
+      "98138"
+    ],
+    "notInList": [
+      "3005pe4",
+      "64648",
+      "8043"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 482,
+      "usage": {
+        "input": 245299,
+        "cached": 159644,
+        "output": 49488,
+        "reasoning": 36082,
+        "costUsd": 4.694407399999999
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "fish",
+            "limit": 6
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "brick 1 x 1 with eye",
+            "limit": 6
+          },
+          "results": [
+            "3005pe1",
+            "3005pe4",
+            "3005pe2",
+            "3005pe3",
+            "3005pe5",
+            "3005pe6"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope inverted",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023",
+            "11301",
+            "45410",
+            "41764",
+            "41765"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope 6 x 1",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "42022",
+            "42023",
+            "35164"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge curved",
+            "colour": "yellow",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "45677",
+            "64225",
+            "43713",
+            "47753",
+            "98281",
+            "43712",
+            "45301",
+            "41748"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1012,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 871,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "14769",
+          "15068",
+          "24201",
+          "2431",
+          "3005",
+          "3005pe4",
+          "3068b",
+          "3070b",
+          "32607",
+          "3665a",
+          "3788",
+          "3941",
+          "3942c",
+          "4032b",
+          "61678",
+          "64648",
+          "8043",
+          "98138"
+        ],
+        "notInList": [
+          "3005pe4",
+          "64648",
+          "8043"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 871
+    }
+  ]
+}

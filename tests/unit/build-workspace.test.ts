@@ -33,7 +33,8 @@ describe("build agent workspaces", () => {
     expect(text.indexOf("## Workspace")).toBeLessThan(
       text.indexOf("## Output"),
     );
-    expect(text.startsWith("You are a master brick architect.")).toBe(true);
+    expect(text.startsWith("You are a master LEGO set designer,")).toBe(true);
+    expect(text).toContain("Choose support separately from composition");
   });
 
   it("reports builds against the part target in the CLI wrapper", () => {

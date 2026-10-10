@@ -3,7 +3,8 @@
 ## Default E adoption — 10 October 2026
 
 - Default one-shot input is byte-identical to the frozen E system/reply combination. The default JSON and JavaScript examples match and compile with no warnings; legacy defaults are preserved explicitly. Generation still receives only text search results, part counts and errors.
-- The study harness accepts the Claude runner and rejects image feedback there. Opus runs and gallery publication verification will be recorded when complete.
+- The study harness accepts the Claude runner and rejects image feedback there. Six Opus 5.5 high runs accept in one attempt with no compiler errors/baseplates and four final views; parts are 871/1,028/2,190/1,108/5,434/3,347. The 42-run provenance manifest verifies matching E inputs, original source hashes, zero images and disabled agent tools. The 48-build viewer loads three angles at all six supported phone/desktop sizes without overflow.
+- Production build and type-check pass after rebasing on current main. All 72 focused generation, workspace, gallery and publication guard tests pass. The reviewed publication bundle has 18 replacements and 108 checksum-verified assets, with three high-effort models per prompt. Publication requires exact live-roster agreement and successful main CI; it uploads immutable files before hiding the exact 12 older entries and rebuilding the index. Actual remote workflow results remain available in GitHub Actions.
 
 ## Astra E spatial reasoning comparison — 10 October 2026
 
