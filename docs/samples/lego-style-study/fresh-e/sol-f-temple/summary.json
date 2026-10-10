@@ -1,0 +1,204 @@
+{
+  "brief": "a japanese buddhist temple",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "attempts": 5,
+  "prompt": "build-agent-economical.md",
+  "replyPrompt": "brick-build-economical.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 2000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 2201,
+      "targetMiss": {
+        "target": 2000,
+        "parts": 2201,
+        "difference": 201,
+        "percent": 10.1
+      },
+      "seconds": 770,
+      "tokens": {
+        "input": 569833,
+        "cached": 235136,
+        "output": 69029,
+        "reasoning": 39634
+      },
+      "searches": 5,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "13547",
+          "15068",
+          "2417",
+          "2423",
+          "2431",
+          "24866",
+          "3004",
+          "30055",
+          "3031",
+          "3660b",
+          "3942c",
+          "3957a",
+          "3960",
+          "4032b",
+          "61678",
+          "90398"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 770,
+          "usage": {
+            "input": 569833,
+            "cached": 235136,
+            "output": 69029,
+            "reasoning": 39634,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "roof curved slope",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bell",
+                "limit": 6
+              },
+              "results": [
+                "3942c",
+                "3943b",
+                "30151a",
+                "6017",
+                "u608",
+                "u609"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "minifig statue",
+                "colour": "pearl gold",
+                "limit": 6
+              },
+              "results": [
+                "90398"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "round plate open stud",
+                "size": "1x1",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "85861"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope inverted curved",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[0].ops[0].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"light bluish grey\",\"light bluish grey\",\"dark bluish grey\"]}); $.sections[2].ops[122].holes[0].at must be [x, z] integers (studs) (got [26,41,21]); $.sections[4].ops[77].holes[0].at must be [x, z] integers (studs) (got [4,31,31]); $.sections[4].ops[149].holes[0].at must be [x, z] integers (studs) (got [5,55,32]); $.sections[4].ops[213].holes[0].at must be [x, z] i"
+            },
+            {
+              "round": 2,
+              "parts": 2393,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 2252,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "13547",
+              "15068",
+              "2417",
+              "2423",
+              "2431",
+              "24866",
+              "3004",
+              "30055",
+              "3031",
+              "3660b",
+              "3942c",
+              "3957a",
+              "3960",
+              "4032b",
+              "61678",
+              "90398"
+            ],
+            "notInList": [
+              "90398"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 2201
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "brief": "piplup",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "build-agent-contextual.md",
+  "replyPrompt": "brick-build-object.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "claude",
+      "model": "claude-opus-5-5",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1112,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1112,
+        "difference": 112,
+        "percent": 11.2
+      },
+      "seconds": 502,
+      "tokens": {
+        "input": 255016,
+        "cached": 175915,
+        "output": 49079,
+        "reasoning": 37555,
+        "costUsd": 5.4528343999999995
+      },
+      "searches": 3,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "15068",
+          "3003",
+          "3039",
+          "3040b",
+          "3045",
+          "3062b",
+          "3298",
+          "3747b",
+          "3941",
+          "54200",
+          "6141",
+          "64648",
+          "85984"
+        ],
+        "notInList": [
+          "64648"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 502,
+          "usage": {
+            "input": 255016,
+            "cached": 175915,
+            "output": 49079,
+            "reasoning": 37555,
+            "costUsd": 5.4528343999999995
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "fish",
+                "limit": 6
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "round brick 2x2",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "3941",
+                "6143",
+                "2654a"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope 2x2",
+                "colour": "dark blue",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "15068",
+                "32803",
+                "30602",
+                "44675"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1284,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 2,
+              "parts": 1112,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "15068",
+              "3003",
+              "3039",
+              "3040b",
+              "3045",
+              "3062b",
+              "3298",
+              "3747b",
+              "3941",
+              "54200",
+              "6141",
+              "64648",
+              "85984"
+            ],
+            "notInList": [
+              "64648"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1112
+        }
+      ]
+    }
+  ]
+}

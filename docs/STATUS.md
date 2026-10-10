@@ -1,8 +1,14 @@
 # Implementation status
 
+## Fresh E/F generation comparison — 10 October 2026
+
+The [independent generation comparison](samples/lego-style-study/fresh-e/README.md) contains 24 fresh builds: six briefs with E across Sol 6.1, Astra 6 and Opus 5.5 high, plus the same six with F and Sol high. Each starts in a separate empty directory/session with no supplied model, preservation request, repository instructions or images. All accept in one attempt with zero final errors/baseplate parts and four views. Exact E inputs match across models; metadata verifies model/effort and disabled tools. These fresh samples are separate from the source-conditioned gallery collection.
+
+Sol E/F visual preferences split three–three; F uses fewer parts in five pairs and 7.3% fewer in total. Astra is the preferred fresh E collection in four subjects, with Sol's pelican and Opus's Destroyer the other picks. One sample per cell does not establish model superiority or a consistent prompt effect. Existing preferred scene compositions remain valid; substantial clash/attachment warnings and visible floating wings prevent a physical-buildability claim. No default or gallery replacement follows from this comparison.
+
 ## Deterministic browser CI states — 10 October 2026
 
-PR #13 exposed two timing races in existing browser tests. The train layout test now advances the two hint timeout callbacks explicitly while rendering, physics and input retain their real clocks; it checks the running train against the visible look hint and verifies the hint expires. The fallback-storage test starts its shortened expiry only after the baseline checksum has reached the injected stall, so slow IndexedDB acquisition cannot bypass the scenario. Application code and performance budgets are unchanged.
+PR #13 exposed two timing races in existing browser tests. The train layout test now advances the two hint timeout callbacks explicitly while rendering, physics and input retain their real clocks; it checks the running train against the visible look hint and verifies the hint expires. The fallback-storage test starts its shortened expiry only after the baseline checksum has reached the injected stall, so slow IndexedDB acquisition cannot bypass the scenario. Application code and performance budgets are unchanged. PR validation passed before merge; main validation and automatic deployment then passed on `ed5eda6` without a failed-job rerun.
 
 ## Adopt E as the default build prompt — 10 October 2026
 

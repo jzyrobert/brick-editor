@@ -1,0 +1,32 @@
+script({title:"Tour de Poisson — the Pelican Pedaller",description:"An enormous white pelican pedals an azure bicycle to deliver his catch. His golden bill and deep throat pouch lead the silhouette; wings hold the handlebars, opposed orange webbed feet work the pedals, and a red sailor scarf streams over a basket of fish.",palette:{bird:"white",bike:"medium azure",ink:"black",bill:"yellow",foot:"orange",metal:"light bluish grey"}});
+const P=(part,at,colour,turn=0)=>place({part,at,colour,turn});
+const L=(from,to,colour)=>line({from,to,colour});
+section("Discreet double kickstand",[floor({at:[-5,0,0],size:[10,5],layers:2,colour:"dark bluish grey",top:"tile"}),...[-3,2].map(x=>L([x,2,2],[x,23,2],"dark bluish grey"))]);
+function wheel(z){return [P("88517c03",[-1,0,z-6],"light bluish grey",90),L([-3,16,z],[4,16,z],"metal"),...[-3,2].map(x=>L([x,16,z],[x,z<0?46:44,z<0?-12:6],"bike"))];}
+section("Wheels and diamond frame",[...wheel(-16),...wheel(16),...[-1,0].flatMap(x=>[L([x,23,2],[x,44,-12],"bike"),L([x,23,2],[x,46,6],"bike"),L([x,44,-12],[x,44,6],"bike")]),...[-3,3].map(x=>L([x,16,16],[x,23,2],"bike")),...range(7).map(i=>P("3039",[-1,41-3*i,-12+2*i],"bike",180)),floor({at:[-1,45,-12],size:[3,19],layers:1,colour:"bike",top:"tile"}),column({at:[-1,44,6],height:3,diameter:2,colour:"metal"}),box({at:[-3,47,3],size:[6,2,7],colour:"ink",top:"tile"}),...[-3,-1,1].map(x=>P("15068",[x,49,3],"ink")),L([0,46,-12],[0,52,-13],"metal"),floor({at:[-10,52,-14],size:[20,2],layers:2,colour:"metal",top:"tile"}),...[-10,-8,6,8].map(x=>P("3069b",[x,54,-14],"ink")),P("3649",[3,17,-1],"metal",90),L([4,18,2],[4,15,16],"dark bluish grey"),L([4,31,2],[4,20,16],"dark bluish grey"),L([4,15,16],[4,20,16],"dark bluish grey"),L([0,24,2],[7,24,2],"metal"),L([0,27,3],[-7,30,3],"metal"),floor({at:[4,24,-1],size:[5,3],colour:"ink"}),floor({at:[-8,30,2],size:[5,3],colour:"ink"})]);
+section("Pedalling webbed feet",[...[[5,26,0,35,-2],[-6,32,3,39,7]].flatMap(([x,y,z,ky,kz])=>[L([x,y,z],[x,ky,kz],"foot"),L([x,ky,kz],[x,48,5],"foot"),L([x+1,y,z],[x+1,ky,kz],"foot"),L([x+1,ky,kz],[x+1,48,5],"foot"),P("15068",[x,ky,kz],"foot")]),P("43720",[4,25,-2],"foot"),P("43721",[6,25,-2],"foot"),P("43720",[-8,31,1],"foot"),P("43721",[-6,31,1],"foot")]);
+const body=[box({at:[-5,47,-4],size:[10,18,18],colour:"bird",supports:6,top:"tile"}),floor({at:[-5,47,-6],size:[10,22],layers:1,colour:"bird"})];
+for(const side of [-1,1]){const x=side<0?-7:5,t=side<0?90:270;for(let z=-4;z<14;z++)body.push(P("2449",[x,47,z],"bird",t));for(let z=-4;z<14;z+=2)body.push(P("3684a",[x,56,z],"bird",t));}
+for(const z of [-6,14]){for(let x=-5;x<5;x++)body.push(P("2449",[x,47,z],"bird",z<0?0:180));for(let x=-5;x<5;x+=2)body.push(P("3684a",[x,56,z],"bird",z<0?0:180));}
+for(let x=-5;x<5;x+=2)for(let z=4;z<16;z+=2){if(x>=-3&&x<3&&z<12)continue;body.push(P("15068",[x,65,z],"bird",z>6?180:0));}
+body.push(P("45411",[-3,65,4],"bird"));
+for(const x of [-5,4])for(let z=-4;z<4;z+=2)body.push(P("11477",[x,65,z],"bird"));
+body.push(floor({at:[-3,52,13],size:[6,9],layers:2,colour:"bird"}));
+for(let x=-3;x<3;x++)body.push(P("61678",[x,54,13],"bird",180),P("61678",[x,54,17],"ink",180));
+section("Rounded breast, belly and tail",body);
+function wing(x){const a=[];for(let k=0;k<8;k++){const z=-14+2*k,y=54+2*k;a.push(floor({at:[x,y,z],size:[3,4],layers:2,colour:"bird"}),P("15068",[x,y+2,z],"bird"),P("11477",[x+2,y+2,z],"bird"));}for(let k=0;k<6;k++){const z=2+2*k,y=68-k;a.push(floor({at:[x,y,z],size:[3,2],layers:1,colour:"bird"}),P("15068",[x,y+1,z],k>3?"ink":"bird",180),P("11477",[x+2,y+1,z],k>2?"ink":"bird",180));}return a;}
+section("Wings on the grips",[floor({at:[-10,67,0],size:[20,4],layers:2,colour:"bird"}),...wing(-10),...wing(7)]);
+const neck=[];
+for(const [y,z,h] of [[65,-5,12],[77,-7,9],[86,-9,9]]){neck.push(box({at:[-2,y,z],size:[4,h,6],colour:"bird"}));for(let dy=0;dy<h;dy+=6){const tall=h-dy>=6,part=tall?"3678b":"15068",c=y+dy===77?"red":"bird";for(const x of [-2,0])neck.push(P(part,[x,y+dy,z-2],c),P(part,[x,y+dy,z+6],c,180));for(let dz=0;dz<6;dz+=2)neck.push(P(part,[-4,y+dy,z+dz],c,90),P(part,[2,y+dy,z+dz],c,270));}}
+section("S curved neck and flying scarf",[...neck,floor({at:[2,78,-2],size:[3,16],layers:2,colour:"red"}),...range(1,8).map(k=>P("63864",[2,80,-2+2*k],k===2||k===5?"white":"red")),...range(3).map(k=>P("11477",[2+k,80,13],"red",180))]);
+const head=[box({at:[-3,95,-13],size:[6,9,8],colour:"bird"}),box({at:[-5,95,-13],size:[10,7,8],colour:"bird"})];
+for(const z of [-13,-11,-9,-7])for(const [x,t] of [[-5,90],[3,270]])if(z!==-11)head.push(P("15068",[x,95,z],"bird",t),P("15068",[x,98,z],"bird",t),P("15068",[x,101,z],"bird",t));
+for(const [x,t] of [[-5,90],[3,270]])head.push(P("6091",[x,98,-11],"ink",t),P("11477",[x,102,-11],"bird",t));
+head.push(P("45411",[-3,104,-13],"bird"));
+for(const z of [-15,-5])for(let x=-3;x<3;x+=2)head.push(P("15068",[x,98,z],"bird",z===-15?0:180),P("15068",[x,101,z],"bird",z===-15?0:180));
+section("Bright eyed pelican head",head);
+const beak=[floor({at:[-4,94,-32],size:[8,20],layers:2,colour:"bill"}),floor({at:[-2,94,-36],size:[4,6],layers:1,colour:"bill"}),box({at:[-4,96,-32],size:[8,2,17],colour:"bill",top:"tile"}),P("43720",[-4,95,-36],"foot"),P("43721",[2,95,-36],"foot"),...range(4).map(k=>P("61678",[-2+k,95,-36],"bill")),P("45410",[-3,81,-24],"bill"),box({at:[-3,87,-24],size:[6,7,10],colour:"bill"}),floor({at:[-3,89,-26],size:[6,4],layers:1,colour:"bill"}),...range(6).map(k=>P("61678",[-3+k,90,-28],"bill"))];
+for(let z=-24;z<-14;z+=2)for(const [x,t] of [[-4,90],[2,270]])beak.push(P("32803",[x,86,z],"bill",t),P("15068",[x,90,z],"bill",t));
+section("Long bill and deep throat pouch",beak);
+function basket(){return [floor({at:[-4,35,16],size:[8,8],layers:2,colour:"reddish brown"}),...[-4,3].flatMap(x=>[column({at:[x,37,17],height:6,colour:"reddish brown"}),column({at:[x,37,22],height:6,colour:"reddish brown"})]),...[-4,0].flatMap(x=>[P("3633",[x,37,16],"tan"),P("3633",[x,40,16],"tan"),P("3633",[x,37,23],"tan"),P("3633",[x,40,23],"tan")]),...[-4,3].flatMap(x=>[P("3633",[x,37,18],"tan",90),P("3633",[x,40,18],"tan",90)]),floor({at:[-4,43,16],size:[8,8],layers:1,holes:[{at:[-3,17],size:[6,6]}],colour:"reddish brown",top:"tile"}),P("64648",[-2,37,19],"medium azure"),P("64648",[0,37,19],"orange"),P("64648",[2,37,19],"sand green"),L([-3,28,17],[-3,35,17],"metal"),L([3,28,17],[3,35,17],"metal")];}
+section("Rear fish delivery basket",basket());

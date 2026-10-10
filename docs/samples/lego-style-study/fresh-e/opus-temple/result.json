@@ -1,0 +1,97 @@
+{
+  "effort": "high",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2014,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2014,
+    "difference": 14,
+    "percent": 0.7
+  },
+  "seconds": 494,
+  "tokens": {
+    "input": 110721,
+    "cached": 33562,
+    "output": 48190,
+    "reasoning": 40800,
+    "costUsd": 2.7376994000000003
+  },
+  "searches": 0,
+  "checks": 1,
+  "knowledge": {
+    "named": [
+      "2412b",
+      "2435",
+      "24866",
+      "3001",
+      "3022",
+      "3062b",
+      "3470",
+      "3471",
+      "3666",
+      "3941",
+      "3942c",
+      "4032b",
+      "4589",
+      "54200",
+      "6141"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 494,
+      "usage": {
+        "input": 110721,
+        "cached": 33562,
+        "output": 48190,
+        "reasoning": 40800,
+        "costUsd": 2.7376994000000003
+      },
+      "searches": [],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2014,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2435",
+          "24866",
+          "3001",
+          "3022",
+          "3062b",
+          "3470",
+          "3471",
+          "3666",
+          "3941",
+          "3942c",
+          "4032b",
+          "4589",
+          "54200",
+          "6141"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2014
+    }
+  ]
+}

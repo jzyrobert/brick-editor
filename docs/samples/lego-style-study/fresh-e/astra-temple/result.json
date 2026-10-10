@@ -1,0 +1,207 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6-astra",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2231,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2231,
+    "difference": 231,
+    "percent": 11.6
+  },
+  "seconds": 415,
+  "tokens": {
+    "input": 563131,
+    "cached": 354944,
+    "output": 51692,
+    "reasoning": 15409
+  },
+  "searches": 5,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "2417",
+      "2423",
+      "2431",
+      "24866",
+      "3004",
+      "3005",
+      "30151a",
+      "3022",
+      "3039",
+      "3045",
+      "3069b",
+      "3665a",
+      "3710",
+      "3941",
+      "3957a",
+      "3960",
+      "4032b",
+      "4589",
+      "4740",
+      "6141",
+      "61678",
+      "90398"
+    ],
+    "notInList": [
+      "30151a",
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 415,
+      "usage": {
+        "input": 563131,
+        "cached": 354944,
+        "output": 51692,
+        "reasoning": 15409,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "1x4",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "61678",
+            "93273",
+            "13547",
+            "11153"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "inverted slope",
+            "size": "1x2",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "3665a",
+            "2449",
+            "24201",
+            "3665b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "size": "2x2",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "4740",
+            "17964",
+            "35395"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell",
+            "limit": 6
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2386,
+          "errors": 8,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 2351,
+          "errors": 2,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 2231,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2417",
+          "2423",
+          "2431",
+          "24866",
+          "3004",
+          "3005",
+          "30151a",
+          "3022",
+          "3039",
+          "3045",
+          "3069b",
+          "3665a",
+          "3710",
+          "3941",
+          "3957a",
+          "3960",
+          "4032b",
+          "4589",
+          "4740",
+          "6141",
+          "61678",
+          "90398"
+        ],
+        "notInList": [
+          "30151a",
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2231
+    }
+  ]
+}

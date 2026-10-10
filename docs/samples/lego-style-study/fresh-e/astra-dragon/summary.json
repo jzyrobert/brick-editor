@@ -1,0 +1,283 @@
+{
+  "brief": "a dragon",
+  "runner": "codex",
+  "model": "gpt-6-astra",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "build-agent-contextual.md",
+  "replyPrompt": "brick-build-object.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6-astra",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1220,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1220,
+        "difference": 220,
+        "percent": 22
+      },
+      "seconds": 473,
+      "tokens": {
+        "input": 789545,
+        "cached": 558208,
+        "output": 48478,
+        "reasoning": 25899
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "3003",
+          "3004",
+          "3005",
+          "3023b",
+          "3039",
+          "3069b",
+          "3660b",
+          "3684a",
+          "3710",
+          "3941",
+          "3942c",
+          "4286",
+          "4589",
+          "54200",
+          "6141",
+          "61678",
+          "64847",
+          "93606"
+        ],
+        "notInList": [
+          "64847",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 473,
+          "usage": {
+            "input": 789545,
+            "cached": 558208,
+            "output": 48478,
+            "reasoning": 25899,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "dragon horn",
+                "limit": 8
+              },
+              "results": [
+                "51342",
+                "51344",
+                "52258",
+                "51352",
+                "51353"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tooth claw",
+                "limit": 8
+              },
+              "results": [
+                "41669",
+                "16770",
+                "48267",
+                "11089"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "6x3",
+                "limit": 6
+              },
+              "results": [
+                "54383",
+                "54384"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye tile",
+                "limit": 6
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07",
+                "98138pz4"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x4",
+                "colour": "dark red",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "93606",
+                "47456"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "horn",
+                "limit": 10
+              },
+              "results": [
+                "2142",
+                "89522",
+                "13564",
+                "64847",
+                "40379",
+                "11089",
+                "67361",
+                "112",
+                "6135b",
+                "1997"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope inverted curved",
+                "limit": 6
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope 75",
+                "size": "2x2",
+                "limit": 4
+              },
+              "results": [
+                "3684a",
+                "3684c",
+                "3685",
+                "3688"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dinosaur tail",
+                "limit": 5
+              },
+              "results": [
+                "40395",
+                "40379",
+                "40396",
+                "40378",
+                "30456"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "size": "3x6",
+                "limit": 4
+              },
+              "results": [
+                "3939",
+                "35299",
+                "58181",
+                "62360"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[3].ops[89].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [2,-3,2]); $.sections[3].ops[92].ops[0].ops[87].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [2,-3,2])"
+            },
+            {
+              "round": 2,
+              "parts": 1317,
+              "errors": 44,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 1473,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "3003",
+              "3004",
+              "3005",
+              "3023b",
+              "3039",
+              "3069b",
+              "3660b",
+              "3684a",
+              "3710",
+              "3941",
+              "3942c",
+              "4286",
+              "4589",
+              "54200",
+              "6141",
+              "61678",
+              "64847",
+              "93606"
+            ],
+            "notInList": [
+              "64847",
+              "93606"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1220
+        }
+      ]
+    }
+  ]
+}

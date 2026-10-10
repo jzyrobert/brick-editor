@@ -1,0 +1,5570 @@
+{
+ "buildScript": 1,
+ "title": "Koyo-ji — Temple of the Nine Rings",
+ "description": "An autumn Japanese Buddhist temple with a sweeping irimoya roof, three-storey pagoda, nine-ring sorin, timber verandahs, open sanctuary, stone lanterns and an incense court.",
+ "palette": {
+  "timber": "dark red",
+  "wood": "reddish brown",
+  "paper": "tan",
+  "roof": "black",
+  "stone": "light bluish grey",
+  "gold": "pearl gold"
+ },
+ "components": {
+  "stone-lantern": {
+   "size": [
+    4,
+    4
+   ],
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      4,
+      4
+     ],
+     "layers": 2,
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      1,
+      2,
+      1
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "column",
+     "at": [
+      1,
+      3,
+      1
+     ],
+     "height": 6,
+     "diameter": 2,
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3031",
+     "at": [
+      0,
+      9,
+      0
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "window",
+     "at": [
+      1,
+      10,
+      1
+     ],
+     "facing": "front",
+     "size": "1x2x2",
+     "frame": "light bluish grey",
+     "glass": "trans yellow"
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      1,
+      10,
+      2
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      1,
+      13,
+      2
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      15,
+      0
+     ],
+     "size": [
+      4,
+      4
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      0,
+      16,
+      0
+     ],
+     "size": [
+      4,
+      4
+     ],
+     "overhang": 0,
+     "colour": "dark bluish grey"
+    }
+   ]
+  }
+ },
+ "sections": [
+  {
+   "name": "Stone podium and ceremonial approach",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      22,
+      0,
+      18
+     ],
+     "size": [
+      36,
+      7,
+      28
+     ],
+     "colour": "light bluish grey",
+     "texture": "masonry",
+     "supports": 8
+    },
+    {
+     "op": "floor",
+     "at": [
+      22,
+      7,
+      18
+     ],
+     "size": [
+      36,
+      28
+     ],
+     "layers": 3,
+     "colour": "dark brown",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      34,
+      0,
+      0
+     ],
+     "size": [
+      12,
+      8
+     ],
+     "layers": 2,
+     "colour": "light bluish grey",
+     "top": "tile"
+    },
+    {
+     "op": "stairs",
+     "at": [
+      34,
+      0,
+      8
+     ],
+     "width": 12,
+     "steps": 10,
+     "dir": "+z",
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "instance",
+     "component": "stone-lantern",
+     "at": [
+      26,
+      0,
+      9
+     ]
+    },
+    {
+     "op": "instance",
+     "component": "stone-lantern",
+     "at": [
+      50,
+      0,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Kondo worship hall",
+   "ops": [
+    {
+     "op": "room",
+     "at": [
+      26,
+      10,
+      23
+     ],
+     "size": [
+      28,
+      27,
+      18
+     ],
+     "colour": "reddish brown",
+     "openings": [
+      {
+       "side": "front",
+       "at": 10,
+       "width": 8,
+       "y": 0,
+       "height": 24,
+       "fill": "none"
+      },
+      {
+       "side": "front",
+       "at": 2,
+       "width": 4,
+       "y": 3,
+       "height": 12,
+       "fill": "none"
+      },
+      {
+       "side": "front",
+       "at": 22,
+       "width": 4,
+       "y": 3,
+       "height": 12,
+       "fill": "none"
+      },
+      {
+       "side": "back",
+       "at": 4,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "tan",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "back",
+       "at": 12,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "tan",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "back",
+       "at": 20,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "tan",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "left",
+       "at": 3,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "tan",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "left",
+       "at": 11,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "tan",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "right",
+       "at": 3,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "tan",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "right",
+       "at": 11,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "tan",
+       "glass": "trans-clear"
+      }
+     ]
+    },
+    {
+     "op": "column",
+     "at": [
+      26,
+      10,
+      23
+     ],
+     "height": 27,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      26,
+      10,
+      40
+     ],
+     "height": 27,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      53,
+      10,
+      23
+     ],
+     "height": 27,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      53,
+      10,
+      40
+     ],
+     "height": 27,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      26,
+      25,
+      23
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      44,
+      25,
+      23
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      26,
+      25,
+      40
+     ],
+     "size": [
+      28,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      26,
+      25,
+      24
+     ],
+     "size": [
+      1,
+      3,
+      16
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      53,
+      25,
+      24
+     ],
+     "size": [
+      1,
+      3,
+      16
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      28,
+      13,
+      23
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      28,
+      19,
+      23
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      48,
+      13,
+      23
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      48,
+      19,
+      23
+     ],
+     "colour": "tan"
+    },
+    {
+     "op": "column",
+     "at": [
+      22,
+      10,
+      18
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      22,
+      34,
+      18
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      28,
+      10,
+      18
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      28,
+      34,
+      18
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      34,
+      10,
+      18
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      34,
+      34,
+      18
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      44,
+      10,
+      18
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      44,
+      34,
+      18
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      50,
+      10,
+      18
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      50,
+      34,
+      18
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      56,
+      10,
+      18
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      56,
+      34,
+      18
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      22,
+      10,
+      43
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      22,
+      34,
+      43
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      29,
+      10,
+      43
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      29,
+      34,
+      43
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      36,
+      10,
+      43
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      36,
+      34,
+      43
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      43,
+      10,
+      43
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      43,
+      34,
+      43
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      50,
+      10,
+      43
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      50,
+      34,
+      43
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      56,
+      10,
+      43
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      56,
+      34,
+      43
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      34,
+      18
+     ],
+     "size": [
+      36,
+      3,
+      2
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      34,
+      43
+     ],
+     "size": [
+      36,
+      3,
+      2
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      22,
+      34,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      23
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      56,
+      34,
+      20
+     ],
+     "size": [
+      2,
+      3,
+      23
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       22,
+       20
+      ],
+      [
+       22,
+       39
+      ]
+     ],
+     "y": 10,
+     "colour": "reddish brown",
+     "style": "spindle"
+    },
+    {
+     "op": "fence",
+     "path": [
+      [
+       57,
+       20
+      ],
+      [
+       57,
+       39
+      ]
+     ],
+     "y": 10,
+     "colour": "reddish brown",
+     "style": "spindle"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      24,
+      10,
+      18
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      30,
+      10,
+      18
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      46,
+      10,
+      18
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      52,
+      10,
+      18
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      24,
+      10,
+      45
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      31,
+      10,
+      45
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      38,
+      10,
+      45
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      45,
+      10,
+      45
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "30055",
+     "at": [
+      52,
+      10,
+      45
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "box",
+     "at": [
+      36,
+      10,
+      34
+     ],
+     "size": [
+      8,
+      3,
+      4
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      37,
+      13,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "90398",
+     "at": [
+      37,
+      14,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      39,
+      13,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "90398",
+     "at": [
+      39,
+      14,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      41,
+      13,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "90398",
+     "at": [
+      41,
+      14,
+      35
+     ],
+     "colour": "pearl gold"
+    }
+   ]
+  },
+  {
+   "name": "Sweeping irimoya roof",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      19,
+      37,
+      14
+     ],
+     "size": [
+      42,
+      32
+     ],
+     "layers": 1,
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      22,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      22,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      23,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      23,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      24,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      24,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      25,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      25,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      26,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      26,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      27,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      27,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      28,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      28,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      29,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      29,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      30,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      30,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      31,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      31,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      32,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      32,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      33,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      33,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      34,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      34,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      35,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      35,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      36,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      36,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      37,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      37,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      38,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      38,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      39,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      39,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      40,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      40,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      41,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      41,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      42,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      42,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      43,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      43,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      44,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      44,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      45,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      45,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      46,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      46,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      47,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      47,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      48,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      48,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      49,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      49,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      50,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      50,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      51,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      51,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      52,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      52,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      53,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      53,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      54,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      54,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      55,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      55,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      56,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      56,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      14
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      18
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      18
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      19
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      19
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      20
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      20
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      21
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      21
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      22
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      22
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      23
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      23
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      24
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      24
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      25
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      25
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      26
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      26
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      27
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      27
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      28
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      28
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      29
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      29
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      30
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      30
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      31
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      31
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      32
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      32
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      33
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      33
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      34
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      34
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      35
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      35
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      36
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      36
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      37
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      37
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      38
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      38
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      39
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      39
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      40
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      40
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      19,
+      38,
+      41
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      57,
+      38,
+      41
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      19,
+      38,
+      14
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      19,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      60,
+      38,
+      14
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      60,
+      38,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      26,
+      38,
+      21
+     ],
+     "size": [
+      28,
+      12,
+      18
+     ],
+     "colour": "dark red",
+     "supports": 8
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      22,
+      41,
+      17
+     ],
+     "size": [
+      36,
+      26
+     ],
+     "overhang": 0,
+     "colour": "black",
+     "holes": [
+      {
+       "at": [
+        26,
+        21
+       ],
+       "size": [
+        28,
+        18
+       ]
+      }
+     ]
+    },
+    {
+     "op": "roof",
+     "style": "gable",
+     "at": [
+      26,
+      50,
+      21
+     ],
+     "size": [
+      28,
+      18
+     ],
+     "ridge": "x",
+     "overhang": 0,
+     "ends": 0,
+     "colour": "black",
+     "gable": "tan"
+    }
+   ]
+  },
+  {
+   "name": "Pagoda foundation",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      0,
+      0,
+      27
+     ],
+     "size": [
+      18,
+      6,
+      18
+     ],
+     "colour": "light bluish grey",
+     "texture": "masonry"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      6,
+      27
+     ],
+     "size": [
+      18,
+      18
+     ],
+     "colour": "light bluish grey",
+     "top": "tile"
+    },
+    {
+     "op": "stairs",
+     "at": [
+      6,
+      0,
+      21
+     ],
+     "width": 6,
+     "steps": 7,
+     "dir": "+z",
+     "colour": "light bluish grey"
+    }
+   ]
+  },
+  {
+   "name": "Three-storey pagoda",
+   "ops": [
+    {
+     "op": "room",
+     "at": [
+      3,
+      7,
+      30
+     ],
+     "size": [
+      12,
+      24,
+      12
+     ],
+     "colour": "tan",
+     "openings": [
+      {
+       "side": "front",
+       "at": 4,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "reddish brown",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "back",
+       "at": 4,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "reddish brown",
+       "glass": "trans-clear"
+      }
+     ]
+    },
+    {
+     "op": "column",
+     "at": [
+      3,
+      7,
+      30
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      3,
+      7,
+      41
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      14,
+      7,
+      30
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      14,
+      7,
+      41
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      25,
+      30
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      25,
+      41
+     ],
+     "size": [
+      12,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -3,
+      27,
+      24
+     ],
+     "size": [
+      24,
+      24
+     ],
+     "layers": 1,
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      0,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      0,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      1,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      1,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      3,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      3,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      5,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      5,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      7,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      7,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      8,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      8,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      10,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      10,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      11,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      11,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      12,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      12,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      13,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      13,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      14,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      14,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      24
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      28
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      28
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      29
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      29
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      30
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      30
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      31
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      31
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      32
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      32
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      33
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      33
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      34
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      34
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      35
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      35
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      36
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      36
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      37
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      37
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      38
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      38
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      39
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      39
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      40
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      40
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      41
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      41
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      42
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      42
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      28,
+      43
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      17,
+      28,
+      43
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      -3,
+      28,
+      24
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      -3,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      20,
+      28,
+      24
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      20,
+      28,
+      44
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      29,
+      30
+     ],
+     "size": [
+      12,
+      12
+     ],
+     "layers": 2,
+     "colour": "reddish brown"
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      0,
+      31,
+      27
+     ],
+     "size": [
+      18,
+      18
+     ],
+     "overhang": 0,
+     "colour": "black",
+     "holes": [
+      {
+       "at": [
+        4,
+        31
+       ],
+       "size": [
+        10,
+        10
+       ]
+      }
+     ]
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      7,
+      28,
+      30
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      7,
+      28,
+      41
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "room",
+     "at": [
+      4,
+      31,
+      31
+     ],
+     "size": [
+      10,
+      24,
+      10
+     ],
+     "colour": "tan",
+     "openings": [
+      {
+       "side": "front",
+       "at": 3,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "reddish brown",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "back",
+       "at": 3,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "reddish brown",
+       "glass": "trans-clear"
+      }
+     ]
+    },
+    {
+     "op": "column",
+     "at": [
+      4,
+      31,
+      31
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      4,
+      31,
+      40
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      13,
+      31,
+      31
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      13,
+      31,
+      40
+     ],
+     "height": 24,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      49,
+      31
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      49,
+      40
+     ],
+     "size": [
+      10,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -2,
+      51,
+      25
+     ],
+     "size": [
+      22,
+      22
+     ],
+     "layers": 1,
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      1,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      1,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      3,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      3,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      5,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      5,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      7,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      7,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      8,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      8,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      10,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      10,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      11,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      11,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      12,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      12,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      13,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      13,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      14,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      14,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      25
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      29
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      29
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      30
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      30
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      31
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      31
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      32
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      32
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      33
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      33
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      34
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      34
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      35
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      35
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      36
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      36
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      37
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      37
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      38
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      38
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      39
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      39
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      40
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      40
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      41
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      41
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -2,
+      52,
+      42
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      16,
+      52,
+      42
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      -2,
+      52,
+      25
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      -2,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      19,
+      52,
+      25
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      19,
+      52,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      53,
+      31
+     ],
+     "size": [
+      10,
+      10
+     ],
+     "layers": 2,
+     "colour": "reddish brown"
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      1,
+      55,
+      28
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "overhang": 0,
+     "colour": "black",
+     "holes": [
+      {
+       "at": [
+        5,
+        32
+       ],
+       "size": [
+        8,
+        8
+       ]
+      }
+     ]
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      7,
+      52,
+      31
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      7,
+      52,
+      40
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "room",
+     "at": [
+      5,
+      55,
+      32
+     ],
+     "size": [
+      8,
+      21,
+      8
+     ],
+     "colour": "tan",
+     "openings": [
+      {
+       "side": "front",
+       "at": 2,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "reddish brown",
+       "glass": "trans-clear"
+      },
+      {
+       "side": "back",
+       "at": 2,
+       "width": 4,
+       "y": 6,
+       "height": 9,
+       "fill": "window",
+       "frame": "reddish brown",
+       "glass": "trans-clear"
+      }
+     ]
+    },
+    {
+     "op": "column",
+     "at": [
+      5,
+      55,
+      32
+     ],
+     "height": 21,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      5,
+      55,
+      39
+     ],
+     "height": 21,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      12,
+      55,
+      32
+     ],
+     "height": 21,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "column",
+     "at": [
+      12,
+      55,
+      39
+     ],
+     "height": 21,
+     "diameter": 1,
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      73,
+      32
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "box",
+     "at": [
+      5,
+      73,
+      39
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -1,
+      72,
+      26
+     ],
+     "size": [
+      20,
+      20
+     ],
+     "layers": 1,
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      3,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      3,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      5,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      5,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      7,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      7,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      8,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      8,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      10,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      10,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      11,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      11,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      12,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      12,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      13,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      13,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      14,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      14,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      26
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      30
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      30
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      31
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      31
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      32
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      32
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      33
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      33
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      34
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      34
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      35
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      35
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      36
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      36
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      37
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      37
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      38
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      38
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      39
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      39
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      40
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      40
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -1,
+      73,
+      41
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      73,
+      41
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      -1,
+      73,
+      26
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      -1,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      18,
+      73,
+      26
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      18,
+      73,
+      42
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      74,
+      32
+     ],
+     "size": [
+      8,
+      8
+     ],
+     "layers": 2,
+     "colour": "reddish brown"
+    },
+    {
+     "op": "roof",
+     "style": "hip",
+     "at": [
+      2,
+      76,
+      29
+     ],
+     "size": [
+      14,
+      14
+     ],
+     "overhang": 0,
+     "colour": "black",
+     "holes": [
+      {
+       "at": [
+        8,
+        35
+       ],
+       "size": [
+        2,
+        2
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Nine-ring sorin",
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      8,
+      76,
+      35
+     ],
+     "height": 24,
+     "diameter": 2,
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      100,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      101,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      102,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      103,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      104,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      105,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      106,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      107,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      108,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      109,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      110,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      111,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      112,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      113,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      114,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      115,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      116,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      117,
+      35
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "3942c",
+     "at": [
+      8,
+      118,
+      35
+     ],
+     "colour": "pearl gold"
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      8,
+      124,
+      35
+     ],
+     "colour": "black"
+    }
+   ]
+  },
+  {
+   "name": "Incense and reflection",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      23,
+      0,
+      0
+     ],
+     "size": [
+      8,
+      7
+     ],
+     "layers": 2,
+     "colour": "dark bluish grey",
+     "top": "tile"
+    },
+    {
+     "op": "column",
+     "at": [
+      25,
+      2,
+      1
+     ],
+     "diameter": 4,
+     "height": 6,
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      25,
+      8,
+      1
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      26,
+      10,
+      2
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      26,
+      11,
+      2
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      27,
+      11,
+      2
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "floor",
+     "at": [
+      60,
+      0,
+      16
+     ],
+     "size": [
+      12,
+      10
+     ],
+     "layers": 2,
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "floor",
+     "at": [
+      61,
+      2,
+      17
+     ],
+     "size": [
+      10,
+      8
+     ],
+     "colour": "trans light blue",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      60,
+      2,
+      16
+     ],
+     "size": [
+      12,
+      2,
+      2
+     ],
+     "colour": "dark tan",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      60,
+      2,
+      24
+     ],
+     "size": [
+      12,
+      2,
+      2
+     ],
+     "colour": "dark tan",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      60,
+      0,
+      29
+     ],
+     "size": [
+      12,
+      10
+     ],
+     "layers": 2,
+     "colour": "dark tan"
+    },
+    {
+     "op": "box",
+     "at": [
+      64,
+      2,
+      33
+     ],
+     "size": [
+      2,
+      12,
+      2
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "box",
+     "at": [
+      63,
+      14,
+      33
+     ],
+     "size": [
+      3,
+      9,
+      2
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "box",
+     "at": [
+      63,
+      23,
+      31
+     ],
+     "size": [
+      2,
+      6,
+      4
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "box",
+     "at": [
+      60,
+      25,
+      32
+     ],
+     "size": [
+      8,
+      3,
+      1
+     ],
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "2417",
+     "at": [
+      60,
+      28,
+      30
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "2417",
+     "at": [
+      63,
+      29,
+      31
+     ],
+     "colour": "orange"
+    },
+    {
+     "op": "place",
+     "part": "2423",
+     "at": [
+      66,
+      30,
+      31
+     ],
+     "colour": "red"
+    },
+    {
+     "op": "place",
+     "part": "2417",
+     "at": [
+      64,
+      31,
+      33
+     ],
+     "colour": "red"
+    },
+    {
+     "op": "place",
+     "part": "2423",
+     "at": [
+      63,
+      32,
+      30
+     ],
+     "colour": "orange"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      60,
+      2,
+      29
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      69,
+      2,
+      36
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      61,
+      2,
+      37
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "24866",
+     "at": [
+      62,
+      2,
+      36
+     ],
+     "colour": "red"
+    },
+    {
+     "op": "place",
+     "part": "24866",
+     "at": [
+      67,
+      2,
+      29
+     ],
+     "colour": "orange"
+    },
+    {
+     "op": "place",
+     "part": "24866",
+     "at": [
+      70,
+      2,
+      32
+     ],
+     "colour": "red"
+    },
+    {
+     "op": "place",
+     "part": "24866",
+     "at": [
+      60,
+      2,
+      34
+     ],
+     "colour": "orange"
+    }
+   ]
+  }
+ ]
+}

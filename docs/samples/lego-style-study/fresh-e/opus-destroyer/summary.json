@@ -1,0 +1,220 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "claude",
+  "model": "claude-opus-5-5",
+  "targetParts": 5000,
+  "attempts": 5,
+  "prompt": "build-agent-contextual.md",
+  "replyPrompt": "brick-build-object.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "claude",
+      "model": "claude-opus-5-5",
+      "targetParts": 5000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 5404,
+      "targetMiss": {
+        "target": 5000,
+        "parts": 5404,
+        "difference": 404,
+        "percent": 8.1
+      },
+      "seconds": 777,
+      "tokens": {
+        "input": 307574,
+        "cached": 200620,
+        "output": 72988,
+        "reasoning": 62473,
+        "costUsd": 7.0952924
+      },
+      "searches": 5,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "15068",
+          "3004",
+          "3039",
+          "3062b",
+          "3941",
+          "3957a",
+          "4032b",
+          "4740",
+          "48336",
+          "60474",
+          "86500",
+          "87079"
+        ],
+        "notInList": [
+          "86500"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 777,
+          "usage": {
+            "input": 307574,
+            "cached": 200620,
+            "output": 72988,
+            "reasoning": 62473,
+            "costUsd": 7.0952924
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "2x6"
+              },
+              "results": [
+                "2336"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "limit": 30
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "2450",
+                "62743",
+                "43719",
+                "32059",
+                "90194",
+                "43723b",
+                "26601",
+                "41769b",
+                "41770b",
+                "43722b",
+                "2336",
+                "48183",
+                "6106",
+                "30503",
+                "54383",
+                "54384",
+                "30504",
+                "50304",
+                "50305",
+                "4859",
+                "2413",
+                "47407",
+                "4596",
+                "50303",
+                "92584"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dome",
+                "limit": 15
+              },
+              "results": [
+                "4740",
+                "3262",
+                "6908",
+                "15395",
+                "86500",
+                "30367c",
+                "49308",
+                "88293",
+                "24947",
+                "20952",
+                "1744",
+                "30367b",
+                "30151a",
+                "5848",
+                "50747"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "sphere",
+                "limit": 10
+              },
+              "results": [
+                "33176",
+                "20953",
+                "6908",
+                "15395",
+                "5906",
+                "54821",
+                "18990",
+                "86500",
+                "30208",
+                "24947"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tile wedge",
+                "limit": 15
+              },
+              "results": [
+                "3388",
+                "3389"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 6588,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 2,
+              "parts": 5404,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "15068",
+              "3004",
+              "3039",
+              "3062b",
+              "3941",
+              "3957a",
+              "4032b",
+              "4740",
+              "48336",
+              "60474",
+              "86500",
+              "87079"
+            ],
+            "notInList": [
+              "86500"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 5404
+        }
+      ]
+    }
+  ]
+}

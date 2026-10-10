@@ -1,10 +1,17 @@
 # Verification — 27 September 2026
 
+## Fresh E/F independent generation — 10 October 2026
+
+- All 24 fresh runs verify accepted source/input hashes, separate sessions and empty working directories, zero supplied sources/images and zero native tool events. All E inputs match byte for byte across Sol/Astra/Opus for each subject. Codex session records verify requested models/high effort and absence of repository AGENTS instructions; Claude initialization verifies model, working directory and empty tools/MCP/skills, with high effort recorded by invocation/results.
+- All 24 accept in one attempt with zero final compiler errors and no baseplate parts. Compiler checks repair some colour/overlap errors; warnings remain. Sources are retained unchanged, and 96 final views use matching Standard look/resolution/camera presets. [Provenance and metrics](samples/lego-style-study/fresh-e/README.md) distinguish this experiment from historical source revisions.
+- The viewer displays 24 distinct models in 30 comparison cells. All four views load at 360 × 600, 411 × 685, 390 × 844, 1080 × 1800, 686 × 411 and 1440 × 1000 without horizontal overflow. Exported E three-model and Sol E/F comparison sheets cover all six subjects. The application runtime, generation harness and default prompts are unchanged; repository formatting and diff whitespace checks pass.
+
 ## Browser CI timing races — 10 October 2026
 
 - PR #13's failed shards timed out waiting for the train's transient look-hint geometry at 800 × 360 and for the expired fallback checksum to resume. Both original cases pass in isolation (two tests, one worker, 1.2 minutes), confirming timing-sensitive failures.
 - The revised train checks explicitly advance only the six-second hint callbacks, retain real rendering/input clocks, capture simultaneous running-train/hint geometry and verify the hint disappears after expiry. The storage check waits for its deliberately blocked checksum before expiring coordination; the saved baseline and newer in-memory revision assertions remain intact.
 - All four revised checks pass with two workers (2.6 minutes): train layout at 360 × 600, 600 × 360 and 800 × 360, plus expired fallback coordination. Production build, type-check, repository formatting and diff whitespace checks pass.
+- [PR #13 validation](https://github.com/jzyrobert/brick-editor/actions/runs/38069119723) passed every job before merge. Main commit `ed5eda6` then passed [all validation and automatic deployment jobs](https://github.com/jzyrobert/brick-editor/actions/runs/38069999576) without a failed-job rerun.
 
 ## Default E adoption — 10 October 2026
 

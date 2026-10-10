@@ -1,0 +1,272 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 916,
+  "targetMiss": {
+    "target": 800,
+    "parts": 916,
+    "difference": 116,
+    "percent": 14.5
+  },
+  "seconds": 727,
+  "tokens": {
+    "input": 754878,
+    "cached": 507520,
+    "output": 63386,
+    "reasoning": 34202
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "15068",
+      "24201",
+      "24309",
+      "3005",
+      "3039",
+      "3660b",
+      "3678b",
+      "3700",
+      "41747",
+      "41748",
+      "41769a",
+      "41770a",
+      "4460b",
+      "6141",
+      "61678",
+      "6636",
+      "87079",
+      "88930"
+    ],
+    "notInList": [
+      "41747",
+      "41748"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 727,
+      "usage": {
+        "input": 754878,
+        "cached": 507520,
+        "output": 63386,
+        "reasoning": 34202,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wheel motorcycle large",
+            "limit": 8
+          },
+          "results": [
+            "4624",
+            "3641",
+            "6255",
+            "3788",
+            "4600",
+            "3471",
+            "3829c01",
+            "50860"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bicycle wheel",
+            "limit": 6
+          },
+          "results": [
+            "92851",
+            "4720",
+            "64248",
+            "u9163",
+            "28578",
+            "4719c03"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tyre motorcycle",
+            "limit": 8
+          },
+          "results": [
+            "2902",
+            "11957",
+            "67140",
+            "71721",
+            "71722",
+            "80542",
+            "88516",
+            "6596"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved wedge",
+            "size": "2x6",
+            "limit": 6
+          },
+          "results": [
+            "41748",
+            "41747",
+            "41764",
+            "41765"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "2x4",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "88930",
+            "93606",
+            "47456",
+            "61068"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wheel motorcycle 75",
+            "limit": 10
+          },
+          "results": [
+            "84772p01c01"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wheel motorcycle 62",
+            "limit": 10
+          },
+          "results": [
+            "84772"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wheel spoked",
+            "limit": 10
+          },
+          "results": [
+            "50862",
+            "30155",
+            "242c01",
+            "243c01",
+            "50862c01",
+            "244c01",
+            "244c02",
+            "244c03",
+            "242",
+            "243"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "technic axle",
+            "size": "6x1",
+            "limit": 5
+          },
+          "results": [
+            "61800",
+            "3706",
+            "61795",
+            "370626",
+            "u9010"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "4x6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "78522",
+            "52031"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 995,
+          "errors": 24,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 924,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 926,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "24201",
+          "24309",
+          "3005",
+          "3039",
+          "3660b",
+          "3678b",
+          "3700",
+          "41747",
+          "41748",
+          "41769a",
+          "41770a",
+          "4460b",
+          "6141",
+          "61678",
+          "6636",
+          "87079",
+          "88930"
+        ],
+        "notInList": [
+          "41747",
+          "41748"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 916
+    }
+  ]
+}
