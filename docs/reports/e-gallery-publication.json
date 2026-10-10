@@ -1,0 +1,220 @@
+{
+  "publishedAt": "2026-10-10 15:09:32 UTC",
+  "sourceCommit": "4f1adbad826e8dede43be14c68284e37c77338f6",
+  "mainValidation": {
+    "run": 38059600711,
+    "attempt": 2,
+    "conclusion": "success",
+    "initialFailure": "A frame-polling assertion in load-performance.spec.ts missed the mixed skeleton/parts frame; the isolated test and retried shard passed with no code or budget changes."
+  },
+  "publication": {
+    "method": "Authenticated owner Cloudflare connection",
+    "workflowAttempt": 38061099397,
+    "workflowConclusion": "failure at initial D1 read; no changes from that attempt",
+    "builds": 18,
+    "prompts": 6,
+    "models": 3,
+    "verifiedAssets": 108,
+    "previousBuildsHidden": 12
+  },
+  "visibility": [
+    {
+      "id": "082e998e79bb",
+      "hidden": 1
+    },
+    {
+      "id": "09b5d4aca90b",
+      "hidden": 0
+    },
+    {
+      "id": "136595b3dfc6",
+      "hidden": 1
+    },
+    {
+      "id": "1cb68fc57858",
+      "hidden": 1
+    },
+    {
+      "id": "1ec5cf3535ec",
+      "hidden": 0
+    },
+    {
+      "id": "256416f99469",
+      "hidden": 1
+    },
+    {
+      "id": "2a0711252172",
+      "hidden": 0
+    },
+    {
+      "id": "2fb84e9df15f",
+      "hidden": 0
+    },
+    {
+      "id": "44f44b6e0cba",
+      "hidden": 0
+    },
+    {
+      "id": "48cc573c7e7a",
+      "hidden": 0
+    },
+    {
+      "id": "5047fe996a56",
+      "hidden": 0
+    },
+    {
+      "id": "5913db6fb6f8",
+      "hidden": 0
+    },
+    {
+      "id": "61e6c4105e56",
+      "hidden": 0
+    },
+    {
+      "id": "64f1f0693d08",
+      "hidden": 1
+    },
+    {
+      "id": "65422603b324",
+      "hidden": 1
+    },
+    {
+      "id": "6a5ac18a082c",
+      "hidden": 0
+    },
+    {
+      "id": "8152ec6d73c4",
+      "hidden": 0
+    },
+    {
+      "id": "837caf412bf6",
+      "hidden": 0
+    },
+    {
+      "id": "8a5f5b260900",
+      "hidden": 1
+    },
+    {
+      "id": "906ed6d85a27",
+      "hidden": 1
+    },
+    {
+      "id": "9cc74120fae3",
+      "hidden": 1
+    },
+    {
+      "id": "ac5b8302d122",
+      "hidden": 0
+    },
+    {
+      "id": "b45b5d27cc0e",
+      "hidden": 1
+    },
+    {
+      "id": "bf7a491c4b52",
+      "hidden": 0
+    },
+    {
+      "id": "c6be78913e1b",
+      "hidden": 1
+    },
+    {
+      "id": "cf2820810338",
+      "hidden": 0
+    },
+    {
+      "id": "d633f0502682",
+      "hidden": 1
+    },
+    {
+      "id": "e5f5d590399f",
+      "hidden": 0
+    },
+    {
+      "id": "eb402640545f",
+      "hidden": 0
+    },
+    {
+      "id": "f4456c545e1a",
+      "hidden": 0
+    }
+  ],
+  "cacheResponseRuleset": {
+    "description": "",
+    "id": "8adb30b7444e4f5f98f791d0ac1387f8",
+    "kind": "zone",
+    "last_updated": "2026-10-10T14:58:44.319897Z",
+    "name": "Gallery cache policy",
+    "phase": "http_response_cache_settings",
+    "rules": [
+      {
+        "action": "set_cache_control",
+        "action_parameters": {
+          "immutable": {
+            "cloudflare_only": false,
+            "operation": "set"
+          },
+          "max-age": {
+            "cloudflare_only": false,
+            "operation": "set",
+            "value": 31536000
+          },
+          "public": {
+            "cloudflare_only": false,
+            "operation": "set"
+          }
+        },
+        "description": "Keep content-addressed gallery files immutable",
+        "enabled": true,
+        "expression": "(http.host eq \"gallery.bricks.robertj.in\" and http.response.code in {200 206 304} and (starts_with(http.request.uri.path, \"/b/\") or starts_with(http.request.uri.path, \"/s/\") or starts_with(http.request.uri.path, \"/p/\") or starts_with(http.request.uri.path, \"/r/\")))",
+        "id": "ed052112e9ae4fc0a8cad46f9abe3224",
+        "last_updated": "2026-10-10T14:58:44.319897Z",
+        "ref": "brick_gallery_immutable",
+        "version": "1"
+      },
+      {
+        "action": "set_cache_control",
+        "action_parameters": {
+          "immutable": {
+            "cloudflare_only": false,
+            "operation": "remove"
+          },
+          "max-age": {
+            "cloudflare_only": false,
+            "operation": "set",
+            "value": 60
+          },
+          "public": {
+            "cloudflare_only": false,
+            "operation": "set"
+          },
+          "s-maxage": {
+            "cloudflare_only": false,
+            "operation": "set",
+            "value": 60
+          }
+        },
+        "description": "Refresh the gallery index every minute",
+        "enabled": true,
+        "expression": "(http.host eq \"gallery.bricks.robertj.in\" and http.request.uri.path eq \"/index.json\" and http.response.code in {200 304})",
+        "id": "6ea33a2ee80542749c94a186d6f5a5c5",
+        "last_updated": "2026-10-10T14:58:44.319897Z",
+        "ref": "brick_gallery_index",
+        "version": "1"
+      }
+    ],
+    "version": "1"
+  },
+  "liveChecks": {
+    "modelFilters": "Six builds per model",
+    "viewports": [
+      [1440, 1000],
+      [1080, 1800],
+      [360, 600],
+      [411, 685],
+      [390, 844],
+      [686, 411]
+    ],
+    "horizontalOverflow": false
+  }
+}

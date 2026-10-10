@@ -378,3 +378,9 @@ npx tsx scripts/publish-gallery-bundle.ts docs/samples/lego-style-study/gallery-
 # After this commit is on main and every validation/deployment job passes:
 gh workflow run gallery.yml --ref main
 ```
+
+### Publication verification
+
+The 18-build collection is live at [Brick Editor](https://bricks.robertj.in). Main validation and deployment passed on `4f1adba`; one transient skeleton/parts frame-polling assertion passed in isolation and on the failed-shard rerun, with no code or budget changes. The dedicated gallery workflow stopped at its initial D1 read before changing anything. The authenticated owner connection then uploaded the exact reviewed files, applied the reviewed SQL and rebuilt the index from live rows. The previous 12 entries are hidden and their files retained.
+
+Every public asset matches its committed checksum. Two gallery-only Cache Response Rules preserve one-year immutable files and a one-minute index lifetime; the existing cache eligibility rule is unchanged. The live app shows 18 responses, each model filter gives six, and all six supported phone/desktop sizes have no horizontal overflow. [The publication receipt](../../reports/e-gallery-publication.json) records the exact workflow attempts, visibility audit and rules. CI gallery access remains an open TODO; model generation and requested publication are complete.
