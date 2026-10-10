@@ -70,7 +70,13 @@ workflow requires successful validation of that main commit, verifies the
 bundle and live roster, uploads assets, hides those exact older entries and
 rebuilds the index. The 7 October creative runs remain in
 [the previous comparison](samples/creative-prompt-comparison/README.md), and
-are retained as hidden history by the replacement SQL.
+are retained as hidden history by the replacement SQL. The collection is live,
+and all 108 public files and cache headers are verified. The first gallery
+workflow run stopped at its initial D1 read; publication used the authenticated
+owner connection after successful main validation/deployment. Gallery CI
+access remains an open TODO. Two gallery-only Cache Response Rules preserve
+immutable files and the one-minute index lifetime independently of the upload
+client. See [the publication receipt](reports/e-gallery-publication.json).
 
 Earlier builds were hidden with `gallery:publish -- --hide <id> --remote`
 (`hidden = 1`), not deleted: their files stay in the bucket, and

@@ -1,10 +1,16 @@
 # Verification — 27 September 2026
 
+## Browser CI timing races — 10 October 2026
+
+- PR #13's failed shards timed out waiting for the train's transient look-hint geometry at 800 × 360 and for the expired fallback checksum to resume. Both original cases pass in isolation (two tests, one worker, 1.2 minutes), confirming timing-sensitive failures.
+- The revised train checks explicitly advance only the six-second hint callbacks, retain real rendering/input clocks, capture simultaneous running-train/hint geometry and verify the hint disappears after expiry. The storage check waits for its deliberately blocked checksum before expiring coordination; the saved baseline and newer in-memory revision assertions remain intact.
+- All four revised checks pass with two workers (2.6 minutes): train layout at 360 × 600, 600 × 360 and 800 × 360, plus expired fallback coordination. Production build, type-check, repository formatting and diff whitespace checks pass.
+
 ## Default E adoption — 10 October 2026
 
 - Default one-shot input is byte-identical to the frozen E system/reply combination. The default JSON and JavaScript examples match and compile with no warnings; legacy defaults are preserved explicitly. Generation still receives only text search results, part counts and errors.
 - The study harness accepts the Claude runner and rejects image feedback there. Six Opus 5.5 high runs accept in one attempt with no compiler errors/baseplates and four final views; parts are 871/1,028/2,190/1,108/5,434/3,347. The 42-run provenance manifest verifies matching E inputs, original source hashes, zero images and disabled agent tools. The 48-build viewer loads three angles at all six supported phone/desktop sizes without overflow.
-- Production build and type-check pass after rebasing on current main. All 72 focused generation, workspace, gallery and publication guard tests pass. The reviewed publication bundle has 18 replacements and 108 checksum-verified assets, with three high-effort models per prompt. Publication requires exact live-roster agreement and successful main CI; it uploads immutable files before hiding the exact 12 older entries and rebuilding the index. Actual remote workflow results remain available in GitHub Actions.
+- Production build and type-check pass after rebasing on current main. All 72 focused generation, workspace, gallery and publication guard tests pass. The reviewed publication bundle has 18 replacements and 108 checksum-verified assets, with three high-effort models per prompt. Publication requires exact live-roster agreement and successful main CI; it uploads immutable files before hiding the exact 12 older entries and rebuilding the index. Main CI passed all checks and deployed after one isolated/retried frame-polling failure, with no code or budget changes. The gallery workflow failed at its first D1 read before changing anything; owner-authenticated publication succeeded. Public verification checks all 108 file checksums/cache headers, six prompts × three models, 12 hidden prior entries, and model filters at all six supported sizes. [The receipt](reports/e-gallery-publication.json) records the exact runs and cache policy.
 
 ## Astra E spatial reasoning comparison — 10 October 2026
 

@@ -374,16 +374,25 @@ test("an expired fallback transaction cannot publish after its checksum resumes"
     const w = window as any,
       timer = window.setTimeout.bind(window),
       digest = crypto.subtle.digest.bind(crypto.subtle);
+    let checksumStarted!: () => void;
+    const started = new Promise<void>((resolve) => {
+      checksumStarted = resolve;
+    });
     window.setTimeout = ((
       handler: TimerHandler,
       delay?: number,
       ...args: any[]
     ) =>
-      timer(
-        handler,
-        delay === 30000 ? 50 : delay,
-        ...args,
-      )) as typeof window.setTimeout;
+      delay === 30000
+        ? timer(async () => {
+            // Expire while checksum work is suspended, even if acquiring the
+            // IndexedDB transaction takes longer than 50 ms on a busy runner.
+            await started;
+            if (typeof handler !== "function")
+              throw new Error("Expected a coordination timeout callback.");
+            handler(...args);
+          }, 50)
+        : timer(handler, delay, ...args)) as typeof window.setTimeout;
     const gate = new Promise<void>((resolve) => {
       w.releaseExpired = resolve;
     });
@@ -394,6 +403,7 @@ test("an expired fallback transaction cannot publish after its checksum resumes"
       if (
         new TextDecoder().decode(args[1]).includes('"title":"Timeout baseline"')
       ) {
+        checksumStarted();
         await gate;
         const result = await digest(...args);
         w.expiredResumed = true;
