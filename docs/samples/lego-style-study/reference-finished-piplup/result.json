@@ -1,0 +1,308 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1135,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1135,
+    "difference": 135,
+    "percent": 13.5
+  },
+  "seconds": 468,
+  "tokens": {
+    "input": 893076,
+    "cached": 606464,
+    "output": 56690,
+    "reasoning": 27779
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "15068",
+      "24201",
+      "24309",
+      "3001",
+      "3003",
+      "3004",
+      "3005",
+      "3035",
+      "3039",
+      "3063b",
+      "3069b",
+      "3660b",
+      "3676",
+      "3678b",
+      "3747b",
+      "47753",
+      "50950",
+      "61678",
+      "93606"
+    ],
+    "notInList": [
+      "47753",
+      "93606"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 468,
+      "usage": {
+        "input": 893076,
+        "cached": 606464,
+        "output": 56690,
+        "reasoning": 27779,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x4",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "88930",
+            "93606",
+            "47456"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 20
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "6091",
+            "30602",
+            "42022",
+            "70681",
+            "80177",
+            "80178",
+            "93606",
+            "5093",
+            "5095",
+            "47457",
+            "3573",
+            "29119"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "inverted curved slope",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "42023",
+            "11301",
+            "1750",
+            "5847"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye",
+            "limit": 20
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope",
+            "size": "2x3",
+            "colour": "yellow",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "3298",
+            "3038",
+            "24309",
+            "3747b",
+            "80177",
+            "80178",
+            "3747a",
+            "6032"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved",
+            "size": "8x8",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "54091",
+            "54095",
+            "54096",
+            "6252"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "curved",
+            "size": "4x4",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 15
+          },
+          "results": [
+            "45677",
+            "47753",
+            "66955",
+            "18969",
+            "7249",
+            "61487",
+            "93589",
+            "5651"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "curved",
+            "size": "8x2",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "41766",
+            "11290",
+            "11301"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope 65",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "60481a",
+            "3678b",
+            "78886"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "2x6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "44126",
+            "41748",
+            "41747",
+            "41764",
+            "41765"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1298,
+          "errors": 29,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 1110,
+          "errors": 2,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 1135,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "24201",
+          "24309",
+          "3001",
+          "3003",
+          "3004",
+          "3005",
+          "3035",
+          "3039",
+          "3063b",
+          "3069b",
+          "3660b",
+          "3676",
+          "3678b",
+          "3747b",
+          "47753",
+          "50950",
+          "61678",
+          "93606"
+        ],
+        "notInList": [
+          "47753",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1135
+    }
+  ]
+}

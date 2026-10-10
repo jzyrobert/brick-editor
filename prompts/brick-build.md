@@ -1,6 +1,6 @@
 # brick.build reply format
 
-The one-shot runner (`npm run oneshot`) asks for builds as brick.build code instead of a build script JSON, after MineBench's `voxel.exec`. It swaps the sections below into [build-agent.md](build-agent.md) in place of its `## Output` and `## Example` sections; the rest of that prompt (ops, geometry, counting, parts) still describes the ops the code makes. Code runs in [scripts/brick-build.ts](../scripts/brick-build.ts); `brick-cli build --script build.js` compiles it too.
+Default E reply format. The previous default is preserved as [brick-build-legacy.md](brick-build-legacy.md).
 
 ---
 
@@ -33,21 +33,15 @@ script({
   },
 });
 
-section("Site", [
-  baseplate({ at: [-16, -16], size: [32, 32], colour: "green" }),
+// A compact plate-built footing follows the cottage footprint. The tree is
+// a separate coherent assembly standing on the table, outside the footing.
+section("Foundation", [
   floor({
-    at: [-16, 0, -16],
-    size: [32, 6],
-    colour: "trans light blue",
+    at: [-7, 0, -4],
+    size: [14, 10],
+    layers: 2,
+    colour: "dark bluish grey",
     top: "tile",
-  }),
-  fence({
-    path: [
-      [-14, -9],
-      [14, -9],
-    ],
-    colour: "white",
-    style: "picket",
   }),
 ]);
 
@@ -63,14 +57,14 @@ const window2x9 = (at) => ({
 
 section("Cottage", [
   box({
-    at: [-7, 0, -4],
+    at: [-7, 2, -4],
     size: [14, 3, 10],
     colour: "stone",
     texture: "masonry",
     interior: "fill",
   }),
   room({
-    at: [-6, 3, -3],
+    at: [-6, 5, -3],
     size: [12, "6b", 8],
     colour: "wall",
     floor: "tan",
@@ -89,14 +83,14 @@ section("Cottage", [
   }),
   roof({
     style: "gable",
-    at: [-6, 21, -3],
+    at: [-6, 23, -3],
     size: [12, 8],
     colour: "roof",
     gable: "wall",
     holes: [{ at: [2, 3], size: [2, 2] }],
   }),
   box({
-    at: [2, 3, 3],
+    at: [2, 5, 3],
     size: [2, "11b", 2],
     colour: "stone",
     interior: "solid",

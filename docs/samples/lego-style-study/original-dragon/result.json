@@ -1,0 +1,288 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1138,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1138,
+    "difference": 138,
+    "percent": 13.8
+  },
+  "seconds": 1047,
+  "tokens": {
+    "input": 820965,
+    "cached": 548608,
+    "output": 81234,
+    "reasoning": 50606
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11089",
+      "11477",
+      "15068",
+      "15070",
+      "24309",
+      "24482",
+      "3005",
+      "3039",
+      "3062b",
+      "3069b",
+      "3070b",
+      "3941",
+      "4032b",
+      "40379",
+      "4589",
+      "50950",
+      "54200",
+      "61678",
+      "93606",
+      "98138"
+    ],
+    "notInList": [
+      "11089",
+      "15070",
+      "24482",
+      "40379",
+      "93606"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1047,
+      "usage": {
+        "input": 820965,
+        "cached": 548608,
+        "output": 81234,
+        "reasoning": 50606,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "dragon wing",
+            "limit": 8
+          },
+          "results": [
+            "6133",
+            "5984",
+            "38547",
+            "51342",
+            "30130",
+            "6125",
+            "75174c01",
+            "87685"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "horn tooth claw",
+            "limit": 12
+          },
+          "results": [
+            "11089"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dragon head",
+            "limit": 5
+          },
+          "results": [
+            "6027",
+            "24199",
+            "43900",
+            "24196",
+            "51344"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "flame",
+            "limit": 8
+          },
+          "results": [
+            "70880",
+            "7727",
+            "64647",
+            "18395",
+            "80519",
+            "6126b",
+            "69858",
+            "6126a"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "egg",
+            "limit": 5
+          },
+          "results": [
+            "24946",
+            "24130",
+            "24132"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tooth",
+            "size": "1x1",
+            "limit": 10
+          },
+          "results": [
+            "15070",
+            "3647",
+            "11089",
+            "50903",
+            "10928",
+            "11955",
+            "35463",
+            "32053"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "horn",
+            "limit": 12
+          },
+          "results": [
+            "2142",
+            "89522",
+            "13564",
+            "64847",
+            "40379",
+            "11089",
+            "67361",
+            "112",
+            "6135b",
+            "1997",
+            "6135a",
+            "88964"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "spike",
+            "limit": 8
+          },
+          "results": [
+            "24482",
+            "39789",
+            "98578",
+            "39793",
+            "49283",
+            "27266",
+            "64712",
+            "39794"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "rock",
+            "category": "Rock",
+            "limit": 6
+          },
+          "results": [
+            "30385",
+            "30153",
+            "42284",
+            "42291",
+            "10178",
+            "70880"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "size": "2x4",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "93606",
+            "43720",
+            "43721",
+            "80545"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "ok": false,
+          "reason": "INVALID_INPUT: Invalid build script: $.sections[3].ops[50].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [2,0,3]); $.sections[3].ops[106].size [w, h, d]: positive studs, h in plates or \"<n>b\" (got [2,0,3])"
+        },
+        {
+          "round": 2,
+          "parts": 2035,
+          "errors": 1,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 1407,
+          "errors": 2,
+          "ok": false
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11089",
+          "11477",
+          "15068",
+          "15070",
+          "24309",
+          "24482",
+          "3005",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "3941",
+          "4032b",
+          "40379",
+          "4589",
+          "50950",
+          "54200",
+          "61678",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "11089",
+          "15070",
+          "24482",
+          "40379",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1138
+    }
+  ]
+}

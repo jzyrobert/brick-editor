@@ -1,0 +1,309 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 882,
+  "targetMiss": {
+    "target": 800,
+    "parts": 882,
+    "difference": 82,
+    "percent": 10.3
+  },
+  "seconds": 476,
+  "tokens": {
+    "input": 661036,
+    "cached": 424192,
+    "output": 38063,
+    "reasoning": 19164
+  },
+  "searches": 10,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11290",
+      "11301",
+      "11477",
+      "13547",
+      "14769",
+      "15068",
+      "2431",
+      "3005",
+      "3005pe4",
+      "3039",
+      "3069b",
+      "32607",
+      "3660b",
+      "3666",
+      "3788",
+      "3941",
+      "3942c",
+      "4032b",
+      "42022",
+      "42023",
+      "45410",
+      "45411",
+      "60481a",
+      "61678",
+      "64648",
+      "8043",
+      "98138"
+    ],
+    "notInList": [
+      "11290",
+      "11301",
+      "3005pe4",
+      "42022",
+      "42023",
+      "45410",
+      "45411",
+      "64648",
+      "8043"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 476,
+      "usage": {
+        "input": 661036,
+        "cached": 424192,
+        "output": 38063,
+        "reasoning": 19164,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope inverted",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023",
+            "11301",
+            "45410",
+            "41764",
+            "41765"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved 6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "42022",
+            "44126",
+            "42023",
+            "78522",
+            "45410",
+            "45411",
+            "56204",
+            "52031",
+            "35164",
+            "61484"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "brick eye",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "41669",
+            "48267"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bicycle wheel",
+            "limit": 8
+          },
+          "results": [
+            "92851",
+            "4720",
+            "64248",
+            "u9163",
+            "28578",
+            "4719c03"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "fish",
+            "limit": 6
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "3005pe4",
+            "limit": 3
+          },
+          "results": [
+            "3005pe4"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "1x6",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "42022",
+            "42023",
+            "35164"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved double",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "93273",
+            "54091",
+            "66956",
+            "78522",
+            "11290",
+            "52031",
+            "1762",
+            "11301"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope inverted",
+            "size": "1x3",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "4287a",
+            "70681",
+            "2341",
+            "4287c"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved double",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "93273",
+            "54091",
+            "66956",
+            "78522",
+            "11290",
+            "52031",
+            "54095",
+            "1762"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 876,
+          "errors": 4,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 882,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11290",
+          "11301",
+          "11477",
+          "13547",
+          "14769",
+          "15068",
+          "2431",
+          "3005",
+          "3005pe4",
+          "3039",
+          "3069b",
+          "32607",
+          "3660b",
+          "3666",
+          "3788",
+          "3941",
+          "3942c",
+          "4032b",
+          "42022",
+          "42023",
+          "45410",
+          "45411",
+          "60481a",
+          "61678",
+          "64648",
+          "8043",
+          "98138"
+        ],
+        "notInList": [
+          "11290",
+          "11301",
+          "3005pe4",
+          "42022",
+          "42023",
+          "45410",
+          "45411",
+          "64648",
+          "8043"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 882
+    }
+  ]
+}
