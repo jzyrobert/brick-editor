@@ -1,5 +1,16 @@
 # Verification — 27 September 2026
 
+## Viewer performance audit — 11 October 2026
+
+- Baseline `f0cd3a2`, isolated worktree and production bundles; separate strict localhost ports. The [audit](RENDER-PERFORMANCE-AUDIT.md) and [measurement record](reports/render-performance-2026-10-11.json) retain byte counts, desktop/mobile individual frame samples, cold/warm captures, paint observations and limitations.
+- 46 targeted unit checks pass across ten files: look/material/sampling policy, AO disposal, static viewer dependency boundaries, BrowserPlay seat coordination, native-free source binding, motor source preparation/input and Play look policy.
+- Ten main browser checks pass in 3.3 minutes: soft outlines, shared studio lighting, cached Play shadows, offline install/reload/first Play entry, large motor controls on desktop/phone, deterministic Play isolation, Photo motion/settling on both resource profiles, and camera replacement/resize shadow reuse with edit invalidation. Resize coverage: 1080 × 1800, 360 × 600, 411 × 685, 390 × 844, 686 × 411 and 1440 × 1000.
+- Two heavy Photo checks pass in 4.2 minutes: actual path-traced refinement/progress/idle and subsequent camera changes, Play raster behavior, repeatable captures, Photo/Realistic distinction and section-cut raster fallback.
+- Three captures per look before/after, plus a controlled-noise image pair: four looks are pixel-identical; Photo's mean absolute channel difference is 0.0057/255 (maximum 60, 190 changed channels out of 76,800). The latter is a close image match, not a pixel-identical claim. The actual Photo path traces 61,428 triangles at four samples in both builds.
+- A further phone Play check passes in 15.7 seconds: DPR 3 is capped to 1.5 during Play, idle input stops drawing, movement resumes frames and exit restores the editor's 2× cap (13 browser checks in total).
+- The 148,960-part city stress command completes on the mobile profile with no errors: 17,265,248 budgeted triangles under the unchanged 24 M limit, 162 MiB heap after load, 8.804 s to first full render; final camera-sweep frame 76 draws / 9,388,400 triangles. The approximate 150,000 input generated 150,480 and correctly hit the occurrence limit. The runner's stale autosave-label check was repaired before the successful within-budget run. No large-scene Play/recovery measurement is claimed for this command.
+- Native chunks remain in the generated offline precache. A dependency-graph regression refuses any eager runtime import path from `src/main.tsx` to Rapier; actual offline Play and motor tests verify the deferred code executes.
+
 ## CI scheduling and timing isolation — 11 October 2026
 
 - Baseline [camera validation](https://github.com/jzyrobert/brick-editor/actions/runs/38098722392):

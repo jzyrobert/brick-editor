@@ -1,5 +1,9 @@
 # Implementation status
 
+## Viewer performance audit — 11 October 2026
+
+The [renderer audit](RENDER-PERFORMANCE-AUDIT.md) restores lazy loading of native Play physics, preserves model-fitted shadows across camera replacement and viewport resizing, defers Photo scene inspection until motion ends, and disposes the two AO materials omitted by three r174. The initial entry is 44.2% smaller uncompressed and 63.0% smaller gzipped. In the paired 5,000-part camera-replacement runs, Realistic/Photo submit about half the draws and Photo performs no scene inspections while held. Shared-VM wall times are mixed; no general FPS improvement is claimed. Standard, soft outlines, Realistic and raster Photo have identical controlled-noise captures; path-traced Photo differs by a mean 0.006/255 per channel. The automation surface and resource limits remain unchanged. Validation and remaining shader/device work are recorded in the audit and [verification](VERIFICATION.md#viewer-performance-audit--11-october-2026).
+
 ## CI scheduling and timing isolation — 11 October 2026
 
 CI separates static checks, three bounded-worker unit shards, single-worker CLI

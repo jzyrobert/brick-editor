@@ -435,6 +435,11 @@ export class LookPipeline {
     this.hdr = undefined;
     this.accumulation.forEach((t) => t.dispose());
     this.accumulation = [];
+    // r174's GTAOPass.dispose omits these two materials. In particular the
+    // rendered AO material otherwise retains its WebGLProgram after every
+    // Realistic -> Standard switch (and every temporary Realistic capture).
+    this.gtao?.gtaoMaterial.dispose();
+    this.gtao?.blendMaterial.dispose();
     this.gtao?.dispose();
     this.gtao = undefined;
     this.aoBox = null;
