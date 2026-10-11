@@ -29,7 +29,7 @@ for (const [width, height] of [
       await page.evaluate(async () => {
         await window.brickEditor!.project.import({
           format: "template",
-          template: "seated-vehicle",
+          template: "car",
         });
         await window.brickEditor!.ready();
       });
@@ -37,8 +37,8 @@ for (const [width, height] of [
       await page.evaluate(async () => {
         const play = window.brickEditor!.play;
         await play.enter({
-          rigId: "vehicle",
-          position: [80, -0.3, -188],
+          rigId: "car",
+          position: [-90, -0.3, 40],
           realtime: false,
           cameraMode: "third-person",
         });
@@ -51,7 +51,7 @@ for (const [width, height] of [
               (await window.brickEditor!.play.snapshot()).vehicleControl?.rigId,
           ),
         )
-        .toBe("vehicle");
+        .toBe("car");
       // Use the live viewport's aspect in captures, including the wide phone.
       const camera = () =>
         page.evaluate(async () => {
