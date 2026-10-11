@@ -22,6 +22,21 @@
   replacement and saved-state behavior. Seven duplicate sample opens are
   removed. Idle rendering now waits for ten quiet frames with the existing
   assertion timeout. Build, TypeScript, repository and workflow formatting pass.
+- The optimized [PR run](https://github.com/jzyrobert/brick-editor/actions/runs/38100483482)
+  passed in **11 min 27 s**, 17.4% quicker than the baseline. All 1,928 Vitest
+  cases and 365 browser cases passed, with two and three intentional skips
+  respectively and no reported browser flakes. The longest browser job fell
+  from 11 min 35 s to 9 min 2 s.
+- The first main run exposed the previously documented skeleton-frame flake:
+  its load diagnostics showed 281 boxes and progressive replacement, while
+  the observer sampled only two empty frames. The unchanged test passed three
+  isolated local runs. Its acceptance check now holds two compile jobs until
+  the first skeleton frame, releases one worker to build partial geometry,
+  and releases the other after a partial frame is observed. It retains all
+  skeleton, progressive rendering, cleanup and edit assertions without adding
+  sleeps or retries. The controlled test also passes three local repeats.
+  The separate load-performance test remains uncontrolled
+  and retains its existing time budgets.
 - Full optimized CI and hosted timing comparisons are recorded on the pull
   request before merge. The final gate requires static checks, all unit shards,
   isolated unit performance, CLI integration, every browser shard and the merged

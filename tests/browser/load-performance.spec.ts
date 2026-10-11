@@ -12,6 +12,8 @@ import { expect, test, type Page } from "@playwright/test";
  * (software WebGL, 0.3–1.3 s on the shared VM), so the bound is generous;
  * the load work itself must have been split into many tasks.
  */
+type CompileGate = { hold: boolean; pending: (() => void)[] };
+
 const LONGEST_TASK_MS = 2500;
 test.describe.configure({ timeout: 240000 });
 
@@ -159,9 +161,32 @@ test("a newly opened model shows its skeleton first on a phone, then its parts; 
     hasTouch: true,
   });
   const page = await context.newPage();
+  // Control compile completion rather than hoping SwiftShader draws between
+  // fast worker replies. Keep one worker held until a partial frame is seen.
+  await page.addInitScript(() => {
+    const controls = window as typeof window & { compileGate: CompileGate };
+    controls.compileGate = { hold: false, pending: [] };
+    const NativeWorker = window.Worker;
+    window.Worker = class extends NativeWorker {
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        if (!String(url).includes("part-compile")) return;
+        this.postMessage = (message, options?) => {
+          const send = () =>
+            Reflect.apply(NativeWorker.prototype.postMessage, this, [
+              message,
+              options,
+            ]);
+          const gate = controls.compileGate;
+          if (gate.hold) gate.pending.push(send);
+          else send();
+        };
+      }
+    };
+  });
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("./?automation=1");
+  await page.goto("./?automation=1&compileWorkers=2");
   await page.waitForFunction(() => !!window.brickEditor);
   const result = await page.evaluate(async () => {
     const a = window.brickEditor!;
@@ -172,19 +197,31 @@ test("a newly opened model shows its skeleton first on a phone, then its parts; 
     });
     type Seen = { skeleton: number; revealed: number; drawn: number };
     const frames: Seen[] = [];
+    const gate = (window as typeof window & { compileGate: CompileGate })
+      .compileGate;
+    let last = (await a.render.budget()).lastFrame.frames;
+    gate.hold = true;
     let ready = false;
+    let skeletonSeen = false;
     const poll = (async () => {
-      let last = (await a.render.budget()).lastFrame.frames;
       while (!ready) {
         await new Promise((r) => requestAnimationFrame(r));
         const b = await a.render.budget();
-        if (b.lastFrame.frames <= last) continue;
-        last = b.lastFrame.frames;
-        frames.push({
-          skeleton: b.skeleton?.instances ?? 0,
-          revealed: b.skeleton?.revealed ?? 0,
-          drawn: b.batches.occurrencesDrawn,
-        });
+        if (b.lastFrame.frames > last) {
+          last = b.lastFrame.frames;
+          frames.push({
+            skeleton: b.skeleton?.instances ?? 0,
+            revealed: b.skeleton?.revealed ?? 0,
+            drawn: b.batches.occurrencesDrawn,
+          });
+          if (b.skeleton && !b.batches.occurrencesDrawn) skeletonSeen = true;
+          if (b.skeleton && b.batches.occurrencesDrawn && !gate.hold)
+            gate.pending.shift()?.();
+        }
+        if (skeletonSeen && gate.hold && gate.pending.length === 2) {
+          gate.hold = false;
+          gate.pending.shift()!();
+        }
       }
     })();
     const imported = await a.project.import({
@@ -207,12 +244,19 @@ test("a newly opened model shows its skeleton first on a phone, then its parts; 
     });
     await a.ready({ minRevision: edited.revision, strict: true });
     const edit = (await a.render.compileStats()).lastLoad;
-    return { frames, opened, after, edit };
+    return {
+      frames,
+      opened,
+      after,
+      edit,
+      compileGateReleased: !gate.hold && gate.pending.length === 0,
+    };
   });
   console.log(
     "skeleton load",
     JSON.stringify({ ...result, frames: result.frames.slice(0, 12) }),
   );
+  expect(result.compileGateReleased).toBe(true);
   // The first frame showing anything of the house shows all of it as boxes.
   const first = result.frames.find((f) => f.skeleton || f.drawn);
   expect(first?.skeleton).toBe(281);
