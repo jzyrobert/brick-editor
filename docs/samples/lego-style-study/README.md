@@ -458,3 +458,63 @@ npx tsx scripts/evaluate-build-style.ts --model gpt-6.1-sol \
 ```
 
 Use a new output directory for another independent trial. The viewer loads all 72 images across four presets, with no horizontal overflow at six supported phone/desktop sizes and a 44 px view selector. Exact hashes confirm all 54 previously committed pilot model/control/image artifacts remain unchanged.
+
+## Sol self-improvement loops
+
+The [comparison preview](../style-self-improvement/index.html) retains the current clean-start E and frozen Diorama builds alongside the self-improvement candidates, with separate style filters and front, three-quarter, back and top views. The experiment uses all six original briefs in both styles with **`gpt-6.1-sol`, high**, without changing the published gallery or default prompt.
+
+### Method and retrospective interviews
+
+Before generating a candidate, the twelve existing Sol builds were reviewed using five fixed axes: recognizability/proportions, intentional shaping/surfaces, style composition, visible assembly/support and consistency across views. Each axis scores 0–4. Deliberate stepped/pixel surfaces and exposed studs are valid choices. These are subjective visual assessments, not physical certification or model rankings. [Baseline records](../style-self-improvement/baseline.json) retain individual scores, issues, original session IDs and hashes.
+
+All twelve original Codex sessions were then resumed for retrospective interviews. They first described their own choices, distinguished instructions from inference, and quoted the relevant short prompt clauses; only then did the interview ask about the textual reviewer observations. No images were supplied. Each interview retained the original Sol/high session and empty working directory, with native tools disabled. [Requests, answers and audits](../style-self-improvement/interviews-baseline/) and [findings](../style-self-improvement/interview-findings.json) preserve the evidence. Explanations are self-reports that suggest hypotheses; they do not prove prompt causation.
+
+The first candidate replaces repeated blanket pressure toward curves and smooth skins with a coherent chosen treatment, permitting intentional stepped sculpture. It clarifies that one stud spans 2.5 plates in physical length, reserves parts for defining proportions and structure before secondary detail, distinguishes spatial envelopes/compiler acceptance from actual attachment, and makes conventional architecture ratios optional. All guidance is build-agnostic. Both composition styles and their reply examples remain intact. [Changes and frozen hashes](../style-self-improvement/round-1/changes.json) record the bundle and rejected suggestions. No connector solver, construction recipes, additional drafting stages or warning feedback were added.
+
+The runner adds `--fresh on`, which rejects nonempty output roots before generation, and always checks that native model working directories are empty. Each new case receives only its original brief/target, the candidate prompt, catalogue and existing part-search/compiler-count/error protocol. It receives no previous build, interview, reviewer critique, repository instructions or rendered images. Final renders happen after submission and remain unavailable to the generating model. Accepted model sources are archived without manual geometry corrections. Independent evaluation before adopting a prompt follows [OpenAI's model optimization guidance](https://developers.openai.com/api/docs/guides/model-optimization) and [prompt optimization guidance](https://developers.openai.com/api/docs/guides/prompt-optimizer).
+
+The [fixed protocol](../style-self-improvement/protocol.json) allows at most five loops. A new loop proceeds only when the preceding candidate gains at least 6 points out of 240, improves at least six cases, has more improvements than regressions, and passes isolation/tool/image audits. Otherwise the experiment stops for plateau or regression. Counts and construction warnings are recorded separately. There is one generation per brief/style/loop; variance remains a plausible explanation and this bundle is not an individual-clause ablation.
+
+### Reproduce and inspect
+
+From the repository root, with the documented Node version on `PATH` and native Codex access:
+
+```sh
+python3 docs/samples/style-self-improvement/run-round.py 1
+npx tsx docs/samples/style-self-improvement/audit-inputs.ts 1
+```
+
+The runner refuses to reuse an existing round directory. The input audit checks exact filled inputs and frozen hashes against the retained accepted artifacts. To interview locally retained original sessions, `interview.py` accepts a case-record JSON and a new output directory; resuming those IDs requires the original native session store. The retained prose/audits are portable; private native rollout logs are excluded from the repository.
+
+### Loop 1 results and stopping decision
+
+All twelve new cases finish with accepted compiler results, zero final errors and four Standard 1,280 × 960 views. Eleven accept on the first attempt; Lego-style Destroyer needs one model-authored repair. [Metrics](../style-self-improvement/round-1/metrics.json), [assessment](../style-self-improvement/round-1/assessment.json) and [exact-input audit](../style-self-improvement/round-1/input-audit.json) retain the evidence. Twelve independent case starts use thirteen distinct attempt sessions, verified as Sol/high with empty directories, no native tools, no sources from other cases and no image input. Every accepted JS source equals its final native submission.
+
+| Case              | Target | Baseline → new parts | Visual score /20 | Preference | New warning records |
+| ----------------- | -----: | -------------------: | ---------------: | ---------- | ------------------: |
+| lego-pelican      |    800 |            889 → 897 |          15 → 14 | baseline   |                   2 |
+| lego-piplup       |  1,000 |        1,204 → 1,173 |          14 → 15 | candidate  |                   1 |
+| lego-temple       |  2,000 |        2,258 → 2,273 |          15 → 15 | tie        |                   2 |
+| lego-dragon       |  1,000 |        1,017 → 1,094 |          13 → 16 | candidate  |                   4 |
+| lego-destroyer    |  5,000 |        5,630 → 5,554 |          16 → 16 | tie        |                   1 |
+| lego-ewok         |  3,000 |        3,278 → 3,191 |          13 → 13 | baseline   |                   1 |
+| diorama-pelican   |    800 |            898 → 865 |          15 → 14 | baseline   |                   4 |
+| diorama-piplup    |  1,000 |        1,095 → 1,318 |          14 → 15 | candidate  |                   3 |
+| diorama-temple    |  2,000 |        2,279 → 2,179 |          16 → 16 | tie        |                   1 |
+| diorama-dragon    |  1,000 |        1,100 → 1,114 |          13 → 15 | candidate  |                   1 |
+| diorama-destroyer |  5,000 |        5,282 → 5,323 |          13 → 16 | candidate  |                   1 |
+| diorama-ewok      |  3,000 |        2,955 → 3,125 |          15 → 14 | baseline   |                   9 |
+
+**Stop after one full loop.** The candidate gains 7 points (172 → 179/240), but only five of twelve cases improve, below the fixed six-case continuation criterion. Three regress and four tie numerically. Lego Ewok's tied total conceals worse theme fidelity offset by better assembly scores; its baseline remains preferred. [Decision](../style-self-improvement/decision.json) records the stop. The improvement is insufficiently broad under this protocol, rather than an aggregate score regression. No second candidate is generated and no default is promoted.
+
+My strongest preference is the **new Lego-style dragon**: the brick-built patterned wings visibly meet the torso and the tail reads more coherently from the back. Both Piplups have clearer stepped faces and less compressed proportions, although their plain dark backs still need work; the diorama Piplup's 1,318 parts are 31.8% over target. The diorama Destroyer has a clearer continuous triangular hull at a similar count. These are promising individual results, not evidence that the entire prompt bundle consistently improves every build.
+
+I prefer the **baseline pelicans and Ewok builds**. The pelicans lose convincing bicycle proportions or gesture. Lego Ewok becomes a timber-clad spacecraft with little readable forest identity; the diorama keeps the treeport, but its bare straight trunks and thin canopy rings are weaker than the baseline. Temples and Lego Destroyer are near ties: different composition/roof choices or surface details do not produce a clear overall gain. All per-case observations are retained in the assessment; the preview includes the less flattering rear and top views.
+
+Ten cases land inside the soft ±15% target range; both Piplups remain outside it (17.3% and 31.8% high). The twelve reports contain 30 warning records, including one floating record per build. A warning record can describe many disconnected parts, so fewer records do not establish physical buildability. Visible attachment improvements remain visual judgments, not solver certification. Defaults and gallery entries retain their existing E/diorama versions. The fresh-directory guard is the only production runner change. Conditional finishing and physical scale remain useful hypotheses for future isolated tests, rather than an adopted winning bundle.
+
+### Interruption and verification
+
+The original execution wrapper returned 143 after ten cases completed. Lego Destroyer had already submitted an accepted source; its completed native replies were replayed locally to restore bookkeeping and render that exact JS/expanded JSON/MPD, all byte-identical to the pre-interruption versions. The final Ewok diorama resumed its original session with the exact interrupted search-feedback message. No new brief, reviewer critique, other-case source or image was added, and no alternative output was generated or selected. [Recovery audit](../style-self-improvement/round-1/recovery-audit.json) retains hashes and session continuity. The interrupted turn had begun reasoning, and repeated feedback may affect its continuation; this is a comparison limitation. Raw recovered `result.json`/`summary.json` seconds describe replay/resumed execution, not complete generation times; metrics exclude those timings.
+
+Verification: 24 focused runner/brick-build tests, type-check and repository format check pass. A real stale-directory probe rejects reuse before model contact or artifact overwrite. Input reconstruction, frozen prompt/reply hashes, baseline hashes and final-submission source equality pass for all twelve. The standalone preview loads all 96 images and filters both styles across four views at six desktop/phone sizes with no overflow and 44 px selectors. No native private rollout logs are committed.

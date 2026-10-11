@@ -1,0 +1,321 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 3191,
+  "targetMiss": {
+    "target": 3000,
+    "parts": 3191,
+    "difference": 191,
+    "percent": 6.4
+  },
+  "seconds": 499,
+  "tokens": {
+    "input": 556514,
+    "cached": 347136,
+    "output": 54054,
+    "reasoning": 35111
+  },
+  "searches": 10,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "18729",
+      "2335",
+      "2412b",
+      "2431",
+      "3004",
+      "3005",
+      "3009",
+      "3010",
+      "3023b",
+      "3037",
+      "3039",
+      "3039p23",
+      "3039p34",
+      "3068b",
+      "3068bp7d",
+      "3069bp25",
+      "3069bpcc",
+      "3070b",
+      "33909",
+      "3660b",
+      "3710",
+      "3957a",
+      "3960",
+      "3961",
+      "3963",
+      "4032b",
+      "41769a",
+      "41770a",
+      "4588",
+      "4740",
+      "4746",
+      "87079p50"
+    ],
+    "notInList": [
+      "18729",
+      "3039p23",
+      "3039p34",
+      "3068bp7d",
+      "3069bp25",
+      "3069bpcc",
+      "3961",
+      "3963",
+      "4588",
+      "4746",
+      "87079p50"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 499,
+      "usage": {
+        "input": 556514,
+        "cached": 347136,
+        "output": 54054,
+        "reasoning": 35111,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "windscreen",
+            "colour": "trans yellow",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "6070",
+            "2437",
+            "6152a",
+            "62360",
+            "4474",
+            "6238a",
+            "6238b",
+            "87752",
+            "11289",
+            "92279",
+            "2337",
+            "18729"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "space classic logo",
+            "limit": 8
+          },
+          "results": [
+            "3004p90",
+            "3298p90",
+            "4490p90",
+            "9460",
+            "59349p50",
+            "87079p50",
+            "3068bp5e",
+            "80123"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "2450",
+            "62743",
+            "43719",
+            "32059",
+            "90194"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "4740",
+            "3960",
+            "2654a",
+            "43898",
+            "3961",
+            "4285b",
+            "44375a",
+            "30209"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Ewok",
+            "limit": 8
+          },
+          "results": [
+            "3622pz2",
+            "64805",
+            "6047615a",
+            "6047615b",
+            "11203d01",
+            "11203d02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "engine",
+            "category": "Space",
+            "limit": 12
+          },
+          "results": [],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "rocket",
+            "limit": 10
+          },
+          "results": [
+            "4588",
+            "6233",
+            "4746",
+            "4591",
+            "3963",
+            "61801"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tail fin",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "44661",
+            "35265",
+            "61800"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "computer pattern",
+            "limit": 8
+          },
+          "results": [
+            "3069bp25",
+            "3039p23",
+            "3039p34",
+            "3069bpcc",
+            "3069bps1",
+            "3660bp01",
+            "3068bp7d",
+            "3068bp56"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "rope bridge",
+            "limit": 5
+          },
+          "results": [
+            "2549"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 3613,
+          "errors": 1,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 3191,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "18729",
+          "2335",
+          "2412b",
+          "2431",
+          "3004",
+          "3005",
+          "3009",
+          "3010",
+          "3023b",
+          "3037",
+          "3039",
+          "3039p23",
+          "3039p34",
+          "3068b",
+          "3068bp7d",
+          "3069bp25",
+          "3069bpcc",
+          "3070b",
+          "33909",
+          "3660b",
+          "3710",
+          "3957a",
+          "3960",
+          "3961",
+          "3963",
+          "4032b",
+          "41769a",
+          "41770a",
+          "4588",
+          "4740",
+          "4746",
+          "87079p50"
+        ],
+        "notInList": [
+          "18729",
+          "3039p23",
+          "3039p34",
+          "3068bp7d",
+          "3069bp25",
+          "3069bpcc",
+          "3961",
+          "3963",
+          "4588",
+          "4746",
+          "87079p50"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 3191
+    }
+  ]
+}

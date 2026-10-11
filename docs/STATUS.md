@@ -1,5 +1,11 @@
 # Implementation status
 
+## Sol style self-improvement — 11 October 2026
+
+The [interview-driven comparison](samples/lego-style-study/README.md#sol-self-improvement-loops) reviews twelve current clean-start Sol builds, resumes all twelve original sessions for text-only interviews, and generates twelve independent Sol 6.1 high candidates across six briefs and both styles. Experimental guidance clarifies conditional finish, physical units, proportion/budget allocation, attachment and optional architecture references. The production runner adds a stale-directory guard; compiler feedback, language, search/check limits and absence of visual assistance remain unchanged.
+
+One full loop completes with zero final errors, thirteen attempt sessions and 48 new final views. Subjective scores rise 172 → 179/240, with five improvements, three regressions and four numerical ties; this misses the predeclared six-case continuation threshold, so the study stops without promoting the bundle. The strongest gain is the Lego-style dragon; Piplups and diorama Destroyer improve visually, while pelicans/Ewoks favour their baselines. Both Piplups exceed the soft target range and 30 warning records remain. A wrapper interruption is recovered transparently with exact accepted-source replay and an original-session continuation; recovered timings are excluded. The preview retains 24 builds/96 views. Existing prompts, published gallery and defaults stay unchanged; other-model and repeated-trial evidence remains open.
+
 ## All six diorama briefs — 10 October 2026
 
 The frozen diorama prompt now covers all six gallery briefs with clean-start Sol 6.1 high. The [four additional builds](samples/lego-style-study/README.md#diorama-all-six-briefs--sol-61-high) accept in one attempt at 898/1,095/1,100/5,282 parts with zero final errors; temple/Ewok pilot artifacts are unchanged. Six distinct native sessions, empty directories, exact reconstructed inputs and zero source/image/native-tool input are verified. The comparison retains all 18 Original/E/Diorama builds, 72 matching views and 24 comparison sheets; six-size browser checks pass.

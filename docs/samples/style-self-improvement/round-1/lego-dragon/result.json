@@ -1,0 +1,190 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1094,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1094,
+    "difference": 94,
+    "percent": 9.4
+  },
+  "seconds": 776,
+  "tokens": {
+    "input": 391681,
+    "cached": 222848,
+    "output": 64813,
+    "reasoning": 45125
+  },
+  "searches": 5,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11089",
+      "11477",
+      "15068",
+      "3002",
+      "3003",
+      "3004",
+      "3005",
+      "3010",
+      "3024",
+      "3039",
+      "3040b",
+      "3044b",
+      "3062b",
+      "3069b",
+      "3622",
+      "3665a",
+      "3941",
+      "4589",
+      "54200"
+    ],
+    "notInList": [
+      "11089"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 776,
+      "usage": {
+        "input": 391681,
+        "cached": 222848,
+        "output": 64813,
+        "reasoning": 45125,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "horn tooth claw",
+            "limit": 12
+          },
+          "results": [
+            "11089"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dragon wing",
+            "limit": 8
+          },
+          "results": [
+            "6133",
+            "5984",
+            "38547",
+            "51342",
+            "30130",
+            "6125",
+            "75174c01",
+            "87685"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "2x2",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "15068",
+            "30602",
+            "5093",
+            "5095",
+            "47457"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "hinge rotation joint",
+            "limit": 8
+          },
+          "results": [
+            "3937",
+            "2429",
+            "2430",
+            "3938",
+            "4275b",
+            "4276b",
+            "44728",
+            "99207"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye",
+            "limit": 6
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1458,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 1094,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11089",
+          "11477",
+          "15068",
+          "3002",
+          "3003",
+          "3004",
+          "3005",
+          "3010",
+          "3024",
+          "3039",
+          "3040b",
+          "3044b",
+          "3062b",
+          "3069b",
+          "3622",
+          "3665a",
+          "3941",
+          "4589",
+          "54200"
+        ],
+        "notInList": [
+          "11089"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1094
+    }
+  ]
+}

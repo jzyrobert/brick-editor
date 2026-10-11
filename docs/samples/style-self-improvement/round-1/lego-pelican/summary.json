@@ -1,0 +1,270 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "style-loop-1-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 897,
+      "targetMiss": {
+        "target": 800,
+        "parts": 897,
+        "difference": 97,
+        "percent": 12.1
+      },
+      "seconds": 389,
+      "tokens": {
+        "input": 766206,
+        "cached": 520832,
+        "output": 56005,
+        "reasoning": 28637
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "24309",
+          "3001",
+          "3002",
+          "3004",
+          "3007",
+          "3020",
+          "3024",
+          "3062b",
+          "4740",
+          "50950",
+          "54200",
+          "61678",
+          "64648",
+          "87079",
+          "87087"
+        ],
+        "notInList": [
+          "64648"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 389,
+          "usage": {
+            "input": 766206,
+            "cached": 520832,
+            "output": 56005,
+            "reasoning": 28637,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "motorcycle wheel",
+                "limit": 5
+              },
+              "results": [
+                "88517",
+                "2903",
+                "50860",
+                "18895",
+                "52035"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x3",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "24309",
+                "80177",
+                "80178"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope inverted",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3665a",
+                "3660b",
+                "2449",
+                "3676",
+                "4287a"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "technic axle",
+                "limit": 4
+              },
+              "results": [
+                "3700",
+                "3701",
+                "3709b",
+                "59443"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 4
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tyre motorcycle",
+                "limit": 5
+              },
+              "results": [
+                "2902",
+                "11957",
+                "67140",
+                "71721",
+                "71722"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "brick eye",
+                "limit": 5
+              },
+              "results": [
+                "41669",
+                "48267"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "size": "2x4",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456",
+                "61068"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "hinge locking",
+                "limit": 4
+              },
+              "results": [
+                "44302a",
+                "30383",
+                "44301a",
+                "30540"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "bicycle",
+                "limit": 4
+              },
+              "results": [
+                "4719",
+                "92851",
+                "2807",
+                "4720"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1076,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 2,
+              "parts": 944,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 897,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "24309",
+              "3001",
+              "3002",
+              "3004",
+              "3007",
+              "3020",
+              "3024",
+              "3062b",
+              "4740",
+              "50950",
+              "54200",
+              "61678",
+              "64648",
+              "87079",
+              "87087"
+            ],
+            "notInList": [
+              "64648"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 897
+        }
+      ]
+    }
+  ]
+}

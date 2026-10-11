@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Sol style improvement loops</title
+  ><style>
+    body {
+      margin: 0;
+      background: #faf8f4;
+      color: #242424;
+      font: 16px system-ui;
+    }
+    main {
+      max-width: 1800px;
+      margin: auto;
+      padding: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    article {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px;
+      min-width: 0;
+    }
+    img {
+      width: 100%;
+      height: auto;
+    }
+    select {
+      min-height: 44px;
+      font: inherit;
+      margin: 4px 12px 4px 0;
+      max-width: 100%;
+    }
+    a {
+      color: #254c7f;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+      margin: 16px 0;
+    }
+    nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+    .meta {
+      color: #555;
+      font-size: 14px;
+    }
+    [hidden] {
+      display: none !important;
+    }
+    @media (max-width: 720px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      main {
+        padding: 12px;
+      }
+    }
+  </style>
+  <main>
+    <h1>Sol 6.1 · Style improvement loops</h1>
+    <p>
+      All builds use high effort and independent clean starts. Generations
+      receive the original brief, part target and text-only search/compiler
+      feedback. Interviews happen after generation in their original sessions;
+      interview text, critiques and renders never enter a new generation.
+    </p>
+    <p>
+      Compare silhouette, intentional surface treatment, style composition,
+      visible support and consistency across views. Stepped/pixel-like
+      construction and purposeful studs are valid. Scores are subjective
+      single-sample assessments; compiler acceptance does not prove physical
+      buildability.
+    </p>
+    <label
+      >Style
+      <select id="style">
+        <option value="all">Both styles</option>
+        <option value="lego">Lego-style</option>
+        <option value="diorama">Diorama</option>
+      </select></label
+    ><label
+      >View
+      <select id="view">
+        <option value="iso">Three-quarter</option>
+        <option value="front">Front</option>
+        <option value="iso-back">Back</option>
+        <option value="top">Top</option>
+      </select></label
+    >
+    <nav>
+      <a href="#pelican">Pelican</a><a href="#piplup">Piplup</a
+      ><a href="#temple">Temple</a><a href="#dragon">Dragon</a
+      ><a href="#destroyer">Destroyer</a><a href="#ewok">Ewok</a
+      ><a href="../lego-style-study/README.md#sol-self-improvement-loops"
+        >Report</a
+      ><a href="protocol.json">Fixed protocol</a
+      ><a href="interview-findings.json">Interview findings</a>
+    </nav>
+    <section id="pelican">
+      <h2>Pelican</h2>
+      <div data-style="lego">
+        <h3>Lego-style</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline E</h4>
+            <a
+              data-view-link="../lego-style-study/fresh-e/sol-pelican"
+              href="../lego-style-study/fresh-e/sol-pelican/iso.webp"
+              ><img
+                data-model="../lego-style-study/fresh-e/sol-pelican"
+                src="../lego-style-study/fresh-e/sol-pelican/iso.webp"
+                alt="pelican: lego: Baseline E"
+            /></a>
+            <p>Tour de Poisson — the Pelican Pedaller</p>
+            <p class="meta">889 parts · 22 warning records</p>
+            <a href="../lego-style-study/fresh-e/sol-pelican/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/fresh-e/sol-pelican/build.js"
+              >Source</a
+            >
+            ·
+            <a href="../lego-style-study/fresh-e/sol-pelican/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/lego-pelican"
+              href="round-1/lego-pelican/iso.webp"
+              ><img
+                data-model="round-1/lego-pelican"
+                src="round-1/lego-pelican/iso.webp"
+                alt="pelican: lego: Loop 1"
+            /></a>
+            <p>Catch of the Day — Pelican Pedal Express</p>
+            <p class="meta">897 parts · 2 warning records</p>
+            <a href="round-1/lego-pelican/compile.json">Compiler report</a> ·
+            <a href="round-1/lego-pelican/build.js">Source</a> ·
+            <a href="round-1/lego-pelican/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+      <div data-style="diorama">
+        <h3>Diorama</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline Diorama</h4>
+            <a
+              data-view-link="../lego-style-study/diorama/sol-pelican"
+              href="../lego-style-study/diorama/sol-pelican/iso.webp"
+              ><img
+                data-model="../lego-style-study/diorama/sol-pelican"
+                src="../lego-style-study/diorama/sol-pelican/iso.webp"
+                alt="pelican: diorama: Baseline Diorama"
+            /></a>
+            <p>Pelican Express — Fish for the Road</p>
+            <p class="meta">898 parts · 55 warning records</p>
+            <a href="../lego-style-study/diorama/sol-pelican/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/diorama/sol-pelican/build.js"
+              >Source</a
+            >
+            ·
+            <a href="../lego-style-study/diorama/sol-pelican/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/diorama-pelican"
+              href="round-1/diorama-pelican/iso.webp"
+              ><img
+                data-model="round-1/diorama-pelican"
+                src="round-1/diorama-pelican/iso.webp"
+                alt="pelican: diorama: Loop 1"
+            /></a>
+            <p>The Fishmonger&#x27;s Express</p>
+            <p class="meta">865 parts · 4 warning records</p>
+            <a href="round-1/diorama-pelican/compile.json">Compiler report</a> ·
+            <a href="round-1/diorama-pelican/build.js">Source</a> ·
+            <a href="round-1/diorama-pelican/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section id="piplup">
+      <h2>Piplup</h2>
+      <div data-style="lego">
+        <h3>Lego-style</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline E</h4>
+            <a
+              data-view-link="../lego-style-study/fresh-e/sol-piplup"
+              href="../lego-style-study/fresh-e/sol-piplup/iso.webp"
+              ><img
+                data-model="../lego-style-study/fresh-e/sol-piplup"
+                src="../lego-style-study/fresh-e/sol-piplup/iso.webp"
+                alt="piplup: lego: Baseline E"
+            /></a>
+            <p>Piplup — A Royal Little Wave</p>
+            <p class="meta">1,204 parts · 34 warning records</p>
+            <a href="../lego-style-study/fresh-e/sol-piplup/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/fresh-e/sol-piplup/build.js">Source</a>
+            ·
+            <a href="../lego-style-study/fresh-e/sol-piplup/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/lego-piplup"
+              href="round-1/lego-piplup/iso.webp"
+              ><img
+                data-model="round-1/lego-piplup"
+                src="round-1/lego-piplup/iso.webp"
+                alt="piplup: lego: Loop 1"
+            /></a>
+            <p>Piplup — A Proud Little Waddle</p>
+            <p class="meta">1,173 parts · 1 warning records</p>
+            <a href="round-1/lego-piplup/compile.json">Compiler report</a> ·
+            <a href="round-1/lego-piplup/build.js">Source</a> ·
+            <a href="round-1/lego-piplup/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+      <div data-style="diorama">
+        <h3>Diorama</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline Diorama</h4>
+            <a
+              data-view-link="../lego-style-study/diorama/sol-piplup"
+              href="../lego-style-study/diorama/sol-piplup/iso.webp"
+              ><img
+                data-model="../lego-style-study/diorama/sol-piplup"
+                src="../lego-style-study/diorama/sol-piplup/iso.webp"
+                alt="piplup: diorama: Baseline Diorama"
+            /></a>
+            <p>Piplup&#x27;s First Bubble Lesson</p>
+            <p class="meta">1,095 parts · 6 warning records</p>
+            <a href="../lego-style-study/diorama/sol-piplup/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/diorama/sol-piplup/build.js">Source</a>
+            ·
+            <a href="../lego-style-study/diorama/sol-piplup/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/diorama-piplup"
+              href="round-1/diorama-piplup/iso.webp"
+              ><img
+                data-model="round-1/diorama-piplup"
+                src="round-1/diorama-piplup/iso.webp"
+                alt="piplup: diorama: Loop 1"
+            /></a>
+            <p>Piplup&#x27;s First Bubble Beam</p>
+            <p class="meta">1,318 parts · 3 warning records</p>
+            <a href="round-1/diorama-piplup/compile.json">Compiler report</a> ·
+            <a href="round-1/diorama-piplup/build.js">Source</a> ·
+            <a href="round-1/diorama-piplup/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section id="temple">
+      <h2>Temple</h2>
+      <div data-style="lego">
+        <h3>Lego-style</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline E</h4>
+            <a
+              data-view-link="../lego-style-study/fresh-e/sol-temple"
+              href="../lego-style-study/fresh-e/sol-temple/iso.webp"
+              ><img
+                data-model="../lego-style-study/fresh-e/sol-temple"
+                src="../lego-style-study/fresh-e/sol-temple/iso.webp"
+                alt="temple: lego: Baseline E"
+            /></a>
+            <p>Temple of the Nine Rings</p>
+            <p class="meta">2,258 parts · 1 warning records</p>
+            <a href="../lego-style-study/fresh-e/sol-temple/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/fresh-e/sol-temple/build.js">Source</a>
+            ·
+            <a href="../lego-style-study/fresh-e/sol-temple/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/lego-temple"
+              href="round-1/lego-temple/iso.webp"
+              ><img
+                data-model="round-1/lego-temple"
+                src="round-1/lego-temple/iso.webp"
+                alt="temple: lego: Loop 1"
+            /></a>
+            <p>The Five Rings of Dawn</p>
+            <p class="meta">2,273 parts · 2 warning records</p>
+            <a href="round-1/lego-temple/compile.json">Compiler report</a> ·
+            <a href="round-1/lego-temple/build.js">Source</a> ·
+            <a href="round-1/lego-temple/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+      <div data-style="diorama">
+        <h3>Diorama</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline Diorama</h4>
+            <a
+              data-view-link="../lego-style-study/diorama/sol-temple"
+              href="../lego-style-study/diorama/sol-temple/iso.webp"
+              ><img
+                data-model="../lego-style-study/diorama/sol-temple"
+                src="../lego-style-study/diorama/sol-temple/iso.webp"
+                alt="temple: diorama: Baseline Diorama"
+            /></a>
+            <p>The Autumn Bell — Koyo-ji Buddhist Temple</p>
+            <p class="meta">2,279 parts · 2 warning records</p>
+            <a href="../lego-style-study/diorama/sol-temple/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/diorama/sol-temple/build.js">Source</a>
+            ·
+            <a href="../lego-style-study/diorama/sol-temple/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/diorama-temple"
+              href="round-1/diorama-temple/iso.webp"
+              ><img
+                data-model="round-1/diorama-temple"
+                src="round-1/diorama-temple/iso.webp"
+                alt="temple: diorama: Loop 1"
+            /></a>
+            <p>Komyo-ji — The Autumn Bell</p>
+            <p class="meta">2,179 parts · 1 warning records</p>
+            <a href="round-1/diorama-temple/compile.json">Compiler report</a> ·
+            <a href="round-1/diorama-temple/build.js">Source</a> ·
+            <a href="round-1/diorama-temple/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section id="dragon">
+      <h2>Dragon</h2>
+      <div data-style="lego">
+        <h3>Lego-style</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline E</h4>
+            <a
+              data-view-link="../lego-style-study/fresh-e/sol-dragon"
+              href="../lego-style-study/fresh-e/sol-dragon/iso.webp"
+              ><img
+                data-model="../lego-style-study/fresh-e/sol-dragon"
+                src="../lego-style-study/fresh-e/sol-dragon/iso.webp"
+                alt="dragon: lego: Baseline E"
+            /></a>
+            <p>The Last Ember</p>
+            <p class="meta">1,017 parts · 7 warning records</p>
+            <a href="../lego-style-study/fresh-e/sol-dragon/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/fresh-e/sol-dragon/build.js">Source</a>
+            ·
+            <a href="../lego-style-study/fresh-e/sol-dragon/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/lego-dragon"
+              href="round-1/lego-dragon/iso.webp"
+              ><img
+                data-model="round-1/lego-dragon"
+                src="round-1/lego-dragon/iso.webp"
+                alt="dragon: lego: Loop 1"
+            /></a>
+            <p>Cinderwing — Keeper of the Last Egg</p>
+            <p class="meta">1,094 parts · 4 warning records</p>
+            <a href="round-1/lego-dragon/compile.json">Compiler report</a> ·
+            <a href="round-1/lego-dragon/build.js">Source</a> ·
+            <a href="round-1/lego-dragon/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+      <div data-style="diorama">
+        <h3>Diorama</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline Diorama</h4>
+            <a
+              data-view-link="../lego-style-study/diorama/sol-dragon"
+              href="../lego-style-study/diorama/sol-dragon/iso.webp"
+              ><img
+                data-model="../lego-style-study/diorama/sol-dragon"
+                src="../lego-style-study/diorama/sol-dragon/iso.webp"
+                alt="dragon: diorama: Baseline Diorama"
+            /></a>
+            <p>The Last Ember — Guardian of the Stormglass Nest</p>
+            <p class="meta">1,100 parts · 19 warning records</p>
+            <a href="../lego-style-study/diorama/sol-dragon/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/diorama/sol-dragon/build.js">Source</a>
+            ·
+            <a href="../lego-style-study/diorama/sol-dragon/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/diorama-dragon"
+              href="round-1/diorama-dragon/iso.webp"
+              ><img
+                data-model="round-1/diorama-dragon"
+                src="round-1/diorama-dragon/iso.webp"
+                alt="dragon: diorama: Loop 1"
+            /></a>
+            <p>The Ember Nursery</p>
+            <p class="meta">1,114 parts · 1 warning records</p>
+            <a href="round-1/diorama-dragon/compile.json">Compiler report</a> ·
+            <a href="round-1/diorama-dragon/build.js">Source</a> ·
+            <a href="round-1/diorama-dragon/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section id="destroyer">
+      <h2>Destroyer</h2>
+      <div data-style="lego">
+        <h3>Lego-style</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline E</h4>
+            <a
+              data-view-link="../lego-style-study/fresh-e/sol-destroyer"
+              href="../lego-style-study/fresh-e/sol-destroyer/iso.webp"
+              ><img
+                data-model="../lego-style-study/fresh-e/sol-destroyer"
+                src="../lego-style-study/fresh-e/sol-destroyer/iso.webp"
+                alt="destroyer: lego: Baseline E"
+            /></a>
+            <p>Imperial Star Destroyer — Tractor Beam Interception</p>
+            <p class="meta">5,630 parts · 200 warning records</p>
+            <a href="../lego-style-study/fresh-e/sol-destroyer/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/fresh-e/sol-destroyer/build.js"
+              >Source</a
+            >
+            ·
+            <a href="../lego-style-study/fresh-e/sol-destroyer/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/lego-destroyer"
+              href="round-1/lego-destroyer/iso.webp"
+              ><img
+                data-model="round-1/lego-destroyer"
+                src="round-1/lego-destroyer/iso.webp"
+                alt="destroyer: lego: Loop 1"
+            /></a>
+            <p>Imperial Star Destroyer — The Capture</p>
+            <p class="meta">5,554 parts · 1 warning records</p>
+            <a href="round-1/lego-destroyer/compile.json">Compiler report</a> ·
+            <a href="round-1/lego-destroyer/build.js">Source</a> ·
+            <a href="round-1/lego-destroyer/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+      <div data-style="diorama">
+        <h3>Diorama</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline Diorama</h4>
+            <a
+              data-view-link="../lego-style-study/diorama/sol-destroyer"
+              href="../lego-style-study/diorama/sol-destroyer/iso.webp"
+              ><img
+                data-model="../lego-style-study/diorama/sol-destroyer"
+                src="../lego-style-study/diorama/sol-destroyer/iso.webp"
+                alt="destroyer: diorama: Baseline Diorama"
+            /></a>
+            <p>Devastator — Capture above Tatooine</p>
+            <p class="meta">5,282 parts · 1 warning records</p>
+            <a href="../lego-style-study/diorama/sol-destroyer/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/diorama/sol-destroyer/build.js"
+              >Source</a
+            >
+            ·
+            <a href="../lego-style-study/diorama/sol-destroyer/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/diorama-destroyer"
+              href="round-1/diorama-destroyer/iso.webp"
+              ><img
+                data-model="round-1/diorama-destroyer"
+                src="round-1/diorama-destroyer/iso.webp"
+                alt="destroyer: diorama: Loop 1"
+            /></a>
+            <p>Devastator — The Pursuit Above Tatooine</p>
+            <p class="meta">5,323 parts · 1 warning records</p>
+            <a href="round-1/diorama-destroyer/compile.json">Compiler report</a>
+            · <a href="round-1/diorama-destroyer/build.js">Source</a> ·
+            <a href="round-1/diorama-destroyer/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section id="ewok">
+      <h2>Ewok</h2>
+      <div data-style="lego">
+        <h3>Lego-style</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline E</h4>
+            <a
+              data-view-link="../lego-style-study/fresh-e/sol-ewok"
+              href="../lego-style-study/fresh-e/sol-ewok/iso.webp"
+              ><img
+                data-model="../lego-style-study/fresh-e/sol-ewok"
+                src="../lego-style-study/fresh-e/sol-ewok/iso.webp"
+                alt="ewok: lego: Baseline E"
+            /></a>
+            <p>Moonbranch Outpost — Ewok Classic Space</p>
+            <p class="meta">3,278 parts · 30 warning records</p>
+            <a href="../lego-style-study/fresh-e/sol-ewok/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/fresh-e/sol-ewok/build.js">Source</a> ·
+            <a href="../lego-style-study/fresh-e/sol-ewok/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/lego-ewok"
+              href="round-1/lego-ewok/iso.webp"
+              ><img
+                data-model="round-1/lego-ewok"
+                src="round-1/lego-ewok/iso.webp"
+                alt="ewok: lego: Loop 1"
+            /></a>
+            <p>Yub-Nub Explorer — Endor Space, 1979</p>
+            <p class="meta">3,191 parts · 1 warning records</p>
+            <a href="round-1/lego-ewok/compile.json">Compiler report</a> ·
+            <a href="round-1/lego-ewok/build.js">Source</a> ·
+            <a href="round-1/lego-ewok/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+      <div data-style="diorama">
+        <h3>Diorama</h3>
+        <div class="grid">
+          <article>
+            <h4>Baseline Diorama</h4>
+            <a
+              data-view-link="../lego-style-study/diorama/sol-ewok"
+              href="../lego-style-study/diorama/sol-ewok/iso.webp"
+              ><img
+                data-model="../lego-style-study/diorama/sol-ewok"
+                src="../lego-style-study/diorama/sol-ewok/iso.webp"
+                alt="ewok: diorama: Baseline Diorama"
+            /></a>
+            <p>LL-979 • The Moonwood Treeport</p>
+            <p class="meta">2,955 parts · 12 warning records</p>
+            <a href="../lego-style-study/diorama/sol-ewok/compile.json"
+              >Compiler report</a
+            >
+            ·
+            <a href="../lego-style-study/diorama/sol-ewok/build.js">Source</a> ·
+            <a href="../lego-style-study/diorama/sol-ewok/prompt.md"
+              >Exact input</a
+            >
+          </article>
+          <article>
+            <h4>Loop 1</h4>
+            <a
+              data-view-link="round-1/diorama-ewok"
+              href="round-1/diorama-ewok/iso.webp"
+              ><img
+                data-model="round-1/diorama-ewok"
+                src="round-1/diorama-ewok/iso.webp"
+                alt="ewok: diorama: Loop 1"
+            /></a>
+            <p>LL-928: The Forest Moon Explorer</p>
+            <p class="meta">3,125 parts · 9 warning records</p>
+            <a href="round-1/diorama-ewok/compile.json">Compiler report</a> ·
+            <a href="round-1/diorama-ewok/build.js">Source</a> ·
+            <a href="round-1/diorama-ewok/prompt.md">Exact input</a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    document.querySelector("#view").addEventListener("change", (e) => {
+      for (const img of document.querySelectorAll("[data-model]"))
+        img.src = img.dataset.model + "/" + e.target.value + ".webp";
+      for (const a of document.querySelectorAll("[data-view-link]"))
+        a.href = a.dataset.viewLink + "/" + e.target.value + ".webp";
+    });
+    document.querySelector("#style").addEventListener("change", (e) => {
+      for (const s of document.querySelectorAll("[data-style]"))
+        s.hidden =
+          e.target.value !== "all" && s.dataset.style !== e.target.value;
+    });
+  </script>
+</html>
