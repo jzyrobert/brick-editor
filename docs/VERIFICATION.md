@@ -24,7 +24,8 @@
   assertion timeout. Build, TypeScript, repository and workflow formatting pass.
 - Full optimized CI and hosted timing comparisons are recorded on the pull
   request before merge. The final gate requires static checks, all unit shards,
-  isolated unit performance, CLI integration and every browser shard before
+  isolated unit performance, CLI integration, every browser shard and the merged
+  report before
   automatic publication.
 
 ## Gallery prompt generations — 10 October 2026

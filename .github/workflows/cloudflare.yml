@@ -230,19 +230,20 @@ jobs:
 
   # Single required gate: everything above passed.
   verified:
-    needs: [build, checks, unit, unit_performance, integration, browser]
+    needs: [build, checks, unit, unit_performance, integration, browser, report]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: All validation jobs passed
         run: |
-          echo "build=${{ needs.build.result }} checks=${{ needs.checks.result }} unit=${{ needs.unit.result }} unit_performance=${{ needs.unit_performance.result }} integration=${{ needs.integration.result }} browser=${{ needs.browser.result }}"
+          echo "build=${{ needs.build.result }} checks=${{ needs.checks.result }} unit=${{ needs.unit.result }} unit_performance=${{ needs.unit_performance.result }} integration=${{ needs.integration.result }} browser=${{ needs.browser.result }} report=${{ needs.report.result }}"
           test "${{ needs.build.result }}" = success
           test "${{ needs.checks.result }}" = success
           test "${{ needs.unit.result }}" = success
           test "${{ needs.unit_performance.result }}" = success
           test "${{ needs.integration.result }}" = success
           test "${{ needs.browser.result }}" = success
+          test "${{ needs.report.result }}" = success
 
   publish:
     needs: verified
