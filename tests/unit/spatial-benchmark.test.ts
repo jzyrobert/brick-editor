@@ -157,3 +157,40 @@ it("unsupported connector families remain unknown in calibration evaluation", ()
   ).toBe("unknown");
   expect(e.coverage.uncovered).toBeGreaterThan(0);
 });
+
+it("relationship calibration accepts reordered operations without changing literal pose expectations", () => {
+  registerFullLibraryFromDisk();
+  registerAgentData();
+  const w = JSON.parse(
+    readFileSync("fixtures/spatial-benchmark/evaluator/witnesses.json", "utf8"),
+  )[0] as Witness;
+  const compile = (ps: Witness["places"]) =>
+    compileBuildScript({
+      buildScript: 1,
+      title: "Order",
+      sections: [
+        {
+          name: "Parts",
+          ops: ps.map((p) => ({ op: "place", ...p, colour: 4 })),
+        },
+      ],
+    }).ldraw;
+  const reversed = compile([...w.places].reverse());
+  expect(
+    inspectCalibration(reversed, w, "any").records.every(
+      (p) => p.status === "verified",
+    ),
+  ).toBe(true);
+  expect(
+    inspectCalibration(reversed, w, "given").records.find(
+      (p) => p.property === "specified-poses",
+    )?.status,
+  ).toBe("invalid");
+  const bad = structuredClone(w.places);
+  bad[1].at = [0, 3, 0];
+  expect(
+    inspectCalibration(compile(bad), w, "any").records.some(
+      (p) => p.status === "invalid",
+    ),
+  ).toBe(true);
+});

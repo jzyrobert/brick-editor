@@ -31,7 +31,11 @@ export async function witnesses(): Promise<Witness[]> {
   );
 }
 // Independent corner multiplication in LDraw units; no kit anchor conversion.
-export function inspectCalibration(ldraw: string, w: Witness) {
+export function inspectCalibration(
+  ldraw: string,
+  w: Witness,
+  poseOrder: "given" | "any" = "given",
+) {
   registerFullLibraryFromDisk();
   registerAgentData();
   const project = importLDraw(ldraw, "calibration.mpd");
@@ -39,14 +43,24 @@ export function inspectCalibration(ldraw: string, w: Witness) {
     checked = checkBuild(project);
   const equal = (a: number[], b: number[]) =>
     a.length === b.length && a.every((v, i) => Math.abs(v - b[i]) < 1e-6);
-  const poses =
-    all.length === w.places.length &&
-    w.places.every(
-      (p, i) =>
-        all[i].node.ref === p.part + ".dat" &&
-        equal(all[i].transform.position, w.origins[i]) &&
-        equal(all[i].transform.basis, w.bases[i]),
-    );
+  const matches = (index: number, expected: number) =>
+    all[index].node.ref === w.places[expected].part + ".dat" &&
+    equal(all[index].transform.position, w.origins[expected]) &&
+    equal(all[index].transform.basis, w.bases[expected]);
+  let poses = all.length === w.places.length;
+  if (poses && poseOrder === "given")
+    poses = w.places.every((_, i) => matches(i, i));
+  if (poses && poseOrder === "any") {
+    const unused = new Set(all.map((_, i) => i));
+    for (let expected = 0; expected < w.places.length; expected++) {
+      const index = [...unused].find((i) => matches(i, expected));
+      if (index === undefined) {
+        poses = false;
+        break;
+      }
+      unused.delete(index);
+    }
+  }
   const points: Vec3[] = [];
   for (const o of all) {
     const b = localBounds(o.node.ref),
@@ -67,7 +81,10 @@ export function inspectCalibration(ldraw: string, w: Witness) {
       Math.min(...points.map((p) => p[i])),
   );
   return {
-    version: "calibration-evaluator/1",
+    version:
+      poseOrder === "given"
+        ? "calibration-evaluator/1"
+        : "calibration-evaluator/2",
     task: w.task,
     records: [
       { property: "specified-poses", status: poses ? "verified" : "invalid" },
