@@ -1,0 +1,1033 @@
+{
+ "buildScript": 1,
+ "title": "Piplup — A Little Big Wave",
+ "description": "A palm-sized Piplup with a rounded blue hood, sculpted white cheek patches, bright beak, oval chest buttons, webbed feet and one raised flipper.",
+ "palette": {
+  "hood": "blue",
+  "body": "medium azure",
+  "face": "white",
+  "beak": "yellow"
+ },
+ "sections": [
+  {
+   "name": "Webbed feet",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -3,
+      0,
+      -4
+     ],
+     "size": [
+      3,
+      4
+     ],
+     "colour": "beak",
+     "layers": 1
+    },
+    {
+     "op": "place",
+     "part": "50950",
+     "at": [
+      -3,
+      1,
+      -4
+     ],
+     "colour": "beak",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "50950",
+     "at": [
+      -2,
+      1,
+      -4
+     ],
+     "colour": "beak",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "50950",
+     "at": [
+      -1,
+      1,
+      -4
+     ],
+     "colour": "beak",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3622",
+     "at": [
+      -3,
+      1,
+      -1
+     ],
+     "colour": "beak",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      1,
+      0,
+      -4
+     ],
+     "size": [
+      3,
+      4
+     ],
+     "colour": "beak",
+     "layers": 1
+    },
+    {
+     "op": "place",
+     "part": "50950",
+     "at": [
+      1,
+      1,
+      -4
+     ],
+     "colour": "beak",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "50950",
+     "at": [
+      2,
+      1,
+      -4
+     ],
+     "colour": "beak",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "50950",
+     "at": [
+      3,
+      1,
+      -4
+     ],
+     "colour": "beak",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3622",
+     "at": [
+      1,
+      1,
+      -1
+     ],
+     "colour": "beak",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Connected egg-shaped body",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      -2,
+      4,
+      -1
+     ],
+     "size": [
+      4,
+      4,
+      2
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      -2,
+      4,
+      -3
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      -2,
+      4,
+      1
+     ],
+     "colour": "body",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      -1,
+      4,
+      -3
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      -1,
+      4,
+      1
+     ],
+     "colour": "body",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      0,
+      4,
+      -3
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      0,
+      4,
+      1
+     ],
+     "colour": "body",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      1,
+      4,
+      -3
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      1,
+      4,
+      1
+     ],
+     "colour": "body",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      -3,
+      4,
+      -1
+     ],
+     "colour": "body",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      1,
+      4,
+      -1
+     ],
+     "colour": "body",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      -3,
+      4,
+      0
+     ],
+     "colour": "body",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      1,
+      4,
+      0
+     ],
+     "colour": "body",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      -2,
+      8,
+      -3
+     ],
+     "size": [
+      4,
+      6,
+      6
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      -3,
+      8,
+      -2
+     ],
+     "size": [
+      6,
+      6,
+      4
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -1,
+      14,
+      -3
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -1,
+      14,
+      1
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -3,
+      14,
+      -1
+     ],
+     "colour": "body",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      1,
+      14,
+      -1
+     ],
+     "colour": "body",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3045",
+     "at": [
+      -3,
+      14,
+      -3
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3045",
+     "at": [
+      1,
+      14,
+      -3
+     ],
+     "colour": "body",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3045",
+     "at": [
+      1,
+      14,
+      1
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3045",
+     "at": [
+      -3,
+      14,
+      1
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "box",
+     "at": [
+      -1,
+      14,
+      -1
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "5847",
+     "at": [
+      -2,
+      8,
+      -3
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      -2,
+      11,
+      -3
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "5847",
+     "at": [
+      1,
+      8,
+      -3
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      1,
+      11,
+      -3
+     ],
+     "colour": "face",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "A friendly wave",
+   "ops": [
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      -5,
+      5,
+      0
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      -4,
+      5,
+      0
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      -5,
+      9,
+      0
+     ],
+     "size": [
+      2,
+      4,
+      2
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -5,
+      13,
+      0
+     ],
+     "colour": "body",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3020",
+     "at": [
+      -5,
+      9,
+      0
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3020",
+     "at": [
+      2,
+      11,
+      0
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      2,
+      12,
+      0
+     ],
+     "colour": "body",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      4,
+      12,
+      0
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      5,
+      12,
+      0
+     ],
+     "colour": "body",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      16,
+      0
+     ],
+     "size": [
+      2,
+      4,
+      2
+     ],
+     "colour": "body",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      4,
+      20,
+      0
+     ],
+     "colour": "body",
+     "turn": 270
+    }
+   ]
+  },
+  {
+   "name": "Little tail",
+   "ops": [
+    {
+     "op": "place",
+     "part": "3020",
+     "at": [
+      -1,
+      8,
+      1
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -1,
+      9,
+      3
+     ],
+     "colour": "hood",
+     "turn": 180
+    }
+   ]
+  },
+  {
+   "name": "Round blue head",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      -2,
+      17,
+      -2
+     ],
+     "size": [
+      4,
+      3,
+      4
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "3676",
+     "at": [
+      -4,
+      17,
+      -4
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3676",
+     "at": [
+      2,
+      17,
+      -4
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3676",
+     "at": [
+      2,
+      17,
+      2
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3676",
+     "at": [
+      -4,
+      17,
+      2
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      -2,
+      17,
+      -4
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      -2,
+      17,
+      2
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      0,
+      17,
+      -4
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      0,
+      17,
+      2
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      -4,
+      17,
+      -2
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      2,
+      17,
+      -2
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      -4,
+      17,
+      0
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      2,
+      17,
+      0
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      -3,
+      20,
+      -4
+     ],
+     "size": [
+      6,
+      10,
+      8
+     ],
+     "colour": "hood",
+     "interior": "empty"
+    },
+    {
+     "op": "box",
+     "at": [
+      -4,
+      20,
+      -3
+     ],
+     "size": [
+      8,
+      10,
+      6
+     ],
+     "colour": "hood",
+     "interior": "empty"
+    },
+    {
+     "op": "place",
+     "part": "73682",
+     "at": [
+      -4,
+      30,
+      -4
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "73682",
+     "at": [
+      1,
+      30,
+      -4
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "73682",
+     "at": [
+      1,
+      30,
+      1
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "73682",
+     "at": [
+      -4,
+      30,
+      1
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      -1,
+      30,
+      -4
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      -1,
+      30,
+      1
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      -4,
+      30,
+      -1
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      1,
+      30,
+      -1
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      -1,
+      30,
+      -1
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "hood",
+     "interior": "solid",
+     "top": "tile"
+    }
+   ]
+  },
+  {
+   "name": "Expressive face",
+   "ops": [
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      -3,
+      20,
+      -4
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      -3,
+      24,
+      -4
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "3005pe4",
+     "at": [
+      -3,
+      24,
+      -4
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -3,
+      27,
+      -4
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      1,
+      20,
+      -4
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      1,
+      24,
+      -4
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "face",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "3005pe4",
+     "at": [
+      2,
+      24,
+      -4
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      1,
+      27,
+      -4
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3021",
+     "at": [
+      -1,
+      22,
+      -6
+     ],
+     "colour": "beak",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -1,
+      23,
+      -6
+     ],
+     "colour": "beak",
+     "turn": 0
+    }
+   ]
+  }
+ ]
+}

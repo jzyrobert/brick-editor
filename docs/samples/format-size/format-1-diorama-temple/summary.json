@@ -1,0 +1,356 @@
+{
+  "brief": "a japanese buddhist temple",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-format-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1266,
+      "seconds": 703,
+      "tokens": {
+        "input": 799588,
+        "cached": 590848,
+        "output": 60018,
+        "reasoning": 38245
+      },
+      "searches": 15,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2417",
+          "24866",
+          "25269",
+          "3005",
+          "3020",
+          "3022",
+          "3045",
+          "32607",
+          "3307",
+          "3626c",
+          "3665a",
+          "3941",
+          "3942c",
+          "3960",
+          "4032b",
+          "4589",
+          "6141",
+          "90398",
+          "92947",
+          "98138"
+        ],
+        "notInList": [
+          "3626c",
+          "90398",
+          "92947"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 703,
+          "usage": {
+            "input": 799588,
+            "cached": 590848,
+            "output": 60018,
+            "reasoning": 38245,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "slope curved inverted",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023",
+                "11301",
+                "73682"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "4740",
+                "3960",
+                "44375b",
+                "98606",
+                "17964",
+                "35395"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "minifigure statuette",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "90398"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "plant leaves",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "2423",
+                "2417",
+                "32607",
+                "10884"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bar round",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "15303",
+                "4735",
+                "32828",
+                "35365",
+                "65578"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bell",
+                "limit": 8
+              },
+              "results": [
+                "3942c",
+                "3943b",
+                "30151a",
+                "6017",
+                "u608",
+                "u609",
+                "30151b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig head plain",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "3626bp7f"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "size": "2x2",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "15068",
+                "47457",
+                "7037",
+                "47458"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "plant leaves",
+                "colour": "dark red",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "2423",
+                "2417",
+                "32607",
+                "37695"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "round brick",
+                "size": "2x2",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "85080",
+                "5906",
+                "92947",
+                "7037"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig torso robe",
+                "limit": 4
+              },
+              "results": [
+                "973p5p",
+                "76382p5p",
+                "76382p0018",
+                "76382p0028"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "minifig hips legs",
+                "colour": "dark orange",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "41879a",
+                "73200bp0c",
+                "73200bpde4"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "minifig head",
+                "colour": "tan",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "3626c",
+                "28621",
+                "3626b"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "minifig seated",
+                "limit": 4
+              },
+              "results": [
+                "4079",
+                "3816c",
+                "3817c",
+                "3818"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "smoke",
+                "limit": 4
+              },
+              "results": [
+                "40375",
+                "43889",
+                "68547",
+                "73435"
+              ],
+              "round": 3
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1199,
+              "errors": 3,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 1266,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "2417",
+              "24866",
+              "25269",
+              "3005",
+              "3020",
+              "3022",
+              "3045",
+              "32607",
+              "3307",
+              "3626c",
+              "3665a",
+              "3941",
+              "3942c",
+              "3960",
+              "4032b",
+              "4589",
+              "6141",
+              "90398",
+              "92947",
+              "98138"
+            ],
+            "notInList": [
+              "3626c",
+              "90398",
+              "92947"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1266
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,522 @@
+{
+  "brief": "a dragon",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-reference-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 764,
+      "seconds": 1024,
+      "tokens": {
+        "input": 1118469,
+        "cached": 843520,
+        "output": 81526,
+        "reasoning": 57898
+      },
+      "searches": 20,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11089",
+          "11477",
+          "15068",
+          "2449",
+          "3023b",
+          "3031",
+          "30355",
+          "30356",
+          "3039",
+          "3039p50",
+          "3040b",
+          "3068b",
+          "3069b",
+          "3298",
+          "35320",
+          "3660b",
+          "3665a",
+          "3666",
+          "3676",
+          "3678b",
+          "3684a",
+          "3710",
+          "3960",
+          "41747",
+          "41769a",
+          "41770a",
+          "4460b",
+          "4589",
+          "4740",
+          "49668",
+          "50950",
+          "54200",
+          "6141",
+          "61678",
+          "87081",
+          "93273",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "11089",
+          "30355",
+          "30356",
+          "3039p50",
+          "35320",
+          "41747",
+          "49668",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 1024,
+          "usage": {
+            "input": 1118469,
+            "cached": 843520,
+            "output": 81526,
+            "reasoning": 57898,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "dragon wing",
+                "limit": 12
+              },
+              "results": [
+                "6133",
+                "5984",
+                "38547",
+                "51342",
+                "30130",
+                "6125",
+                "75174c01",
+                "87685",
+                "87686",
+                "75174p01c01"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "horn tooth claw",
+                "limit": 12
+              },
+              "results": [
+                "11089"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye printed round tile",
+                "limit": 8
+              },
+              "results": [
+                "98138",
+                "14769",
+                "25269",
+                "3070b",
+                "3069b",
+                "2431",
+                "6141",
+                "3068b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope curved",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "93606",
+                "42918",
+                "52031",
+                "41748",
+                "41747",
+                "41764",
+                "41765"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24201",
+                "6091",
+                "30602",
+                "42022",
+                "70681",
+                "80177"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dragon wing",
+                "colour": "dark red",
+                "available_in_colour": true,
+                "limit": 20
+              },
+              "results": [
+                "5984"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "horn",
+                "limit": 18
+              },
+              "results": [
+                "2142",
+                "89522",
+                "13564",
+                "64847",
+                "40379",
+                "11089",
+                "67361",
+                "112",
+                "6135b",
+                "1997",
+                "6135a",
+                "88964",
+                "88695",
+                "51342",
+                "51344",
+                "52258",
+                "71182",
+                "53451"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "tooth",
+                "limit": 12
+              },
+              "results": [
+                "41669",
+                "48267",
+                "49668",
+                "15070",
+                "3647",
+                "3649",
+                "3648b",
+                "4019",
+                "6589",
+                "6573",
+                "32269",
+                "32270"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "tile eye",
+                "category": "Tile",
+                "limit": 12
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07",
+                "98138pz4",
+                "3069bpm0",
+                "3070bp0e",
+                "3070bpm0",
+                "16424",
+                "98138p0b",
+                "98138p0c"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "egg",
+                "limit": 12
+              },
+              "results": [
+                "24946",
+                "24130",
+                "24132"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope eye pattern",
+                "limit": 12
+              },
+              "results": [
+                "3039p50",
+                "4286p01",
+                "4286p02",
+                "3298p02",
+                "3678bpk0",
+                "15068p0i",
+                "15068p01",
+                "15068px0",
+                "78522ph0",
+                "78522ph1",
+                "93604pk0"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "wedge 6 12",
+                "limit": 12
+              },
+              "results": [
+                "30355",
+                "30356",
+                "30037",
+                "42607",
+                "98088",
+                "98089"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "dinosaur tail",
+                "limit": 10
+              },
+              "results": [
+                "40395",
+                "40379",
+                "40396",
+                "40378",
+                "30456",
+                "40375",
+                "43889",
+                "6028",
+                "40376",
+                "40377"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "flame",
+                "limit": 10
+              },
+              "results": [
+                "70880",
+                "7727",
+                "64647",
+                "18395",
+                "80519",
+                "6126b",
+                "69858",
+                "6126a",
+                "37775"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "brick modified fang",
+                "limit": 10
+              },
+              "results": [
+                "4070",
+                "87087",
+                "11211",
+                "30414",
+                "3005",
+                "3004",
+                "3622",
+                "3010",
+                "3009",
+                "3003"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "24132",
+                "limit": 5
+              },
+              "results": [
+                "24132"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "24130",
+                "limit": 5
+              },
+              "results": [
+                "24130"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "sphere",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "6908",
+                "15395",
+                "5906",
+                "54821",
+                "86500",
+                "53550",
+                "35320"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "bright light orange",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24201",
+                "13547"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "rock panel",
+                "limit": 8
+              },
+              "results": [
+                "47847",
+                "6083",
+                "6082",
+                "23996",
+                "3161",
+                "30156",
+                "47991"
+              ],
+              "round": 4
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 671,
+              "errors": 1,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 764,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11089",
+              "11477",
+              "15068",
+              "2449",
+              "3023b",
+              "3031",
+              "30355",
+              "30356",
+              "3039",
+              "3039p50",
+              "3040b",
+              "3068b",
+              "3069b",
+              "3298",
+              "35320",
+              "3660b",
+              "3665a",
+              "3666",
+              "3676",
+              "3678b",
+              "3684a",
+              "3710",
+              "3960",
+              "41747",
+              "41769a",
+              "41770a",
+              "4460b",
+              "4589",
+              "4740",
+              "49668",
+              "50950",
+              "54200",
+              "6141",
+              "61678",
+              "87081",
+              "93273",
+              "93606",
+              "98138"
+            ],
+            "notInList": [
+              "11089",
+              "30355",
+              "30356",
+              "3039p50",
+              "35320",
+              "41747",
+              "49668",
+              "93606"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 764
+        }
+      ]
+    }
+  ]
+}

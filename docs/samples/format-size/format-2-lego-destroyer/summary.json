@@ -1,0 +1,486 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-format-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 685,
+      "seconds": 545,
+      "tokens": {
+        "input": 1014326,
+        "cached": 727552,
+        "output": 40647,
+        "reasoning": 25111
+      },
+      "searches": 20,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "30162",
+          "3023b",
+          "30355",
+          "30356",
+          "30363",
+          "3039",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3298",
+          "3660b",
+          "3941",
+          "4032b",
+          "4229",
+          "43121",
+          "44359",
+          "47397",
+          "47398",
+          "4740",
+          "98138"
+        ],
+        "notInList": [
+          "30162",
+          "30355",
+          "30356",
+          "4229",
+          "43121",
+          "44359",
+          "47397",
+          "47398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 545,
+          "usage": {
+            "input": 1014326,
+            "cached": 727552,
+            "output": 40647,
+            "reasoning": 25111,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "Wedge plate 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "47405"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Wedge plate 8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "30504",
+                "41769b",
+                "50304",
+                "50305",
+                "3544",
+                "3545",
+                "47405"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Wedge 6 4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "43713",
+                "98281",
+                "43712",
+                "48205",
+                "48208",
+                "41761",
+                "47407",
+                "6153b",
+                "32059",
+                "52031"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "hemisphere",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "30208",
+                "44359",
+                "61287",
+                "86500",
+                "44358"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "engine cylinder",
+                "limit": 8
+              },
+              "results": [
+                "2851",
+                "2850a",
+                "2850b",
+                "6608",
+                "32061"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Wing 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "43979",
+                "47397",
+                "47398",
+                "30355",
+                "30356",
+                "47405"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wing 16",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "30370"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wedge 10",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "50955",
+                "50956"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "engine jet",
+                "limit": 15
+              },
+              "results": [
+                "43121",
+                "4868b",
+                "46667",
+                "4868a",
+                "3475b",
+                "4869",
+                "4229",
+                "3475a",
+                "98302",
+                "61801",
+                "43122",
+                "4746"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Slope 2 4 double inverted",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "3676",
+                "4871",
+                "3049d",
+                "18759",
+                "22889",
+                "3049c",
+                "2341px0"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wedge tile",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 20
+              },
+              "results": [
+                "3070b",
+                "3069b",
+                "2431",
+                "3068b",
+                "6636",
+                "98138",
+                "2412b",
+                "4162",
+                "87079",
+                "63864",
+                "14769",
+                "25269",
+                "33909",
+                "26603",
+                "2555",
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Wedge plate 6 12",
+                "colour": "dark bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3958",
+                "51739",
+                "3036",
+                "3028",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Wing 3 12",
+                "colour": "dark bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "47397",
+                "47398"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Slope 4 2",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "3039",
+                "3040b",
+                "3037",
+                "3045",
+                "3043",
+                "3038",
+                "3046",
+                "3665a",
+                "3660b",
+                "3044b",
+                "3676",
+                "3048b",
+                "30363",
+                "88930",
+                "3665b"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Minifig utensil binoculars",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "4079",
+                "30162",
+                "2343",
+                "6269",
+                "3816c"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Tile Wedge",
+                "category": "Tile",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "24246",
+                "69729",
+                "15712",
+                "2432",
+                "96910",
+                "11203",
+                "27925",
+                "3477",
+                "27507",
+                "1126",
+                "35787",
+                "5092",
+                "79393",
+                "22385",
+                "5091"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Tile 2 x 2 triangular",
+                "limit": 8
+              },
+              "results": [
+                "35787"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Wing 3 × 12 Left",
+                "limit": 3
+              },
+              "results": [
+                "47397"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Plate 1 × 2 with Jet Engine with 12 Fins",
+                "limit": 3
+              },
+              "results": [
+                "32028",
+                "60478",
+                "3839b"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Slope 6 8 triple",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "42021"
+              ],
+              "round": 4
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[2].ops[53].top must be one of \"studs\", \"tile\" (got \"stud\")"
+            },
+            {
+              "round": 2,
+              "parts": 685,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "15068",
+              "2412b",
+              "2431",
+              "30162",
+              "3023b",
+              "30355",
+              "30356",
+              "30363",
+              "3039",
+              "3062b",
+              "3068b",
+              "3069b",
+              "3070b",
+              "3298",
+              "3660b",
+              "3941",
+              "4032b",
+              "4229",
+              "43121",
+              "44359",
+              "47397",
+              "47398",
+              "4740",
+              "98138"
+            ],
+            "notInList": [
+              "30162",
+              "30355",
+              "30356",
+              "4229",
+              "43121",
+              "44359",
+              "47397",
+              "47398"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 685
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,963 @@
+{
+  "ok": true,
+  "buildScript": 1,
+  "title": "Devastator: Opening Pursuit",
+  "stats": {
+    "parts": 483,
+    "designs": 64,
+    "lots": 103,
+    "massingCells": 4087,
+    "massingParts": 329,
+    "placedParts": 154,
+    "sections": 5,
+    "components": 0,
+    "opsRun": 167,
+    "scriptBytes": 12714,
+    "ldrawBytes": 23114,
+    "partsPerScriptKB": 38.9,
+    "compileMs": 416,
+    "checkMs": 641
+  },
+  "bounds": {
+    "studs": {
+      "min": [
+        -14,
+        0,
+        -4
+      ],
+      "max": [
+        14,
+        50,
+        42
+      ]
+    },
+    "ldu": {
+      "min": [
+        -280,
+        -396,
+        -80
+      ],
+      "max": [
+        280,
+        0,
+        840
+      ]
+    }
+  },
+  "sections": [
+    {
+      "name": "Orbital display",
+      "layer": "Orbital display",
+      "parts": 214
+    },
+    {
+      "name": "Connected wedge hull",
+      "layer": "Connected wedge hull",
+      "parts": 122
+    },
+    {
+      "name": "Dorsal island and batteries",
+      "layer": "Dorsal island and batteries",
+      "parts": 95
+    },
+    {
+      "name": "Command bridge",
+      "layer": "Command bridge",
+      "parts": 33
+    },
+    {
+      "name": "Tantive IV",
+      "layer": "Tantive IV",
+      "parts": 19
+    }
+  ],
+  "parts": [
+    {
+      "ref": "4162.dat",
+      "name": "Tile 1 × 8",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 103
+    },
+    {
+      "ref": "87079.dat",
+      "name": "Tile 2 × 4",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 32
+    },
+    {
+      "ref": "15068.dat",
+      "name": "Curved Slope 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 25
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 25
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 24
+    },
+    {
+      "ref": "3022.dat",
+      "name": "Plate 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 11
+    },
+    {
+      "ref": "30367c.dat",
+      "name": "Cylinder 2 × 2 with Dome Top with Axle Hole and Hollow Stud",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 10
+    },
+    {
+      "ref": "4032b.dat",
+      "name": "Round Plate 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 10
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 8
+    },
+    {
+      "ref": "3839b.dat",
+      "name": "Plate 1 × 2 with Handles",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 8
+    },
+    {
+      "ref": "2412b.dat",
+      "name": "Tile 1 × 2 Grille",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 7
+    },
+    {
+      "ref": "2431.dat",
+      "name": "Tile 1 × 4",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 7
+    },
+    {
+      "ref": "3006.dat",
+      "name": "Brick 2 × 10",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 7
+    },
+    {
+      "ref": "3020.dat",
+      "name": "Plate 2 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 7
+    },
+    {
+      "ref": "3070b.dat",
+      "name": "Tile 1 × 1",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 7
+    },
+    {
+      "ref": "92438.dat",
+      "name": "Plate 8 × 16",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 7
+    },
+    {
+      "ref": "98138.dat",
+      "name": "Round Tile 1 × 1",
+      "colour": "15",
+      "colourName": "White",
+      "count": 7
+    },
+    {
+      "ref": "3023b.dat",
+      "name": "Plate 1 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 6
+    },
+    {
+      "ref": "3070b.dat",
+      "name": "Tile 1 × 1",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 6
+    },
+    {
+      "ref": "3795.dat",
+      "name": "Plate 2 × 6",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 6
+    },
+    {
+      "ref": "47397.dat",
+      "name": "Wing 3 × 12 Left",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 6
+    },
+    {
+      "ref": "47398.dat",
+      "name": "Wing 3 × 12 Right",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 6
+    },
+    {
+      "ref": "6636.dat",
+      "name": "Tile 1 × 6",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 6
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 5
+    },
+    {
+      "ref": "2445.dat",
+      "name": "Plate 2 × 12",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 4
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 4
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 4
+    },
+    {
+      "ref": "3941.dat",
+      "name": "Round Brick 2 × 2",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 4
+    },
+    {
+      "ref": "11477.dat",
+      "name": "Curved Slope 2 × 1",
+      "colour": "15",
+      "colourName": "White",
+      "count": 3
+    },
+    {
+      "ref": "3007.dat",
+      "name": "Brick 2 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 3
+    },
+    {
+      "ref": "3020.dat",
+      "name": "Plate 2 × 4",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 3
+    },
+    {
+      "ref": "3029.dat",
+      "name": "Plate 4 × 12",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 3
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "43",
+      "colourName": "Trans light blue",
+      "count": 3
+    },
+    {
+      "ref": "3070b.dat",
+      "name": "Tile 1 × 1",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 3
+    },
+    {
+      "ref": "3070b.dat",
+      "name": "Tile 1 × 1",
+      "colour": "15",
+      "colourName": "White",
+      "count": 3
+    },
+    {
+      "ref": "42060.dat",
+      "name": "Wedge 12 × 3 × 1 Double Rounded Right",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 3
+    },
+    {
+      "ref": "42061.dat",
+      "name": "Wedge 12 × 3 × 1 Double Rounded Left",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 3
+    },
+    {
+      "ref": "47397.dat",
+      "name": "Wing 3 × 12 Left",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 3
+    },
+    {
+      "ref": "47398.dat",
+      "name": "Wing 3 × 12 Right",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 3
+    },
+    {
+      "ref": "4868b.dat",
+      "name": "Plane Jet Engine with Plate 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 3
+    },
+    {
+      "ref": "63864.dat",
+      "name": "Tile 1 × 3",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 3
+    },
+    {
+      "ref": "98138.dat",
+      "name": "Round Tile 1 × 1",
+      "colour": "43",
+      "colourName": "Trans light blue",
+      "count": 3
+    },
+    {
+      "ref": "15068.dat",
+      "name": "Curved Slope 2 × 2",
+      "colour": "15",
+      "colourName": "White",
+      "count": 2
+    },
+    {
+      "ref": "15395.dat",
+      "name": "Dome 2 × 2 Inverted with Stud and Tube",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "26603.dat",
+      "name": "Tile 2 × 3",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 2
+    },
+    {
+      "ref": "3001.dat",
+      "name": "Brick 2 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3002.dat",
+      "name": "Brick 2 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3004.dat",
+      "name": "Brick 1 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3034.dat",
+      "name": "Plate 2 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3068b.dat",
+      "name": "Tile 2 × 2",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 2
+    },
+    {
+      "ref": "3068b.dat",
+      "name": "Tile 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 2
+    },
+    {
+      "ref": "3660b.dat",
+      "name": "Inverted Slope 45° 2 × 2",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 2
+    },
+    {
+      "ref": "3660b.dat",
+      "name": "Inverted Slope 45° 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3666.dat",
+      "name": "Plate 1 × 6",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "15",
+      "colourName": "White",
+      "count": 2
+    },
+    {
+      "ref": "4477.dat",
+      "name": "Plate 1 × 10",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "60479.dat",
+      "name": "Plate 1 × 12",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "6111.dat",
+      "name": "Brick 1 × 10",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "6636.dat",
+      "name": "Tile 1 × 6",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "14769ps4.dat",
+      "name": "Tile 2 × 2 Round with SW Dark Bluish Grey Imperial Pattern",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "2412b.dat",
+      "name": "Tile 1 × 2 Grille",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "2431.dat",
+      "name": "Tile 1 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "2445.dat",
+      "name": "Plate 2 × 12",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "2456.dat",
+      "name": "Brick 2 × 6",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "26603.dat",
+      "name": "Tile 2 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3005.dat",
+      "name": "Brick 1 × 1",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3010.dat",
+      "name": "Brick 1 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3021.dat",
+      "name": "Plate 2 × 3",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3021.dat",
+      "name": "Plate 2 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3021.dat",
+      "name": "Plate 2 × 3",
+      "colour": "15",
+      "colourName": "White",
+      "count": 1
+    },
+    {
+      "ref": "3022.dat",
+      "name": "Plate 2 × 2",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 1
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "320",
+      "colourName": "Dark red",
+      "count": 1
+    },
+    {
+      "ref": "3027.dat",
+      "name": "Plate 6 × 16",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3028.dat",
+      "name": "Plate 6 × 12",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3028.dat",
+      "name": "Plate 6 × 12",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3029.dat",
+      "name": "Plate 4 × 12",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3030.dat",
+      "name": "Plate 4 × 10",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3032.dat",
+      "name": "Plate 4 × 6",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3034.dat",
+      "name": "Plate 2 × 8",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3035.dat",
+      "name": "Plate 4 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3062b.dat",
+      "name": "Round Brick 1 × 1",
+      "colour": "47",
+      "colourName": "Clear",
+      "count": 1
+    },
+    {
+      "ref": "3460.dat",
+      "name": "Plate 1 × 8",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3460.dat",
+      "name": "Plate 1 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 1
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "15",
+      "colourName": "White",
+      "count": 1
+    },
+    {
+      "ref": "3666.dat",
+      "name": "Plate 1 × 6",
+      "colour": "320",
+      "colourName": "Dark red",
+      "count": 1
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 1
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "320",
+      "colourName": "Dark red",
+      "count": 1
+    },
+    {
+      "ref": "4032b.dat",
+      "name": "Round Plate 2 × 2",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "41539.dat",
+      "name": "Plate 8 × 8",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "4282.dat",
+      "name": "Plate 2 × 16",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "43720.dat",
+      "name": "Wedge 4 × 2 Sloped Right",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "43721.dat",
+      "name": "Wedge 4 × 2 Sloped Left",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "54200.dat",
+      "name": "Slope 30° 1 × 1 × ⅔",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 1
+    },
+    {
+      "ref": "6141.dat",
+      "name": "Round Plate 1 × 1",
+      "colour": "47",
+      "colourName": "Clear",
+      "count": 1
+    },
+    {
+      "ref": "6141.dat",
+      "name": "Round Plate 1 × 1",
+      "colour": "320",
+      "colourName": "Dark red",
+      "count": 1
+    },
+    {
+      "ref": "63864.dat",
+      "name": "Tile 1 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "87079.dat",
+      "name": "Tile 2 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "87079ps0.dat",
+      "name": "Tile 2 × 4 with Star Wars Logo Pattern",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "95198.dat",
+      "name": "Windscreen 8 × 8 × 3.667 Dome Hinge Locking with 2 Dual Fingers",
+      "colour": "19",
+      "colourName": "Tan",
+      "count": 1
+    }
+  ],
+  "heaviestOps": [
+    {
+      "op": "sections[0].ops[0]",
+      "kind": "box",
+      "parts": 194
+    },
+    {
+      "op": "sections[1].ops[44]",
+      "kind": "floor",
+      "parts": 37
+    },
+    {
+      "op": "sections[2].ops[1]",
+      "kind": "box",
+      "parts": 30
+    },
+    {
+      "op": "sections[3].ops[6]",
+      "kind": "floor",
+      "parts": 11
+    },
+    {
+      "op": "sections[1].ops[25]",
+      "kind": "box",
+      "parts": 8
+    },
+    {
+      "op": "sections[1].ops[31]",
+      "kind": "floor",
+      "parts": 8
+    },
+    {
+      "op": "sections[2].ops[2]",
+      "kind": "box",
+      "parts": 8
+    },
+    {
+      "op": "sections[2].ops[0]",
+      "kind": "box",
+      "parts": 7
+    },
+    {
+      "op": "sections[0].ops[2]",
+      "kind": "column",
+      "parts": 5
+    },
+    {
+      "op": "sections[2].ops[3]",
+      "kind": "box",
+      "parts": 5
+    },
+    {
+      "op": "sections[3].ops[3]",
+      "kind": "box",
+      "parts": 5
+    },
+    {
+      "op": "sections[1].ops[16]",
+      "kind": "box",
+      "parts": 4
+    }
+  ],
+  "costliestOps": [
+    {
+      "op": "sections[0].ops[0]",
+      "parts": 194
+    },
+    {
+      "op": "sections[1].ops[44]",
+      "parts": 37
+    },
+    {
+      "op": "sections[2].ops[1]",
+      "parts": 30
+    },
+    {
+      "op": "sections[3].ops[6]",
+      "parts": 11
+    },
+    {
+      "op": "sections[1].ops[25]",
+      "parts": 8
+    },
+    {
+      "op": "sections[1].ops[31]",
+      "parts": 8
+    },
+    {
+      "op": "sections[2].ops[2]",
+      "parts": 8
+    },
+    {
+      "op": "sections[2].ops[0]",
+      "parts": 7
+    },
+    {
+      "op": "sections[0].ops[2]",
+      "parts": 5
+    },
+    {
+      "op": "sections[2].ops[3]",
+      "parts": 5
+    },
+    {
+      "op": "sections[3].ops[3]",
+      "parts": 5
+    },
+    {
+      "op": "sections[1].ops[16]",
+      "parts": 4
+    }
+  ],
+  "resolved": [],
+  "check": {
+    "overlaps": 0,
+    "offGrid": 9,
+    "groups": 17,
+    "covered": 432,
+    "uncovered": 51,
+    "health": "warning: 432 parts with verified connectors form 17 separately connected groups; 12 parts are not connected to anything. 51 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+  },
+  "problems": [
+    {
+      "severity": "warning",
+      "code": "off-grid",
+      "message": "9 part(s) are off the stud grid",
+      "ops": [
+        "sections[0].ops[1] (code line 3)",
+        "sections[2].ops[8] (code line 3)",
+        "sections[2].ops[12] (code line 3)",
+        "sections[2].ops[16] (code line 3)",
+        "sections[2].ops[20] (code line 3)",
+        "sections[2].ops[24] (code line 3)",
+        "sections[2].ops[28] (code line 3)",
+        "sections[2].ops[32] (code line 3)",
+        "sections[2].ops[36] (code line 3)"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "floating",
+      "message": "22 part(s) in 16 group(s) are not connected to the main structure (largest group: 410 parts); e.g. 98138 at [4, 8, 6], 3795 at [-5, 11, 37], 3795 at [0, 11, 37], 3795 at [5, 11, 37], 15068 at [-5, 17, 35], 15068 at [5, 17, 35]",
+      "ops": [
+        "sections[4].ops[14] (code line 3)",
+        "sections[4].ops[10] (code line 69)",
+        "sections[4].ops[16] (code line 3)",
+        "sections[4].ops[15] (code line 3)",
+        "sections[1].ops[60] (code line 3)",
+        "sections[1].ops[62] (code line 3)",
+        "sections[1].ops[63] (code line 3)",
+        "sections[1].ops[65] (code line 3)",
+        "sections[1].ops[66] (code line 3)",
+        "sections[1].ops[68] (code line 3)",
+        "sections[1].ops[55] (code line 3)",
+        "sections[1].ops[56] (code line 3)"
+      ]
+    }
+  ],
+  "output": "build.mpd",
+  "images": [
+    "views/build-iso.png",
+    "views/build-front.png",
+    "views/build-iso-back.png",
+    "views/build-top.png"
+  ],
+  "totalMs": 69032
+}

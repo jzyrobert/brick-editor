@@ -1,0 +1,272 @@
+{
+  "complete": true,
+  "summary": [
+    {
+      "variant": "format",
+      "style": "lego",
+      "expected": 12,
+      "finished": 12,
+      "accepted": 12,
+      "failed": 0,
+      "meanParts": 626.5,
+      "medianParts": 382.0,
+      "meanSearches": 17.5,
+      "meanGenerationSeconds": 544.75,
+      "compilerWarnings": 42,
+      "blockedNativeToolAttempts": 1
+    },
+    {
+      "variant": "format",
+      "style": "diorama",
+      "expected": 12,
+      "finished": 12,
+      "accepted": 12,
+      "failed": 0,
+      "meanParts": 814.9166666666666,
+      "medianParts": 701.5,
+      "meanSearches": 17.75,
+      "meanGenerationSeconds": 555.6666666666666,
+      "compilerWarnings": 53,
+      "blockedNativeToolAttempts": 0
+    },
+    {
+      "variant": "format",
+      "style": "both",
+      "expected": 24,
+      "finished": 24,
+      "accepted": 24,
+      "failed": 0,
+      "meanParts": 720.7083333333334,
+      "medianParts": 602.0,
+      "meanSearches": 17.625,
+      "meanGenerationSeconds": 550.2083333333334,
+      "compilerWarnings": 95,
+      "blockedNativeToolAttempts": 1
+    },
+    {
+      "variant": "reference",
+      "style": "lego",
+      "expected": 12,
+      "finished": 12,
+      "accepted": 12,
+      "failed": 0,
+      "meanParts": 631.6666666666666,
+      "medianParts": 344.0,
+      "meanSearches": 14.833333333333334,
+      "meanGenerationSeconds": 556.3333333333334,
+      "compilerWarnings": 41,
+      "blockedNativeToolAttempts": 0
+    },
+    {
+      "variant": "reference",
+      "style": "diorama",
+      "expected": 12,
+      "finished": 12,
+      "accepted": 12,
+      "failed": 0,
+      "meanParts": 797.3333333333334,
+      "medianParts": 812.5,
+      "meanSearches": 18,
+      "meanGenerationSeconds": 634.6666666666666,
+      "compilerWarnings": 78,
+      "blockedNativeToolAttempts": 0
+    },
+    {
+      "variant": "reference",
+      "style": "both",
+      "expected": 24,
+      "finished": 24,
+      "accepted": 24,
+      "failed": 0,
+      "meanParts": 714.5,
+      "medianParts": 538.5,
+      "meanSearches": 16.416666666666668,
+      "meanGenerationSeconds": 595.5,
+      "compilerWarnings": 119,
+      "blockedNativeToolAttempts": 0
+    }
+  ],
+  "comparisons": [
+    {
+      "style": "lego",
+      "subject": "pelican",
+      "parts": {
+        "format": [
+          363,
+          289
+        ],
+        "reference": [
+          235,
+          288
+        ]
+      },
+      "referenceMeanCountRatio": 0.8021472392638037
+    },
+    {
+      "style": "lego",
+      "subject": "piplup",
+      "parts": {
+        "format": [
+          301,
+          249
+        ],
+        "reference": [
+          148,
+          163
+        ]
+      },
+      "referenceMeanCountRatio": 0.5654545454545454
+    },
+    {
+      "style": "lego",
+      "subject": "temple",
+      "parts": {
+        "format": [
+          1921,
+          1632
+        ],
+        "reference": [
+          1791,
+          1631
+        ]
+      },
+      "referenceMeanCountRatio": 0.9631297495074584
+    },
+    {
+      "style": "lego",
+      "subject": "dragon",
+      "parts": {
+        "format": [
+          401,
+          410
+        ],
+        "reference": [
+          512,
+          400
+        ]
+      },
+      "referenceMeanCountRatio": 1.124537607891492
+    },
+    {
+      "style": "lego",
+      "subject": "destroyer",
+      "parts": {
+        "format": [
+          632,
+          685
+        ],
+        "reference": [
+          1036,
+          907
+        ]
+      },
+      "referenceMeanCountRatio": 1.475322703113136
+    },
+    {
+      "style": "lego",
+      "subject": "ewok",
+      "parts": {
+        "format": [
+          313,
+          322
+        ],
+        "reference": [
+          278,
+          191
+        ]
+      },
+      "referenceMeanCountRatio": 0.7385826771653543
+    },
+    {
+      "style": "diorama",
+      "subject": "pelican",
+      "parts": {
+        "format": [
+          662,
+          234
+        ],
+        "reference": [
+          539,
+          538
+        ]
+      },
+      "referenceMeanCountRatio": 1.2020089285714286
+    },
+    {
+      "style": "diorama",
+      "subject": "piplup",
+      "parts": {
+        "format": [
+          349,
+          478
+        ],
+        "reference": [
+          361,
+          364
+        ]
+      },
+      "referenceMeanCountRatio": 0.8766626360338573
+    },
+    {
+      "style": "diorama",
+      "subject": "temple",
+      "parts": {
+        "format": [
+          1266,
+          1768
+        ],
+        "reference": [
+          1254,
+          1149
+        ]
+      },
+      "referenceMeanCountRatio": 0.7920237310481213
+    },
+    {
+      "style": "diorama",
+      "subject": "dragon",
+      "parts": {
+        "format": [
+          741,
+          1058
+        ],
+        "reference": [
+          1231,
+          764
+        ]
+      },
+      "referenceMeanCountRatio": 1.1089494163424125
+    },
+    {
+      "style": "diorama",
+      "subject": "destroyer",
+      "parts": {
+        "format": [
+          572,
+          836
+        ],
+        "reference": [
+          483,
+          1076
+        ]
+      },
+      "referenceMeanCountRatio": 1.1072443181818181
+    },
+    {
+      "style": "diorama",
+      "subject": "ewok",
+      "parts": {
+        "format": [
+          1169,
+          646
+        ],
+        "reference": [
+          861,
+          948
+        ]
+      },
+      "referenceMeanCountRatio": 0.996694214876033
+    }
+  ],
+  "uniqueNativeSessions": 48
+}

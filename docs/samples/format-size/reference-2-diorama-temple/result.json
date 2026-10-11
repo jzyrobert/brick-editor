@@ -1,0 +1,263 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1149,
+  "seconds": 517,
+  "tokens": {
+    "input": 334818,
+    "cached": 231296,
+    "output": 27291,
+    "reasoning": 16970
+  },
+  "searches": 10,
+  "checks": 1,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2417",
+      "2423",
+      "24866",
+      "3003",
+      "30151a",
+      "3062b",
+      "32607",
+      "3633",
+      "3659",
+      "3665a",
+      "3941",
+      "3942c",
+      "4032b",
+      "43898",
+      "4589",
+      "4740",
+      "54200",
+      "6141",
+      "61678",
+      "64648",
+      "90398",
+      "98138"
+    ],
+    "notInList": [
+      "30151a",
+      "43898",
+      "64648",
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 517,
+      "usage": {
+        "input": 334818,
+        "cached": 231296,
+        "output": 27291,
+        "reasoning": 16970,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "1x4",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "61678",
+            "93273",
+            "13547",
+            "11153"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "inverted slope",
+            "size": "1x2",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "3665a",
+            "2449",
+            "24201",
+            "3665b",
+            "2310",
+            "5847"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell",
+            "limit": 8
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609",
+            "30151b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "plant leaves",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2423",
+            "2417",
+            "32607",
+            "37695"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "fish",
+            "colour": "orange",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "64648"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "minifigure head",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "45755p02"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "dish",
+            "size": "3x3",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "43898",
+            "15587"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "plant leaves",
+            "colour": "orange",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "2423",
+            "2417",
+            "32607",
+            "10884"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "round brick",
+            "size": "2x2",
+            "colour": "sand green",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "3941",
+            "3063b",
+            "6143",
+            "85080"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1134,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2417",
+          "2423",
+          "24866",
+          "3003",
+          "30151a",
+          "3062b",
+          "32607",
+          "3633",
+          "3659",
+          "3665a",
+          "3941",
+          "3942c",
+          "4032b",
+          "43898",
+          "4589",
+          "4740",
+          "54200",
+          "6141",
+          "61678",
+          "64648",
+          "90398",
+          "98138"
+        ],
+        "notInList": [
+          "30151a",
+          "43898",
+          "64648",
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1149
+    }
+  ]
+}

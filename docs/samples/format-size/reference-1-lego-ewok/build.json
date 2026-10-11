@@ -1,0 +1,1420 @@
+{
+ "buildScript": 1,
+ "title": "LL-78 Yub-Nub Treehopper",
+ "description": "A 1978 blue-and-grey scout lander reinvented by Ewok engineers: an amber cockpit in an orange hood, twin round scanner ears, paw landing pads, a log-lined sample hold and a wooden spear aerial. Two short Ewok astronauts explore beside the ship. Lift off the canopy, load the hold and board by the rear ramp.",
+ "palette": {
+  "space": "blue",
+  "metal": "light bluish grey",
+  "hood": "dark orange",
+  "wood": "reddish brown",
+  "glass": "trans yellow"
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "components": {
+  "Ewok explorer": {
+   "size": [
+    4,
+    3
+   ],
+   "ops": [
+    {
+     "op": "place",
+     "part": "41879a",
+     "at": [
+      1,
+      0,
+      1
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "76382p6g",
+     "at": [
+      0,
+      4,
+      0
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "64805",
+     "at": [
+      1,
+      11,
+      0
+     ],
+     "colour": "wood",
+     "turn": 0
+    }
+   ]
+  }
+ },
+ "sections": [
+  {
+   "name": "Four rounded landing paws",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      2,
+      0,
+      2
+     ],
+     "size": [
+      4,
+      5
+     ],
+     "layers": 2,
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      2,
+      2,
+      2
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      4,
+      2,
+      2
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      3,
+      2,
+      4
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      3,
+      5,
+      4
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      18,
+      0,
+      2
+     ],
+     "size": [
+      4,
+      5
+     ],
+     "layers": 2,
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      18,
+      2,
+      2
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      20,
+      2,
+      2
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      19,
+      2,
+      4
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      19,
+      5,
+      4
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      0,
+      16
+     ],
+     "size": [
+      4,
+      5
+     ],
+     "layers": 2,
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      2,
+      2,
+      19
+     ],
+     "colour": "wood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      4,
+      2,
+      19
+     ],
+     "colour": "wood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      3,
+      2,
+      17
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      3,
+      5,
+      17
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      18,
+      0,
+      16
+     ],
+     "size": [
+      4,
+      5
+     ],
+     "layers": 2,
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      18,
+      2,
+      19
+     ],
+     "colour": "wood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      20,
+      2,
+      19
+     ],
+     "colour": "wood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      19,
+      2,
+      17
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      19,
+      5,
+      17
+     ],
+     "colour": "metal",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Connected undercarriage",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      3,
+      8,
+      4
+     ],
+     "size": [
+      18,
+      3
+     ],
+     "layers": 2,
+     "colour": "metal"
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      8,
+      16
+     ],
+     "size": [
+      18,
+      3
+     ],
+     "layers": 2,
+     "colour": "metal"
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      8,
+      4
+     ],
+     "size": [
+      8,
+      15
+     ],
+     "layers": 2,
+     "colour": "space"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      5,
+      7
+     ],
+     "size": [
+      6,
+      3,
+      9
+     ],
+     "colour": "space",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      8,
+      5,
+      4
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      14,
+      5,
+      4
+     ],
+     "colour": "space",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Swept wings, ear scanners and repulsors",
+   "ops": [
+    {
+     "op": "place",
+     "part": "41769a",
+     "at": [
+      2,
+      10,
+      3
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41770a",
+     "at": [
+      6,
+      10,
+      3
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      10,
+      3
+     ],
+     "size": [
+      2,
+      4
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      10,
+      7
+     ],
+     "size": [
+      6,
+      12
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      2,
+      11,
+      3
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      6,
+      11,
+      3
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298p90",
+     "at": [
+      4,
+      11,
+      4
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3068b",
+     "at": [
+      4,
+      11,
+      7
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      11,
+      9
+     ],
+     "size": [
+      4,
+      4,
+      2
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      15,
+      9
+     ],
+     "size": [
+      4,
+      3,
+      2
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "place",
+     "part": "30209",
+     "at": [
+      4,
+      18,
+      9
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "43721",
+     "at": [
+      2,
+      11,
+      10
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "43720",
+     "at": [
+      6,
+      11,
+      10
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      3,
+      11,
+      14
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      3,
+      14,
+      14
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      4,
+      16,
+      15
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      4,
+      19,
+      15
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      4,
+      7,
+      15
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      4,
+      4,
+      15
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      2,
+      11,
+      18
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      6,
+      11,
+      18
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41769a",
+     "at": [
+      16,
+      10,
+      3
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41770a",
+     "at": [
+      20,
+      10,
+      3
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      18,
+      10,
+      3
+     ],
+     "size": [
+      2,
+      4
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "floor",
+     "at": [
+      16,
+      10,
+      7
+     ],
+     "size": [
+      6,
+      12
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      16,
+      11,
+      3
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      20,
+      11,
+      3
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298p90",
+     "at": [
+      18,
+      11,
+      4
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3068b",
+     "at": [
+      18,
+      11,
+      7
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      11,
+      9
+     ],
+     "size": [
+      4,
+      4,
+      2
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      15,
+      9
+     ],
+     "size": [
+      4,
+      3,
+      2
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "place",
+     "part": "30209",
+     "at": [
+      16,
+      18,
+      9
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "43721",
+     "at": [
+      16,
+      11,
+      10
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "43720",
+     "at": [
+      20,
+      11,
+      10
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      17,
+      11,
+      14
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      17,
+      14,
+      14
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      18,
+      16,
+      15
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      18,
+      19,
+      15
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      18,
+      7,
+      15
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      18,
+      4,
+      15
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      16,
+      11,
+      18
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      20,
+      11,
+      18
+     ],
+     "colour": "black",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Hollow cockpit and hood",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      8,
+      10,
+      4
+     ],
+     "size": [
+      2,
+      5,
+      8
+     ],
+     "colour": "space",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      10,
+      4
+     ],
+     "size": [
+      2,
+      5,
+      8
+     ],
+     "colour": "space",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      14,
+      4
+     ],
+     "size": [
+      8,
+      1
+     ],
+     "colour": "space"
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      10,
+      11
+     ],
+     "size": [
+      4,
+      8,
+      2
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      10,
+      1
+     ],
+     "size": [
+      8,
+      3,
+      3
+     ],
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      8,
+      13,
+      1
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      13,
+      1
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      13,
+      2
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      13,
+      2
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "85984",
+     "at": [
+      11,
+      13,
+      1
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4079",
+     "at": [
+      11,
+      10,
+      8
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      10,
+      5
+     ],
+     "colour": "space",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069bp28",
+     "at": [
+      11,
+      13,
+      6
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4474",
+     "at": [
+      10,
+      15,
+      4
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      15,
+      4
+     ],
+     "size": [
+      2,
+      3,
+      7
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      8,
+      18,
+      4
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      8,
+      18,
+      6
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      8,
+      18,
+      8
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      8,
+      18,
+      10
+     ],
+     "colour": "hood",
+     "turn": 90
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      15,
+      4
+     ],
+     "size": [
+      2,
+      3,
+      7
+     ],
+     "colour": "hood"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      18,
+      4
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      18,
+      6
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      18,
+      8
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      18,
+      10
+     ],
+     "colour": "hood",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      18,
+      11
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      18,
+      11
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      9,
+      21,
+      11
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      13,
+      21,
+      11
+     ],
+     "colour": "tan",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Log sample hold and boarding ramp",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      9,
+      10,
+      13
+     ],
+     "size": [
+      6,
+      5
+     ],
+     "layers": 2,
+     "colour": "dark tan",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      8,
+      12,
+      13
+     ],
+     "size": [
+      1,
+      4,
+      6
+     ],
+     "colour": "wood",
+     "texture": "log",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      12,
+      13
+     ],
+     "size": [
+      1,
+      4,
+      6
+     ],
+     "colour": "wood",
+     "texture": "log",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      12,
+      18
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "space",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      12,
+      18
+     ],
+     "size": [
+      1,
+      3,
+      1
+     ],
+     "colour": "space",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4345b",
+     "at": [
+      10,
+      12,
+      14
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4346",
+     "at": [
+      10,
+      12,
+      13
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      13,
+      12,
+      14
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      13,
+      12,
+      16
+     ],
+     "colour": "lime",
+     "turn": 0
+    },
+    {
+     "op": "stairs",
+     "at": [
+      10,
+      0,
+      23
+     ],
+     "width": 4,
+     "steps": 5,
+     "dir": "-z",
+     "rise": 2,
+     "run": 1,
+     "colour": "dark tan",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      15,
+      16,
+      17
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      15,
+      19,
+      17
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      15,
+      20,
+      17
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      15,
+      32,
+      17
+     ],
+     "colour": "glass",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Ewok astronauts",
+   "ops": [
+    {
+     "op": "instance",
+     "component": "Ewok explorer",
+     "at": [
+      24,
+      0,
+      4
+     ]
+    },
+    {
+     "op": "instance",
+     "component": "Ewok explorer",
+     "at": [
+      25,
+      0,
+      15
+     ],
+     "turn": 90,
+     "palette": {
+      "wood": "tan"
+     }
+    }
+   ]
+  }
+ ]
+}

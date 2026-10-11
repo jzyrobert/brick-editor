@@ -1,0 +1,306 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-reference-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1036,
+      "seconds": 440,
+      "tokens": {
+        "input": 523542,
+        "cached": 382080,
+        "output": 34292,
+        "reasoning": 21825
+      },
+      "searches": 10,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "3004",
+          "30363",
+          "3040b",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3666",
+          "3710",
+          "3941",
+          "4032b",
+          "41747",
+          "41748",
+          "41764",
+          "41765",
+          "43121",
+          "43720",
+          "43721",
+          "44359",
+          "4460b",
+          "4589",
+          "4868b",
+          "54200",
+          "60477",
+          "85984"
+        ],
+        "notInList": [
+          "41747",
+          "41748",
+          "41764",
+          "41765",
+          "43121",
+          "43720",
+          "43721",
+          "44359",
+          "4868b"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 440,
+          "usage": {
+            "input": 523542,
+            "cached": 382080,
+            "output": 34292,
+            "reasoning": 21825,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wedge plate 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "47405"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate 6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "6106",
+                "32059",
+                "30303",
+                "54383",
+                "54384",
+                "47407",
+                "50303",
+                "2625"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720",
+                "43721",
+                "80545",
+                "41764",
+                "41765"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "hemisphere",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "30208",
+                "44359",
+                "61287",
+                "86500",
+                "44358"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "engine",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "50943",
+                "43121",
+                "2853a",
+                "2853b",
+                "2853c",
+                "2854",
+                "4868b",
+                "2852"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate 2 6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "32059",
+                "47407"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "41747",
+                "limit": 2
+              },
+              "results": [
+                "41747"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "4868b",
+                "limit": 2
+              },
+              "results": [
+                "4868b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "43121",
+                "limit": 2
+              },
+              "results": [
+                "43121"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "barrel gun",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "2489",
+                "4424",
+                "64951",
+                "98585",
+                "4593",
+                "15391"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1022,
+              "errors": 10,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 1036,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "15068",
+              "2412b",
+              "2431",
+              "3004",
+              "30363",
+              "3040b",
+              "3069b",
+              "3070b",
+              "3660b",
+              "3666",
+              "3710",
+              "3941",
+              "4032b",
+              "41747",
+              "41748",
+              "41764",
+              "41765",
+              "43121",
+              "43720",
+              "43721",
+              "44359",
+              "4460b",
+              "4589",
+              "4868b",
+              "54200",
+              "60477",
+              "85984"
+            ],
+            "notInList": [
+              "41747",
+              "41748",
+              "41764",
+              "41765",
+              "43121",
+              "43720",
+              "43721",
+              "44359",
+              "4868b"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1036
+        }
+      ]
+    }
+  ]
+}

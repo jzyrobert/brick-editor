@@ -18,6 +18,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Gallery content
 
+- [x] Complete the 48-case [format-first sizing study](docs/samples/format-size/README.md): two clean repetitions with and without the supplied commercial reference table, all six briefs and both styles. References score 349/480 versus 343/480, with mixed per-brief effects; keep defaults unchanged.
 - [x] Complete the 72-case [prompt directions and variance study](docs/samples/style-directions/README.md). Richer part information is promising but overlaps unchanged-prompt variance; no second convincing change merits combining. Defaults and published gallery remain unchanged.
 - [x] Complete an interview-driven Sol 6.1 high style-improvement loop over all six briefs × both styles, with independent text-only generations and a fixed plateau rule. [Results](docs/samples/lego-style-study/README.md#sol-self-improvement-loops): five improvements, three regressions and four ties; stop after one loop without promoting the bundled candidate. Conditional finishing/unit clarifications remain hypotheses for repeated trials or isolated tests.
 - [ ] Test the experimental diorama prompt across other models and repeated clean-start trials before adopting it or changing public style filters. [Sol 6.1 high now covers all six briefs](docs/samples/lego-style-study/README.md#diorama-all-six-briefs--sol-61-high), with mixed visual preferences and remaining construction warnings.

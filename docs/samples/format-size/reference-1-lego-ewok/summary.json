@@ -1,0 +1,467 @@
+{
+  "brief": "ewok inspired version of the classic 1970s lego space sets",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-reference-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 278,
+      "seconds": 410,
+      "tokens": {
+        "input": 1006002,
+        "cached": 727040,
+        "output": 30823,
+        "reasoning": 17980
+      },
+      "searches": 20,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "30209",
+          "3039",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3069bp28",
+          "3298p90",
+          "3660b",
+          "3941",
+          "3957a",
+          "3960",
+          "4079",
+          "41747",
+          "41748",
+          "41769a",
+          "41770a",
+          "41879a",
+          "4345b",
+          "4346",
+          "43720",
+          "43721",
+          "4474",
+          "4589",
+          "4740",
+          "64805",
+          "76382p6g",
+          "85984",
+          "87081"
+        ],
+        "notInList": [
+          "30209",
+          "3069bp28",
+          "3298p90",
+          "41747",
+          "41748",
+          "41879a",
+          "43720",
+          "43721",
+          "4474",
+          "64805",
+          "76382p6g"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 410,
+          "usage": {
+            "input": 1006002,
+            "cached": 727040,
+            "output": 30823,
+            "reasoning": 17980,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "space windscreen",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "6070",
+                "2437",
+                "6152a",
+                "62360",
+                "4474",
+                "6238a",
+                "6238b",
+                "87752"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "dark orange",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4740",
+                "3960",
+                "2654a",
+                "43898",
+                "3961",
+                "4285b",
+                "44375a",
+                "30209"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "cone",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4589",
+                "59900",
+                "64288",
+                "2343",
+                "6269"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "ewok",
+                "limit": 12
+              },
+              "results": [
+                "3622pz2",
+                "64805",
+                "6047615a",
+                "6047615b",
+                "11203d01",
+                "11203d02"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "space logo",
+                "limit": 8
+              },
+              "results": [
+                "3004p90",
+                "3298p90",
+                "3068bp53",
+                "3068bp5e",
+                "4490p90",
+                "9460",
+                "59349p50",
+                "80123"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wedge 4 x 2 Sloped Left",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "43721"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig space helmet",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "87781",
+                "30124b",
+                "50665",
+                "87754",
+                "3842a",
+                "3842b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "round brick dome",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "5848",
+                "1871",
+                "76776"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Bracket 1 x 2 Dish 4 x 4",
+                "limit": 4
+              },
+              "results": [
+                "30209"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "dish",
+                "colour": "dark orange",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "44375b",
+                "21599",
+                "35327",
+                "38622",
+                "6256"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "minifig head ewok",
+                "limit": 6
+              },
+              "results": [
+                "64805"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "minifig torso classic space",
+                "limit": 6
+              },
+              "results": [
+                "973p6m",
+                "63208p91",
+                "76382p6g",
+                "76382p6j",
+                "76382p6m",
+                "76382p0024"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "basket",
+                "colour": "tan",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "30492",
+                "30489"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "minifig legs short",
+                "limit": 8
+              },
+              "results": [
+                "41879a",
+                "16709",
+                "41879b"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "minifig torso classic space logo",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "76382p6g"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Minifig Hips and Legs",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "41879a",
+                "15",
+                "73200b-f1",
+                "73200b-f2"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "space control panel",
+                "limit": 8
+              },
+              "results": [
+                "3069bpa2",
+                "3622p02",
+                "3069bp28",
+                "3069bp49",
+                "6074343m",
+                "6636d50"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Minifig Utensil Basket",
+                "limit": 6
+              },
+              "results": [
+                "4079",
+                "4523",
+                "2343",
+                "6269",
+                "3816c",
+                "3817c"
+              ],
+              "round": 4
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 277,
+              "errors": 7,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 278,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "15068",
+              "2412b",
+              "30209",
+              "3039",
+              "3062b",
+              "3068b",
+              "3069b",
+              "3069bp28",
+              "3298p90",
+              "3660b",
+              "3941",
+              "3957a",
+              "3960",
+              "4079",
+              "41747",
+              "41748",
+              "41769a",
+              "41770a",
+              "41879a",
+              "4345b",
+              "4346",
+              "43720",
+              "43721",
+              "4474",
+              "4589",
+              "4740",
+              "64805",
+              "76382p6g",
+              "85984",
+              "87081"
+            ],
+            "notInList": [
+              "30209",
+              "3069bp28",
+              "3298p90",
+              "41747",
+              "41748",
+              "41879a",
+              "43720",
+              "43721",
+              "4474",
+              "64805",
+              "76382p6g"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 278
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1102 @@
+{
+ "buildScript": 1,
+ "title": "Piplup's First Bubble",
+ "description": "A round, bright-eyed Piplup balances on a sculpted ice floe, reaching a flipper toward its first enormous Bubble attack. A curious fish watches below; a trail of smaller bubbles crosses the blue meltwater.",
+ "palette": {
+  "blue": "medium azure",
+  "cap": "dark blue",
+  "snow": "white",
+  "water": "dark blue"
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "sections": [
+  {
+   "name": "Rounded display and meltwater",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      2,
+      0,
+      0
+     ],
+     "size": [
+      22,
+      22
+     ],
+     "layers": 2,
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      2
+     ],
+     "size": [
+      26,
+      18
+     ],
+     "layers": 2,
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      2,
+      1
+     ],
+     "size": [
+      22,
+      20
+     ],
+     "colour": "water",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      1,
+      2,
+      2
+     ],
+     "size": [
+      24,
+      18
+     ],
+     "colour": "water",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      3,
+      3
+     ],
+     "size": [
+      6,
+      3
+     ],
+     "colour": "trans light blue",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      17,
+      3,
+      2
+     ],
+     "size": [
+      7,
+      4
+     ],
+     "colour": "trans light blue",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      20,
+      3,
+      15
+     ],
+     "size": [
+      4,
+      5
+     ],
+     "colour": "trans light blue",
+     "top": "tile"
+    }
+   ]
+  },
+  {
+   "name": "Piplup's ice floe",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      7,
+      3,
+      9
+     ],
+     "size": [
+      12,
+      3,
+      8
+     ],
+     "colour": "white",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3037",
+     "at": [
+      7,
+      3,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3037",
+     "at": [
+      11,
+      3,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3037",
+     "at": [
+      15,
+      3,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      7,
+      6,
+      8
+     ],
+     "size": [
+      12,
+      9
+     ],
+     "colour": "white",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      5,
+      3,
+      10
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      5,
+      3,
+      13
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      19,
+      3,
+      11
+     ],
+     "colour": "white",
+     "turn": 270
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      3,
+      17
+     ],
+     "size": [
+      9,
+      3
+     ],
+     "layers": 2,
+     "colour": "white",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "30357",
+     "at": [
+      2,
+      3,
+      8
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      3,
+      4,
+      9
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30357",
+     "at": [
+      20,
+      4,
+      3
+     ],
+     "colour": "white",
+     "turn": 180
+    }
+   ]
+  },
+  {
+   "name": "Blue glacier pinnacle",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      2,
+      3,
+      16
+     ],
+     "size": [
+      5,
+      9,
+      2
+     ],
+     "colour": "white",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3678b",
+     "at": [
+      3,
+      3,
+      14
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3678b",
+     "at": [
+      3,
+      3,
+      18
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3678b",
+     "at": [
+      1,
+      3,
+      16
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      4,
+      6,
+      16
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      4,
+      15,
+      17
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      5,
+      3,
+      18
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      2,
+      12,
+      16
+     ],
+     "colour": "white",
+     "turn": 90
+    }
+   ]
+  },
+  {
+   "name": "Yellow paddles and rounded torso",
+   "ops": [
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      10,
+      7,
+      7
+     ],
+     "colour": "yellow",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      14,
+      7,
+      7
+     ],
+     "colour": "yellow",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      11,
+      10
+     ],
+     "size": [
+      6,
+      13,
+      6
+     ],
+     "colour": "blue",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      10,
+      11,
+      9
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "24201",
+     "at": [
+      15,
+      11,
+      9
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      10,
+      15,
+      9
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      15,
+      15,
+      9
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      10,
+      18,
+      9
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      15,
+      18,
+      9
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      11,
+      11,
+      8
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      13,
+      11,
+      8
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      11,
+      15,
+      8
+     ],
+     "size": [
+      4,
+      3,
+      2
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      11,
+      15,
+      8
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      14,
+      15,
+      8
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      11,
+      18,
+      8
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      13,
+      18,
+      8
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      21,
+      9
+     ],
+     "colour": "cap",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      21,
+      9
+     ],
+     "colour": "cap",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      21,
+      9
+     ],
+     "colour": "cap",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      18,
+      14
+     ],
+     "size": [
+      6,
+      3,
+      3
+     ],
+     "colour": "cap"
+    },
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      10,
+      21,
+      14
+     ],
+     "colour": "cap",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      12,
+      21,
+      14
+     ],
+     "colour": "cap",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      14,
+      21,
+      14
+     ],
+     "colour": "cap",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3795",
+     "at": [
+      12,
+      12,
+      14
+     ],
+     "colour": "cap",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      12,
+      13,
+      16
+     ],
+     "colour": "cap",
+     "turn": 180
+    }
+   ]
+  },
+  {
+   "name": "One flipper reaching, one flipper balancing",
+   "ops": [
+    {
+     "op": "place",
+     "part": "3678b",
+     "at": [
+      8,
+      11,
+      12
+     ],
+     "colour": "blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3020",
+     "at": [
+      8,
+      17,
+      12
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      8,
+      18,
+      12
+     ],
+     "colour": "blue",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3795",
+     "at": [
+      14,
+      17,
+      11
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      18,
+      11
+     ],
+     "colour": "blue",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      16,
+      18,
+      11
+     ],
+     "colour": "blue",
+     "turn": 270
+    }
+   ]
+  },
+  {
+   "name": "Spherical head and signature face",
+   "ops": [
+    {
+     "op": "place",
+     "part": "54091",
+     "at": [
+      9,
+      24,
+      8
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      30,
+      8
+     ],
+     "size": [
+      8,
+      6,
+      8
+     ],
+     "colour": "blue",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "54095",
+     "at": [
+      9,
+      36,
+      8
+     ],
+     "colour": "cap",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      10,
+      26,
+      6
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      14,
+      26,
+      6
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      30,
+      6
+     ],
+     "size": [
+      2,
+      3,
+      3
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      14,
+      30,
+      6
+     ],
+     "size": [
+      2,
+      3,
+      3
+     ],
+     "colour": "white",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      10,
+      33,
+      6
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      14,
+      33,
+      6
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3005pe4",
+     "at": [
+      10,
+      30,
+      6
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3005pe4",
+     "at": [
+      15,
+      30,
+      6
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3678b",
+     "at": [
+      12,
+      30,
+      7
+     ],
+     "colour": "cap",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3020",
+     "at": [
+      12,
+      29,
+      4
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      12,
+      30,
+      4
+     ],
+     "colour": "yellow",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      12,
+      30,
+      6
+     ],
+     "colour": "yellow",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "First Bubble attack",
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      21,
+      3,
+      10
+     ],
+     "height": 18,
+     "diameter": 2,
+     "colour": "trans-clear"
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      20,
+      21,
+      9
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "86500",
+     "at": [
+      20,
+      23,
+      9
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      17,
+      4,
+      3
+     ],
+     "colour": "trans-clear",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30151a",
+     "at": [
+      17,
+      7,
+      3
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30151a",
+     "at": [
+      22,
+      4,
+      17
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "64648",
+     "at": [
+      4,
+      4,
+      4
+     ],
+     "colour": "orange",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      8,
+      4,
+      4
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      9,
+      3,
+      5
+     ],
+     "colour": "trans-clear",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      15,
+      3,
+      5
+     ],
+     "colour": "trans-clear",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      20,
+      3,
+      8
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      23,
+      3,
+      14
+     ],
+     "colour": "trans-clear",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      3,
+      3,
+      12
+     ],
+     "colour": "trans-clear",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      6,
+      3,
+      18
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      10,
+      3,
+      3
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      12,
+      3,
+      4
+     ],
+     "colour": "trans light blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      20,
+      3,
+      19
+     ],
+     "colour": "white",
+     "turn": 0
+    }
+   ]
+  }
+ ]
+}
