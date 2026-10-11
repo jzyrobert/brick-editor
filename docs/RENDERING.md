@@ -1,5 +1,7 @@
 # Rendering looks
 
+The [11 October performance audit](RENDER-PERFORMANCE-AUDIT.md) covers startup, all looks, camera/shadow work, Photo motion, captures and resource cleanup, with measured changes and explicit software-renderer limits.
+
 The viewport and captures offer three shading looks. The look is a separate setting from the render quality profile (`fast`/`balanced`/`photo`, which controls edges, shadow map size, pixel-ratio cap, tone mapping and exposure). A look never changes the document, the geometry or the stored quality profile.
 
 | Look                 | What it draws                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Where                               |
