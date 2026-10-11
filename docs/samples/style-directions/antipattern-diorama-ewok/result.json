@@ -1,0 +1,214 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2933,
+  "targetMiss": {
+    "target": 3000,
+    "parts": 2933,
+    "difference": -67,
+    "percent": -2.2
+  },
+  "seconds": 720,
+  "tokens": {
+    "input": 539288,
+    "cached": 335360,
+    "output": 71749,
+    "reasoning": 33198
+  },
+  "searches": 5,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "2412b",
+      "2423",
+      "2431",
+      "2489",
+      "3002",
+      "3003",
+      "3004",
+      "3005",
+      "3022",
+      "3023b",
+      "3039",
+      "3040b",
+      "3069b",
+      "32607",
+      "3710",
+      "3832",
+      "3941",
+      "3960",
+      "4032b",
+      "4474",
+      "4589",
+      "54200",
+      "6141",
+      "6255"
+    ],
+    "notInList": [
+      "2489",
+      "4474"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 720,
+      "usage": {
+        "input": 539288,
+        "cached": 335360,
+        "output": 71749,
+        "reasoning": 33198,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "windscreen space trans yellow",
+            "colour": "trans yellow",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "60601",
+            "6070",
+            "2437",
+            "6152a",
+            "62360",
+            "4474",
+            "6238a",
+            "6238b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Ewok",
+            "limit": 8
+          },
+          "results": [
+            "3622pz2",
+            "64805",
+            "6047615a",
+            "6047615b",
+            "11203d01",
+            "11203d02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "12x6",
+            "limit": 6
+          },
+          "results": [
+            "3028",
+            "6178",
+            "30355",
+            "30356",
+            "42607",
+            "98088"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "barrel",
+            "limit": 4
+          },
+          "results": [
+            "2489",
+            "4424",
+            "64951",
+            "30139"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "hinge vehicle roof space",
+            "colour": "trans yellow",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "3039",
+            "3040b",
+            "54200",
+            "11477",
+            "4287a"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2755,
+          "errors": 12,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 2927,
+          "errors": 2,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 2933,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "2412b",
+          "2423",
+          "2431",
+          "2489",
+          "3002",
+          "3003",
+          "3004",
+          "3005",
+          "3022",
+          "3023b",
+          "3039",
+          "3040b",
+          "3069b",
+          "32607",
+          "3710",
+          "3832",
+          "3941",
+          "3960",
+          "4032b",
+          "4474",
+          "4589",
+          "54200",
+          "6141",
+          "6255"
+        ],
+        "notInList": [
+          "2489",
+          "4474"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2933
+    }
+  ]
+}

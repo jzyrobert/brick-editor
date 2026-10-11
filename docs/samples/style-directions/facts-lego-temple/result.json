@@ -1,0 +1,282 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2218,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2218,
+    "difference": 218,
+    "percent": 10.9
+  },
+  "seconds": 739,
+  "tokens": {
+    "input": 894274,
+    "cached": 601856,
+    "output": 79527,
+    "reasoning": 39808
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "13547",
+      "15068",
+      "2412b",
+      "3003",
+      "3004",
+      "3005",
+      "30055",
+      "3022",
+      "30224",
+      "3023b",
+      "3024",
+      "30359b",
+      "30363",
+      "3062b",
+      "3070b",
+      "3185",
+      "3626c",
+      "3665a",
+      "3941",
+      "3942c",
+      "3943b",
+      "3960",
+      "4032b",
+      "43708",
+      "4589",
+      "60474",
+      "6141",
+      "87081"
+    ],
+    "notInList": [
+      "30224",
+      "30359b",
+      "3626c",
+      "43708"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 739,
+      "usage": {
+        "input": 894274,
+        "cached": 601856,
+        "output": 79527,
+        "reasoning": 39808,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "slope curved inverted",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023",
+            "11301",
+            "45410"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope 18 4",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "18759",
+            "30363",
+            "60477",
+            "43708"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell",
+            "limit": 5
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "pagoda roof",
+            "limit": 5
+          },
+          "results": [
+            "3039",
+            "3037",
+            "3040b",
+            "3038",
+            "3043"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "ornamental fish",
+            "limit": 5
+          },
+          "results": [
+            "30224"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifig head plain",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "3626c",
+            "28621",
+            "3816c"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "minifig body",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "69858"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "dish 3 x 3",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "43898",
+            "15587"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "bar 1 x 8",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "15303",
+            "30359b",
+            "95229"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "round brick 2 x 2 dome",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "5906"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2480,
+          "errors": 5,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 2208,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 2218,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "13547",
+          "15068",
+          "2412b",
+          "3003",
+          "3004",
+          "3005",
+          "30055",
+          "3022",
+          "30224",
+          "3023b",
+          "3024",
+          "30359b",
+          "30363",
+          "3062b",
+          "3070b",
+          "3185",
+          "3626c",
+          "3665a",
+          "3941",
+          "3942c",
+          "3943b",
+          "3960",
+          "4032b",
+          "43708",
+          "4589",
+          "60474",
+          "6141",
+          "87081"
+        ],
+        "notInList": [
+          "30224",
+          "30359b",
+          "3626c",
+          "43708"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2218
+    }
+  ]
+}

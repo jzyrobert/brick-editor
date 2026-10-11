@@ -1,0 +1,17 @@
+[
+  {
+    "attempt": 1,
+    "check": 1,
+    "feedback": "Check 1 of 3: the code did not compile. INVALID_INPUT: Invalid build script: $.sections[0].ops[23].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"tan\",\"dark tan\"]})\n"
+  },
+  {
+    "attempt": 1,
+    "check": 2,
+    "feedback": "Check 2 of 3: the code compiled to 8,553 parts (target 5,000: +3,553, +71.1%). Sections: Interlocked triangular keel, beveled rim and shallow armored facets 3,690, Connected orbital display, planetary limb and concealed cradles 2,109, Arrowhead dorsal terraces 1,964, Eight shoulder-mounted heavy turbolaser batteries 411, Three main drives and four auxiliary thrusters 166, Recessed service galleries, cooling combs and dorsal conduits 105, The captured blockade runner 83, Ventral docking aperture and tractor emitters 25.\nErrors (4):\n- colour-unavailable: Round Brick 4 \u00d7 4 (87081) is not made in light bluish grey (3\u00d7); it comes in white, black, red, blue, yellow, green, tan, reddish brown and more [sections[2].ops[236] (code line 2), sections[2].ops[239] (code line 2), components.Heavy twin turbolaser.ops[2] (code line 2)]\n- overlap: 30363 Slope 18\u00b0 4 \u00d7 2 placed at [-4, 64, 66] and 3069b Tile 1 \u00d7 2 placed at [-2, 64, 67] overlap where their bodies meet: x -2\u20130, y 64\u201365, z 67\u201368 [sections[2].ops[5] (code line 2), sections[4].ops[32] (code line 2)]\n- overlap: 30363 Slope 18\u00b0 4 \u00d7 2 placed at [0, 64, 66] and 2412b Tile 1 \u00d7 2 Grille placed at [0, 64, 67] overlap where their bodies meet: x 0\u20132, y 64\u201365, z 67\u201368 [sections[2].ops[6] (code line 2), sections[4].ops[33] (code line 2)]\n- overlap: 30363 Slope 18\u00b0 4 \u00d7 2 placed at [0, 64, 66] and 3070b Tile 1 \u00d7 1 placed at [2, 64, 67] overlap where their bodies meet: x 2\u20133, y 64\u201365, z 67\u201368 [sections[2].ops[6] (code line 2), sections[4].ops[34] (code line 2)]\n"
+  },
+  {
+    "attempt": 1,
+    "check": 3,
+    "feedback": "Check 3 of 3: the code compiled to 5,523 parts (target 5,000: +523, +10.5%). Sections: Interlocked triangular keel, beveled rim and shallow armored facets 2,637, Arrowhead dorsal terraces 1,340, Connected orbital display, planetary limb and concealed cradles 869, Eight shoulder-mounted heavy turbolaser batteries 316, Three main drives and four auxiliary thrusters 151, Recessed service galleries, cooling combs and dorsal conduits 102, The captured blockade runner 83, Ventral docking aperture and tractor emitters 25.\nNo errors: as an answer it would be accepted.\n"
+  }
+]

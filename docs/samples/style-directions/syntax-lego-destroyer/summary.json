@@ -1,0 +1,432 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "attempts": 5,
+  "prompt": "build-agent.md",
+  "replyPrompt": "brick-build-syntax.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 5000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 4979,
+      "targetMiss": {
+        "target": 5000,
+        "parts": 4979,
+        "difference": -21,
+        "percent": -0.4
+      },
+      "seconds": 755,
+      "tokens": {
+        "input": 1117805,
+        "cached": 791552,
+        "output": 72066,
+        "reasoning": 46882
+      },
+      "searches": 15,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2412b",
+          "2877",
+          "2903",
+          "3004",
+          "3005",
+          "3020",
+          "3023b",
+          "3031",
+          "30359b",
+          "30363",
+          "3069b",
+          "3623",
+          "3678b",
+          "3941",
+          "3957a",
+          "3960",
+          "42060",
+          "42061",
+          "47397",
+          "47398",
+          "56904",
+          "86500",
+          "87081"
+        ],
+        "notInList": [
+          "2903",
+          "30359b",
+          "42060",
+          "42061",
+          "47397",
+          "47398",
+          "56904",
+          "86500"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 755,
+          "usage": {
+            "input": 1117805,
+            "cached": 791552,
+            "output": 72066,
+            "reasoning": 46882,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "12x3",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "42060",
+                "42061",
+                "47397",
+                "47398"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720",
+                "43721",
+                "80545",
+                "41764",
+                "41765"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "engine cylinder",
+                "limit": 8
+              },
+              "results": [
+                "2851",
+                "2850a",
+                "2850b",
+                "6608",
+                "32061"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "6x6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "44375b",
+                "4285b",
+                "44375a",
+                "21599",
+                "35327"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "hemisphere",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "30208",
+                "44359",
+                "61287",
+                "86500",
+                "44358"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel rim",
+                "size": "8x8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel rim 43",
+                "limit": 8
+              },
+              "results": [
+                "43903-f1",
+                "56145",
+                "56904",
+                "6580a",
+                "44292",
+                "54087",
+                "6580b",
+                "56145c01"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge plate 16",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "62743"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope 8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "42918",
+                "41766",
+                "54091",
+                "41750",
+                "41749",
+                "49618",
+                "4515",
+                "4445"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "barrel cannon",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "2489",
+                "4424",
+                "64951",
+                "98585",
+                "30359b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel rim",
+                "category": "Wheel",
+                "limit": 30
+              },
+              "results": [
+                "56145",
+                "2695",
+                "60208",
+                "6014b",
+                "3482",
+                "55981",
+                "4266",
+                "30027b",
+                "30027c",
+                "30027d",
+                "56904",
+                "56908",
+                "30285",
+                "2903",
+                "41896",
+                "66727",
+                "18976",
+                "30155",
+                "6580a",
+                "6582",
+                "11208",
+                "13971",
+                "42610",
+                "55982",
+                "74967",
+                "32077",
+                "34337",
+                "51377",
+                "6248",
+                "18978a"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "arch 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "12939",
+                "6108",
+                "18838",
+                "14707",
+                "30272",
+                "30938"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope inverted 4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3665a",
+                "3660b",
+                "3676",
+                "13547",
+                "3665b",
+                "2310",
+                "2341",
+                "4871"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "wedge plate 6 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3958",
+                "51739",
+                "3036",
+                "3028",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Technic axle",
+                "size": "1x8",
+                "limit": 3
+              },
+              "results": [
+                "3707",
+                "55013",
+                "370726"
+              ],
+              "round": 3
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 7964,
+              "errors": 22,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 4910,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 4979,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "2412b",
+              "2877",
+              "2903",
+              "3004",
+              "3005",
+              "3020",
+              "3023b",
+              "3031",
+              "30359b",
+              "30363",
+              "3069b",
+              "3623",
+              "3678b",
+              "3941",
+              "3957a",
+              "3960",
+              "42060",
+              "42061",
+              "47397",
+              "47398",
+              "56904",
+              "86500",
+              "87081"
+            ],
+            "notInList": [
+              "2903",
+              "30359b",
+              "42060",
+              "42061",
+              "47397",
+              "47398",
+              "56904",
+              "86500"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 4979
+        }
+      ]
+    }
+  ]
+}

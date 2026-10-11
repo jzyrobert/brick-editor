@@ -1,0 +1,429 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 5283,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 5283,
+    "difference": 283,
+    "percent": 5.7
+  },
+  "seconds": 943,
+  "tokens": {
+    "input": 1528507,
+    "cached": 1210112,
+    "output": 107454,
+    "reasoning": 57843
+  },
+  "searches": 16,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2412b",
+      "2431",
+      "3004",
+      "30208",
+      "3023b",
+      "30363",
+      "3039",
+      "3062b",
+      "3069b",
+      "3298",
+      "3710",
+      "3941",
+      "3957a",
+      "3959",
+      "3960",
+      "41747",
+      "41748",
+      "4229",
+      "43121",
+      "43720",
+      "43722a",
+      "43723a",
+      "4740",
+      "4868b",
+      "54200",
+      "60474",
+      "6141",
+      "6320",
+      "87079",
+      "90498",
+      "98283"
+    ],
+    "notInList": [
+      "30208",
+      "3959",
+      "41747",
+      "41748",
+      "4229",
+      "43121",
+      "43720",
+      "4868b",
+      "6320",
+      "90498"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 943,
+      "usage": {
+        "input": 1528507,
+        "cached": 1210112,
+        "output": 107454,
+        "reasoning": 57843,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "12x3",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "42060",
+            "42061",
+            "47397",
+            "47398"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "42918",
+            "41748",
+            "41747",
+            "52031",
+            "43720",
+            "43721",
+            "80545"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "6x3",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "54383",
+            "54384"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "hemisphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "30208",
+            "44359",
+            "61287",
+            "86500",
+            "44358"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "engine cylinder",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2850a",
+            "2850b",
+            "6608"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "engine",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 16
+          },
+          "results": [
+            "50943",
+            "43121",
+            "2853a",
+            "2853b",
+            "2853c",
+            "2854",
+            "4868b",
+            "2852",
+            "30358",
+            "2850a",
+            "2850b",
+            "4229",
+            "6608",
+            "4869",
+            "15547",
+            "6614"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "bracket inverted",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "99780",
+            "99207"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge 6 12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "30355",
+            "30356"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge 4 12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "3039",
+            "3040b",
+            "3032",
+            "43723a",
+            "43722a",
+            "3035",
+            "54200"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "sphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "20953",
+            "15395",
+            "5906",
+            "54821",
+            "86500",
+            "30208",
+            "24947",
+            "53585"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "gun barrel",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2489",
+            "4424",
+            "64951",
+            "98585",
+            "4593",
+            "15391"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "space gun",
+            "limit": 5
+          },
+          "results": [
+            "3839a",
+            "13608",
+            "87993",
+            "3959",
+            "4349"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "bar 4 horizontal",
+            "limit": 5
+          },
+          "results": [
+            "16709p02"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "Tile 8",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "4162",
+            "90498",
+            "48288",
+            "83496",
+            "6320",
+            "8165",
+            "65474",
+            "4974"
+          ],
+          "round": 6
+        },
+        {
+          "args": {
+            "query": "Tile 6",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "6636",
+            "10202",
+            "69729",
+            "6320",
+            "65474"
+          ],
+          "round": 6
+        },
+        {
+          "args": {
+            "query": "Tile 16",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "90498",
+            "48288",
+            "4974"
+          ],
+          "round": 6
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 9229,
+          "errors": 25,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 7227,
+          "errors": 9,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 6002,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "3004",
+          "30208",
+          "3023b",
+          "30363",
+          "3039",
+          "3062b",
+          "3069b",
+          "3298",
+          "3710",
+          "3941",
+          "3957a",
+          "3959",
+          "3960",
+          "41747",
+          "41748",
+          "4229",
+          "43121",
+          "43720",
+          "43722a",
+          "43723a",
+          "4740",
+          "4868b",
+          "54200",
+          "60474",
+          "6141",
+          "6320",
+          "87079",
+          "90498",
+          "98283"
+        ],
+        "notInList": [
+          "30208",
+          "3959",
+          "41747",
+          "41748",
+          "4229",
+          "43121",
+          "43720",
+          "4868b",
+          "6320",
+          "90498"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 5283
+    }
+  ]
+}

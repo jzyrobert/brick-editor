@@ -1,0 +1,595 @@
+{
+  "brief": "ewok inspired version of the classic 1970s lego space sets",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-budget-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 187,
+      "seconds": 473,
+      "tokens": {
+        "input": 1389992,
+        "cached": 1110784,
+        "output": 33901,
+        "reasoning": 21857
+      },
+      "searches": 25,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2412b",
+          "2417",
+          "2431",
+          "2489",
+          "3004p90",
+          "30355",
+          "30356",
+          "3039p15",
+          "3069b",
+          "3298",
+          "3298p90",
+          "3660b",
+          "3666",
+          "3710",
+          "3832",
+          "3941",
+          "3943b",
+          "3957a",
+          "3960",
+          "41879a",
+          "4424",
+          "4474",
+          "4589",
+          "4600",
+          "4740",
+          "48205",
+          "48208",
+          "54200",
+          "60474",
+          "6091",
+          "6141",
+          "64805",
+          "6636",
+          "76382p3z",
+          "76382p6g"
+        ],
+        "notInList": [
+          "2489",
+          "3004p90",
+          "30355",
+          "30356",
+          "3039p15",
+          "3298p90",
+          "41879a",
+          "4424",
+          "4474",
+          "48205",
+          "48208",
+          "64805",
+          "76382p3z",
+          "76382p6g"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 473,
+          "usage": {
+            "input": 1389992,
+            "cached": 1110784,
+            "output": 33901,
+            "reasoning": 21857,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "windscreen",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "6070",
+                "2437",
+                "6152a",
+                "62360",
+                "4474",
+                "6238a",
+                "6238b",
+                "87752",
+                "11289",
+                "92279",
+                "2337",
+                "18729"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "54200",
+                "85984",
+                "2450",
+                "24299",
+                "24307",
+                "43719",
+                "90194"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "round tile eye",
+                "limit": 6
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4740",
+                "3960",
+                "2654a",
+                "43898",
+                "44375b",
+                "3961",
+                "4285b",
+                "35394"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547",
+                "6091"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "ewok",
+                "limit": 16
+              },
+              "results": [
+                "3622pz2",
+                "64805",
+                "6047615a",
+                "6047615b",
+                "11203d01",
+                "11203d02"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "space pattern",
+                "limit": 12
+              },
+              "results": [
+                "3004p90",
+                "3298p90",
+                "2362ap53",
+                "2362ap54",
+                "3068bp53",
+                "3068bp69",
+                "2468p53",
+                "2468p54",
+                "3039p15",
+                "3068bp5c",
+                "3068bp5e",
+                "3069bp57"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wing",
+                "colour": "tan",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "24299",
+                "24307",
+                "43719",
+                "90194",
+                "43723b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "engine rocket",
+                "limit": 8
+              },
+              "results": [
+                "4746",
+                "61801"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig torso",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "973",
+                "30375",
+                "17",
+                "37191"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wing 6",
+                "colour": "tan",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "30355",
+                "54383",
+                "54384",
+                "48205",
+                "48208",
+                "47407",
+                "50303",
+                "6106",
+                "32059",
+                "2744",
+                "30303",
+                "2625"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "wing 8",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "6104",
+                "41769b",
+                "4475",
+                "50304",
+                "50305",
+                "3934",
+                "3933",
+                "30504"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Minifig Hips and Legs",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "41879a",
+                "16709p0j",
+                "21019bp0b",
+                "21019bpdg8",
+                "73200bp8a",
+                "73200bp30"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Minifig Torso Space",
+                "limit": 8
+              },
+              "results": [
+                "30375",
+                "973p6m",
+                "63208p91",
+                "76382p5d",
+                "76382p5g",
+                "76382p6a",
+                "76382p6g",
+                "76382p6j"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Minifig short legs",
+                "limit": 5
+              },
+              "results": [
+                "41879a",
+                "16709",
+                "41879b"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "64805",
+                "limit": 12
+              },
+              "results": [
+                "64805"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Torso with Arms Classic Space Logo",
+                "limit": 10
+              },
+              "results": [
+                "76382p6g",
+                "76382p6j",
+                "76382p0024"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "space helmet",
+                "limit": 6
+              },
+              "results": [
+                "2446",
+                "769",
+                "6119",
+                "22380",
+                "87781",
+                "30124b"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "ladder",
+                "limit": 6
+              },
+              "results": [
+                "4175",
+                "4207a",
+                "4207b",
+                "15118",
+                "87913",
+                "420"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "spear",
+                "limit": 6
+              },
+              "results": [
+                "24482",
+                "4497",
+                "93789",
+                "27257",
+                "43899"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Wing 6 × 12 Right",
+                "limit": 3
+              },
+              "results": [
+                "30356",
+                "98089"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "barrel",
+                "limit": 6
+              },
+              "results": [
+                "2489",
+                "4424",
+                "64951",
+                "30139",
+                "98585",
+                "15361"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Minifig Torso with Arms and Hands",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "76382p0u",
+                "76382p2q",
+                "76382p3v",
+                "76382p3z",
+                "76382p4m"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Tile computer",
+                "limit": 6
+              },
+              "results": [
+                "3069bp25",
+                "3069bpcc",
+                "3069bps1",
+                "3068bp7d",
+                "3068bp56",
+                "3068bp58"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Slope 2 x 2 Space",
+                "limit": 5
+              },
+              "results": [
+                "3039p15",
+                "905c01",
+                "3039pc5",
+                "3039p67",
+                "3039pc3"
+              ],
+              "round": 5
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 166,
+              "errors": 10,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 187,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "2412b",
+              "2417",
+              "2431",
+              "2489",
+              "3004p90",
+              "30355",
+              "30356",
+              "3039p15",
+              "3069b",
+              "3298",
+              "3298p90",
+              "3660b",
+              "3666",
+              "3710",
+              "3832",
+              "3941",
+              "3943b",
+              "3957a",
+              "3960",
+              "41879a",
+              "4424",
+              "4474",
+              "4589",
+              "4600",
+              "4740",
+              "48205",
+              "48208",
+              "54200",
+              "60474",
+              "6091",
+              "6141",
+              "64805",
+              "6636",
+              "76382p3z",
+              "76382p6g"
+            ],
+            "notInList": [
+              "2489",
+              "3004p90",
+              "30355",
+              "30356",
+              "3039p15",
+              "3298p90",
+              "41879a",
+              "4424",
+              "4474",
+              "48205",
+              "48208",
+              "64805",
+              "76382p3z",
+              "76382p6g"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 187
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,342 @@
+{
+  "brief": "a japanese buddhist temple",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 2000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 2179,
+      "targetMiss": {
+        "target": 2000,
+        "parts": 2179,
+        "difference": 179,
+        "percent": 9
+      },
+      "seconds": 777,
+      "tokens": {
+        "input": 1214113,
+        "cached": 862080,
+        "output": 100164,
+        "reasoning": 53761
+      },
+      "searches": 13,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "14716",
+          "15068",
+          "2412b",
+          "2417",
+          "2423",
+          "2431",
+          "2453b",
+          "24866",
+          "3005",
+          "3010",
+          "3062b",
+          "3069b",
+          "3070b",
+          "3307",
+          "3626c",
+          "3633",
+          "3665a",
+          "3795",
+          "3941",
+          "3942c",
+          "3943b",
+          "3957a",
+          "4032b",
+          "4589",
+          "60474",
+          "6141",
+          "61678",
+          "87081",
+          "90398",
+          "98138"
+        ],
+        "notInList": [
+          "3626c",
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 777,
+          "usage": {
+            "input": 1214113,
+            "cached": 862080,
+            "output": 100164,
+            "reasoning": 53761,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "1x4",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "61678",
+                "93273",
+                "13547",
+                "3573",
+                "11153"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "inverted slope",
+                "size": "1x3",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "4287a",
+                "70681",
+                "4287c",
+                "4287b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bell",
+                "limit": 6
+              },
+              "results": [
+                "3942c",
+                "3943b",
+                "30151a",
+                "6017",
+                "u608",
+                "u609"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "minifigure statue buddha",
+                "limit": 6
+              },
+              "results": [
+                "90398",
+                "93562",
+                "12890",
+                "35699",
+                "5785",
+                "13784"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "plant leaves",
+                "colour": "orange",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "2423",
+                "2417",
+                "32607",
+                "10884"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "round plate 2 x 2",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "4032b",
+                "4032a",
+                "79491"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig head",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "3626c",
+                "28621",
+                "3626b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dish 4 x 4",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "3960"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "cylinder dome top",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "3262",
+                "30367c",
+                "49308"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved 2 x 1",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "11477",
+                "24201",
+                "6091"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "microfigure",
+                "limit": 4
+              },
+              "results": [],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "brick 1 x 1 x 5",
+                "colour": "dark red",
+                "available_in_colour": true,
+                "limit": 2
+              },
+              "results": [
+                "2453b",
+                "2453a"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "brick 1 x 1 x 3",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 2
+              },
+              "results": [
+                "14716"
+              ],
+              "round": 5
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 2428,
+              "errors": 21,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 2313,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 2179,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "14716",
+              "15068",
+              "2412b",
+              "2417",
+              "2423",
+              "2431",
+              "2453b",
+              "24866",
+              "3005",
+              "3010",
+              "3062b",
+              "3069b",
+              "3070b",
+              "3307",
+              "3626c",
+              "3633",
+              "3665a",
+              "3795",
+              "3941",
+              "3942c",
+              "3943b",
+              "3957a",
+              "4032b",
+              "4589",
+              "60474",
+              "6141",
+              "61678",
+              "87081",
+              "90398",
+              "98138"
+            ],
+            "notInList": [
+              "3626c",
+              "90398"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 2179
+        }
+      ]
+    }
+  ]
+}

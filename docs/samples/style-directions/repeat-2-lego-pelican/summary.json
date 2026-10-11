@@ -1,0 +1,302 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "build-agent.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 919,
+      "targetMiss": {
+        "target": 800,
+        "parts": 919,
+        "difference": 119,
+        "percent": 14.9
+      },
+      "seconds": 506,
+      "tokens": {
+        "input": 805634,
+        "cached": 549760,
+        "output": 50618,
+        "reasoning": 23013
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "24309",
+          "3005",
+          "3678b",
+          "3700",
+          "4032b",
+          "41769a",
+          "41770a",
+          "4740",
+          "6141",
+          "61678",
+          "63864",
+          "64648",
+          "6636",
+          "8043",
+          "88517c01",
+          "88930",
+          "93273"
+        ],
+        "notInList": [
+          "64648",
+          "8043",
+          "88517c01"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 506,
+          "usage": {
+            "input": 805634,
+            "cached": 549760,
+            "output": 50618,
+            "reasoning": 23013,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wheel motorcycle tyre",
+                "limit": 8
+              },
+              "results": [
+                "46334c01",
+                "71720c01",
+                "71720c02",
+                "88517c01",
+                "88517c02",
+                "88517c03",
+                "2903c01",
+                "2903c02"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel bicycle",
+                "limit": 8
+              },
+              "results": [
+                "92851",
+                "4720",
+                "64248",
+                "u9163",
+                "28578",
+                "4719c03"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x4",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456",
+                "61068"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "limit": 8
+              },
+              "results": [
+                "41669",
+                "48267",
+                "4592",
+                "7768",
+                "4257"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope curved inverted",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023",
+                "11301",
+                "45410"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tile eye",
+                "limit": 10
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07",
+                "98138pz4",
+                "3069bpm0",
+                "3070bp0e",
+                "3070bpm0",
+                "16424"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Technic axle",
+                "size": "1x8",
+                "limit": 6
+              },
+              "results": [
+                "3707",
+                "55013",
+                "370726"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel motorcycle 88517",
+                "limit": 6
+              },
+              "results": [
+                "88517",
+                "88517c01",
+                "88517c02",
+                "88517c03"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547",
+                "6091"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 6
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[9].ops[2].holes[0].at must be [x, z] integers (studs) (got [-3,47,-15])"
+            },
+            {
+              "round": 2,
+              "parts": 903,
+              "errors": 1,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 919,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "13547",
+              "15068",
+              "24309",
+              "3005",
+              "3678b",
+              "3700",
+              "4032b",
+              "41769a",
+              "41770a",
+              "4740",
+              "6141",
+              "61678",
+              "63864",
+              "64648",
+              "6636",
+              "8043",
+              "88517c01",
+              "88930",
+              "93273"
+            ],
+            "notInList": [
+              "64648",
+              "8043",
+              "88517c01"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 919
+        }
+      ]
+    }
+  ]
+}

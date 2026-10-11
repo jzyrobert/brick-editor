@@ -1,0 +1,192 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "style-antipattern-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 908,
+      "targetMiss": {
+        "target": 800,
+        "parts": 908,
+        "difference": 108,
+        "percent": 13.5
+      },
+      "seconds": 795,
+      "tokens": {
+        "input": 548728,
+        "cached": 340480,
+        "output": 84577,
+        "reasoning": 55321
+      },
+      "searches": 4,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "15068",
+          "2456",
+          "3001",
+          "3003",
+          "3004",
+          "3005",
+          "3020",
+          "3021",
+          "3022",
+          "3023b",
+          "3034",
+          "3660b",
+          "3795",
+          "3941",
+          "50950",
+          "54200",
+          "61678",
+          "88930"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 795,
+          "usage": {
+            "input": 548728,
+            "cached": 340480,
+            "output": 84577,
+            "reasoning": 55321,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wheel spoked",
+                "limit": 6
+              },
+              "results": [
+                "50862",
+                "30155",
+                "242c01",
+                "243c01",
+                "50862c01",
+                "244c01"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "size": "2x4",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456",
+                "61068"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "2450"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tile round eye",
+                "limit": 4
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1186,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 2,
+              "parts": 871,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 908,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "15068",
+              "2456",
+              "3001",
+              "3003",
+              "3004",
+              "3005",
+              "3020",
+              "3021",
+              "3022",
+              "3023b",
+              "3034",
+              "3660b",
+              "3795",
+              "3941",
+              "50950",
+              "54200",
+              "61678",
+              "88930"
+            ],
+            "notInList": [],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 908
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,557 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-budget-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 819,
+      "seconds": 522,
+      "tokens": {
+        "input": 1666266,
+        "cached": 1283328,
+        "output": 60749,
+        "reasoning": 31985
+      },
+      "searches": 25,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "15395",
+          "2412b",
+          "2431",
+          "2877",
+          "2921",
+          "3023b",
+          "30363",
+          "30367c",
+          "3039",
+          "3069b",
+          "3297",
+          "3298",
+          "3660b",
+          "3941",
+          "3961",
+          "4032b",
+          "42060",
+          "42061",
+          "4215b",
+          "43121",
+          "43720",
+          "43721",
+          "4515",
+          "47397",
+          "47398",
+          "4740",
+          "4868b",
+          "54200",
+          "6141",
+          "98138"
+        ],
+        "notInList": [
+          "15395",
+          "30367c",
+          "3961",
+          "42060",
+          "42061",
+          "43121",
+          "43720",
+          "43721",
+          "4515",
+          "47397",
+          "47398",
+          "4868b"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 522,
+          "usage": {
+            "input": 1666266,
+            "cached": 1283328,
+            "output": 60749,
+            "reasoning": 31985,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wedge plate 12 6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3958",
+                "51739",
+                "3036",
+                "3028",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate 6 3",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "54383",
+                "54384"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate 4 2",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43719",
+                "32059",
+                "47407"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "4x4",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3960",
+                "35394"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "size": "2x4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456",
+                "61068"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Wing 6 × 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "30355",
+                "30356"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wedge 6 × 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "30355",
+                "30356"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Tile triangular",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "35787",
+                "7975"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "engine",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "50943",
+                "43121",
+                "2853a",
+                "2853b",
+                "2853c",
+                "2854",
+                "4868b",
+                "2852"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "ball 2",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "48170",
+                "48171",
+                "54821",
+                "44358",
+                "11949",
+                "92910"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wing 4 × 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3029",
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "24299",
+                "24307"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Wing 4 × 8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3934",
+                "3933"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Wedge 3 × 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "47397",
+                "47398",
+                "42060",
+                "42061"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Slope 6 × 8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "4515",
+                "45410",
+                "45411",
+                "56204",
+                "42021",
+                "33215"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Minifig Head plain",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "4070",
+                "4079",
+                "87087",
+                "3626c",
+                "28621"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Dome 2 × 2",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3262",
+                "15395",
+                "30367c",
+                "24947",
+                "30367b",
+                "5906"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Slope 2 × 4 wedge",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "93606",
+                "43720",
+                "43721",
+                "80545"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Plane Jet Engine",
+                "limit": 8
+              },
+              "results": [
+                "43121",
+                "4868b",
+                "46667",
+                "4868a",
+                "4869",
+                "61801"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Tile 3 × 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3070b",
+                "3069b",
+                "2431",
+                "3068b",
+                "6636"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Slope 2 × 2 inverted",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "3660b",
+                "3676",
+                "32803",
+                "3049d"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Dish 10 × 10",
+                "colour": "tan",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "4740",
+                "3960",
+                "2654a",
+                "43898"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Dish 8 × 8",
+                "colour": "tan",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "3961"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Tile 2 × 2 triangular",
+                "colour": "dark bluish grey",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "35787"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Plate 3 × 12 wing",
+                "colour": "dark bluish grey",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "3024",
+                "3023b",
+                "3623",
+                "3710"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Wedge 12 × 3 double rounded",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "42060",
+                "42061"
+              ],
+              "round": 5
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[4].ops[0].holes[0].at must be [x, z] integers (studs) (got [-1,22,13])"
+            },
+            {
+              "round": 2,
+              "parts": 797,
+              "errors": 13,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 819,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "15395",
+              "2412b",
+              "2431",
+              "2877",
+              "2921",
+              "3023b",
+              "30363",
+              "30367c",
+              "3039",
+              "3069b",
+              "3297",
+              "3298",
+              "3660b",
+              "3941",
+              "3961",
+              "4032b",
+              "42060",
+              "42061",
+              "4215b",
+              "43121",
+              "43720",
+              "43721",
+              "4515",
+              "47397",
+              "47398",
+              "4740",
+              "4868b",
+              "54200",
+              "6141",
+              "98138"
+            ],
+            "notInList": [
+              "15395",
+              "30367c",
+              "3961",
+              "42060",
+              "42061",
+              "43121",
+              "43720",
+              "43721",
+              "4515",
+              "47397",
+              "47398",
+              "4868b"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 819
+        }
+      ]
+    }
+  ]
+}

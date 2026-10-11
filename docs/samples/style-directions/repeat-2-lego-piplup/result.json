@@ -1,0 +1,369 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1211,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1211,
+    "difference": 211,
+    "percent": 21.1
+  },
+  "seconds": 750,
+  "tokens": {
+    "input": 1072018,
+    "cached": 768384,
+    "output": 71514,
+    "reasoning": 45453
+  },
+  "searches": 15,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "13547",
+      "14716",
+      "15068",
+      "24201",
+      "24309",
+      "2454b",
+      "3004",
+      "3005",
+      "3010",
+      "3660b",
+      "3678b",
+      "37352",
+      "3747b",
+      "41769a",
+      "41770a",
+      "50950",
+      "61678"
+    ],
+    "notInList": [
+      "37352"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 750,
+      "usage": {
+        "input": 1072018,
+        "cached": 768384,
+        "output": 71514,
+        "reasoning": 45453,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "2x4",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "88930",
+            "93606",
+            "47456"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "colour": "dark blue",
+            "available_in_colour": true,
+            "limit": 15
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "13547",
+            "6091",
+            "30602",
+            "42022",
+            "70681",
+            "80177",
+            "80178"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye",
+            "limit": 12
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope inverted curved",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "42023",
+            "11301",
+            "1750",
+            "5847"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved corner",
+            "limit": 12
+          },
+          "results": [
+            "77180",
+            "77182",
+            "73682"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Slope Brick Curved 8",
+            "colour": "dark blue",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "42918",
+            "41766",
+            "54091",
+            "54095",
+            "11290",
+            "11301",
+            "13731",
+            "88930p02"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope Brick Curved 6",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "42023",
+            "52031",
+            "5847",
+            "11344"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope 65",
+            "colour": "dark blue",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "60481a",
+            "3678b"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope Curved",
+            "colour": "yellow",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "13547",
+            "6091"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "4257",
+            "limit": 5
+          },
+          "results": [
+            "4257"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Brick Curved",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "6091",
+            "30602",
+            "33243",
+            "42022",
+            "37352",
+            "70681",
+            "80177",
+            "80178",
+            "93606",
+            "49307"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "Slope 75",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "75538"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "Slope Inverted 75",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "3665a",
+            "3660b",
+            "24201",
+            "13547",
+            "3747b",
+            "54200",
+            "3039",
+            "3040b"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "Dome",
+            "colour": "trans light blue",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "4740",
+            "86500",
+            "30367c",
+            "30151a",
+            "50747",
+            "30083",
+            "58176",
+            "87375"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "Slope Brick Curved 6",
+            "colour": "dark blue",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "42022",
+            "44126",
+            "42023",
+            "52031",
+            "35164",
+            "61484"
+          ],
+          "round": 3
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2631,
+          "errors": 6,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 1633,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 1292,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "13547",
+          "14716",
+          "15068",
+          "24201",
+          "24309",
+          "2454b",
+          "3004",
+          "3005",
+          "3010",
+          "3660b",
+          "3678b",
+          "37352",
+          "3747b",
+          "41769a",
+          "41770a",
+          "50950",
+          "61678"
+        ],
+        "notInList": [
+          "37352"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1211
+    }
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2741,
+  "targetMiss": {
+    "target": 3000,
+    "parts": 2741,
+    "difference": -259,
+    "percent": -8.6
+  },
+  "seconds": 662,
+  "tokens": {
+    "input": 523532,
+    "cached": 376832,
+    "output": 55169,
+    "reasoning": 36076
+  },
+  "searches": 9,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "14769",
+      "2335",
+      "2412b",
+      "2423",
+      "2431",
+      "2437",
+      "2489",
+      "2877",
+      "3003",
+      "3004",
+      "3005",
+      "3022",
+      "3023b",
+      "3024",
+      "3039",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3660b",
+      "3941",
+      "3957a",
+      "3961",
+      "4032b",
+      "4460b",
+      "4740",
+      "54200"
+    ],
+    "notInList": [
+      "2437",
+      "2489",
+      "3961"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 662,
+      "usage": {
+        "input": 523532,
+        "cached": 376832,
+        "output": 55169,
+        "reasoning": 36076,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "windscreen",
+            "colour": "trans yellow",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "6070",
+            "2437",
+            "6152a",
+            "62360",
+            "4474",
+            "6238a",
+            "6238b",
+            "87752",
+            "11289",
+            "92279"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Ewok",
+            "limit": 10
+          },
+          "results": [
+            "3622pz2",
+            "64805",
+            "6047615a",
+            "6047615b",
+            "11203d01",
+            "11203d02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "radar dish",
+            "size": "8x8",
+            "limit": 5
+          },
+          "results": [
+            "3961",
+            "18859"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope wedge",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "42918",
+            "41748",
+            "41747",
+            "52031",
+            "43720"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "barrel",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "2489",
+            "4424",
+            "64951",
+            "30139"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wheel tyre",
+            "size": "4x2",
+            "limit": 6
+          },
+          "results": [
+            "55981c01",
+            "3482c04",
+            "3482c05",
+            "30155c01",
+            "51377c02",
+            "55981c03"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tyre",
+            "limit": 8
+          },
+          "results": [
+            "3641",
+            "2346",
+            "3139b",
+            "44309",
+            "u9131",
+            "36",
+            "458",
+            "2995"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "vehicle wheel holder",
+            "limit": 5
+          },
+          "results": [
+            "4600"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "minifig torso space",
+            "limit": 4
+          },
+          "results": [
+            "30375",
+            "973p6m",
+            "63208p91",
+            "76382p5d"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2736,
+          "errors": 8,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 2741,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "14769",
+          "2335",
+          "2412b",
+          "2423",
+          "2431",
+          "2437",
+          "2489",
+          "2877",
+          "3003",
+          "3004",
+          "3005",
+          "3022",
+          "3023b",
+          "3024",
+          "3039",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3941",
+          "3957a",
+          "3961",
+          "4032b",
+          "4460b",
+          "4740",
+          "54200"
+        ],
+        "notInList": [
+          "2437",
+          "2489",
+          "3961"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2741
+    }
+  ]
+}

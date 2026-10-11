@@ -1,5 +1,9 @@
 # Implementation status
 
+## Prompt directions and variance — 11 October 2026
+
+A separate [Sol 6.1 high study](samples/style-directions/README.md) completed 72 independent text-only builds: commercial/open sizing, design anti-patterns, richer part reference information, two unchanged-prompt repetitions and a syntax-only reply example across six briefs and both styles. Each starts in an empty directory with its original brief; no prior source or reviewer render is supplied. Numerical targets remain unchanged outside the sizing arm. Optional runner controls are isolated from defaults, the language and compiler feedback. All cases are archived and reviewed in a portable 84-build preview including retained baselines. Richer data scores 183/240 versus unchanged repeats at 182 and 175 (retained 172); syntax-only scores 172, anti-patterns 170 and sizing 168. These subjective results do not establish a general gain, so no combined batch or default/gallery promotion follows.
+
 ## Sol style self-improvement — 11 October 2026
 
 Four loop-1 regression/preference-loss sessions were subsequently interviewed in their original Sol/high contexts. Their explanations favour design, budget and attachment-uncertainty causes over a new mandatory prompt rule; repeated guidance and theme legibility remain hypotheses. The comparison now embeds all 96 images so baseline pictures work outside the checkout. [Follow-up](samples/lego-style-study/README.md#follow-up-interviews-on-the-weaker-loop-1-builds).

@@ -1,0 +1,17 @@
+[
+  {
+    "attempt": 1,
+    "check": 1,
+    "feedback": "Check 1 of 3: the code did not compile. INVALID_INPUT: sections[0].ops[0].part: unknown part alias @wheel\n"
+  },
+  {
+    "attempt": 1,
+    "check": 2,
+    "feedback": "Check 2 of 3: the code compiled to 1,048 parts (target 800: +248, +31%). Sections: Round feathered body 494, Rolling scarlet bicycle 171, Swanlike neck and keen eyes 130, The spectacular pelican bill 110, Busy webbed feet 50, Windblown sailor scarf 50, Wings gripping the bars 43.\nErrors (6):\n- overlap: 88517c03 Wheel 17 \u00d7 75 Motorcycle with Holes in Rim with Tyre 21/ 48 \u00d7 75 Motorcycle with Racing Tread placed at [9, 0, 1] and 3707 Technic Axle 8 placed at [6, 16, 7] overlap where their bodies meet: x 9\u201312, y 16\u201317.5, z 7\u20138 [sections[0].ops[0] (code line 2), sections[0].ops[1] (code line 2)]\n- overlap: 3707 Technic Axle 8 placed at [6, 16, 7] and 3700 Technic Brick 1 \u00d7 2 with Hole placed at [7, 15, 7] overlap where their bodies meet: x 7\u20138, y 16\u201317.5, z 7\u20138 [sections[0].ops[1] (code line 2), sections[0].ops[2] (code line 2)]\n- overlap: 3707 Technic Axle 8 placed at [6, 16, 7] and 3700 Technic Brick 1 \u00d7 2 with Hole placed at [13, 15, 7] overlap where their bodies meet: x 13\u201314, y 16\u201317.5, z 7\u20138 [sections[0].ops[1] (code line 2), sections[0].ops[3] (code line 2)]\n- overlap: 88517c03 Wheel 17 \u00d7 75 Motorcycle with Holes in Rim with Tyre 21/ 48 \u00d7 75 Motorcycle with Racing Tread placed at [9, 0, 25] and 3707 Technic Axle 8 placed at [6, 16, 31] overlap where their bodies meet: x 9\u201312, y 16\u201317.5, z 31\u201332 [sections[0].ops[4] (code line 2), sections[0].ops[5] (code line 2)]\n- overlap: 3707 Technic Axle 8 placed at [6, 16, 31] and 3700 Technic Brick 1 \u00d7 2 with Hole placed at [7, 15, 31] overlap where their bodies meet: x 7\u20138, y 16\u201317.5, z 31\u201332 [sections[0].ops[5] (code line 2), sections[0].ops[6] (code line 2)]\n- overlap: 3707 Technic Axle 8 placed at [6, 16, 31] and 3700 Technic Brick 1 \u00d7 2 with Hole placed at [13, 15, 31] overlap where their bodies meet: x 13\u201314, y 16\u201317.5, z 31\u201332 [sections[0].ops[5] (code line 2), sections[0].ops[7] (code line 2)]\n"
+  },
+  {
+    "attempt": 1,
+    "check": 3,
+    "feedback": "Check 3 of 3: the code compiled to 901 parts (target 800: +101, +12.6%). Sections: Round feathered body 378, Rolling scarlet bicycle 170, The spectacular pelican bill 110, Swanlike neck and keen eyes 94, Windblown sailor scarf 56, Busy webbed feet 50, Wings gripping the bars 43.\nNo errors: as an answer it would be accepted.\n"
+  }
+]

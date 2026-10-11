@@ -1,0 +1,327 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 837,
+      "targetMiss": {
+        "target": 800,
+        "parts": 837,
+        "difference": 37,
+        "percent": 4.6
+      },
+      "seconds": 756,
+      "tokens": {
+        "input": 901699,
+        "cached": 606464,
+        "output": 69559,
+        "reasoning": 41946
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "24309",
+          "2431",
+          "2903c02",
+          "3005",
+          "3009",
+          "3022",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3678b",
+          "3684a",
+          "3710",
+          "3749",
+          "4032b",
+          "42022",
+          "42918",
+          "43720",
+          "43721",
+          "6141",
+          "61678",
+          "63864",
+          "64648",
+          "78522"
+        ],
+        "notInList": [
+          "2903c02",
+          "3749",
+          "42022",
+          "42918",
+          "43720",
+          "43721",
+          "64648",
+          "78522"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 756,
+          "usage": {
+            "input": 901699,
+            "cached": 606464,
+            "output": 69559,
+            "reasoning": 41946,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "motorcycle wheel tyre",
+                "limit": 8
+              },
+              "results": [
+                "46334c01",
+                "71720c01",
+                "71720c02",
+                "88517c01",
+                "88517c02",
+                "88517c03",
+                "2903c01",
+                "2903c02"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel tyre large",
+                "limit": 8
+              },
+              "results": [
+                "51377c01",
+                "51377c02",
+                "715c02",
+                "35c01"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547",
+                "6091",
+                "30602",
+                "42022"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720",
+                "43721",
+                "41764"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye tile",
+                "limit": 6
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07",
+                "98138pz4"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bicycle wheel",
+                "limit": 10
+              },
+              "results": [
+                "92851",
+                "4720",
+                "64248",
+                "u9163",
+                "28578",
+                "4719c03"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "technic axle pin",
+                "limit": 6
+              },
+              "results": [
+                "3700",
+                "3701",
+                "3709b",
+                "3749",
+                "22961",
+                "10197"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel 14 62",
+                "limit": 6
+              },
+              "results": [
+                "62701",
+                "62359"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved 6",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "42022",
+                "44126",
+                "42023",
+                "78522",
+                "45410",
+                "45411",
+                "56204",
+                "52031",
+                "35164",
+                "61484"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 6
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 745,
+              "errors": 1,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 759,
+              "errors": 2,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 837,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "24309",
+              "2431",
+              "2903c02",
+              "3005",
+              "3009",
+              "3022",
+              "3069b",
+              "3070b",
+              "3660b",
+              "3678b",
+              "3684a",
+              "3710",
+              "3749",
+              "4032b",
+              "42022",
+              "42918",
+              "43720",
+              "43721",
+              "6141",
+              "61678",
+              "63864",
+              "64648",
+              "78522"
+            ],
+            "notInList": [
+              "2903c02",
+              "3749",
+              "42022",
+              "42918",
+              "43720",
+              "43721",
+              "64648",
+              "78522"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 837
+        }
+      ]
+    }
+  ]
+}

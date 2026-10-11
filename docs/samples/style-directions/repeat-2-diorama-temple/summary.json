@@ -1,0 +1,300 @@
+{
+  "brief": "a japanese buddhist temple",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 2000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 2191,
+      "targetMiss": {
+        "target": 2000,
+        "parts": 2191,
+        "difference": 191,
+        "percent": 9.6
+      },
+      "seconds": 794,
+      "tokens": {
+        "input": 799895,
+        "cached": 537856,
+        "output": 79400,
+        "reasoning": 36512
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "2412b",
+          "2417",
+          "24201",
+          "3003",
+          "3009",
+          "3023b",
+          "3039",
+          "3062b",
+          "3068b",
+          "3070b",
+          "32607",
+          "3307",
+          "3665a",
+          "3942c",
+          "3943b",
+          "3960",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "60474",
+          "6141",
+          "87081",
+          "90398"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 794,
+          "usage": {
+            "input": 799895,
+            "cached": 537856,
+            "output": 79400,
+            "reasoning": 36512,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "bell",
+                "limit": 8
+              },
+              "results": [
+                "3942c",
+                "3943b",
+                "30151a",
+                "6017",
+                "u608",
+                "u609",
+                "30151b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "1x4",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "61678",
+                "93273",
+                "13547",
+                "3573",
+                "11153"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "inverted curved slope",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023",
+                "11301",
+                "73682"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "plant leaves",
+                "colour": "dark red",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "2423",
+                "2417",
+                "32607",
+                "37695"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "minifigure trophy",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "89801",
+                "10172"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "statuette",
+                "limit": 6
+              },
+              "results": [
+                "90398"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig legs",
+                "colour": "dark orange",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "41879a",
+                "30376"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig torso",
+                "colour": "dark orange",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "973",
+                "30375",
+                "16360pd7f",
+                "34777pd7f",
+                "30375ps5"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig head",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3626c",
+                "28621",
+                "3626b",
+                "3626a",
+                "31990"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "bar 6L",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "63965a",
+                "7078",
+                "63965"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 2587,
+              "errors": 18,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 2419,
+              "errors": 3,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 2365,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "13547",
+              "2412b",
+              "2417",
+              "24201",
+              "3003",
+              "3009",
+              "3023b",
+              "3039",
+              "3062b",
+              "3068b",
+              "3070b",
+              "32607",
+              "3307",
+              "3665a",
+              "3942c",
+              "3943b",
+              "3960",
+              "4032b",
+              "4589",
+              "4740",
+              "54200",
+              "60474",
+              "6141",
+              "87081",
+              "90398"
+            ],
+            "notInList": [
+              "90398"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 2191
+        }
+      ]
+    }
+  ]
+}

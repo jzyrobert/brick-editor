@@ -1,0 +1,1599 @@
+{
+ "buildScript": 1,
+ "title": "Special Delivery: the Pelican Pedal Post",
+ "description": "A bright-eyed pelican pedals a scarlet bicycle down a saltwater jetty, carrying the morning fish in a blue rear crate. His great golden bill and orange throat pouch lead the way; black-tipped wings steer, while broad webbed feet catch the pedals at different heights.",
+ "palette": {
+  "bird": "white",
+  "bill": "yellow",
+  "pouch": "orange",
+  "frame": "red",
+  "wood": "dark tan",
+  "sea": "dark azure"
+ },
+ "sections": [
+  {
+   "name": "Connected jetty and tide",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      30,
+      20
+     ],
+     "colour": "dark bluish grey",
+     "layers": 2
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      2,
+      0
+     ],
+     "size": [
+      30,
+      5
+     ],
+     "colour": "sea",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      2,
+      15
+     ],
+     "size": [
+      30,
+      5
+     ],
+     "colour": "sea",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      1,
+      2,
+      5
+     ],
+     "size": [
+      28,
+      3,
+      10
+     ],
+     "colour": "reddish brown",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      1,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "tan",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      7,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "tan",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      9,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      11,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      13,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "tan",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      15,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      17,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      19,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "tan",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      21,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      23,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      25,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "tan",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      27,
+      4,
+      5
+     ],
+     "size": [
+      2,
+      10
+     ],
+     "colour": "wood",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      4,
+      3,
+      1
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      8,
+      3,
+      2
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      21,
+      3,
+      1
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      26,
+      3,
+      17
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      17,
+      3,
+      18
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      3,
+      3,
+      17
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "64648",
+     "at": [
+      24,
+      3,
+      2
+     ],
+     "colour": "medium azure",
+     "turn": 90
+    }
+   ]
+  },
+  {
+   "name": "Jetty fittings",
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      2,
+      5,
+      5
+     ],
+     "height": 7,
+     "diameter": 1,
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      2,
+      12,
+      5
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      2,
+      13,
+      5
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "column",
+     "at": [
+      27,
+      5,
+      14
+     ],
+     "height": 9,
+     "diameter": 1,
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      27,
+      14,
+      14
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      27,
+      15,
+      14
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "column",
+     "at": [
+      2,
+      5,
+      14
+     ],
+     "height": 5,
+     "diameter": 1,
+     "colour": "reddish brown"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      2,
+      10,
+      14
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      2,
+      11,
+      14
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      25,
+      5,
+      12
+     ],
+     "size": [
+      2,
+      1,
+      2
+     ],
+     "colour": "light bluish grey",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      25,
+      6,
+      12
+     ],
+     "colour": "orange",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      25,
+      7,
+      12
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      25,
+      8,
+      12
+     ],
+     "colour": "orange",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      3,
+      5,
+      5
+     ],
+     "colour": "dark bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      10,
+      5,
+      5
+     ],
+     "colour": "dark bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      17,
+      5,
+      5
+     ],
+     "colour": "dark bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      24,
+      5,
+      5
+     ],
+     "colour": "dark bluish grey",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Scarlet bicycle",
+   "ops": [
+    {
+     "op": "place",
+     "part": "33211",
+     "at": [
+      3,
+      5,
+      8
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "line",
+     "from": [
+      5,
+      12,
+      6
+     ],
+     "to": [
+      5,
+      12,
+      10
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "place",
+     "part": "33211",
+     "at": [
+      18,
+      5,
+      8
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "line",
+     "from": [
+      20,
+      12,
+      6
+     ],
+     "to": [
+      20,
+      12,
+      10
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      5,
+      12,
+      6
+     ],
+     "to": [
+      12,
+      12,
+      6
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      12,
+      12,
+      6
+     ],
+     "to": [
+      11,
+      23,
+      6
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      11,
+      23,
+      6
+     ],
+     "to": [
+      5,
+      12,
+      6
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      11,
+      23,
+      6
+     ],
+     "to": [
+      20,
+      24,
+      6
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      20,
+      24,
+      6
+     ],
+     "to": [
+      12,
+      12,
+      6
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      20,
+      12,
+      6
+     ],
+     "to": [
+      20,
+      27,
+      6
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      20,
+      12,
+      10
+     ],
+     "to": [
+      20,
+      27,
+      10
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      5,
+      12,
+      10
+     ],
+     "to": [
+      6,
+      20,
+      10
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      5,
+      8
+     ],
+     "size": [
+      2,
+      15,
+      2
+     ],
+     "colour": "trans-clear",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      10,
+      22,
+      7
+     ],
+     "size": [
+      5,
+      4
+     ],
+     "colour": "black",
+     "layers": 1
+    },
+    {
+     "op": "floor",
+     "at": [
+      20,
+      26,
+      4
+     ],
+     "size": [
+      1,
+      10
+     ],
+     "colour": "black",
+     "layers": 1
+    },
+    {
+     "op": "box",
+     "at": [
+      20,
+      24,
+      8
+     ],
+     "size": [
+      1,
+      3,
+      2
+     ],
+     "colour": "light bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      20,
+      27,
+      7
+     ],
+     "colour": "pearl gold",
+     "turn": 0
+    },
+    {
+     "op": "line",
+     "from": [
+      12,
+      12,
+      6
+     ],
+     "to": [
+      12,
+      12,
+      4
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "line",
+     "from": [
+      12,
+      12,
+      10
+     ],
+     "to": [
+      12,
+      17,
+      13
+     ],
+     "colour": "frame"
+    },
+    {
+     "op": "floor",
+     "at": [
+      10,
+      11,
+      3
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "colour": "black",
+     "layers": 1
+    },
+    {
+     "op": "floor",
+     "at": [
+      11,
+      16,
+      13
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "colour": "black",
+     "layers": 1
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      20,
+      6
+     ],
+     "size": [
+      6,
+      6
+     ],
+     "colour": "black",
+     "layers": 1,
+     "top": "tile"
+    }
+   ]
+  },
+  {
+   "name": "The fish delivery",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      3,
+      21,
+      7
+     ],
+     "size": [
+      5,
+      6,
+      5
+     ],
+     "colour": "dark blue",
+     "open": [
+      "top"
+     ]
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      27,
+      7
+     ],
+     "size": [
+      5,
+      1
+     ],
+     "colour": "medium azure",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      27,
+      11
+     ],
+     "size": [
+      5,
+      1
+     ],
+     "colour": "medium azure",
+     "layers": 1,
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "64648",
+     "at": [
+      4,
+      23,
+      8
+     ],
+     "colour": "medium azure",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "64648",
+     "at": [
+      6,
+      24,
+      8
+     ],
+     "colour": "orange",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      3,
+      25,
+      7
+     ],
+     "colour": "light bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      5,
+      25,
+      7
+     ],
+     "colour": "light bluish grey",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Webbed feet on the pedals",
+   "ops": [
+    {
+     "op": "place",
+     "part": "88930",
+     "at": [
+      10,
+      12,
+      3
+     ],
+     "colour": "yellow",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      15,
+      4
+     ],
+     "size": [
+      2,
+      9,
+      2
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      18,
+      4
+     ],
+     "colour": "yellow",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "88930",
+     "at": [
+      11,
+      17,
+      13
+     ],
+     "colour": "yellow",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      20,
+      11
+     ],
+     "size": [
+      2,
+      4,
+      3
+     ],
+     "colour": "yellow"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      13,
+      20,
+      11
+     ],
+     "colour": "yellow",
+     "turn": 180
+    }
+   ]
+  },
+  {
+   "name": "Pelican rounded body",
+   "ops": [
+    {
+     "op": "place",
+     "part": "54091",
+     "at": [
+      9,
+      23,
+      5
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      10,
+      29,
+      7
+     ],
+     "size": [
+      7,
+      6,
+      4
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "88930",
+     "at": [
+      9,
+      29,
+      5
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "88930",
+     "at": [
+      9,
+      29,
+      11
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "88930",
+     "at": [
+      13,
+      29,
+      5
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "88930",
+     "at": [
+      13,
+      29,
+      11
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      8,
+      29,
+      7
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      15,
+      29,
+      7
+     ],
+     "colour": "white",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      8,
+      29,
+      9
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      15,
+      29,
+      9
+     ],
+     "colour": "white",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "78522",
+     "at": [
+      9,
+      35,
+      7
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3020",
+     "at": [
+      12,
+      32,
+      4
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3020",
+     "at": [
+      12,
+      32,
+      10
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41769a",
+     "at": [
+      6,
+      27,
+      7
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41770a",
+     "at": [
+      6,
+      27,
+      9
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      28,
+      7
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      6,
+      28,
+      10
+     ],
+     "colour": "black",
+     "turn": 90
+    }
+   ]
+  },
+  {
+   "name": "Wings steering",
+   "ops": [
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      12,
+      33,
+      4
+     ],
+     "colour": "white",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      30,
+      4
+     ],
+     "colour": "white",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      18,
+      27,
+      4
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      12,
+      33,
+      13
+     ],
+     "colour": "white",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      15,
+      30,
+      13
+     ],
+     "colour": "white",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      18,
+      27,
+      13
+     ],
+     "colour": "black",
+     "turn": 90
+    }
+   ]
+  },
+  {
+   "name": "S neck and courier scarf",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      16,
+      32,
+      8
+     ],
+     "size": [
+      2,
+      11,
+      2
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "60481a",
+     "at": [
+      16,
+      37,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "60481a",
+     "at": [
+      16,
+      37,
+      9
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "60481a",
+     "at": [
+      17,
+      37,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "60481a",
+     "at": [
+      17,
+      37,
+      9
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      35,
+      8
+     ],
+     "size": [
+      2,
+      2,
+      2
+     ],
+     "colour": "medium azure"
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      12,
+      36,
+      9
+     ],
+     "colour": "medium azure",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      12,
+      37,
+      9
+     ],
+     "colour": "medium azure",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Bright eyed pelican and great bill",
+   "ops": [
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      16,
+      43,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      16,
+      43,
+      9
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      18,
+      43,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "32803",
+     "at": [
+      18,
+      43,
+      9
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      47,
+      7
+     ],
+     "size": [
+      4,
+      3,
+      4
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "3005pe4",
+     "at": [
+      18,
+      47,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3005pe4",
+     "at": [
+      18,
+      47,
+      10
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "88930",
+     "at": [
+      16,
+      50,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "88930",
+     "at": [
+      16,
+      50,
+      9
+     ],
+     "colour": "white",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      16,
+      53,
+      8
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "floor",
+     "at": [
+      18,
+      42,
+      7
+     ],
+     "size": [
+      8,
+      4
+     ],
+     "colour": "yellow",
+     "layers": 2
+    },
+    {
+     "op": "place",
+     "part": "43713",
+     "at": [
+      20,
+      39,
+      7
+     ],
+     "colour": "orange",
+     "turn": 270
+    },
+    {
+     "op": "floor",
+     "at": [
+      20,
+      44,
+      7
+     ],
+     "size": [
+      6,
+      4
+     ],
+     "colour": "black",
+     "layers": 1
+    },
+    {
+     "op": "floor",
+     "at": [
+      26,
+      44,
+      8
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "black",
+     "layers": 1
+    },
+    {
+     "op": "place",
+     "part": "43712",
+     "at": [
+      20,
+      45,
+      7
+     ],
+     "colour": "yellow",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      26,
+      45,
+      8
+     ],
+     "colour": "yellow",
+     "turn": 270
+    }
+   ]
+  }
+ ]
+}

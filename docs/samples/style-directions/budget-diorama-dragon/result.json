@@ -1,0 +1,310 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 613,
+  "seconds": 588,
+  "tokens": {
+    "input": 793860,
+    "cached": 534528,
+    "output": 58661,
+    "reasoning": 34074
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "10238",
+      "11477",
+      "15068",
+      "15070",
+      "24201",
+      "2431",
+      "24946",
+      "3020",
+      "3034",
+      "3039",
+      "3068b",
+      "3069b",
+      "32607",
+      "3678b",
+      "3684a",
+      "3795",
+      "40379",
+      "41770a",
+      "4589",
+      "49668",
+      "54200",
+      "54384",
+      "6141",
+      "63864",
+      "64847",
+      "93606",
+      "98138"
+    ],
+    "notInList": [
+      "10238",
+      "15070",
+      "24946",
+      "40379",
+      "49668",
+      "54384",
+      "64847",
+      "93606"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 588,
+      "usage": {
+        "input": 793860,
+        "cached": 534528,
+        "output": 58661,
+        "reasoning": 34074,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "dragon wing",
+            "limit": 8
+          },
+          "results": [
+            "6133",
+            "5984",
+            "38547",
+            "51342",
+            "30130",
+            "6125",
+            "75174c01",
+            "87685"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "horn tooth claw",
+            "limit": 10
+          },
+          "results": [
+            "11089"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge slope curved",
+            "colour": "dark green",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "93606",
+            "42918",
+            "52031",
+            "41748",
+            "41747",
+            "41764",
+            "41765"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye tile",
+            "limit": 8
+          },
+          "results": [
+            "10238",
+            "98138pz0",
+            "98138pz2",
+            "98138p2d",
+            "98138p07",
+            "98138pz4",
+            "3069bpm0",
+            "3070bp0e"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "egg",
+            "limit": 6
+          },
+          "results": [
+            "24946",
+            "24130",
+            "24132"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dragon head",
+            "limit": 10
+          },
+          "results": [
+            "6027",
+            "24199",
+            "43900",
+            "24196",
+            "51344",
+            "6125",
+            "75174p01c01",
+            "36017",
+            "87685",
+            "87686"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tooth",
+            "limit": 10
+          },
+          "results": [
+            "41669",
+            "48267",
+            "49668",
+            "15070",
+            "3647",
+            "3649",
+            "3648b",
+            "4019",
+            "6589",
+            "6573"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "horn",
+            "limit": 10
+          },
+          "results": [
+            "2142",
+            "89522",
+            "13564",
+            "64847",
+            "40379",
+            "11089",
+            "67361",
+            "112",
+            "6135b",
+            "1997"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge plate 6",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "6106",
+            "32059",
+            "54383",
+            "54384",
+            "47407"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved inverted",
+            "colour": "dark green",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "24201",
+            "70681",
+            "32803",
+            "42023",
+            "73682",
+            "41764",
+            "41765"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 633,
+          "errors": 26,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 602,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 613,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "10238",
+          "11477",
+          "15068",
+          "15070",
+          "24201",
+          "2431",
+          "24946",
+          "3020",
+          "3034",
+          "3039",
+          "3068b",
+          "3069b",
+          "32607",
+          "3678b",
+          "3684a",
+          "3795",
+          "40379",
+          "41770a",
+          "4589",
+          "49668",
+          "54200",
+          "54384",
+          "6141",
+          "63864",
+          "64847",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "10238",
+          "15070",
+          "24946",
+          "40379",
+          "49668",
+          "54384",
+          "64847",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 613
+    }
+  ]
+}

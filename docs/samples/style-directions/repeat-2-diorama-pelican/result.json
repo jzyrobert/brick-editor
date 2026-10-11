@@ -1,0 +1,390 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 809,
+  "targetMiss": {
+    "target": 800,
+    "parts": 809,
+    "difference": 9,
+    "percent": 1.1
+  },
+  "seconds": 558,
+  "tokens": {
+    "input": 810747,
+    "cached": 549760,
+    "output": 44129,
+    "reasoning": 24556
+  },
+  "searches": 15,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11477",
+      "14769",
+      "15068",
+      "2412b",
+      "24309",
+      "2431",
+      "25269",
+      "3004",
+      "3005",
+      "3021",
+      "3068b",
+      "3069b",
+      "32803",
+      "3623",
+      "3666",
+      "3710",
+      "3736",
+      "3941",
+      "4032b",
+      "44126",
+      "4460b",
+      "45410",
+      "45411",
+      "6141",
+      "61678",
+      "64648",
+      "8043",
+      "88517"
+    ],
+    "notInList": [
+      "32803",
+      "3736",
+      "44126",
+      "45410",
+      "45411",
+      "64648",
+      "8043",
+      "88517"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 558,
+      "usage": {
+        "input": 810747,
+        "cached": 549760,
+        "output": 44129,
+        "reasoning": 24556,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wheel motorcycle",
+            "limit": 8
+          },
+          "results": [
+            "88517",
+            "2903",
+            "50860",
+            "18895",
+            "52035",
+            "85983",
+            "46334",
+            "71720"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tyre motorcycle",
+            "limit": 8
+          },
+          "results": [
+            "2902",
+            "11957",
+            "67140",
+            "71721",
+            "71722",
+            "80542",
+            "88516",
+            "6596"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x4",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "88930",
+            "93606",
+            "47456",
+            "61068"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye",
+            "limit": 8
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved inverted",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023",
+            "11301",
+            "45410"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Tile Round 1 x 1 eye",
+            "limit": 10
+          },
+          "results": [
+            "10238",
+            "98138pz0",
+            "98138pz2",
+            "98138p2d",
+            "98138p07",
+            "98138pz4",
+            "98138p0b",
+            "98138p0c",
+            "98138p0k",
+            "98138p1u"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "handlebar",
+            "limit": 8
+          },
+          "results": [
+            "3003126",
+            "30031",
+            "98397",
+            "51723",
+            "u9204c01",
+            "u9206c01",
+            "u9205c01",
+            "u9203"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "axle 6",
+            "limit": 5
+          },
+          "results": [
+            "3706",
+            "2994",
+            "59443",
+            "32020",
+            "86652"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "fish",
+            "limit": 6
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved 6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "42022",
+            "44126",
+            "42023",
+            "78522",
+            "45410",
+            "45411",
+            "56204",
+            "52031"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "basket",
+            "limit": 6
+          },
+          "results": [
+            "30109",
+            "51858",
+            "2424",
+            "71861",
+            "30492",
+            "30489"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "2x2",
+            "colour": "yellow",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "15068",
+            "30602",
+            "5093",
+            "5095",
+            "47457",
+            "32803"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "colour": "bright light orange",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "technic pulley",
+            "limit": 5
+          },
+          "results": [
+            "3736",
+            "32123b",
+            "7335",
+            "32123a",
+            "4265a"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "tile round 2 x 2 nautical",
+            "limit": 5
+          },
+          "results": [
+            "14769",
+            "98138",
+            "3068b",
+            "3941",
+            "4032b"
+          ],
+          "round": 3
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 778,
+          "errors": 12,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 808,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "14769",
+          "15068",
+          "2412b",
+          "24309",
+          "2431",
+          "25269",
+          "3004",
+          "3005",
+          "3021",
+          "3068b",
+          "3069b",
+          "32803",
+          "3623",
+          "3666",
+          "3710",
+          "3736",
+          "3941",
+          "4032b",
+          "44126",
+          "4460b",
+          "45410",
+          "45411",
+          "6141",
+          "61678",
+          "64648",
+          "8043",
+          "88517"
+        ],
+        "notInList": [
+          "32803",
+          "3736",
+          "44126",
+          "45410",
+          "45411",
+          "64648",
+          "8043",
+          "88517"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 809
+    }
+  ]
+}

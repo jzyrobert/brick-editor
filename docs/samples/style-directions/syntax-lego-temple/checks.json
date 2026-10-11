@@ -1,0 +1,17 @@
+[
+  {
+    "attempt": 1,
+    "check": 1,
+    "feedback": "Check 1 of 3: the code did not compile. INVALID_INPUT: Invalid build script: $.sections[0].ops[0].colour must be a palette key, colour name or LDraw colour code; $.sections[2].ops[2].holes[0].at must be [x, z] integers (studs) (got [10,45,9])\n"
+  },
+  {
+    "attempt": 1,
+    "check": 2,
+    "feedback": "Check 2 of 3: the code compiled to 2,142 parts (target 2,000: +142, +7.1%). Sections: Carved timber hall and shoji screens 737, Sweeping tiled irimoya roof 560, Stone terraces and timber veranda 487, Working bell pavilion with suspended striker 216, Golden Buddha sanctuary 81, Autumn maple and approach lanterns 61.\nErrors (7):\n- overlap: 3633 Fence 1 \u00d7 4 \u00d7 1 Lattice placed at [2, 9, 26] and 3941 Round Brick 2 \u00d7 2 placed at [3, 9, 25] overlap where their bodies meet: x 3\u20135, y 9\u201312, z 26\u201327 [sections[1].ops[238] (code line 12), sections[1].ops[57] (code line 3)]\n- overlap: 3633 Fence 1 \u00d7 4 \u00d7 1 Lattice placed at [6, 9, 26] and 3941 Round Brick 2 \u00d7 2 placed at [9, 9, 25] overlap where their bodies meet: x 9\u201310, y 9\u201312, z 26\u201327 (2 pairs like this) [sections[1].ops[238] (code line 12), sections[1].ops[66] (code line 3)]\n- overlap: 3633 Fence 1 \u00d7 4 \u00d7 1 Lattice placed at [14, 9, 26] and 3941 Round Brick 2 \u00d7 2 placed at [15, 9, 25] overlap where their bodies meet: x 15\u201317, y 9\u201312, z 26\u201327 [sections[1].ops[238] (code line 12), sections[1].ops[75] (code line 3)]\n- overlap: 3633 Fence 1 \u00d7 4 \u00d7 1 Lattice placed at [22, 9, 26] and 3941 Round Brick 2 \u00d7 2 placed at [23, 9, 25] overlap where their bodies meet: x 23\u201325, y 9\u201312, z 26\u201327 [sections[1].ops[238] (code line 12), sections[1].ops[84] (code line 3)]\n- overlap: 3633 Fence 1 \u00d7 4 \u00d7 1 Lattice placed at [26, 9, 26] and 3941 Round Brick 2 \u00d7 2 placed at [29, 9, 25] overlap where their bodies meet: x 29\u201330, y 9\u201312, z 26\u201327 (2 pairs like this) [sections[1].ops[238] (code line 12), sections[1].ops[93] (code line 3)]\n- overlap: 3941 Round Brick 2 \u00d7 2 placed at [35, 9, 25] and 3633 Fence 1 \u00d7 4 \u00d7 1 Lattice placed at [34, 9, 26] overlap where their bodies meet: x 35\u201337, y 9\u201312, z 26\u201327 [sections[1].ops[102] (code line 3), sections[1].ops[238] (code line 12)]\n- overlap: 3062b Round Brick 1 \u00d7 1 placed at [49, 35, 15] and 3660b Inverted Slope 45\u00b0 2 \u00d7 2 placed at [48, 37, 14] overlap where their bodies meet: x 49\u201350, y 37\u201338, z 15\u201316 (2 pairs like this) [sections[4].ops[110] (code line 17), sections[4].ops[7] (code line 3)]\n"
+  },
+  {
+    "attempt": 1,
+    "check": 3,
+    "feedback": "Check 3 of 3: the code compiled to 2,180 parts (target 2,000: +180, +9%). Sections: Carved timber hall and shoji screens 737, Sweeping tiled irimoya roof 560, Stone terraces and timber veranda 497, Bell pavilion with suspended striker 212, Golden Buddha sanctuary 102, Autumn maple and approach lanterns 72.\nNo errors: as an answer it would be accepted.\n"
+  }
+]

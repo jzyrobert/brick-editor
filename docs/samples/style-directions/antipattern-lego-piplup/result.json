@@ -1,0 +1,86 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1098,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1098,
+    "difference": 98,
+    "percent": 9.8
+  },
+  "seconds": 357,
+  "tokens": {
+    "input": 301007,
+    "cached": 189440,
+    "output": 31627,
+    "reasoning": 15780
+  },
+  "searches": 0,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11477",
+      "3001",
+      "3002",
+      "3003",
+      "3004",
+      "3005",
+      "3298"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 357,
+      "usage": {
+        "input": 301007,
+        "cached": 189440,
+        "output": 31627,
+        "reasoning": 15780,
+        "costUsd": 0
+      },
+      "searches": [],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1266,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 1098,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "3001",
+          "3002",
+          "3003",
+          "3004",
+          "3005",
+          "3298"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1098
+    }
+  ]
+}

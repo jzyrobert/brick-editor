@@ -1,0 +1,34 @@
+script({title:"Pelican Pedal Power",description:"A white pelican leans into the handlebars of a scarlet bicycle. Its long yellow bill, deep throat pouch, folded wings and webbed feet make the rider unmistakable. Open spoke wheels stand on two compact wheel shoes.",palette:{bird:"white",bike:"red",tyre:"black",metal:"light bluish grey",pouch:"tan"}});
+const front=-15,rear=15;
+const lengths=[10,8,6,4,3,2,1],plates={1:"3023b",2:"3022",3:"3021",4:"3020",6:"3795",8:"3034",10:"3832"},bricks={1:"3004",2:"3003",3:"3002",4:"3001",6:"2456",8:"3007",10:"3006"};
+function wheel(zc){const ops=[],grid=[];for(let y=0;y<50;y++){grid[y]=[];for(let z=-10;z<10;z++){const zz=z+0.5,yy=y+0.5-25,outer=zz*zz/100+yy*yy/625<=1,inner=zz*zz/(8.4*8.4)+yy*yy/441<1;let c=null;if(outer&&!inner)c="black";else if(inner&&(Math.abs(zz)<=0.6||Math.abs(yy)<=0.5||Math.abs(Math.abs(zz)-Math.abs(yy)*0.4)<=0.65))c="light bluish grey";if(inner&&Math.abs(zz)<=1.5&&Math.abs(yy)<=2.5)c="dark bluish grey";if(y>=24&&y<27&&z>=-1&&z<1)c=null;grid[y][z+10]=c;}}
+for(let y=0;y<50;y++)for(let j=0;j<20;){const c=grid[y][j];if(!c){j++;continue;}const h=y+2<50&&grid[y+1][j]===c&&grid[y+2][j]===c?3:1;let end=j+1;while(end<20&&grid[y][end]===c&&(h===1||(grid[y+1][end]===c&&grid[y+2][end]===c)))end++;const n=lengths.find(n=>n<=end-j);ops.push(place({part:(h===3?bricks:plates)[n],at:[-1,y+2,zc+j-10],turn:n===1?0:90,colour:c}));for(let dy=0;dy<h;dy++)for(let dz=0;dz<n;dz++)grid[y+dy][j+dz]=null;j+=n;}
+ops.push(place({part:"2456",at:[-3,26,zc-1],colour:"dark bluish grey"}));return ops;}
+section("Two open spoke wheels",[...wheel(front),...wheel(rear)]);
+section("Small wheel shoes",[front,rear].map(z=>floor({at:[-5,0,z-2],size:[10,4],layers:2,colour:"dark bluish grey"})));
+function tube(a,b,x,width,colour,depth=3){if(a[0]>b[0]){const swap=a;a=b;b=swap;}const dy=b[0]-a[0],dz=b[1]-a[1];if(dy<=3)return [box({at:[x,a[0],Math.min(a[1],b[1])],size:[width,3,Math.abs(dz)+depth],colour,interior:"solid"})];const ops=[],n=Math.ceil(dy/3);for(let i=0;i<n;i++)ops.push(box({at:[x,a[0]+i*3,Math.round(a[1]+dz*(i*3/dy))],size:[width,3,depth],colour,interior:"solid"}));return ops;}
+section("Scarlet bicycle diamond frame",[
+...tube([27,1],[57,6],1,2,"red"),...tube([55,-11],[57,6],1,2,"red"),...tube([55,-11],[27,1],1,2,"red"),...tube([57,6],[27,15],1,2,"red"),...tube([25,1],[25,15],1,2,"red"),
+...tube([27,-15],[60,-11],1,2,"red"),...tube([27,-15],[60,-11],-3,2,"red"),...tube([55,-11],[68,-13],1,2,"light bluish grey"),...tube([55,6],[64,6],1,2,"dark bluish grey"),
+box({at:[-9,68,-14],size:[18,2,2],colour:"light bluish grey",interior:"solid"}),box({at:[-10,68,-14],size:[3,2,2],colour:"black",interior:"solid"}),box({at:[7,68,-14],size:[3,2,2],colour:"black",interior:"solid"}),
+box({at:[-4,64,3],size:[8,3,6],colour:"black",interior:"solid"}),...[-4,-2,0,2].map(x=>place({part:"15068",at:[x,64,3],colour:"black"})),
+...tube([28,1],[32,-3],3,2,"dark bluish grey",4),...tube([28,1],[23,5],-5,2,"dark bluish grey",4),floor({at:[4,32,-4],size:[6,4],layers:2,colour:"black"}),floor({at:[-10,23,3],size:[6,4],layers:2,colour:"black"})
+]);
+function foot(x,y,z){return [floor({at:[x,y,z],size:[4,6],layers:2,colour:"orange"}),...[0,1,2,3].map(dx=>place({part:"54200",at:[x+dx,y+2,z],colour:"orange"})),box({at:[x+1,y+2,z+3],size:[2,3,3],colour:"orange",interior:"solid"})];}
+section("Webbed feet on staggered pedals",[
+...foot(4,34,-5),...foot(-8,25,2),...tube([39,-2],[53,0],5,2,"orange"),...tube([53,0],[69,4],4,2,"orange"),...tube([30,5],[49,7],-6,2,"orange"),...tube([49,7],[69,4],-5,2,"orange"),place({part:"3941",at:[5,51,0],colour:"orange"}),place({part:"3941",at:[-6,48,7],colour:"orange"})
+]);
+const profiles=[[67,8,1,10],[70,10,0,12],[73,12,-2,15],[76,14,-4,18],[79,14,-5,19],[82,14,-5,19],[85,12,-5,18],[88,10,-5,16],[91,8,-5,13],[94,6,-5,10],[97,6,-5,7]];
+const body=[];for(let i=0;i<profiles.length;i++){const [y,w,z,d]=profiles[i];body.push(box({at:[-w/2,y,z],size:[w,3,d],colour:"white",interior:"solid"}));if(i>=5&&i<=8)for(let zz=z+2;zz+2<=z+d-2;zz+=2)body.push(place({part:"15068",at:[-w/2,y,zz],turn:90,colour:"white"}),place({part:"15068",at:[w/2-2,y,zz],turn:270,colour:"white"}));}
+body.push(...[-4,-2,0,2].map(x=>place({part:"3660b",at:[x,73,-4],colour:"white"})),...[-4,-2,0,2].map(x=>place({part:"15068",at:[x,88,-5],colour:"white"})));
+section("Rounded white breast and body",body);
+function wing(side){const x=side>0?7:-9,shoulder=side>0?7:-10,bridge=side>0?3:-10;const ops=[...tube([71,-13],[85,2],x,2,"white",5),box({at:[shoulder,82,2],size:[3,9,10],colour:"white",interior:"solid"}),floor({at:[bridge,91,0],size:[7,11],layers:1,colour:"white"}),place({part:"3003",at:[x,70,-14],colour:"white"})];for(let i=0;i<3;i++){const xx=shoulder+i;ops.push(place({part:"50950",at:[xx,92,1],colour:"white"}),place({part:"50950",at:[xx,92,4],colour:"white"}),place({part:"61678",at:[xx,92,7],turn:180,colour:i===2?"light bluish grey":"white"}));}return ops;}
+section("Wings reaching the handlebars",[...wing(-1),...wing(1)]);
+function tail(){const ops=[];for(let x=-3;x<3;x+=2){ops.push(place({part:"3034",at:[x,78,11],turn:90,colour:"white"}));for(let dx=0;dx<2;dx++)ops.push(place({part:"61678",at:[x+dx,79,15],turn:180,colour:"white"}));}return ops;}
+section("Rear feather fan",tail());
+section("Forward leaning neck",[box({at:[-3,97,-6],size:[6,6,6],colour:"white",interior:"solid"}),...tube([100,-7],[113,-12],-2,4,"white",5),box({at:[-2,113,-12],size:[4,16,5],colour:"white",interior:"solid"}),place({part:"15068",at:[-2,112,-13],colour:"white"}),place({part:"15068",at:[0,112,-13],colour:"white"})]);
+const head=[box({at:[-4,126,-16],size:[8,9,9],colour:"white",interior:"solid"}),box({at:[-3,135,-15],size:[6,3,7],colour:"white",interior:"solid"}),place({part:"3005",at:[-4,132,-14],colour:"black"}),place({part:"3005",at:[3,132,-14],colour:"black"})];for(const x of [-4,0])head.push(place({part:"88930",at:[x,135,-16],colour:"white"}),place({part:"88930",at:[x,135,-9],turn:180,colour:"white"}));for(const z of [-14,-12])head.push(place({part:"15068",at:[-4,135,z],turn:90,colour:"white"}),place({part:"15068",at:[2,135,z],turn:270,colour:"white"}));
+section("Pelican head with two side eyes",head);
+const bill=[];for(let z=-34;z<=-15;z++){const dist=-15-z,w=dist<9?6:dist<15?4:2,bottom=118+Math.round(dist*0.6);bill.push(box({at:[-w/2,bottom,z],size:[w,130-bottom,1],colour:"tan",interior:"solid"}));}
+bill.push(floor({at:[-3,130,-29],size:[6,15],layers:1,colour:"black"}),floor({at:[-2,130,-32],size:[4,3],layers:1,colour:"black"}),floor({at:[-1,130,-35],size:[2,3],layers:1,colour:"black"}),floor({at:[-3,131,-29],size:[6,15],layers:2,colour:"yellow"}),floor({at:[-2,131,-32],size:[4,3],layers:2,colour:"yellow"}),floor({at:[-1,131,-34],size:[2,2],layers:2,colour:"yellow"}),box({at:[-1,128,-36],size:[2,3,2],colour:"orange",interior:"solid"}),place({part:"15068",at:[-1,131,-36],colour:"yellow"}));
+section("Long shovel bill and hanging throat pouch",bill);
