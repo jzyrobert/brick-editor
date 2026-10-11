@@ -13,7 +13,9 @@ The chooser still lists every card and strictly loads every sample. Its two
 viewport checks now compile only a representative untouched replacement,
 removing seven repeated sample opens. Play's idle-render check polls a settled
 frame window rather than assuming five frames are enough. Budgets and test
-isolation are retained. Local validation and the measured baseline are in
+isolation are retained. The skeleton acceptance check controls compile completion
+until it observes the initial boxes and a partial frame, avoiding the intermittent
+race with fast worker replies. Local validation and the measured baseline are in
 [verification](VERIFICATION.md#ci-scheduling-and-timing-isolation--11-october-2026).
 
 ## Gallery generation browsing — 10 October 2026
