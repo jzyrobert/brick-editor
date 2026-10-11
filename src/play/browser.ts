@@ -1,5 +1,4 @@
 import { deriveVehicleRigs } from "./auto-vehicles";
-import { compactArticulatedSource } from "./compact-vehicle";
 import {
   admitSourceRideAlong,
   librarySourceRecord,
@@ -79,13 +78,8 @@ import type { PlayPneumaticSource } from "./session";
 import { PLAY_CAMERA_LIMITS } from "./types";
 import { vehicleReachDistance } from "./vehicle-possession";
 import { PF_LARGE_MOTOR_PROFILE } from "../mechanisms/pf-large-motor-binding";
-import {
-  prepareLoadedMotorAssemblies,
-  loadMotorSourceComponents,
-  motorComponentGroupMeshes,
-  motorComponentPresentation,
-} from "./motor-source-components";
-import { loadArocsBallContacts } from "./arocs-ball-contacts";
+import type { motorComponentPresentation } from "./motor-source-components";
+import { loadArocsBallContacts } from "./arocs-ball-binding";
 import {
   hasNativeRestDeclaration,
   prepareNativeRestSources,
@@ -214,6 +208,9 @@ export class BrowserPlay {
       ),
     );
     if (!candidates.length) return {} as Record<string, string>;
+    const { prepareLoadedMotorAssemblies } = await import(
+      "./motor-source-components"
+    );
     await this.renderer().ready(project.revision, true);
     ensure(
       project.revision === this.revision(),
@@ -549,8 +546,22 @@ export class BrowserPlay {
         }
       }
       const pneumaticRig = pneumatic?.prepared?.candidate.rig;
-      const [{ PlaySession }, geometry] = await Promise.all([
+      // Keep native physics and its source preparation out of the viewer's
+      // initial bundle. All three modules are needed only after entering Play.
+      const [
+        { PlaySession },
+        { compactArticulatedSource },
+        {
+          prepareLoadedMotorAssemblies,
+          loadMotorSourceComponents,
+          motorComponentGroupMeshes,
+          motorComponentPresentation,
+        },
+        geometry,
+      ] = await Promise.all([
         import("./session"),
+        import("./compact-vehicle"),
+        import("./motor-source-components"),
         r.playGeometry({
           include: worldProfile?.includedOccurrenceIds,
           exclude: [

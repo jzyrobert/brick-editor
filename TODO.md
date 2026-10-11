@@ -27,6 +27,9 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Rendering and performance
 
+- [ ] Warm first-use Realistic/Photo raster shaders asynchronously with a defined visible fallback; the [11 October audit](docs/RENDER-PERFORMANCE-AUDIT.md) still records substantial synchronous program-link waits despite reduced steady-frame work.
+- [ ] Split more of the remaining viewer entry (precompiled validators/application/catalogue code) while preserving synchronous validation, strict CSP and offline workers. Native physics is now deferred; first Play entry and network tradeoffs still need physical-phone measurements ([audit](docs/RENDER-PERFORMANCE-AUDIT.md)).
+
 - [ ] Reduce source-backed Kinematic car/door sweep costs: measured 30.091/12.927 ms mean ticks in the 4×-throttled phone profile; Dynamic car ticks remain within the unchanged 10 ms budget ([verification](docs/VERIFICATION.md#physical-source-play-correction--4-october-2026)). Measure physical phones separately.
 
 - [ ] Low-resolution (`8/`) stud primitives as a phone geometry option, or distance LOD: exposed studs are now most of what plain builds draw (needs its own quality setting and cache key).

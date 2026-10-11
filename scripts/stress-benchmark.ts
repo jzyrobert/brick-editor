@@ -199,7 +199,7 @@ async function measure(context: BrowserContext, profile: string) {
   try {
     await page
       .locator(".save-state")
-      .filter({ hasText: /^Saved revision/ })
+      .filter({ hasText: /^Saved on this device · version/ })
       // Attached, not visible: the phone layout hides the save indicator.
       .waitFor({ state: "attached", timeout: 300000 });
     savedAt = await page.evaluate(() => performance.now());

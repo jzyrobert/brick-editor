@@ -709,7 +709,7 @@ export class SceneAdapter {
     });
     this.controls.addEventListener("end", () => {
       this.motionHeld = false;
-      if (this.moving) this.noteMotion();
+      if (this.moving || this.look.renderer === "path") this.noteMotion();
     });
     this.setCamera(defaultCamera);
     this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -1480,7 +1480,11 @@ export class SceneAdapter {
     // restarts the idle timer.
     if (this.motionHeld) return;
     this.moving = false;
-    if (this.reducedFrame) this.invalidate({ cameraOnly: true });
+    // Photo defers scene inspection while the view moves, including small
+    // models that never reduce geometry quality. Give it one still frame on
+    // release so refinement starts with the final camera and scene.
+    if (this.reducedFrame || this.look.renderer === "path")
+      this.invalidate({ cameraOnly: true });
   }
   /** Vertices before/after indexing new prototypes, and the time it took. */
   private geometryIndexStats = { ms: 0, before: 0, after: 0 };
@@ -3051,6 +3055,18 @@ export class SceneAdapter {
     }
     let note: string | null = null;
     if (look.renderer === "path") {
+      if (this.motionHeld || this.moving) {
+        // A drag only displays raster frames. Building proxies, counting every
+        // triangle and hashing the entire scene here cannot contribute to a
+        // still, and used to repeat for every camera event on large models.
+        const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
+        this.drawLookFrame({ ...look, samples: 1 }, null, size.x, size.y, 0, {
+          aoScale: 0.5,
+          msaa: this.look.resourceProfile === "mobile" ? 2 : 4,
+        });
+        this.lookStats = { passes: this.pipeline!.lastPasses, samples: 0 };
+        return;
+      }
       const trace = this.photoTrace(look);
       if (trace.choice.renderer === "path") {
         this.drawPhotoFrame(look, trace);
@@ -3759,7 +3775,9 @@ export class SceneAdapter {
     if (!w || !h) return;
     this.renderer.setSize(w, h);
     this.aspect(w / h);
-    this.invalidate();
+    // The shadow camera is fitted to the model, not the viewport. Resizing or
+    // replacing the viewing camera does not change its casters or light.
+    this.invalidate({ cameraOnly: true });
   }
   private aspect(a: number) {
     if (this.camera instanceof THREE.PerspectiveCamera) this.camera.aspect = a;
