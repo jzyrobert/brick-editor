@@ -32,7 +32,7 @@ it.each([
     for (let angle = -Math.PI; angle <= Math.PI; angle += Math.PI / 12) {
       const frame: Transform = {
         position: [400, -20, -300],
-        basis: axisRotation([0, -1, 0], angle),
+        basis: axisRotation([0, -1, 0], (angle * 180) / Math.PI),
       };
       for (const orbit of [0, 1.1, Math.PI]) {
         const spec = vehicleChaseCamera(

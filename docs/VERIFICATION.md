@@ -861,8 +861,19 @@ damped turn, and uses the normal Play near plane. This removes pose-dependent
 refitting and the excessive depth-range ratio on the driving camera.
 
 The 29 targeted unit regressions pass across walking bob, both driving routes,
-seat entry, possession/exit, and six-size vehicle framing. The original
-nearby-block artifact report has not been visually reproduced; the near-plane
+seat entry, possession/exit, and six-size vehicle framing. The broader Play run
+passed 718 checks with two intentional skips; two existing mechanical checks
+hit timeouts under parallel load and passed with unchanged limits when both
+files (30 checks) were rerun alone. The six additional framing checks pass,
+including projection of every corner through full chassis turns and orbit.
+All 17 focused production-browser checks pass across the final targeted runs:
+the six-size chase regression uses the real-parts roadster and the actual
+Get in flow, with 450 driving ticks to cross the heading seam. The existing
+jeep/roadster orbit, entry/exit, seat metadata and keyboard/touch strafe checks
+also pass. Private previews used ports 4392 and 4393; phone portrait and
+landscape captures were inspected. Production build, TypeScript and repository
+formatting pass. The original nearby-block artifact report has not been
+visually reproduced; the near-plane
 correction addresses a concrete depth-precision issue, with confirmation on
 the user's affected model still pending.
 
