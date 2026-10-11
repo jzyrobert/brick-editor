@@ -1,0 +1,133 @@
+{
+  "version": "spatial-benchmark/1",
+  "id": "calibration-facts-v1",
+  "language": "build-script-v1/brick.build-v1",
+  "assistance": "macro-assisted-v1",
+  "factsVersion": "spatial-part-facts/1",
+  "model": {
+    "id": "replay-fixture",
+    "effort": "high",
+    "sampling": {
+      "temperature": null,
+      "topP": null,
+      "seed": null
+    }
+  },
+  "buildSeed": 1,
+  "orderSeed": 7341,
+  "repetitions": 1,
+  "order": "interleaved",
+  "budgets": {
+    "turns": 16,
+    "searchCalls": 50,
+    "infoCalls": 8,
+    "referenceBytes": 200000,
+    "checks": 0,
+    "repairs": 0,
+    "compileMs": 30000,
+    "totalMs": 120000,
+    "compilerBytes": 8000000,
+    "sourceBytes": 200000,
+    "maxOutputTokens": 16000
+  },
+  "infrastructureRetries": 0,
+  "evaluator": {
+    "version": "spatial-assessment/1",
+    "views": ["iso", "front", "iso-back", "back"],
+    "protocol": "docs/SPATIAL-BENCHMARK.md"
+  },
+  "tasks": [
+    {
+      "id": "slope-row",
+      "split": "calibration",
+      "brief": "Place a 3039 slope at [0,0,0], turn 0. Place a 3024 plate on a verified top stud at x=0, level 3. Choose the correct whole-stud z row. Use red parts.",
+      "targetParts": 2,
+      "palette": ["3039.dat", "3024.dat"],
+      "inventory": {
+        "3039.dat": 1,
+        "3024.dat": 1
+      },
+      "aliases": null
+    },
+    {
+      "id": "arch-opening",
+      "split": "calibration",
+      "brief": "Place a 3659 arch at [0,2,0], turn 0, and a 3024 plate beneath its central opening at x=1, z=0. Choose level 0 or 4 to avoid body intersection. These are intentional separate objects; no connection is required. Use red parts.",
+      "targetParts": 2,
+      "palette": ["3659.dat", "3024.dat"],
+      "inventory": {
+        "3659.dat": 1,
+        "3024.dat": 1
+      },
+      "aliases": null
+    },
+    {
+      "id": "body-contact",
+      "split": "calibration",
+      "brief": "Place two 3068b tiles at [0,0,0] and [0,1,0], turn 0. This tests body contact versus verified mating: no top stud is present. The evaluator reports contact and connection evidence separately; it does not require a connection. Use red parts.",
+      "targetParts": 2,
+      "palette": ["3068b.dat"],
+      "inventory": {
+        "3068b.dat": 2
+      },
+      "aliases": null
+    },
+    {
+      "id": "quarter-turn",
+      "split": "calibration",
+      "brief": "Place two 3001 bricks at [2,0,3] and [2,3,3], both turn 90. Predict the physical extent by your placement. The evaluator checks the combined uniform-LDU envelope including studs. Use red parts.",
+      "targetParts": 2,
+      "palette": ["3001.dat"],
+      "inventory": {
+        "3001.dat": 2
+      },
+      "aliases": null
+    },
+    {
+      "id": "slope-transfer",
+      "split": "calibration",
+      "brief": "Place a 3039 slope at [2,0,3], turn 90. Place a 3024 plate, turn 0, on a verified top stud at level 3, z=3. Choose the correct x row, 2 or 3. Use red parts.",
+      "targetParts": 2,
+      "palette": ["3039.dat", "3024.dat"],
+      "inventory": {
+        "3039.dat": 1,
+        "3024.dat": 1
+      },
+      "aliases": null
+    }
+  ],
+  "conditions": [
+    {
+      "id": "control",
+      "prompt": "build-agent.md",
+      "reply": "brick-build.md",
+      "policy": "blind-no-feedback",
+      "facts": [],
+      "exposure": "on-demand"
+    },
+    {
+      "id": "shape",
+      "prompt": "build-agent.md",
+      "reply": "brick-build.md",
+      "policy": "blind-no-feedback",
+      "facts": ["shape"],
+      "exposure": "on-demand"
+    },
+    {
+      "id": "connections",
+      "prompt": "build-agent.md",
+      "reply": "brick-build.md",
+      "policy": "blind-no-feedback",
+      "facts": ["connectors"],
+      "exposure": "on-demand"
+    },
+    {
+      "id": "combined",
+      "prompt": "build-agent.md",
+      "reply": "brick-build.md",
+      "policy": "blind-no-feedback",
+      "facts": ["shape", "connectors"],
+      "exposure": "on-demand"
+    }
+  ]
+}

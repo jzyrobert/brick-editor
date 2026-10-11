@@ -1,5 +1,15 @@
 # Implementation status
 
+## Render-blind spatial benchmark infrastructure — 11 October 2026
+
+Opt-in tooling on current `main` f7f7b4b7, isolated worktree/branch. [Contract, usage and limits](SPATIAL-BENCHMARK.md) document the existing observation paths and retain the exploratory interpretation of prior 183/182/175 and 349/343 scores. E, diorama, legacy richer facts, language/editor/export semantics and the published gallery are unchanged.
+
+Implemented: strict versioned manifests; no-feedback, mechanical and legacy count/error conditions; fresh text-only generation state with run-wide budgets and audited denials; Bubblewrap compiler without repository/evaluator/credential mounts or network; filled inputs, exact payloads and implementation hashes/copies; frozen original submission/MPD and separate evaluator staging. CLI execution is preflight/dry-run/replay only; no live provider is enabled or paid invocation authorised.
+
+Typed optional shape/connector/capability facts separate uniform-LDU physical extents, nominal placement, occupancy and connection evidence. The five-part starter palette has independently checked surface extents/contours; other shape details remain unknown or labelled conservative. Stable connector IDs and explicit pagination retrieve full arrays. Calibration has five two-part fixtures, literal evaluator-only witnesses, deliberate invalid variants and an alias condition. Declarative plans isolate fact factors, retrieval exposure and mechanical feedback.
+
+Test/replay correctness evidence is in [VERIFICATION](VERIFICATION.md); no model-quality experiment or physical certification is claimed. Live provider audit, private held-out suite, frozen executed visual assessment, advanced poses/assistance/provenance, stronger mechanical diagnostics and design-guidance treatments remain separate follow-ups. Automation capabilities are unchanged because this is offline research tooling, not a new editor API.
+
 ## Format-first sizing references — 11 October 2026
 
 A [48-case follow-up](samples/format-size/README.md) compares format-first sizing alone with identical guidance plus the supplied commercial piece-count table. Two clean Sol 6.1 high repetitions cover every original brief and both styles, without targets or richer part facts. Only the Size section changes; generation, tool feedback and default prompts remain unchanged. All 48 builds completed in distinct empty-directory sessions and were reviewed across four views. References score 349/480 versus 343/480, winning six brief/style means, tying two and losing four. The small mixed advantage does not justify default adoption. A portable 96-build preview retains both repetitions and historical context.

@@ -147,6 +147,12 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 - [x] Add bounded source hierarchy/STEP scheduling for the Shark head and jaw, finite paired clip/handle details, exact custom-part closure and measured four-view PDF rows ([v16 evidence](docs/reports/instruction-generation/source-guided-articulation.md)); whole Shark improves1→2/5 in desk review.
 - [ ] Further automatic instruction transfers: executable Crane mounting/handling, remaining Shark body/tail finite receivers and constructive jaw foundations, wheel/rail readiness, additional articulated hinges and vehicle accessory clips, compact supplied-figure alternatives and bounded publication chapters. Deduplicate mechanism uncertainty notes and sparse marker-legend continuations. V15 preserves final-source control-stick CAD intersections; whole Crane2/5, Shark2/5 and Train3/5 leave broader critic acceptance open ([latest review](docs/reports/instruction-generation/source-guided-articulation-critic.md)).
 
+## Spatial benchmark follow-ups
+
+- [ ] Audit a live text-only provider adapter and authorise model budget before running the new render-blind manifests; freeze executed camera/reviewer configuration separately. Replay/preflight infrastructure is implemented ([SPATIAL-BENCHMARK](docs/SPATIAL-BENCHMARK.md)).
+- [ ] Private held-out creative tasks and broader verified-palette coverage; physical shortcut counting, occurrence/interface diagnostics, assembly-language poses/offsets and explicit attachment-assistance comparisons. Keep E, diorama and archived studies unchanged until evidence supports promotion.
+- [ ] Audit collision containment/arch hollow-end-support gaps; surface occupancy remains conservative and does not certify physical support or assembly order.
+
 ## Build scripts
 
 From [AGENT-BUILDING](docs/AGENT-BUILDING.md) and the [design-language study](docs/DESIGN-LANGUAGE.md):
