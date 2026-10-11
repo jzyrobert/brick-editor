@@ -1,5 +1,33 @@
 # Verification — 27 September 2026
 
+## CI scheduling and timing isolation — 11 October 2026
+
+- Baseline [camera validation](https://github.com/jzyrobert/brick-editor/actions/runs/38098722392):
+  **13 min 52 s** overall, **11 min 45 s** for checks and **11 min 35 s** for
+  the slowest browser shard. These are one hosted-run measurement, not a
+  reference-hardware performance claim.
+- Fresh Vitest discovery includes all **286 files exactly once**: 273 ordinary
+  unit files, eight CLI integration files and five performance-budget files.
+  All 35 performance checks pass alone with one worker; the three new shard
+  regressions cover exact coverage, new/deleted files, changed test counts,
+  deterministic assignment and nested/project-filtered discovery.
+- Fresh browser discovery assigns all **357 main tests in 125 files exactly
+  once** across eight shards. Estimates range from 778.5 to 783.5 seconds using
+  the previous two-worker timings; they guide assignment, not wall-time claims.
+  A real Playwright test-list discovery matches the selected shard's 34 tests.
+  Whole files stay together for serial describes and shared setup.
+- All six changed production-browser checks pass through the new runner with a
+  private preview on port 4394. The chooser retains complete card lists, image loading,
+  strict loading/health of every sample, desktop/phone routing, untouched
+  replacement and saved-state behavior. Seven duplicate sample opens are
+  removed. Idle rendering now waits for ten quiet frames with the existing
+  assertion timeout. Build, TypeScript, repository and workflow formatting pass.
+- Full optimized CI and hosted timing comparisons are recorded on the pull
+  request before merge. The final gate requires static checks, all unit shards,
+  isolated unit performance, CLI integration, every browser shard and the merged
+  report before
+  automatic publication.
+
 ## Gallery prompt generations — 10 October 2026
 
 - The latest selector uses explicit featured-generation metadata rather than publication date. Unit checks cover legacy-index compatibility, invalid or duplicated generation metadata, an F run newer than E, combined filters and retained source arrays.
@@ -893,11 +921,13 @@ The browser tests are independent (each gets a fresh browser context) and run in
 | `npm run test:browser:quick`                      | builds, runs only `main` — for iteration                                                                                    |
 | `npm run test:browser -- tests/browser/x.spec.ts` | extra arguments (spec paths, `--grep`) go to both phases                                                                    |
 | `npx playwright test --project=main <spec>`       | against the existing `dist/`, no rebuild                                                                                    |
-| `BROWSER_WORKERS=1 npm run test:browser`          | override the worker count (default: half the cores locally, 2 on CI)                                                        |
+| `BROWSER_WORKERS=1 npm run test:browser`          | override the worker count (default: half the cores locally, 1 on CI)                                                        |
 
 Tag a new test by ending its title with ` @perf` if it asserts elapsed time, or ` @heavy` if it path-traces. Local results go to `test-results/browser-results.json` (and `browser-results-perf.json`); perf traces to `test-results/perf/`.
 
-On CI (`.github/workflows/cloudflare.yml`) the bundle is built once and shared as an artifact; the browser tests run as eleven parallel jobs — `main` in eight shards, `heavy` in two, `perf` in one — with a merged HTML/JSON report uploaded as `playwright-report`. SwiftShader is CPU-bound, so a second worker on a 4-vCPU runner roughly doubles each test's duration; the speed-up comes from more jobs, not more workers per job. Shards are contiguous by test count, not balanced by duration, so the slowest shard sets the pace. The default test timeout is 120 s, since two workers sharing the CPU can double a test's duration.
+On CI (`.github/workflows/cloudflare.yml`) the bundle is built once and shared as an artifact. Browser acceptance runs as eleven jobs with one worker each: `main` in eight duration-balanced shards, `heavy` in two and `perf` alone. `scripts/ci-browser.ts` discovers the current main tests and balances whole files using `scripts/ci-browser-timings.json`; new files use a conservative fallback, and deleted files never enter the plan. Refresh the timing snapshot from a successful merged `playwright-report/results.json` with `npx tsx scripts/ci-browser.ts update results.json <run-url>`. Every shard still runs; historical timings cannot suppress coverage. The merged HTML/JSON report is uploaded as `playwright-report`. The default test timeout remains 120 s, with larger models declaring their existing limits.
+
+Vitest has `unit`, `integration` and `performance` projects. CI uses three unit shards with at most two workers each, serial CLI integration on its own Chromium runner, and a separate single-worker performance runner. The five files listed in `vitest.config.ts` retain their actual wall-clock budgets without competing native or browser processes; add new timing-budget suites there. `npm test` still includes every project. On a shared development machine, measure budgets alone with `npm test -- --project=performance --maxWorkers=1`. Each CI test job uploads a JSON report, and all projects participate in the `verified` publication gate.
 
 ## Expanded feature verification
 

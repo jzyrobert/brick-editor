@@ -13,19 +13,19 @@ import { defineConfig } from "@playwright/test";
  *   physics tick time, selection latency); one at a time, and never
  *   alongside other tests (`npm run test:browser` runs them after the rest).
  *
- * `BROWSER_WORKERS` overrides the worker count (default: 2 on CI, half the
+ * `BROWSER_WORKERS` overrides the worker count (default: 1 on CI, half the
  * cores locally).
  */
 const workers =
-  Number(process.env.BROWSER_WORKERS) || (process.env.CI ? 2 : "50%");
+  Number(process.env.BROWSER_WORKERS) || (process.env.CI ? 1 : "50%");
 
 export default defineConfig({
   testDir: "tests/browser",
   // Cleaned at the start of each run; scripts/test-browser.ts gives its
   // second (perf) phase a subdirectory so the first phase's traces survive.
   outputDir: process.env.BROWSER_OUTPUT_DIR ?? "test-results",
-  // Two workers share the CPU, so software-GL tests take up to twice their
-  // one-at-a-time duration; 120 s keeps a 30 s test clear of the limit.
+  // CI uses one worker to avoid competing software-GL renders. Keep the
+  // existing timeouts and performance budgets; slow models set their own.
   timeout: 120000,
   expect: { timeout: 10000 },
   fullyParallel: true,

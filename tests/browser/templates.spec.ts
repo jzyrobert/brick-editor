@@ -104,7 +104,7 @@ for (const viewport of [
   { width: 1440, height: 900 },
   { width: 390, height: 844 },
 ])
-  test(`the chooser offers only the samples and opens them (${viewport.width}×${viewport.height})`, async ({
+  test(`the chooser lists the samples and replaces an untouched sample (${viewport.width}×${viewport.height})`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -147,38 +147,23 @@ for (const viewport of [
     });
     await page.evaluate(() => window.brickEditor!.ready({ strict: true }));
     await page.screenshot({ path: `${shots}cafe-${viewport.width}.png` });
-    const next: [string, string, string][] =
-      viewport.width > 800
-        ? [
-            ["Windmill farm", "Windmill farm", "windmill"],
-            ["Lighthouse", "Lighthouse", "lighthouse"],
-            ["Off-road jeep", "Off-road jeep", "jeep"],
-            ["Playground park", "Playground park", "playground"],
-            ["House with garden", "House with garden", "house"],
-            ["Small castle", "Small castle", "castle"],
-            ["Roadster car", "Roadster", "car"],
-          ]
-        : [
-            ["Lighthouse", "Lighthouse", "lighthouse"],
-            ["Off-road jeep", "Off-road jeep", "jeep"],
-          ];
-    for (const [name, title, file] of next) {
-      await openMenuTab(page, "Project", "New");
-      await showAllTemplates(page);
-      // The previous sample is untouched, so it is replaced without asking.
-      await page.getByRole("button", { name }).click();
-      await expect(page.getByRole("dialog")).toHaveCount(0);
-      await expect(page.getByLabel("Project title")).toHaveValue(title, {
-        timeout: LOAD,
-      });
-      await page.evaluate(() => window.brickEditor!.ready({ strict: true }));
-      // A template just opened has nothing unsaved (it is autosaved for
-      // recovery, so the state may already read "Saved").
-      await expect(page.locator(".save-state")).toHaveText(
-        /^(No changes|Saving…|Saved on this device · version \d+)$/,
-      );
-      await page.screenshot({ path: `${shots}${file}-${viewport.width}.png` });
-    }
+    // Strict compilation/health for every sample is checked above. One
+    // small replacement per viewport covers chooser routing, untouched
+    // replacement and saved state without compiling the whole library again.
+    await openMenuTab(page, "Project", "New");
+    await showAllTemplates(page);
+    // The previous sample is untouched, so it is replaced without asking.
+    await page.getByRole("button", { name: "Roadster car" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByLabel("Project title")).toHaveValue("Roadster", {
+      timeout: LOAD,
+    });
+    await page.evaluate(() => window.brickEditor!.ready({ strict: true }));
+    // It is autosaved for recovery, so the state may already read Saved.
+    await expect(page.locator(".save-state")).toHaveText(
+      /^(No changes|Saving…|Saved on this device · version \d+)$/,
+    );
+    await page.screenshot({ path: `${shots}car-${viewport.width}.png` });
   });
 
 test("the jeep drives from its driver seat and unpowered windmill sails stay static", async ({
