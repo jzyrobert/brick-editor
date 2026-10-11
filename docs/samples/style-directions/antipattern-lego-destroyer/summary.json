@@ -1,0 +1,313 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "attempts": 5,
+  "prompt": "style-antipattern-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 5000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 5413,
+      "targetMiss": {
+        "target": 5000,
+        "parts": 5413,
+        "difference": 413,
+        "percent": 8.3
+      },
+      "seconds": 636,
+      "tokens": {
+        "input": 755169,
+        "cached": 554880,
+        "output": 61574,
+        "reasoning": 32295
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "14716",
+          "2412b",
+          "2453b",
+          "2877",
+          "3005",
+          "3009",
+          "3020",
+          "30208",
+          "3022",
+          "3023b",
+          "3024",
+          "3031",
+          "30363",
+          "3039",
+          "3068b",
+          "3460",
+          "3941",
+          "3957a",
+          "4032b",
+          "4477",
+          "47397",
+          "47398",
+          "60479",
+          "87081"
+        ],
+        "notInList": [
+          "30208",
+          "47397",
+          "47398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 636,
+          "usage": {
+            "input": 755169,
+            "cached": 554880,
+            "output": 61574,
+            "reasoning": 32295,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "Wedge Plate 6 x 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "3028",
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Wedge Plate 4 x 8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "3035",
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Wedge 3 x 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "47397",
+                "47398",
+                "42060",
+                "42061"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Hemisphere",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "30208",
+                "44359",
+                "61287",
+                "86500",
+                "44358"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Dish 6 x 6",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "44375b",
+                "4285b",
+                "44375a",
+                "21599"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Wedge Plate 3 x 6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "54383",
+                "54384"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wedge Plate 4 x 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3029",
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "3024",
+                "3023b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wedge Plate 6 x 8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3036",
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "3024",
+                "3023b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Slope 10 x 2",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "30180"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Engine",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "50943",
+                "43121",
+                "2853a",
+                "2853b",
+                "2853c",
+                "2854",
+                "4868b",
+                "2852"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 9299,
+              "errors": 2,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 6624,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 5413,
+              "errors": 28,
+              "ok": false
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "14716",
+              "2412b",
+              "2453b",
+              "2877",
+              "3005",
+              "3009",
+              "3020",
+              "30208",
+              "3022",
+              "3023b",
+              "3024",
+              "3031",
+              "30363",
+              "3039",
+              "3068b",
+              "3460",
+              "3941",
+              "3957a",
+              "4032b",
+              "4477",
+              "47397",
+              "47398",
+              "60479",
+              "87081"
+            ],
+            "notInList": [
+              "30208",
+              "47397",
+              "47398"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 5413
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 # Verification — 27 September 2026
 
+## Prompt directions and variance — 11 October 2026
+
+The [protocol](samples/style-directions/protocol.json) and [parallel comparisons](samples/style-directions/extra-protocol.json) freeze the 72-case matrix. All twelve retained baseline inputs reconstruct byte-for-byte. Current focused verification passes 28 tests across `one-shot-build.test.ts`, `brick-build.test.ts` and `agent-part-facts.test.ts`, plus `tsc -b`, repository formatting and staged whitespace checks. The two-part syntax example compiles without problems. All 72 new inputs reconstruct exactly and accepted sources match native final submissions. Every case compiles with zero final errors; 517 construction warning records remain across the 72 cases. There are 73 distinct attempt sessions (one case needed a second attempt). The portable preview passes seven standalone pages, 84 builds/336 images, four views, both style filters and six viewport sizes without external requests.
+
+The optional enriched search reply can exceed Linux's per-argument limit, so native messages use stdin before the first enriched case starts. The first four cases used the previous transport with identical model-visible text; protocol hashes record both. Five sessions attempt a native `exec`, but each host reply is `code-mode host is disabled`; no tool executes and every case is retained. Audits inspect native rollouts as well as the CLI event stream and record blocked attempts explicitly. Sources and model inputs stay frozen throughout generation. After completion, part-reference source formatting is verified by identical minified TypeScript transforms; the exact executed snapshot and both hashes are retained.
+
 ## Sol style self-improvement — 11 October 2026
 
 Follow-up: four original loop-1 sessions (both pelicans/Ewoks) resume at Sol/high with zero tools/images, empty working directories and source hashes unchanged. The portable preview is tested as an HTML file alone in an empty directory: 96 byte-identical embedded images, four views, both filters, zero external requests and six viewport sizes pass. [Interview audit](samples/style-self-improvement/regression-interview-audit.json) and [preview audit](samples/style-self-improvement/portable-preview-audit.json) retain evidence.

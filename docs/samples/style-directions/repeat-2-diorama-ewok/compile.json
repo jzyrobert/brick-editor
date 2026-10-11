@@ -1,0 +1,1867 @@
+{
+  "ok": true,
+  "buildScript": 1,
+  "title": "LL-979: The Acorn Explorer",
+  "stats": {
+    "parts": 3393,
+    "designs": 102,
+    "lots": 227,
+    "massingCells": 27570,
+    "massingParts": 2326,
+    "placedParts": 1067,
+    "sections": 9,
+    "components": 2,
+    "opsRun": 559,
+    "scriptBytes": 42891,
+    "ldrawBytes": 150904,
+    "partsPerScriptKB": 81,
+    "compileMs": 544,
+    "checkMs": 1230
+  },
+  "bounds": {
+    "studs": {
+      "min": [
+        -1,
+        0,
+        0
+      ],
+      "max": [
+        64,
+        104,
+        48
+      ]
+    },
+    "ldu": {
+      "min": [
+        -1,
+        -832,
+        0
+      ],
+      "max": [
+        1280,
+        0,
+        960
+      ]
+    }
+  },
+  "sections": [
+    {
+      "name": "Connected forest display",
+      "layer": "Connected forest display",
+      "parts": 280
+    },
+    {
+      "name": "Ancient launch trees",
+      "layer": "Ancient launch trees",
+      "parts": 1147
+    },
+    {
+      "name": "Treetop mission control",
+      "layer": "Treetop mission control",
+      "parts": 595
+    },
+    {
+      "name": "Acorn engine workshop",
+      "layer": "Acorn engine workshop",
+      "parts": 411
+    },
+    {
+      "name": "Rope bridge and ascent",
+      "layer": "Rope bridge and ascent",
+      "parts": 199
+    },
+    {
+      "name": "Timber launch cradle",
+      "layer": "Timber launch cradle",
+      "parts": 315
+    },
+    {
+      "name": "LL-979 glider explorer",
+      "layer": "LL-979 glider explorer",
+      "parts": 342
+    },
+    {
+      "name": "Forest science patrol",
+      "layer": "Forest science patrol",
+      "parts": 41
+    },
+    {
+      "name": "Ferns, moss and moon rocks",
+      "layer": "Ferns, moss and moon rocks",
+      "parts": 63
+    }
+  ],
+  "parts": [
+    {
+      "ref": "3005.dat",
+      "name": "Brick 1 × 1",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 296
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 257
+    },
+    {
+      "ref": "3005.dat",
+      "name": "Brick 1 × 1",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 131
+    },
+    {
+      "ref": "3038.dat",
+      "name": "Slope 45° 2 × 3",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 120
+    },
+    {
+      "ref": "3004.dat",
+      "name": "Brick 1 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 101
+    },
+    {
+      "ref": "3023b.dat",
+      "name": "Plate 1 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 100
+    },
+    {
+      "ref": "4162.dat",
+      "name": "Tile 1 × 8",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 90
+    },
+    {
+      "ref": "3941.dat",
+      "name": "Round Brick 2 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 88
+    },
+    {
+      "ref": "92438.dat",
+      "name": "Plate 8 × 16",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 62
+    },
+    {
+      "ref": "2423.dat",
+      "name": "Plant Leaves 4 × 3",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 60
+    },
+    {
+      "ref": "3005.dat",
+      "name": "Brick 1 × 1",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 60
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 59
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 59
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "19",
+      "colourName": "Tan",
+      "count": 53
+    },
+    {
+      "ref": "30136.dat",
+      "name": "Brick 1 × 2 Log",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 50
+    },
+    {
+      "ref": "2417.dat",
+      "name": "Plant Leaves 6 × 5",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 48
+    },
+    {
+      "ref": "2417.dat",
+      "name": "Plant Leaves 6 × 5",
+      "colour": "2",
+      "colourName": "Green",
+      "count": 48
+    },
+    {
+      "ref": "3684a.dat",
+      "name": "Slope 75° 2 × 2 × 3",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 48
+    },
+    {
+      "ref": "3004.dat",
+      "name": "Brick 1 × 2",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 43
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 39
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 39
+    },
+    {
+      "ref": "3070b.dat",
+      "name": "Tile 1 × 1",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 38
+    },
+    {
+      "ref": "4162.dat",
+      "name": "Tile 1 × 8",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 38
+    },
+    {
+      "ref": "3007.dat",
+      "name": "Brick 2 × 8",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 36
+    },
+    {
+      "ref": "3045.dat",
+      "name": "Slope 45° 2 × 2 Double Convex",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 36
+    },
+    {
+      "ref": "3062b.dat",
+      "name": "Round Brick 1 × 1",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 36
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 36
+    },
+    {
+      "ref": "3020.dat",
+      "name": "Plate 2 × 4",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 34
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 32
+    },
+    {
+      "ref": "3062b.dat",
+      "name": "Round Brick 1 × 1",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 32
+    },
+    {
+      "ref": "87079.dat",
+      "name": "Tile 2 × 4",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 30
+    },
+    {
+      "ref": "3023b.dat",
+      "name": "Plate 1 × 2",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 29
+    },
+    {
+      "ref": "2431.dat",
+      "name": "Tile 1 × 4",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 28
+    },
+    {
+      "ref": "3010.dat",
+      "name": "Brick 1 × 4",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 26
+    },
+    {
+      "ref": "30055.dat",
+      "name": "Fence 1 × 4 × 2 Spindled",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 25
+    },
+    {
+      "ref": "4162.dat",
+      "name": "Tile 1 × 8",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 24
+    },
+    {
+      "ref": "3023b.dat",
+      "name": "Plate 1 × 2",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 23
+    },
+    {
+      "ref": "3039.dat",
+      "name": "Slope 45° 2 × 2",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 22
+    },
+    {
+      "ref": "3062b.dat",
+      "name": "Round Brick 1 × 1",
+      "colour": "19",
+      "colourName": "Tan",
+      "count": 22
+    },
+    {
+      "ref": "2431.dat",
+      "name": "Tile 1 × 4",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 21
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "19",
+      "colourName": "Tan",
+      "count": 21
+    },
+    {
+      "ref": "3622.dat",
+      "name": "Brick 1 × 3",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 21
+    },
+    {
+      "ref": "3024.dat",
+      "name": "Plate 1 × 1",
+      "colour": "2",
+      "colourName": "Green",
+      "count": 20
+    },
+    {
+      "ref": "32607.dat",
+      "name": "Round Plate 1 × 1 with Leaves",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 20
+    },
+    {
+      "ref": "61678.dat",
+      "name": "Curved Slope 4 × 1",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 20
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 19
+    },
+    {
+      "ref": "3666.dat",
+      "name": "Plate 1 × 6",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 19
+    },
+    {
+      "ref": "3007.dat",
+      "name": "Brick 2 × 8",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 18
+    },
+    {
+      "ref": "3795.dat",
+      "name": "Plate 2 × 6",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 18
+    },
+    {
+      "ref": "30136.dat",
+      "name": "Brick 1 × 2 Log",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 17
+    },
+    {
+      "ref": "3010.dat",
+      "name": "Brick 1 × 4",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 15
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 15
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 15
+    },
+    {
+      "ref": "6636.dat",
+      "name": "Tile 1 × 6",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 15
+    },
+    {
+      "ref": "2423.dat",
+      "name": "Plant Leaves 4 × 3",
+      "colour": "2",
+      "colourName": "Green",
+      "count": 14
+    },
+    {
+      "ref": "3622.dat",
+      "name": "Brick 1 × 3",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 14
+    },
+    {
+      "ref": "4282.dat",
+      "name": "Plate 2 × 16",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 14
+    },
+    {
+      "ref": "92438.dat",
+      "name": "Plate 8 × 16",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 14
+    },
+    {
+      "ref": "3029.dat",
+      "name": "Plate 4 × 12",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 13
+    },
+    {
+      "ref": "4282.dat",
+      "name": "Plate 2 × 16",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 13
+    },
+    {
+      "ref": "2445.dat",
+      "name": "Plate 2 × 12",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 12
+    },
+    {
+      "ref": "3040b.dat",
+      "name": "Slope 45° 2 × 1",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 12
+    },
+    {
+      "ref": "4162.dat",
+      "name": "Tile 1 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 12
+    },
+    {
+      "ref": "60479.dat",
+      "name": "Plate 1 × 12",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 12
+    },
+    {
+      "ref": "3022.dat",
+      "name": "Plate 2 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 11
+    },
+    {
+      "ref": "3023b.dat",
+      "name": "Plate 1 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 11
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 11
+    },
+    {
+      "ref": "60479.dat",
+      "name": "Plate 1 × 12",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 11
+    },
+    {
+      "ref": "87079.dat",
+      "name": "Tile 2 × 4",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 11
+    },
+    {
+      "ref": "2431.dat",
+      "name": "Tile 1 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 10
+    },
+    {
+      "ref": "2445.dat",
+      "name": "Plate 2 × 12",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 10
+    },
+    {
+      "ref": "3004.dat",
+      "name": "Brick 1 × 2",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 10
+    },
+    {
+      "ref": "3020.dat",
+      "name": "Plate 2 × 4",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 9
+    },
+    {
+      "ref": "3795.dat",
+      "name": "Plate 2 × 6",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 9
+    },
+    {
+      "ref": "3795.dat",
+      "name": "Plate 2 × 6",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 9
+    },
+    {
+      "ref": "60592.dat",
+      "name": "Window 1 × 2 × 2 Frame",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 9
+    },
+    {
+      "ref": "60601.dat",
+      "name": "Glass for Window 1 × 2 × 2",
+      "colour": "46",
+      "colourName": "Trans yellow",
+      "count": 9
+    },
+    {
+      "ref": "26603.dat",
+      "name": "Tile 2 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 8
+    },
+    {
+      "ref": "3023b.dat",
+      "name": "Plate 1 × 2",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 8
+    },
+    {
+      "ref": "3666.dat",
+      "name": "Plate 1 × 6",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 8
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 8
+    },
+    {
+      "ref": "3941.dat",
+      "name": "Round Brick 2 × 2",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 8
+    },
+    {
+      "ref": "4032b.dat",
+      "name": "Round Plate 2 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 8
+    },
+    {
+      "ref": "87079.dat",
+      "name": "Tile 2 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 8
+    },
+    {
+      "ref": "26603.dat",
+      "name": "Tile 2 × 3",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 7
+    },
+    {
+      "ref": "3070b.dat",
+      "name": "Tile 1 × 1",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 7
+    },
+    {
+      "ref": "3666.dat",
+      "name": "Plate 1 × 6",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 7
+    },
+    {
+      "ref": "3666.dat",
+      "name": "Plate 1 × 6",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 7
+    },
+    {
+      "ref": "4477.dat",
+      "name": "Plate 1 × 10",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 7
+    },
+    {
+      "ref": "2431.dat",
+      "name": "Tile 1 × 4",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 6
+    },
+    {
+      "ref": "2445.dat",
+      "name": "Plate 2 × 12",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 6
+    },
+    {
+      "ref": "2489.dat",
+      "name": "Barrel 2 × 2 × 1.667",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 6
+    },
+    {
+      "ref": "3029.dat",
+      "name": "Plate 4 × 12",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 6
+    },
+    {
+      "ref": "3460.dat",
+      "name": "Plate 1 × 8",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 6
+    },
+    {
+      "ref": "4282.dat",
+      "name": "Plate 2 × 16",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 6
+    },
+    {
+      "ref": "54200.dat",
+      "name": "Slope 30° 1 × 1 × ⅔",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 6
+    },
+    {
+      "ref": "6112.dat",
+      "name": "Brick 1 × 12",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 6
+    },
+    {
+      "ref": "6141.dat",
+      "name": "Round Plate 1 × 1",
+      "colour": "36",
+      "colourName": "Trans red",
+      "count": 6
+    },
+    {
+      "ref": "63864.dat",
+      "name": "Tile 1 × 3",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 6
+    },
+    {
+      "ref": "6636.dat",
+      "name": "Tile 1 × 6",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 6
+    },
+    {
+      "ref": "2456.dat",
+      "name": "Brick 2 × 6",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 5
+    },
+    {
+      "ref": "3022.dat",
+      "name": "Plate 2 × 2",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 5
+    },
+    {
+      "ref": "3070b.dat",
+      "name": "Tile 1 × 1",
+      "colour": "19",
+      "colourName": "Tan",
+      "count": 5
+    },
+    {
+      "ref": "3460.dat",
+      "name": "Plate 1 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 5
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 5
+    },
+    {
+      "ref": "41879a.dat",
+      "name": "Minifig Hips and Legs Short without Hole",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 5
+    },
+    {
+      "ref": "6255.dat",
+      "name": "Plant 1 × 1 Large Leaves",
+      "colour": "2",
+      "colourName": "Green",
+      "count": 5
+    },
+    {
+      "ref": "64805.dat",
+      "name": "Minifig Head Ewok",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 5
+    },
+    {
+      "ref": "26603.dat",
+      "name": "Tile 2 × 3",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 4
+    },
+    {
+      "ref": "3001.dat",
+      "name": "Brick 2 × 4",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 4
+    },
+    {
+      "ref": "3002.dat",
+      "name": "Brick 2 × 3",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 4
+    },
+    {
+      "ref": "3004p90.dat",
+      "name": "Brick 1 × 2 with Classic Space Logo Pattern",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 4
+    },
+    {
+      "ref": "3007.dat",
+      "name": "Brick 2 × 8",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 4
+    },
+    {
+      "ref": "3009.dat",
+      "name": "Brick 1 × 6",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 4
+    },
+    {
+      "ref": "3020.dat",
+      "name": "Plate 2 × 4",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 4
+    },
+    {
+      "ref": "3022.dat",
+      "name": "Plate 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 4
+    },
+    {
+      "ref": "3068b.dat",
+      "name": "Tile 2 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 4
+    },
+    {
+      "ref": "3069b.dat",
+      "name": "Tile 1 × 2",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 4
+    },
+    {
+      "ref": "3070b.dat",
+      "name": "Tile 1 × 1",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 4
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 4
+    },
+    {
+      "ref": "3641.dat",
+      "name": "Tyre 6/50 × 8 Offset Tread",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 4
+    },
+    {
+      "ref": "3710.dat",
+      "name": "Plate 1 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 4
+    },
+    {
+      "ref": "3832.dat",
+      "name": "Plate 2 × 10",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 4
+    },
+    {
+      "ref": "4477.dat",
+      "name": "Plate 1 × 10",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 4
+    },
+    {
+      "ref": "4477.dat",
+      "name": "Plate 1 × 10",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 4
+    },
+    {
+      "ref": "4624.dat",
+      "name": "Wheel Rim 6.4 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 4
+    },
+    {
+      "ref": "54200.dat",
+      "name": "Slope 30° 1 × 1 × ⅔",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 4
+    },
+    {
+      "ref": "60479.dat",
+      "name": "Plate 1 × 12",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 4
+    },
+    {
+      "ref": "60479.dat",
+      "name": "Plate 1 × 12",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 4
+    },
+    {
+      "ref": "6636.dat",
+      "name": "Tile 1 × 6",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 4
+    },
+    {
+      "ref": "15068.dat",
+      "name": "Curved Slope 2 × 2",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 3
+    },
+    {
+      "ref": "15068.dat",
+      "name": "Curved Slope 2 × 2",
+      "colour": "378",
+      "colourName": "Sand green",
+      "count": 3
+    },
+    {
+      "ref": "2465.dat",
+      "name": "Brick 1 × 16",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 3
+    },
+    {
+      "ref": "3010.dat",
+      "name": "Brick 1 × 4",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 3
+    },
+    {
+      "ref": "3021.dat",
+      "name": "Plate 2 × 3",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 3
+    },
+    {
+      "ref": "3022.dat",
+      "name": "Plate 2 × 2",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 3
+    },
+    {
+      "ref": "3027.dat",
+      "name": "Plate 6 × 16",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 3
+    },
+    {
+      "ref": "3028.dat",
+      "name": "Plate 6 × 12",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 3
+    },
+    {
+      "ref": "3035.dat",
+      "name": "Plate 4 × 8",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 3
+    },
+    {
+      "ref": "3039.dat",
+      "name": "Slope 45° 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 3
+    },
+    {
+      "ref": "3039.dat",
+      "name": "Slope 45° 2 × 2",
+      "colour": "72",
+      "colourName": "Dark grey",
+      "count": 3
+    },
+    {
+      "ref": "3039pc5.dat",
+      "name": "Slope Brick 45 2 × 2 with Flight Control Pattern",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 3
+    },
+    {
+      "ref": "3068b.dat",
+      "name": "Tile 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 3
+    },
+    {
+      "ref": "3832.dat",
+      "name": "Plate 2 × 10",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 3
+    },
+    {
+      "ref": "3942c.dat",
+      "name": "Cone 2 × 2 × 2",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 3
+    },
+    {
+      "ref": "3957a.dat",
+      "name": "Antenna 1 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 3
+    },
+    {
+      "ref": "41769a.dat",
+      "name": "Wedge Plate 2 × 4 Right",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 3
+    },
+    {
+      "ref": "41770a.dat",
+      "name": "Wedge Plate 2 × 4 Left",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 3
+    },
+    {
+      "ref": "76382p90.dat",
+      "name": "Minifig Torso with Arms and Hands with Classic Space Pattern",
+      "colour": "15",
+      "colourName": "White",
+      "count": 3
+    },
+    {
+      "ref": "87552.dat",
+      "name": "Panel 1 × 2 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 3
+    },
+    {
+      "ref": "2431.dat",
+      "name": "Tile 1 × 4",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 2
+    },
+    {
+      "ref": "2456.dat",
+      "name": "Brick 2 × 6",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 2
+    },
+    {
+      "ref": "3001.dat",
+      "name": "Brick 2 × 4",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 2
+    },
+    {
+      "ref": "3004.dat",
+      "name": "Brick 1 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3008.dat",
+      "name": "Brick 1 × 8",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 2
+    },
+    {
+      "ref": "3010.dat",
+      "name": "Brick 1 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3020.dat",
+      "name": "Plate 2 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3021.dat",
+      "name": "Plate 2 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3022.dat",
+      "name": "Plate 2 × 2",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 2
+    },
+    {
+      "ref": "3023b.dat",
+      "name": "Plate 1 × 2",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 2
+    },
+    {
+      "ref": "3028.dat",
+      "name": "Plate 6 × 12",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 2
+    },
+    {
+      "ref": "3028.dat",
+      "name": "Plate 6 × 12",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 2
+    },
+    {
+      "ref": "3029.dat",
+      "name": "Plate 4 × 12",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 2
+    },
+    {
+      "ref": "3031.dat",
+      "name": "Plate 4 × 4",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 2
+    },
+    {
+      "ref": "3031.dat",
+      "name": "Plate 4 × 4",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 2
+    },
+    {
+      "ref": "3031.dat",
+      "name": "Plate 4 × 4",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "3034.dat",
+      "name": "Plate 2 × 8",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "3035.dat",
+      "name": "Plate 4 × 8",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "3036.dat",
+      "name": "Plate 6 × 8",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "3062b.dat",
+      "name": "Round Brick 1 × 1",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "3297.dat",
+      "name": "Slope 33° 3 × 4",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "3298p90.dat",
+      "name": "Slope Brick 33 3 × 2 with Classic Space Logo Pattern",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "3460.dat",
+      "name": "Plate 1 × 8",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 2
+    },
+    {
+      "ref": "3460.dat",
+      "name": "Plate 1 × 8",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "3958.dat",
+      "name": "Plate 6 × 6",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 2
+    },
+    {
+      "ref": "3958.dat",
+      "name": "Plate 6 × 6",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 2
+    },
+    {
+      "ref": "3960.dat",
+      "name": "Dish 4 × 4 Inverted",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "4424.dat",
+      "name": "Barrel 4.5 × 4.5",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 2
+    },
+    {
+      "ref": "4474.dat",
+      "name": "Windscreen 6 × 4 × 2 Canopy",
+      "colour": "46",
+      "colourName": "Trans yellow",
+      "count": 2
+    },
+    {
+      "ref": "4477.dat",
+      "name": "Plate 1 × 10",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 2
+    },
+    {
+      "ref": "4600.dat",
+      "name": "Plate 2 × 2 with Wheel Holders",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "4746.dat",
+      "name": "Tail 4 × 2 × 2 with Rocket",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "60479.dat",
+      "name": "Plate 1 × 12",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "6111.dat",
+      "name": "Brick 1 × 10",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "63864.dat",
+      "name": "Tile 1 × 3",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 2
+    },
+    {
+      "ref": "63864.dat",
+      "name": "Tile 1 × 3",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 2
+    },
+    {
+      "ref": "87081.dat",
+      "name": "Round Brick 4 × 4",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "92438.dat",
+      "name": "Plate 8 × 16",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 2
+    },
+    {
+      "ref": "2437.dat",
+      "name": "Windscreen 3 × 4 × 1.333",
+      "colour": "46",
+      "colourName": "Trans yellow",
+      "count": 1
+    },
+    {
+      "ref": "2445.dat",
+      "name": "Plate 2 × 12",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "2456.dat",
+      "name": "Brick 2 × 6",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3002.dat",
+      "name": "Brick 2 × 3",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 1
+    },
+    {
+      "ref": "3003.dat",
+      "name": "Brick 2 × 2",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 1
+    },
+    {
+      "ref": "3003.dat",
+      "name": "Brick 2 × 2",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3005.dat",
+      "name": "Brick 1 × 1",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 1
+    },
+    {
+      "ref": "3006.dat",
+      "name": "Brick 2 × 10",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 1
+    },
+    {
+      "ref": "3009.dat",
+      "name": "Brick 1 × 6",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 1
+    },
+    {
+      "ref": "3009.dat",
+      "name": "Brick 1 × 6",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 1
+    },
+    {
+      "ref": "3010.dat",
+      "name": "Brick 1 × 4",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 1
+    },
+    {
+      "ref": "3021.dat",
+      "name": "Plate 2 × 3",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 1
+    },
+    {
+      "ref": "3028.dat",
+      "name": "Plate 6 × 12",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3029.dat",
+      "name": "Plate 4 × 12",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 1
+    },
+    {
+      "ref": "3030.dat",
+      "name": "Plate 4 × 10",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 1
+    },
+    {
+      "ref": "3031.dat",
+      "name": "Plate 4 × 4",
+      "colour": "0",
+      "colourName": "Black",
+      "count": 1
+    },
+    {
+      "ref": "3033.dat",
+      "name": "Plate 6 × 10",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 1
+    },
+    {
+      "ref": "3034.dat",
+      "name": "Plate 2 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3035.dat",
+      "name": "Plate 4 × 8",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 1
+    },
+    {
+      "ref": "3035.dat",
+      "name": "Plate 4 × 8",
+      "colour": "308",
+      "colourName": "Dark brown",
+      "count": 1
+    },
+    {
+      "ref": "3035.dat",
+      "name": "Plate 4 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3036.dat",
+      "name": "Plate 6 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "3068b.dat",
+      "name": "Tile 2 × 2",
+      "colour": "28",
+      "colourName": "Dark tan",
+      "count": 1
+    },
+    {
+      "ref": "3460.dat",
+      "name": "Plate 1 × 8",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 1
+    },
+    {
+      "ref": "3623.dat",
+      "name": "Plate 1 × 3",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 1
+    },
+    {
+      "ref": "3795.dat",
+      "name": "Plate 2 × 6",
+      "colour": "288",
+      "colourName": "Dark green",
+      "count": 1
+    },
+    {
+      "ref": "3960.dat",
+      "name": "Dish 4 × 4 Inverted",
+      "colour": "14",
+      "colourName": "Yellow",
+      "count": 1
+    },
+    {
+      "ref": "3961.dat",
+      "name": "Dish 8 × 8 Inverted with Solid Studs",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "4079.dat",
+      "name": "Seat 2 × 2",
+      "colour": "70",
+      "colourName": "Reddish brown",
+      "count": 1
+    },
+    {
+      "ref": "41539.dat",
+      "name": "Plate 8 × 8",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "4589.dat",
+      "name": "Cone 1 × 1",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 1
+    },
+    {
+      "ref": "4740.dat",
+      "name": "Dish 2 × 2 Inverted",
+      "colour": "46",
+      "colourName": "Trans yellow",
+      "count": 1
+    },
+    {
+      "ref": "60596.dat",
+      "name": "Door Frame 1 × 4 × 6",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    },
+    {
+      "ref": "60616a.dat",
+      "name": "Door 1 × 4 × 6 Smooth",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 1
+    },
+    {
+      "ref": "6182.dat",
+      "name": "Arch 1 × 4 × 2",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 1
+    },
+    {
+      "ref": "76382p6j.dat",
+      "name": "Minifig Torso with Arms and Yellow Hands with Jacket, Zippered Pockets and Classic Space Logo Pattern",
+      "colour": "4",
+      "colourName": "Red",
+      "count": 1
+    },
+    {
+      "ref": "76382p91.dat",
+      "name": "Minifig Torso with Arms and Hands with Classic Space Simulated Wear Pattern",
+      "colour": "1",
+      "colourName": "Blue",
+      "count": 1
+    },
+    {
+      "ref": "92438.dat",
+      "name": "Plate 8 × 16",
+      "colour": "71",
+      "colourName": "Light grey",
+      "count": 1
+    }
+  ],
+  "heaviestOps": [
+    {
+      "op": "sections[1].ops[23]",
+      "kind": "cylinder",
+      "parts": 189
+    },
+    {
+      "op": "sections[2].ops[7]",
+      "kind": "cylinder",
+      "parts": 184
+    },
+    {
+      "op": "sections[1].ops[0]",
+      "kind": "cylinder",
+      "parts": 172
+    },
+    {
+      "op": "sections[3].ops[6]",
+      "kind": "cylinder",
+      "parts": 118
+    },
+    {
+      "op": "sections[5].ops[7]",
+      "kind": "floor",
+      "parts": 115
+    },
+    {
+      "op": "sections[2].ops[16]",
+      "kind": "roof",
+      "parts": 108
+    },
+    {
+      "op": "sections[1].ops[1]",
+      "kind": "cylinder",
+      "parts": 102
+    },
+    {
+      "op": "sections[2].ops[6]",
+      "kind": "cylinder",
+      "parts": 97
+    },
+    {
+      "op": "sections[2].ops[0]",
+      "kind": "floor",
+      "parts": 96
+    },
+    {
+      "op": "sections[6].ops[7]",
+      "kind": "box",
+      "parts": 90
+    },
+    {
+      "op": "sections[4].ops[39]",
+      "kind": "stairs",
+      "parts": 87
+    },
+    {
+      "op": "sections[3].ops[12]",
+      "kind": "roof",
+      "parts": 82
+    }
+  ],
+  "costliestOps": [
+    {
+      "op": "sections[1].ops[23]",
+      "parts": 189
+    },
+    {
+      "op": "sections[2].ops[7]",
+      "parts": 184
+    },
+    {
+      "op": "sections[1].ops[0]",
+      "parts": 172
+    },
+    {
+      "op": "sections[3].ops[6]",
+      "parts": 118
+    },
+    {
+      "op": "sections[5].ops[7]",
+      "parts": 115
+    },
+    {
+      "op": "sections[2].ops[16]",
+      "parts": 108
+    },
+    {
+      "op": "sections[1].ops[1]",
+      "parts": 102
+    },
+    {
+      "op": "sections[2].ops[6]",
+      "parts": 97
+    },
+    {
+      "op": "sections[2].ops[0]",
+      "parts": 96
+    },
+    {
+      "op": "sections[6].ops[7]",
+      "parts": 90
+    },
+    {
+      "op": "sections[4].ops[39]",
+      "parts": 87
+    },
+    {
+      "op": "sections[3].ops[12]",
+      "parts": 82
+    }
+  ],
+  "target": {
+    "target": 3000,
+    "parts": 3393,
+    "difference": 393,
+    "percent": 13.1
+  },
+  "resolved": [],
+  "check": {
+    "overlaps": 0,
+    "offGrid": 10,
+    "groups": 282,
+    "covered": 3140,
+    "uncovered": 253,
+    "health": "warning: 3140 parts with verified connectors form 282 separately connected groups; 230 parts are not connected to anything. 2 cars stand on their wheels. 253 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+  },
+  "problems": [
+    {
+      "severity": "warning",
+      "code": "part-clash",
+      "message": "41879a.dat is placed where 2431.dat already is",
+      "ops": [
+        "sections[5].ops[14] (code line 2)",
+        "sections[5].ops[32].ops[0] (code line 2)"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "off-grid",
+      "message": "10 part(s) are off the stud grid",
+      "ops": [
+        "sections[2].ops[26].ops[1] (code line 2)",
+        "sections[2].ops[26].ops[2] (code line 2)",
+        "sections[3].ops[23].ops[1] (code line 2)",
+        "sections[3].ops[23].ops[2] (code line 2)",
+        "sections[5].ops[32].ops[1] (code line 2)",
+        "sections[5].ops[32].ops[2] (code line 2)",
+        "sections[5].ops[33].ops[1] (code line 2)",
+        "sections[5].ops[33].ops[2] (code line 2)",
+        "sections[7].ops[1].ops[1] (code line 2)",
+        "sections[7].ops[1].ops[2] (code line 2)"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "floating",
+      "message": "443 part(s) in 281 group(s) are not connected to the main structure (largest group: 50 parts); e.g. 3297 at [35, 22, 9], 3941 at [45, 7, 32], 3941 at [6, 10, 26], 3941 at [6, 10, 45], 3941 at [25, 10, 45], 3710 at [43, 35, 35]",
+      "ops": [
+        "sections[2].ops[0] (code line 9)",
+        "sections[5].ops[7] (code line 12)",
+        "sections[3].ops[0] (code line 10)",
+        "sections[6].ops[7] (code line 14)",
+        "sections[2].ops[8] (code line 9)",
+        "sections[6].ops[6] (code line 14)",
+        "sections[5].ops[6] (code line 12)",
+        "sections[3].ops[1] (code line 10)",
+        "sections[1].ops[81] (code line 7)",
+        "sections[2].ops[2] (code line 9)",
+        "sections[2].ops[4] (code line 9)",
+        "sections[2].ops[5] (code line 9)"
+      ]
+    }
+  ],
+  "output": "build.mpd",
+  "images": [
+    "views/build-iso.png",
+    "views/build-front.png",
+    "views/build-iso-back.png",
+    "views/build-top.png"
+  ],
+  "totalMs": 62544
+}

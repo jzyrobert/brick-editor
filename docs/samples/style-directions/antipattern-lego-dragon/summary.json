@@ -1,0 +1,103 @@
+{
+  "brief": "a dragon",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "style-antipattern-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1180,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1180,
+        "difference": 180,
+        "percent": 18
+      },
+      "seconds": 439,
+      "tokens": {
+        "input": 62217,
+        "cached": 28288,
+        "output": 14088,
+        "reasoning": 9920
+      },
+      "searches": 0,
+      "checks": 0,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "3004",
+          "3005",
+          "3022",
+          "3039",
+          "3040b",
+          "3044b",
+          "3068b",
+          "3942c",
+          "4589",
+          "54200",
+          "6141",
+          "98138"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 439,
+          "usage": {
+            "input": 62217,
+            "cached": 28288,
+            "output": 14088,
+            "reasoning": 9920,
+            "costUsd": 0
+          },
+          "searches": [],
+          "checks": [],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "3004",
+              "3005",
+              "3022",
+              "3039",
+              "3040b",
+              "3044b",
+              "3068b",
+              "3942c",
+              "4589",
+              "54200",
+              "6141",
+              "98138"
+            ],
+            "notInList": [],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1180
+        }
+      ]
+    }
+  ]
+}

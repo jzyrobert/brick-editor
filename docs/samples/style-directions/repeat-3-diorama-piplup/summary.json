@@ -1,0 +1,552 @@
+{
+  "brief": "piplup",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1138,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1138,
+        "difference": 138,
+        "percent": 13.8
+      },
+      "seconds": 839,
+      "tokens": {
+        "input": 1414252,
+        "cached": 1137024,
+        "output": 90934,
+        "reasoning": 68215
+      },
+      "searches": 19,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "24201",
+          "2431",
+          "3003",
+          "3005",
+          "30151a",
+          "3020",
+          "30286",
+          "30342",
+          "30385",
+          "3039",
+          "3045",
+          "3068b",
+          "3069b",
+          "3660b",
+          "3678b",
+          "41749",
+          "41750",
+          "4460b",
+          "50950",
+          "6091",
+          "6141",
+          "61678",
+          "63864",
+          "64648",
+          "65734",
+          "98138"
+        ],
+        "notInList": [
+          "30151a",
+          "30286",
+          "30342",
+          "30385",
+          "41749",
+          "41750",
+          "64648",
+          "65734"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 839,
+          "usage": {
+            "input": 1414252,
+            "cached": 1137024,
+            "output": 90934,
+            "reasoning": 68215,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 20
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24201",
+                "13547",
+                "6091",
+                "70681",
+                "80177",
+                "80178",
+                "93606",
+                "47457",
+                "93604",
+                "3573",
+                "29119",
+                "29120",
+                "54091",
+                "47456"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "dark blue",
+                "available_in_colour": true,
+                "limit": 20
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547",
+                "6091",
+                "30602",
+                "42022",
+                "70681",
+                "80177",
+                "80178",
+                "93606",
+                "3573",
+                "29119",
+                "29120",
+                "44126"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "limit": 20
+              },
+              "results": [
+                "41669",
+                "48267",
+                "4592",
+                "7768",
+                "4257"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "inverted curved slope",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "42023",
+                "11301",
+                "1750",
+                "5847"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 10
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "hemisphere",
+                "limit": 15
+              },
+              "results": [
+                "30208",
+                "44359",
+                "98107",
+                "24130",
+                "24132",
+                "61287",
+                "1974",
+                "86500",
+                "44358",
+                "20455",
+                "30083",
+                "4412",
+                "57587",
+                "58772",
+                "58773"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dome",
+                "size": "4x4",
+                "limit": 15
+              },
+              "results": [
+                "86500",
+                "49612",
+                "35320",
+                "8181",
+                "85834"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547",
+                "6091",
+                "30602",
+                "42022",
+                "70681",
+                "80177",
+                "80178"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "54200",
+                "85984",
+                "2450",
+                "24299",
+                "24307",
+                "43719",
+                "90194",
+                "43723b",
+                "41769b",
+                "41770b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "round brick",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "3062b",
+                "3941",
+                "6143",
+                "41750",
+                "41749",
+                "5152",
+                "18860",
+                "35390",
+                "42022",
+                "77808"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "sphere",
+                "limit": 20
+              },
+              "results": [
+                "33176",
+                "20953",
+                "6908",
+                "15395",
+                "5906",
+                "54821",
+                "18990",
+                "86500",
+                "30208",
+                "24947",
+                "53585",
+                "98107",
+                "22119",
+                "24130",
+                "53550",
+                "88067",
+                "88068",
+                "24132",
+                "30342",
+                "87375"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope curved 6",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "42022",
+                "35164",
+                "41881"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "brick round 4",
+                "colour": "trans-clear",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "79850",
+                "32531b",
+                "32532b",
+                "3477",
+                "716a",
+                "4032a",
+                "65734",
+                "59900",
+                "15570"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope 75",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "54200",
+                "3039",
+                "3040b",
+                "11477",
+                "3660b",
+                "6091",
+                "30602",
+                "42022",
+                "41750",
+                "41749"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "crystal",
+                "limit": 10
+              },
+              "results": [
+                "30385",
+                "11127",
+                "30151a",
+                "30153",
+                "5686",
+                "30213",
+                "30151b",
+                "5331",
+                "88695",
+                "70770"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "arctic globe",
+                "limit": 10
+              },
+              "results": [
+                "30342",
+                "30286"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "sphere",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "54821",
+                "18990",
+                "86500",
+                "30208",
+                "30342",
+                "87375",
+                "30286",
+                "35320"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "hemisphere 4",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "30208",
+                "86500"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "round sphere",
+                "colour": "trans-clear",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "6141",
+                "98138",
+                "3062b",
+                "3941",
+                "4032b",
+                "14769",
+                "33291",
+                "25269",
+                "4589",
+                "4740"
+              ],
+              "round": 4
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1171,
+              "errors": 1,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 1138,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "13547",
+              "15068",
+              "24201",
+              "2431",
+              "3003",
+              "3005",
+              "30151a",
+              "3020",
+              "30286",
+              "30342",
+              "30385",
+              "3039",
+              "3045",
+              "3068b",
+              "3069b",
+              "3660b",
+              "3678b",
+              "41749",
+              "41750",
+              "4460b",
+              "50950",
+              "6091",
+              "6141",
+              "61678",
+              "63864",
+              "64648",
+              "65734",
+              "98138"
+            ],
+            "notInList": [
+              "30151a",
+              "30286",
+              "30342",
+              "30385",
+              "41749",
+              "41750",
+              "64648",
+              "65734"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1138
+        }
+      ]
+    }
+  ]
+}

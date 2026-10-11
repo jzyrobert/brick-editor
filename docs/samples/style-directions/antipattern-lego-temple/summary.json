@@ -1,0 +1,161 @@
+{
+  "brief": "a japanese buddhist temple",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "attempts": 5,
+  "prompt": "style-antipattern-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 2000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 2210,
+      "targetMiss": {
+        "target": 2000,
+        "parts": 2210,
+        "difference": 210,
+        "percent": 10.5
+      },
+      "seconds": 526,
+      "tokens": {
+        "input": 507274,
+        "cached": 321280,
+        "output": 53478,
+        "reasoning": 29539
+      },
+      "searches": 3,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "3003",
+          "3009",
+          "3062b",
+          "3660b",
+          "3941",
+          "3942c",
+          "3943b",
+          "3960",
+          "4032b",
+          "4589",
+          "50950",
+          "60598"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 526,
+          "usage": {
+            "input": 507274,
+            "cached": 321280,
+            "output": 53478,
+            "reasoning": 29539,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "bell",
+                "limit": 5
+              },
+              "results": [
+                "3942c",
+                "3943b",
+                "30151a",
+                "6017",
+                "u608"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "roof ornament",
+                "limit": 5
+              },
+              "results": [
+                "3039",
+                "3037",
+                "3040b",
+                "3038",
+                "3043"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "1x3",
+                "colour": "dark bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "50950",
+                "70681"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 2598,
+              "errors": 4,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 2379,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 2210,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "3003",
+              "3009",
+              "3062b",
+              "3660b",
+              "3941",
+              "3942c",
+              "3943b",
+              "3960",
+              "4032b",
+              "4589",
+              "50950",
+              "60598"
+            ],
+            "notInList": [],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 2210
+        }
+      ]
+    }
+  ]
+}

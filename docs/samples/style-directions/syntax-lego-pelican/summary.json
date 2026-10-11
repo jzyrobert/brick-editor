@@ -1,0 +1,482 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "build-agent.md",
+  "replyPrompt": "brick-build-syntax.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 901,
+      "targetMiss": {
+        "target": 800,
+        "parts": 901,
+        "difference": 101,
+        "percent": 12.6
+      },
+      "seconds": 528,
+      "tokens": {
+        "input": 1441544,
+        "cached": 1076992,
+        "output": 54869,
+        "reasoning": 31421
+      },
+      "searches": 20,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "14769",
+          "15068",
+          "24309",
+          "3005pe4",
+          "3045",
+          "3700",
+          "3941",
+          "42022",
+          "54095",
+          "54200",
+          "6141",
+          "61678",
+          "63864",
+          "88517c03",
+          "98138"
+        ],
+        "notInList": [
+          "3005pe4",
+          "42022",
+          "54095",
+          "88517c03"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 528,
+          "usage": {
+            "input": 1441544,
+            "cached": 1076992,
+            "output": 54869,
+            "reasoning": 31421,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "bicycle",
+                "limit": 12
+              },
+              "results": [
+                "4719",
+                "92851",
+                "2807",
+                "4720",
+                "64248",
+                "4719c01",
+                "4719c02",
+                "4719c03",
+                "u9163",
+                "28578"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel spoked large",
+                "limit": 12
+              },
+              "results": [
+                "4624",
+                "3641",
+                "6255",
+                "3788",
+                "4600",
+                "3471",
+                "3829c01",
+                "50862",
+                "2741",
+                "85544",
+                "2515a",
+                "2515b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547",
+                "6091",
+                "30602",
+                "42022"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope curved inverted",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023",
+                "11301",
+                "45410"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tile round eye",
+                "limit": 8
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel 75",
+                "limit": 8
+              },
+              "results": [
+                "75545",
+                "73389",
+                "73398",
+                "5428",
+                "4624c04",
+                "42610c01",
+                "42610c03",
+                "50944c01"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel motorcycle",
+                "limit": 10
+              },
+              "results": [
+                "88517",
+                "2903",
+                "50860",
+                "18895",
+                "52035",
+                "85983",
+                "46334",
+                "71720",
+                "30189",
+                "84772"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "brick eye pattern",
+                "limit": 10
+              },
+              "results": [
+                "3005pe1",
+                "3005pe4",
+                "3003pe3",
+                "3003pe2",
+                "3005pe2",
+                "3005pe3",
+                "3437pe1",
+                "3003pe1",
+                "3003pe7",
+                "3010pzf"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved 6",
+                "colour": "orange",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "42022",
+                "44126",
+                "42023",
+                "52031",
+                "35164",
+                "41748",
+                "41747",
+                "41764"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "technic axle connector perpendicular",
+                "limit": 8
+              },
+              "results": [
+                "3700",
+                "3701",
+                "3709b",
+                "4600",
+                "32039",
+                "6553",
+                "22961",
+                "42135"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "tyre 75 motorcycle",
+                "limit": 10
+              },
+              "results": [
+                "80542"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 8
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope curved 8",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "42918",
+                "41766",
+                "54091",
+                "54095",
+                "50967",
+                "11290",
+                "15625",
+                "11301"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope curved 2 2 corner",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "77180",
+                "77182"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "plate axle wheel holder",
+                "limit": 8
+              },
+              "results": [
+                "4600",
+                "69963c01"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "tyre motorcycle",
+                "limit": 30
+              },
+              "results": [
+                "2902",
+                "11957",
+                "67140",
+                "71721",
+                "71722",
+                "80542",
+                "88516",
+                "6596",
+                "50861",
+                "46334c01",
+                "71720c01",
+                "71720c02",
+                "88517c01",
+                "88517c02",
+                "88517c03",
+                "2903c01",
+                "2903c02",
+                "51378"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "technic axle 8",
+                "limit": 6
+              },
+              "results": [
+                "3707",
+                "55013",
+                "4192",
+                "52730",
+                "77590",
+                "99012"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "technic bush",
+                "limit": 6
+              },
+              "results": [
+                "32039",
+                "32123b",
+                "3713",
+                "32123a",
+                "32054",
+                "42135"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "bar handlebar",
+                "limit": 8
+              },
+              "results": [
+                "2921",
+                "60478",
+                "3839b",
+                "48336",
+                "30374",
+                "87994",
+                "6187",
+                "11090"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "slope wedge orange",
+                "colour": "orange",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "54200",
+                "85984",
+                "3039",
+                "3040b",
+                "11477",
+                "4286",
+                "3665a",
+                "3298"
+              ],
+              "round": 4
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: sections[0].ops[0].part: unknown part alias @wheel"
+            },
+            {
+              "round": 2,
+              "parts": 1048,
+              "errors": 6,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 901,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "14769",
+              "15068",
+              "24309",
+              "3005pe4",
+              "3045",
+              "3700",
+              "3941",
+              "42022",
+              "54095",
+              "54200",
+              "6141",
+              "61678",
+              "63864",
+              "88517c03",
+              "98138"
+            ],
+            "notInList": [
+              "3005pe4",
+              "42022",
+              "54095",
+              "88517c03"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 901
+        }
+      ]
+    }
+  ]
+}

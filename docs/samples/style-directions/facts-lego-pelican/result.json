@@ -1,0 +1,575 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 2,
+  "parts": 878,
+  "targetMiss": {
+    "target": 800,
+    "parts": 878,
+    "difference": 78,
+    "percent": 9.8
+  },
+  "seconds": 1049,
+  "tokens": {
+    "input": 2228590,
+    "cached": 1666944,
+    "output": 124790,
+    "reasoning": 83422
+  },
+  "searches": 27,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "24201",
+      "24309",
+      "2431",
+      "3005pe4",
+      "3022",
+      "3023b",
+      "3039",
+      "32803",
+      "3660b",
+      "3684a",
+      "3684c",
+      "4032b",
+      "41747",
+      "41748",
+      "4460b",
+      "4740",
+      "54091",
+      "54200",
+      "6091",
+      "61678",
+      "64648",
+      "71720c01",
+      "93606"
+    ],
+    "notInList": [
+      "3005pe4",
+      "32803",
+      "3684c",
+      "41747",
+      "41748",
+      "54091",
+      "64648",
+      "71720c01",
+      "93606"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 979,
+      "usage": {
+        "input": 2193568,
+        "cached": 1666944,
+        "output": 121278,
+        "reasoning": 83236,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "motorcycle wheel",
+            "limit": 8
+          },
+          "results": [
+            "88517",
+            "2903",
+            "50860",
+            "18895",
+            "52035",
+            "85983",
+            "46334",
+            "71720"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wheel tyre large",
+            "limit": 8
+          },
+          "results": [
+            "51377c01",
+            "51377c02",
+            "715c02",
+            "35c01"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "13547",
+            "6091",
+            "30602",
+            "42022"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye tile",
+            "limit": 8
+          },
+          "results": [
+            "10238",
+            "98138pz0",
+            "98138pz2",
+            "98138p2d",
+            "98138p07",
+            "98138pz4",
+            "3069bpm0",
+            "3070bp0e"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bicycle",
+            "limit": 8
+          },
+          "results": [
+            "4719",
+            "92851",
+            "2807",
+            "4720",
+            "64248",
+            "4719c01",
+            "4719c02",
+            "4719c03"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "71720c01",
+            "limit": 2
+          },
+          "results": [
+            "71720c01"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "88517c02",
+            "limit": 2
+          },
+          "results": [
+            "88517c02"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Technic axle 6",
+            "limit": 3
+          },
+          "results": [
+            "3706",
+            "59443",
+            "2994"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Technic brick axle hole",
+            "size": "1x2",
+            "limit": 4
+          },
+          "results": [
+            "3700"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved wedge",
+            "colour": "orange",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "93606",
+            "52031",
+            "41748",
+            "41747",
+            "41764"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "brick eye pattern",
+            "limit": 8
+          },
+          "results": [
+            "3005pe1",
+            "3005pe4",
+            "3003pe3",
+            "3003pe2",
+            "3005pe2",
+            "3005pe3",
+            "3437pe1",
+            "3003pe1"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "fish",
+            "limit": 5
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "Technic axle pin",
+            "limit": 5
+          },
+          "results": [
+            "3700",
+            "3701",
+            "3709b",
+            "3749",
+            "22961"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "slope inverted curved",
+            "colour": "orange",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "slope 75",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "4460b",
+            "3684a",
+            "2449",
+            "3684c"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "motorcycle wheel axle",
+            "limit": 8
+          },
+          "results": [
+            "u9163"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "wheel with axle",
+            "limit": 8
+          },
+          "results": [
+            "4600",
+            "2994",
+            "6595",
+            "32020",
+            "56903",
+            "86652",
+            "3482",
+            "22253"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "71720c02",
+            "limit": 2
+          },
+          "results": [
+            "71720c02"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "wheel pin",
+            "limit": 4
+          },
+          "results": [
+            "4600",
+            "30027b",
+            "30027c",
+            "30027d"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "32803",
+            "colour": "bright light orange",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [
+            "32803"
+          ],
+          "round": 7
+        },
+        {
+          "args": {
+            "query": "3684a",
+            "colour": "bright light orange",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [],
+          "round": 7
+        },
+        {
+          "args": {
+            "query": "54091",
+            "colour": "yellow",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [
+            "54091"
+          ],
+          "round": 7
+        },
+        {
+          "args": {
+            "query": "Technic motorcycle wheel axle assembly",
+            "limit": 8
+          },
+          "results": [
+            "4624",
+            "3641",
+            "3700",
+            "3701",
+            "3709b",
+            "4600",
+            "3788",
+            "3829c01"
+          ],
+          "round": 7
+        },
+        {
+          "args": {
+            "query": "3684c",
+            "colour": "bright light orange",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [],
+          "round": 8
+        },
+        {
+          "args": {
+            "query": "3684c",
+            "colour": "orange",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [
+            "3684c"
+          ],
+          "round": 8
+        },
+        {
+          "args": {
+            "query": "93606",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [
+            "93606",
+            "93606p02"
+          ],
+          "round": 8
+        },
+        {
+          "args": {
+            "query": "71720",
+            "limit": 3
+          },
+          "results": [
+            "71720",
+            "71720c01",
+            "71720c02"
+          ],
+          "round": 8
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1029,
+          "errors": 8,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 918,
+          "errors": 2,
+          "ok": false
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "errors",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "24201",
+          "24309",
+          "2431",
+          "3005pe4",
+          "3022",
+          "3023b",
+          "3039",
+          "32803",
+          "3660b",
+          "3684a",
+          "3684c",
+          "3706",
+          "4032b",
+          "41747",
+          "41748",
+          "4460b",
+          "4740",
+          "54091",
+          "54200",
+          "6091",
+          "61678",
+          "64648",
+          "71720c01",
+          "93606"
+        ],
+        "notInList": [
+          "3005pe4",
+          "32803",
+          "3684c",
+          "3706",
+          "41747",
+          "41748",
+          "54091",
+          "64648",
+          "71720c01",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 904,
+      "reason": "The script compiled to 904 parts (target 800: +104, +13%). Errors to fix:\n- overlap: 71720c01 Wheel 24 × 107 Motorcycle with 7 Spokes with Tyre 27/ 48 × 107 Motorcycle with Racing Tread placed at [-1.5, 0.5, -20.5] (its body reaches x -1.5–1.5, z -20.5–-3.5, past its footprint) and 3706 Technic Axle 6 placed at [-3, 20.5, -12.5] overlap where their bodies meet: x -1.5–1.5, y 20.5–22, z -12.5–-11.5 [sections[1].ops[0] (code line 13), sections[1].ops[1] (code line 14)]\n- overlap: 71720c01 Wheel 24 × 107 Motorcycle with 7 Spokes with Tyre 27/ 48 × 107 Motorcycle with Racing Tread placed at [-1.5, 0.5, 5.5] (its body reaches x -1.5–1.5, z 5.5–22.5, past its footprint) and 3706 Technic Axle 6 placed at [-3, 20.5, 13.5] overlap where their bodies meet: x -1.5–1.5, y 20.5–22, z 13.5–14.5 [sections[1].ops[4] (code line 13), sections[1].ops[5] (code line 14)]"
+    },
+    {
+      "attempt": 2,
+      "seconds": 70,
+      "usage": {
+        "input": 35022,
+        "cached": 0,
+        "output": 3512,
+        "reasoning": 186,
+        "costUsd": 0
+      },
+      "searches": [],
+      "checks": [],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "24201",
+          "24309",
+          "2431",
+          "3005pe4",
+          "3022",
+          "3023b",
+          "3039",
+          "32803",
+          "3660b",
+          "3684a",
+          "3684c",
+          "4032b",
+          "41747",
+          "41748",
+          "4460b",
+          "4740",
+          "54091",
+          "54200",
+          "6091",
+          "61678",
+          "64648",
+          "71720c01",
+          "93606"
+        ],
+        "notInList": [
+          "3005pe4",
+          "32803",
+          "3684c",
+          "41747",
+          "41748",
+          "54091",
+          "64648",
+          "71720c01",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 878
+    }
+  ]
+}

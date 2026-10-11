@@ -1,0 +1,279 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 895,
+  "targetMiss": {
+    "target": 800,
+    "parts": 895,
+    "difference": 95,
+    "percent": 11.9
+  },
+  "seconds": 559,
+  "tokens": {
+    "input": 765120,
+    "cached": 521472,
+    "output": 52747,
+    "reasoning": 24730
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "15068",
+      "24309",
+      "3003",
+      "3020",
+      "3023b",
+      "30363",
+      "3062b",
+      "32803",
+      "3678b",
+      "42023",
+      "44126",
+      "4460b",
+      "4740",
+      "50950",
+      "6141",
+      "61678",
+      "64648",
+      "71720c01"
+    ],
+    "notInList": [
+      "32803",
+      "42023",
+      "44126",
+      "64648",
+      "71720c01"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 559,
+      "usage": {
+        "input": 765120,
+        "cached": 521472,
+        "output": 52747,
+        "reasoning": 24730,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "motorcycle wheel tyre",
+            "limit": 8
+          },
+          "results": [
+            "46334c01",
+            "71720c01",
+            "71720c02",
+            "88517c01",
+            "88517c02",
+            "88517c03",
+            "2903c01",
+            "2903c02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wheel spoked large",
+            "limit": 8
+          },
+          "results": [
+            "4624",
+            "3641",
+            "6255",
+            "3788",
+            "4600",
+            "3471",
+            "3829c01",
+            "50862"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "44126",
+            "41748",
+            "41747",
+            "41764",
+            "41765"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope curved inverted",
+            "colour": "yellow",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tile round eye",
+            "limit": 6
+          },
+          "results": [
+            "10238",
+            "98138pz0",
+            "98138pz2",
+            "98138p2d",
+            "98138p07"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "71720",
+            "limit": 6
+          },
+          "results": [
+            "71720",
+            "71720c01",
+            "71720c02"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "motorcycle tyre 107",
+            "limit": 5
+          },
+          "results": [
+            "3641",
+            "50860",
+            "2902",
+            "11957",
+            "67140"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "technic axle",
+            "size": "1x8",
+            "limit": 6
+          },
+          "results": [
+            "3707",
+            "55013",
+            "370726"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "4x6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "78522",
+            "52031"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "fish",
+            "limit": 6
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 919,
+          "errors": 22,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 911,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 933,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "24309",
+          "3003",
+          "3020",
+          "3023b",
+          "30363",
+          "3062b",
+          "32803",
+          "3678b",
+          "42023",
+          "44126",
+          "4460b",
+          "4740",
+          "50950",
+          "6141",
+          "61678",
+          "64648",
+          "71720c01"
+        ],
+        "notInList": [
+          "32803",
+          "42023",
+          "44126",
+          "64648",
+          "71720c01"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 895
+    }
+  ]
+}

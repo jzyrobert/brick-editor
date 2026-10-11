@@ -1,0 +1,591 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 249,
+  "seconds": 783,
+  "tokens": {
+    "input": 2190706,
+    "cached": 1722240,
+    "output": 101469,
+    "reasoning": 75613
+  },
+  "searches": 29,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "15068",
+      "24201",
+      "24309",
+      "2458",
+      "3005pe4",
+      "3069b",
+      "3070b",
+      "3678b",
+      "42022",
+      "43723a",
+      "44293",
+      "49295p02",
+      "50950",
+      "54200",
+      "61678"
+    ],
+    "notInList": [
+      "2458",
+      "3005pe4",
+      "42022",
+      "44293",
+      "49295p02"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 783,
+      "usage": {
+        "input": 2190706,
+        "cached": 1722240,
+        "output": 101469,
+        "reasoning": 75613,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bicycle",
+            "limit": 8
+          },
+          "results": [
+            "4719",
+            "92851",
+            "2807",
+            "4720",
+            "64248",
+            "4719c01",
+            "4719c02",
+            "4719c03"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wheel spoked",
+            "limit": 8
+          },
+          "results": [
+            "50862",
+            "30155",
+            "242c01",
+            "243c01",
+            "50862c01",
+            "244c01",
+            "244c02",
+            "244c03"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x4",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "88930",
+            "93606",
+            "47456",
+            "61068"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye",
+            "limit": 6
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope inverted",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023",
+            "11301",
+            "45410"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tyre",
+            "size": "6x2",
+            "limit": 8
+          },
+          "results": [],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wheel large spoked",
+            "limit": 8
+          },
+          "results": [
+            "4624",
+            "3641",
+            "6255",
+            "3788",
+            "4600",
+            "3471",
+            "3829c01",
+            "50862"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "brick eye pattern",
+            "limit": 10
+          },
+          "results": [
+            "3005pe1",
+            "3005pe4",
+            "3003pe3",
+            "3003pe2",
+            "3005pe2",
+            "3005pe3",
+            "3437pe1",
+            "3003pe1",
+            "3003pe7",
+            "3010pzf"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "technic angle connector",
+            "limit": 10
+          },
+          "results": [
+            "32013",
+            "32016",
+            "32015",
+            "32192",
+            "32034",
+            "32014",
+            "7329",
+            "10288",
+            "4450",
+            "6611"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "colour": "bright light orange",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24201",
+            "13547"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "bicycle complete",
+            "limit": 10
+          },
+          "results": [
+            "4719c01",
+            "4719c02"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "wheel tyre",
+            "limit": 20
+          },
+          "results": [
+            "3641",
+            "458",
+            "539",
+            "74214",
+            "44293",
+            "92851",
+            "105162",
+            "49098",
+            "110100",
+            "2815",
+            "55981c01",
+            "6600",
+            "32248",
+            "39367",
+            "49295",
+            "64248",
+            "65834",
+            "80441",
+            "105645",
+            "110638"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "wing",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "24299",
+            "24307",
+            "43719",
+            "90194",
+            "43723b",
+            "41769b",
+            "41770b"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "3x2",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "24309",
+            "80177",
+            "80178"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "fish",
+            "limit": 8
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "brick pin",
+            "limit": 10
+          },
+          "results": [
+            "3700",
+            "3701",
+            "6232",
+            "2458",
+            "17485",
+            "44865",
+            "4729",
+            "4730",
+            "67361",
+            "52040"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "49295",
+            "limit": 3
+          },
+          "results": [
+            "49295",
+            "49295p01",
+            "49295p02"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "wheel stub axle",
+            "limit": 10
+          },
+          "results": [
+            "50862",
+            "3464b",
+            "30190",
+            "243c01",
+            "245c01",
+            "447c01",
+            "u9167",
+            "244c01",
+            "244c02",
+            "244c03"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "1x6",
+            "colour": "dark turquoise",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "42022",
+            "42023",
+            "35164"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "plate towball",
+            "limit": 5
+          },
+          "results": [
+            "3731",
+            "3730",
+            "2508",
+            "3183c",
+            "3184"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "24309",
+            "24201",
+            "13547",
+            "6091",
+            "30602"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "1x6",
+            "colour": "red",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "42022",
+            "42023",
+            "35164"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "wheel 29 smooth",
+            "limit": 5
+          },
+          "results": [
+            "4624",
+            "3641",
+            "2921",
+            "3070b",
+            "3069b"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "plate 1 2 pin",
+            "limit": 5
+          },
+          "results": [
+            "2476a",
+            "32529",
+            "4488",
+            "2926",
+            "3023a"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "slope curved double",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "93273",
+            "54091",
+            "66956",
+            "78522",
+            "11290",
+            "52031",
+            "54095",
+            "1762",
+            "11301",
+            "61484"
+          ],
+          "round": 5
+        },
+        {
+          "args": {
+            "query": "65834",
+            "limit": 8
+          },
+          "results": [
+            "65834",
+            "65834p01"
+          ],
+          "round": 7
+        },
+        {
+          "args": {
+            "query": "39367",
+            "limit": 6
+          },
+          "results": [
+            "39367",
+            "39367p02",
+            "39367p01"
+          ],
+          "round": 7
+        },
+        {
+          "args": {
+            "query": "74214",
+            "limit": 5
+          },
+          "results": [
+            "74214",
+            "74214p01"
+          ],
+          "round": 7
+        },
+        {
+          "args": {
+            "query": "wheel holder",
+            "limit": 8
+          },
+          "results": [
+            "4600",
+            "30640",
+            "69963",
+            "69964",
+            "2484c01",
+            "69963c01",
+            "429c01",
+            "30640c01"
+          ],
+          "round": 7
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 247,
+          "errors": 5,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 250,
+          "errors": 2,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 249,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "24201",
+          "24309",
+          "2458",
+          "3005pe4",
+          "3069b",
+          "3070b",
+          "3678b",
+          "42022",
+          "43723a",
+          "44293",
+          "49295p02",
+          "50950",
+          "54200",
+          "61678"
+        ],
+        "notInList": [
+          "2458",
+          "3005pe4",
+          "42022",
+          "44293",
+          "49295p02"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 249
+    }
+  ]
+}

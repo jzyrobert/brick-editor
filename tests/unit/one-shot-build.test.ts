@@ -17,6 +17,66 @@ import {
 import { searchForAgent } from "../../src/build-script/part-list";
 
 describe("one-shot build runs", () => {
+  it("isolates the syntax example without changing design, size or output guidance", () => {
+    for (const style of ["lego", "diorama"]) {
+      const options = {
+        partsList: false,
+        search: true,
+        check: true,
+        promptFile:
+          style === "lego" ? "build-agent.md" : "build-agent-diorama.md",
+      };
+      const baseline = oneShotPrompt("a playground", 2000, {
+        ...options,
+        replyPromptFile:
+          style === "lego" ? "brick-build.md" : "brick-build-diorama.md",
+      });
+      const syntax = oneShotPrompt("a playground", 2000, {
+        ...options,
+        replyPromptFile: "brick-build-syntax.md",
+      });
+      expect(syntax.split("## Example")[0]).toBe(
+        baseline.split("## Example")[0],
+      );
+      expect(syntax).toContain('title: "Syntax example"');
+      expect(syntax).not.toContain("Fisherman's cottage");
+      expect(syntax.trimEnd()).toMatch(/Build request: a playground$/);
+    }
+  });
+
+  it("removes target instructions and target feedback for explicitly target-free prompts", () => {
+    const text = oneShotPrompt("an observatory", undefined, {
+      partsList: false,
+      search: true,
+      check: true,
+      promptFile: "style-budget-lego.md",
+    });
+    expect(text).toContain(
+      "realistic part count and scale for a commercial LEGO set",
+    );
+    expect(text).not.toMatch(
+      /against the target|adjust to the target|±15%|\{\{TARGET_PARTS\}\}/,
+    );
+    expect(() =>
+      oneShotPrompt("an observatory", undefined, { partsList: false }),
+    ).toThrow("target-free run");
+    const feedback = checkAnswer(1, undefined, {
+      report: {
+        ok: true,
+        stats: { parts: 372 },
+        problems: [],
+        sections: [],
+      },
+    });
+    expect(feedback).toContain("372 parts");
+    expect(feedback).not.toContain("target");
+    expect(
+      errorsReason(372, undefined, [
+        { code: "overlap", message: "two parts intersect" },
+      ]),
+    ).not.toContain("target");
+  });
+
   it("rejects stale artifacts before an independent generation can overwrite them", () => {
     const dir = mkdtempSync(join(tmpdir(), "brick-fresh-run-"));
     try {

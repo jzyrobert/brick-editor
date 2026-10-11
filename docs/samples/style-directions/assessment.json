@@ -1,0 +1,2039 @@
+{
+  "complete": true,
+  "reviewed": 72,
+  "expected": 72,
+  "axes": [
+    "recognition/proportions",
+    "intentional finish",
+    "composition",
+    "visible support",
+    "across-view consistency"
+  ],
+  "scale": "Each axis 0\u20134; subjective four-view review. Scores are not physical certification or statistical evidence.",
+  "limitations": [
+    "One sample per intervention; three unchanged-prompt controls per brief/style.",
+    "Retained baseline generated earlier. Reviews are unblinded.",
+    "Exposed studs and angular/pixel forms are valid when purposeful.",
+    "Warning counts are retained separately; zero compiler errors does not establish buildability."
+  ],
+  "summary": [
+    {
+      "variant": "budget",
+      "style": "lego",
+      "reviewed": 6,
+      "score": 87,
+      "baselineScore": 86,
+      "better": 3,
+      "tied": 1,
+      "worse": 2,
+      "aboveRange": 0,
+      "belowRange": 1
+    },
+    {
+      "variant": "budget",
+      "style": "diorama",
+      "reviewed": 6,
+      "score": 81,
+      "baselineScore": 86,
+      "better": 1,
+      "tied": 0,
+      "worse": 5,
+      "aboveRange": 1,
+      "belowRange": 4
+    },
+    {
+      "variant": "budget",
+      "style": "both",
+      "reviewed": 12,
+      "score": 168,
+      "baselineScore": 172,
+      "better": 4,
+      "tied": 1,
+      "worse": 7,
+      "aboveRange": 1,
+      "belowRange": 5
+    },
+    {
+      "variant": "antipattern",
+      "style": "lego",
+      "reviewed": 6,
+      "score": 86,
+      "baselineScore": 86,
+      "better": 2,
+      "tied": 2,
+      "worse": 2,
+      "aboveRange": 0,
+      "belowRange": 1
+    },
+    {
+      "variant": "antipattern",
+      "style": "diorama",
+      "reviewed": 6,
+      "score": 84,
+      "baselineScore": 86,
+      "better": 2,
+      "tied": 1,
+      "worse": 3,
+      "aboveRange": 0,
+      "belowRange": 2
+    },
+    {
+      "variant": "antipattern",
+      "style": "both",
+      "reviewed": 12,
+      "score": 170,
+      "baselineScore": 172,
+      "better": 4,
+      "tied": 3,
+      "worse": 5,
+      "aboveRange": 0,
+      "belowRange": 3
+    },
+    {
+      "variant": "facts",
+      "style": "lego",
+      "reviewed": 6,
+      "score": 92,
+      "baselineScore": 86,
+      "better": 3,
+      "tied": 3,
+      "worse": 0,
+      "aboveRange": 0,
+      "belowRange": 0
+    },
+    {
+      "variant": "facts",
+      "style": "diorama",
+      "reviewed": 6,
+      "score": 91,
+      "baselineScore": 86,
+      "better": 3,
+      "tied": 2,
+      "worse": 1,
+      "aboveRange": 2,
+      "belowRange": 1
+    },
+    {
+      "variant": "facts",
+      "style": "both",
+      "reviewed": 12,
+      "score": 183,
+      "baselineScore": 172,
+      "better": 6,
+      "tied": 5,
+      "worse": 1,
+      "aboveRange": 2,
+      "belowRange": 1
+    },
+    {
+      "variant": "repeat-2",
+      "style": "lego",
+      "reviewed": 6,
+      "score": 94,
+      "baselineScore": 86,
+      "better": 4,
+      "tied": 1,
+      "worse": 1,
+      "aboveRange": 0,
+      "belowRange": 0
+    },
+    {
+      "variant": "repeat-2",
+      "style": "diorama",
+      "reviewed": 6,
+      "score": 88,
+      "baselineScore": 86,
+      "better": 1,
+      "tied": 4,
+      "worse": 1,
+      "aboveRange": 0,
+      "belowRange": 0
+    },
+    {
+      "variant": "repeat-2",
+      "style": "both",
+      "reviewed": 12,
+      "score": 182,
+      "baselineScore": 172,
+      "better": 5,
+      "tied": 5,
+      "worse": 2,
+      "aboveRange": 0,
+      "belowRange": 0
+    },
+    {
+      "variant": "repeat-3",
+      "style": "lego",
+      "reviewed": 6,
+      "score": 88,
+      "baselineScore": 86,
+      "better": 3,
+      "tied": 1,
+      "worse": 2,
+      "aboveRange": 0,
+      "belowRange": 0
+    },
+    {
+      "variant": "repeat-3",
+      "style": "diorama",
+      "reviewed": 6,
+      "score": 87,
+      "baselineScore": 86,
+      "better": 2,
+      "tied": 2,
+      "worse": 2,
+      "aboveRange": 0,
+      "belowRange": 0
+    },
+    {
+      "variant": "repeat-3",
+      "style": "both",
+      "reviewed": 12,
+      "score": 175,
+      "baselineScore": 172,
+      "better": 5,
+      "tied": 3,
+      "worse": 4,
+      "aboveRange": 0,
+      "belowRange": 0
+    },
+    {
+      "variant": "syntax",
+      "style": "lego",
+      "reviewed": 6,
+      "score": 88,
+      "baselineScore": 86,
+      "better": 2,
+      "tied": 2,
+      "worse": 2,
+      "aboveRange": 0,
+      "belowRange": 0
+    },
+    {
+      "variant": "syntax",
+      "style": "diorama",
+      "reviewed": 6,
+      "score": 84,
+      "baselineScore": 86,
+      "better": 2,
+      "tied": 1,
+      "worse": 3,
+      "aboveRange": 1,
+      "belowRange": 3
+    },
+    {
+      "variant": "syntax",
+      "style": "both",
+      "reviewed": 12,
+      "score": 172,
+      "baselineScore": 172,
+      "better": 4,
+      "tied": 3,
+      "worse": 5,
+      "aboveRange": 1,
+      "belowRange": 3
+    }
+  ],
+  "cases": [
+    {
+      "id": "budget-lego-pelican",
+      "style": "lego",
+      "subject": "pelican",
+      "variant": "budget",
+      "scores": [
+        3,
+        2,
+        4,
+        2,
+        3
+      ],
+      "score": 14,
+      "baselineScore": 15,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "249-part penny-farthing is a coherent alternative composition, with smoother white torso and compact support. The under-bill pouch is a ragged stack of tan pieces and the stepped red rear frame is visually weak. Large front/small rear wheel is intentional penny-farthing design, not itself a proportion error. Retained baseline is more finished overall; commercial sizing is substantially smaller, not uniformly better."
+    },
+    {
+      "id": "budget-diorama-pelican",
+      "style": "diorama",
+      "subject": "pelican",
+      "variant": "budget",
+      "scores": [
+        2,
+        3,
+        3,
+        2,
+        3
+      ],
+      "score": 13,
+      "baselineScore": 15,
+      "deltaFromRetained": -2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "359 parts gives a compact readable waterfront scene and smoother bird body. Bicycle wheels are too small relative to the thick red frame; yellow legs/feet read as oversized blocks. Retained baseline has better bicycle proportions and riding relationships. Fewer parts is not automatically better."
+    },
+    {
+      "id": "antipattern-lego-pelican",
+      "style": "lego",
+      "subject": "pelican",
+      "variant": "antipattern",
+      "scores": [
+        3,
+        2,
+        3,
+        2,
+        3
+      ],
+      "score": 13,
+      "baselineScore": 15,
+      "deltaFromRetained": -2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "Readable bird and bicycle, but a wide rectangular handlebar/wing frame, squared legs, stepped torso and stud-covered beak dominate. Brick-built wheels are heavier than the retained E model. Retained baseline preferred; brevity alone does not preserve E surface finishing."
+    },
+    {
+      "id": "antipattern-diorama-pelican",
+      "style": "diorama",
+      "subject": "pelican",
+      "variant": "antipattern",
+      "scores": [
+        2,
+        2,
+        3,
+        2,
+        3
+      ],
+      "score": 12,
+      "baselineScore": 15,
+      "deltaFromRetained": -3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "Large brick-built ring wheels dominate the scene and have thick square spokes. Neck and wings become stepped shelves; exposed studs cover the paving and upper bill. Anti-pattern brevity has not improved this case; baseline preferred."
+    },
+    {
+      "id": "facts-lego-pelican",
+      "style": "lego",
+      "subject": "pelican",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Deep orange bill pouch and shaped white shell remain recognizable; real motorcycle wheel assemblies are used. The wide wing/handlebar rectangle, stiff feet and stand remain. Similar visual quality to retained E and its repeats; richer geometry did not resolve assembly/pose weaknesses by itself."
+    },
+    {
+      "id": "facts-diorama-pelican",
+      "style": "diorama",
+      "subject": "pelican",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "837-part scene keeps real spoked wheels, a smoothly clad bird and a coherent boardwalk. Red bicycle, dark scarf and foreground-facing composition differ from baseline. Broad wing/handlebar shelves and stiff yellow feet remain. Comparable to normal E/diorama repeat quality; no clear visible improvement attributable to richer facts."
+    },
+    {
+      "id": "budget-lego-piplup",
+      "style": "lego",
+      "subject": "piplup",
+      "variant": "budget",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 14,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "252-part compact figure restores upright head/body proportions compared with the flattened retained E head. Clear eyes, beak and feet, simple coherent back and supported silhouette. Still a blocky oversized head with curved hood, and the raised flipper reads as separate fingers. Prefer this to retained baseline; improvement does not establish that rounding itself was removed."
+    },
+    {
+      "id": "budget-diorama-piplup",
+      "style": "diorama",
+      "subject": "piplup",
+      "variant": "budget",
+      "scores": [
+        2,
+        2,
+        3,
+        3,
+        2
+      ],
+      "score": 12,
+      "baselineScore": 14,
+      "deltaFromRetained": -2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "384-part ice/water scene is tidy but the hood reads as a hat separated from the face, and horizontal shelves split the small body. The small round eyes and detached collar weaken Piplup identity relative to retained baseline. Unlike the compact Lego-style result, smaller size is not an improvement here."
+    },
+    {
+      "id": "antipattern-lego-piplup",
+      "style": "lego",
+      "subject": "piplup",
+      "variant": "antipattern",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 14,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "The anti-pattern version restores a coherent upright Piplup with readable face, belly spots, flippers and feet. Its stepped/pixel-like treatment is consistent and should not be penalized just for visible studs or angular surfaces. Prefer it to the flattened retained E figure. One attempted native exec call was blocked by the disabled host; no tool executed."
+    },
+    {
+      "id": "antipattern-diorama-piplup",
+      "style": "diorama",
+      "subject": "piplup",
+      "variant": "antipattern",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 14,
+      "deltaFromRetained": 1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Clearer upright, pixel-like Piplup with matching face, belly spots and flippers. The blue-water gradient and ice give context, but much of the display is flat and less active than the bubble scene. Modest overall preference over retained baseline, mainly for subject proportions."
+    },
+    {
+      "id": "facts-lego-piplup",
+      "style": "lego",
+      "subject": "piplup",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 14,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Richer-data Piplup has a taller rounded head and clearly readable eyes/beak, with coherent body, feet and waving flipper. Better proportions than retained flattened E baseline, but the ordinary E repeat reaches comparable quality; not evidence of a unique data-driven gain."
+    },
+    {
+      "id": "facts-diorama-piplup",
+      "style": "diorama",
+      "subject": "piplup",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 14,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": true,
+      "belowObservedBaselineRange": false,
+      "note": "Clearer upright figure and readable face/body proportions than retained diorama baseline. Water, fish, ice shelf and wave provide coherent context. Still a blocky rounded hood and vertical eye outlines; promising result, but ordinary-repeat Piplups can also improve."
+    },
+    {
+      "id": "budget-lego-temple",
+      "style": "lego",
+      "subject": "temple",
+      "variant": "budget",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        15,
+        16
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "800-part main hall and separate bell pavilion form a plausible compact commercial set. Curved eaves help the Japanese roof, although the central ridge is heavy and rear elevation plain. The retained pagoda/pond/tree complex is more ambitious; this is a good smaller alternative, not a clear overall visual upgrade."
+    },
+    {
+      "id": "budget-diorama-temple",
+      "style": "diorama",
+      "subject": "temple",
+      "variant": "budget",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 16,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        16,
+        16
+      ],
+      "baselineMean": 16,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "1492 parts still support a coherent pagoda/main hall/pond/bell pavilion diorama, so removing the target does not erase scene scope. More exposed gravel-like studs and a less developed landscape; retained baseline has a stronger stream/bridge/entrance composition. Slight baseline preference rather than a size-driven failure."
+    },
+    {
+      "id": "antipattern-lego-temple",
+      "style": "lego",
+      "subject": "temple",
+      "variant": "antipattern",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        15,
+        16
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Coherent separate hall, pavilion and pagoda with consistent grey roofs and clear support. Cleaner architectural uniformity, but repetitive exposed roof studs and plain grey bases; loses original pond/tree/colour contrast. Comparable architectural quality with a composition tradeoff, not clear overall gain."
+    },
+    {
+      "id": "antipattern-diorama-temple",
+      "style": "diorama",
+      "subject": "temple",
+      "variant": "antipattern",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 16,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        16,
+        16
+      ],
+      "baselineMean": 16,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "Strong coherent pagoda/main hall/pavilion layout with consistent roofs. Small pond and flat green patch are less integrated and expressive than retained baseline stream, bridge and autumn tree; architectural quality similar but scene composition slightly weaker."
+    },
+    {
+      "id": "facts-lego-temple",
+      "style": "lego",
+      "subject": "temple",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        15,
+        16
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Readable freestanding hall, pavilion and pagoda; layered roofs and more entrance detail, but broad heavy roof masses and no original pond/tree. Good consistent architecture rather than a clear improvement. Extra part facts do not visibly change the basic construction strategy."
+    },
+    {
+      "id": "facts-diorama-temple",
+      "style": "diorama",
+      "subject": "temple",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 16,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        16,
+        16
+      ],
+      "baselineMean": 16,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "Attractive red hall and taller pagoda with lanterns and small pond, but scene is mostly flat studded ground and disconnected accents. Retained baseline stream/bridge landscape remains stronger. More part data does not clearly improve composition or roof construction."
+    },
+    {
+      "id": "budget-lego-dragon",
+      "style": "lego",
+      "subject": "dragon",
+      "variant": "budget",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "284-part compact playful dragon has a readable seated pose, horns, claws and small egg. Brick-built wings connect to body and silhouette is more coherent than retained baseline detached prefabricated wings, though flat ragged wings, simplified tail and enlarged snout trade away detail. Better compact interpretation overall, not evidence of commercially verified joints."
+    },
+    {
+      "id": "budget-diorama-dragon",
+      "style": "diorama",
+      "subject": "dragon",
+      "variant": "budget",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        12,
+        13
+      ],
+      "baselineMean": 12.666666666666666,
+      "aboveObservedBaselineRange": true,
+      "belowObservedBaselineRange": false,
+      "note": "613-part scene keeps dragon, ruins and egg/treasure narrative. Compact seated dragon has connected horizontal wings and cleaner body than original floating-wing figure. Flat wing pose and simplified terrain reduce drama, but spatial coherence improves."
+    },
+    {
+      "id": "antipattern-lego-dragon",
+      "style": "lego",
+      "subject": "dragon",
+      "variant": "antipattern",
+      "scores": [
+        3,
+        2,
+        3,
+        3,
+        3
+      ],
+      "score": 14,
+      "baselineScore": 13,
+      "deltaFromRetained": 1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Attached broad plate-built wings and long tail make a coherent dragon silhouette, resolving the retained baseline wing detachment. Extremely blocky/studded neck, cuboid snout and repeated thin segments look more voxel-built than a refined Lego creature. Modest spatial gain with a surface/proportion tradeoff; not a clear style winner."
+    },
+    {
+      "id": "antipattern-diorama-dragon",
+      "style": "diorama",
+      "subject": "dragon",
+      "variant": "antipattern",
+      "scores": [
+        3,
+        2,
+        3,
+        2,
+        3
+      ],
+      "score": 13,
+      "baselineScore": 13,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        12,
+        13
+      ],
+      "baselineMean": 12.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "A readable dragon/egg/lava diorama, but stepped brick wings, neck and broad studded grey ground recreate much of the original voxel-like construction. Wing roots remain visually ambiguous from these views. Less polished terrain and mouth treatment; no clear overall gain despite a different wing silhouette."
+    },
+    {
+      "id": "facts-lego-dragon",
+      "style": "lego",
+      "subject": "dragon",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Green dragon has a coherent long-neck/curled-tail pose and attached upright brick-built wings, better spatial placement than retained floating prefabricated wings. Scalloped red membranes improve silhouette, though the torso, neck and tail remain heavily stepped. Similar support gains also occur in no-target and anti-pattern samples; await controls before attributing to data."
+    },
+    {
+      "id": "facts-diorama-dragon",
+      "style": "diorama",
+      "subject": "dragon",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        12,
+        13
+      ],
+      "baselineMean": 12.666666666666666,
+      "aboveObservedBaselineRange": true,
+      "belowObservedBaselineRange": false,
+      "note": "More compact red guardian with coherent egg/lava/ruin scene and wings close to the back rather than obviously detached. Broad rounded body, chunky wing panels and flat terrain remain. A modest spatial improvement over original, not a transformed style."
+    },
+    {
+      "id": "budget-lego-destroyer",
+      "style": "lego",
+      "subject": "destroyer",
+      "variant": "budget",
+      "scores": [
+        2,
+        2,
+        3,
+        3,
+        2
+      ],
+      "score": 12,
+      "baselineScore": 16,
+      "deltaFromRetained": -4,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        17
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "530 parts yields a narrow cruiser with bridge and rear engines, but the iconic broad triangular wedge is lost. Repeated side wedge pieces form separated fins rather than a continuous hull; small scale alone does not explain or excuse the silhouette error. Retained large baseline is strongly preferred despite its busier surface."
+    },
+    {
+      "id": "budget-diorama-destroyer",
+      "style": "diorama",
+      "subject": "destroyer",
+      "variant": "budget",
+      "scores": [
+        2,
+        2,
+        3,
+        3,
+        2
+      ],
+      "score": 12,
+      "baselineScore": 13,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "819-part ship/planet/escort display is coherent at small scale, but the hull becomes a very narrow strip with detached-looking wedge fins and an oversized bridge. The retained diorama was already too narrow; this exaggerates the silhouette error. Removing the target does not unlock a larger or more convincing scene."
+    },
+    {
+      "id": "antipattern-lego-destroyer",
+      "style": "lego",
+      "subject": "destroyer",
+      "variant": "antipattern",
+      "scores": [
+        2,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 16,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        17
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Large detailed wedge is preserved, but becomes markedly longer/narrower and bridge scale is reduced compared with retained baseline. Repetitive stepped panel strips and squared engines remain. More convincing than the no-target cruiser, but original proportions are preferred; anti-pattern guidance is not a clear improvement."
+    },
+    {
+      "id": "antipattern-diorama-destroyer",
+      "style": "diorama",
+      "subject": "destroyer",
+      "variant": "antipattern",
+      "scores": [
+        4,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 13,
+      "deltaFromRetained": 3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Broad continuous triangular hull, restrained upper decks and correctly prominent bridge improve substantially on the retained narrow stepped ship. Dock/yard display has coherent support and lights, though a large plain foreground makes the scene sparse. A promising single anti-pattern result for this subject, not yet a general effect."
+    },
+    {
+      "id": "facts-lego-destroyer",
+      "style": "lego",
+      "subject": "destroyer",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 16,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        17
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Broad wedge, bridge, tiered decks and rear engines closely match the retained E construction family. Surface layout is a little cleaner and less busy, but hull edges remain stepped and proportions broadly comparable. No clear overall gain attributable to richer part facts."
+    },
+    {
+      "id": "facts-diorama-destroyer",
+      "style": "diorama",
+      "subject": "destroyer",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Broader continuous wedge improves on the retained narrow hull, with restrained decks and clear engine bank. Tapered base echoes the hull; planet remains a small scene cue with lots of plain ground. Better silhouette than retained sample, but anti-pattern sample is stronger and baseline repetitions are needed for attribution."
+    },
+    {
+      "id": "budget-lego-ewok",
+      "style": "lego",
+      "subject": "ewok",
+      "variant": "budget",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "187-part spaceship and rover fit the actual Ewok-inspired classic 1970s Space brief; a village was never required. Blue/yellow space parts, brown wood-like framing and Ewok heads create a plausible small themed set with clear separate vehicles. Better compact composition than retained sprawling treehouses, though heads sit unnaturally high above torsos and attachment remains questionable."
+    },
+    {
+      "id": "budget-diorama-ewok",
+      "style": "diorama",
+      "subject": "ewok",
+      "variant": "budget",
+      "scores": [
+        3,
+        3,
+        3,
+        2,
+        3
+      ],
+      "score": 14,
+      "baselineScore": 15,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "1111-part landing-pad, shuttle, bridge and treehouse preserve the Ewok/Classic Space mashup and a readable scene. Simplified squared trunks, sparse flat foliage and less developed ship/terrain lose some retained baseline richness. Several figure heads sit high above bodies. Smaller but not clearly improved."
+    },
+    {
+      "id": "antipattern-lego-ewok",
+      "style": "lego",
+      "subject": "ewok",
+      "variant": "antipattern",
+      "scores": [
+        2,
+        2,
+        3,
+        3,
+        3
+      ],
+      "score": 13,
+      "baselineScore": 13,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "A very different triangular wood/Space craft with hut-like cabin, side pods and brick-built figures fits the mashup loosely. Broad flat studded deck and coarse front figures dominate, while Ewok recognition and refined spacecraft shaping are weak. Attached simple geometry trades against identity/finish; numerical tie to weak retained baseline, but no clear design improvement."
+    },
+    {
+      "id": "antipattern-diorama-ewok",
+      "style": "diorama",
+      "subject": "ewok",
+      "variant": "antipattern",
+      "scores": [
+        3,
+        2,
+        3,
+        3,
+        2
+      ],
+      "score": 13,
+      "baselineScore": 15,
+      "deltaFromRetained": -2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Treehouse, raised landing platform and blue shuttle clearly signal the mashup, and block-built Ewoks avoid floating prefabricated heads. However slab-like foliage, cylindrical bare trunks, checkerboard studded terrain and coarse figures make the result much more voxel-like. Retained scene has better proportions and finish; anti-pattern-only guidance regresses the intended Lego style."
+    },
+    {
+      "id": "facts-lego-ewok",
+      "style": "lego",
+      "subject": "ewok",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "A distinctive wood/Classic Space craft with long rounded log-like pods, blue/yellow cockpit, separate outpost and rover fits the brief without requiring treehouses. More intentional overall shape and component hierarchy than retained sprawling set. Some thin wing-edge strips look detached and brick-built Ewok faces are coarse; richer data does not eliminate spatial uncertainty."
+    },
+    {
+      "id": "facts-diorama-ewok",
+      "style": "diorama",
+      "subject": "ewok",
+      "variant": "facts",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Two connected treehouse outposts, a recognizable blue/yellow shuttle and rover form a coherent Classic Space/Ewok scene. Similar quality to retained baseline; bare tall trunks and sparse slab canopies are less natural, and small figure attachments remain uncertain. Richer part reference does not produce an obvious overall improvement."
+    },
+    {
+      "id": "repeat-2-lego-pelican",
+      "style": "lego",
+      "subject": "pelican",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        2,
+        4,
+        2,
+        3
+      ],
+      "score": 14,
+      "baselineScore": 15,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E independently produces red bicycle/front fish basket rather than aqua bicycle/rear basket/scarf. Rounded body is readable, but the tall neck becomes alternating horizontal shelves. This ordinary repeat varies by about as much as some prompt interventions; retained baseline slightly preferred."
+    },
+    {
+      "id": "repeat-2-diorama-pelican",
+      "style": "diorama",
+      "subject": "pelican",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        2,
+        4,
+        2,
+        3
+      ],
+      "score": 14,
+      "baselineScore": 15,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged diorama prompt independently keeps the waterfront/aqua bicycle theme but moves the fish basket forward and adds a scarf and bollards. Compact bird has several exposed stud fields and a segmented upper bill; comparable composition with somewhat less finished surfaces than retained baseline."
+    },
+    {
+      "id": "repeat-3-lego-pelican",
+      "style": "lego",
+      "subject": "pelican",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E produces a red bicycle, aqua scarf and rear rack, with a compact head and orange throat pouch. Clear riding concept and fewer neck shelves than repeat 2; broadly comparable to retained baseline. Wide plate-like wings and support stand remain."
+    },
+    {
+      "id": "repeat-3-diorama-pelican",
+      "style": "diorama",
+      "subject": "pelican",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged diorama prompt produces another aqua bicycle waterfront scene, with a deeper rounded bill pouch, rear basket, larger bird and different dock layout. Strong readable scene, similar quality to retained baseline despite visibly different anatomy and frame."
+    },
+    {
+      "id": "syntax-lego-pelican",
+      "style": "lego",
+      "subject": "pelican",
+      "variant": "syntax",
+      "scores": [
+        3,
+        2,
+        4,
+        2,
+        3
+      ],
+      "score": 14,
+      "baselineScore": 15,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Removing the cottage example still yields the familiar rider/scarf concept. Body and wings show busy overlapping stepped cladding; bicycle and support remain readable. No obvious benefit beyond ordinary E variation in this case."
+    },
+    {
+      "id": "syntax-diorama-pelican",
+      "style": "diorama",
+      "subject": "pelican",
+      "variant": "syntax",
+      "scores": [
+        2,
+        2,
+        4,
+        2,
+        2
+      ],
+      "score": 12,
+      "baselineScore": 15,
+      "deltaFromRetained": -3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "The scene/bicycle remain coherent, but the bird has an excessively tall segmented neck, a very thin upper bill and shallow disconnected-looking pouch. The syntax-only example does not cure anatomy or ledge problems; retained baseline and both ordinary repeats look stronger."
+    },
+    {
+      "id": "repeat-2-lego-piplup",
+      "style": "lego",
+      "subject": "piplup",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 14,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "The unchanged E prompt alone restores taller head/body proportions, readable face and belly spots, and waving flippers. Its improvement over retained baseline is comparable to the commercial-size and anti-pattern Piplups. This directly cautions against attributing those single-sample gains to prompting alone."
+    },
+    {
+      "id": "repeat-2-diorama-piplup",
+      "style": "diorama",
+      "subject": "piplup",
+      "variant": "repeat-2",
+      "scores": [
+        2,
+        3,
+        4,
+        3,
+        2
+      ],
+      "score": 14,
+      "baselineScore": 14,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged prompt produces a broad, shallow hood, rectangular face and larger ice props instead of the retained tall hood. Bubble scene and shell finish are coherent, but proportions remain weak. Similar overall quality to retained baseline while showing substantial shape variance."
+    },
+    {
+      "id": "repeat-3-lego-piplup",
+      "style": "lego",
+      "subject": "piplup",
+      "variant": "repeat-3",
+      "scores": [
+        2,
+        2,
+        4,
+        3,
+        2
+      ],
+      "score": 13,
+      "baselineScore": 14,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E can also regress: very shallow head, large protruding white eye frames and curved pieces at the hood corners read like horns/eaves. Body remains coherent but the head treatment weakens character identity. The three E samples span a meaningful quality range."
+    },
+    {
+      "id": "repeat-3-diorama-piplup",
+      "style": "diorama",
+      "subject": "piplup",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 14,
+      "deltaFromRetained": 1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged prompt yields a more upright, square head and cleaner character proportions than retained baseline, though thick white eye frames and large hood remain. Bubble supports clutter the frontal silhouette. Shows improvement within ordinary variance."
+    },
+    {
+      "id": "syntax-lego-piplup",
+      "style": "lego",
+      "subject": "piplup",
+      "variant": "syntax",
+      "scores": [
+        2,
+        3,
+        4,
+        3,
+        2
+      ],
+      "score": 14,
+      "baselineScore": 14,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Changing only the example leaves a broad flattened head, layered hood and waving flipper much like the retained E family. Brighter blue palette and eye treatment vary, but proportions do not show a clear benefit over the baseline."
+    },
+    {
+      "id": "syntax-diorama-piplup",
+      "style": "diorama",
+      "subject": "piplup",
+      "variant": "syntax",
+      "scores": [
+        2,
+        2,
+        3,
+        3,
+        2
+      ],
+      "score": 12,
+      "baselineScore": 14,
+      "deltaFromRetained": -2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        14,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "Very broad shallow head, layered roof-like hood and projecting corners weaken identity from front and back. Wave/ice/bubble setting remains readable but does not repair character proportions. Syntax-only example gives no consistent benefit."
+    },
+    {
+      "id": "repeat-2-lego-temple",
+      "style": "lego",
+      "subject": "temple",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        15,
+        16
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E produces the familiar pagoda/hall/pavilion plus separate tree and pond, with grey roofing and striped columns. Coherent and comparable to retained baseline and both intervention temples, showing palette/layout shifts without prompt changes."
+    },
+    {
+      "id": "repeat-2-diorama-temple",
+      "style": "diorama",
+      "subject": "temple",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 16,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        16,
+        16
+      ],
+      "baselineMean": 16,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged prompt yields a complete pond, broad bridge, autumn tree, pavilion and main hall/pagoda composition comparable to retained baseline. Roof studs differ but are coherent. Scene richness exceeds the smaller landscape in both anti-pattern and facts samples without changing instructions."
+    },
+    {
+      "id": "repeat-3-lego-temple",
+      "style": "lego",
+      "subject": "temple",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        4,
+        3,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 15,
+      "deltaFromRetained": 1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        15,
+        16
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E shifts from pagoda compound to a raised main hall with wraparound timber balcony, railings, broad steps and a separate bell pavilion. More coherent detailed architecture and intentional curved eaves, though upper roof is unusually steep and landscape scope is reduced. Strong ordinary-variance alternative, matching or exceeding intervention samples."
+    },
+    {
+      "id": "repeat-3-diorama-temple",
+      "style": "diorama",
+      "subject": "temple",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 16,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        16,
+        16
+      ],
+      "baselineMean": 16,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged diorama prompt again delivers a complete pond, bridge, tree, hall, pagoda and bell pavilion. Larger light-blue foreground pond and red/white hall create a strong scene, although tree trunk and upper roof are blocky. Comparable to retained baseline; scene composition remains stronger than the sparse intervention samples."
+    },
+    {
+      "id": "syntax-lego-temple",
+      "style": "lego",
+      "subject": "temple",
+      "variant": "syntax",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        15,
+        16
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Main hall and bell pavilion have smooth curved eaves, consistent columns and a small separate tree. Coherent but less architectural detail than unchanged repeat 3 and less compound scope than baseline. Similar raised-roof forms occur with the normal example, so this does not isolate a beneficial example effect."
+    },
+    {
+      "id": "syntax-diorama-temple",
+      "style": "diorama",
+      "subject": "temple",
+      "variant": "syntax",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 16,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        16,
+        16
+      ],
+      "baselineMean": 16,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": true,
+      "note": "Coherent brown main hall, pavilion, pond bridge and raked garden; fewer competing buildings. Very steep upper roof and flat, studded pond/garden reduce refinement versus the retained landscape and both unchanged repeats. Different composition but no clear syntax-example quality gain."
+    },
+    {
+      "id": "repeat-2-lego-dragon",
+      "style": "lego",
+      "subject": "dragon",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 13,
+      "deltaFromRetained": 3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E produces attached upright brick wings, a curled tail and a more coherent guardian pose around a blue egg. Better overall proportions and wing silhouette than retained detached-wing baseline, and at least comparable to the richer-data dragon. Strong evidence that the baseline weakness can disappear under ordinary variance."
+    },
+    {
+      "id": "repeat-2-diorama-dragon",
+      "style": "diorama",
+      "subject": "dragon",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        2,
+        3,
+        2,
+        3
+      ],
+      "score": 13,
+      "baselineScore": 13,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        12,
+        13
+      ],
+      "baselineMean": 12.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged diorama prompt produces a squat red dragon with very tall upright lattice-like wing panels. Body is coherent but wings read as oversized antennae/paddles, and support is visually ambiguous. Sparse studded grey ground with lava strip is less expressive than original; overall tradeoff rather than a clear improvement."
+    },
+    {
+      "id": "repeat-3-lego-dragon",
+      "style": "lego",
+      "subject": "dragon",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E again chooses attached upright brick wings, this time yellow membranes and a seated egg-guarding pose. Better wing/body relationship than retained baseline, but stepped neck, shelf-like limbs and long rectangular tail remain. Matches modest improvements seen in new conditions without changed guidance."
+    },
+    {
+      "id": "repeat-3-diorama-dragon",
+      "style": "diorama",
+      "subject": "dragon",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        3,
+        3,
+        1,
+        2
+      ],
+      "score": 12,
+      "baselineScore": 13,
+      "deltaFromRetained": -1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        12,
+        13
+      ],
+      "baselineMean": 12.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged prompt can retain the original failure: black prefabricated wings float beside the back, clearly separated in rear view. Rounder green body and water/ruin/egg scene read well, but unsupported wings and thin shelved neck weaken cross-view coherence. Baseline variability spans visibly different attachment outcomes."
+    },
+    {
+      "id": "syntax-lego-dragon",
+      "style": "lego",
+      "subject": "dragon",
+      "variant": "syntax",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 14.666666666666666,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Attached broad brick wings, compact crouching pose and separate egg are clearer than retained detached-wing baseline. Thin shelved neck and repetitive striped wing ribs remain; similar or better attachment and poses appear in both unchanged E repeats. Positive sample, but not evidence that the syntax-only example caused the gain."
+    },
+    {
+      "id": "syntax-diorama-dragon",
+      "style": "diorama",
+      "subject": "dragon",
+      "variant": "syntax",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        12,
+        13
+      ],
+      "baselineMean": 12.666666666666666,
+      "aboveObservedBaselineRange": true,
+      "belowObservedBaselineRange": false,
+      "note": "Black dragon with horizontal red ribbed wings, egg, lava and ruin is coherent, with wings visibly joined to the shoulder area. Thin stepped neck and flat rigid wings remain stylistic weaknesses. Better spatial coherence than retained floating-wing baseline and both diorama repeats, but a single successful sample shared by several unrelated intervention conditions."
+    },
+    {
+      "id": "repeat-2-lego-destroyer",
+      "style": "lego",
+      "subject": "destroyer",
+      "variant": "repeat-2",
+      "scores": [
+        4,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 17,
+      "baselineScore": 16,
+      "deltaFromRetained": 1,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        17
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E produces a broad continuous triangular wedge, restrained central decks and rounded engine nozzles. Cleaner silhouette and better massing than retained busy sample, clearly stronger than the narrow third repeat. Best Lego-style Destroyer so far, demonstrating large quality variation under identical prompts."
+    },
+    {
+      "id": "repeat-2-diorama-destroyer",
+      "style": "diorama",
+      "subject": "destroyer",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 13,
+      "deltaFromRetained": 3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged diorama prompt produces a broad continuous wedge and a convincing dock/gantry scene, improving the retained narrow-hull version. Edges remain serrated and upper decks bulky, but composition is at least comparable to the anti-pattern candidate and stronger than the richer-data scene. Silhouette gain is demonstrably available through ordinary variance."
+    },
+    {
+      "id": "repeat-3-lego-destroyer",
+      "style": "lego",
+      "subject": "destroyer",
+      "variant": "repeat-3",
+      "scores": [
+        2,
+        2,
+        3,
+        3,
+        3
+      ],
+      "score": 13,
+      "baselineScore": 16,
+      "deltaFromRetained": -3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        17
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E can produce a much narrower ship with oversized upper decks, detached-looking side strips and a forked nose. Same high part target does not ensure the broad wedge; retained baseline is clearly stronger. Demonstrates substantial silhouette variance at fixed instructions and budget."
+    },
+    {
+      "id": "repeat-3-diorama-destroyer",
+      "style": "diorama",
+      "subject": "destroyer",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 13,
+      "deltaFromRetained": 3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Second unchanged diorama repeat also yields a broad wedge and well-composed dock with yellow gantries, service details and perimeter lights. Hull panels are busy, but silhouette and scene improve clearly on retained narrow sample. Anti-pattern and facts gains do not exceed the observed unchanged-prompt range."
+    },
+    {
+      "id": "syntax-lego-destroyer",
+      "style": "lego",
+      "subject": "destroyer",
+      "variant": "syntax",
+      "scores": [
+        2,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 14,
+      "baselineScore": 16,
+      "deltaFromRetained": -2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        17
+      ],
+      "baselineMean": 15.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Ship remains recognizable but is long and narrow with an oversized tiered superstructure and separate side strips. Similar failure to unchanged repeat 3, less severe than no-target cruiser but weaker than retained and unchanged repeat 2. Replacing the architectural example does not fix global proportions."
+    },
+    {
+      "id": "syntax-diorama-destroyer",
+      "style": "diorama",
+      "subject": "destroyer",
+      "variant": "syntax",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 13,
+      "deltaFromRetained": 2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Recognizable wedge in an open shipyard frame with gantry and hazard-striped walkways. Cleaner scene footprint than a full slab but narrow forward hull and repetitive panels persist. Better than retained diorama silhouette, within the range of stronger unchanged dock repeats; syntax-only example has no distinct advantage."
+    },
+    {
+      "id": "repeat-2-lego-ewok",
+      "style": "lego",
+      "subject": "ewok",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 13,
+      "deltaFromRetained": 3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged E shifts to a wood-toned Classic Space landing craft/outpost, small rover and brick-built Ewok figures. Coherent separated modules and spacecraft massing improve on retained treehouse slabs, and compare favourably with the richer-data log-pod craft. The broad design shift occurs without changing prompts."
+    },
+    {
+      "id": "repeat-2-diorama-ewok",
+      "style": "diorama",
+      "subject": "ewok",
+      "variant": "repeat-2",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged diorama prompt produces two well-proportioned huts, layered branching foliage, bridge and a central Space landing platform. Scene is comparable to retained baseline and stronger than the sparse canopies in richer-data/no-target versions. Figure-head relationships remain awkward, so better trees do not imply physical correctness."
+    },
+    {
+      "id": "repeat-3-lego-ewok",
+      "style": "lego",
+      "subject": "ewok",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 13,
+      "deltaFromRetained": 3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Another unchanged E run makes a coherent wooden Space craft, with long side pods and an Ewok-face-like front cabin. Broad wings/deck are simpler than a commercial design might use, but rounded timber forms and blue accents suit the brief. Comparable to repeat 2 and at least as successful as the richer-data spacecraft, so that design direction is within baseline variance."
+    },
+    {
+      "id": "repeat-3-diorama-ewok",
+      "style": "diorama",
+      "subject": "ewok",
+      "variant": "repeat-3",
+      "scores": [
+        3,
+        2,
+        3,
+        2,
+        3
+      ],
+      "score": 13,
+      "baselineScore": 15,
+      "deltaFromRetained": -2,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Unchanged diorama prompt creates a tall treehouse landing platform, but enormous square trunks, broad flat canopies and empty space beneath dominate. Many figure/head placements are awkward or visibly separated. Mashup is recognizable, yet retained baseline has more natural tree forms and a better integrated landing scene. Meaningful regression within baseline variance."
+    },
+    {
+      "id": "syntax-lego-ewok",
+      "style": "lego",
+      "subject": "ewok",
+      "variant": "syntax",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16,
+      "baselineScore": 13,
+      "deltaFromRetained": 3,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        16
+      ],
+      "baselineMean": 15,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Distinctive blue/brown Ewok-inspired Space mech with broad feet, readable face, classic logo panel, antennae and rear access ladder. Coherent and playful alternative to treehouses/spacecraft; deliberate angular robotic forms are valid. One of the more interesting individual samples, comparable in overall quality to the unchanged spacecraft repeats, not evidence of a generally better reply example."
+    },
+    {
+      "id": "syntax-diorama-ewok",
+      "style": "diorama",
+      "subject": "ewok",
+      "variant": "syntax",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15,
+      "baselineScore": 15,
+      "deltaFromRetained": 0,
+      "baselineSamples": 3,
+      "baselineRange": [
+        13,
+        15
+      ],
+      "baselineMean": 14.333333333333334,
+      "aboveObservedBaselineRange": false,
+      "belowObservedBaselineRange": false,
+      "note": "Coherent twin blue-roof treehouses frame a recognisable Classic Space craft and tiled landing apron. Layered foliage and restrained blue/brown colours work across views, although trunks remain bulky, figures are blocky and the rear bridge is a plain slab. Comparable to the retained baseline and repeat 2; no clear syntax-example advantage."
+    }
+  ]
+}

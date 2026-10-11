@@ -1,0 +1,17 @@
+[
+  {
+    "attempt": 1,
+    "check": 1,
+    "feedback": "Check 1 of 3: the code did not compile. INVALID_INPUT: Invalid build script: $.sections[0].ops[3].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"tan\",\"dark tan\"]}); $.sections[1].ops[0].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"light bluish grey\",\"dark bluish grey\"]}); $.sections[1].ops[5].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"light bluish grey\",\"dark bluish grey\"]}); $.sections[1].ops[9].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"light bluish grey\",\"dark bluish grey\"]}); $.sections[1].ops[14].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"light bluish grey\",\"dark bluish grey\"]})\n"
+  },
+  {
+    "attempt": 1,
+    "check": 2,
+    "feedback": "Check 2 of 3: the code compiled to 976 parts (target 800: +176, +22%). Sections: Connected seaside display 418, Spoked wheels and diamond frame 225, Round body and swept tail 93, Curving neck and expressive head 70, Golden bill and deep throat pouch 59, Tide line and route marker 48, Working webbed feet 35, Wings holding the handlebars 28.\nErrors (3):\n- overlap: 8043 Animal Fish Skeleton placed at [33, 40, 16] and 2431 Tile 1 \u00d7 4 placed at [32, 42, 17] overlap where their bodies meet: x 33\u201334, y 42\u201343, z 17\u201318 [sections[2].ops[36] (code line 2), sections[2].ops[47] (code line 2)]\n- overlap: 3069b Tile 1 \u00d7 2 placed at [37, 42, 10] and 3069b Tile 1 \u00d7 2 placed at [36, 42, 10] overlap where their bodies meet: x 37\u201338, y 42\u201343, z 10\u201311 [sections[2].ops[41] (code line 2), sections[2].ops[46] (code line 2)]\n- overlap: 3069b Tile 1 \u00d7 2 placed at [37, 42, 16] and 3069b Tile 1 \u00d7 2 placed at [36, 42, 17] overlap where their bodies meet: x 37\u201338, y 42\u201343, z 17\u201318 [sections[2].ops[44] (code line 2), sections[2].ops[48] (code line 2)]\n"
+  },
+  {
+    "attempt": 1,
+    "check": 3,
+    "feedback": "Check 3 of 3: the code compiled to 916 parts (target 800: +116, +14.5%). Sections: Connected seaside display 358, Spoked wheels and diamond frame 225, Round body and swept tail 93, Curving neck and expressive head 70, Golden bill and deep throat pouch 59, Tide line and route marker 48, Working webbed feet 35, Wings holding the handlebars 28.\nNo errors: as an answer it would be accepted.\n"
+  }
+]

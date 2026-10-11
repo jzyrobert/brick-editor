@@ -1,0 +1,454 @@
+{
+  "brief": "ewok inspired version of the classic 1970s lego space sets",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-syntax.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 3000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 3248,
+      "targetMiss": {
+        "target": 3000,
+        "parts": 3248,
+        "difference": 248,
+        "percent": 8.3
+      },
+      "seconds": 1195,
+      "tokens": {
+        "input": 1130183,
+        "cached": 798592,
+        "output": 116621,
+        "reasoning": 69607
+      },
+      "searches": 14,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "14769",
+          "15068",
+          "2412b",
+          "2417",
+          "2423",
+          "2431",
+          "2489",
+          "3004p90",
+          "3005",
+          "3023b",
+          "3035",
+          "30355",
+          "30356",
+          "3039",
+          "3039p23",
+          "3039p34",
+          "3062b",
+          "3069b",
+          "3070b",
+          "32607",
+          "3298",
+          "3298p90",
+          "3307",
+          "3678b",
+          "3710",
+          "3941",
+          "3957a",
+          "3960",
+          "3961",
+          "4032b",
+          "4079",
+          "43712",
+          "43713",
+          "43722a",
+          "43723a",
+          "44375b",
+          "4460b",
+          "4474",
+          "4600",
+          "4740",
+          "4746",
+          "50304",
+          "50305",
+          "54200",
+          "6141",
+          "61678",
+          "98138"
+        ],
+        "notInList": [
+          "2489",
+          "3004p90",
+          "30355",
+          "30356",
+          "3039p23",
+          "3039p34",
+          "3298p90",
+          "3961",
+          "43712",
+          "43713",
+          "44375b",
+          "4474",
+          "4746",
+          "50304",
+          "50305"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 1195,
+          "usage": {
+            "input": 1130183,
+            "cached": 798592,
+            "output": 116621,
+            "reasoning": 69607,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "windscreen",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "6070",
+                "2437",
+                "6152a",
+                "62360",
+                "4474",
+                "6238a",
+                "6238b",
+                "87752",
+                "11289",
+                "92279",
+                "2337",
+                "18729"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "54200",
+                "85984",
+                "2450",
+                "24299",
+                "24307"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Ewok",
+                "limit": 8
+              },
+              "results": [
+                "3622pz2",
+                "64805",
+                "6047615a",
+                "6047615b",
+                "11203d01",
+                "11203d02"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4740",
+                "3960",
+                "2654a",
+                "43898",
+                "44375b",
+                "3961",
+                "4285b",
+                "35394"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "leaves",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "2423",
+                "32607",
+                "2417",
+                "10884"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "space logo",
+                "limit": 8
+              },
+              "results": [
+                "3004p90",
+                "3298p90",
+                "3068bp53",
+                "3068bp5e",
+                "4490p90",
+                "9460",
+                "59349p50",
+                "80123"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge plate 8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "30504",
+                "41769b",
+                "50304",
+                "50305",
+                "3544",
+                "3545",
+                "47405"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge 6",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "43713",
+                "98281",
+                "43712",
+                "41761",
+                "42021",
+                "4856",
+                "30355",
+                "30356"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "rocket engine",
+                "limit": 6
+              },
+              "results": [
+                "4746",
+                "61801"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "size": "2x2",
+                "colour": "dark tan",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "15068",
+                "30602",
+                "47457",
+                "32803",
+                "66956"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "barrel",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "2489",
+                "4424",
+                "64951"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "computer pattern",
+                "size": "2x2",
+                "limit": 5
+              },
+              "results": [
+                "3039p23",
+                "3039p34",
+                "3660bp01",
+                "3068bp7d",
+                "3068bp56"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope 2 x 2",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "3039",
+                "30602",
+                "3678a",
+                "35277"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "round brick",
+                "size": "2x2",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "3941",
+                "6143",
+                "4588"
+              ],
+              "round": 3
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.components.fern-rock.ops[0].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"light bluish grey\",\"light bluish grey\",\"dark bluish grey\"]}); $.components.leaf-bough.ops[1].holes[0].at must be [x, z] integers (studs) (got [1,3,1]); $.components.leaf-bough.ops[1].holes[1].at must be [x, z] integers (studs) (got [7,3,6]); $.sections[0].ops[2].holes[0].at must be [x, z] integers (studs) (got [25,3,0]); $.sections[0].ops[2].holes[1].at "
+            },
+            {
+              "round": 2,
+              "parts": 3168,
+              "errors": 15,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 3193,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "14769",
+              "15068",
+              "2412b",
+              "2417",
+              "2423",
+              "2431",
+              "2489",
+              "3004p90",
+              "3005",
+              "3023b",
+              "3035",
+              "30355",
+              "30356",
+              "3039",
+              "3039p23",
+              "3039p34",
+              "3062b",
+              "3069b",
+              "3070b",
+              "32607",
+              "3298",
+              "3298p90",
+              "3307",
+              "3678b",
+              "3710",
+              "3941",
+              "3957a",
+              "3960",
+              "3961",
+              "4032b",
+              "4079",
+              "43712",
+              "43713",
+              "43722a",
+              "43723a",
+              "44375b",
+              "4460b",
+              "4474",
+              "4600",
+              "4740",
+              "4746",
+              "50304",
+              "50305",
+              "54200",
+              "6141",
+              "61678",
+              "98138"
+            ],
+            "notInList": [
+              "2489",
+              "3004p90",
+              "30355",
+              "30356",
+              "3039p23",
+              "3039p34",
+              "3298p90",
+              "3961",
+              "43712",
+              "43713",
+              "44375b",
+              "4474",
+              "4746",
+              "50304",
+              "50305"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 3248
+        }
+      ]
+    }
+  ]
+}

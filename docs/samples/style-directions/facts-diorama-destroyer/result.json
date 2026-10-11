@@ -1,0 +1,431 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 5523,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 5523,
+    "difference": 523,
+    "percent": 10.5
+  },
+  "seconds": 949,
+  "tokens": {
+    "input": 1348143,
+    "cached": 944640,
+    "output": 88767,
+    "reasoning": 54995
+  },
+  "searches": 15,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "2412b",
+      "2431",
+      "3004",
+      "3020",
+      "3022",
+      "3023b",
+      "30363",
+      "3039",
+      "3069b",
+      "3070b",
+      "3660b",
+      "3957a",
+      "4032b",
+      "41747",
+      "41748",
+      "41764",
+      "41765",
+      "43121",
+      "43712",
+      "43713",
+      "4569",
+      "4740",
+      "4868b",
+      "54383",
+      "54384",
+      "60474",
+      "6141",
+      "78443",
+      "78444",
+      "86500",
+      "87081",
+      "87087"
+    ],
+    "notInList": [
+      "41747",
+      "41748",
+      "41764",
+      "41765",
+      "43121",
+      "43712",
+      "43713",
+      "4569",
+      "4868b",
+      "54383",
+      "54384",
+      "78443",
+      "78444",
+      "86500"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 949,
+      "usage": {
+        "input": 1348143,
+        "cached": 944640,
+        "output": 88767,
+        "reasoning": 54995,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wedge plate 12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "47405"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate 16",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "62743"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope wedge",
+            "size": "4x4",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "47757"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish 6",
+            "colour": "trans light blue",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "44375b",
+            "4285b",
+            "44375a",
+            "21599",
+            "35327",
+            "38622"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "round dome hemisphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "4740",
+            "3262",
+            "6141",
+            "98138",
+            "3062b",
+            "3941"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Wedge Plate",
+            "category": "Wedge",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 40
+          },
+          "results": [
+            "62743"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Wedge 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 20
+          },
+          "results": [
+            "43713",
+            "98281",
+            "43712",
+            "41761",
+            "42021",
+            "30355",
+            "30356",
+            "6153b",
+            "41748",
+            "41747",
+            "29115",
+            "41764",
+            "41765",
+            "54383",
+            "54384",
+            "48205",
+            "48208",
+            "78443",
+            "78444",
+            "47407"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "60481a",
+            "3678b",
+            "42022",
+            "4515",
+            "44126",
+            "4569",
+            "42023",
+            "4509",
+            "32083",
+            "61409b",
+            "78522",
+            "60219"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "hemisphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "30208",
+            "44359",
+            "61287",
+            "86500",
+            "44358"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Brick with Studs on Side",
+            "size": "4x1",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "30414",
+            "3701",
+            "92593",
+            "3010",
+            "60581",
+            "10314"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge tile",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 15
+          },
+          "results": [
+            "3070b",
+            "3069b",
+            "2431",
+            "3068b",
+            "6636",
+            "98138",
+            "2412b",
+            "4162",
+            "87079",
+            "63864",
+            "14769",
+            "25269",
+            "33909",
+            "26603",
+            "2555"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "41747",
+            "limit": 1
+          },
+          "results": [
+            "41747"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "78444",
+            "limit": 1
+          },
+          "results": [
+            "78444"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "engine nozzle",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "50943",
+            "43121",
+            "2853a",
+            "2853b",
+            "2853c",
+            "2854",
+            "4868b",
+            "2852"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "Slope Brick 10",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "4515",
+            "4569",
+            "30180",
+            "85970",
+            "76795",
+            "7821",
+            "13731"
+          ],
+          "round": 3
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "ok": false,
+          "reason": "INVALID_INPUT: Invalid build script: $.sections[0].ops[23].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"tan\",\"dark tan\"]})"
+        },
+        {
+          "round": 2,
+          "parts": 8553,
+          "errors": 4,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 5523,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2412b",
+          "2431",
+          "3004",
+          "3020",
+          "3022",
+          "3023b",
+          "30363",
+          "3039",
+          "3069b",
+          "3070b",
+          "3660b",
+          "3957a",
+          "4032b",
+          "41747",
+          "41748",
+          "41764",
+          "41765",
+          "43121",
+          "43712",
+          "43713",
+          "4569",
+          "4740",
+          "4868b",
+          "54383",
+          "54384",
+          "60474",
+          "6141",
+          "78443",
+          "78444",
+          "86500",
+          "87081",
+          "87087"
+        ],
+        "notInList": [
+          "41747",
+          "41748",
+          "41764",
+          "41765",
+          "43121",
+          "43712",
+          "43713",
+          "4569",
+          "4868b",
+          "54383",
+          "54384",
+          "78443",
+          "78444",
+          "86500"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 5523
+    }
+  ]
+}

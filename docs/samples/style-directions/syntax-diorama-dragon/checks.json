@@ -1,0 +1,17 @@
+[
+  {
+    "attempt": 1,
+    "check": 1,
+    "feedback": "Check 1 of 3: the code did not compile. INVALID_INPUT: Invalid build script: $.sections[0].ops[24].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"dark bluish grey\",\"dark bluish grey\",\"light bluish grey\"]}); $.sections[0].ops[25].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"dark bluish grey\",\"dark bluish grey\",\"light bluish grey\"]}); $.sections[0].ops[26].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"dark bluish grey\",\"dark bluish grey\",\"light bluish grey\"]}); $.sections[0].ops[27].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"dark bluish grey\",\"dark bluish grey\",\"light bluish grey\"]}); $.sections[0].ops[30].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"dark bluish grey\",\"dark bluish grey\",\"light bluish grey\"]}) (+10 more)\n"
+  },
+  {
+    "attempt": 1,
+    "check": 2,
+    "feedback": "Check 2 of 3: the code compiled to 1,378 parts (target 1,000: +378, +37.8%). Sections: Weight-bearing legs and muscular body 470, Connected exhibition plinth 289, Arched neck and expressive horned head 198, Tail enclosing the clutch 161, Sweeping garnet wings 140, Nursery in the old forge 120.\nErrors (3):\n- overlap: 3941 Round Brick 2 \u00d7 2 placed at [25, 7, 10] and 61678 Curved Slope 4 \u00d7 1 placed at [24, 7, 11] overlap where their bodies meet: x 25\u201327, y 7\u201310, z 11\u201312 [sections[1].ops[19] (code line 2), sections[4].ops[63] (code line 2)]\n- overlap: 3941 Round Brick 2 \u00d7 2 placed at [25, 7, 10] and 40379 Animal Tail Section End placed at [22, 4, 10] overlap where their bodies meet: x 25\u201326, y 7\u201310, z 10\u201311 [sections[1].ops[19] (code line 2), sections[4].ops[64] (code line 2)]\n- overlap: 3941 Round Brick 2 \u00d7 2 placed at [18, 7, 12] and 49668 Plate 1 \u00d7 1 with Tooth In-line placed at [18, 8, 13] overlap where their bodies meet: x 18\u201319, y 8\u20139, z 13\u201314 [sections[1].ops[21] (code line 2), sections[2].ops[63] (code line 2)]\n"
+  },
+  {
+    "attempt": 1,
+    "check": 3,
+    "feedback": "Check 3 of 3: the code compiled to 1,290 parts (target 1,000: +290, +29%). Sections: Weight-bearing legs and muscular body 457, Connected exhibition plinth 246, Arched neck and expressive horned head 184, Tail enclosing the clutch 143, Sweeping garnet wings 140, Nursery in the old forge 120.\nNo errors: as an answer it would be accepted.\n"
+  }
+]

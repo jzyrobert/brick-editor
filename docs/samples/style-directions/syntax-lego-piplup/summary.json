@@ -1,0 +1,213 @@
+{
+  "brief": "piplup",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "build-agent.md",
+  "replyPrompt": "brick-build-syntax.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1141,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1141,
+        "difference": 141,
+        "percent": 14.1
+      },
+      "seconds": 454,
+      "tokens": {
+        "input": 553918,
+        "cached": 401408,
+        "output": 44958,
+        "reasoning": 26771
+      },
+      "searches": 5,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "15068",
+          "24309",
+          "3003",
+          "3004",
+          "3005",
+          "3020",
+          "30363",
+          "3660b",
+          "3747b",
+          "61678"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 454,
+          "usage": {
+            "input": 553918,
+            "cached": 401408,
+            "output": 44958,
+            "reasoning": 26771,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "6091",
+                "30602",
+                "42022",
+                "70681"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24201",
+                "13547",
+                "6091",
+                "70681",
+                "80177",
+                "80178"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "limit": 12
+              },
+              "results": [
+                "41669",
+                "48267",
+                "4592",
+                "7768",
+                "4257"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "inverted slope",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3665a",
+                "3660b",
+                "2449",
+                "3676",
+                "4287a",
+                "24201",
+                "3747b",
+                "3665b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "54200",
+                "3039",
+                "3040b",
+                "85984",
+                "4286",
+                "11477",
+                "3298",
+                "60481a"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1246,
+              "errors": 16,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 1266,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 1141,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "15068",
+              "24309",
+              "3003",
+              "3004",
+              "3005",
+              "3020",
+              "30363",
+              "3660b",
+              "3747b",
+              "61678"
+            ],
+            "notInList": [],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1141
+        }
+      ]
+    }
+  ]
+}

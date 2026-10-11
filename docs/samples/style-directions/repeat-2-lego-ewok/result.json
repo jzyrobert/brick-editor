@@ -1,0 +1,460 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 3188,
+  "targetMiss": {
+    "target": 3000,
+    "parts": 3188,
+    "difference": 188,
+    "percent": 6.3
+  },
+  "seconds": 666,
+  "tokens": {
+    "input": 1053284,
+    "cached": 753920,
+    "output": 59857,
+    "reasoning": 34662
+  },
+  "searches": 20,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2412b",
+      "2417",
+      "2431",
+      "2489",
+      "2877",
+      "3004",
+      "3004p90",
+      "3023b",
+      "3024",
+      "3039",
+      "3062b",
+      "3069b",
+      "3070b",
+      "3298p90",
+      "3941",
+      "3957a",
+      "3960",
+      "4070",
+      "43720",
+      "43721",
+      "44375b",
+      "4474",
+      "4589",
+      "4600",
+      "4740",
+      "6141",
+      "61678",
+      "87081"
+    ],
+    "notInList": [
+      "2489",
+      "3004p90",
+      "3298p90",
+      "43720",
+      "43721",
+      "44375b",
+      "4474"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 666,
+      "usage": {
+        "input": 1053284,
+        "cached": 753920,
+        "output": 59857,
+        "reasoning": 34662,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "windscreen",
+            "colour": "trans yellow",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "6070",
+            "2437",
+            "6152a",
+            "62360",
+            "4474",
+            "6238a",
+            "6238b",
+            "87752"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "41748",
+            "41747",
+            "52031",
+            "43720",
+            "43721"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "4740",
+            "3960",
+            "2654a",
+            "43898",
+            "44375b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Ewok",
+            "limit": 6
+          },
+          "results": [
+            "3622pz2",
+            "64805",
+            "6047615a",
+            "6047615b",
+            "11203d01",
+            "11203d02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Slope Brick Curved 4",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "93606",
+            "3573",
+            "52031",
+            "66955",
+            "47456",
+            "61068"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "windscreen",
+            "size": "12x6",
+            "colour": "trans yellow",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "space logo",
+            "limit": 8
+          },
+          "results": [
+            "3004p90",
+            "3298p90",
+            "3068bp53",
+            "3068bp5e",
+            "4490p90",
+            "9460",
+            "59349p50",
+            "80123"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wheel",
+            "size": "4x2",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "3788",
+            "2695",
+            "60208",
+            "56904",
+            "32146",
+            "6157"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "round corner",
+            "colour": "dark orange",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "30357",
+            "30565",
+            "25269",
+            "48092",
+            "27925",
+            "3477"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "dark orange",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "13547"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "Minifig Head Ewok",
+            "limit": 10
+          },
+          "results": [
+            "64805"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "Minifig Torso space",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "30375",
+            "973p6m",
+            "76382p5d",
+            "76382p5g",
+            "76382p6a"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "cylinder hemisphere",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "44359",
+            "44358"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "wedge",
+            "size": "4x6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "43713",
+            "98281",
+            "43712",
+            "48205",
+            "48208",
+            "47407"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "barrel",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "2489",
+            "4424",
+            "64951",
+            "30139"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "plant leaves",
+            "colour": "dark green",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "2423",
+            "2417",
+            "32607",
+            "10884"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "space antenna",
+            "limit": 6
+          },
+          "results": [
+            "3144",
+            "6119",
+            "6119b"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "Slope 45° 2 × 1",
+            "colour": "dark orange",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "3040b",
+            "3665a",
+            "3044b"
+          ],
+          "round": 4
+        },
+        {
+          "args": {
+            "query": "Plate 1 × 2 with Handles",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 2
+          },
+          "results": [
+            "3839b",
+            "18649"
+          ],
+          "round": 4
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 3194,
+          "errors": 32,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 3188,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2417",
+          "2431",
+          "2489",
+          "2877",
+          "3004",
+          "3004p90",
+          "3023b",
+          "3024",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "3298p90",
+          "3941",
+          "3957a",
+          "3960",
+          "4070",
+          "43720",
+          "43721",
+          "44375b",
+          "4474",
+          "4589",
+          "4600",
+          "4740",
+          "6141",
+          "61678",
+          "87081"
+        ],
+        "notInList": [
+          "2489",
+          "3004p90",
+          "3298p90",
+          "43720",
+          "43721",
+          "44375b",
+          "4474"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 3188
+    }
+  ]
+}

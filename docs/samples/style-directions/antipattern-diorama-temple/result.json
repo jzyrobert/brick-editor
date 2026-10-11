@@ -1,0 +1,171 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2037,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2037,
+    "difference": 37,
+    "percent": 1.9
+  },
+  "seconds": 557,
+  "tokens": {
+    "input": 521318,
+    "cached": 327040,
+    "output": 58216,
+    "reasoning": 27901
+  },
+  "searches": 3,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "13547",
+      "24201",
+      "2435",
+      "24866",
+      "3003",
+      "3009",
+      "30176",
+      "3031",
+      "3039",
+      "3069b",
+      "32607",
+      "3633",
+      "3941",
+      "3942c",
+      "3943b",
+      "3960",
+      "4032b",
+      "4589",
+      "4740",
+      "54200",
+      "87081",
+      "90398"
+    ],
+    "notInList": [
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 557,
+      "usage": {
+        "input": 521318,
+        "cached": 327040,
+        "output": 58216,
+        "reasoning": 27901,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bell",
+            "limit": 6
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "inverted curved slope",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2519,
+          "errors": 20,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 2422,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 2037,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "13547",
+          "24201",
+          "2435",
+          "24866",
+          "3003",
+          "3009",
+          "30176",
+          "3031",
+          "3039",
+          "3069b",
+          "32607",
+          "3633",
+          "3941",
+          "3942c",
+          "3943b",
+          "3960",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "87081",
+          "90398"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2037
+    }
+  ]
+}

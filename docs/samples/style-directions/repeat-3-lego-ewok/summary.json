@@ -1,0 +1,305 @@
+{
+  "brief": "ewok inspired version of the classic 1970s lego space sets",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "attempts": 5,
+  "prompt": "build-agent.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 3000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 3425,
+      "targetMiss": {
+        "target": 3000,
+        "parts": 3425,
+        "difference": 425,
+        "percent": 14.2
+      },
+      "seconds": 575,
+      "tokens": {
+        "input": 536826,
+        "cached": 340608,
+        "output": 41903,
+        "reasoning": 24104
+      },
+      "searches": 10,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2412b",
+          "24309",
+          "3004",
+          "3062b",
+          "3068b",
+          "3185",
+          "3660b",
+          "3957a",
+          "3960",
+          "3961",
+          "4079",
+          "4286",
+          "4345b",
+          "43720",
+          "43721",
+          "4589",
+          "4740",
+          "50950",
+          "54200",
+          "61678",
+          "62360",
+          "87079p50"
+        ],
+        "notInList": [
+          "3961",
+          "43720",
+          "43721",
+          "62360",
+          "87079p50"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 575,
+          "usage": {
+            "input": 536826,
+            "cached": 340608,
+            "output": 41903,
+            "reasoning": 24104,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "windscreen space",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "6070",
+                "2437",
+                "6152a",
+                "62360",
+                "4474",
+                "6238a",
+                "6238b",
+                "87752"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "dark orange",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "13547"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Ewok",
+                "limit": 8
+              },
+              "results": [
+                "3622pz2",
+                "64805",
+                "6047615a",
+                "6047615b",
+                "11203d01",
+                "11203d02"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "8x8",
+                "limit": 5
+              },
+              "results": [
+                "3961",
+                "35154",
+                "18859"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Wedge Plate 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "47405"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Slope Brick Curved 6",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "42022",
+                "44126",
+                "42023",
+                "45410",
+                "52031",
+                "35164"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Tile space logo",
+                "limit": 6
+              },
+              "results": [
+                "3068bp53",
+                "3068bp5e",
+                "87079p50",
+                "3068bp11",
+                "3068bp55",
+                "3069bp49"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Minifig astronaut",
+                "limit": 6
+              },
+              "results": [
+                "50665",
+                "3842a",
+                "3842b",
+                "3842c",
+                "71016",
+                "769"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Wedge 4 × 2 Sloped Left",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "43721"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 3526,
+              "errors": 8,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 3425,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "2412b",
+              "24309",
+              "3004",
+              "3062b",
+              "3068b",
+              "3185",
+              "3660b",
+              "3957a",
+              "3960",
+              "3961",
+              "4079",
+              "4286",
+              "4345b",
+              "43720",
+              "43721",
+              "4589",
+              "4740",
+              "50950",
+              "54200",
+              "61678",
+              "62360",
+              "87079p50"
+            ],
+            "notInList": [
+              "3961",
+              "43720",
+              "43721",
+              "62360",
+              "87079p50"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 3425
+        }
+      ]
+    }
+  ]
+}

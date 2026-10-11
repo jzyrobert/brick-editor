@@ -1,0 +1,336 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 3474,
+  "targetMiss": {
+    "target": 3000,
+    "parts": 3474,
+    "difference": 474,
+    "percent": 15.8
+  },
+  "seconds": 1062,
+  "tokens": {
+    "input": 825593,
+    "cached": 548480,
+    "output": 97314,
+    "reasoning": 62625
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "2335",
+      "2877",
+      "3004p90",
+      "3039pcg",
+      "3062b",
+      "3068b",
+      "3069b",
+      "3070b",
+      "3298p90",
+      "3307",
+      "3622p02",
+      "3622pz2",
+      "3660b",
+      "3678b",
+      "3941",
+      "3943b",
+      "3957a",
+      "3960",
+      "3961",
+      "4070",
+      "4079",
+      "42022",
+      "4345b",
+      "4460b",
+      "4589",
+      "50950",
+      "59349p50",
+      "6141",
+      "61678",
+      "62360",
+      "6238b",
+      "87079p50",
+      "87081"
+    ],
+    "notInList": [
+      "3004p90",
+      "3039pcg",
+      "3298p90",
+      "3622p02",
+      "3622pz2",
+      "3961",
+      "42022",
+      "59349p50",
+      "62360",
+      "6238b",
+      "87079p50"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 1062,
+      "usage": {
+        "input": 825593,
+        "cached": 548480,
+        "output": 97314,
+        "reasoning": 62625,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "windscreen",
+            "colour": "trans yellow",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "6070",
+            "2437",
+            "6152a",
+            "62360",
+            "4474",
+            "6238a",
+            "6238b",
+            "87752"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "size": "8x8",
+            "limit": 5
+          },
+          "results": [
+            "3961",
+            "35154",
+            "18859"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "54200",
+            "85984",
+            "2450"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Ewok",
+            "limit": 8
+          },
+          "results": [
+            "3622pz2",
+            "64805",
+            "6047615a",
+            "6047615b",
+            "11203d01",
+            "11203d02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "space logo",
+            "limit": 10
+          },
+          "results": [
+            "3004p90",
+            "3298p90",
+            "3068bp53",
+            "3068bp5e",
+            "4490p90",
+            "9460",
+            "59349p50",
+            "80123",
+            "87079p50",
+            "2336p90"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope Curved 6",
+            "limit": 8
+          },
+          "results": [
+            "42022",
+            "44126",
+            "42023",
+            "78522",
+            "45410",
+            "45411",
+            "56204",
+            "52031"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope Curved 4 x 4",
+            "limit": 5
+          },
+          "results": [
+            "66955",
+            "7249",
+            "61487",
+            "93589"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Slope Inverted 75",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "2449"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "control panel",
+            "limit": 8
+          },
+          "results": [
+            "3039pcg",
+            "3039pch",
+            "3069bpa2",
+            "3069bpce",
+            "2431pc1",
+            "3069bpsa",
+            "3622p02",
+            "81048"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 5127,
+          "errors": 6,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 4049,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 3556,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2335",
+          "2877",
+          "3004p90",
+          "3039pcg",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3298p90",
+          "3307",
+          "3622p02",
+          "3622pz2",
+          "3660b",
+          "3678b",
+          "3941",
+          "3943b",
+          "3957a",
+          "3960",
+          "3961",
+          "4070",
+          "4079",
+          "42022",
+          "4345b",
+          "4460b",
+          "4589",
+          "50950",
+          "59349p50",
+          "6141",
+          "61678",
+          "62360",
+          "6238b",
+          "87079p50",
+          "87081"
+        ],
+        "notInList": [
+          "3004p90",
+          "3039pcg",
+          "3298p90",
+          "3622p02",
+          "3622pz2",
+          "3961",
+          "42022",
+          "59349p50",
+          "62360",
+          "6238b",
+          "87079p50"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 3474
+    }
+  ]
+}

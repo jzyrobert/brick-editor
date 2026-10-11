@@ -1,0 +1,574 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-budget-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 359,
+      "seconds": 482,
+      "tokens": {
+        "input": 1739295,
+        "cached": 1347456,
+        "output": 55605,
+        "reasoning": 38208
+      },
+      "searches": 29,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "14769",
+          "15068",
+          "2412b",
+          "2431",
+          "3005pe4",
+          "3020",
+          "32803",
+          "33211",
+          "3710",
+          "4032b",
+          "41769a",
+          "41770a",
+          "43712",
+          "43713",
+          "54091",
+          "54200",
+          "60481a",
+          "6141",
+          "61678",
+          "64648",
+          "78522",
+          "88930",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "3005pe4",
+          "32803",
+          "33211",
+          "43712",
+          "43713",
+          "54091",
+          "64648",
+          "78522",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 482,
+          "usage": {
+            "input": 1739295,
+            "cached": 1347456,
+            "output": 55605,
+            "reasoning": 38208,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wheel bicycle",
+                "limit": 8
+              },
+              "results": [
+                "92851",
+                "4720",
+                "64248",
+                "u9163",
+                "28578",
+                "4719c03"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel spoked",
+                "limit": 8
+              },
+              "results": [
+                "50862",
+                "30155",
+                "242c01",
+                "243c01",
+                "50862c01",
+                "244c01",
+                "244c02",
+                "244c03"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x4",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456",
+                "61068"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope curved inverted",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel wagon",
+                "limit": 8
+              },
+              "results": [
+                "2470",
+                "4489a",
+                "33211",
+                "4489b",
+                "33212"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel motorcycle",
+                "limit": 8
+              },
+              "results": [
+                "88517",
+                "2903",
+                "50860",
+                "18895",
+                "52035",
+                "85983",
+                "46334",
+                "71720"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel tyre 81",
+                "limit": 6
+              },
+              "results": [
+                "817c03",
+                "817c04",
+                "2997",
+                "32196",
+                "2903c02"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "tile eye",
+                "limit": 6
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07",
+                "98138pz4"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 6
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "tyre 43",
+                "limit": 6
+              },
+              "results": [
+                "4455",
+                "30699",
+                "56898",
+                "44309",
+                "2696",
+                "6579"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Wheel Motorcycle Tyre",
+                "limit": 6
+              },
+              "results": [
+                "46334c01",
+                "71720c01",
+                "71720c02",
+                "88517c01",
+                "88517c02",
+                "88517c03"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "wheel holding pin",
+                "limit": 6
+              },
+              "results": [
+                "30027b",
+                "30027c",
+                "30027d",
+                "4489a",
+                "4489b",
+                "30027a"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "bar curved",
+                "limit": 6
+              },
+              "results": [
+                "4042",
+                "30359b",
+                "30359a",
+                "88964",
+                "95229",
+                "7534"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope curved double",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "93273",
+                "54091",
+                "66956",
+                "78522",
+                "11290",
+                "52031"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "brick axle 1 x 1",
+                "limit": 5
+              },
+              "results": [
+                "73230",
+                "32123b",
+                "32123a",
+                "6135b",
+                "3464b"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "wheel holder pin",
+                "limit": 5
+              },
+              "results": [
+                "4600",
+                "3467"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "plate wheel holders",
+                "limit": 5
+              },
+              "results": [
+                "4600"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "handlebar",
+                "limit": 6
+              },
+              "results": [
+                "3003126",
+                "30031",
+                "98397",
+                "51723",
+                "u9204c01",
+                "u9206c01"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "wedge curved",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "45677",
+                "64225",
+                "43713",
+                "47753",
+                "98281",
+                "43712"
+              ],
+              "round": 4
+            },
+            {
+              "args": {
+                "query": "Technic Axle 5",
+                "limit": 4
+              },
+              "results": [
+                "32073",
+                "15462",
+                "32209",
+                "11478"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Technic Axle 4",
+                "limit": 4
+              },
+              "results": [
+                "3701",
+                "3709b",
+                "3705",
+                "87083"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Plate 2 x 2 with Wheels",
+                "limit": 4
+              },
+              "results": [
+                "122c01",
+                "75545",
+                "122c02",
+                "122c03"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "Technic Brick 1 x 2 axle",
+                "limit": 4
+              },
+              "results": [
+                "3700",
+                "32064a",
+                "32064b",
+                "32064c"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "bicycle frame",
+                "limit": 4
+              },
+              "results": [
+                "4719"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "brick eye pattern",
+                "limit": 8
+              },
+              "results": [
+                "3005pe1",
+                "3005pe4",
+                "3003pe3",
+                "3003pe2",
+                "3005pe2",
+                "3005pe3",
+                "3437pe1",
+                "3003pe1"
+              ],
+              "round": 7
+            },
+            {
+              "args": {
+                "query": "brick eyes",
+                "limit": 6
+              },
+              "results": [
+                "4258",
+                "73162",
+                "3001p08",
+                "3004p0a",
+                "3001p09",
+                "3004p0b"
+              ],
+              "round": 7
+            },
+            {
+              "args": {
+                "query": "slope eye pattern",
+                "limit": 6
+              },
+              "results": [
+                "3039p50",
+                "4286p01",
+                "4286p02",
+                "3298p02",
+                "3678bpk0",
+                "15068p0i"
+              ],
+              "round": 7
+            },
+            {
+              "args": {
+                "query": "brick 1 x 1 eye",
+                "limit": 6
+              },
+              "results": [
+                "3005pe1",
+                "3005pe4",
+                "3005pe2",
+                "3005pe3"
+              ],
+              "round": 7
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 358,
+              "errors": 1,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 359,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "14769",
+              "15068",
+              "2412b",
+              "2431",
+              "3005pe4",
+              "3020",
+              "32803",
+              "33211",
+              "3710",
+              "4032b",
+              "41769a",
+              "41770a",
+              "43712",
+              "43713",
+              "54091",
+              "54200",
+              "60481a",
+              "6141",
+              "61678",
+              "64648",
+              "78522",
+              "88930",
+              "93606",
+              "98138"
+            ],
+            "notInList": [
+              "3005pe4",
+              "32803",
+              "33211",
+              "43712",
+              "43713",
+              "54091",
+              "64648",
+              "78522",
+              "93606"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 359
+        }
+      ]
+    }
+  ]
+}

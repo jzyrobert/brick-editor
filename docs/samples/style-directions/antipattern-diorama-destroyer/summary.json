@@ -1,0 +1,189 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "attempts": 5,
+  "prompt": "style-antipattern-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 5000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 5100,
+      "targetMiss": {
+        "target": 5000,
+        "parts": 5100,
+        "difference": 100,
+        "percent": 2
+      },
+      "seconds": 549,
+      "tokens": {
+        "input": 327437,
+        "cached": 224768,
+        "output": 37446,
+        "reasoning": 19498
+      },
+      "searches": 4,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2877",
+          "3005",
+          "3020",
+          "3022",
+          "3023b",
+          "3034",
+          "30363",
+          "3068b",
+          "3069b",
+          "3941",
+          "3957a",
+          "6141",
+          "87079"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 549,
+          "usage": {
+            "input": 327437,
+            "cached": 224768,
+            "output": 37446,
+            "reasoning": 19498,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "12x6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "3028",
+                "6178",
+                "30355",
+                "30356"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "2450",
+                "62743",
+                "43719",
+                "32059",
+                "90194",
+                "43723b",
+                "26601"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "6x6",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "44375b",
+                "4285b",
+                "44375a",
+                "21599",
+                "35327"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "hemisphere",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "30208",
+                "44359",
+                "61287",
+                "86500",
+                "44358"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 7712,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 2,
+              "parts": 5136,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "2412b",
+              "2877",
+              "3005",
+              "3020",
+              "3022",
+              "3023b",
+              "3034",
+              "30363",
+              "3068b",
+              "3069b",
+              "3941",
+              "3957a",
+              "6141",
+              "87079"
+            ],
+            "notInList": [],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 5100
+        }
+      ]
+    }
+  ]
+}

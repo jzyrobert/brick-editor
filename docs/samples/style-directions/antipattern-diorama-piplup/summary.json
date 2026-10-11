@@ -1,0 +1,110 @@
+{
+  "brief": "piplup",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "style-antipattern-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1126,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1126,
+        "difference": 126,
+        "percent": 12.6
+      },
+      "seconds": 329,
+      "tokens": {
+        "input": 196089,
+        "cached": 91648,
+        "output": 26083,
+        "reasoning": 14114
+      },
+      "searches": 0,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "3004",
+          "3005",
+          "3020",
+          "3023b",
+          "3039",
+          "3068b",
+          "3069b",
+          "3660b",
+          "61678"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 329,
+          "usage": {
+            "input": 196089,
+            "cached": 91648,
+            "output": 26083,
+            "reasoning": 14114,
+            "costUsd": 0
+          },
+          "searches": [],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1128,
+              "errors": 2,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 1126,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "3004",
+              "3005",
+              "3020",
+              "3023b",
+              "3039",
+              "3068b",
+              "3069b",
+              "3660b",
+              "61678"
+            ],
+            "notInList": [],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1126
+        }
+      ]
+    }
+  ]
+}
