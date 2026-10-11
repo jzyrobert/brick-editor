@@ -1,0 +1,284 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 288,
+  "seconds": 431,
+  "tokens": {
+    "input": 548868,
+    "cached": 350208,
+    "output": 32147,
+    "reasoning": 19484
+  },
+  "searches": 10,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "15068",
+      "24309",
+      "2903c02",
+      "3005pe4",
+      "30363",
+      "3062b",
+      "3070b",
+      "32803",
+      "3700",
+      "41769a",
+      "42022",
+      "42023",
+      "45410",
+      "45411",
+      "60474",
+      "61678"
+    ],
+    "notInList": [
+      "2903c02",
+      "3005pe4",
+      "32803",
+      "42022",
+      "42023",
+      "45410",
+      "45411"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 431,
+      "usage": {
+        "input": 548868,
+        "cached": 350208,
+        "output": 32147,
+        "reasoning": 19484,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bicycle",
+            "limit": 6
+          },
+          "results": [
+            "4719",
+            "92851",
+            "2807",
+            "4720",
+            "64248",
+            "4719c01"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "motorcycle wheel tyre",
+            "limit": 8
+          },
+          "results": [
+            "46334c01",
+            "71720c01",
+            "71720c02",
+            "88517c01",
+            "88517c02",
+            "88517c03",
+            "2903c01",
+            "2903c02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope inverted",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023",
+            "11301",
+            "45410"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye tile",
+            "limit": 8
+          },
+          "results": [
+            "10238",
+            "98138pz0",
+            "98138pz2",
+            "98138p2d",
+            "98138p07",
+            "98138pz4",
+            "3069bpm0",
+            "3070bp0e"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "colour": "orange",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "41748",
+            "41747",
+            "52031",
+            "43720",
+            "43721"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Technic axle 6",
+            "limit": 5
+          },
+          "results": [
+            "3706",
+            "59443",
+            "2994",
+            "32167",
+            "61800"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "brick eye pattern",
+            "limit": 8
+          },
+          "results": [
+            "3005pe1",
+            "3005pe4",
+            "3003pe3",
+            "3003pe2",
+            "3005pe2",
+            "3005pe3",
+            "3437pe1",
+            "3003pe1"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved 6",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "42022",
+            "44126",
+            "42023",
+            "78522",
+            "45410",
+            "45411",
+            "56204",
+            "52031"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Technic connector axle perpendicular",
+            "limit": 6
+          },
+          "results": [
+            "3700",
+            "3701",
+            "3709b",
+            "4600",
+            "32039",
+            "6553"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "fish",
+            "limit": 5
+          },
+          "results": [
+            "64648",
+            "30224",
+            "49595e",
+            "8043"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 289,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 288,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "24309",
+          "2903c02",
+          "3005pe4",
+          "30363",
+          "3062b",
+          "3070b",
+          "32803",
+          "3700",
+          "41769a",
+          "42022",
+          "42023",
+          "45410",
+          "45411",
+          "60474",
+          "61678"
+        ],
+        "notInList": [
+          "2903c02",
+          "3005pe4",
+          "32803",
+          "42022",
+          "42023",
+          "45410",
+          "45411"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 288
+    }
+  ]
+}

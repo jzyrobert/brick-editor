@@ -1,0 +1,1256 @@
+{
+ "buildScript": 1,
+ "title": "LL-379 Wicket Woodland Explorer",
+ "description": "A 1979 blue-and-grey delta scout rebuilt by Ewok engineers: amber canopy in an orange flight hood, ear-shaped radar dishes, timber-framed jet pods, paw landing pads and removable forest-sample barrels. Includes an Ewok Classic Space astronaut. Wing studs retain the original Space-era texture.",
+ "palette": {
+  "hull": "blue",
+  "metal": "light bluish grey",
+  "bark": "reddish brown",
+  "hood": "dark orange",
+  "face": "tan",
+  "glass": "trans yellow"
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "sections": [
+  {
+   "name": "Three padded landing paws",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -2,
+      0,
+      3
+     ],
+     "size": [
+      4,
+      5
+     ],
+     "layers": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -2,
+      1,
+      3
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -1,
+      1,
+      3
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      0,
+      1,
+      3
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      1,
+      1,
+      3
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -2,
+      1,
+      4
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      0,
+      1,
+      4
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      -2,
+      1,
+      6
+     ],
+     "size": [
+      4,
+      3,
+      2
+     ],
+     "colour": "bark",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -7,
+      0,
+      12
+     ],
+     "size": [
+      4,
+      5
+     ],
+     "layers": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -7,
+      1,
+      12
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -6,
+      1,
+      12
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -5,
+      1,
+      12
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -4,
+      1,
+      12
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -7,
+      1,
+      13
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -5,
+      1,
+      13
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      -7,
+      1,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      2
+     ],
+     "colour": "bark",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      0,
+      12
+     ],
+     "size": [
+      4,
+      5
+     ],
+     "layers": 1,
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      3,
+      1,
+      12
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      4,
+      1,
+      12
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      5,
+      1,
+      12
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      6,
+      1,
+      12
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      3,
+      1,
+      13
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      5,
+      1,
+      13
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      1,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      2
+     ],
+     "colour": "bark",
+     "interior": "solid"
+    }
+   ]
+  },
+  {
+   "name": "Connected blue spaceframe",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -3,
+      3,
+      2
+     ],
+     "size": [
+      6,
+      19
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -9,
+      4,
+      15
+     ],
+     "size": [
+      18,
+      2
+     ],
+     "layers": 1,
+     "colour": "metal"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -7,
+      4,
+      11
+     ],
+     "size": [
+      14,
+      2
+     ],
+     "layers": 1,
+     "colour": "metal"
+    },
+    {
+     "op": "box",
+     "at": [
+      -3,
+      5,
+      2
+     ],
+     "size": [
+      6,
+      5,
+      13
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "carve",
+     "at": [
+      -1,
+      5,
+      3
+     ],
+     "size": [
+      2,
+      5,
+      6
+     ]
+    },
+    {
+     "op": "place",
+     "part": "43713",
+     "at": [
+      -2,
+      2,
+      -3
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "43712",
+     "at": [
+      -2,
+      5,
+      -3
+     ],
+     "colour": "hull",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Delta wings",
+   "ops": [
+    {
+     "op": "place",
+     "part": "30355",
+     "at": [
+      -9,
+      5,
+      5
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30356",
+     "at": [
+      3,
+      5,
+      5
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      -9,
+      6,
+      13
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      8,
+      6,
+      13
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3298p90",
+     "at": [
+      -6,
+      6,
+      5
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298p90",
+     "at": [
+      4,
+      6,
+      5
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      -8,
+      6,
+      16
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      7,
+      6,
+      16
+     ],
+     "colour": "green",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -8,
+      6,
+      14
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      7,
+      6,
+      14
+     ],
+     "colour": "black",
+     "turn": 90
+    }
+   ]
+  },
+  {
+   "name": "Hooded amber cockpit",
+   "ops": [
+    {
+     "op": "place",
+     "part": "3039pcc",
+     "at": [
+      -1,
+      5,
+      3
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4079",
+     "at": [
+      -1,
+      4,
+      6
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4474",
+     "at": [
+      -2,
+      10,
+      3
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      10,
+      3
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      10,
+      7
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30136",
+     "at": [
+      -3,
+      5,
+      8
+     ],
+     "colour": "bark",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      10,
+      3
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      10,
+      7
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30136",
+     "at": [
+      2,
+      5,
+      8
+     ],
+     "colour": "bark",
+     "turn": 90
+    },
+    {
+     "op": "box",
+     "at": [
+      -3,
+      10,
+      10
+     ],
+     "size": [
+      6,
+      3,
+      3
+     ],
+     "colour": "hood",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -3,
+      13,
+      11
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -1,
+      13,
+      11
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      1,
+      13,
+      11
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      -2,
+      13,
+      10
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      1,
+      13,
+      10
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -1,
+      8,
+      1
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      -1,
+      11,
+      2
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      -2,
+      8,
+      2
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      -2,
+      11,
+      2
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      1,
+      8,
+      2
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      1,
+      11,
+      2
+     ],
+     "colour": "white",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Ear radar and spear aerial",
+   "ops": [
+    {
+     "op": "cylinder",
+     "at": [
+      -7,
+      6,
+      8
+     ],
+     "diameter": 4,
+     "height": 3,
+     "colour": "metal"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      -7,
+      9,
+      8
+     ],
+     "diameter": 4,
+     "height": 4,
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      -7,
+      13,
+      8
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      -6,
+      15,
+      9
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      -5,
+      16,
+      10
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      -6,
+      16,
+      10
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      3,
+      6,
+      8
+     ],
+     "diameter": 4,
+     "height": 3,
+     "colour": "metal"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      3,
+      9,
+      8
+     ],
+     "diameter": 4,
+     "height": 4,
+     "colour": "bark"
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      3,
+      13,
+      8
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      4,
+      15,
+      9
+     ],
+     "colour": "face",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      5,
+      16,
+      10
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      4,
+      16,
+      10
+     ],
+     "colour": "glass",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Bound-log propulsion",
+   "ops": [
+    {
+     "op": "place",
+     "part": "4868b",
+     "at": [
+      -6,
+      6,
+      12
+     ],
+     "colour": "metal",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -7,
+      6,
+      12
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93273",
+     "at": [
+      -7,
+      7,
+      12
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      -7,
+      7,
+      16
+     ],
+     "colour": "tan",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -4,
+      6,
+      12
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93273",
+     "at": [
+      -4,
+      7,
+      12
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      -4,
+      7,
+      16
+     ],
+     "colour": "tan",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      -6,
+      12,
+      16
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4868b",
+     "at": [
+      4,
+      6,
+      12
+     ],
+     "colour": "metal",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      3,
+      6,
+      12
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93273",
+     "at": [
+      3,
+      7,
+      12
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      3,
+      7,
+      16
+     ],
+     "colour": "tan",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      6,
+      6,
+      12
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93273",
+     "at": [
+      6,
+      7,
+      12
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      6,
+      7,
+      16
+     ],
+     "colour": "tan",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      4,
+      12,
+      16
+     ],
+     "colour": "trans red",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Aft cargo and tail",
+   "ops": [
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      -2,
+      10,
+      13
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "24309",
+     "at": [
+      0,
+      10,
+      13
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -3,
+      10,
+      13
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      2,
+      10,
+      13
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      -2,
+      6,
+      15
+     ],
+     "size": [
+      4,
+      3,
+      3
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2489",
+     "at": [
+      -2,
+      9,
+      16
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2489",
+     "at": [
+      0,
+      9,
+      16
+     ],
+     "colour": "bark",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "32607",
+     "at": [
+      -2,
+      14,
+      17
+     ],
+     "colour": "dark green",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      0,
+      14,
+      16
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "44661",
+     "at": [
+      0,
+      5,
+      18
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004p90",
+     "at": [
+      -2,
+      6,
+      18
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      -2,
+      9,
+      18
+     ],
+     "colour": "metal",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Ewok astronaut",
+   "ops": [
+    {
+     "op": "place",
+     "part": "41879a",
+     "at": [
+      -12,
+      0,
+      0
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "76382p91",
+     "at": [
+      -13,
+      4,
+      0
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "64805",
+     "at": [
+      -12,
+      11,
+      0
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    }
+   ]
+  }
+ ]
+}

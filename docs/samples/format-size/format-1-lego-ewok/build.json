@@ -1,0 +1,1424 @@
+{
+ "buildScript": 1,
+ "title": "Yub-Nub Galaxy Glider — 1979 Forest Fleet",
+ "description": "A blue-and-grey delta explorer rebuilt by Ewoks: stitched hide sails, timber landing skids, a hooded yellow cockpit with round ear scanners, acorn reactors, a boarding ramp and a treetop tracking station. An Ewok astronaut wears the original Classic Space insignia while a forest controller tracks the flight.",
+ "palette": {
+  "hull": "blue",
+  "metal": "light bluish grey",
+  "wood": "reddish brown",
+  "hide": "tan",
+  "hood": "dark orange",
+  "glass": "trans yellow"
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "sections": [
+  {
+   "name": "Timber landing gear",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -4,
+      0,
+      -8
+     ],
+     "size": [
+      2,
+      18
+     ],
+     "layers": 2,
+     "colour": "metal",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -4,
+      0,
+      -10
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -4,
+      1,
+      -10
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      -4,
+      0,
+      10
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -4,
+      1,
+      10
+     ],
+     "colour": "metal",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      -4,
+      2,
+      -5
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "wood",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      -4,
+      2,
+      6
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "wood",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      0,
+      -8
+     ],
+     "size": [
+      2,
+      18
+     ],
+     "layers": 2,
+     "colour": "metal",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      0,
+      -10
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      2,
+      1,
+      -10
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      0,
+      10
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      2,
+      1,
+      10
+     ],
+     "colour": "metal",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      2,
+      -5
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "wood",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      2,
+      6
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "wood",
+     "interior": "solid"
+    }
+   ]
+  },
+  {
+   "name": "Connected explorer hull",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -4,
+      5,
+      -10
+     ],
+     "size": [
+      8,
+      23
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "box",
+     "at": [
+      -3,
+      6,
+      -9
+     ],
+     "size": [
+      6,
+      3,
+      22
+     ],
+     "colour": "hull",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -2,
+      5,
+      -13
+     ],
+     "size": [
+      4,
+      3
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "3298p90",
+     "at": [
+      -1,
+      6,
+      -13
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4286",
+     "at": [
+      -2,
+      6,
+      -13
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4286",
+     "at": [
+      1,
+      6,
+      -13
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "carve",
+     "at": [
+      -2,
+      6,
+      -9
+     ],
+     "size": [
+      4,
+      3,
+      6
+     ]
+    },
+    {
+     "op": "place",
+     "part": "3039p34",
+     "at": [
+      -2,
+      6,
+      -8
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039p23",
+     "at": [
+      0,
+      6,
+      -8
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4474",
+     "at": [
+      -2,
+      9,
+      -9
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      -3,
+      9,
+      -9
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      -3,
+      9,
+      -7
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      -3,
+      9,
+      -5
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      2,
+      9,
+      -9
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      2,
+      9,
+      -7
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      2,
+      9,
+      -5
+     ],
+     "colour": "hood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -2,
+      9,
+      -2
+     ],
+     "colour": "hood",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      0,
+      9,
+      -2
+     ],
+     "colour": "hood",
+     "turn": 180
+    }
+   ]
+  },
+  {
+   "name": "Swept hide sails",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -8,
+      4,
+      2
+     ],
+     "size": [
+      16,
+      11
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "3832",
+     "at": [
+      -12,
+      4,
+      8
+     ],
+     "colour": "light bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3832",
+     "at": [
+      2,
+      4,
+      8
+     ],
+     "colour": "light bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      -8,
+      5,
+      2
+     ],
+     "size": [
+      4,
+      1,
+      11
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      4,
+      5,
+      2
+     ],
+     "size": [
+      4,
+      1,
+      11
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3933",
+     "at": [
+      -8,
+      5,
+      -6
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3934",
+     "at": [
+      4,
+      5,
+      -6
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3933",
+     "at": [
+      -12,
+      5,
+      2
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3934",
+     "at": [
+      8,
+      5,
+      2
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41770a",
+     "at": [
+      -7,
+      6,
+      -2
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41769a",
+     "at": [
+      5,
+      6,
+      -2
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41770a",
+     "at": [
+      -11,
+      6,
+      6
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41769a",
+     "at": [
+      9,
+      6,
+      6
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      -8,
+      6,
+      4
+     ],
+     "size": [
+      2,
+      8
+     ],
+     "colour": "hide",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      6,
+      6,
+      4
+     ],
+     "size": [
+      2,
+      8
+     ],
+     "colour": "hide",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -5,
+      6,
+      2
+     ],
+     "size": [
+      1,
+      11
+     ],
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      4,
+      6,
+      2
+     ],
+     "size": [
+      1,
+      11
+     ],
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -8,
+      7,
+      5
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      6,
+      7,
+      5
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -8,
+      6,
+      2
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      6,
+      6,
+      2
+     ],
+     "colour": "blue",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Ear scanners and acorn fusion engines",
+   "ops": [
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      -7,
+      6,
+      -6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      -7,
+      9,
+      -6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      -7,
+      12,
+      -6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      -7,
+      15,
+      -6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      -6,
+      17,
+      -5
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      3,
+      6,
+      -6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      3,
+      9,
+      -6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      3,
+      12,
+      -6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      3,
+      15,
+      -6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      4,
+      17,
+      -5
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      -7,
+      7,
+      8
+     ],
+     "colour": "dark bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      -7,
+      10,
+      8
+     ],
+     "colour": "dark bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      -7,
+      13,
+      8
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      -7,
+      16,
+      8
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      -6,
+      18,
+      9
+     ],
+     "colour": "yellow",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      -6,
+      19,
+      9
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3678b",
+     "at": [
+      -7,
+      7,
+      12
+     ],
+     "colour": "blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      3,
+      7,
+      8
+     ],
+     "colour": "dark bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      3,
+      10,
+      8
+     ],
+     "colour": "dark bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "87081",
+     "at": [
+      3,
+      13,
+      8
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      3,
+      16,
+      8
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      4,
+      18,
+      9
+     ],
+     "colour": "yellow",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      4,
+      19,
+      9
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3678b",
+     "at": [
+      3,
+      7,
+      12
+     ],
+     "colour": "blue",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      -1,
+      9,
+      9
+     ],
+     "size": [
+      2,
+      9,
+      2
+     ],
+     "colour": "hull",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      -1,
+      9,
+      11
+     ],
+     "colour": "blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      0,
+      9,
+      11
+     ],
+     "colour": "blue",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3298p90",
+     "at": [
+      -1,
+      18,
+      9
+     ],
+     "colour": "blue",
+     "turn": 180
+    }
+   ]
+  },
+  {
+   "name": "Open cargo basket and boarding ramp",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      -3,
+      9,
+      0
+     ],
+     "size": [
+      1,
+      3,
+      8
+     ],
+     "colour": "wood",
+     "texture": "log",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      9,
+      0
+     ],
+     "size": [
+      1,
+      3,
+      8
+     ],
+     "colour": "wood",
+     "texture": "log",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "3622pz2",
+     "at": [
+      -3,
+      9,
+      8
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3622pz2",
+     "at": [
+      0,
+      9,
+      8
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -3,
+      12,
+      1
+     ],
+     "colour": "tan",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -3,
+      12,
+      4
+     ],
+     "colour": "tan",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      2,
+      12,
+      1
+     ],
+     "colour": "tan",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      2,
+      12,
+      4
+     ],
+     "colour": "tan",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "2489",
+     "at": [
+      0,
+      9,
+      6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "stairs",
+     "at": [
+      -2,
+      0,
+      20
+     ],
+     "width": 4,
+     "steps": 8,
+     "dir": "-z",
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3020",
+     "at": [
+      -2,
+      8,
+      12
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Ewok flight crew",
+   "ops": [
+    {
+     "op": "place",
+     "part": "41879a",
+     "at": [
+      -2,
+      9,
+      3
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "76382p90",
+     "at": [
+      -3,
+      13,
+      3
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "64805",
+     "at": [
+      -2,
+      20,
+      3
+     ],
+     "colour": "dark orange",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Treetop tracking station",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      20,
+      0,
+      3
+     ],
+     "size": [
+      6,
+      6
+     ],
+     "colour": "wood"
+    },
+    {
+     "op": "cylinder",
+     "at": [
+      21,
+      1,
+      4
+     ],
+     "diameter": 4,
+     "height": 11,
+     "colour": "wood"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      21,
+      1,
+      2
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      19,
+      1,
+      4
+     ],
+     "colour": "reddish brown",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      25,
+      1,
+      6
+     ],
+     "colour": "reddish brown",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      1,
+      8
+     ],
+     "colour": "reddish brown",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      7,
+      6
+     ],
+     "size": [
+      5,
+      3,
+      1
+     ],
+     "colour": "wood",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "2423",
+     "at": [
+      17,
+      10,
+      6
+     ],
+     "colour": "dark green",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      24,
+      8,
+      8
+     ],
+     "size": [
+      3,
+      3,
+      2
+     ],
+     "colour": "wood",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "2417",
+     "at": [
+      24,
+      11,
+      8
+     ],
+     "colour": "green",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      19,
+      12,
+      2
+     ],
+     "size": [
+      8,
+      8
+     ],
+     "layers": 2,
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3633",
+     "at": [
+      19,
+      14,
+      9
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3633",
+     "at": [
+      23,
+      14,
+      9
+     ],
+     "colour": "tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039p34",
+     "at": [
+      19,
+      14,
+      3
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      24,
+      14,
+      4
+     ],
+     "colour": "light bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      23,
+      17,
+      3
+     ],
+     "colour": "light bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      24,
+      19,
+      4
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      24,
+      31,
+      4
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41879a",
+     "at": [
+      20,
+      14,
+      6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "76382pdg1",
+     "at": [
+      19,
+      18,
+      6
+     ],
+     "colour": "reddish brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "64805",
+     "at": [
+      20,
+      25,
+      6
+     ],
+     "colour": "tan",
+     "turn": 0
+    }
+   ]
+  }
+ ]
+}

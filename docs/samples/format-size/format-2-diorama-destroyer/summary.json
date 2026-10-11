@@ -1,0 +1,407 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-format-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 836,
+      "seconds": 532,
+      "tokens": {
+        "input": 751179,
+        "cached": 511232,
+        "output": 42822,
+        "reasoning": 27070
+      },
+      "searches": 15,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "14769",
+          "15068",
+          "2412b",
+          "2877",
+          "30162",
+          "30363",
+          "3039",
+          "3062b",
+          "3069b",
+          "3070b",
+          "3298",
+          "3960",
+          "4032b",
+          "42060",
+          "42061",
+          "4229",
+          "43121",
+          "43710",
+          "43711",
+          "44359",
+          "4460b",
+          "4589",
+          "47397",
+          "47398",
+          "4740",
+          "4868b",
+          "6141",
+          "87079",
+          "98138"
+        ],
+        "notInList": [
+          "30162",
+          "42060",
+          "42061",
+          "4229",
+          "43121",
+          "43710",
+          "43711",
+          "44359",
+          "47397",
+          "47398",
+          "4868b"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 532,
+          "usage": {
+            "input": 751179,
+            "cached": 511232,
+            "output": 42822,
+            "reasoning": 27070,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "6x12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "3028",
+                "6178",
+                "30355",
+                "30356"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "4x8",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "3035",
+                "22888",
+                "3934",
+                "6576",
+                "3933",
+                "73832"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "3x12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "42060",
+                "42061",
+                "47397",
+                "47398"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "hemisphere",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "30208",
+                "44359",
+                "61287",
+                "86500",
+                "44358"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "4x4",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3960",
+                "35394"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge 16",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 14
+              },
+              "results": [
+                "45301",
+                "30382",
+                "62743",
+                "30370"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge 12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 14
+              },
+              "results": [
+                "42060",
+                "42061",
+                "43979",
+                "47397",
+                "47398",
+                "30355",
+                "30356",
+                "47405"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "engine",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "50943",
+                "43121",
+                "2853a",
+                "2853b",
+                "2853c",
+                "2854",
+                "4868b",
+                "2852",
+                "30358",
+                "2850a",
+                "2850b",
+                "4229"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wheel rim",
+                "size": "4x2",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "2695",
+                "60208",
+                "56904"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope wedge",
+                "size": "4x4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "47757"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "binoculars",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "30162"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "wedge",
+                "size": "2x4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "41769a",
+                "41770a",
+                "41769b",
+                "41770b",
+                "43710",
+                "43711",
+                "65426",
+                "65429",
+                "41767",
+                "41768"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "tile triangular",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "35787",
+                "7975"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "bar",
+                "size": "1x1",
+                "colour": "trans red",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "30374",
+                "87994",
+                "68211",
+                "58176",
+                "27257",
+                "13549"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "grille round",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "92947"
+              ],
+              "round": 3
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 833,
+              "errors": 2,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 836,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "14769",
+              "15068",
+              "2412b",
+              "2877",
+              "30162",
+              "30363",
+              "3039",
+              "3062b",
+              "3069b",
+              "3070b",
+              "3298",
+              "3960",
+              "4032b",
+              "42060",
+              "42061",
+              "4229",
+              "43121",
+              "43710",
+              "43711",
+              "44359",
+              "4460b",
+              "4589",
+              "47397",
+              "47398",
+              "4740",
+              "4868b",
+              "6141",
+              "87079",
+              "98138"
+            ],
+            "notInList": [
+              "30162",
+              "42060",
+              "42061",
+              "4229",
+              "43121",
+              "43710",
+              "43711",
+              "44359",
+              "47397",
+              "47398",
+              "4868b"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 836
+        }
+      ]
+    }
+  ]
+}

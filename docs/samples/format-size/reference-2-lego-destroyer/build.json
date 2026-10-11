@@ -1,0 +1,4018 @@
+{
+ "buildScript": 1,
+ "title": "Imperial Star Destroyer — The Capture",
+ "description": "A double-wedge Imperial warship with an armoured dorsal spine, eight twin turbolasers, the unmistakable T-shaped command bridge and twin spherical shield generators. Three large and four auxiliary engines finish the stern. A white and dark-red blockade runner flies beneath the port bow beside the recessed docking bay; both ships lift on compact display supports.",
+ "palette": {
+  "hull": "light bluish grey",
+  "machinery": "dark bluish grey",
+  "glass": "black"
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "sections": [
+  {
+   "name": "Quiet display cradle",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -6,
+      0,
+      29
+     ],
+     "size": [
+      12,
+      16
+     ],
+     "layers": 2,
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -2,
+      2,
+      31
+     ],
+     "size": [
+      4,
+      15,
+      3
+     ],
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -2,
+      2,
+      41
+     ],
+     "size": [
+      4,
+      15,
+      3
+     ],
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -6,
+      2,
+      29
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -6,
+      2,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      4,
+      2,
+      29
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      4,
+      2,
+      43
+     ],
+     "colour": "black",
+     "turn": 180
+    }
+   ]
+  },
+  {
+   "name": "Connected keel and shaped armour",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -1,
+      17,
+      0
+     ],
+     "size": [
+      2,
+      6
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "41765",
+     "at": [
+      -2,
+      19,
+      0
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41764",
+     "at": [
+      0,
+      19,
+      0
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -1,
+      22,
+      0
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      0,
+      22,
+      0
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      -2,
+      23,
+      0
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      0,
+      23,
+      0
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -2,
+      26,
+      5
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -1,
+      27,
+      2
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      -3,
+      17,
+      6
+     ],
+     "size": [
+      6,
+      6
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      -2,
+      19,
+      6
+     ],
+     "size": [
+      4,
+      8,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "41765",
+     "at": [
+      -4,
+      19,
+      6
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41764",
+     "at": [
+      2,
+      19,
+      6
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -3,
+      22,
+      6
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      2,
+      22,
+      6
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      -4,
+      23,
+      6
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      2,
+      23,
+      6
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -4,
+      26,
+      11
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      0,
+      26,
+      11
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -2,
+      27,
+      6
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      0,
+      27,
+      6
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -2,
+      27,
+      8
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      0,
+      27,
+      8
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -2,
+      27,
+      10
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      0,
+      27,
+      10
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "floor",
+     "at": [
+      -5,
+      17,
+      12
+     ],
+     "size": [
+      10,
+      6
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      -4,
+      19,
+      12
+     ],
+     "size": [
+      8,
+      8,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "41765",
+     "at": [
+      -6,
+      19,
+      12
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41764",
+     "at": [
+      4,
+      19,
+      12
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -5,
+      22,
+      12
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      4,
+      22,
+      12
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      -6,
+      23,
+      12
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      4,
+      23,
+      12
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -6,
+      26,
+      17
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      2,
+      26,
+      17
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -4,
+      27,
+      12
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      0,
+      27,
+      12
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -4,
+      27,
+      14
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      0,
+      27,
+      14
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -4,
+      27,
+      16
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      0,
+      27,
+      16
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "floor",
+     "at": [
+      -7,
+      17,
+      18
+     ],
+     "size": [
+      14,
+      6
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      -6,
+      19,
+      18
+     ],
+     "size": [
+      12,
+      8,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "41765",
+     "at": [
+      -8,
+      19,
+      18
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41764",
+     "at": [
+      6,
+      19,
+      18
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -7,
+      22,
+      18
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      6,
+      22,
+      18
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      -8,
+      23,
+      18
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      6,
+      23,
+      18
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -8,
+      26,
+      23
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      4,
+      26,
+      23
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      27,
+      18
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      27,
+      18
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      27,
+      20
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      27,
+      20
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      27,
+      22
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      27,
+      22
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      -2,
+      27,
+      18
+     ],
+     "size": [
+      4,
+      3,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -9,
+      17,
+      24
+     ],
+     "size": [
+      18,
+      6
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      -8,
+      19,
+      24
+     ],
+     "size": [
+      16,
+      8,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "41765",
+     "at": [
+      -10,
+      19,
+      24
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41764",
+     "at": [
+      8,
+      19,
+      24
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -9,
+      22,
+      24
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      8,
+      22,
+      24
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      -10,
+      23,
+      24
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      8,
+      23,
+      24
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -10,
+      26,
+      29
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      6,
+      26,
+      29
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -8,
+      27,
+      24
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      4,
+      27,
+      24
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -8,
+      27,
+      26
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      4,
+      27,
+      26
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -8,
+      27,
+      28
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      4,
+      27,
+      28
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      -4,
+      27,
+      24
+     ],
+     "size": [
+      8,
+      3,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -11,
+      17,
+      30
+     ],
+     "size": [
+      22,
+      6
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      -10,
+      19,
+      30
+     ],
+     "size": [
+      20,
+      8,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "41765",
+     "at": [
+      -12,
+      19,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41764",
+     "at": [
+      10,
+      19,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -11,
+      22,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      10,
+      22,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      -12,
+      23,
+      30
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      10,
+      23,
+      30
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -12,
+      26,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      8,
+      26,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -10,
+      27,
+      30
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      6,
+      27,
+      30
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -10,
+      27,
+      32
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      6,
+      27,
+      32
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -10,
+      27,
+      34
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      6,
+      27,
+      34
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      -6,
+      27,
+      30
+     ],
+     "size": [
+      12,
+      3,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -13,
+      17,
+      36
+     ],
+     "size": [
+      26,
+      6
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      -12,
+      19,
+      36
+     ],
+     "size": [
+      24,
+      8,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "41765",
+     "at": [
+      -14,
+      19,
+      36
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41764",
+     "at": [
+      12,
+      19,
+      36
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -13,
+      22,
+      36
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      12,
+      22,
+      36
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      -14,
+      23,
+      36
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      12,
+      23,
+      36
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -14,
+      26,
+      41
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      10,
+      26,
+      41
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -12,
+      27,
+      36
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      8,
+      27,
+      36
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -12,
+      27,
+      38
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      8,
+      27,
+      38
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -12,
+      27,
+      40
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      8,
+      27,
+      40
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      -8,
+      27,
+      36
+     ],
+     "size": [
+      16,
+      3,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -15,
+      17,
+      42
+     ],
+     "size": [
+      30,
+      6
+     ],
+     "layers": 2,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      -14,
+      19,
+      42
+     ],
+     "size": [
+      28,
+      8,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "41765",
+     "at": [
+      -16,
+      19,
+      42
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41764",
+     "at": [
+      14,
+      19,
+      42
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -15,
+      22,
+      42
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      14,
+      22,
+      42
+     ],
+     "colour": "machinery",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      -16,
+      23,
+      42
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      14,
+      23,
+      42
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -16,
+      26,
+      47
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      12,
+      26,
+      47
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -14,
+      27,
+      42
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      10,
+      27,
+      42
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      -10,
+      27,
+      42
+     ],
+     "size": [
+      20,
+      3,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -1,
+      30,
+      6
+     ],
+     "size": [
+      2,
+      1,
+      10
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "carve",
+     "at": [
+      -3,
+      17,
+      18
+     ],
+     "size": [
+      6,
+      7,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Ventral docking bay",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -3,
+      24,
+      18
+     ],
+     "size": [
+      6,
+      10
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "box",
+     "at": [
+      -4,
+      17,
+      18
+     ],
+     "size": [
+      1,
+      1,
+      10
+     ],
+     "colour": "machinery",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      17,
+      18
+     ],
+     "size": [
+      1,
+      1,
+      10
+     ],
+     "colour": "machinery",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -3,
+      17,
+      17
+     ],
+     "size": [
+      6,
+      1,
+      1
+     ],
+     "colour": "machinery",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -3,
+      17,
+      28
+     ],
+     "size": [
+      6,
+      1,
+      1
+     ],
+     "colour": "machinery",
+     "top": "tile"
+    }
+   ]
+  },
+  {
+   "name": "Layered dorsal superstructure",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -6,
+      30,
+      18
+     ],
+     "size": [
+      12,
+      25
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -6,
+      31,
+      20
+     ],
+     "size": [
+      12,
+      3,
+      23
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      20
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      20
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      22
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      22
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      24
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      24
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      26
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      26
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      28
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      28
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      30
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      30
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      32
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      32
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      34
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      34
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      36
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      36
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      38
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      38
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      40
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      40
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      31,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -4,
+      31,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -2,
+      31,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      0,
+      31,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      31,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      4,
+      31,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      -5,
+      34,
+      27
+     ],
+     "size": [
+      10,
+      16
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -5,
+      35,
+      28
+     ],
+     "size": [
+      10,
+      3,
+      15
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -5,
+      35,
+      28
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      2,
+      35,
+      28
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -5,
+      35,
+      30
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      2,
+      35,
+      30
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -5,
+      35,
+      32
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      2,
+      35,
+      32
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -5,
+      35,
+      34
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      2,
+      35,
+      34
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -5,
+      35,
+      36
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      2,
+      35,
+      36
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -5,
+      35,
+      38
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      2,
+      35,
+      38
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -5,
+      35,
+      40
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      2,
+      35,
+      40
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -5,
+      35,
+      25
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -3,
+      35,
+      25
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      -1,
+      35,
+      25
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      1,
+      35,
+      25
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      3,
+      35,
+      25
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      -4,
+      38,
+      34
+     ],
+     "size": [
+      8,
+      9
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -4,
+      39,
+      34
+     ],
+     "size": [
+      8,
+      3,
+      9
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -4,
+      39,
+      34
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      2,
+      39,
+      34
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -4,
+      39,
+      36
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      2,
+      39,
+      36
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -4,
+      39,
+      38
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      2,
+      39,
+      38
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -4,
+      39,
+      40
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      2,
+      39,
+      40
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -4,
+      39,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -2,
+      39,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      0,
+      39,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      2,
+      39,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -2,
+      34,
+      20
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      0,
+      34,
+      20
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3068b",
+     "at": [
+      -1,
+      34,
+      22
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -2,
+      38,
+      29
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      0,
+      38,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      -2,
+      30,
+      44
+     ],
+     "size": [
+      4,
+      2,
+      2
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -2,
+      32,
+      44
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      0,
+      32,
+      45
+     ],
+     "colour": "machinery",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Eight twin turbolaser batteries",
+   "ops": [
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      -8,
+      30,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      -8,
+      31,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      -8,
+      34,
+      30
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      6,
+      30,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      6,
+      31,
+      30
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      6,
+      34,
+      30
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      -8,
+      30,
+      34
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      -8,
+      31,
+      34
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      -8,
+      34,
+      34
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      6,
+      30,
+      34
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      6,
+      31,
+      34
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      6,
+      34,
+      34
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      -8,
+      30,
+      38
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      -8,
+      31,
+      38
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      -8,
+      34,
+      38
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      6,
+      30,
+      38
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      6,
+      31,
+      38
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      6,
+      34,
+      38
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      -8,
+      30,
+      42
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      -8,
+      31,
+      42
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      -8,
+      34,
+      42
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      6,
+      30,
+      42
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      6,
+      31,
+      42
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      6,
+      34,
+      42
+     ],
+     "colour": "hull",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Command tower and shield generators",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      -2,
+      42,
+      37
+     ],
+     "size": [
+      4,
+      9,
+      4
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      -2,
+      42,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      -1,
+      42,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      0,
+      42,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      1,
+      42,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      -4,
+      48,
+      37
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      2,
+      48,
+      37
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -2,
+      45,
+      40
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      0,
+      45,
+      40
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      -8,
+      51,
+      34
+     ],
+     "size": [
+      16,
+      8
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      -8,
+      52,
+      36
+     ],
+     "size": [
+      16,
+      6,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -8,
+      52,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -6,
+      52,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -4,
+      52,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      -2,
+      52,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      0,
+      52,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      2,
+      52,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      4,
+      52,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      6,
+      52,
+      32
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -7,
+      55,
+      36
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -5,
+      55,
+      36
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -3,
+      55,
+      36
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -1,
+      55,
+      36
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      1,
+      55,
+      36
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      3,
+      55,
+      36
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      5,
+      55,
+      36
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -7,
+      55,
+      41
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -5,
+      55,
+      41
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -3,
+      55,
+      41
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      -1,
+      55,
+      41
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      1,
+      55,
+      41
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      3,
+      55,
+      41
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3004",
+     "at": [
+      5,
+      55,
+      41
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -8,
+      55,
+      37
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      6,
+      55,
+      37
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      -8,
+      55,
+      39
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      6,
+      55,
+      39
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -8,
+      58,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -8,
+      58,
+      41
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -6,
+      58,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -6,
+      58,
+      41
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -4,
+      58,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -4,
+      58,
+      41
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -2,
+      58,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -2,
+      58,
+      41
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      0,
+      58,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      0,
+      58,
+      41
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      2,
+      58,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      2,
+      58,
+      41
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      4,
+      58,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      4,
+      58,
+      41
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      6,
+      58,
+      35
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      6,
+      58,
+      41
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      -6,
+      58,
+      38
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "20953",
+     "at": [
+      -6,
+      61,
+      38
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      4,
+      58,
+      38
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "20953",
+     "at": [
+      4,
+      61,
+      38
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      -1,
+      58,
+      38
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -3,
+      58,
+      38
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      1,
+      58,
+      38
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      0,
+      58,
+      40
+     ],
+     "colour": "hull",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Seven-engine stern",
+   "ops": [
+    {
+     "op": "place",
+     "part": "43121",
+     "at": [
+      -11,
+      17,
+      44
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "43121",
+     "at": [
+      -3,
+      17,
+      44
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "43121",
+     "at": [
+      5,
+      17,
+      44
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      -14,
+      27,
+      45
+     ],
+     "size": [
+      2,
+      5,
+      1
+     ],
+     "colour": "machinery",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4229",
+     "at": [
+      -14,
+      27,
+      46
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "floor",
+     "at": [
+      -14,
+      32,
+      45
+     ],
+     "size": [
+      2,
+      5
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -14,
+      33,
+      45
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      -5,
+      30,
+      45
+     ],
+     "size": [
+      2,
+      2,
+      1
+     ],
+     "colour": "machinery",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4229",
+     "at": [
+      -5,
+      27,
+      46
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "floor",
+     "at": [
+      -5,
+      32,
+      45
+     ],
+     "size": [
+      2,
+      5
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      -5,
+      33,
+      45
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      3,
+      30,
+      45
+     ],
+     "size": [
+      2,
+      2,
+      1
+     ],
+     "colour": "machinery",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4229",
+     "at": [
+      3,
+      27,
+      46
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "floor",
+     "at": [
+      3,
+      32,
+      45
+     ],
+     "size": [
+      2,
+      5
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      3,
+      33,
+      45
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      27,
+      45
+     ],
+     "size": [
+      2,
+      5,
+      1
+     ],
+     "colour": "machinery",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4229",
+     "at": [
+      12,
+      27,
+      46
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "floor",
+     "at": [
+      12,
+      32,
+      45
+     ],
+     "size": [
+      2,
+      5
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      12,
+      33,
+      45
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      -5,
+      19,
+      47
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      3,
+      19,
+      47
+     ],
+     "colour": "machinery",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Blockade runner — beneath the port bow",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      -11,
+      0,
+      15
+     ],
+     "size": [
+      4,
+      6
+     ],
+     "layers": 2,
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "column",
+     "at": [
+      -10,
+      2,
+      18
+     ],
+     "height": 8,
+     "diameter": 1,
+     "colour": "trans-clear"
+    },
+    {
+     "op": "floor",
+     "at": [
+      -10,
+      9,
+      12
+     ],
+     "size": [
+      2,
+      12
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "box",
+     "at": [
+      -10,
+      10,
+      14
+     ],
+     "size": [
+      2,
+      3,
+      9
+     ],
+     "colour": "white",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      -10,
+      10,
+      12
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      -9,
+      10,
+      12
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -10,
+      13,
+      13
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      -9,
+      13,
+      13
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      -10,
+      13,
+      17
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "dark red",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      -10,
+      13,
+      19
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      -10,
+      13,
+      21
+     ],
+     "colour": "machinery",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      -10,
+      13,
+      22
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      -11,
+      7,
+      23
+     ],
+     "size": [
+      4,
+      9,
+      3
+     ],
+     "colour": "light bluish grey",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -11,
+      7,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -10,
+      7,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -9,
+      7,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -8,
+      7,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -10,
+      10,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -9,
+      10,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -8,
+      10,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -11,
+      13,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -10,
+      13,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -9,
+      13,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "4070",
+     "at": [
+      -8,
+      13,
+      25
+     ],
+     "colour": "light bluish grey",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -11,
+      16,
+      25
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -10,
+      16,
+      25
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -9,
+      16,
+      25
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      -8,
+      16,
+      25
+     ],
+     "colour": "white",
+     "turn": 0
+    }
+   ]
+  }
+ ]
+}

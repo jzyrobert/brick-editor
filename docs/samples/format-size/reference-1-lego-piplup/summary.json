@@ -1,0 +1,446 @@
+{
+  "brief": "piplup",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-reference-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 148,
+      "seconds": 386,
+      "tokens": {
+        "input": 1106819,
+        "cached": 796160,
+        "output": 41952,
+        "reasoning": 31176
+      },
+      "searches": 18,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "24201",
+          "3005",
+          "3005pe4",
+          "30151a",
+          "3020",
+          "3021",
+          "3023b",
+          "3039",
+          "3062b",
+          "3298",
+          "3660b",
+          "54091",
+          "54095",
+          "93273"
+        ],
+        "notInList": [
+          "3005pe4",
+          "30151a",
+          "54091",
+          "54095"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 386,
+          "usage": {
+            "input": 1106819,
+            "cached": 796160,
+            "output": 41952,
+            "reasoning": 31176,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "eye",
+                "category": "Brick",
+                "limit": 12
+              },
+              "results": [
+                "3005pe1",
+                "3005pe4",
+                "3003pe3",
+                "3003pe2",
+                "3005pe2",
+                "3005pe3",
+                "3437pe1",
+                "4258",
+                "73162",
+                "3437pe2",
+                "3003pe1",
+                "3003pe7"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "category": "Slope",
+                "limit": 12
+              },
+              "results": [
+                "3039p50",
+                "4286p01",
+                "4286p02",
+                "3298p02",
+                "3678bpk0",
+                "15068p0i",
+                "15068p01",
+                "15068px0",
+                "78522ph0",
+                "78522ph1",
+                "93604pk0"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x4",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201",
+                "6091",
+                "30602",
+                "42022",
+                "70681"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "inverted curved slope",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "42023",
+                "11301",
+                "1750",
+                "5847"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 16
+              },
+              "results": [
+                "41669",
+                "48267",
+                "4592",
+                "7768",
+                "89520",
+                "48489",
+                "30162"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved double",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "93273",
+                "54091",
+                "66956",
+                "11290",
+                "52031",
+                "54095",
+                "11301",
+                "45410",
+                "54096",
+                "41748",
+                "41747",
+                "41764"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved corner",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "77180",
+                "77182",
+                "73682"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "size": "3x3",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4161",
+                "3675",
+                "99301",
+                "76797",
+                "65617",
+                "68568",
+                "42862",
+                "48165"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "41769a",
+                "41770a",
+                "43723a",
+                "54200",
+                "85984",
+                "2450",
+                "24299",
+                "24307",
+                "43719",
+                "90194",
+                "43723b",
+                "41769b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dome",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4740",
+                "86500",
+                "30367c",
+                "30151a",
+                "50747",
+                "30083",
+                "58176",
+                "87375"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "round brick eye",
+                "limit": 10
+              },
+              "results": [
+                "41669"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "3005pe4",
+                "limit": 5
+              },
+              "results": [
+                "3005pe4"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "size": "2x2",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "15068",
+                "30602",
+                "5093",
+                "5095",
+                "47457",
+                "32803",
+                "66956",
+                "44675"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "slope inverted",
+                "size": "3x2",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3747b",
+                "3747a"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "inverted slope",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 15
+              },
+              "results": [
+                "3665a",
+                "3660b",
+                "24201",
+                "3747b",
+                "13547",
+                "3665b",
+                "70681",
+                "2310",
+                "54091",
+                "42023",
+                "2341",
+                "3747a",
+                "18759",
+                "60219",
+                "11301"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "slope 75",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "75538"
+              ],
+              "round": 5
+            },
+            {
+              "args": {
+                "query": "eye highlight",
+                "size": "1x1",
+                "limit": 8
+              },
+              "results": [
+                "3005pe4",
+                "3626bpac"
+              ],
+              "round": 5
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 145,
+              "errors": 1,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 148,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "24201",
+              "3005",
+              "3005pe4",
+              "30151a",
+              "3020",
+              "3021",
+              "3023b",
+              "3039",
+              "3062b",
+              "3298",
+              "3660b",
+              "54091",
+              "54095",
+              "93273"
+            ],
+            "notInList": [
+              "3005pe4",
+              "30151a",
+              "54091",
+              "54095"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 148
+        }
+      ]
+    }
+  ]
+}

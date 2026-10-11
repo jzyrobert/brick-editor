@@ -1,0 +1,1657 @@
+{
+ "buildScript": 1,
+ "title": "Pouch Express — a pelican pedalling",
+ "description": "A big golden pouch leads a white pelican on a cherry-red bicycle. Swept wings grip the handlebars, webbed feet pedal at different heights, and a turquoise scarf streams behind. Real wheel assemblies and a small transparent support make a compact character sculpture.",
+ "palette": {
+  "bird": "white",
+  "bill": "yellow",
+  "bike": "red",
+  "metal": "light bluish grey",
+  "scarf": "dark turquoise"
+ },
+ "sections": [
+  {
+   "name": "Quiet display support",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      12,
+      0,
+      2
+     ],
+     "size": [
+      4,
+      6
+     ],
+     "layers": 2,
+     "colour": "dark bluish grey",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      2,
+      4
+     ],
+     "size": [
+      2,
+      18,
+      2
+     ],
+     "colour": "trans-clear",
+     "interior": "solid"
+    }
+   ]
+  },
+  {
+   "name": "Rolling bicycle",
+   "ops": [
+    {
+     "op": "place",
+     "part": "2903c01",
+     "at": [
+      0,
+      0,
+      4
+     ],
+     "colour": "light bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2903c01",
+     "at": [
+      18,
+      0,
+      4
+     ],
+     "colour": "light bluish grey",
+     "turn": 0
+    },
+    {
+     "op": "line",
+     "from": [
+      5,
+      12,
+      2
+     ],
+     "to": [
+      8,
+      33,
+      2
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "line",
+     "from": [
+      8,
+      33,
+      2
+     ],
+     "to": [
+      19,
+      36,
+      2
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "line",
+     "from": [
+      8,
+      33,
+      2
+     ],
+     "to": [
+      14,
+      20,
+      2
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "line",
+     "from": [
+      14,
+      20,
+      2
+     ],
+     "to": [
+      19,
+      36,
+      2
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "line",
+     "from": [
+      19,
+      36,
+      2
+     ],
+     "to": [
+      23,
+      12,
+      2
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "line",
+     "from": [
+      23,
+      12,
+      2
+     ],
+     "to": [
+      14,
+      20,
+      2
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      5,
+      12,
+      2
+     ],
+     "colour": "metal",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      6,
+      21,
+      2
+     ],
+     "colour": "metal",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      7,
+      30,
+      2
+     ],
+     "colour": "metal",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      22,
+      12,
+      2
+     ],
+     "colour": "bike",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      21,
+      21,
+      2
+     ],
+     "colour": "bike",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      20,
+      30,
+      2
+     ],
+     "colour": "bike",
+     "turn": 270
+    },
+    {
+     "op": "line",
+     "from": [
+      5,
+      12,
+      7
+     ],
+     "to": [
+      8,
+      33,
+      7
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "line",
+     "from": [
+      8,
+      33,
+      7
+     ],
+     "to": [
+      19,
+      36,
+      7
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "line",
+     "from": [
+      8,
+      33,
+      7
+     ],
+     "to": [
+      14,
+      20,
+      7
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "line",
+     "from": [
+      14,
+      20,
+      7
+     ],
+     "to": [
+      19,
+      36,
+      7
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "line",
+     "from": [
+      19,
+      36,
+      7
+     ],
+     "to": [
+      23,
+      12,
+      7
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "line",
+     "from": [
+      23,
+      12,
+      7
+     ],
+     "to": [
+      14,
+      20,
+      7
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      5,
+      12,
+      7
+     ],
+     "colour": "metal",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      6,
+      21,
+      7
+     ],
+     "colour": "metal",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      7,
+      30,
+      7
+     ],
+     "colour": "metal",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      22,
+      12,
+      7
+     ],
+     "colour": "bike",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      21,
+      21,
+      7
+     ],
+     "colour": "bike",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      20,
+      30,
+      7
+     ],
+     "colour": "bike",
+     "turn": 270
+    },
+    {
+     "op": "line",
+     "from": [
+      5,
+      12,
+      2
+     ],
+     "to": [
+      5,
+      12,
+      7
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "line",
+     "from": [
+      23,
+      12,
+      2
+     ],
+     "to": [
+      23,
+      12,
+      7
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "line",
+     "from": [
+      14,
+      20,
+      2
+     ],
+     "to": [
+      14,
+      20,
+      7
+     ],
+     "colour": "bike"
+    },
+    {
+     "op": "box",
+     "at": [
+      7,
+      32,
+      3
+     ],
+     "size": [
+      2,
+      9,
+      4
+     ],
+     "colour": "bike",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      18,
+      35,
+      4
+     ],
+     "size": [
+      2,
+      5,
+      2
+     ],
+     "colour": "metal",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      17,
+      40,
+      3
+     ],
+     "size": [
+      6,
+      4
+     ],
+     "layers": 1,
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      17,
+      41,
+      3
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      17,
+      41,
+      5
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      21,
+      41,
+      3
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      21,
+      41,
+      5
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "floor",
+     "at": [
+      7,
+      41,
+      -1
+     ],
+     "size": [
+      2,
+      12
+     ],
+     "layers": 1,
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      7,
+      42,
+      -1
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      7,
+      42,
+      9
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "line",
+     "from": [
+      14,
+      20,
+      1
+     ],
+     "to": [
+      23,
+      12,
+      1
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "line",
+     "from": [
+      14,
+      18,
+      1
+     ],
+     "to": [
+      23,
+      12,
+      1
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "floor",
+     "at": [
+      12,
+      22,
+      0
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "layers": 1,
+     "colour": "black"
+    },
+    {
+     "op": "floor",
+     "at": [
+      17,
+      30,
+      8
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "layers": 1,
+     "colour": "black"
+    },
+    {
+     "op": "line",
+     "from": [
+      14,
+      20,
+      2
+     ],
+     "to": [
+      14,
+      22,
+      1
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "line",
+     "from": [
+      14,
+      20,
+      7
+     ],
+     "to": [
+      18,
+      30,
+      8
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      8,
+      42,
+      3
+     ],
+     "colour": "pearl gold",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      8,
+      43,
+      3
+     ],
+     "colour": "pearl gold",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Webbed feet in mid pedal",
+   "ops": [
+    {
+     "op": "place",
+     "part": "43723a",
+     "at": [
+      12,
+      23,
+      0
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      24,
+      0
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      24,
+      1
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "43723a",
+     "at": [
+      17,
+      31,
+      8
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      17,
+      32,
+      8
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      17,
+      32,
+      9
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "line",
+     "from": [
+      14,
+      26,
+      1
+     ],
+     "to": [
+      12,
+      33,
+      1
+     ],
+     "colour": "bill"
+    },
+    {
+     "op": "line",
+     "from": [
+      12,
+      33,
+      1
+     ],
+     "to": [
+      18,
+      46,
+      1
+     ],
+     "colour": "bill"
+    },
+    {
+     "op": "line",
+     "from": [
+      19,
+      34,
+      8
+     ],
+     "to": [
+      22,
+      38,
+      8
+     ],
+     "colour": "bill"
+    },
+    {
+     "op": "line",
+     "from": [
+      22,
+      38,
+      8
+     ],
+     "to": [
+      20,
+      46,
+      8
+     ],
+     "colour": "bill"
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      33,
+      0
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      21,
+      38,
+      8
+     ],
+     "colour": "bill",
+     "turn": 270
+    }
+   ]
+  },
+  {
+   "name": "Round white body and flowing neck",
+   "ops": [
+    {
+     "op": "place",
+     "part": "54091",
+     "at": [
+      15,
+      44,
+      1
+     ],
+     "colour": "bird",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      15,
+      50,
+      1
+     ],
+     "size": [
+      8,
+      8
+     ],
+     "layers": 2,
+     "colour": "bird",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "54095",
+     "at": [
+      15,
+      52,
+      1
+     ],
+     "colour": "bird",
+     "turn": 0
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      50,
+      3
+     ],
+     "size": [
+      5,
+      3,
+      4
+     ],
+     "colour": "bird",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      12,
+      53,
+      4
+     ],
+     "size": [
+      3,
+      16,
+      2
+     ],
+     "colour": "bird",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      12,
+      53,
+      3
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "6091",
+     "at": [
+      12,
+      62,
+      3
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      66,
+      3
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      12,
+      53,
+      6
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "6091",
+     "at": [
+      12,
+      62,
+      6
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      66,
+      6
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      10,
+      53,
+      3
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      10,
+      53,
+      5
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41748",
+     "at": [
+      22,
+      50,
+      3
+     ],
+     "colour": "bird",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      22,
+      50,
+      5
+     ],
+     "colour": "bird",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      23,
+      53,
+      4
+     ],
+     "colour": "black",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      23,
+      53,
+      5
+     ],
+     "colour": "black",
+     "turn": 270
+    }
+   ]
+  },
+  {
+   "name": "Wings steering the bicycle",
+   "ops": [
+    {
+     "op": "line",
+     "from": [
+      8,
+      44,
+      -1
+     ],
+     "to": [
+      17,
+      51,
+      -1
+     ],
+     "colour": "bird"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      45,
+      -1
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      45,
+      0
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      12,
+      48,
+      -1
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "44126",
+     "at": [
+      12,
+      51,
+      -1
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      18,
+      54,
+      -1
+     ],
+     "colour": "bird",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      8,
+      44,
+      -1
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      8,
+      44,
+      0
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "line",
+     "from": [
+      8,
+      44,
+      9
+     ],
+     "to": [
+      17,
+      51,
+      9
+     ],
+     "colour": "bird"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      45,
+      9
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      9,
+      45,
+      10
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "41747",
+     "at": [
+      12,
+      48,
+      9
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "44126",
+     "at": [
+      12,
+      51,
+      9
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      18,
+      54,
+      9
+     ],
+     "colour": "bird",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      8,
+      44,
+      9
+     ],
+     "colour": "black",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      8,
+      44,
+      10
+     ],
+     "colour": "black",
+     "turn": 90
+    }
+   ]
+  },
+  {
+   "name": "Alert face and unmistakable pelican pouch",
+   "ops": [
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      8,
+      66,
+      3
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      8,
+      66,
+      4
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      8,
+      66,
+      5
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      8,
+      66,
+      6
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "box",
+     "at": [
+      9,
+      69,
+      3
+     ],
+     "size": [
+      4,
+      3,
+      4
+     ],
+     "colour": "bird",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      8,
+      72,
+      3
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "93606",
+     "at": [
+      8,
+      72,
+      5
+     ],
+     "colour": "bird",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      72,
+      3
+     ],
+     "colour": "bird",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      72,
+      4
+     ],
+     "colour": "bird",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      72,
+      5
+     ],
+     "colour": "bird",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      12,
+      72,
+      6
+     ],
+     "colour": "bird",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      10,
+      69,
+      2
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      10,
+      72,
+      2
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      10,
+      75,
+      2
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3005",
+     "at": [
+      10,
+      69,
+      7
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      10,
+      72,
+      7
+     ],
+     "colour": "black",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      10,
+      75,
+      7
+     ],
+     "colour": "white",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "42023",
+     "at": [
+      0,
+      63,
+      3
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      6,
+      63,
+      3
+     ],
+     "colour": "bill",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "42023",
+     "at": [
+      0,
+      63,
+      4
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      6,
+      63,
+      4
+     ],
+     "colour": "bill",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "42023",
+     "at": [
+      0,
+      63,
+      5
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      6,
+      63,
+      5
+     ],
+     "colour": "bill",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "42023",
+     "at": [
+      0,
+      63,
+      6
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "13547",
+     "at": [
+      6,
+      63,
+      6
+     ],
+     "colour": "bill",
+     "turn": 270
+    },
+    {
+     "op": "box",
+     "at": [
+      1,
+      66,
+      3
+     ],
+     "size": [
+      7,
+      3,
+      4
+     ],
+     "colour": "bill",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      69,
+      3
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      69,
+      4
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      69,
+      5
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "61678",
+     "at": [
+      4,
+      69,
+      6
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "42022",
+     "at": [
+      -2,
+      69,
+      4
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      -4,
+      69,
+      4
+     ],
+     "colour": "orange",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "42022",
+     "at": [
+      -2,
+      69,
+      5
+     ],
+     "colour": "bill",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      -4,
+      69,
+      5
+     ],
+     "colour": "orange",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      5,
+      72,
+      3
+     ],
+     "colour": "dark tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      5,
+      72,
+      6
+     ],
+     "colour": "dark tan",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Sea breeze scarf",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      11,
+      58,
+      3
+     ],
+     "size": [
+      5,
+      4
+     ],
+     "layers": 2,
+     "colour": "scarf",
+     "holes": [
+      {
+       "at": [
+        12,
+        4
+       ],
+       "size": [
+        3,
+        2
+       ]
+      }
+     ],
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      15,
+      59,
+      2
+     ],
+     "size": [
+      6,
+      2
+     ],
+     "layers": 1,
+     "colour": "scarf",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "44126",
+     "at": [
+      15,
+      60,
+      2
+     ],
+     "colour": "scarf",
+     "turn": 270
+    }
+   ]
+  }
+ ]
+}

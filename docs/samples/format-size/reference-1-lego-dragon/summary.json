@@ -1,0 +1,307 @@
+{
+  "brief": "a dragon",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-reference-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 512,
+      "seconds": 617,
+      "tokens": {
+        "input": 538865,
+        "cached": 387968,
+        "output": 46925,
+        "reasoning": 34143
+      },
+      "searches": 10,
+      "checks": 2,
+      "knowledge": {
+        "named": [
+          "10238",
+          "11089",
+          "11477",
+          "15068",
+          "15070",
+          "24201",
+          "3022",
+          "3062b",
+          "3069b",
+          "3660b",
+          "3941",
+          "3942c",
+          "4032b",
+          "4460b",
+          "4589",
+          "50950",
+          "51342",
+          "54200",
+          "60474",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "10238",
+          "11089",
+          "15070",
+          "51342",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 617,
+          "usage": {
+            "input": 538865,
+            "cached": 387968,
+            "output": 46925,
+            "reasoning": 34143,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "dragon wing",
+                "limit": 12
+              },
+              "results": [
+                "6133",
+                "5984",
+                "38547",
+                "51342",
+                "30130",
+                "6125",
+                "75174c01",
+                "87685",
+                "87686",
+                "75174p01c01"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "horn tooth claw",
+                "limit": 12
+              },
+              "results": [
+                "11089"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "limit": 8
+              },
+              "results": [
+                "41669",
+                "48267",
+                "4592",
+                "7768",
+                "4257"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x4",
+                "limit": 8
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456",
+                "61068",
+                "1942"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "dark red",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720",
+                "43721",
+                "41764"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tile round eye",
+                "limit": 15
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "horn",
+                "limit": 15
+              },
+              "results": [
+                "2142",
+                "89522",
+                "13564",
+                "64847",
+                "40379",
+                "11089",
+                "67361",
+                "112",
+                "6135b",
+                "1997",
+                "6135a",
+                "88964",
+                "88695",
+                "51342",
+                "51344"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "tooth",
+                "limit": 15
+              },
+              "results": [
+                "41669",
+                "48267",
+                "49668",
+                "15070",
+                "3647",
+                "3649",
+                "3648b",
+                "4019",
+                "6589",
+                "6573",
+                "32269",
+                "32270",
+                "35442",
+                "35443",
+                "35446"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge plate 6",
+                "limit": 12
+              },
+              "results": [
+                "6106",
+                "32059",
+                "30303",
+                "2336",
+                "54383",
+                "54384",
+                "47407",
+                "50303",
+                "2625",
+                "45407"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "51342",
+                "limit": 4
+              },
+              "results": [
+                "51342"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 421,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 2,
+              "parts": 512,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "10238",
+              "11089",
+              "11477",
+              "15068",
+              "15070",
+              "24201",
+              "3022",
+              "3062b",
+              "3069b",
+              "3660b",
+              "3941",
+              "3942c",
+              "4032b",
+              "4460b",
+              "4589",
+              "50950",
+              "51342",
+              "54200",
+              "60474",
+              "93606",
+              "98138"
+            ],
+            "notInList": [
+              "10238",
+              "11089",
+              "15070",
+              "51342",
+              "93606"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 512
+        }
+      ]
+    }
+  ]
+}

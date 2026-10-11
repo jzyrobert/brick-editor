@@ -1,0 +1,397 @@
+{
+  "brief": "piplup",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "attempts": 5,
+  "prompt": "style-size-format-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": null,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 349,
+      "seconds": 374,
+      "tokens": {
+        "input": 529983,
+        "cached": 386176,
+        "output": 22490,
+        "reasoning": 15940
+      },
+      "searches": 15,
+      "checks": 1,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "24201",
+          "24309",
+          "2431",
+          "3004",
+          "3005",
+          "3005pe4",
+          "30151a",
+          "3020",
+          "30357",
+          "3037",
+          "3069b",
+          "32803",
+          "3678b",
+          "3795",
+          "3941",
+          "3960",
+          "4460b",
+          "54091",
+          "54095",
+          "54200",
+          "64648",
+          "86500",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "3005pe4",
+          "30151a",
+          "32803",
+          "54091",
+          "54095",
+          "64648",
+          "86500",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 374,
+          "usage": {
+            "input": 529983,
+            "cached": 386176,
+            "output": 22490,
+            "reasoning": 15940,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "brick eye printed",
+                "limit": 12
+              },
+              "results": [
+                "3005",
+                "3004",
+                "3622",
+                "3010",
+                "3009",
+                "3003",
+                "3002",
+                "3001",
+                "2456",
+                "3008",
+                "2357",
+                "3062b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x4",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope inverted",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "42023",
+                "11301",
+                "1750",
+                "5847"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge slope",
+                "colour": "dark blue",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "54200",
+                "85984",
+                "93606",
+                "42918",
+                "41748",
+                "41747",
+                "52031",
+                "43720",
+                "43721",
+                "41764",
+                "41765",
+                "42862"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "round dome",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "30083"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye",
+                "category": "Brick",
+                "limit": 15
+              },
+              "results": [
+                "3005pe1",
+                "3005pe4",
+                "3003pe3",
+                "3003pe2",
+                "3005pe2",
+                "3005pe3",
+                "3437pe1",
+                "4258",
+                "73162",
+                "3437pe2",
+                "3003pe1",
+                "3003pe7",
+                "3010pzf",
+                "3437pe3",
+                "3664p07"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "eye",
+                "category": "Tile",
+                "limit": 8
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07",
+                "98138pz4",
+                "3069bpm0",
+                "3070bp0e"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Slope Brick Curved 8",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "54091",
+                "54095",
+                "11290",
+                "11301",
+                "13731"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dome",
+                "size": "4x4",
+                "limit": 12
+              },
+              "results": [
+                "86500",
+                "49612",
+                "35320",
+                "8181",
+                "85834"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 8
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dome",
+                "size": "2x2",
+                "limit": 10
+              },
+              "results": [
+                "4740",
+                "3262",
+                "15395",
+                "30367c",
+                "24947",
+                "30367b",
+                "30151a",
+                "30367a",
+                "30151b",
+                "5906"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Slope Brick Curved 8 × 8 × 2 Double",
+                "colour": "dark blue",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "54091",
+                "54095"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Slope Brick Curved 4 × 2",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "93606",
+                "47456",
+                "61068",
+                "88930pz2"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Slope Brick Curved 3 × 1",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "70681"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "Slope Brick Curved 2 × 2 Inverted",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "32803",
+                "1750"
+              ],
+              "round": 3
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 349,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "24201",
+              "24309",
+              "2431",
+              "3004",
+              "3005",
+              "3005pe4",
+              "30151a",
+              "3020",
+              "30357",
+              "3037",
+              "3069b",
+              "32803",
+              "3678b",
+              "3795",
+              "3941",
+              "3960",
+              "4460b",
+              "54091",
+              "54095",
+              "54200",
+              "64648",
+              "86500",
+              "93606",
+              "98138"
+            ],
+            "notInList": [
+              "3005pe4",
+              "30151a",
+              "32803",
+              "54091",
+              "54095",
+              "64648",
+              "86500",
+              "93606"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 349
+        }
+      ]
+    }
+  ]
+}

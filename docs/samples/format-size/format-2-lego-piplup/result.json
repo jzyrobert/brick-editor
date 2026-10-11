@@ -1,0 +1,311 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 249,
+  "seconds": 495,
+  "tokens": {
+    "input": 535326,
+    "cached": 338816,
+    "output": 33216,
+    "reasoning": 23473
+  },
+  "searches": 10,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11290",
+      "11301",
+      "11477",
+      "13547",
+      "15068",
+      "24309",
+      "3020",
+      "3021",
+      "3024",
+      "3068b",
+      "3660b",
+      "3678b",
+      "3795",
+      "54091",
+      "54095",
+      "61678",
+      "93606"
+    ],
+    "notInList": [
+      "11290",
+      "11301",
+      "54091",
+      "54095",
+      "93606"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 495,
+      "usage": {
+        "input": 535326,
+        "cached": 338816,
+        "output": 33216,
+        "reasoning": 23473,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "eye",
+            "limit": 12
+          },
+          "results": [
+            "41669",
+            "48267",
+            "4592",
+            "7768",
+            "4257"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 15
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24201",
+            "13547",
+            "6091",
+            "70681",
+            "80177",
+            "80178",
+            "93606",
+            "47457",
+            "93604"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "dark blue",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "13547",
+            "6091",
+            "30602",
+            "42022"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "inverted slope",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "3665a",
+            "3660b",
+            "24201",
+            "3747b",
+            "13547",
+            "3665b",
+            "70681",
+            "2310",
+            "54091",
+            "42023"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope",
+            "colour": "yellow",
+            "size": "2x3",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "3298",
+            "3038",
+            "24309",
+            "3747b",
+            "80177",
+            "80178",
+            "3747a",
+            "6032"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye pattern",
+            "limit": 15
+          },
+          "results": [
+            "61898a",
+            "3005pe1",
+            "3005pe4",
+            "10238",
+            "3003pe3",
+            "3003pe2",
+            "3005pe2",
+            "3005pe3",
+            "3437pe1",
+            "98138pz0",
+            "98138pz2",
+            "98138p2d",
+            "98138p07",
+            "3437pe2",
+            "98138pz4"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved 6",
+            "colour": "dark blue",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "42022",
+            "44126",
+            "42023",
+            "52031",
+            "35164",
+            "61484",
+            "42021",
+            "41748",
+            "41747",
+            "41764"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved 8",
+            "limit": 8
+          },
+          "results": [
+            "42918",
+            "41766",
+            "54091",
+            "54095",
+            "50967",
+            "11290",
+            "15625",
+            "11301"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "sphere",
+            "colour": "trans light blue",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "54821",
+            "18990",
+            "86500",
+            "30208",
+            "30342",
+            "87375",
+            "30286",
+            "35320"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved corner",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "77180",
+            "77182"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 210,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 249,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11290",
+          "11301",
+          "11477",
+          "13547",
+          "15068",
+          "24309",
+          "3020",
+          "3021",
+          "3024",
+          "3068b",
+          "3660b",
+          "3678b",
+          "3795",
+          "54091",
+          "54095",
+          "61678",
+          "93606"
+        ],
+        "notInList": [
+          "11290",
+          "11301",
+          "54091",
+          "54095",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 249
+    }
+  ]
+}

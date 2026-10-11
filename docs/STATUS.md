@@ -1,5 +1,9 @@
 # Implementation status
 
+## Format-first sizing references — 11 October 2026
+
+A [48-case follow-up](samples/format-size/README.md) compares format-first sizing alone with identical guidance plus the supplied commercial piece-count table. Two clean Sol 6.1 high repetitions cover every original brief and both styles, without targets or richer part facts. Only the Size section changes; generation, tool feedback and default prompts remain unchanged. All 48 builds completed in distinct empty-directory sessions and were reviewed across four views. References score 349/480 versus 343/480, winning six brief/style means, tying two and losing four. The small mixed advantage does not justify default adoption. A portable 96-build preview retains both repetitions and historical context.
+
 ## Prompt directions and variance — 11 October 2026
 
 A separate [Sol 6.1 high study](samples/style-directions/README.md) completed 72 independent text-only builds: commercial/open sizing, design anti-patterns, richer part reference information, two unchanged-prompt repetitions and a syntax-only reply example across six briefs and both styles. Each starts in an empty directory with its original brief; no prior source or reviewer render is supplied. Numerical targets remain unchanged outside the sizing arm. Optional runner controls are isolated from defaults, the language and compiler feedback. All cases are archived and reviewed in a portable 84-build preview including retained baselines. Richer data scores 183/240 versus unchanged repeats at 182 and 175 (retained 172); syntax-only scores 172, anti-patterns 170 and sizing 168. These subjective results do not establish a general gain, so no combined batch or default/gallery promotion follows.

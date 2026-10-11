@@ -1,0 +1,262 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1631,
+  "seconds": 593,
+  "tokens": {
+    "input": 539406,
+    "cached": 274304,
+    "output": 46358,
+    "reasoning": 28070
+  },
+  "searches": 10,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11477",
+      "13547",
+      "2423",
+      "3005",
+      "3062b",
+      "3070b",
+      "3307",
+      "3941",
+      "3942c",
+      "3960",
+      "4032b",
+      "4589",
+      "6141",
+      "61678",
+      "90398"
+    ],
+    "notInList": [
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 593,
+      "usage": {
+        "input": 539406,
+        "cached": 274304,
+        "output": 46358,
+        "reasoning": 28070,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "roof curved slope",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "13547",
+            "6091",
+            "30602",
+            "42022"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "horn",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "2142",
+            "13564",
+            "64847",
+            "40379",
+            "11089",
+            "67361",
+            "6135b",
+            "51342"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell",
+            "limit": 8
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609",
+            "30151b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "window lattice",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "60607",
+            "2529"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bar fence",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "95229",
+            "42448",
+            "98460"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statue",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "minifigure head",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "30367c",
+            "48492",
+            "30367b",
+            "30124b",
+            "10113"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "round plate hole",
+            "size": "2x2",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "4032b",
+            "3022",
+            "2420",
+            "14769",
+            "87580",
+            "33909"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "plant leaves",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2423",
+            "2417",
+            "32607",
+            "37695"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "brick modified log",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "30136",
+            "4070",
+            "87087",
+            "11211"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1592,
+          "errors": 28,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 1595,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "2423",
+          "3005",
+          "3062b",
+          "3070b",
+          "3307",
+          "3941",
+          "3942c",
+          "3960",
+          "4032b",
+          "4589",
+          "6141",
+          "61678",
+          "90398"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1631
+    }
+  ]
+}
