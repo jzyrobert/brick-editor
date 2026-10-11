@@ -149,7 +149,8 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Spatial benchmark follow-ups
 
-- [ ] Audit a live text-only provider adapter and authorise model budget before running the new render-blind manifests; freeze executed camera/reviewer configuration separately. Replay/preflight infrastructure is implemented ([SPATIAL-BENCHMARK](docs/SPATIAL-BENCHMARK.md)).
+- [x] Audit the isolated Codex subscription adapter and record owner authorisation for Sol 6.1/high with per-run quota checks; freeze camera/reviewer configuration. Forty calibration runs are evaluated; creative generation continues ([SPATIAL-PILOT](docs/SPATIAL-PILOT.md)).
+- [ ] Finish the 72-case blinded creative fact comparison within the quota reserve; evaluate mechanical feedback independently and add automatic-versus-demand inspection only as separate conditions.
 - [ ] Private held-out creative tasks and broader verified-palette coverage; physical shortcut counting, occurrence/interface diagnostics, assembly-language poses/offsets and explicit attachment-assistance comparisons. Keep E, diorama and archived studies unchanged until evidence supports promotion.
 - [ ] Audit collision containment/arch hollow-end-support gaps; surface occupancy remains conservative and does not certify physical support or assembly order.
 

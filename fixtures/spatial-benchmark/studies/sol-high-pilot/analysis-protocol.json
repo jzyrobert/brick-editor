@@ -1,0 +1,21 @@
+{
+  "version": "spatial-pilot-analysis/1",
+  "frozenBeforeVisualReview": true,
+  "scheduledCreativeCases": 72,
+  "generatedBuildIsUnit": true,
+  "cluster": "task",
+  "primaryVisualContrast": "combined minus control on six-axis total /24",
+  "secondaryContrasts": [
+    "shape minus control",
+    "connections minus control",
+    "shape factorial main effect",
+    "connections factorial main effect",
+    "interaction"
+  ],
+  "taskMeans": "average independent repetitions within each task and condition; equal task weights",
+  "uncertainty": "10,000 task-cluster bootstrap resamples, percentile 95% interval, seed 20261011; descriptive on six fixed development tasks",
+  "incomplete": "report every missing/failure separately; estimate visual contrasts only for tasks with all four arms represented; disclose case counts and do not impute invalid/missing renders",
+  "cost": "sum actual provider input/output/cached/reasoning token fields where logged; report missing usage instead of assigning zeros",
+  "calibration": "relationship multiset evaluator/2; retain original ordered-v1 scores and disclose evaluator correction; no visual scores",
+  "noDefaultPromotion": true
+}

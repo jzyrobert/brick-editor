@@ -1,14 +1,20 @@
 # Implementation status
 
+## Sol 6.1 high spatial pilot — 11 October 2026
+
+The owner authorised Sol 6.1/high with quota checks after each run. The opt-in [pilot](SPATIAL-PILOT.md) adds an isolated Codex subscription broker, run/request quota gates and a separate frozen-image evaluator. Forty calibration sessions passed in all four arms (10/10 each), with inspection in 0, 1, 3 and 6 sessions respectively. This ceiling result establishes no accuracy improvement. The 72-case creative comparison is in progress; no visual results are claimed. The independent 36-case feedback comparison remains planned. E, diorama, language, archive and gallery are unchanged; no publishing occurred.
+
+81 unit and 19 integration checks, type checking and formatting pass. The real isolated client is tested with mocked text/image transport; the four-view renderer has a separate smoke check. See [VERIFICATION](VERIFICATION.md) for evidence and remaining limitations.
+
 ## Render-blind spatial benchmark infrastructure — 11 October 2026
 
 Opt-in tooling on current `main` f7f7b4b7, isolated worktree/branch. [Contract, usage and limits](SPATIAL-BENCHMARK.md) document the existing observation paths and retain the exploratory interpretation of prior 183/182/175 and 349/343 scores. E, diorama, legacy richer facts, language/editor/export semantics and the published gallery are unchanged.
 
-Implemented: strict versioned manifests; no-feedback, mechanical and legacy count/error conditions; fresh text-only generation state with run-wide budgets and audited denials; Bubblewrap compiler without repository/evaluator/credential mounts or network; filled inputs, exact payloads and implementation hashes/copies; frozen original submission/MPD and separate evaluator staging. CLI execution is preflight/dry-run/replay only; no live provider is enabled or paid invocation authorised.
+Implemented: strict versioned manifests; no-feedback, mechanical and legacy count/error conditions; fresh text-only generation state with run-wide budgets and audited denials; Bubblewrap compiler without repository/evaluator/credential mounts or network; filled inputs, exact payloads and implementation hashes/copies; frozen original submission/MPD and separate evaluator staging. At this initial delivery, CLI execution was preflight/dry-run/replay only; the later authorised subscription adapter is documented above.
 
 Typed optional shape/connector/capability facts separate uniform-LDU physical extents, nominal placement, occupancy and connection evidence. The five-part starter palette has independently checked surface extents/contours; other shape details remain unknown or labelled conservative. Stable connector IDs and explicit pagination retrieve full arrays. Calibration has five two-part fixtures, literal evaluator-only witnesses, deliberate invalid variants and an alias condition. Declarative plans isolate fact factors, retrieval exposure and mechanical feedback.
 
-Test/replay correctness evidence is in [VERIFICATION](VERIFICATION.md); no model-quality experiment or physical certification is claimed. Live provider audit, private held-out suite, frozen executed visual assessment, advanced poses/assistance/provenance, stronger mechanical diagnostics and design-guidance treatments remain separate follow-ups. Automation capabilities are unchanged because this is offline research tooling, not a new editor API.
+Test/replay correctness evidence is in [VERIFICATION](VERIFICATION.md); no model-quality experiment or physical certification is claimed. Private held-out tasks, completed blinded creative assessment, advanced poses/assistance/provenance, stronger mechanical diagnostics and design-guidance treatments remain separate follow-ups. Automation capabilities are unchanged because this is offline research tooling, not a new editor API.
 
 ## Format-first sizing references — 11 October 2026
 

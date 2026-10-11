@@ -1,5 +1,13 @@
 # Verification — 27 September 2026
 
+## Authorised Sol 6.1 high pilot transport — 11 October 2026
+
+[Protocol and evidence](SPATIAL-PILOT.md). The separate live increment passes **81 unit and 19 integration checks**, `npx tsc -b` and repository `format:check`. Unit cases include exact native model/effort/tool restrictions, rejection of image inputs in generation, hash-locked evaluator images and omission rejection, weekly/short-window quota reserves, source-order independent calibration relationships and deterministic task-cluster summaries. Integration runs the real isolated Codex client against mocked Responses streams for text and approved images, with no paid calls, and reruns the existing benchmark/build CLI checks.
+
+Executed 40 real no-feedback calibration sessions on Sol 6.1/high: all four arms pass 10/10. Every original ordered-v1 and multiset-v2 score is retained; both pass all 40. Actual private token records cover 50 provider requests, including catalogue dialogue. Quota readings moved from 51% to 50% weekly remaining across calibration, including concurrent account activity. A four-view renderer smoke check produced four 1280×960 PNGs after a separately retained initial configuration failure. No creative visual quality outcome, physical certification, human review or publishing is claimed; creative generation is ongoing.
+
+Commands: the previously listed focused unit suites plus `tests/unit/spatial-codex.test.ts` and `tests/unit/spatial-analysis.test.ts`; the previous two integration suites plus `tests/integration/spatial-codex.test.ts`; `FORCE_COLOR=0 npx tsc -b`; `FORCE_COLOR=0 npm run format:check`; explicit live/render/report commands in SPATIAL-PILOT. The initial too-long socket pathname launch made zero model calls and is retained separately from the corrected v2 launch. Public [calibration ledger](../fixtures/spatial-benchmark/studies/sol-high-pilot/calibration-results.json), frozen manifests and private `.local/spatial-pilot-*` archives distinguish implementation tests, infrastructure failures, generation and evaluation.
+
 ## Render-blind spatial benchmark infrastructure — 11 October 2026
 
 Based on actual remote `main` f7f7b4b7, branch `codex/render-blind-benchmark`, worktree `/home/ubuntu/brick-benchmark`. [Contract and supported commands](SPATIAL-BENCHMARK.md); [compact hash/evidence ledger](../fixtures/spatial-benchmark/verification.json). All results below are implementation/fixture checks. **Zero model calls, no quality experiment, no visual assessment and no publishing.**

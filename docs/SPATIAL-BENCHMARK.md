@@ -1,8 +1,8 @@
 # Render-blind spatial benchmark v1
 
-This is an opt-in infrastructure increment, based on remote `main` **f7f7b4b7fe6a9831a256f2c48dada858f9c90fc8**, checked on 11 October 2026. PR 19 was already merged and was not reapplied. Worktree: `/home/ubuntu/brick-benchmark`, branch `codex/render-blind-benchmark`. E, the diorama prompt, the legacy runner/facts, language, editor and published gallery are unchanged. No paid models or visual assessments were run.
+This is an opt-in infrastructure increment, based on remote `main` **f7f7b4b7fe6a9831a256f2c48dada858f9c90fc8**, checked on 11 October 2026. PR 19 was already merged and was not reapplied. Worktree: `/home/ubuntu/brick-benchmark`, branch `codex/render-blind-benchmark`. E, the diorama prompt, the legacy runner/facts, language, editor and published gallery are unchanged. The initial delivery ran no models or visual assessments. The subsequent authorised [Sol 6.1 high pilot](SPATIAL-PILOT.md) adds an isolated subscription transport and records actual calibration results.
 
-The CLI currently supports preflight, isolated transport dry runs and text replay. `GenerationSession` also accepts a trusted host `TextChannel` for later provider integration; **no live provider adapter is enabled**. Replay fixtures test infrastructure, not model ability. Adding a provider requires a separate adapter audit, explicit spending authorisation and a new executed configuration. Native Codex/Claude CLIs are not a supported benchmark transport in v1.
+The initial CLI supports preflight, isolated transport dry runs and text replay. `GenerationSession` also accepts a trusted host `TextChannel` for later provider integration; **that initial delivery had no live provider adapter**; the later opt-in adapter is documented in [SPATIAL-PILOT](SPATIAL-PILOT.md). Replay fixtures test infrastructure, not model ability. Adding a provider requires a separate adapter audit, explicit spending authorisation and a new executed configuration. Unisolated native Codex/Claude CLIs are not a supported benchmark transport in v1. The later Codex broker has its own version and OS isolation audit.
 
 ## Current observation audit
 
@@ -120,7 +120,7 @@ Report visual design, construction requirements, verification coverage and proce
 
 Retain every scheduled case, including ordinary poor outputs and unevaluated runs. Infrastructure retries are predetermined (zero here), separately labelled and never swapped for better model outputs. Summarise paired task-level effects with repeated samples clustered by task; views are not independent generated builds. Predefine exclusions and uncertainty analysis before seeing results. Historical 183/182/175 and 349/343 totals are exploratory context, not power estimates or promotion evidence. Promote no default on the basis of a best sample or unblinded marginal win.
 
-## Delivery boundaries
+## Initial delivery boundaries
 
 Implemented: policy validation/enforcement, fresh one-way text sessions, isolated compiler, exact inputs/payloads/hashes, modular facts/pagination/aliases, source freeze/evaluator staging, calibration witnesses/evaluator and declarative comparison/preflight/replay facilities.
 
