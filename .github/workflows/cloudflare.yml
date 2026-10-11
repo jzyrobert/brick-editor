@@ -14,6 +14,9 @@ on:
 permissions:
   contents: read
 
+env:
+  FORCE_COLOR: "0"
+
 # One run per ref at a time. Superseded branch runs are cancelled; main runs
 # queue so every main commit is validated. Publication itself is serialised
 # separately on the publish job.
@@ -44,8 +47,64 @@ jobs:
           path: dist
           retention-days: 7
 
-  # Static checks and unit tests, in parallel with the build and browser tests.
+  # Static checks need no browser installation or physics-test worker.
   checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npx prettier --check .github/workflows
+      - run: npm run library:validate
+
+  # Bound CPU contention and distribute the native/geometry suites across VMs.
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    name: unit (${{ matrix.shard }}/3)
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - run: npm ci
+      - run: npm test -- --project=unit --shard=${{ matrix.shard }}/3 --maxWorkers=2 --reporter=default --reporter=json --outputFile=.local/unit-results.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: unit-results-${{ matrix.shard }}
+          path: .local/unit-results.json
+          retention-days: 7
+
+  # Wall-clock assertions retain their budgets on an otherwise idle runner.
+  unit_performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - run: npm ci
+      - run: npm test -- --project=performance --maxWorkers=1 --reporter=default --reporter=json --outputFile=.local/unit-performance.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: unit-performance-results
+          path: .local/unit-performance.json
+          retention-days: 7
+
+  # Only headless CLI integration tests need Chromium. Do not run competing
+  # browsers alongside the native unit tests or performance budgets.
+  integration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -70,16 +129,19 @@ jobs:
       - name: Install browser system dependencies
         if: steps.browsers.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
-      - run: npm run format:check
-      - run: npm test
-      - run: npm run library:validate
+      - run: npm test -- --project=integration --maxWorkers=1 --reporter=default --reporter=json --outputFile=.local/integration-results.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: integration-results
+          path: .local/integration-results.json
+          retention-days: 7
 
   # Browser acceptance tests on software WebGL, split across parallel jobs:
   # the main project in eight shards, the path-traced Photo tests (@heavy) in
   # two, and the wall-clock budget tests (@perf) alone, one at a time, so no
-  # other test competes for the CPU they are timing. SwiftShader is
-  # CPU-bound: two workers on a 4-vCPU runner gain little over one, so the
-  # speed-up comes from more jobs, not more workers per job.
+  # other test competes for the CPU they are timing. Each shard uses one
+  # worker; main files are balanced by measured duration rather than count.
   browser:
     needs: build
     runs-on: ubuntu-latest
@@ -127,7 +189,7 @@ jobs:
           name: cloudflare-static-site
           path: dist
       - name: Browser acceptance tests (${{ matrix.id }})
-        run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}
+        run: npx tsx scripts/ci-browser.ts ${{ matrix.project }} ${{ matrix.shard }}
         env:
           PLAYWRIGHT_BLOB_OUTPUT_NAME: report-${{ matrix.id }}.zip
       - name: Upload blob report
@@ -168,15 +230,18 @@ jobs:
 
   # Single required gate: everything above passed.
   verified:
-    needs: [build, checks, browser]
+    needs: [build, checks, unit, unit_performance, integration, browser]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: All validation jobs passed
         run: |
-          echo "build=${{ needs.build.result }} checks=${{ needs.checks.result }} browser=${{ needs.browser.result }}"
+          echo "build=${{ needs.build.result }} checks=${{ needs.checks.result }} unit=${{ needs.unit.result }} unit_performance=${{ needs.unit_performance.result }} integration=${{ needs.integration.result }} browser=${{ needs.browser.result }}"
           test "${{ needs.build.result }}" = success
           test "${{ needs.checks.result }}" = success
+          test "${{ needs.unit.result }}" = success
+          test "${{ needs.unit_performance.result }}" = success
+          test "${{ needs.integration.result }}" = success
           test "${{ needs.browser.result }}" = success
 
   publish:

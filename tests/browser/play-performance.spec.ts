@@ -65,8 +65,7 @@ test("Play caps the phone drawing buffer and redraws only when the view changes"
       return counter.draws - start;
     }, frames);
   // Hovering with no input: after settling, frames draw nothing.
-  await drawsOver(5);
-  expect(await drawsOver(10)).toBe(0);
+  await expect.poll(() => drawsOver(10)).toBe(0);
   // Moving redraws continuously again.
   await page.evaluate(() => window.brickEditor!.play.setInput({ moveZ: 1 }));
   expect(await drawsOver(10)).toBeGreaterThan(0);

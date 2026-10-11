@@ -1,5 +1,21 @@
 # Implementation status
 
+## CI scheduling and timing isolation — 11 October 2026
+
+CI separates static checks, three bounded-worker unit shards, single-worker CLI
+integration tests and a dedicated runner for the five unit suites with real
+wall-clock budgets. Browser shards use one worker, and the eight main shards
+balance whole files by measured duration from a successful run. Fresh test
+discovery determines coverage; timings never select or omit tests. Unit JSON
+reports are retained to make future bottlenecks visible.
+
+The chooser still lists every card and strictly loads every sample. Its two
+viewport checks now compile only a representative untouched replacement,
+removing seven repeated sample opens. Play's idle-render check polls a settled
+frame window rather than assuming five frames are enough. Budgets and test
+isolation are retained. Local validation and the measured baseline are in
+[verification](VERIFICATION.md#ci-scheduling-and-timing-isolation--11-october-2026).
+
 ## Gallery generation browsing — 10 October 2026
 
 The gallery adds **Prompt generation** beside prompt/model filters. Fresh E is the explicit default, with 18 builds across Sol/Astra/Opus high. Text-only history is available separately: fresh F, E/F source revisions, A/B/C text-only experiments, the creative collection and earlier temple/Ewok runs. Cards and detail notes label starting conditions, and selections survive detail/Play visits. Migration/index/publisher additions preserve old-index compatibility and content-addressed files; no generation guidance or visual-feedback protocol changes. The reviewed bundle contains 80 builds and 480 immutable files. All 26 relevant unit checks pass; migrated database data matches the reviewed index, and publication/replay/rollback preserve rows. A full-collection preview confirms the E default, all cohorts, three views and six supported sizes. Closed phone controls measure 88.8 px after the default-generation label was moved onto the count line. Live publication follows successful main validation; see [verification](VERIFICATION.md#gallery-prompt-generations--10-october-2026).
