@@ -1,0 +1,158 @@
+[
+  {
+    "task": "slope-row",
+    "places": [
+      {
+        "part": "3039",
+        "at": [0, 0, 0],
+        "turn": 0
+      },
+      {
+        "part": "3024",
+        "at": [0, 3, 1],
+        "turn": 0
+      }
+    ],
+    "origins": [
+      [20, -24, 30],
+      [10, -32, 30]
+    ],
+    "bases": [
+      [1, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 0, 1]
+    ],
+    "contacts": 1,
+    "overlaps": 0,
+    "perturb": {
+      "index": 1,
+      "at": [0, 3, 0]
+    },
+    "perturbedContacts": 0,
+    "perturbedOverlaps": 0
+  },
+  {
+    "task": "arch-opening",
+    "places": [
+      {
+        "part": "3659",
+        "at": [0, 2, 0],
+        "turn": 0
+      },
+      {
+        "part": "3024",
+        "at": [1, 0, 0],
+        "turn": 0
+      }
+    ],
+    "origins": [
+      [40, -40, 10],
+      [30, -8, 10]
+    ],
+    "bases": [
+      [1, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 0, 1]
+    ],
+    "contacts": 0,
+    "overlaps": 0,
+    "perturb": {
+      "index": 1,
+      "at": [1, 4, 0]
+    },
+    "perturbedContacts": 0,
+    "perturbedOverlaps": 1
+  },
+  {
+    "task": "body-contact",
+    "places": [
+      {
+        "part": "3068b",
+        "at": [0, 0, 0],
+        "turn": 0
+      },
+      {
+        "part": "3068b",
+        "at": [0, 1, 0],
+        "turn": 0
+      }
+    ],
+    "origins": [
+      [20, -8, 20],
+      [20, -16, 20]
+    ],
+    "bases": [
+      [1, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 0, 1]
+    ],
+    "contacts": 0,
+    "overlaps": 0,
+    "perturb": {
+      "index": 1,
+      "at": [0, 0, 0]
+    },
+    "perturbedContacts": 0,
+    "perturbedOverlaps": 1
+  },
+  {
+    "task": "quarter-turn",
+    "places": [
+      {
+        "part": "3001",
+        "at": [2, 0, 3],
+        "turn": 90
+      },
+      {
+        "part": "3001",
+        "at": [2, 3, 3],
+        "turn": 90
+      }
+    ],
+    "origins": [
+      [60, -24, 100],
+      [60, -48, 100]
+    ],
+    "bases": [
+      [0, 0, 1, 0, 1, 0, -1, 0, 0],
+      [0, 0, 1, 0, 1, 0, -1, 0, 0]
+    ],
+    "contacts": 8,
+    "overlaps": 0,
+    "extentLdu": [40, 52, 80],
+    "perturb": {
+      "index": 1,
+      "at": [2, 2, 3]
+    },
+    "perturbedContacts": 0,
+    "perturbedOverlaps": 1
+  },
+  {
+    "task": "slope-transfer",
+    "places": [
+      {
+        "part": "3039",
+        "at": [2, 0, 3],
+        "turn": 90
+      },
+      {
+        "part": "3024",
+        "at": [3, 3, 3],
+        "turn": 0
+      }
+    ],
+    "origins": [
+      [70, -24, 80],
+      [70, -32, 70]
+    ],
+    "bases": [
+      [0, 0, 1, 0, 1, 0, -1, 0, 0],
+      [1, 0, 0, 0, 1, 0, 0, 0, 1]
+    ],
+    "contacts": 1,
+    "overlaps": 0,
+    "perturb": {
+      "index": 1,
+      "at": [2, 3, 3]
+    },
+    "perturbedContacts": 0,
+    "perturbedOverlaps": 0
+  }
+]
