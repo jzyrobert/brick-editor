@@ -1,0 +1,287 @@
+{
+  "brief": "piplup",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "style-loop-1-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1318,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1318,
+        "difference": 318,
+        "percent": 31.8
+      },
+      "seconds": 835,
+      "tokens": {
+        "input": 900565,
+        "cached": 601216,
+        "output": 121895,
+        "reasoning": 85132
+      },
+      "searches": 9,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "24309",
+          "2431",
+          "3001",
+          "3003",
+          "3004",
+          "3005",
+          "30367c",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3666",
+          "4085c",
+          "4740",
+          "50950",
+          "54200",
+          "64648",
+          "86500",
+          "87079"
+        ],
+        "notInList": [
+          "30367c",
+          "64648",
+          "86500"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 835,
+          "usage": {
+            "input": 900565,
+            "cached": 601216,
+            "output": 121895,
+            "reasoning": 85132,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x2",
+                "colour": "medium azure",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "15068",
+                "47457",
+                "1750"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope inverted",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3665a",
+                "3660b",
+                "2449",
+                "3676",
+                "4287a",
+                "24201",
+                "3747b",
+                "3665b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bubble",
+                "limit": 8
+              },
+              "results": [
+                "87752",
+                "47844",
+                "98102",
+                "47843",
+                "30083",
+                "4506847",
+                "87995"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 6
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "round brick",
+                "size": "2x2",
+                "colour": "trans-clear",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3941",
+                "3063b",
+                "6143",
+                "3063a",
+                "4032a"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dome",
+                "colour": "trans-clear",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "4740",
+                "6908",
+                "86500",
+                "30367c",
+                "30151a",
+                "5848",
+                "50747",
+                "30083",
+                "87375",
+                "95198"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "4x4",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3960",
+                "35394"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "brick round",
+                "size": "4x4",
+                "colour": "trans-clear",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "79850",
+                "3477"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope curved",
+                "colour": "trans light blue",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "11477",
+                "6091",
+                "30602",
+                "42022",
+                "35164",
+                "41881"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[7].ops[0].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"light bluish grey\",\"white\",\"white\"]})"
+            },
+            {
+              "round": 2,
+              "parts": 1398,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 1274,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "24309",
+              "2431",
+              "3001",
+              "3003",
+              "3004",
+              "3005",
+              "30367c",
+              "3068b",
+              "3069b",
+              "3070b",
+              "3666",
+              "4085c",
+              "4740",
+              "50950",
+              "54200",
+              "64648",
+              "86500",
+              "87079"
+            ],
+            "notInList": [
+              "30367c",
+              "64648",
+              "86500"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1318
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
+  assertEmptyDirectory,
   CHECKS,
   checkAnswer,
   checkRequest,
@@ -13,6 +17,102 @@ import {
 import { searchForAgent } from "../../src/build-script/part-list";
 
 describe("one-shot build runs", () => {
+  it("isolates the syntax example without changing design, size or output guidance", () => {
+    for (const style of ["lego", "diorama"]) {
+      const options = {
+        partsList: false,
+        search: true,
+        check: true,
+        promptFile:
+          style === "lego" ? "build-agent.md" : "build-agent-diorama.md",
+      };
+      const baseline = oneShotPrompt("a playground", 2000, {
+        ...options,
+        replyPromptFile:
+          style === "lego" ? "brick-build.md" : "brick-build-diorama.md",
+      });
+      const syntax = oneShotPrompt("a playground", 2000, {
+        ...options,
+        replyPromptFile: "brick-build-syntax.md",
+      });
+      expect(syntax.split("## Example")[0]).toBe(
+        baseline.split("## Example")[0],
+      );
+      expect(syntax).toContain('title: "Syntax example"');
+      expect(syntax).not.toContain("Fisherman's cottage");
+      expect(syntax.trimEnd()).toMatch(/Build request: a playground$/);
+    }
+  });
+
+  it("removes target instructions and target feedback for explicitly target-free prompts", () => {
+    const text = oneShotPrompt("an observatory", undefined, {
+      partsList: false,
+      search: true,
+      check: true,
+      promptFile: "style-budget-lego.md",
+    });
+    expect(text).toContain(
+      "realistic part count and scale for a commercial LEGO set",
+    );
+    expect(text).not.toMatch(
+      /against the target|adjust to the target|±15%|\{\{TARGET_PARTS\}\}/,
+    );
+    expect(() =>
+      oneShotPrompt("an observatory", undefined, { partsList: false }),
+    ).toThrow("target-free run");
+    const feedback = checkAnswer(1, undefined, {
+      report: {
+        ok: true,
+        stats: { parts: 372 },
+        problems: [],
+        sections: [],
+      },
+    });
+    expect(feedback).toContain("372 parts");
+    expect(feedback).not.toContain("target");
+    expect(
+      errorsReason(372, undefined, [
+        { code: "overlap", message: "two parts intersect" },
+      ]),
+    ).not.toContain("target");
+  });
+
+  it("rejects stale artifacts before an independent generation can overwrite them", () => {
+    const dir = mkdtempSync(join(tmpdir(), "brick-fresh-run-"));
+    try {
+      expect(() => assertEmptyDirectory(join(dir, "new"))).not.toThrow();
+      const empty = join(dir, "empty");
+      mkdirSync(empty);
+      expect(() => assertEmptyDirectory(empty)).not.toThrow();
+      writeFileSync(join(empty, "result.json"), '{"accepted":true}');
+      expect(() => assertEmptyDirectory(empty)).toThrow(
+        "Fresh directory must be empty",
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+  it("pairs diorama composition with E construction and text-only feedback", () => {
+    const text = oneShotPrompt("a playground", 2000, {
+      partsList: false,
+      search: true,
+      check: true,
+      promptFile: "build-agent-diorama.md",
+      replyPromptFile: "brick-build-diorama.md",
+    });
+    expect(text).toContain("one cohesive diorama on a shared display base");
+    expect(text).toContain(
+      "Use a shared baseplate or connected plate-built display base",
+    );
+    expect(text).toContain("Finish the subject's visible skin intentionally");
+    expect(text).toContain("## Checking a draft");
+    expect(text).toContain("You cannot render or run commands");
+    expect(text).toContain("baseplate({");
+    expect(text).not.toMatch(
+      /standalone object is complete|stand on the table|When you can run tools|\{\{/,
+    );
+    expect(text.trimEnd()).toMatch(/Build request: a playground$/);
+  });
   it("uses the exact E construction guidance and reply contract by default", () => {
     const options = { partsList: false, search: true, check: true };
     const text = oneShotPrompt("a playground", 2000, options);

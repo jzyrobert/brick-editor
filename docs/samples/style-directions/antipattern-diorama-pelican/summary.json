@@ -1,0 +1,179 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "style-antipattern-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 868,
+      "targetMiss": {
+        "target": 800,
+        "parts": 868,
+        "difference": 68,
+        "percent": 8.5
+      },
+      "seconds": 616,
+      "tokens": {
+        "input": 559786,
+        "cached": 360960,
+        "output": 33931,
+        "reasoning": 6413
+      },
+      "searches": 5,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "2431",
+          "3003",
+          "3004",
+          "3005",
+          "30176",
+          "3710",
+          "54200",
+          "61678"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 616,
+          "usage": {
+            "input": 559786,
+            "cached": 360960,
+            "output": 33931,
+            "reasoning": 6413,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wheel tyre large motorcycle",
+                "limit": 6
+              },
+              "results": [
+                "4624",
+                "3641",
+                "6255",
+                "3788",
+                "4600",
+                "3471"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bicycle wheel",
+                "limit": 6
+              },
+              "results": [
+                "92851",
+                "4720",
+                "64248",
+                "u9163",
+                "28578",
+                "4719c03"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Technic wheel tyre 81",
+                "limit": 5
+              },
+              "results": [
+                "2997"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "pelican",
+                "limit": 3
+              },
+              "results": [],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bar curved",
+                "limit": 5
+              },
+              "results": [
+                "4042",
+                "30359b",
+                "30359a",
+                "88964",
+                "95229"
+              ],
+              "round": 1
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 982,
+              "errors": 2,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 932,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 868,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "13547",
+              "15068",
+              "2431",
+              "3003",
+              "3004",
+              "3005",
+              "30176",
+              "3710",
+              "54200",
+              "61678"
+            ],
+            "notInList": [],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 868
+        }
+      ]
+    }
+  ]
+}

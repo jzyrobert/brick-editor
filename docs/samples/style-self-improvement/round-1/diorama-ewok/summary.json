@@ -1,0 +1,336 @@
+{
+  "brief": "ewok inspired version of the classic 1970s lego space sets",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "attempts": 5,
+  "prompt": "style-loop-1-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 3000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 3125,
+      "targetMiss": {
+        "target": 3000,
+        "parts": 3125,
+        "difference": 125,
+        "percent": 4.2
+      },
+      "seconds": 543,
+      "tokens": {
+        "input": 981810,
+        "cached": 663552,
+        "output": 90494,
+        "reasoning": 36175
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2417",
+          "2423",
+          "2431",
+          "3002",
+          "3004p90",
+          "3005",
+          "30136",
+          "3020",
+          "3022",
+          "3024",
+          "3039",
+          "3040b",
+          "3062b",
+          "3068b",
+          "3069b",
+          "32607",
+          "3298",
+          "3298p90",
+          "3622",
+          "3623",
+          "3710",
+          "3941",
+          "3957a",
+          "3960",
+          "4079",
+          "44375b",
+          "4460b",
+          "4474",
+          "4600",
+          "4740",
+          "4746",
+          "54200",
+          "62360",
+          "6255",
+          "6636",
+          "85984",
+          "87081"
+        ],
+        "notInList": [
+          "3004p90",
+          "3298p90",
+          "44375b",
+          "4474",
+          "4746",
+          "62360"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 543,
+          "usage": {
+            "input": 981810,
+            "cached": 663552,
+            "output": 90494,
+            "reasoning": 36175,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "windscreen space canopy",
+                "colour": "trans yellow",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "4474",
+                "11289",
+                "87752",
+                "2337",
+                "6070",
+                "2437",
+                "6152a",
+                "62360"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Ewok",
+                "limit": 6
+              },
+              "results": [
+                "3622pz2",
+                "64805",
+                "6047615a",
+                "6047615b",
+                "11203d01",
+                "11203d02"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "space logo",
+                "limit": 6
+              },
+              "results": [
+                "3004p90",
+                "3298p90",
+                "3068bp53",
+                "3068bp5e",
+                "4490p90",
+                "9460"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "plant leaves",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "2423",
+                "2417",
+                "32607",
+                "10884"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "6x6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "44375b",
+                "4285b",
+                "44375a",
+                "21599"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "51739",
+                "41769a",
+                "41770a",
+                "43723a",
+                "43722a",
+                "2450",
+                "62743",
+                "43719",
+                "32059",
+                "90194"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "slope inverted",
+                "size": "2x3",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3747b",
+                "3747a"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "space wheel",
+                "limit": 5
+              },
+              "results": [
+                "30033"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "rocket engine",
+                "limit": 5
+              },
+              "results": [
+                "4746",
+                "61801"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "round corner brick",
+                "size": "4x4",
+                "colour": "blue",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "48092",
+                "2577",
+                "49612",
+                "5651"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 3054,
+              "errors": 16,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 3040,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 3125,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "2412b",
+              "2417",
+              "2423",
+              "2431",
+              "3002",
+              "3004p90",
+              "3005",
+              "30136",
+              "3020",
+              "3022",
+              "3024",
+              "3039",
+              "3040b",
+              "3062b",
+              "3068b",
+              "3069b",
+              "32607",
+              "3298",
+              "3298p90",
+              "3622",
+              "3623",
+              "3710",
+              "3941",
+              "3957a",
+              "3960",
+              "4079",
+              "44375b",
+              "4460b",
+              "4474",
+              "4600",
+              "4740",
+              "4746",
+              "54200",
+              "62360",
+              "6255",
+              "6636",
+              "85984",
+              "87081"
+            ],
+            "notInList": [
+              "3004p90",
+              "3298p90",
+              "44375b",
+              "4474",
+              "4746",
+              "62360"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 3125
+        }
+      ]
+    }
+  ]
+}

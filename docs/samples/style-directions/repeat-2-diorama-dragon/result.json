@@ -1,0 +1,356 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1144,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1144,
+    "difference": 144,
+    "percent": 14.4
+  },
+  "seconds": 879,
+  "tokens": {
+    "input": 797580,
+    "cached": 594816,
+    "output": 62809,
+    "reasoning": 38821
+  },
+  "searches": 15,
+  "checks": 2,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "2431",
+      "3004",
+      "3005",
+      "3021",
+      "3039",
+      "3045",
+      "3062b",
+      "3069b",
+      "3070b",
+      "32803",
+      "4162",
+      "43722a",
+      "43723a",
+      "4460b",
+      "4589",
+      "54200",
+      "61678",
+      "6182",
+      "93606",
+      "98138",
+      "98138pz4"
+    ],
+    "notInList": [
+      "32803",
+      "93606",
+      "98138pz4"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 879,
+      "usage": {
+        "input": 797580,
+        "cached": 594816,
+        "output": 62809,
+        "reasoning": 38821,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "dragon horn",
+            "limit": 8
+          },
+          "results": [
+            "51342",
+            "51344",
+            "52258",
+            "51352",
+            "51353"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x4",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "93606",
+            "47456"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 10
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "2450",
+            "43719",
+            "32059",
+            "90194",
+            "43723b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "eye tile",
+            "limit": 6
+          },
+          "results": [
+            "10238",
+            "98138pz0",
+            "98138pz2",
+            "98138p2d",
+            "98138p07",
+            "98138pz4"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tooth claw",
+            "limit": 8
+          },
+          "results": [
+            "41669",
+            "16770",
+            "48267",
+            "11089"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "horn",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "2142",
+            "64847",
+            "40379",
+            "11089",
+            "67361",
+            "53451",
+            "11437",
+            "87747"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wing dragon",
+            "limit": 10
+          },
+          "results": [
+            "6133",
+            "5984",
+            "38547",
+            "51342",
+            "30130",
+            "6125",
+            "75174c01",
+            "87685",
+            "87686",
+            "75174p01c01"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope curved",
+            "size": "2x2",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "15068",
+            "30602",
+            "5093",
+            "5095",
+            "47457"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope inverted curved",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "32803",
+            "42023"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "flame",
+            "limit": 6
+          },
+          "results": [
+            "70880",
+            "7727",
+            "64647",
+            "18395",
+            "80519",
+            "6126b"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "horn",
+            "category": "Cone",
+            "limit": 8
+          },
+          "results": [],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "spike curved",
+            "limit": 8
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "6091",
+            "88930",
+            "24309"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "slope wedge",
+            "size": "2x4",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "93606",
+            "43720",
+            "43721"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "egg",
+            "limit": 6
+          },
+          "results": [
+            "24946",
+            "24130",
+            "24132"
+          ],
+          "round": 3
+        },
+        {
+          "args": {
+            "query": "bar holder clip",
+            "limit": 4
+          },
+          "results": [
+            "4085c",
+            "2555",
+            "4081b",
+            "2921"
+          ],
+          "round": 3
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1199,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 2,
+          "parts": 1192,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2431",
+          "3004",
+          "3005",
+          "3021",
+          "3039",
+          "3045",
+          "3062b",
+          "3069b",
+          "3070b",
+          "32803",
+          "4162",
+          "43722a",
+          "43723a",
+          "4460b",
+          "4589",
+          "54200",
+          "61678",
+          "6182",
+          "93606",
+          "98138",
+          "98138pz4"
+        ],
+        "notInList": [
+          "32803",
+          "93606",
+          "98138pz4"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1144
+    }
+  ]
+}

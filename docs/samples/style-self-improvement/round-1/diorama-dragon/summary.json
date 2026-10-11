@@ -1,0 +1,298 @@
+{
+  "brief": "a dragon",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "attempts": 5,
+  "prompt": "style-loop-1-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 1000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1114,
+      "targetMiss": {
+        "target": 1000,
+        "parts": 1114,
+        "difference": 114,
+        "percent": 11.4
+      },
+      "seconds": 764,
+      "tokens": {
+        "input": 854994,
+        "cached": 568320,
+        "output": 94823,
+        "reasoning": 65104
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "18395",
+          "2431",
+          "24946",
+          "3004",
+          "3005",
+          "3009",
+          "3010",
+          "3020",
+          "3022",
+          "3023b",
+          "3024",
+          "3039",
+          "3040b",
+          "3062b",
+          "3069b",
+          "3660b",
+          "4032b",
+          "40379",
+          "4589",
+          "54200",
+          "6141",
+          "93606",
+          "98138"
+        ],
+        "notInList": [
+          "18395",
+          "24946",
+          "40379",
+          "93606"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 764,
+          "usage": {
+            "input": 854994,
+            "cached": 568320,
+            "output": 94823,
+            "reasoning": 65104,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "horn tooth claw",
+                "limit": 8
+              },
+              "results": [
+                "11089"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dragon wing",
+                "limit": 6
+              },
+              "results": [
+                "6133",
+                "5984",
+                "38547",
+                "51342",
+                "30130",
+                "6125"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "eye tile",
+                "limit": 6
+              },
+              "results": [
+                "10238",
+                "98138pz0",
+                "98138pz2",
+                "98138p2d",
+                "98138p07",
+                "98138pz4"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "flame",
+                "limit": 6
+              },
+              "results": [
+                "70880",
+                "7727",
+                "64647",
+                "18395",
+                "80519",
+                "6126b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "egg",
+                "limit": 4
+              },
+              "results": [
+                "24946",
+                "24130",
+                "24132"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope tooth",
+                "limit": 8
+              },
+              "results": [
+                "54200",
+                "3039",
+                "3040b",
+                "11477",
+                "85984",
+                "4286",
+                "3665a",
+                "3298"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "horn",
+                "limit": 8
+              },
+              "results": [
+                "2142",
+                "89522",
+                "13564",
+                "64847",
+                "40379",
+                "11089",
+                "67361",
+                "112"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "wedge slope curved",
+                "colour": "dark red",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "93606",
+                "42918",
+                "52031",
+                "41748",
+                "41747",
+                "41764"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "round brick open stud",
+                "size": "1x1",
+                "limit": 4
+              },
+              "results": [
+                "3062b",
+                "87087",
+                "3005",
+                "6141"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig dragon knight",
+                "limit": 4
+              },
+              "results": [
+                "6124b",
+                "6265",
+                "6124"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 1537,
+              "errors": 16,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 1237,
+              "errors": 1,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 1192,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "15068",
+              "18395",
+              "2431",
+              "24946",
+              "3004",
+              "3005",
+              "3009",
+              "3010",
+              "3020",
+              "3022",
+              "3023b",
+              "3024",
+              "3039",
+              "3040b",
+              "3062b",
+              "3069b",
+              "3660b",
+              "4032b",
+              "40379",
+              "4589",
+              "54200",
+              "6141",
+              "93606",
+              "98138"
+            ],
+            "notInList": [
+              "18395",
+              "24946",
+              "40379",
+              "93606"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1114
+        }
+      ]
+    }
+  ]
+}

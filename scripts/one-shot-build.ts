@@ -13,7 +13,7 @@
 // count and errors), but cannot render. Accepted builds are rendered
 // afterwards for review. docs/AGENT-BUILDING.md#one-shot-runs
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
@@ -24,15 +24,16 @@ import {
   searchForAgent,
   type SearchArgs,
 } from "../src/build-script/part-list";
+import { PART_FACTS_GUIDE, partFacts } from "./agent-part-facts";
 import { catalog } from "../src/catalog/catalog";
 import { registerAgentData } from "./build-script-cli";
 import { registerFullLibraryFromDisk } from "./full-library-node";
 import { REPO, slug } from "./new-build-workspace";
 import { isBrickBuild, type BrickBuildCall } from "./brick-build";
 
-const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file f) --model M
+const HELP = `npm run oneshot -- [--target-parts N] (--brief "…" | --brief-file f) --model M
     [--efforts low,medium,high,xhigh,max] [--attempts 5] [--out dir] [--views iso,front,iso-back]
-    [--parts-list on|off] [--search on|off] [--check on|off] [--runner codex|claude]
+    [--parts-list on|off] [--search on|off] [--check on|off] [--runner codex|claude] [--fresh on|off] [--part-facts on|off]
     [--prompt build-agent.md] [--reply-prompt brick-build.md] [--images a.png,b.png]
   Runs each reasoning effort in parallel through \`codex exec\` (or, with --runner claude,
   \`claude -p\` with --effort) with its tools turned off;
@@ -45,6 +46,12 @@ const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file 
   --reply-prompt  the output/example prompt (default brick-build.md).
   --images  comma-separated input images for a Codex visual revision; recorded in summary.json.
   --out  default ~/brick-builds/oneshot-<name>-<target>; one folder per effort, plus summary.md`;
+
+/** Refuse stale artifacts rather than silently contaminating an independent run. */
+export function assertEmptyDirectory(dir: string) {
+  if (existsSync(dir) && readdirSync(dir).length)
+    throw new Error(`Fresh directory must be empty: ${dir}`);
+}
 
 /** Text below the first "---" line of a prompt file. */
 function below(file: string) {
@@ -86,13 +93,14 @@ Before you answer you may compile a draft up to ${CHECKS} times: reply with ONLY
  * described when on. The part list needs colour availability registered. */
 export function oneShotPrompt(
   brief: string,
-  target: number,
+  target: number | undefined,
   {
     partsList = true,
     search = false,
     check = false,
     promptFile = "build-agent.md",
     replyPromptFile = "brick-build.md",
+    partFactsEnabled = false,
   } = {},
 ) {
   let text = below(promptFile);
@@ -123,17 +131,29 @@ export function oneShotPrompt(
     const parts = sectionOf(text, "Parts")!;
     text = text.slice(0, parts.at) + text.slice(parts.end);
   }
-  const extra = [search && SEARCH_SECTION, check && CHECK_SECTION].filter(
-    Boolean,
-  );
+  const extra = [
+    search &&
+      SEARCH_SECTION + (partFactsEnabled ? "\n\n" + PART_FACTS_GUIDE : ""),
+    check &&
+      (target === undefined
+        ? CHECK_SECTION.replace("part count against the target", "part count")
+        : CHECK_SECTION),
+  ].filter(Boolean);
   if (extra.length) {
     const first = text.indexOf("\n## ");
     text = `${text.slice(0, first)}\n\n${extra.join("\n\n")}\n${text.slice(first)}`;
   }
+  if (target === undefined && text.includes("{{TARGET_PARTS}}"))
+    throw new Error(
+      "A target-free run requires a prompt without {{TARGET_PARTS}}",
+    );
   const fmt = (n: number) => () => n.toLocaleString("en-US");
   return (
     text
-      .replaceAll("{{TARGET_PARTS}}", fmt(target))
+      .replaceAll(
+        "{{TARGET_PARTS}}",
+        target === undefined ? () => "" : fmt(target),
+      )
       .replaceAll("{{BRIEF}}", () => brief.trim()) + "\n"
   );
 }
@@ -159,7 +179,7 @@ ${previous}
  * count), then up to 20 errors with the ops that made them. */
 export function errorsReason(
   parts: number,
-  target: number,
+  target: number | undefined,
   errors: { code: string; message: string; ops?: string[] }[],
 ) {
   return (
@@ -371,7 +391,7 @@ type Check = {
  * size and every error (up to 20), or why the code did not compile. */
 export function checkAnswer(
   k: number,
-  target: number,
+  target: number | undefined,
   c: { report?: CheckReport; reason?: string },
 ) {
   const head = `Check ${k} of ${CHECKS}`;
@@ -444,15 +464,16 @@ function codexRunner(
       const r = await run(
         "codex",
         thread
-          ? ["exec", "resume", thread, ...common, message]
+          ? ["exec", "resume", thread, ...common, "-"]
           : [
               "exec",
               ...images.flatMap((file) => ["--image", file]),
               ...common,
-              message,
+              "-",
             ],
         cwd,
         3 * 60 * 60 * 1000,
+        message,
       );
       return {
         ...r,
@@ -558,6 +579,7 @@ async function askAgent(
   dir: string,
   n: number,
   search: boolean,
+  partFactsEnabled: boolean,
   images: string[],
   check?: (
     input: BrickBuildCall["input"],
@@ -567,6 +589,7 @@ async function askAgent(
 ) {
   const empty = join(dir, "empty");
   await mkdir(empty, { recursive: true });
+  assertEmptyDirectory(empty);
   const agent =
     runner === "claude"
       ? claudeRunner(model, effort, empty)
@@ -631,6 +654,12 @@ async function askAgent(
       }
       const answers = asked.map((args) => {
         const out = searchForAgent(args);
+        if (partFactsEnabled)
+          out.text +=
+            "\n" +
+            out.ids
+              .map((id) => `${id} facts: ${partFacts(id + ".dat")}`)
+              .join("\n");
         searches.push({ args, results: out.ids, round: round + 1 });
         return `### ${JSON.stringify(args)}\n${out.text}`;
       });
@@ -727,7 +756,7 @@ export function knowledge(
 async function compile(
   dir: string,
   name: string,
-  target: number,
+  target: number | undefined,
   extra: string[] = [],
 ) {
   const r = await run(
@@ -741,8 +770,7 @@ async function compile(
       `${name}.json`,
       "--output",
       `${name}.mpd`,
-      "--target-parts",
-      String(target),
+      ...(target === undefined ? [] : ["--target-parts", String(target)]),
       "--json",
       ...extra,
     ],
@@ -780,11 +808,12 @@ async function runEffort(
   o: {
     prompt: string;
     model: string;
-    target: number;
+    target: number | undefined;
     attempts: number;
     out: string;
     views: string;
     search: boolean;
+    partFactsEnabled: boolean;
     check: boolean;
     runner: "codex" | "claude";
     images: string[];
@@ -805,6 +834,7 @@ async function runEffort(
       dir,
       n,
       o.search,
+      o.partFactsEnabled,
       o.images,
       o.check
         ? async (input, k) => {
@@ -907,13 +937,13 @@ async function runEffort(
     effort,
     runner: o.runner,
     model: o.model,
-    targetParts: o.target,
+    targetParts: o.target ?? null,
     accepted,
     attemptsUsed: attempts.length,
     parts: accepted ? final?.parts : undefined,
     /** How far the accepted build landed from the target: the size score. */
     targetMiss:
-      accepted && final?.parts !== undefined
+      accepted && final?.parts !== undefined && o.target !== undefined
         ? targetMiss(final.parts, o.target)
         : undefined,
     seconds: attempts.reduce((s, a) => s + a.seconds, 0),
@@ -965,6 +995,8 @@ async function main(argv: string[]) {
         "prompt",
         "reply-prompt",
         "images",
+        "fresh",
+        "part-facts",
       ].includes(key)
     )
       throw new Error(`Unknown flag ${argv[i]}\n${HELP}`);
@@ -972,7 +1004,9 @@ async function main(argv: string[]) {
       throw new Error(`Missing value for ${argv[i]}`);
     flags.set(key, argv[++i]);
   }
-  const target = partTarget(Number(flags.get("target-parts")));
+  const target = flags.has("target-parts")
+    ? partTarget(Number(flags.get("target-parts")))
+    : undefined;
   const file = flags.get("brief-file");
   const brief = flags.get("brief") ?? (file ? readFileSync(file, "utf8") : "");
   const model = flags.get("model");
@@ -987,9 +1021,13 @@ async function main(argv: string[]) {
   const out = resolve(
     (
       flags.get("out") ??
-      `~/brick-builds/oneshot-${slug(flags.get("name") ?? brief)}-${target}`
+      `~/brick-builds/oneshot-${slug(flags.get("name") ?? brief)}-${target ?? "open"}`
     ).replace(/^~(?=$|\/)/, homedir()),
   );
+  const fresh = flags.get("fresh") ?? "off";
+  if (fresh !== "on" && fresh !== "off")
+    throw new Error("--fresh takes on or off");
+  if (fresh === "on") assertEmptyDirectory(out);
   await mkdir(out, { recursive: true });
   const onOff = (key: string) => {
     const v = flags.get(key) ?? "on";
@@ -999,6 +1037,9 @@ async function main(argv: string[]) {
   const partsList = onOff("parts-list"),
     search = onOff("search"),
     check = onOff("check");
+  const partFactsEnabled = flags.has("part-facts")
+    ? onOff("part-facts")
+    : false;
   const runner = flags.get("runner") ?? "codex";
   if (runner !== "codex" && runner !== "claude")
     throw new Error("--runner takes codex or claude");
@@ -1018,6 +1059,7 @@ async function main(argv: string[]) {
     check,
     promptFile: flags.get("prompt"),
     replyPromptFile: flags.get("reply-prompt"),
+    partFactsEnabled,
   });
   const views = flags.get("views") ?? "iso,front,iso-back";
   const results = await Promise.all(
@@ -1030,6 +1072,7 @@ async function main(argv: string[]) {
         out,
         views,
         search,
+        partFactsEnabled,
         check,
         runner,
         images,
@@ -1039,6 +1082,7 @@ async function main(argv: string[]) {
   // "+6.9%": how far a count is from the target.
   const miss = (parts?: number) => {
     if (parts === undefined) return "–";
+    if (target === undefined) return parts.toLocaleString("en-US");
     const p = targetMiss(parts, target).percent;
     return `${parts.toLocaleString("en-US")} (${p > 0 ? "+" : p < 0 ? "−" : "±"}${Math.abs(p)}%)`;
   };
@@ -1053,13 +1097,14 @@ async function main(argv: string[]) {
         brief: brief.trim(),
         runner,
         model,
-        targetParts: target,
+        targetParts: target ?? null,
         attempts,
         prompt: flags.get("prompt") ?? "build-agent.md",
         replyPrompt: flags.get("reply-prompt") ?? "brick-build.md",
         images,
         partsList,
         search,
+        partFactsEnabled,
         check,
         results,
       },
@@ -1069,8 +1114,8 @@ async function main(argv: string[]) {
   );
   await writeFile(
     join(out, "summary.md"),
-    `# ${brief.trim()} — ${model}, target ${target.toLocaleString("en-US")} parts\n\n` +
-      "Parts are the accepted build's count and, after it, the first reply's (the model's own estimate), each with its distance from the target.\n\n" +
+    `# ${brief.trim()} — ${model}, ${target === undefined ? "no part target" : `target ${target.toLocaleString("en-US")} parts`}\n\n` +
+      "Parts are the measured accepted and first-reply counts; target differences are shown only for targeted runs.\n\n" +
       "| effort | accepted | parts (vs target) | first reply | attempts | seconds | output tokens | searches | checks | finds | numbers named (not listed) | colour errors | outcomes |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n" +
       rows.join("\n") +
       "\n",

@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Diorama prompt comparison</title
+  ><style>
+    body {
+      margin: 0;
+      background: #faf8f4;
+      color: #242424;
+      font: 16px system-ui;
+    }
+    main {
+      max-width: 1800px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 28px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    article {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px;
+      min-width: 0;
+    }
+    img {
+      width: 100%;
+      height: auto;
+    }
+    select {
+      min-height: 44px;
+      font: inherit;
+    }
+    a {
+      color: #254c7f;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+      margin: 16px 0;
+    }
+    nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+    .meta {
+      color: #555;
+      font-size: 14px;
+    }
+    @media (max-width: 720px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      main {
+        padding: 12px;
+      }
+    }
+  </style>
+  <main>
+    <h1>Diorama prompt comparison</h1>
+    <p>
+      Sol 6.1 · high. All six diorama builds start from their original briefs in
+      separate empty directories and new sessions, using the same frozen prompt.
+      No existing sources, images or visual feedback. Temple and Ewok retain the
+      pilot results. Original and fresh E sources are unchanged and re-rendered
+      using the same four camera presets and Standard look.
+    </p>
+    <p>
+      Compare scene cohesion, subject readability, surface finish and support.
+      One sample per prompt and brief; generation variance remains. Compiler
+      acceptance does not establish physical buildability.
+    </p>
+    <label
+      >View
+      <select id="view">
+        <option value="iso">Three-quarter</option>
+        <option value="front">Front</option>
+        <option value="iso-back">Back</option>
+        <option value="top">Top</option>
+      </select></label
+    >
+    <nav>
+      <a href="#pelican">Pelican riding a bicycle</a><a href="#piplup">Piplup</a
+      ><a href="#dragon">Dragon</a
+      ><a href="#destroyer">Imperial Star Destroyer</a
+      ><a href="#temple">Japanese Buddhist temple</a
+      ><a href="#ewok">Ewok / Classic Space</a
+      ><a href="../README.md#diorama-all-six-briefs--sol-61-high">Report</a
+      ><a href="provenance.json">Starting conditions</a>
+    </nav>
+    <section id="pelican">
+      <h2>Pelican riding a bicycle</h2>
+      <p><a href="pelican-iso.png">Export comparison image</a></p>
+      <div class="grid">
+        <article>
+          <h3>Original · creative</h3>
+          <a
+            data-view-link="controls/original-pelican"
+            href="controls/original-pelican/iso.webp"
+            ><img
+              data-model="controls/original-pelican"
+              src="controls/original-pelican/iso.webp"
+              alt="Pelican riding a bicycle: Original · creative"
+          /></a>
+          <p>The Fish Pedal Express</p>
+          <p class="meta">852 parts · 2 compiler warnings</p>
+          <a href="controls/original-pelican/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>E · Lego-style</h3>
+          <a
+            data-view-link="controls/e-pelican"
+            href="controls/e-pelican/iso.webp"
+            ><img
+              data-model="controls/e-pelican"
+              src="controls/e-pelican/iso.webp"
+              alt="Pelican riding a bicycle: E · Lego-style"
+          /></a>
+          <p>Tour de Poisson — the Pelican Pedaller</p>
+          <p class="meta">889 parts · 22 compiler warnings</p>
+          <a href="controls/e-pelican/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>Updated · Diorama</h3>
+          <a data-view-link="sol-pelican" href="sol-pelican/iso.webp"
+            ><img
+              data-model="sol-pelican"
+              src="sol-pelican/iso.webp"
+              alt="Pelican riding a bicycle: Updated · Diorama"
+          /></a>
+          <p>Pelican Express — Fish for the Road</p>
+          <p class="meta">898 parts · 55 compiler warnings</p>
+          <a href="sol-pelican/compile.json">Compiler report</a> ·
+          <a href="sol-pelican/build.js">Source</a> ·
+          <a href="sol-pelican/prompt.md">Exact input</a>
+        </article>
+      </div>
+    </section>
+    <section id="piplup">
+      <h2>Piplup</h2>
+      <p><a href="piplup-iso.png">Export comparison image</a></p>
+      <div class="grid">
+        <article>
+          <h3>Original · creative</h3>
+          <a
+            data-view-link="controls/original-piplup"
+            href="controls/original-piplup/iso.webp"
+            ><img
+              data-model="controls/original-piplup"
+              src="controls/original-piplup/iso.webp"
+              alt="Piplup: Original · creative"
+          /></a>
+          <p>Piplup&#x27;s Bubble-Berg</p>
+          <p class="meta">1,056 parts · 3 compiler warnings</p>
+          <a href="controls/original-piplup/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>E · Lego-style</h3>
+          <a
+            data-view-link="controls/e-piplup"
+            href="controls/e-piplup/iso.webp"
+            ><img
+              data-model="controls/e-piplup"
+              src="controls/e-piplup/iso.webp"
+              alt="Piplup: E · Lego-style"
+          /></a>
+          <p>Piplup — A Royal Little Wave</p>
+          <p class="meta">1,204 parts · 34 compiler warnings</p>
+          <a href="controls/e-piplup/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>Updated · Diorama</h3>
+          <a data-view-link="sol-piplup" href="sol-piplup/iso.webp"
+            ><img
+              data-model="sol-piplup"
+              src="sol-piplup/iso.webp"
+              alt="Piplup: Updated · Diorama"
+          /></a>
+          <p>Piplup&#x27;s First Bubble Lesson</p>
+          <p class="meta">1,095 parts · 6 compiler warnings</p>
+          <a href="sol-piplup/compile.json">Compiler report</a> ·
+          <a href="sol-piplup/build.js">Source</a> ·
+          <a href="sol-piplup/prompt.md">Exact input</a>
+        </article>
+      </div>
+    </section>
+    <section id="dragon">
+      <h2>Dragon</h2>
+      <p><a href="dragon-iso.png">Export comparison image</a></p>
+      <div class="grid">
+        <article>
+          <h3>Original · creative</h3>
+          <a
+            data-view-link="controls/original-dragon"
+            href="controls/original-dragon/iso.webp"
+            ><img
+              data-model="controls/original-dragon"
+              src="controls/original-dragon/iso.webp"
+              alt="Dragon: Original · creative"
+          /></a>
+          <p>Cinderkeeper — The Last Egg</p>
+          <p class="meta">1,138 parts · 3 compiler warnings</p>
+          <a href="controls/original-dragon/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>E · Lego-style</h3>
+          <a
+            data-view-link="controls/e-dragon"
+            href="controls/e-dragon/iso.webp"
+            ><img
+              data-model="controls/e-dragon"
+              src="controls/e-dragon/iso.webp"
+              alt="Dragon: E · Lego-style"
+          /></a>
+          <p>The Last Ember</p>
+          <p class="meta">1,017 parts · 7 compiler warnings</p>
+          <a href="controls/e-dragon/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>Updated · Diorama</h3>
+          <a data-view-link="sol-dragon" href="sol-dragon/iso.webp"
+            ><img
+              data-model="sol-dragon"
+              src="sol-dragon/iso.webp"
+              alt="Dragon: Updated · Diorama"
+          /></a>
+          <p>The Last Ember — Guardian of the Stormglass Nest</p>
+          <p class="meta">1,100 parts · 19 compiler warnings</p>
+          <a href="sol-dragon/compile.json">Compiler report</a> ·
+          <a href="sol-dragon/build.js">Source</a> ·
+          <a href="sol-dragon/prompt.md">Exact input</a>
+        </article>
+      </div>
+    </section>
+    <section id="destroyer">
+      <h2>Imperial Star Destroyer</h2>
+      <p><a href="destroyer-iso.png">Export comparison image</a></p>
+      <div class="grid">
+        <article>
+          <h3>Original · creative</h3>
+          <a
+            data-view-link="controls/original-destroyer"
+            href="controls/original-destroyer/iso.webp"
+            ><img
+              data-model="controls/original-destroyer"
+              src="controls/original-destroyer/iso.webp"
+              alt="Imperial Star Destroyer: Original · creative"
+          /></a>
+          <p>Devastator — The Capture of Tantive IV</p>
+          <p class="meta">4,844 parts · 1 compiler warnings</p>
+          <a href="controls/original-destroyer/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>E · Lego-style</h3>
+          <a
+            data-view-link="controls/e-destroyer"
+            href="controls/e-destroyer/iso.webp"
+            ><img
+              data-model="controls/e-destroyer"
+              src="controls/e-destroyer/iso.webp"
+              alt="Imperial Star Destroyer: E · Lego-style"
+          /></a>
+          <p>Imperial Star Destroyer — Tractor Beam Interception</p>
+          <p class="meta">5,630 parts · 200 compiler warnings</p>
+          <a href="controls/e-destroyer/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>Updated · Diorama</h3>
+          <a data-view-link="sol-destroyer" href="sol-destroyer/iso.webp"
+            ><img
+              data-model="sol-destroyer"
+              src="sol-destroyer/iso.webp"
+              alt="Imperial Star Destroyer: Updated · Diorama"
+          /></a>
+          <p>Devastator — Capture above Tatooine</p>
+          <p class="meta">5,282 parts · 1 compiler warnings</p>
+          <a href="sol-destroyer/compile.json">Compiler report</a> ·
+          <a href="sol-destroyer/build.js">Source</a> ·
+          <a href="sol-destroyer/prompt.md">Exact input</a>
+        </article>
+      </div>
+    </section>
+    <section id="temple">
+      <h2>Japanese Buddhist temple</h2>
+      <p><a href="temple-iso.png">Export comparison image</a></p>
+      <div class="grid">
+        <article>
+          <h3>Original · creative</h3>
+          <a
+            data-view-link="controls/original-temple"
+            href="controls/original-temple/iso.webp"
+            ><img
+              data-model="controls/original-temple"
+              src="controls/original-temple/iso.webp"
+              alt="Japanese Buddhist temple: Original · creative"
+          /></a>
+          <p>Moonwater Temple — The Evening Bell</p>
+          <p class="meta">2,195 parts · 1 compiler warnings</p>
+          <a href="controls/original-temple/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>E · Lego-style</h3>
+          <a
+            data-view-link="controls/e-temple"
+            href="controls/e-temple/iso.webp"
+            ><img
+              data-model="controls/e-temple"
+              src="controls/e-temple/iso.webp"
+              alt="Japanese Buddhist temple: E · Lego-style"
+          /></a>
+          <p>Temple of the Nine Rings</p>
+          <p class="meta">2,258 parts · 1 compiler warnings</p>
+          <a href="controls/e-temple/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>Updated · Diorama</h3>
+          <a data-view-link="sol-temple" href="sol-temple/iso.webp"
+            ><img
+              data-model="sol-temple"
+              src="sol-temple/iso.webp"
+              alt="Japanese Buddhist temple: Updated · Diorama"
+          /></a>
+          <p>The Autumn Bell — Koyo-ji Buddhist Temple</p>
+          <p class="meta">2,279 parts · 2 compiler warnings</p>
+          <a href="sol-temple/compile.json">Compiler report</a> ·
+          <a href="sol-temple/build.js">Source</a> ·
+          <a href="sol-temple/prompt.md">Exact input</a>
+        </article>
+      </div>
+    </section>
+    <section id="ewok">
+      <h2>Ewok / Classic Space</h2>
+      <p><a href="ewok-iso.png">Export comparison image</a></p>
+      <div class="grid">
+        <article>
+          <h3>Original · creative</h3>
+          <a
+            data-view-link="controls/original-ewok"
+            href="controls/original-ewok/iso.webp"
+            ><img
+              data-model="controls/original-ewok"
+              src="controls/original-ewok/iso.webp"
+              alt="Ewok / Classic Space: Original · creative"
+          /></a>
+          <p>Yub-Nub 1978: Moonwood Space Village</p>
+          <p class="meta">3,294 parts · 2 compiler warnings</p>
+          <a href="controls/original-ewok/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>E · Lego-style</h3>
+          <a data-view-link="controls/e-ewok" href="controls/e-ewok/iso.webp"
+            ><img
+              data-model="controls/e-ewok"
+              src="controls/e-ewok/iso.webp"
+              alt="Ewok / Classic Space: E · Lego-style"
+          /></a>
+          <p>Moonbranch Outpost — Ewok Classic Space</p>
+          <p class="meta">3,278 parts · 30 compiler warnings</p>
+          <a href="controls/e-ewok/compile.json">Compiler report</a>
+        </article>
+        <article>
+          <h3>Updated · Diorama</h3>
+          <a data-view-link="sol-ewok" href="sol-ewok/iso.webp"
+            ><img
+              data-model="sol-ewok"
+              src="sol-ewok/iso.webp"
+              alt="Ewok / Classic Space: Updated · Diorama"
+          /></a>
+          <p>LL-979 • The Moonwood Treeport</p>
+          <p class="meta">2,955 parts · 12 compiler warnings</p>
+          <a href="sol-ewok/compile.json">Compiler report</a> ·
+          <a href="sol-ewok/build.js">Source</a> ·
+          <a href="sol-ewok/prompt.md">Exact input</a>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    document.querySelector("#view").addEventListener("change", (event) => {
+      for (const img of document.querySelectorAll("[data-model]"))
+        img.src = img.dataset.model + "/" + event.target.value + ".webp";
+      for (const a of document.querySelectorAll("[data-view-link]"))
+        a.href = a.dataset.viewLink + "/" + event.target.value + ".webp";
+    });
+  </script>
+</html>

@@ -1,0 +1,2253 @@
+{
+ "buildScript": 1,
+ "title": "Imperial Pursuit — The Tantive Escape",
+ "description": "A knife-edged Imperial Star Destroyer overtakes a tiny red-striped blockade runner. Continuous paired wedges shape the armoured hull around a dark equatorial trench. A layered command citadel, twin shield globes, heavy batteries, ventral hangar and seven aft engines complete the silhouette. Both ships connect to one framed starfield display.",
+ "palette": {
+  "hull": "light bluish grey",
+  "trench": "dark bluish grey",
+  "space": "black"
+ },
+ "components": {
+  "blockade-runner": {
+   "size": [
+    6,
+    14
+   ],
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      2,
+      2,
+      2
+     ],
+     "size": [
+      2,
+      3,
+      8
+     ],
+     "colour": "white",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      2,
+      1
+     ],
+     "size": [
+      2,
+      3,
+      2
+     ],
+     "colour": "dark red",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      0,
+      2,
+      1
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      4,
+      2,
+      1
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      5,
+      1
+     ],
+     "size": [
+      6,
+      2
+     ],
+     "colour": "white",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      5,
+      3
+     ],
+     "size": [
+      2,
+      6
+     ],
+     "colour": "white",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      2,
+      5,
+      4
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "colour": "dark red",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3070b",
+     "at": [
+      2,
+      6,
+      3
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "4229",
+     "at": [
+      0,
+      0,
+      9
+     ],
+     "turn": 180,
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "4229",
+     "at": [
+      2,
+      0,
+      9
+     ],
+     "turn": 180,
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "4229",
+     "at": [
+      4,
+      0,
+      9
+     ],
+     "turn": 180,
+     "colour": "white"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      5,
+      8
+     ],
+     "size": [
+      6,
+      5
+     ],
+     "colour": "white",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      2,
+      6,
+      9
+     ],
+     "colour": "dark red"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      0,
+      6,
+      11
+     ],
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      4,
+      6,
+      11
+     ],
+     "colour": "dark bluish grey"
+    }
+   ]
+  }
+ },
+ "sections": [
+  {
+   "name": "Connected starfield display",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      36,
+      60
+     ],
+     "layers": 2,
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      1
+     ],
+     "size": [
+      36,
+      58
+     ],
+     "layers": 1,
+     "colour": "dark bluish grey"
+    },
+    {
+     "op": "floor",
+     "at": [
+      1,
+      1,
+      1
+     ],
+     "size": [
+      34,
+      58
+     ],
+     "layers": 1,
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      2,
+      35
+     ],
+     "size": [
+      4,
+      17,
+      6
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      2,
+      12
+     ],
+     "size": [
+      2,
+      8,
+      4
+     ],
+     "colour": "black",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      12,
+      2,
+      1
+     ],
+     "size": [
+      12,
+      3
+     ],
+     "colour": "light bluish grey",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      13,
+      3,
+      1
+     ],
+     "size": [
+      10,
+      2
+     ],
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      17,
+      4,
+      1
+     ],
+     "colour": "red"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      3,
+      2,
+      5
+     ],
+     "colour": "trans-clear"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      29,
+      2,
+      6
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      32,
+      2,
+      15
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      2,
+      2,
+      26
+     ],
+     "colour": "trans-clear"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      7,
+      2,
+      32
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      30,
+      2,
+      30
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      33,
+      2,
+      41
+     ],
+     "colour": "trans-clear"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      3,
+      2,
+      47
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      8,
+      2,
+      56
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      30,
+      2,
+      57
+     ],
+     "colour": "trans-clear"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      14,
+      2,
+      8
+     ],
+     "colour": "white"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      26,
+      2,
+      19
+     ],
+     "colour": "white"
+    }
+   ]
+  },
+  {
+   "name": "Long tapered armoured hull",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      14,
+      18,
+      14
+     ],
+     "size": [
+      8,
+      2
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      17,
+      19,
+      4
+     ],
+     "size": [
+      2,
+      12
+     ],
+     "layers": 8,
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "47397",
+     "at": [
+      14,
+      19,
+      4
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "47398",
+     "at": [
+      19,
+      19,
+      4
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42061",
+     "at": [
+      14,
+      20,
+      4
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42060",
+     "at": [
+      19,
+      20,
+      4
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "47397",
+     "at": [
+      14,
+      23,
+      4
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "47398",
+     "at": [
+      19,
+      23,
+      4
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "42061",
+     "at": [
+      14,
+      24,
+      4
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42060",
+     "at": [
+      19,
+      24,
+      4
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      11,
+      18,
+      26
+     ],
+     "size": [
+      14,
+      2
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      14,
+      19,
+      16
+     ],
+     "size": [
+      8,
+      12
+     ],
+     "layers": 8,
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "47397",
+     "at": [
+      11,
+      19,
+      16
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "47398",
+     "at": [
+      22,
+      19,
+      16
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42061",
+     "at": [
+      11,
+      20,
+      16
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42060",
+     "at": [
+      22,
+      20,
+      16
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "47397",
+     "at": [
+      11,
+      23,
+      16
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "47398",
+     "at": [
+      22,
+      23,
+      16
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "42061",
+     "at": [
+      11,
+      24,
+      16
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42060",
+     "at": [
+      22,
+      24,
+      16
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      18,
+      38
+     ],
+     "size": [
+      20,
+      2
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      11,
+      19,
+      28
+     ],
+     "size": [
+      14,
+      12
+     ],
+     "layers": 8,
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "47397",
+     "at": [
+      8,
+      19,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "47398",
+     "at": [
+      25,
+      19,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42061",
+     "at": [
+      8,
+      20,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42060",
+     "at": [
+      25,
+      20,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "47397",
+     "at": [
+      8,
+      23,
+      28
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "47398",
+     "at": [
+      25,
+      23,
+      28
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "42061",
+     "at": [
+      8,
+      24,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42060",
+     "at": [
+      25,
+      24,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      5,
+      18,
+      50
+     ],
+     "size": [
+      26,
+      2
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      8,
+      19,
+      40
+     ],
+     "size": [
+      20,
+      12
+     ],
+     "layers": 8,
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "47397",
+     "at": [
+      5,
+      19,
+      40
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "47398",
+     "at": [
+      28,
+      19,
+      40
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42061",
+     "at": [
+      5,
+      20,
+      40
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42060",
+     "at": [
+      28,
+      20,
+      40
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "47397",
+     "at": [
+      5,
+      23,
+      40
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "47398",
+     "at": [
+      28,
+      23,
+      40
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "42061",
+     "at": [
+      5,
+      24,
+      40
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "42060",
+     "at": [
+      28,
+      24,
+      40
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "30363",
+     "at": [
+      17,
+      24,
+      4
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      6,
+      18,
+      50
+     ],
+     "size": [
+      24,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      15,
+      17,
+      27
+     ],
+     "size": [
+      6,
+      10
+     ],
+     "layers": 2,
+     "colour": "trench",
+     "top": "tile"
+    },
+    {
+     "op": "floor",
+     "at": [
+      16,
+      16,
+      29
+     ],
+     "size": [
+      4,
+      6
+     ],
+     "colour": "black",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      16,
+      27,
+      18
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      18,
+      27,
+      18
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "87079",
+     "at": [
+      16,
+      27,
+      23
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      17,
+      27,
+      25
+     ],
+     "colour": "trench"
+    }
+   ]
+  },
+  {
+   "name": "Layered command citadel",
+   "ops": [
+    {
+     "op": "box",
+     "at": [
+      13,
+      27,
+      31
+     ],
+     "size": [
+      10,
+      3,
+      18
+     ],
+     "colour": "hull",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      13,
+      27,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      15,
+      27,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      17,
+      27,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      19,
+      27,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      21,
+      27,
+      28
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      31
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      31
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      33
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      33
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      35
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      35
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      37
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      37
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      39
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      39
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      41
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      41
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      43
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      43
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      45
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      45
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      11,
+      27,
+      47
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      23,
+      27,
+      47
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      15,
+      30,
+      36
+     ],
+     "size": [
+      6,
+      3,
+      12
+     ],
+     "colour": "hull",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      15,
+      30,
+      33
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      17,
+      30,
+      33
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      19,
+      30,
+      33
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      13,
+      30,
+      36
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      21,
+      30,
+      36
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      13,
+      30,
+      38
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      21,
+      30,
+      38
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      13,
+      30,
+      40
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      21,
+      30,
+      40
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      13,
+      30,
+      42
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      21,
+      30,
+      42
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      13,
+      30,
+      44
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      21,
+      30,
+      44
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      13,
+      30,
+      46
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      21,
+      30,
+      46
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      33,
+      42
+     ],
+     "size": [
+      4,
+      3,
+      6
+     ],
+     "colour": "hull",
+     "interior": "solid",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      16,
+      33,
+      39
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      18,
+      33,
+      39
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      14,
+      33,
+      42
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      20,
+      33,
+      42
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      14,
+      33,
+      44
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      20,
+      33,
+      44
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      14,
+      33,
+      46
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3039",
+     "at": [
+      20,
+      33,
+      46
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      16,
+      36,
+      44
+     ],
+     "size": [
+      4,
+      9,
+      4
+     ],
+     "colour": "hull",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      15,
+      36,
+      44
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      20,
+      36,
+      44
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      16,
+      36,
+      42
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      16,
+      36,
+      48
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      15,
+      36,
+      45
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      20,
+      36,
+      45
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      17,
+      36,
+      42
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      17,
+      36,
+      48
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      15,
+      36,
+      46
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      20,
+      36,
+      46
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      18,
+      36,
+      42
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      18,
+      36,
+      48
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      15,
+      36,
+      47
+     ],
+     "turn": 90,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      20,
+      36,
+      47
+     ],
+     "turn": 270,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      19,
+      36,
+      42
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4460b",
+     "at": [
+      19,
+      36,
+      48
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      11,
+      45,
+      43
+     ],
+     "size": [
+      14,
+      6
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "box",
+     "at": [
+      13,
+      46,
+      44
+     ],
+     "size": [
+      10,
+      3,
+      4
+     ],
+     "colour": "hull",
+     "interior": "solid"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      13,
+      46,
+      43
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      13,
+      46,
+      48
+     ],
+     "turn": 180,
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      15,
+      46,
+      43
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      15,
+      46,
+      48
+     ],
+     "turn": 180,
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      17,
+      46,
+      43
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      17,
+      46,
+      48
+     ],
+     "turn": 180,
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      19,
+      46,
+      43
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      19,
+      46,
+      48
+     ],
+     "turn": 180,
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      21,
+      46,
+      43
+     ],
+     "colour": "black"
+    },
+    {
+     "op": "place",
+     "part": "2877",
+     "at": [
+      21,
+      46,
+      48
+     ],
+     "turn": 180,
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "43710",
+     "at": [
+      11,
+      46,
+      44
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "43711",
+     "at": [
+      23,
+      46,
+      44
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      11,
+      49,
+      43
+     ],
+     "size": [
+      14,
+      6
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      13,
+      50,
+      45
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "44359",
+     "at": [
+      12,
+      53,
+      44
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3062b",
+     "at": [
+      22,
+      50,
+      45
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "44359",
+     "at": [
+      21,
+      53,
+      44
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      16,
+      50,
+      44
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      18,
+      50,
+      48
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "98138",
+     "at": [
+      18,
+      53,
+      48
+     ],
+     "colour": "trans red"
+    }
+   ]
+  },
+  {
+   "name": "Heavy batteries and machinery",
+   "ops": [
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      8,
+      27,
+      42
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      28,
+      42
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      8,
+      29,
+      42
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      8,
+      27,
+      46
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      8,
+      28,
+      46
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      8,
+      29,
+      46
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      26,
+      27,
+      42
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      26,
+      28,
+      42
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      26,
+      29,
+      42
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      26,
+      27,
+      46
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "4032b",
+     "at": [
+      26,
+      28,
+      46
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "30162",
+     "at": [
+      26,
+      29,
+      46
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      11,
+      30,
+      48
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      23,
+      30,
+      48
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      14,
+      30,
+      32
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      20,
+      30,
+      32
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      15,
+      33,
+      37
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      19,
+      33,
+      37
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "14769",
+     "at": [
+      17,
+      36,
+      40
+     ],
+     "colour": "trench"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      14,
+      33,
+      46
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      22,
+      33,
+      46
+     ],
+     "colour": "hull"
+    }
+   ]
+  },
+  {
+   "name": "Seven engine stern",
+   "ops": [
+    {
+     "op": "place",
+     "part": "43121",
+     "at": [
+      6,
+      19,
+      52
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "43121",
+     "at": [
+      15,
+      19,
+      52
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "43121",
+     "at": [
+      24,
+      19,
+      52
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4868b",
+     "at": [
+      12,
+      19,
+      52
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4868b",
+     "at": [
+      12,
+      25,
+      52
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4868b",
+     "at": [
+      21,
+      19,
+      52
+     ],
+     "turn": 180,
+     "colour": "hull"
+    },
+    {
+     "op": "place",
+     "part": "4868b",
+     "at": [
+      21,
+      25,
+      52
+     ],
+     "turn": 180,
+     "colour": "hull"
+    }
+   ]
+  },
+  {
+   "name": "The escaping blockade runner",
+   "ops": [
+    {
+     "op": "instance",
+     "component": "blockade-runner",
+     "at": [
+      4,
+      8,
+      6
+     ]
+    }
+   ]
+  }
+ ]
+}

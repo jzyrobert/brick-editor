@@ -1,0 +1,201 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": null,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 800,
+  "seconds": 554,
+  "tokens": {
+    "input": 565629,
+    "cached": 352896,
+    "output": 58573,
+    "reasoning": 31889
+  },
+  "searches": 5,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "2877",
+      "3003",
+      "3009",
+      "3010",
+      "3022",
+      "3023b",
+      "3045",
+      "3062b",
+      "3070b",
+      "3633",
+      "3941",
+      "3942c",
+      "3960",
+      "4032b",
+      "4589",
+      "6141",
+      "61678",
+      "64847",
+      "90398",
+      "98138"
+    ],
+    "notInList": [
+      "64847",
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 554,
+      "usage": {
+        "input": 565629,
+        "cached": 352896,
+        "output": 58573,
+        "reasoning": 31889,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "1x4",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "61678",
+            "93273",
+            "13547",
+            "3573",
+            "11153"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "horn",
+            "colour": "black",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "2142",
+            "13564",
+            "64847",
+            "40379",
+            "11089",
+            "67361",
+            "6135b",
+            "51342"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell",
+            "limit": 6
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "brick modified grille",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2877",
+            "2412b",
+            "4070",
+            "87087",
+            "11211",
+            "30414"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 777,
+          "errors": 5,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 796,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 800,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "2877",
+          "3003",
+          "3009",
+          "3010",
+          "3022",
+          "3023b",
+          "3045",
+          "3062b",
+          "3070b",
+          "3633",
+          "3941",
+          "3942c",
+          "3960",
+          "4032b",
+          "4589",
+          "6141",
+          "61678",
+          "64847",
+          "90398",
+          "98138"
+        ],
+        "notInList": [
+          "64847",
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 800
+    }
+  ]
+}

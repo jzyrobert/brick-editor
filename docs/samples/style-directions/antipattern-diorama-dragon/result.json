@@ -1,0 +1,187 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1040,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1040,
+    "difference": 40,
+    "percent": 4
+  },
+  "seconds": 557,
+  "tokens": {
+    "input": 519791,
+    "cached": 326144,
+    "output": 50086,
+    "reasoning": 20591
+  },
+  "searches": 3,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "15070",
+      "2431",
+      "3004",
+      "3005",
+      "3009",
+      "3010",
+      "30136",
+      "3022",
+      "3024",
+      "3031",
+      "3032",
+      "3037",
+      "3039",
+      "3040b",
+      "3069b",
+      "3070b",
+      "3622",
+      "3660b",
+      "3678b",
+      "3942c",
+      "40379",
+      "4589",
+      "54200"
+    ],
+    "notInList": [
+      "15070",
+      "40379"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 557,
+      "usage": {
+        "input": 519791,
+        "cached": 326144,
+        "output": 50086,
+        "reasoning": 20591,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "horn",
+            "colour": "tan",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2142",
+            "64847",
+            "40379",
+            "11089",
+            "67361",
+            "53451"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "colour": "dark red",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "2450",
+            "43719",
+            "32059"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "tooth",
+            "colour": "white",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "41669",
+            "48267",
+            "49668",
+            "15070",
+            "3647"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 1487,
+          "errors": 10,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 1259,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 1239,
+          "errors": 3,
+          "ok": false
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "15070",
+          "2431",
+          "3004",
+          "3005",
+          "3009",
+          "3010",
+          "30136",
+          "3022",
+          "3024",
+          "3031",
+          "3032",
+          "3037",
+          "3039",
+          "3040b",
+          "3069b",
+          "3070b",
+          "3622",
+          "3660b",
+          "3678b",
+          "3942c",
+          "40379",
+          "4589",
+          "54200"
+        ],
+        "notInList": [
+          "15070",
+          "40379"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1040
+    }
+  ]
+}

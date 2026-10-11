@@ -1,0 +1,315 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 3000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 3294,
+  "targetMiss": {
+    "target": 3000,
+    "parts": 3294,
+    "difference": 294,
+    "percent": 9.8
+  },
+  "seconds": 830,
+  "tokens": {
+    "input": 840101,
+    "cached": 558208,
+    "output": 103558,
+    "reasoning": 55737
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "2412b",
+      "2417",
+      "2489",
+      "3004p90",
+      "3024",
+      "3039",
+      "3039p23",
+      "3039p34",
+      "3062b",
+      "3069b",
+      "32607",
+      "3298p90",
+      "3622pz2",
+      "3941",
+      "3942c",
+      "3943b",
+      "3957a",
+      "3960",
+      "3961",
+      "4032b",
+      "4079",
+      "41879a",
+      "4345b",
+      "4460b",
+      "4474",
+      "4589",
+      "54200",
+      "6141",
+      "64805",
+      "76382p90"
+    ],
+    "notInList": [
+      "2489",
+      "3004p90",
+      "3039p23",
+      "3039p34",
+      "3298p90",
+      "3622pz2",
+      "3961",
+      "41879a",
+      "4474",
+      "64805",
+      "76382p90"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 830,
+      "usage": {
+        "input": 840101,
+        "cached": 558208,
+        "output": 103558,
+        "reasoning": 55737,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "space cockpit canopy",
+            "colour": "trans yellow",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "2618",
+            "44375b",
+            "3961",
+            "4474",
+            "11289",
+            "87752",
+            "4588",
+            "2337"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Ewok",
+            "limit": 10
+          },
+          "results": [
+            "3622pz2",
+            "64805",
+            "6047615a",
+            "6047615b",
+            "11203d01",
+            "11203d02"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "size": "8x8",
+            "limit": 5
+          },
+          "results": [
+            "3961",
+            "35154",
+            "18859"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge",
+            "colour": "blue",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "54200",
+            "85984",
+            "2450"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "space logo",
+            "limit": 8
+          },
+          "results": [
+            "3004p90",
+            "3298p90",
+            "3068bp53",
+            "3068bp5e",
+            "4490p90",
+            "9460",
+            "59349p50",
+            "80123"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Minifig Head Ewok",
+            "limit": 8
+          },
+          "results": [
+            "64805"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Minifig Torso classic space",
+            "limit": 8
+          },
+          "results": [
+            "973p6m",
+            "63208p91",
+            "76382p6g",
+            "76382p6j",
+            "76382p6m",
+            "76382p0024",
+            "76382p90",
+            "76382p91"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "Minifig legs short",
+            "limit": 5
+          },
+          "results": [
+            "41879a",
+            "16709",
+            "41879b"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "8x8",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "30504"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope computer pattern",
+            "limit": 8
+          },
+          "results": [
+            "3039p23",
+            "3039p34",
+            "3660bp01",
+            "3039p58",
+            "3039pca",
+            "3039ps1",
+            "3039pc5",
+            "3660bp04"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 4069,
+          "errors": 15,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 3713,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 3294,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "2412b",
+          "2417",
+          "2489",
+          "3004p90",
+          "3024",
+          "3039",
+          "3039p23",
+          "3039p34",
+          "3062b",
+          "3069b",
+          "32607",
+          "3298p90",
+          "3622pz2",
+          "3941",
+          "3942c",
+          "3943b",
+          "3957a",
+          "3960",
+          "3961",
+          "4032b",
+          "4079",
+          "41879a",
+          "4345b",
+          "4460b",
+          "4474",
+          "4589",
+          "54200",
+          "6141",
+          "64805",
+          "76382p90"
+        ],
+        "notInList": [
+          "2489",
+          "3004p90",
+          "3039p23",
+          "3039p34",
+          "3298p90",
+          "3622pz2",
+          "3961",
+          "41879a",
+          "4474",
+          "64805",
+          "76382p90"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 3294
+    }
+  ]
+}

@@ -1,0 +1,331 @@
+{
+  "design": "Fresh diorama generation; no source-conditioned revisions. Historical sources re-rendered only for human comparisons.",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "feedback": "Text part search and compiler counts/errors only. No visual feedback or construction warnings.",
+  "cases": [
+    {
+      "id": "sol-temple",
+      "sessionIds": [
+        "01a12770-253c-7f41-8ff5-d55363170726"
+      ],
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/runs/diorama-temple/high/empty",
+      "workingDirectoryContents": [],
+      "suppliedSources": [],
+      "inputImages": [],
+      "nativeToolEvents": [],
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "brief": "a japanese buddhist temple",
+      "target": 2000,
+      "promptSha256": "af4f31c5264dda62ff8049d50212a8a0d76fbcef8334f155c92c8bb3e5ed013c",
+      "sourceSha256": "847a06def34138fea277559faffdda6a4fa3cddff9d5acc056d3d25c075609c5",
+      "compilerErrors": 0
+    },
+    {
+      "id": "original-temple",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/original-temple/build.json",
+      "sourceSha256": "922ae3fd3552ebac24b5c8fed4e73047a4bf4094972521a339a540ad934ba939",
+      "parts": 2195,
+      "compilerErrors": 0
+    },
+    {
+      "id": "e-temple",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/fresh-e/sol-temple/build.json",
+      "sourceSha256": "1fb65d023d380fa88db86701a839622dd6c4b2a8416a32d50dee89f4d4daa21c",
+      "parts": 2258,
+      "compilerErrors": 0
+    },
+    {
+      "id": "sol-ewok",
+      "sessionIds": [
+        "01a12770-252e-7983-80f9-86d2639ca198"
+      ],
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/runs/diorama-ewok/high/empty",
+      "workingDirectoryContents": [],
+      "suppliedSources": [],
+      "inputImages": [],
+      "nativeToolEvents": [],
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "brief": "ewok inspired version of the classic 1970s lego space sets",
+      "target": 3000,
+      "promptSha256": "2e12500519f361a0fd59c547f4dad7b14f62e09393597f83e1186d53d626b502",
+      "sourceSha256": "edfdf61285cf212410fccc274fbd607d7d40d7d85712b5795bfd96d7d3c498a3",
+      "compilerErrors": 0
+    },
+    {
+      "id": "original-ewok",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/original-ewok/build.json",
+      "sourceSha256": "523381ba93031ddf64545a091e37c26ec539f1a080e4a84da8bc0653a251b248",
+      "parts": 3294,
+      "compilerErrors": 0
+    },
+    {
+      "id": "e-ewok",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/fresh-e/sol-ewok/build.json",
+      "sourceSha256": "2371755c4ce1fee6a2c29081b6c050400d67280f3e381debd6534cca167faa2c",
+      "parts": 3278,
+      "compilerErrors": 0
+    },
+    {
+      "id": "sol-pelican",
+      "sessionIds": [
+        "01a1279e-5576-71a3-b702-c348ee7a31ad"
+      ],
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/remaining-runs/diorama-pelican/high/empty",
+      "workingDirectoryContents": [],
+      "suppliedSources": [],
+      "inputImages": [],
+      "nativeToolEvents": [],
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "brief": "a pelican riding a bicycle",
+      "target": 800,
+      "promptSha256": "e723f91d82b7719f6309be9aa7f0c88440f2d5455e19886e46ee2faf41d9737f",
+      "sourceSha256": "e959b081b78ba8ddde99aed1eb07a6d07ae4fe4a30ed7286c2388a68fbd51b7c",
+      "compilerErrors": 0,
+      "initialWorkingDirectoryVerifiedEmpty": true
+    },
+    {
+      "id": "original-pelican",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/original-pelican/build.json",
+      "sourceSha256": "ecf770a3252f141aeb1f85c039c1b4c0749e3d9c422aa94eb139e800dc81208b",
+      "parts": 852,
+      "compilerErrors": 0
+    },
+    {
+      "id": "e-pelican",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/fresh-e/sol-pelican/build.json",
+      "sourceSha256": "a74157aac5426a03a007844d6ce2f5936ddd2d18e54aff46b6f81b6ffc6441df",
+      "parts": 889,
+      "compilerErrors": 0
+    },
+    {
+      "id": "sol-piplup",
+      "sessionIds": [
+        "01a1279e-5565-7a40-9f83-3704cae92606"
+      ],
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/remaining-runs/diorama-piplup/high/empty",
+      "workingDirectoryContents": [],
+      "suppliedSources": [],
+      "inputImages": [],
+      "nativeToolEvents": [],
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "brief": "piplup",
+      "target": 1000,
+      "promptSha256": "66b40ac9566001f72e32f03d78a043c1a0bea5c1bf8b8e1b0499c69a473150d9",
+      "sourceSha256": "3941eefb4652206d22bec52b249f60b0f731e7f83692074b65d38dc2a2d9cba1",
+      "compilerErrors": 0,
+      "initialWorkingDirectoryVerifiedEmpty": true
+    },
+    {
+      "id": "original-piplup",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/original-piplup/build.json",
+      "sourceSha256": "6d0aaec570bb05f1bf23f5795e02d95f3230f3ef5f2fd95830e9cdf447d4a0c6",
+      "parts": 1056,
+      "compilerErrors": 0
+    },
+    {
+      "id": "e-piplup",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/fresh-e/sol-piplup/build.json",
+      "sourceSha256": "c52ae92b1a3ed12f848f9b20705f326ebf38fdb2ad7fb2f8b9aebd8a4b8797ed",
+      "parts": 1204,
+      "compilerErrors": 0
+    },
+    {
+      "id": "sol-dragon",
+      "sessionIds": [
+        "01a1279e-55f5-7c52-a0ad-12912f5e7b9a"
+      ],
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/remaining-runs/diorama-dragon/high/empty",
+      "workingDirectoryContents": [],
+      "suppliedSources": [],
+      "inputImages": [],
+      "nativeToolEvents": [],
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "brief": "a dragon",
+      "target": 1000,
+      "promptSha256": "1d78b145d722c8a36a06ae632aac5fed92b852f87acf28b2589025366e58fb6b",
+      "sourceSha256": "2e8aeeedee724ca2b5da35a0c5759aa2f1a6d2aa016b7d28a1ad8b272f25eca6",
+      "compilerErrors": 0,
+      "initialWorkingDirectoryVerifiedEmpty": true
+    },
+    {
+      "id": "original-dragon",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/original-dragon/build.json",
+      "sourceSha256": "345d0133cc269c522213e80c6a9f303b77405071769e38325a4754b29d455d4f",
+      "parts": 1138,
+      "compilerErrors": 0
+    },
+    {
+      "id": "e-dragon",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/fresh-e/sol-dragon/build.json",
+      "sourceSha256": "26f3cbcf8bbadfbacde8571e9535aaf61f761c0f2ed4456b7fd646ea41d0af9f",
+      "parts": 1017,
+      "compilerErrors": 0
+    },
+    {
+      "id": "sol-destroyer",
+      "sessionIds": [
+        "01a1279e-569a-7403-bd93-63d06c1848c2"
+      ],
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/remaining-runs/diorama-destroyer/high/empty",
+      "workingDirectoryContents": [],
+      "suppliedSources": [],
+      "inputImages": [],
+      "nativeToolEvents": [],
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "brief": "imperial star destroyer",
+      "target": 5000,
+      "promptSha256": "68b31c0ff82759229584eb241f8b1634487b7a79fd66d957c6142d3d1127fdd4",
+      "sourceSha256": "f9ff3dedf048f2a910a97e2a3f575f347ac90a36ae453ffdc5ff377d05ff4b8f",
+      "compilerErrors": 0,
+      "initialWorkingDirectoryVerifiedEmpty": true
+    },
+    {
+      "id": "original-destroyer",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/original-destroyer/build.json",
+      "sourceSha256": "8b89ece5e276d360622e9f51b5aa757ab1d37accdd48bd814d73d61b71f0f10c",
+      "parts": 4844,
+      "compilerErrors": 0
+    },
+    {
+      "id": "e-destroyer",
+      "role": "historical comparison, source unchanged; re-rendered only",
+      "originalSource": "docs/samples/lego-style-study/fresh-e/sol-destroyer/build.json",
+      "sourceSha256": "defcad4294092ce73ad4ba2c99934c9170611bf0644d9f8eed14fdd6f541e745",
+      "parts": 5630,
+      "compilerErrors": 0
+    }
+  ],
+  "independentGenerationSessions": 6,
+  "systemPromptSha256": "63eadf606a208d165e8095f43789df617b70137bb2293a889daf4888e1d2ad6b",
+  "replyPromptSha256": "2d728a55ca06d642fb146ce1fdd5baf025270b511da9e445172fbc033c9652af",
+  "parentCommit": "b82f39083bb4ac42d62e002739380dc90014c68a",
+  "recorded": "2026-10-10T21:12:55.888271+00:00",
+  "unchangedESections": [
+    "Size",
+    "Geometry rules",
+    "Ops (one object per op, `\"op\"` names it)",
+    "Colours",
+    "Theme first",
+    "Look like a LEGO design",
+    "Part cheat sheet",
+    "Parts"
+  ],
+  "previewVerification": {
+    "builds": 18,
+    "views": 4,
+    "images": 72,
+    "sizes": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "noOverflow": true
+      },
+      {
+        "width": 1080,
+        "height": 1800,
+        "noOverflow": true
+      },
+      {
+        "width": 360,
+        "height": 600,
+        "noOverflow": true
+      },
+      {
+        "width": 411,
+        "height": 685,
+        "noOverflow": true
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "noOverflow": true
+      },
+      {
+        "width": 686,
+        "height": 411,
+        "noOverflow": true
+      }
+    ]
+  },
+  "nativeModelEffortVerifiedFromTurnContexts": true,
+  "exactFilledInputReconstruction": [
+    {
+      "subject": "temple",
+      "brief": "a japanese buddhist temple",
+      "target": 2000,
+      "promptSha256": "af4f31c5264dda62ff8049d50212a8a0d76fbcef8334f155c92c8bb3e5ed013c",
+      "exactReconstruction": true,
+      "directoryEmpty": true
+    },
+    {
+      "subject": "ewok",
+      "brief": "ewok inspired version of the classic 1970s lego space sets",
+      "target": 3000,
+      "promptSha256": "2e12500519f361a0fd59c547f4dad7b14f62e09393597f83e1186d53d626b502",
+      "exactReconstruction": true,
+      "directoryEmpty": true
+    },
+    {
+      "subject": "pelican",
+      "brief": "a pelican riding a bicycle",
+      "target": 800,
+      "promptSha256": "e723f91d82b7719f6309be9aa7f0c88440f2d5455e19886e46ee2faf41d9737f",
+      "exactReconstruction": true,
+      "directoryEmpty": true
+    },
+    {
+      "subject": "piplup",
+      "brief": "piplup",
+      "target": 1000,
+      "promptSha256": "66b40ac9566001f72e32f03d78a043c1a0bea5c1bf8b8e1b0499c69a473150d9",
+      "exactReconstruction": true,
+      "directoryEmpty": true
+    },
+    {
+      "subject": "dragon",
+      "brief": "a dragon",
+      "target": 1000,
+      "promptSha256": "1d78b145d722c8a36a06ae632aac5fed92b852f87acf28b2589025366e58fb6b",
+      "exactReconstruction": true,
+      "directoryEmpty": true
+    },
+    {
+      "subject": "destroyer",
+      "brief": "imperial star destroyer",
+      "target": 5000,
+      "promptSha256": "68b31c0ff82759229584eb241f8b1634487b7a79fd66d957c6142d3d1127fdd4",
+      "exactReconstruction": true,
+      "directoryEmpty": true
+    }
+  ],
+  "remainingBatchExecution": {
+    "caseExitCodes": {
+      "diorama-pelican": 0,
+      "diorama-piplup": 0,
+      "diorama-dragon": 0,
+      "diorama-destroyer": 0
+    },
+    "outerCommandExitCode": 143,
+    "allCaseResultsAndSummariesComplete": true,
+    "acceptedViews": 16,
+    "note": "Outer logged command reported 143 after all four case FINISH exit=0 records. Accepted results, summaries and views are complete; no generations were rerun."
+  }
+}

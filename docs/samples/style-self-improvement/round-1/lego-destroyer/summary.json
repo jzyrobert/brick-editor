@@ -1,0 +1,395 @@
+{
+  "brief": "imperial star destroyer",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "attempts": 5,
+  "prompt": "style-loop-1-lego.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 5000,
+      "accepted": true,
+      "attemptsUsed": 2,
+      "parts": 5554,
+      "targetMiss": {
+        "target": 5000,
+        "parts": 5554,
+        "difference": 554,
+        "percent": 11.1
+      },
+      "seconds": 38,
+      "tokens": {
+        "input": 969312,
+        "cached": 634752,
+        "output": 97460,
+        "reasoning": 47949
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "10202",
+          "15068",
+          "1751",
+          "22886",
+          "2412b",
+          "2431",
+          "2454b",
+          "2877",
+          "3003",
+          "3004",
+          "3005",
+          "3009",
+          "3020",
+          "30208",
+          "3022",
+          "3023b",
+          "3031",
+          "3032",
+          "30363",
+          "3039",
+          "3062b",
+          "3068b",
+          "3069b",
+          "3070b",
+          "3245c",
+          "3460",
+          "3666",
+          "3700",
+          "3710",
+          "3747b",
+          "3941",
+          "3957a",
+          "3960",
+          "4032b",
+          "4589",
+          "60474",
+          "6636",
+          "87079"
+        ],
+        "notInList": [
+          "10202",
+          "1751",
+          "30208"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 38,
+          "usage": {
+            "input": 932162,
+            "cached": 634752,
+            "output": 89323,
+            "reasoning": 44560,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "6x12",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "3028",
+                "6178",
+                "30355",
+                "30356"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wedge plate",
+                "size": "8x16",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "92438",
+                "2629",
+                "74166"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "hemisphere",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "30208",
+                "44359",
+                "61287",
+                "86500",
+                "44358"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "4x4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3960",
+                "35394"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "slope 18",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "18759",
+                "30363",
+                "60477",
+                "18862",
+                "61409b",
+                "5404",
+                "43708",
+                "61409"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "tile",
+                "size": "8x16",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "tile",
+                "size": "6x6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "10202",
+                "6881b"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "tile",
+                "size": "4x4",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "3477",
+                "27507",
+                "1751",
+                "68869",
+                "7975"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "tile",
+                "size": "2x6",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "69729"
+              ],
+              "round": 3
+            },
+            {
+              "args": {
+                "query": "cone 1 x 1",
+                "colour": "light bluish grey",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "4589",
+                "59900",
+                "11610"
+              ],
+              "round": 3
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 8292,
+              "errors": 22,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 8729,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 8820,
+              "errors": 48,
+              "ok": false
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "errors",
+          "knowledge": {
+            "named": [
+              "10202",
+              "15068",
+              "1751",
+              "22886",
+              "2412b",
+              "2431",
+              "2454b",
+              "2877",
+              "3003",
+              "3004",
+              "3005",
+              "3009",
+              "3020",
+              "30208",
+              "3022",
+              "3023b",
+              "3031",
+              "3032",
+              "30363",
+              "3039",
+              "3062b",
+              "3068b",
+              "3069b",
+              "3070b",
+              "3245c",
+              "3460",
+              "3666",
+              "3700",
+              "3710",
+              "3747b",
+              "3941",
+              "3957a",
+              "3960",
+              "4032b",
+              "4589",
+              "60474",
+              "6636",
+              "87079"
+            ],
+            "notInList": [
+              "10202",
+              "1751",
+              "30208"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 6003,
+          "reason": "The script compiled to 6,003 parts (target 5,000: +1,003, +20.1%). Errors to fix:\n- overlap: 3023b Plate 1 × 2 placed at [4, 43, 14] and 3023b Plate 1 × 2 placed at [5, 43, 14] overlap where their bodies meet: x 5–6, y 43–44, z 14–15 [sections[1].ops[13] (code line 10), sections[4].ops[26] (code line 70)]\n- overlap: 3023b Plate 1 × 2 placed at [4, 44, 14] and 3023b Plate 1 × 2 placed at [5, 44, 14] overlap where their bodies meet: x 5–6, y 44–45, z 14–15 [sections[1].ops[14] (code line 10), sections[4].ops[27] (code line 70)]\n- overlap: 3245c Brick 1 × 2 × 2 placed at [4, 45, 14] and 3004 Brick 1 × 2 placed at [5, 45, 14] overlap where their bodies meet: x 5–6, y 45–48, z 14–15 [sections[1].ops[15] (code line 10), sections[4].ops[28] (code line 72)]\n- overlap: 3245c Brick 1 × 2 × 2 placed at [4, 45, 14] and 3009 Brick 1 × 6 placed at [5, 48, 12] overlap where their bodies meet: x 5–6, y 48–51, z 14–15 [sections[1].ops[15] (code line 10), sections[4].ops[31] (code line 74)]"
+        },
+        {
+          "attempt": 2,
+          "seconds": 0,
+          "usage": {
+            "input": 37150,
+            "cached": 0,
+            "output": 8137,
+            "reasoning": 3389,
+            "costUsd": 0
+          },
+          "searches": [],
+          "checks": [],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "10202",
+              "15068",
+              "1751",
+              "22886",
+              "2412b",
+              "2431",
+              "2454b",
+              "2877",
+              "3003",
+              "3004",
+              "3005",
+              "3009",
+              "3020",
+              "30208",
+              "3022",
+              "3023b",
+              "3031",
+              "3032",
+              "30363",
+              "3039",
+              "3062b",
+              "3068b",
+              "3069b",
+              "3070b",
+              "3245c",
+              "3460",
+              "3666",
+              "3700",
+              "3710",
+              "3747b",
+              "3941",
+              "3957a",
+              "3960",
+              "4032b",
+              "4589",
+              "60474",
+              "6636",
+              "87079"
+            ],
+            "notInList": [
+              "10202",
+              "1751",
+              "30208"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 5554
+        }
+      ]
+    }
+  ]
+}

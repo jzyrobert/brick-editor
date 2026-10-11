@@ -26,7 +26,7 @@ if (args.includes("--help")) {
   [--revise-from directory --source-variant studied]
   [--revision-feedback text|images] (default text; images are historical only)
   [--reference-images a.png,b.png]
-Variants: creative, object, studied, finished, contextual, economical. Subjects: pelican, piplup, temple,
+Variants: creative, object, studied, finished, contextual, economical, diorama. Subjects: pelican, piplup, temple,
 destroyer, dragon, ewok. Default model is gpt-6.1-sol. No publishing.`);
   process.exit(0);
 }
@@ -95,6 +95,7 @@ const cases = flag(
         "creative",
         "contextual",
         "economical",
+        "diorama",
       ].includes(variant) ||
       !(subject in briefs)
     )
@@ -108,6 +109,11 @@ if (
 )
   throw new Error("The economical experiment requires text-only input");
 const concurrency = Number(flag("concurrency", "3"));
+if (
+  cases.some((c) => c.variant === "diorama") &&
+  (reviseFrom || referenceImages || revisionFeedback === "images")
+)
+  throw new Error("The diorama experiment requires a fresh text-only start");
 if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 4)
   throw new Error("--concurrency must be 1–4");
 await mkdir(out, { recursive: true });
@@ -285,7 +291,9 @@ ${source}
           ? "brick-build-legacy.md"
           : c.variant === "economical"
             ? "brick-build-economical.md"
-            : "brick-build-object.md",
+            : c.variant === "diorama"
+              ? "brick-build-diorama.md"
+              : "brick-build-object.md",
         "--parts-list",
         "on",
         "--search",

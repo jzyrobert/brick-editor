@@ -1,0 +1,81 @@
+// Optional, text-only part facts for controlled prompting experiments.
+// No assembly solving, images or geometry changes. Sources are the pinned
+// local LDraw pack and the existing derived connector pack.
+import { footprint, localBounds, underside } from "../src/catalog/builds/kit";
+import { verifiedConnectors } from "../src/catalog/connectors";
+import { fullCatalog } from "../src/catalog/full-library";
+import { directReferences } from "../src/catalog/full-pack";
+import {
+  fullLibrarySources,
+  registerFullCatalogFromDisk,
+} from "./full-library-node";
+
+export const PART_FACTS_GUIDE = `Search results additionally include conservative geometry bounds and connection evidence. All coordinates are relative to place({at:[0,0,0],turn:0}) using the usual minimum-footprint anchor: x/z in studs, y in plates, positive y up. Bounds include studs and projecting geometry, unlike nominal placement heights. One stud = 20 LDU = 2.5 plates; one plate = 8 LDU. Compare physical proportions in the same units. Connector points use these coordinates; axes are unit directions in the physical x/y/z frame. Opposite stud/anti-stud axes can mate only when their points align; hinge pins/sockets need matching dimensions. These are part facts, not a placement solver. Only upright quarter-turns are supported. Missing connector data means unknown, not incompatible. Official shortcut co-occurrence is assembly evidence, not proof that any two components directly mate or that the script can place them with its restricted transforms. Wheel-pin, axle, bar and clip fits are not verified by the connector checker. Existing compiler support: place 4600 with wheels:<rim colour> assembles its two 4624 rims with black 3641 tyres; its plate underside at y=2 puts the tyres just above the ground. Other compatible real-world assemblies may require offsets or rotations this language cannot express.`;
+
+let assemblies: Map<string, string[]> | undefined;
+function assemblyEvidence() {
+  if (assemblies) return assemblies;
+  registerFullCatalogFromDisk();
+  const entries = fullCatalog() ?? [];
+  const named = new Map(entries.map(([ref, title]) => [ref, title]));
+  const candidates = entries
+    .filter(([ref, title]) => /c\d+\.dat$/.test(ref) && !/sticker/i.test(title))
+    .map(([ref]) => ref);
+  const sources = fullLibrarySources(candidates);
+  assemblies = new Map();
+  for (const ref of candidates.sort()) {
+    const source = sources[ref] ?? "";
+    if (!/^0 !LDRAW_ORG (?:Unofficial_)?Shortcut\b/m.test(source)) continue;
+    const children = directReferences(source).filter((child) =>
+      named.has(child),
+    );
+    if (children.length < 2 || children.length > 8) continue;
+    const evidence = `${ref}: ${named.get(ref)} [${children.map((child) => `${child}: ${named.get(child)}`).join("; ")}]`;
+    for (const child of children)
+      assemblies.set(child, [...(assemblies.get(child) ?? []), evidence]);
+  }
+  return assemblies;
+}
+
+/** Exact source extents and verified connector positions in the script frame. */
+export function partGeometryFacts(ref: string) {
+  try {
+    const b = localBounds(ref),
+      f = footprint(ref, 0),
+      bottom = underside(ref);
+    const round = (v: number) => Math.round(v * 1000) / 1000;
+    const point = (p: number[]) => [
+      round((p[0] - f.minX) / 20),
+      round((bottom - p[1]) / 8),
+      round((p[2] - f.minZ) / 20),
+    ];
+    const lo = point([b.min[0], b.max[1], b.min[2]]);
+    const hi = point([b.max[0], b.min[1], b.max[2]]);
+    const connectors = verifiedConnectors(ref);
+    const list = connectors
+      ?.slice(0, 16)
+      .map((c) => ({
+        kind:
+          c.kind === "pin"
+            ? "hinge-pin"
+            : c.kind === "socket"
+              ? "hinge-socket"
+              : c.kind,
+        at: point(c.p),
+        axis: [c.axis[0], -c.axis[1], c.axis[2]],
+      }));
+    return `geometry min=${JSON.stringify(lo)} max=${JSON.stringify(hi)}; physical extent in studs (x,y,z)=${JSON.stringify([round((b.max[0] - b.min[0]) / 20), round((b.max[1] - b.min[1]) / 20), round((b.max[2] - b.min[2]) / 20)])}; verified connectors=${connectors === null ? "unknown" : `${connectors.length} total, ${JSON.stringify(list)}${connectors.length > 16 ? " (first 16 only)" : ""}`}`;
+  } catch {
+    return "geometry and connectors unavailable";
+  }
+}
+
+export function partFacts(ref: string) {
+  const evidence = assemblyEvidence().get(ref)?.slice(0, 3) ?? [];
+  return (
+    partGeometryFacts(ref) +
+    (evidence.length
+      ? `; official shortcut assembly evidence: ${evidence.join(" | ")}`
+      : "; official shortcut assembly evidence: none indexed (not a compatibility verdict)")
+  );
+}

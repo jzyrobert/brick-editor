@@ -1,0 +1,231 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2291,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2291,
+    "difference": 291,
+    "percent": 14.6
+  },
+  "seconds": 839,
+  "tokens": {
+    "input": 1070695,
+    "cached": 843008,
+    "output": 99389,
+    "reasoning": 59896
+  },
+  "searches": 6,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "13547",
+      "2453b",
+      "3005",
+      "30055",
+      "3020",
+      "3022",
+      "3024",
+      "3062b",
+      "3070b",
+      "3307",
+      "3633",
+      "3665a",
+      "3941",
+      "3943b",
+      "3957a",
+      "3960",
+      "4032b",
+      "4589",
+      "60474",
+      "60598",
+      "6141",
+      "61678",
+      "87079",
+      "87081",
+      "90398",
+      "98138"
+    ],
+    "notInList": [
+      "90398"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 839,
+      "usage": {
+        "input": 1070695,
+        "cached": 843008,
+        "output": 99389,
+        "reasoning": 59896,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "bell",
+            "limit": 8
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609",
+            "30151b"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "inverted curved slope",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "24201",
+            "13547",
+            "70681",
+            "54091",
+            "32803",
+            "42023",
+            "11301",
+            "45410"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "1x4",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "61678",
+            "93273",
+            "13547",
+            "11153"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "minifigure statue",
+            "limit": 5
+          },
+          "results": [
+            "90398",
+            "93562",
+            "12890",
+            "35699",
+            "5785"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "dish",
+            "size": "6x6",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "44375b",
+            "21599",
+            "35327",
+            "38622"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "plate 2 x 4",
+            "size": "4x2",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 3
+          },
+          "results": [
+            "3020",
+            "41769a",
+            "41770a"
+          ],
+          "round": 4
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2821,
+          "errors": 49,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 2333,
+          "errors": 14,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 2228,
+          "errors": 1,
+          "ok": false
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "13547",
+          "2453b",
+          "3005",
+          "30055",
+          "3020",
+          "3022",
+          "3024",
+          "3062b",
+          "3070b",
+          "3307",
+          "3633",
+          "3665a",
+          "3941",
+          "3943b",
+          "3957a",
+          "3960",
+          "4032b",
+          "4589",
+          "60474",
+          "60598",
+          "6141",
+          "61678",
+          "87079",
+          "87081",
+          "90398",
+          "98138"
+        ],
+        "notInList": [
+          "90398"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2291
+    }
+  ]
+}

@@ -1,0 +1,275 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 2180,
+  "targetMiss": {
+    "target": 2000,
+    "parts": 2180,
+    "difference": 180,
+    "percent": 9
+  },
+  "seconds": 700,
+  "tokens": {
+    "input": 788378,
+    "cached": 566400,
+    "output": 72763,
+    "reasoning": 36713
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "2412b",
+      "2417",
+      "2423",
+      "3001",
+      "3003",
+      "3022",
+      "3185",
+      "3633",
+      "3660b",
+      "3941",
+      "3943b",
+      "3960",
+      "4032b",
+      "4589",
+      "4740",
+      "60474",
+      "6141",
+      "61678",
+      "87081"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 700,
+      "usage": {
+        "input": 788378,
+        "cached": 566400,
+        "output": 72763,
+        "reasoning": 36713,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "1x4",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "61678",
+            "93273",
+            "13547",
+            "11153"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "inverted slope",
+            "colour": "reddish brown",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "3665a",
+            "3660b",
+            "2449",
+            "3676",
+            "4287a",
+            "24201",
+            "3747b",
+            "13547"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "bell",
+            "limit": 6
+          },
+          "results": [
+            "3942c",
+            "3943b",
+            "30151a",
+            "6017",
+            "u608",
+            "u609"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "horn",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2142",
+            "89522",
+            "40379",
+            "1997",
+            "53451",
+            "11437"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "window lattice",
+            "limit": 6
+          },
+          "results": [
+            "60607",
+            "30046",
+            "2529",
+            "38320"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "statuette",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "90398"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "round brick 4",
+            "colour": "sand green",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "48092",
+            "15469",
+            "2577",
+            "49612",
+            "15588"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "dish",
+            "size": "6x6",
+            "colour": "pearl gold",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "44375b",
+            "21599",
+            "35327",
+            "38622"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "size": "2x3",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "24309",
+            "80177",
+            "80178"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "slope 33",
+            "colour": "dark bluish grey",
+            "available_in_colour": true,
+            "limit": 5
+          },
+          "results": [
+            "3300",
+            "4286",
+            "3298",
+            "3297",
+            "3299"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "ok": false,
+          "reason": "INVALID_INPUT: Invalid build script: $.sections[0].ops[0].colour must be a palette key, colour name or LDraw colour code; $.sections[2].ops[2].holes[0].at must be [x, z] integers (studs) (got [10,45,9])"
+        },
+        {
+          "round": 2,
+          "parts": 2142,
+          "errors": 7,
+          "ok": false
+        },
+        {
+          "round": 3,
+          "parts": 2180,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2412b",
+          "2417",
+          "2423",
+          "3001",
+          "3003",
+          "3022",
+          "3185",
+          "3633",
+          "3660b",
+          "3941",
+          "3943b",
+          "3960",
+          "4032b",
+          "4589",
+          "4740",
+          "60474",
+          "6141",
+          "61678",
+          "87081"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 2180
+    }
+  ]
+}

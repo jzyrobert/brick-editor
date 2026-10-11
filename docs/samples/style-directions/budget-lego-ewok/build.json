@@ -1,0 +1,1161 @@
+{
+ "buildScript": 1,
+ "title": "Forest Moon Surveyor • 1978",
+ "description": "An Ewok hide-wing survey glider rebuilt from blue-and-grey Classic Space hardware: amber navigation hood, timber landing skis, barrel rocket pods, a leafy drum radar and two Ewok explorers. A little acorn cargo rover carries the expedition's power barrel.",
+ "palette": {
+  "hull": "blue",
+  "metal": "light bluish grey",
+  "wood": "reddish brown",
+  "hide": "tan",
+  "glass": "trans yellow"
+ },
+ "defaults": {
+  "interior": "empty"
+ },
+ "sections": [
+  {
+   "name": "Timber landing skis and airframe",
+   "ops": [
+    {
+     "op": "floor",
+     "at": [
+      0,
+      0,
+      1
+     ],
+     "size": [
+      2,
+      18
+     ],
+     "colour": "wood"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      1,
+      3
+     ],
+     "size": [
+      2,
+      14
+     ],
+     "layers": 2,
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      0,
+      1,
+      1
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      0,
+      1,
+      17
+     ],
+     "colour": "wood",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      0,
+      3,
+      5
+     ],
+     "size": [
+      2,
+      4,
+      2
+     ],
+     "colour": "metal",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      0,
+      3,
+      14
+     ],
+     "size": [
+      2,
+      4,
+      2
+     ],
+     "colour": "metal",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      6,
+      0,
+      1
+     ],
+     "size": [
+      2,
+      18
+     ],
+     "colour": "wood"
+    },
+    {
+     "op": "floor",
+     "at": [
+      6,
+      1,
+      3
+     ],
+     "size": [
+      2,
+      14
+     ],
+     "layers": 2,
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      6,
+      1,
+      1
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      6,
+      1,
+      17
+     ],
+     "colour": "wood",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      3,
+      5
+     ],
+     "size": [
+      2,
+      4,
+      2
+     ],
+     "colour": "metal",
+     "interior": "solid"
+    },
+    {
+     "op": "box",
+     "at": [
+      6,
+      3,
+      14
+     ],
+     "size": [
+      2,
+      4,
+      2
+     ],
+     "colour": "metal",
+     "interior": "solid"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      7,
+      1
+     ],
+     "size": [
+      8,
+      18
+     ],
+     "colour": "metal"
+    },
+    {
+     "op": "box",
+     "at": [
+      1,
+      8,
+      2
+     ],
+     "size": [
+      6,
+      3,
+      16
+     ],
+     "colour": "hull"
+    },
+    {
+     "op": "floor",
+     "at": [
+      0,
+      11,
+      10
+     ],
+     "size": [
+      8,
+      9
+     ],
+     "colour": "metal",
+     "top": "tile"
+    },
+    {
+     "op": "wall",
+     "from": [
+      0,
+      11
+     ],
+     "to": [
+      0,
+      18
+     ],
+     "y": 12,
+     "height": 3,
+     "colour": "wood",
+     "texture": "log"
+    },
+    {
+     "op": "wall",
+     "from": [
+      7,
+      11
+     ],
+     "to": [
+      7,
+      18
+     ],
+     "y": 12,
+     "height": 3,
+     "colour": "wood",
+     "texture": "log"
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      0,
+      8,
+      1
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3660b",
+     "at": [
+      6,
+      8,
+      1
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "3004p90",
+     "at": [
+      0,
+      8,
+      7
+     ],
+     "colour": "hull",
+     "turn": 90
+    },
+    {
+     "op": "place",
+     "part": "3004p90",
+     "at": [
+      7,
+      8,
+      7
+     ],
+     "colour": "hull",
+     "turn": 270
+    },
+    {
+     "op": "place",
+     "part": "6091",
+     "at": [
+      0,
+      8,
+      3
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6091",
+     "at": [
+      7,
+      8,
+      3
+     ],
+     "colour": "hull",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Amber navigation hood",
+   "ops": [
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      1,
+      8,
+      -1
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298p90",
+     "at": [
+      3,
+      8,
+      -1
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3298",
+     "at": [
+      5,
+      8,
+      -1
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4474",
+     "at": [
+      2,
+      11,
+      3
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      1,
+      11,
+      3
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      1,
+      11,
+      5
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      1,
+      11,
+      7
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      6,
+      11,
+      3
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      6,
+      11,
+      5
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "11477",
+     "at": [
+      6,
+      11,
+      7
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3039p15",
+     "at": [
+      3,
+      12,
+      10
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      1,
+      11,
+      1
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      6,
+      11,
+      1
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      1,
+      11,
+      18
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "place",
+     "part": "15068",
+     "at": [
+      5,
+      11,
+      18
+     ],
+     "colour": "hull",
+     "turn": 180
+    },
+    {
+     "op": "box",
+     "at": [
+      2,
+      12,
+      16
+     ],
+     "size": [
+      4,
+      3,
+      2
+     ],
+     "colour": "hull",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "2412b",
+     "at": [
+      3,
+      15,
+      16
+     ],
+     "colour": "metal",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Hide sails on blue space wings",
+   "ops": [
+    {
+     "op": "place",
+     "part": "30355",
+     "at": [
+      -6,
+      9,
+      4
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "48208",
+     "at": [
+      -4,
+      10,
+      9
+     ],
+     "colour": "hide",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      -6,
+      10,
+      15
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6636",
+     "at": [
+      -6,
+      11,
+      15
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      -4,
+      11,
+      13
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      -4,
+      12,
+      13
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      -3,
+      11,
+      11
+     ],
+     "colour": "dark tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      -6,
+      10,
+      14
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "30356",
+     "at": [
+      8,
+      9,
+      4
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "48205",
+     "at": [
+      9,
+      10,
+      9
+     ],
+     "colour": "hide",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3666",
+     "at": [
+      8,
+      10,
+      15
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6636",
+     "at": [
+      8,
+      11,
+      15
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3710",
+     "at": [
+      9,
+      11,
+      13
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2431",
+     "at": [
+      9,
+      12,
+      13
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3069b",
+     "at": [
+      10,
+      11,
+      11
+     ],
+     "colour": "dark tan",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "54200",
+     "at": [
+      13,
+      10,
+      14
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3832",
+     "at": [
+      -6,
+      8,
+      12
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3832",
+     "at": [
+      4,
+      8,
+      12
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "floor",
+     "at": [
+      -6,
+      8,
+      16
+     ],
+     "size": [
+      20,
+      2
+     ],
+     "layers": 2,
+     "colour": "wood",
+     "top": "tile"
+    },
+    {
+     "op": "place",
+     "part": "3957a",
+     "at": [
+      13,
+      10,
+      12
+     ],
+     "colour": "white",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Barrel rocket pods",
+   "ops": [
+    {
+     "op": "place",
+     "part": "3943b",
+     "at": [
+      -6,
+      2,
+      16
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4424",
+     "at": [
+      -6,
+      10,
+      16
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "60474",
+     "at": [
+      -6,
+      16,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3943b",
+     "at": [
+      -6,
+      17,
+      16
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      -5,
+      23,
+      17
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      -5,
+      24,
+      17
+     ],
+     "colour": "trans yellow",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3943b",
+     "at": [
+      10,
+      2,
+      16
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4424",
+     "at": [
+      10,
+      10,
+      16
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "60474",
+     "at": [
+      10,
+      16,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3943b",
+     "at": [
+      10,
+      17,
+      16
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      11,
+      23,
+      17
+     ],
+     "colour": "trans red",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "6141",
+     "at": [
+      11,
+      24,
+      17
+     ],
+     "colour": "trans yellow",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Leafy drum radar and aft cargo",
+   "ops": [
+    {
+     "op": "column",
+     "at": [
+      -1,
+      15,
+      16
+     ],
+     "height": 8,
+     "diameter": 2,
+     "colour": "wood"
+    },
+    {
+     "op": "place",
+     "part": "2417",
+     "at": [
+      -3,
+      23,
+      14
+     ],
+     "colour": "dark green",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3960",
+     "at": [
+      -2,
+      24,
+      15
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      -1,
+      26,
+      16
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4589",
+     "at": [
+      0,
+      27,
+      17
+     ],
+     "colour": "white",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2489",
+     "at": [
+      4,
+      12,
+      16
+     ],
+     "colour": "dark brown",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      4,
+      17,
+      16
+     ],
+     "colour": "metal",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Ewok flight commander",
+   "ops": [
+    {
+     "op": "place",
+     "part": "41879a",
+     "at": [
+      2,
+      12,
+      13
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "76382p6g",
+     "at": [
+      2,
+      16,
+      13
+     ],
+     "colour": "blue",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "64805",
+     "at": [
+      2,
+      23,
+      13
+     ],
+     "colour": "wood",
+     "turn": 0
+    }
+   ]
+  },
+  {
+   "name": "Acorn expedition rover",
+   "ops": [
+    {
+     "op": "place",
+     "part": "4600",
+     "at": [
+      20,
+      2,
+      5
+     ],
+     "colour": "metal",
+     "wheels": "metal"
+    },
+    {
+     "op": "place",
+     "part": "4600",
+     "at": [
+      20,
+      2,
+      10
+     ],
+     "colour": "metal",
+     "wheels": "metal"
+    },
+    {
+     "op": "floor",
+     "at": [
+      20,
+      3,
+      5
+     ],
+     "size": [
+      2,
+      7
+     ],
+     "layers": 2,
+     "colour": "metal"
+    },
+    {
+     "op": "floor",
+     "at": [
+      19,
+      5,
+      5
+     ],
+     "size": [
+      4,
+      7
+     ],
+     "layers": 2,
+     "colour": "metal"
+    },
+    {
+     "op": "box",
+     "at": [
+      19,
+      7,
+      7
+     ],
+     "size": [
+      4,
+      3,
+      5
+     ],
+     "colour": "wood",
+     "open": [
+      "top"
+     ]
+    },
+    {
+     "op": "place",
+     "part": "3298p90",
+     "at": [
+      20,
+      7,
+      4
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "2489",
+     "at": [
+      20,
+      7,
+      10
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      20,
+      12,
+      10
+     ],
+     "colour": "hull",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "3941",
+     "at": [
+      20,
+      13,
+      10
+     ],
+     "colour": "glass",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "4740",
+     "at": [
+      20,
+      16,
+      10
+     ],
+     "colour": "metal",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "41879a",
+     "at": [
+      20,
+      7,
+      7
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "76382p3z",
+     "at": [
+      20,
+      11,
+      7
+     ],
+     "colour": "wood",
+     "turn": 0
+    },
+    {
+     "op": "place",
+     "part": "64805",
+     "at": [
+      20,
+      18,
+      7
+     ],
+     "colour": "wood",
+     "turn": 0
+    }
+   ]
+  }
+ ]
+}

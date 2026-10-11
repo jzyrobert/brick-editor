@@ -1,0 +1,312 @@
+{
+  "brief": "a japanese buddhist temple",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "attempts": 5,
+  "prompt": "build-agent-diorama.md",
+  "replyPrompt": "brick-build-syntax.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 2000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 1907,
+      "targetMiss": {
+        "target": 2000,
+        "parts": 1907,
+        "difference": -93,
+        "percent": -4.6
+      },
+      "seconds": 790,
+      "tokens": {
+        "input": 798136,
+        "cached": 593152,
+        "output": 82605,
+        "reasoning": 44499
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "15068",
+          "2412b",
+          "2417",
+          "2423",
+          "2453b",
+          "24866",
+          "3001",
+          "3003",
+          "3004",
+          "3005",
+          "3022",
+          "3023b",
+          "3039",
+          "3045",
+          "3069b",
+          "3307",
+          "3626c",
+          "3633",
+          "3659",
+          "3665a",
+          "3678b",
+          "3941",
+          "3943b",
+          "3957a",
+          "4032b",
+          "41879a",
+          "4589",
+          "60474",
+          "6140",
+          "87081",
+          "90398",
+          "973"
+        ],
+        "notInList": [
+          "3626c",
+          "41879a",
+          "6140",
+          "90398",
+          "973"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 790,
+          "usage": {
+            "input": 798136,
+            "cached": 593152,
+            "output": 82605,
+            "reasoning": 44499,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "slope curved",
+                "colour": "dark bluish grey",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "11477",
+                "15068",
+                "61678",
+                "50950",
+                "93273",
+                "88930",
+                "24309",
+                "24201"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "inverted slope curved",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "32803",
+                "42023"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "minifig bell",
+                "limit": 6
+              },
+              "results": [
+                "25613"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "minifig statue",
+                "limit": 5
+              },
+              "results": [
+                "90398"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "plant leaves",
+                "colour": "dark green",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "2423",
+                "2417",
+                "32607",
+                "10884"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "minifig torso plain",
+                "colour": "dark orange",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "4079",
+                "973",
+                "30375"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig legs",
+                "colour": "dark tan",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "41879a"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig head",
+                "colour": "yellow",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "3626c",
+                "28621",
+                "3626b"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "dish",
+                "size": "6x6",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "44375b",
+                "21599",
+                "35327"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "bar",
+                "size": "6x1",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 3
+              },
+              "results": [
+                "6140"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[3].ops[56].holes[0].at must be [x, z] integers (studs) (got [22,35,26]); $.sections[3].ops[57].holes[0].at must be [x, z] integers (studs) (got [22,36,26]); $.sections[4].ops[7].holes[0].at must be [x, z] integers (studs) (got [25,51,27]); $.sections[5].ops[6].holes[0].at must be [x, z] integers (studs) (got [6,25,31])"
+            },
+            {
+              "round": 2,
+              "parts": 1770,
+              "errors": 7,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 1907,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "13547",
+              "15068",
+              "2412b",
+              "2417",
+              "2423",
+              "2453b",
+              "24866",
+              "3001",
+              "3003",
+              "3004",
+              "3005",
+              "3022",
+              "3023b",
+              "3039",
+              "3045",
+              "3069b",
+              "3307",
+              "3626c",
+              "3633",
+              "3659",
+              "3665a",
+              "3678b",
+              "3941",
+              "3943b",
+              "3957a",
+              "4032b",
+              "41879a",
+              "4589",
+              "60474",
+              "6140",
+              "87081",
+              "90398",
+              "973"
+            ],
+            "notInList": [
+              "3626c",
+              "41879a",
+              "6140",
+              "90398",
+              "973"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 1907
+        }
+      ]
+    }
+  ]
+}

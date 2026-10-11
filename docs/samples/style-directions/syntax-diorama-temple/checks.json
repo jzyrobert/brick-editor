@@ -1,0 +1,17 @@
+[
+  {
+    "attempt": 1,
+    "check": 1,
+    "feedback": "Check 1 of 3: the code did not compile. INVALID_INPUT: Invalid build script: $.sections[3].ops[56].holes[0].at must be [x, z] integers (studs) (got [22,35,26]); $.sections[3].ops[57].holes[0].at must be [x, z] integers (studs) (got [22,36,26]); $.sections[4].ops[7].holes[0].at must be [x, z] integers (studs) (got [25,51,27]); $.sections[5].ops[6].holes[0].at must be [x, z] integers (studs) (got [6,25,31])\n"
+  },
+  {
+    "attempt": 1,
+    "check": 2,
+    "feedback": "Check 2 of 3: the code compiled to 1,770 parts (target 2,000: \u2212230, \u221211.5%). Sections: Stone platform and timber prayer hall 802, Upper sanctuary and lifted tiled roof 276, Open bell pavilion 222, Connected display and lotus stream 214, Raked garden and cloud pine 166, Arched bridge and ascent 90.\nErrors (7):\n- overlap: 2412b Tile 1 \u00d7 2 Grille placed at [12, 4, 10] and 15068 Curved Slope 2 \u00d7 2 placed at [12, 4, 10] overlap where their bodies meet: x 12\u201313, y 4\u20135, z 10\u201312 [sections[2].ops[23] (code line 8), sections[2].ops[39] (code line 8)]\n- overlap: 6140 Bar 1 \u00d7 6 with Studs Closed placed at [5, 18, 30] and 3941 Round Brick 2 \u00d7 2 placed at [4, 16, 29] overlap where their bodies meet: x 5\u20136, y 18\u201319, z 30\u201331 (2 pairs like this) [sections[5].ops[13] (code line 11), sections[5].ops[2] (code line 11)]\n- overlap: 3062b Round Brick 1 \u00d7 1 placed at [5, 21, 30] and 3941 Round Brick 2 \u00d7 2 placed at [4, 19, 29] overlap where their bodies meet: x 5\u20136, y 21\u201322, z 30\u201331 (2 pairs like this) [sections[5].ops[14] (code line 11), sections[5].ops[2] (code line 11)]\n- overlap: 6141 Round Plate 1 \u00d7 1 placed at [5, 24, 30] and 3941 Round Brick 2 \u00d7 2 placed at [4, 22, 29] overlap where their bodies meet: x 5\u20136, y 24\u201325, z 30\u201331 [sections[5].ops[14] (code line 11), sections[5].ops[2] (code line 11)]\n- overlap: 41879a Minifig Hips and Legs Short without Hole placed at [12, 7, 30] and 3941 Round Brick 2 \u00d7 2 placed at [12, 7, 29] overlap where their bodies meet: x 12\u201313, y 7\u201310, z 30\u201331 (2 pairs like this) [sections[5].ops[17].ops[0] (code line 4), sections[5].ops[3] (code line 11)]\n- overlap: 973 Minifig Torso placed at [12, 11, 30] and 3941 Round Brick 2 \u00d7 2 placed at [12, 10, 29] overlap where their bodies meet: x 12\u201313, y 11\u201313, z 30\u201331 (2 pairs like this) [sections[5].ops[17].ops[1] (code line 4), sections[5].ops[3] (code line 11)]\n- overlap: 3626c Minifig Head with Hollow Stud placed at [12, 17, 31] and 3941 Round Brick 2 \u00d7 2 placed at [12, 16, 29] overlap where their bodies meet: x 12\u201313, y 17\u201319, z 31\u201331 (2 pairs like this) [sections[5].ops[17].ops[2] (code line 4), sections[5].ops[3] (code line 11)]\n"
+  },
+  {
+    "attempt": 1,
+    "check": 3,
+    "feedback": "Check 3 of 3: the code compiled to 1,907 parts (target 2,000: \u221293, \u22124.6%). Sections: Stone platform and timber prayer hall 857, Open bell pavilion 281, Upper sanctuary and lifted tiled roof 276, Connected display and lotus stream 238, Raked garden and cloud pine 165, Arched bridge and ascent 90.\nNo errors: as an answer it would be accepted.\n"
+  }
+]

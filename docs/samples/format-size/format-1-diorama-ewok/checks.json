@@ -1,0 +1,17 @@
+[
+  {
+    "attempt": 1,
+    "check": 1,
+    "feedback": "Check 1 of 3: the code did not compile. INVALID_INPUT: Invalid build script: $.sections[3].ops[11].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"tan\",\"dark tan\"]})\n"
+  },
+  {
+    "attempt": 1,
+    "check": 2,
+    "feedback": "Check 2 of 3: the code compiled to 1,150 parts. Sections: Living launch towers 423, Platforms, launch stairs and rope bridge 272, Moonstone and moss 229, Thatch-roof tracking hut 152, Launch-day activity 74.\nErrors (3):\n- overlap: 30176 Plant 1 \u00d7 1 Bamboo placed at [36, 4, 27] (its body reaches x 35\u201338, z 25.5\u201329.5, past its footprint) and 3004 Brick 1 \u00d7 2 placed at [34, 4, 28] overlap where their bodies meet: x 35\u201336, y 4\u20137, z 28\u201329 (2 pairs like this) [sections[0].ops[25] (code line 2), sections[1].ops[8] (code line 32)]\n- overlap: 50950 Curved Slope 3 \u00d7 1 placed at [25, 11, 14] and 3020 Plate 2 \u00d7 4 placed at [22, 11, 15] overlap where their bodies meet: x 25\u201326, y 11\u201312, z 15\u201317 [sections[4].ops[0] > components.Leafwing explorer.ops[22] (code line 2), sections[4].ops[0] > components.Leafwing explorer.ops[35] (code line 2)]\n- overlap: 50950 Curved Slope 3 \u00d7 1 placed at [30, 11, 14] and 3020 Plate 2 \u00d7 4 placed at [30, 11, 15] overlap where their bodies meet: x 30\u201331, y 11\u201312, z 15\u201317 [sections[4].ops[0] > components.Leafwing explorer.ops[23] (code line 2), sections[4].ops[0] > components.Leafwing explorer.ops[36] (code line 2)]\n"
+  },
+  {
+    "attempt": 1,
+    "check": 3,
+    "feedback": "Check 3 of 3: the code compiled to 1,169 parts. Sections: Living launch towers 423, Platforms, launch stairs and rope bridge 286, Moonstone and moss 234, Thatch-roof tracking hut 152, Launch-day activity 74.\nNo errors: as an answer it would be accepted.\n"
+  }
+]

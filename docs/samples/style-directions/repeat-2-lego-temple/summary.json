@@ -1,0 +1,302 @@
+{
+  "brief": "a japanese buddhist temple",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 2000,
+  "attempts": 5,
+  "prompt": "build-agent.md",
+  "replyPrompt": "brick-build.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "partFactsEnabled": false,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 2000,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 2234,
+      "targetMiss": {
+        "target": 2000,
+        "parts": 2234,
+        "difference": 234,
+        "percent": 11.7
+      },
+      "seconds": 1312,
+      "tokens": {
+        "input": 841283,
+        "cached": 631808,
+        "output": 109978,
+        "reasoning": 70853
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "2417",
+          "2423",
+          "24866",
+          "3009",
+          "3045",
+          "3062b",
+          "3069b",
+          "3626c",
+          "3633",
+          "3660b",
+          "3665a",
+          "3675",
+          "3941",
+          "3942c",
+          "3943b",
+          "3960",
+          "4032b",
+          "4589",
+          "4740",
+          "54200",
+          "60598",
+          "61678",
+          "87081",
+          "98138"
+        ],
+        "notInList": [
+          "3626c",
+          "3675"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 1312,
+          "usage": {
+            "input": 841283,
+            "cached": 631808,
+            "output": 109978,
+            "reasoning": 70853,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "inverted curved slope",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 10
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023",
+                "11301",
+                "73682",
+                "41764",
+                "41765"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "1x4",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "61678",
+                "93273",
+                "13547",
+                "3573",
+                "11153"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bar fence",
+                "colour": "reddish brown",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "95229",
+                "42448",
+                "98460"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bell",
+                "limit": 8
+              },
+              "results": [
+                "3942c",
+                "3943b",
+                "30151a",
+                "6017",
+                "u608",
+                "u609",
+                "30151b"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "lotus",
+                "limit": 8
+              },
+              "results": [
+                "76382pne",
+                "973pne"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope corner",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 12
+              },
+              "results": [
+                "77180",
+                "77182",
+                "73682"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Slope 33 Double Convex",
+                "colour": "dark bluish grey",
+                "available_in_colour": true,
+                "limit": 5
+              },
+              "results": [
+                "3675"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "minifig head",
+                "colour": "pearl gold",
+                "available_in_colour": true,
+                "limit": 4
+              },
+              "results": [
+                "3626c",
+                "28621",
+                "30480",
+                "6947"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "chain",
+                "colour": "black",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "88323",
+                "14696",
+                "57518",
+                "3711",
+                "3873",
+                "273"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "leaf",
+                "colour": "dark orange",
+                "available_in_colour": true,
+                "limit": 6
+              },
+              "results": [
+                "19203p01"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "parts": 2802,
+              "errors": 11,
+              "ok": false
+            },
+            {
+              "round": 2,
+              "parts": 2719,
+              "errors": 0,
+              "ok": true
+            },
+            {
+              "round": 3,
+              "parts": 2536,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "13547",
+              "2417",
+              "2423",
+              "24866",
+              "3009",
+              "3045",
+              "3062b",
+              "3069b",
+              "3626c",
+              "3633",
+              "3660b",
+              "3665a",
+              "3675",
+              "3941",
+              "3942c",
+              "3943b",
+              "3960",
+              "4032b",
+              "4589",
+              "4740",
+              "54200",
+              "60598",
+              "61678",
+              "87081",
+              "98138"
+            ],
+            "notInList": [
+              "3626c",
+              "3675"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 2234
+        }
+      ]
+    }
+  ]
+}

@@ -8,3 +8,13 @@ public/thumbnails/** -text -whitespace
 fixtures/instructions/omr/*.mpd -text -whitespace
 # Preserve exact model inputs, including the runner's final blank separator.
 docs/samples/lego-style-study/fresh-e/*/prompt.md -text whitespace=-blank-at-eof
+docs/samples/lego-style-study/diorama/sol-*/prompt.md -text whitespace=-blank-at-eof
+docs/samples/style-self-improvement/round-*/*/prompt.md -text whitespace=-blank-at-eof
+
+# Preserve exact filled experimental model inputs.
+docs/samples/style-directions/*/prompt.md -text whitespace=-blank-at-eof
+
+docs/samples/format-size/*/prompt.md -text whitespace=-blank-at-eof
+
+# Preserve the supplied sizing summary byte-for-byte, including Markdown hard breaks.
+docs/samples/format-size/supplied-piece-count-summary.md -text whitespace=-blank-at-eol
