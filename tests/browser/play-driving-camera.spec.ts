@@ -80,7 +80,7 @@ for (const [width, height] of [
       await page.evaluate(async () => {
         const play = window.brickEditor!.play;
         await play.setInput({ moveZ: 1, moveX: -1 });
-        await play.stepTicks(150);
+        await play.stepTicks(450);
       });
       await page.screenshot({ path: test.info().outputPath("driving.png") });
       const driven = await camera();
@@ -97,7 +97,7 @@ for (const [width, height] of [
           Math.atan2(Math.sin(bearing - heading), Math.cos(bearing - heading)),
         ),
       ).toBeLessThan(0.35);
-      expect(heading).toBeGreaterThan(2);
+      expect(heading).toBeGreaterThan(Math.PI);
       expect(errors).toEqual([]);
     } finally {
       await context.close();
