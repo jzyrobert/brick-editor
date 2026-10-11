@@ -346,7 +346,7 @@ it("seated relative look wraps correctly across zero and a negative chassis head
     }
   }
 });
-it("seated chase frames torso from above a shoulder, preserves first-person eye and respects own backrest", async () => {
+it("seated chase stays centered above the torso without zooming for its own backrest and preserves the first-person eye", async () => {
   for (const tallBackrest of [false, true]) {
     const project = openBenchFixture();
     if (tallBackrest) {
@@ -379,15 +379,10 @@ it("seated chase frames torso from above a shoulder, preserves first-person eye 
       // 30 LDU over the pelvis: the minifig's chest.
       expect(chase.target[1]).toBeCloseTo(-76.5, 5);
       expect(chase.target[2]).toBeCloseTo(-198, 5);
-      expect(chase.position[0]).toBeLessThan(-5);
+      expect(chase.position[0]).toBeCloseTo(chase.target[0], 8);
       expect(chase.position[1]).toBeLessThan(chase.target[1] - 15);
-      if (tallBackrest) {
-        expect(arm).toBeLessThan(65);
-        expect(chase.position[2]).toBeLessThan(-168);
-      } else {
-        expect(arm).toBeCloseTo(PLAY_CAMERA_DEFAULTS.followDistance, 4);
-        expect(play.snapshot().avatarVisible).toBe(false);
-      }
+      expect(arm).toBeCloseTo(PLAY_CAMERA_DEFAULTS.followDistance, 4);
+      expect(play.snapshot().avatarVisible).toBe(false);
       const restore = play.beginCameraCapture(10);
       expect(
         Math.hypot(

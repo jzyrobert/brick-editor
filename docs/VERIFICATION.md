@@ -832,6 +832,40 @@ Browser tests exercise a 200-part UI fill, command recolour/undo, native round t
 
 The first conformance run exposed a real loader integration failure: `s/` subparts were being rewritten to unresolved paths, and the loader returned empty groups after swallowing errors. The final adapter supplies an explicit embedded file map, checks for failed dependency attempts and rejects empty official prototypes. A separate material-cache issue was fixed by compiling colour directives in the same loader instance as the geometry. No placeholder cuboids stand in for the audited starter parts.
 
+## Walking and driving cameras — 10 October 2026
+
+- All **203 Play unit tests in 35 files** pass. New regressions cover subtle
+  distance-driven bob, deterministic replay/interpolation, release and wall
+  settling, steady flight/third-person walking, constant chase distance through
+  full steering circles and yaw wrapping, manual orbit/recentering, reverse,
+  and foreign-wall retraction/recovery at four viewport aspects.
+- **17 focused production-browser tests pass**, using a private preview on port
+  4391 and one worker: `play-driving-camera`, `play-orbit`, `play-seats` and
+  `play-strafe`. The new chase checks run at 1080×1800, 360×600, 411×685, 390×844,
+  686×411 and 1440×1000. Existing tests drive the real jeep through fifteen
+  seconds of steering, seat/drive/exit the roadster, and preserve seat and
+  keyboard/touch movement behavior. Selected portrait/landscape and jeep
+  screenshots were inspected; the nearby fixture panel shows no clipping.
+- TypeScript, the production build and repository formatting checks pass.
+
+These are Chromium/SwiftShader checks. They do not establish physical-phone
+motion comfort or reproduce the separately reported nearby-block artifacts;
+the affected model/look and a visual example remain needed for that issue.
+
+### Current-main integration — 11 October 2026
+
+The camera fixes are also applied to the current vehicle-possession route,
+including native/source-derived cars and player scaling. Its camera caches a
+chassis-local enclosing sphere, follows the actual chassis heading through a
+damped turn, and uses the normal Play near plane. This removes pose-dependent
+refitting and the excessive depth-range ratio on the driving camera.
+
+The 29 targeted unit regressions pass across walking bob, both driving routes,
+seat entry, possession/exit, and six-size vehicle framing. The original
+nearby-block artifact report has not been visually reproduced; the near-plane
+correction addresses a concrete depth-precision issue, with confirmation on
+the user's affected model still pending.
+
 ## Running the browser suite
 
 The browser tests are independent (each gets a fresh browser context) and run in parallel. `playwright.config.ts` splits them into three projects:

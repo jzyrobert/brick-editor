@@ -123,6 +123,17 @@ export function smoothDampAngle(
 }
 /** Presentation smoothing of the feet height while walking (seconds). */
 export const RIDE_SMOOTH_TIME = 0.18;
+/** Small first-person stride motion, in LDU. Shared gait phase keeps it tied
+ * to actual travel; the swing envelope settles when stopped or blocked. */
+export function walkCameraBob(motion: AvatarMotionState) {
+  // Ignore the capsule's tiny contact-correction creep against a wall.
+  const amount =
+    Math.max(0, motion.amount - 0.005) * (1 - motion.air) * (1 - motion.fly);
+  return {
+    sideways: Math.sin(motion.phase) * amount * 0.8,
+    down: Math.abs(Math.cos(motion.phase)) * amount * 1.4,
+  };
+}
 /** Critically damped spring toward a value (Game Programming Gems 4, 1.10). */
 export function smoothDamp(
   current: number,

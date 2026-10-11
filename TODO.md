@@ -75,6 +75,8 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Play
 
+- [ ] Reproduce the reported nearby-block artifacts while driving with the affected model, rendering look and a screenshot; camera pumping and the driving depth-precision issue are corrected, but the original visual report remains unverified.
+
 - [x] Player size: explore micro-scale and giant builds at ¼×–8× a minifigure (figure, collider, eye, steps, jumps, speeds, reach and camera scale; the world does not), with a plain-words suggestion from doors, figures and build height ([player size](docs/PLAY-PHYSICS.md#player-size)).
 - [ ] Player size: measure a Giant (8×) explorer in the biggest builds on phone hardware; a bigger capsule overlaps more triangles per query (desktop SwiftShader p90 38 ms per tick in the Market town under load). Seats and train cabs stay minifigure-only.
 - [ ] Complete the active 5540/42042/42043 systems work: source-owned moving case/rotor components, retained selector routing, native bevel/worm/differential load and backdrive, removable contact-supported accessories, suspension/steering, tracked drives, winch ropes and pneumatic cylinders/hoses. Reviewed profiles, exact source hardware/flexible ownership, native pressure and source-bound pneumatic routing are foundations; whole-model runtime acceptance and mobile verification remain open.

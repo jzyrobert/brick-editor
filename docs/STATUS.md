@@ -399,6 +399,25 @@ the [artifact policy](reports/instruction-generation/README.md#local-artifacts).
 
 This report distinguishes working implementation from the full specification. The delivered scope is a usable core editor with selected later editing/reliability features. **It is not a supported full P0 release, with basic M4 exploration now implemented independently. Selected M4 publishing, the M5 kinematic-mechanism scope and a first M6 dynamic-physics slice are also implemented. The full roadmap remains incomplete.**
 
+## Walking and driving cameras — 10 October 2026
+
+First-person walking now has a subtle, interpolated stride bob that settles on
+release or against a wall. Seated third person uses a centered, damped chase view,
+returns behind the moving car after manual look, and excludes its own vehicle
+from the camera sweep to prevent self-collision zoom pumping. Vehicle possession
+uses a fixed chassis-local framing sphere and the normal Play near plane; turns
+no longer refit the distance, and smooth follow uses the actual chassis heading.
+Included walls and
+foreign rigs still shorten the arm; rider and vehicle collision are unchanged.
+
+Unit regressions cover deterministic bob, stop/block settling, flight/third-person
+isolation, complete driving circles, yaw wrapping, parked manual orbit, forward
+and reverse follow, and wall retraction/recovery at phone and desktop aspects.
+Production-browser evidence is recorded in [verification](VERIFICATION.md).
+The excessively small driving near plane has been corrected as a likely source
+of nearby-block depth artifacts. The original report still needs an affected
+model/look and visual example to verify that it resolves that particular issue.
+
 ## Cream Gallery and Play workshop — 3 October 2026
 
 The approved cream design is implemented in the production React app. Gallery

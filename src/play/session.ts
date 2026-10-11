@@ -29,9 +29,13 @@ import { PlayVehicleWorld } from "./vehicle-world";
 import { sessionGroundY } from "./session-ground";
 import {
   mechanismViewGeometry,
-  mechanismOverviewCamera,
   type MechanismViewGeometry,
 } from "./mechanism-view";
+import {
+  vehicleCameraBounds,
+  vehicleChaseCamera,
+  type VehicleCameraBounds,
+} from "./vehicle-camera";
 import { vehicleExitCandidates } from "./vehicle-possession";
 import {
   compactCollisionMesh,
@@ -80,6 +84,8 @@ import {
   flyBob,
   RIDE_SMOOTH_TIME,
   smoothDamp,
+  smoothDampAngle,
+  walkCameraBob,
   headAngles,
   orbitHead,
   initialMotion,
@@ -218,6 +224,10 @@ export class PlaySession {
     localLookYaw: number;
     localLookPitch: number;
     previousCamera: PlayCameraMode;
+    cameraYaw: number;
+    cameraVelocity: number;
+    lookHold: number;
+    cameraExcluded: Set<number>;
   };
   private controlledVehicle?: {
     rigId: string;
@@ -226,6 +236,10 @@ export class PlaySession {
     previousCamera: PlayCameraMode;
     previousPitch: number;
     heading: number;
+    bounds: VehicleCameraBounds;
+    cameraYaw: number;
+    cameraVelocity: number;
+    lookHold: number;
     zoom: number;
   };
   private vehicleViews = new Map<
@@ -1251,10 +1265,18 @@ export class PlaySession {
       previousCamera: this.cameraMode,
       previousPitch: this.pitch,
       heading,
+      bounds: vehicleCameraBounds(
+        view.geometry,
+        state.groupFrames,
+        state.groupFrames[view.chassisGroup],
+      ),
+      cameraYaw: heading,
+      cameraVelocity: 0,
+      lookHold: 0,
       zoom: 1,
     };
     this.cameraMode = "third-person";
-    this.yaw = heading + Math.PI / 5;
+    this.yaw = heading;
     this.pitch = Math.PI / 7;
     this.support = undefined;
     this.inheritedVelocity = [0, 0, 0];
@@ -1319,6 +1341,23 @@ export class PlaySession {
     const heading = seatYaw(frame);
     this.yaw += wrapAngle(heading - control.heading);
     control.heading = heading;
+    control.lookHold = Math.max(0, control.lookHold - DT);
+    if (
+      control.lookHold === 0 &&
+      Math.hypot(
+        frame.position[0] - this.feet[0],
+        frame.position[2] - this.feet[2],
+      ) > 0.01
+    )
+      this.yaw = heading + wrapAngle(this.yaw - heading) * Math.exp(-4 * DT);
+    const spring = smoothDampAngle(
+      control.cameraYaw,
+      this.yaw,
+      control.cameraVelocity,
+      0.18,
+      DT,
+    );
+    [control.cameraYaw, control.cameraVelocity] = spring;
     this.feet = [...frame.position];
     this.velocity = [0, 0, 0];
     this.grounded = false;
@@ -1517,7 +1556,7 @@ export class PlaySession {
     return { ...result };
   }
   enterVehicle(request: PlaySeatRequest) {
-    const { placement } = this.seatEntry(request);
+    const { info, placement } = this.seatEntry(request);
     this.clearInput();
     this.occupied = {
       request: { ...request },
@@ -1525,6 +1564,20 @@ export class PlaySession {
       localLookYaw: 0,
       localLookPitch: this.pitch,
       previousCamera: this.cameraMode,
+      cameraYaw: seatYaw(placement.pelvisFrame),
+      cameraVelocity: 0,
+      lookHold: 0,
+      cameraExcluded: new Set([
+        ...info.source.project.motionRigs[request.rigId].groups.flatMap(
+          (group) => {
+            const collider = this.mechanisms
+              .get(request.rigId)
+              ?.proxyCollider(group.id);
+            return collider ? [collider.handle] : [];
+          },
+        ),
+        ...(this.dynamics?.rig(request.rigId)?.mirrorBodies().keys() ?? []),
+      ]),
     };
     this.cameraMode = "third-person";
     this.support = undefined;
@@ -1709,6 +1762,11 @@ export class PlaySession {
       this.yaw = ((input.yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     if (input.pitch !== undefined) this.pitch = this.clampPitch(input.pitch);
     if (this.controlledVehicle) {
+      if (input.yaw !== undefined) {
+        this.controlledVehicle.cameraYaw = this.yaw;
+        this.controlledVehicle.cameraVelocity = 0;
+        this.controlledVehicle.lookHold = 1.25;
+      }
       this.rigTarget(this.controlledVehicle.rigId).rig.setVehicleInput({
         throttle: input.moveZ ?? 0,
         steering: -(input.moveX ?? 0),
@@ -1727,6 +1785,11 @@ export class PlaySession {
         Math.cos(this.yaw - this.heading),
       );
       this.occupied.localLookPitch = this.pitch;
+      if (input.yaw !== undefined) {
+        this.occupied.cameraYaw = this.yaw;
+        this.occupied.cameraVelocity = 0;
+        this.occupied.lookHold = 1.25;
+      }
       this.rigTarget(this.occupied.request.rigId).rig.setVehicleInput({
         throttle: input.moveZ ?? 0,
         steering: -(input.moveX ?? 0),
@@ -2012,6 +2075,7 @@ export class PlaySession {
   }
   private step() {
     this.previousMotion = this.motion;
+    const beforeSeat = this.occupied ? [...this.feet] : undefined;
     for (const id of [...this.mechanisms.keys()].sort()) {
       this.mechanisms.get(id)!.step();
       if (this.occupied?.request.rigId === id) this.updateOccupant();
@@ -2063,6 +2127,35 @@ export class PlaySession {
       this.previous = [...this.feet];
       this.updateOccupant();
       this.world.step();
+      const seat = this.occupied;
+      seat.lookHold = Math.max(0, seat.lookHold - DT);
+      if (this.cameraMode === "third-person") {
+        const moving =
+          Math.hypot(
+            this.feet[0] - beforeSeat![0],
+            this.feet[2] - beforeSeat![2],
+          ) > 0.01;
+        if (moving && seat.lookHold === 0) {
+          const info = this.seatSources.get(seat.request.rigId)!;
+          const frame = this.rigTarget(seat.request.rigId).rig.snapshot()
+            .groupFrames[info.chassisGroup];
+          const forward = wrapAngle(seatYaw(frame) - this.heading);
+          seat.localLookYaw =
+            forward +
+            wrapAngle(seat.localLookYaw - forward) * Math.exp(-4 * DT);
+          this.yaw = this.heading + seat.localLookYaw;
+        }
+        [seat.cameraYaw, seat.cameraVelocity] = smoothDampAngle(
+          seat.cameraYaw,
+          this.yaw,
+          seat.cameraVelocity,
+          0.18,
+          DT,
+        );
+      } else {
+        seat.cameraYaw = this.yaw;
+        seat.cameraVelocity = 0;
+      }
       this.settle();
       this.updateArm();
       this.tick++;
@@ -2642,7 +2735,9 @@ export class PlaySession {
       undefined,
       this.collider,
       undefined,
-      (c) => !this.seatedColliders.some((body) => body.handle === c.handle),
+      (c) =>
+        !this.seatedColliders.some((body) => body.handle === c.handle) &&
+        !this.occupied?.cameraExcluded.has(c.handle),
     );
     return hit
       ? Math.max(0, this.followDistance() * hit.time_of_impact - 1)
@@ -2650,12 +2745,13 @@ export class PlaySession {
   }
   private followRig(feet: Vec3 = this.feet) {
     // Seated chase framing is a presentation offset only. It keeps its target
-    // above the bench and looks down past a shoulder; own-rig camera collision
-    // remains active. The first-person eye and stored look intent are unchanged.
+    // above the bench, centered behind the driver. The car is excluded from
+    // the chase sweep: a seat/backrest intersecting its origin must not pump
+    // the follow distance. Walls and foreign rigs still shorten the arm.
     const target: Vec3 = this.occupied
       ? seatPoint(this.occupied.placement.pelvisFrame, [0, -30, -10])
       : [feet[0], feet[1] - this.P.height * 0.7, feet[2]];
-    const yaw = this.yaw + (this.occupied ? 0.35 : 0);
+    const yaw = this.occupied?.cameraYaw ?? this.yaw;
     const pitch = this.occupied
       ? Math.max(-1.35, Math.min(1.1, this.pitch - 0.65))
       : this.pitch;
@@ -2735,13 +2831,13 @@ export class PlaySession {
     if (this.controlledVehicle) {
       const control = this.controlledVehicle;
       const state = this.rigTarget(control.rigId).rig.snapshot();
-      return mechanismOverviewCamera(
-        control.geometry,
-        state,
-        { width: this.aspectRatio, height: 1 },
-        { x: 0, y: 0, width: this.aspectRatio, height: 1 },
-        { yaw: this.yaw, pitch: this.pitch, zoom: control.zoom },
+      return vehicleChaseCamera(
+        control.bounds,
+        state.groupFrames[control.chassisGroup],
+        { yaw: control.cameraYaw, pitch: this.pitch, zoom: control.zoom },
+        this.aspectRatio,
         this.cameraSettings.fovDeg,
+        this.cameraSafety().effectiveNear,
       );
     }
     if (this.riding && this.trains) {
@@ -2783,6 +2879,20 @@ export class PlaySession {
         : this.occupied
           ? [...this.occupied.placement.eye]
           : [feet[0], feet[1] - this.eyeHeight(), feet[2]];
+    if (
+      this.cameraMode === "first-person" &&
+      this.locomotion === "walk" &&
+      !this.occupied
+    ) {
+      const motion =
+        alpha === 1
+          ? this.motion
+          : lerpMotion(this.previousMotion, this.motion, alpha);
+      const bob = walkCameraBob(motion);
+      target[0] -= Math.cos(this.yaw) * bob.sideways * this.scale;
+      target[1] += bob.down * this.scale;
+      target[2] -= Math.sin(this.yaw) * bob.sideways * this.scale;
+    }
     let pos: Vec3 = [...target];
     if (this.cameraMode === "third-person") {
       // Unobstructed, the arm eases to the follow distance (smooth zoom);
