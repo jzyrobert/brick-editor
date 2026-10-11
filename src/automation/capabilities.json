@@ -224,6 +224,7 @@
         "refused": "driver seats and train cabs need Minifigure size; growing where the bigger collider does not fit",
         "suggestion": "Play settings suggest a size from minifigure doors/figures and overall build height; never applied automatically"
       },
+      "walkingCameraBob": "Subtle first-person stride bob from actual travel; fades when stopped or blocked; no flying or seated bob",
       "authoringIsolation": true,
       "poseApplication": true,
       "readyToPlaySamples": [
@@ -410,6 +411,7 @@
         "body": "Independent compound boxes enclosing original rigid straight-leg seated visual; no mesh-derived physics",
         "entry": "Reach, access ray, supported approach, wheel-envelope clearance and swept raised transfer; refuse before mutation",
         "driving": "Kinematic conservative rider sweeps; Dynamic zero-mass torso/head and leg colliders attach to the actual native chassis with own-body exclusion",
+        "chaseCamera": "Centered, damped chassis-heading follow; stable chassis-local framing and normal Play near plane during possession; manual look returns behind the moving car after 1.25 seconds; seated sweep excludes the own vehicle but retains included world and foreign rigs",
         "exit": "Ordered current-frame authored exits with real walkable support (dynamic projection within one step) and 3D raised transfer; blocked exit retains occupancy",
         "scope": "Source-certified unarticulated chassis/wheel rigs with explicit open-bench seats; dynamic tilt/suspension supported; no inferred seats or low-cabin articulation"
       },

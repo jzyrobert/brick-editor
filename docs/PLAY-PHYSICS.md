@@ -2,6 +2,15 @@
 
 This slice closes the remaining M5 items (joint motors and rotating axles, validated mechanism inputs in automation, posed-export controls, and hinged doors without manual rigging) and adds the first M6 slice: optional dynamic rigid assemblies, constrained joints with motors and dynamic vehicles with suspension (spec 19.3–19.5, M5/M6). Everything here is session state. Play never writes to the authored project; the only persisted additions are optional rig physics settings, which are saved through an explicit, undoable rig command.
 
+## Walking camera
+
+First-person walking has a subtle vertical bob and sideways sway tied to actual
+horizontal travel, using the same interpolated stride phase as the figure. The
+maximum offsets at Minifigure size are 1.4 and 0.8 LDU respectively; player size scales them, and slower walking reduces them.
+The motion fades when stopped or blocked and ignores tiny collision correction
+creep. Flying, third-person walking and seated driving do not use this bob.
+Collision positions and look direction are unchanged.
+
 ## Physical parts in ordinary Play
 
 Play admits manual mechanisms only when their source parts reproduce a reviewed
