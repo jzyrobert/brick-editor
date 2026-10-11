@@ -4,7 +4,7 @@
 
 The owner authorised Sol 6.1/high with quota checks after each run. The opt-in [pilot](SPATIAL-PILOT.md) adds an isolated Codex subscription broker, run/request quota gates and a separate frozen-image evaluator. Forty calibration sessions passed in all four arms (10/10 each), with inspection in 0, 1, 3 and 6 sessions respectively. This ceiling result establishes no accuracy improvement. The 72-case creative comparison is in progress; no visual results are claimed. The independent 36-case feedback comparison remains planned. E, diorama, language, archive and gallery are unchanged; no publishing occurred.
 
-81 unit and 19 integration checks, type checking and formatting pass. The real isolated client is tested with mocked text/image transport; the four-view renderer has a separate smoke check. See [VERIFICATION](VERIFICATION.md) for evidence and remaining limitations.
+81 unit and 23 integration checks, type checking and formatting pass. The real isolated client is tested with mocked text/image transport; the four-view renderer has a separate smoke check. See [VERIFICATION](VERIFICATION.md) for evidence and remaining limitations.
 
 ## Render-blind spatial benchmark infrastructure — 11 October 2026
 

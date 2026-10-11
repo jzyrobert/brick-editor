@@ -113,8 +113,24 @@ export async function main(argv: string[]) {
     );
   };
   let stopReason: string | undefined;
+  await writeFile(
+    join(out, "results.json"),
+    json({
+      version: CODEX_TRANSPORT_VERSION,
+      planned: cases.length,
+      authorised,
+      completed: 0,
+      results: [],
+      lastQuota: null,
+      experimentallyEvaluated: false,
+    }) + "\n",
+  );
   for (const c of cases.slice(0, authorised)) {
-    const before = await readCodexQuota();
+    const before = await readCodexQuota().catch((e) => {
+      stopReason = `Quota unavailable before next case: ${String(e.message)}`;
+      return null;
+    });
+    if (!before) break;
     await quotaLog(before, "before-run", c.id);
     if (!quotaAllowsNext(before, largestDrop)) {
       stopReason = `Quota gate: ${before.weeklyRemaining}% weekly remaining, largest observed run drop ${largestDrop}%`;
@@ -126,33 +142,45 @@ export async function main(argv: string[]) {
     const nativeDir = join(out, c.id + "--transport");
     await mkdir(nativeDir);
     await mkdir(join(nativeDir, "generation"));
-    const runtime = await codexChannel({
-      dir: nativeDir,
-      generationDir: join(dir, "generation"),
-      quota: readCodexQuota,
-      notify: async (q) => {
-        lastQuota = q;
-        await quotaLog(q, "after-model-request", c.id);
-      },
-    });
+    // Initialise inside the session's channel callback, so even a launch failure
+    // is sealed and retained by GenerationSession without a model retry.
+    let runtime: Awaited<ReturnType<typeof codexChannel>> | undefined;
     const generation = new GenerationSession(
       m,
       c,
       dir,
       worker,
-      runtime.channel,
+      async (request) => {
+        runtime ??= await codexChannel({
+          dir: nativeDir,
+          generationDir: join(dir, "generation"),
+          quota: readCodexQuota,
+          notify: async (q) => {
+            lastQuota = q;
+            await quotaLog(q, "after-model-request", c.id);
+          },
+        });
+        return runtime.channel(request);
+      },
     );
     let result;
     try {
       result = await generation.run();
     } finally {
-      await runtime.close();
+      await runtime?.close();
     }
-    const after = await readCodexQuota();
-    await quotaLog(after, "after-run", c.id);
-    lastQuota = after;
-    const drop = Math.max(0, before.weeklyRemaining - after.weeklyRemaining);
-    largestDrop = Math.max(largestDrop, drop);
+    const after = await readCodexQuota().catch((e) => {
+      stopReason = `Quota unavailable after frozen case: ${String(e.message)}`;
+      return null;
+    });
+    if (after) {
+      await quotaLog(after, "after-run", c.id);
+      lastQuota = after;
+    }
+    const drop = after
+      ? Math.max(0, before.weeklyRemaining - after.weeklyRemaining)
+      : null;
+    if (drop !== null) largestDrop = Math.max(largestDrop, drop);
     results.push({
       caseId: c.id,
       ...result,
@@ -183,11 +211,12 @@ export async function main(argv: string[]) {
         status: result.status,
         completed: results.length,
         authorised,
-        weeklyRemaining: after.weeklyRemaining,
+        weeklyRemaining: after?.weeklyRemaining ?? null,
         observedAccountDrop: drop,
         quotaForecastNote: "Includes account activity outside this experiment",
       }),
     );
+    if (!after) break;
     if (result.status === "infrastructure-failure") {
       stopReason = "Infrastructure failure; no automatic retry";
       break;
@@ -197,6 +226,9 @@ export async function main(argv: string[]) {
       break;
     }
   }
+  if (!stopReason && authorised < cases.length && results.length === authorised)
+    stopReason =
+      "Authorised case limit reached; remaining scheduled cases were not executed";
   await writeFile(
     join(out, "run-status.json"),
     JSON.stringify(
