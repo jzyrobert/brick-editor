@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
+  assertEmptyDirectory,
   CHECKS,
   checkAnswer,
   checkRequest,
@@ -13,6 +17,21 @@ import {
 import { searchForAgent } from "../../src/build-script/part-list";
 
 describe("one-shot build runs", () => {
+  it("rejects stale artifacts before an independent generation can overwrite them", () => {
+    const dir = mkdtempSync(join(tmpdir(), "brick-fresh-run-"));
+    try {
+      expect(() => assertEmptyDirectory(join(dir, "new"))).not.toThrow();
+      const empty = join(dir, "empty");
+      mkdirSync(empty);
+      expect(() => assertEmptyDirectory(empty)).not.toThrow();
+      writeFileSync(join(empty, "result.json"), '{"accepted":true}');
+      expect(() => assertEmptyDirectory(empty)).toThrow(
+        "Fresh directory must be empty",
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
   it("pairs diorama composition with E construction and text-only feedback", () => {
     const text = oneShotPrompt("a playground", 2000, {
       partsList: false,

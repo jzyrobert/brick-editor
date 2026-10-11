@@ -1,0 +1,289 @@
+{
+  "brief": "a pelican riding a bicycle",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 800,
+  "attempts": 5,
+  "prompt": "style-loop-1-diorama.md",
+  "replyPrompt": "brick-build-diorama.md",
+  "images": [],
+  "partsList": true,
+  "search": true,
+  "check": true,
+  "results": [
+    {
+      "effort": "high",
+      "runner": "codex",
+      "model": "gpt-6.1-sol",
+      "targetParts": 800,
+      "accepted": true,
+      "attemptsUsed": 1,
+      "parts": 865,
+      "targetMiss": {
+        "target": 800,
+        "parts": 865,
+        "difference": 65,
+        "percent": 8.1
+      },
+      "seconds": 405,
+      "tokens": {
+        "input": 797061,
+        "cached": 596992,
+        "output": 58853,
+        "reasoning": 25831
+      },
+      "searches": 10,
+      "checks": 3,
+      "knowledge": {
+        "named": [
+          "11477",
+          "13547",
+          "14769",
+          "15068",
+          "2431",
+          "3003",
+          "3004",
+          "3005",
+          "3023b",
+          "3039",
+          "3069b",
+          "41769a",
+          "54200",
+          "61678",
+          "64648",
+          "87079"
+        ],
+        "notInList": [
+          "64648"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "seconds": 405,
+          "usage": {
+            "input": 797061,
+            "cached": 596992,
+            "output": 58853,
+            "reasoning": 25831,
+            "costUsd": 0
+          },
+          "searches": [
+            {
+              "args": {
+                "query": "motorcycle wheel tyre",
+                "limit": 10
+              },
+              "results": [
+                "46334c01",
+                "71720c01",
+                "71720c02",
+                "88517c01",
+                "88517c02",
+                "88517c03",
+                "2903c01",
+                "2903c02",
+                "51378"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "wheel large",
+                "limit": 10
+              },
+              "results": [
+                "85544",
+                "2741",
+                "85489a",
+                "85489b",
+                "2515a",
+                "2515b",
+                "2999",
+                "51377c01",
+                "51377c02",
+                "85489ac01"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "bicycle",
+                "limit": 10
+              },
+              "results": [
+                "4719",
+                "92851",
+                "2807",
+                "4720",
+                "64248",
+                "4719c01",
+                "4719c02",
+                "4719c03",
+                "u9163",
+                "28578"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "curved slope",
+                "size": "2x4",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "88930",
+                "93606",
+                "47456",
+                "61068"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "fish",
+                "limit": 8
+              },
+              "results": [
+                "64648",
+                "30224",
+                "49595e",
+                "8043"
+              ],
+              "round": 1
+            },
+            {
+              "args": {
+                "query": "Technic Axle 6",
+                "limit": 5
+              },
+              "results": [
+                "3706",
+                "59443",
+                "2994",
+                "32167",
+                "61800"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Technic Brick 1 x 2 axlehole",
+                "limit": 5
+              },
+              "results": [
+                "32064a",
+                "32064b",
+                "32064c",
+                "32064d",
+                "6575a"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Technic Pin Long",
+                "limit": 5
+              },
+              "results": [
+                "32054",
+                "65304",
+                "44874",
+                "87082",
+                "6558"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Technic Gear 24",
+                "limit": 5
+              },
+              "results": [
+                "24121",
+                "2471",
+                "2474a",
+                "24014",
+                "24505"
+              ],
+              "round": 2
+            },
+            {
+              "args": {
+                "query": "Slope Curved Inverted",
+                "colour": "white",
+                "available_in_colour": true,
+                "limit": 8
+              },
+              "results": [
+                "24201",
+                "13547",
+                "70681",
+                "54091",
+                "32803",
+                "42023",
+                "11301",
+                "45410"
+              ],
+              "round": 2
+            }
+          ],
+          "checks": [
+            {
+              "round": 1,
+              "ok": false,
+              "reason": "INVALID_INPUT: Invalid build script: $.sections[3].ops[3].holes[0].at must be [x, z] integers (studs) (got [7,49,10]); $.sections[7].ops[27].holes[0].at must be [x, z] integers (studs) (got [19,71,11])"
+            },
+            {
+              "round": 2,
+              "parts": 1313,
+              "errors": 1,
+              "ok": false
+            },
+            {
+              "round": 3,
+              "parts": 865,
+              "errors": 0,
+              "ok": true
+            }
+          ],
+          "toolEvents": [],
+          "providerRetries": [],
+          "outcome": "accepted",
+          "knowledge": {
+            "named": [
+              "11477",
+              "13547",
+              "14769",
+              "15068",
+              "2431",
+              "3003",
+              "3004",
+              "3005",
+              "3023b",
+              "3039",
+              "3069b",
+              "41769a",
+              "54200",
+              "61678",
+              "64648",
+              "87079"
+            ],
+            "notInList": [
+              "64648"
+            ],
+            "finds": [],
+            "moved": [],
+            "colourErrors": []
+          },
+          "parts": 865
+        }
+      ]
+    }
+  ]
+}

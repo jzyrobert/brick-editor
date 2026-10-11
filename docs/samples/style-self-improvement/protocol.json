@@ -1,0 +1,33 @@
+{
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "subjects": [
+    "pelican",
+    "piplup",
+    "temple",
+    "dragon",
+    "destroyer",
+    "ewok"
+  ],
+  "styles": [
+    "lego",
+    "diorama"
+  ],
+  "maximumLoops": 5,
+  "stop": "Stop on plateau/regression. Continue only if total visual score gains at least 6 of 240, at least six of twelve cases improve, and improvements outnumber regressions; any isolation/tool/image violation disqualifies a round. Compiler acceptance and warnings are recorded separately.",
+  "input": "Original briefs/targets only, fresh sessions and separate empty directories. No supplied sources, interviews, reviewer critiques or images enter generations.",
+  "feedback": "Existing part search and compiler counts/errors only; no render feedback, recipes, geometric solver or construction-warning feedback.",
+  "baseline": "Current independent Sol E and frozen diorama results; historical original pixel-like Piplup is a preference reference, not generation input.",
+  "limits": {
+    "searchReplies": 10,
+    "searchesPerReply": 5,
+    "draftChecksPerAttempt": 3,
+    "attempts": 5
+  },
+  "evaluation": "Same Standard look, 1280x960, iso/front/iso-back/top. Evaluate accepted unmodified sources before interviewing those sessions. One sample per brief/style/round is exploratory, not statistical proof.",
+  "scriptPolicy": "Inspect script feedback/search/part metadata from interviews. Make only small general changes with measured evidence; do not add visual help or subject-specific macros.",
+  "references": [
+    "https://developers.openai.com/api/docs/guides/model-optimization",
+    "https://developers.openai.com/api/docs/guides/prompt-optimizer"
+  ]
+}

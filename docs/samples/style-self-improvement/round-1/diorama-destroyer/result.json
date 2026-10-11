@@ -1,0 +1,305 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 5000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 5323,
+  "targetMiss": {
+    "target": 5000,
+    "parts": 5323,
+    "difference": 323,
+    "percent": 6.5
+  },
+  "seconds": 510,
+  "tokens": {
+    "input": 815044,
+    "cached": 547840,
+    "output": 69607,
+    "reasoning": 38159
+  },
+  "searches": 10,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "15068",
+      "2412b",
+      "2431",
+      "3004",
+      "3005",
+      "3020",
+      "3022",
+      "3023b",
+      "3040b",
+      "3062b",
+      "3069b",
+      "3623",
+      "3660b",
+      "3710",
+      "3941",
+      "3957a",
+      "4032b",
+      "4162",
+      "41747",
+      "41748",
+      "4740",
+      "50950",
+      "78443",
+      "78444",
+      "98138"
+    ],
+    "notInList": [
+      "41747",
+      "41748",
+      "78443",
+      "78444"
+    ],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 510,
+      "usage": {
+        "input": 815044,
+        "cached": 547840,
+        "output": 69607,
+        "reasoning": 38159,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "6x12",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "3028",
+            "6178",
+            "30355",
+            "30356"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge plate",
+            "size": "3x6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "54383",
+            "54384"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "wedge slope",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "54200",
+            "85984",
+            "93606",
+            "42918",
+            "41748",
+            "41747",
+            "52031",
+            "43720",
+            "43721",
+            "80545",
+            "41764",
+            "41765"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "hemisphere",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "30208",
+            "44359",
+            "61287",
+            "86500",
+            "44358"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "engine cylinder",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "2850a",
+            "2850b",
+            "6608"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "Wing 2 × 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "78443",
+            "78444"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "wedge plate 2 x 6",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "3795",
+            "51739",
+            "41769a",
+            "41770a",
+            "43723a",
+            "43722a",
+            "3024",
+            "3023b",
+            "3623",
+            "3710",
+            "3022",
+            "3021"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "engine nozzle",
+            "limit": 10
+          },
+          "results": [
+            "50943",
+            "43121",
+            "2851",
+            "2853a",
+            "2853b",
+            "2853c",
+            "2854",
+            "4868b",
+            "3475b",
+            "2852"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "bar 6L",
+            "colour": "light bluish grey",
+            "available_in_colour": true,
+            "limit": 6
+          },
+          "results": [
+            "63965a",
+            "63965",
+            "76279"
+          ],
+          "round": 2
+        },
+        {
+          "args": {
+            "query": "tile round 1 x 1",
+            "colour": "trans light blue",
+            "available_in_colour": true,
+            "limit": 4
+          },
+          "results": [
+            "98138",
+            "25269",
+            "24246",
+            "35380"
+          ],
+          "round": 2
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 6454,
+          "errors": 51,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "ok": false,
+          "reason": "INVALID_INPUT: Invalid build script: $.sections[1].ops[0].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"tan\",\"tan\",\"dark tan\"]}); $.sections[1].ops[1].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"tan\",\"tan\",\"dark tan\"]}); $.sections[1].ops[2].colour must be a palette key, colour name or LDraw colour code (got {\"mix\":[\"tan\",\"tan\",\"tan\",\"dark tan\"]}); $.sections[1].ops[3].colour must be a palette key, colour name or LDraw c"
+        },
+        {
+          "round": 3,
+          "parts": 5321,
+          "errors": 14,
+          "ok": false
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "15068",
+          "2412b",
+          "2431",
+          "3004",
+          "3005",
+          "3020",
+          "3022",
+          "3023b",
+          "3040b",
+          "3062b",
+          "3069b",
+          "3623",
+          "3660b",
+          "3710",
+          "3941",
+          "3957a",
+          "4032b",
+          "4162",
+          "41747",
+          "41748",
+          "4740",
+          "50950",
+          "78443",
+          "78444",
+          "98138"
+        ],
+        "notInList": [
+          "41747",
+          "41748",
+          "78443",
+          "78444"
+        ],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 5323
+    }
+  ]
+}

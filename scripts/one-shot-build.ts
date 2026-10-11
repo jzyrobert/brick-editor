@@ -13,7 +13,7 @@
 // count and errors), but cannot render. Accepted builds are rendered
 // afterwards for review. docs/AGENT-BUILDING.md#one-shot-runs
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
@@ -32,7 +32,7 @@ import { isBrickBuild, type BrickBuildCall } from "./brick-build";
 
 const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file f) --model M
     [--efforts low,medium,high,xhigh,max] [--attempts 5] [--out dir] [--views iso,front,iso-back]
-    [--parts-list on|off] [--search on|off] [--check on|off] [--runner codex|claude]
+    [--parts-list on|off] [--search on|off] [--check on|off] [--runner codex|claude] [--fresh on|off]
     [--prompt build-agent.md] [--reply-prompt brick-build.md] [--images a.png,b.png]
   Runs each reasoning effort in parallel through \`codex exec\` (or, with --runner claude,
   \`claude -p\` with --effort) with its tools turned off;
@@ -47,6 +47,12 @@ const HELP = `npm run oneshot -- --target-parts N (--brief "…" | --brief-file 
   --out  default ~/brick-builds/oneshot-<name>-<target>; one folder per effort, plus summary.md`;
 
 /** Text below the first "---" line of a prompt file. */
+/** Refuse stale artifacts rather than silently contaminating an independent run. */
+export function assertEmptyDirectory(dir: string) {
+  if (existsSync(dir) && readdirSync(dir).length)
+    throw new Error(`Fresh directory must be empty: ${dir}`);
+}
+
 function below(file: string) {
   const text = readFileSync(join(REPO, "prompts", file), "utf8");
   return text.slice(text.indexOf("\n---\n") + 5).trim();
@@ -567,6 +573,7 @@ async function askAgent(
 ) {
   const empty = join(dir, "empty");
   await mkdir(empty, { recursive: true });
+  assertEmptyDirectory(empty);
   const agent =
     runner === "claude"
       ? claudeRunner(model, effort, empty)
@@ -965,6 +972,7 @@ async function main(argv: string[]) {
         "prompt",
         "reply-prompt",
         "images",
+        "fresh",
       ].includes(key)
     )
       throw new Error(`Unknown flag ${argv[i]}\n${HELP}`);
@@ -990,6 +998,10 @@ async function main(argv: string[]) {
       `~/brick-builds/oneshot-${slug(flags.get("name") ?? brief)}-${target}`
     ).replace(/^~(?=$|\/)/, homedir()),
   );
+  const fresh = flags.get("fresh") ?? "off";
+  if (fresh !== "on" && fresh !== "off")
+    throw new Error("--fresh takes on or off");
+  if (fresh === "on") assertEmptyDirectory(out);
   await mkdir(out, { recursive: true });
   const onOff = (key: string) => {
     const v = flags.get(key) ?? "on";

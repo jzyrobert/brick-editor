@@ -18,6 +18,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Gallery content
 
+- [x] Complete an interview-driven Sol 6.1 high style-improvement loop over all six briefs × both styles, with independent text-only generations and a fixed plateau rule. [Results](docs/samples/lego-style-study/README.md#sol-self-improvement-loops): five improvements, three regressions and four ties; stop after one loop without promoting the bundled candidate. Conditional finishing/unit clarifications remain hypotheses for repeated trials or isolated tests.
 - [ ] Test the experimental diorama prompt across other models and repeated clean-start trials before adopting it or changing public style filters. [Sol 6.1 high now covers all six briefs](docs/samples/lego-style-study/README.md#diorama-all-six-briefs--sol-61-high), with mixed visual preferences and remaining construction warnings.
 
 - [x] Six prompts answered by Opus 5.5 and GPT-6.1-Sol (high, creative prompt) were the previous published collection; the earlier temple and ewok builds are retained in `docs/samples` and restored through generation browsing; see [GALLERY](docs/GALLERY.md).

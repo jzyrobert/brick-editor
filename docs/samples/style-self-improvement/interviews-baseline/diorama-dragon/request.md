@@ -1,0 +1,13 @@
+This is a retrospective interview about your final submitted build, not another build request. Answer in concise plain prose, without JSON, code or a replacement build. You have not been given any rendered images. Do not claim to have seen a render.
+
+First describe your own choices before responding to the reviewer observations below:
+1. Which choices most determined the final silhouette, proportions, surface treatment, context and supports? Which precise prompt clauses materially influenced them? Quote only the short relevant phrases. Distinguish explicit instruction from your own inference or aesthetic choice; do not assume the prompt caused every weakness.
+2. Did you consider a deliberate stepped/brick-sculpted/pixel-like treatment? Did you interpret any instruction as requiring curves, tiles, hiding every stud, removing scenery or adding a display? Which instruction, if any? What worked and should remain?
+3. Were any compromises driven by integer coordinates, turn/footprint conventions, curated/search catalogue coverage, part availability, target counting, compiler feedback or code verbosity? Name the exact constraint and why it affected a choice. Explain where zero compiler errors did not establish connected geometry.
+4. Now consider the observations below. Which are plausible from your own code, and which cannot you verify without images? Explain the relevant design decision or constraint without inventing certainty.
+5. Recommend at most three small build-agnostic edits to the prompt or text-only search/check/code process. No named-subject recipes, prescribed geometry, images, render feedback, extra drafting stages or new geometric solver. Keep the task a spatial reasoning benchmark. Prefer deleting/clarifying conflicting guidance to adding a long checklist. Explain what each edit could harm as well as help.
+
+Reviewer observations (post-generation review; not a diagnosis of prompt causation):
+Both broad brick-built wings remain visibly detached and flat. The guardian scene reads well, but body, wing and tail attachment confidence is weak.
+
+Final count: 1100 against 1000. Compiler errors: 0; warning records: {"part-clash": 17, "off-grid": 1, "floating": 1}. Warnings were not supplied during generation. Your retrospective explanation is evidence to investigate, not proof that a prompt edit will improve future generations.

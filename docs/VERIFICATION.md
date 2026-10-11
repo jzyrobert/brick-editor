@@ -1,5 +1,13 @@
 # Verification — 27 September 2026
 
+## Sol style self-improvement — 11 October 2026
+
+Private branch `codex/style-self-improvement`. [Protocol](samples/style-self-improvement/protocol.json), [original-session interview audit](samples/style-self-improvement/interview-audit.json), [round metrics](samples/style-self-improvement/round-1/metrics.json), [assessment/stop](samples/style-self-improvement/decision.json) and [input audit](samples/style-self-improvement/round-1/input-audit.json) retain the evidence. All twelve filled inputs reconstruct exactly; system/reply/script hashes are frozen, baseline sources/inputs are unchanged, native model/effort is Sol 6.1/high, working directories are empty and no image/native-tool/other-case source input occurs. Accepted JS equals native final submissions. Eleven cases accept first attempt; Destroyer needs one repair, giving thirteen distinct attempt sessions. All finish with zero errors and four Standard 1,280 × 960 views.
+
+The original wrapper exits 143 after ten completed cases. [Recovery audit](samples/style-self-improvement/round-1/recovery-audit.json) verifies completed-reply hashes, Destroyer's exact pre-interruption accepted JS/JSON/MPD, and Ewok's resumed original session with the identical interrupted feedback. No replacement sample or manual geometry fix is used. Raw recovered result/summary timing measures replay/resumption; comparable generation timing is marked unavailable. Interrupted reasoning/repeated feedback and single samples limit comparison claims.
+
+Checks pass: 24 tests in `one-shot-build.test.ts`/`brick-build.test.ts`, `tsc -b`, repository format check and focused report/preview formatting. A real stale-output probe rejects generation before contact or overwrite. The static preview loads 96 images across four views, filters both styles and has no horizontal overflow with 44 px selectors at 1440 × 1000, 1080 × 1800, 360 × 600, 411 × 685, 390 × 844 and 686 × 411. Five scores improve, three regress and four tie; total 172 → 179/240 fails the fixed six-improvement continuation threshold. No prompt default, gallery, schema, language or compiler-feedback change is published. Thirty construction warning records remain and both Piplups exceed ±15%; acceptance is not physical certification.
+
 ## All six diorama briefs — 10 October 2026
 
 - The four remaining cases use frozen diorama system/reply hashes and original briefs/targets with `gpt-6.1-sol`, high. Native sessions verify separate empty directories, actual model/effort, no repository instructions and zero tool events. All six filled inputs reconstruct exactly, with no supplied sources/images or visual feedback. All 54 pilot source/control/image artifacts retain their hashes.

@@ -1,0 +1,350 @@
+{
+  "round": 0,
+  "axes": [
+    "Recognizability and proportions",
+    "Intentional shaping and surface treatment",
+    "Composition appropriate to style",
+    "Visible assembly and support",
+    "Consistency across views"
+  ],
+  "scale": {
+    "0": "missing/broken",
+    "1": "major failure",
+    "2": "clear weakness",
+    "3": "good with minor weaknesses",
+    "4": "strong"
+  },
+  "assessment": "Reviewer visual scores are subjective; intentional stepped/pixel surfaces and studs are valid, and warning counts are diagnostics rather than buildability proof.",
+  "cases": [
+    {
+      "id": "lego-pelican",
+      "style": "lego",
+      "subject": "pelican",
+      "source": "docs/samples/lego-style-study/fresh-e/sol-pelican",
+      "sessionId": "01a126b5-cd89-7290-b203-c1f93ae70b90",
+      "workingDirectory": "/home/ubuntu/.codex/worktrees/e2a9/brick-editor/.local/lego-study/fresh-e-sol/contextual-pelican/high/empty",
+      "brief": "a pelican riding a bicycle",
+      "target": 800,
+      "parts": 889,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 20,
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "4fd3fd21d72bdf85796c91ad8b0addd2e9cd6049669ba359468a7553eec8af6a",
+      "promptSha256": "3411a4d1fab933cd5df46e7b32eb82f8327f2e598c8982654f4acb6ed0dff865",
+      "issues": "Bird anatomy has layered cladding and a rectangular head. A large studded wing shelf competes with the smoother bill; the bicycle connections and riding pose are not fully convincing.",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15
+    },
+    {
+      "id": "lego-piplup",
+      "style": "lego",
+      "subject": "piplup",
+      "source": "docs/samples/lego-style-study/fresh-e/sol-piplup",
+      "sessionId": "01a126b5-cfa2-78e0-8259-fa2cab967066",
+      "workingDirectory": "/home/ubuntu/.codex/worktrees/e2a9/brick-editor/.local/lego-study/fresh-e-sol/contextual-piplup/high/empty",
+      "brief": "piplup",
+      "target": 1000,
+      "parts": 1204,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 32,
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "efcf81a49cd7cc92f8f31f45ba576078dc9e6ecc000877f6d415d0ece88ecbd3",
+      "promptSha256": "0c6d25c97e56abaedfb2c0716e2876d92ca6162e0fcc5654eedf986ffd786e5a",
+      "issues": "The head is very wide and vertically compressed; curved cladding does not preserve the original character proportions. Studded seams and curved transitions are treated inconsistently.",
+      "scores": [
+        2,
+        3,
+        4,
+        3,
+        2
+      ],
+      "score": 14
+    },
+    {
+      "id": "lego-temple",
+      "style": "lego",
+      "subject": "temple",
+      "source": "docs/samples/lego-style-study/fresh-e/sol-temple",
+      "sessionId": "01a126b5-cee0-7771-b70f-441b316ccc09",
+      "workingDirectory": "/home/ubuntu/.codex/worktrees/e2a9/brick-editor/.local/lego-study/fresh-e-sol/contextual-temple/high/empty",
+      "brief": "a japanese buddhist temple",
+      "target": 2000,
+      "parts": 2258,
+      "compilerErrors": 0,
+      "warnings": {
+        "floating": 1
+      },
+      "sourceSha256": "f6c0bbce5965049d0874583f8a7099b68e0c2635b6d4ff8f94ca1fd9f0bb4e48",
+      "promptSha256": "b150447d713791bd97680b8cb7199ba1a4417521acd302d4910ff967d6e89268",
+      "issues": "The pagoda dominates the hall and repeats similar roof tiers; roofs remain fairly planar and regular. Separate accessories are valid, but the arrangement reads more like a collection than a strong focal set.",
+      "scores": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "score": 15
+    },
+    {
+      "id": "lego-dragon",
+      "style": "lego",
+      "subject": "dragon",
+      "source": "docs/samples/lego-style-study/fresh-e/sol-dragon",
+      "sessionId": "01a126bf-f681-7453-8758-0151cdea77ad",
+      "workingDirectory": "/home/ubuntu/.codex/worktrees/e2a9/brick-editor/.local/lego-study/fresh-e-sol/contextual-dragon/high/empty",
+      "brief": "a dragon",
+      "target": 1000,
+      "parts": 1017,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 5,
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "67737eeebcaa538bd6e6c19844e8b3c84b8ff64a2524283872f56bcbbb3764d4",
+      "promptSha256": "e742ac326ebffdbc055040aa17dc0b7b240cd49e8a92bebd6588ae3e474f7c36",
+      "issues": "Both curved wing assemblies are visibly detached from the body. The limbs and tail are chunky despite smoother surfaces, and the front face is compressed.",
+      "scores": [
+        3,
+        3,
+        4,
+        1,
+        2
+      ],
+      "score": 13
+    },
+    {
+      "id": "lego-destroyer",
+      "style": "lego",
+      "subject": "destroyer",
+      "source": "docs/samples/lego-style-study/fresh-e/sol-destroyer",
+      "sessionId": "01a126c2-9754-74e2-9fef-65b92b4dd31b",
+      "workingDirectory": "/home/ubuntu/.codex/worktrees/e2a9/brick-editor/.local/lego-study/fresh-e-sol/contextual-destroyer/high/empty",
+      "brief": "imperial star destroyer",
+      "target": 5000,
+      "parts": 5630,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 200
+      },
+      "sourceSha256": "501febbcfa1ead793921040f00f6fe46637ce5c4433872c30883aa393b3f6c5c",
+      "promptSha256": "9b17097f93c92f8cf4920ceced811d344236d3e2ef587f02ec1d9efbb91f980a",
+      "issues": "The recognizable wedge is covered by repeated rectangular machinery bands. Repetition and surface detail compete with a clean hull silhouette; edge shaping remains stepped.",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16
+    },
+    {
+      "id": "lego-ewok",
+      "style": "lego",
+      "subject": "ewok",
+      "source": "docs/samples/lego-style-study/fresh-e/sol-ewok",
+      "sessionId": "01a126c6-3cde-7ac2-af37-f42882b38416",
+      "workingDirectory": "/home/ubuntu/.codex/worktrees/e2a9/brick-editor/.local/lego-study/fresh-e-sol/contextual-ewok/high/empty",
+      "brief": "ewok inspired version of the classic 1970s lego space sets",
+      "target": 3000,
+      "parts": 3278,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 28,
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "1cc0f538d82c9b810c54ed2644314b273007a9fb1d9a7ebb31db3ec1d659a65f",
+      "promptSha256": "e3bb9be26f94383a98bb6096ae9a92ec062cb49825aea9d65a93cc3c6bcf39a5",
+      "issues": "Canopies are flat regular slabs, trunk detailing repeats uniformly, and space cabins read as ordinary houses in blue. The signature spacecraft needs clearer contrast with the forest settlement.",
+      "scores": [
+        3,
+        2,
+        3,
+        2,
+        3
+      ],
+      "score": 13
+    },
+    {
+      "id": "diorama-pelican",
+      "style": "diorama",
+      "subject": "pelican",
+      "source": "docs/samples/lego-style-study/diorama/sol-pelican",
+      "sessionId": "01a1279e-5576-71a3-b702-c348ee7a31ad",
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/remaining-runs/diorama-pelican/high/empty",
+      "brief": "a pelican riding a bicycle",
+      "target": 800,
+      "parts": 898,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 53,
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "e959b081b78ba8ddde99aed1eb07a6d07ae4fe4a30ed7286c2388a68fbd51b7c",
+      "promptSha256": "e723f91d82b7719f6309be9aa7f0c88440f2d5455e19886e46ee2faf41d9737f",
+      "issues": "Tiled dock and smoother bird are stronger, but the rectangular head and large wing shelves remain. Numerous clash diagnostics and bicycle attachment questions remain.",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15
+    },
+    {
+      "id": "diorama-piplup",
+      "style": "diorama",
+      "subject": "piplup",
+      "source": "docs/samples/lego-style-study/diorama/sol-piplup",
+      "sessionId": "01a1279e-5565-7a40-9f83-3704cae92606",
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/remaining-runs/diorama-piplup/high/empty",
+      "brief": "piplup",
+      "target": 1000,
+      "parts": 1095,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 4,
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "3941eefb4652206d22bec52b249f60b0f731e7f83692074b65d38dc2a2d9cba1",
+      "promptSha256": "66b40ac9566001f72e32f03d78a043c1a0bea5c1bf8b8e1b0499c69a473150d9",
+      "issues": "The oversized rectangular head dominates the small body despite smoother cladding; the lagoon display is clear. Curves are applied broadly without recovering the preferred original character proportions.",
+      "scores": [
+        2,
+        3,
+        4,
+        3,
+        2
+      ],
+      "score": 14
+    },
+    {
+      "id": "diorama-temple",
+      "style": "diorama",
+      "subject": "temple",
+      "source": "docs/samples/lego-style-study/diorama/sol-temple",
+      "sessionId": "01a12770-253c-7f41-8ff5-d55363170726",
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/runs/diorama-temple/high/empty",
+      "brief": "a japanese buddhist temple",
+      "target": 2000,
+      "parts": 2279,
+      "compilerErrors": 0,
+      "warnings": {
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "847a06def34138fea277559faffdda6a4fa3cddff9d5acc056d3d25c075609c5",
+      "promptSha256": "af4f31c5264dda62ff8049d50212a8a0d76fbcef8334f155c92c8bb3e5ed013c",
+      "issues": "The display is coherent but the long straight canal, broad paving and regular roof profiles make the scene rigid. The original richer roof silhouettes and varied arrangement remain preferred.",
+      "scores": [
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "score": 16
+    },
+    {
+      "id": "diorama-dragon",
+      "style": "diorama",
+      "subject": "dragon",
+      "source": "docs/samples/lego-style-study/diorama/sol-dragon",
+      "sessionId": "01a1279e-55f5-7c52-a0ad-12912f5e7b9a",
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/remaining-runs/diorama-dragon/high/empty",
+      "brief": "a dragon",
+      "target": 1000,
+      "parts": 1100,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 17,
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "2e8aeeedee724ca2b5da35a0c5759aa2f1a6d2aa016b7d28a1ad8b272f25eca6",
+      "promptSha256": "1d78b145d722c8a36a06ae632aac5fed92b852f87acf28b2589025366e58fb6b",
+      "issues": "Both broad brick-built wings remain visibly detached and flat. The guardian scene reads well, but body, wing and tail attachment confidence is weak.",
+      "scores": [
+        3,
+        3,
+        4,
+        1,
+        2
+      ],
+      "score": 13
+    },
+    {
+      "id": "diorama-destroyer",
+      "style": "diorama",
+      "subject": "destroyer",
+      "source": "docs/samples/lego-style-study/diorama/sol-destroyer",
+      "sessionId": "01a1279e-569a-7403-bd93-63d06c1848c2",
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/remaining-runs/diorama-destroyer/high/empty",
+      "brief": "imperial star destroyer",
+      "target": 5000,
+      "parts": 5282,
+      "compilerErrors": 0,
+      "warnings": {
+        "floating": 1
+      },
+      "sourceSha256": "f9ff3dedf048f2a910a97e2a3f575f347ac90a36ae453ffdc5ff377d05ff4b8f",
+      "promptSha256": "68b31c0ff82759229584eb241f8b1634487b7a79fd66d957c6142d3d1127fdd4",
+      "issues": "The forebody is unusually narrow and the broad rear makes the plan read as a T rather than a continuous triangular wedge. Display and dorsal machinery use substantial parts; the scene is clear but ship proportions suffer.",
+      "scores": [
+        2,
+        3,
+        3,
+        3,
+        2
+      ],
+      "score": 13
+    },
+    {
+      "id": "diorama-ewok",
+      "style": "diorama",
+      "subject": "ewok",
+      "source": "docs/samples/lego-style-study/diorama/sol-ewok",
+      "sessionId": "01a12770-252e-7983-80f9-86d2639ca198",
+      "workingDirectory": "/home/ubuntu/brick-editor-diorama/.local/diorama/runs/diorama-ewok/high/empty",
+      "brief": "ewok inspired version of the classic 1970s lego space sets",
+      "target": 3000,
+      "parts": 2955,
+      "compilerErrors": 0,
+      "warnings": {
+        "part-clash": 10,
+        "off-grid": 1,
+        "floating": 1
+      },
+      "sourceSha256": "edfdf61285cf212410fccc274fbd607d7d40d7d85712b5795bfd96d7d3c498a3",
+      "promptSha256": "2e12500519f361a0fd59c547f4dad7b14f62e09393597f83e1186d53d626b502",
+      "issues": "The landing scene and forest/space blend read clearly, but canopy layers remain broad and flat, trunk details are repetitive and clash/attachment warnings remain.",
+      "scores": [
+        3,
+        3,
+        4,
+        2,
+        3
+      ],
+      "score": 15
+    }
+  ],
+  "totalScore": 172
+}

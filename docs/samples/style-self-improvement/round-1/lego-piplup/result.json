@@ -1,0 +1,191 @@
+{
+  "effort": "high",
+  "runner": "codex",
+  "model": "gpt-6.1-sol",
+  "targetParts": 1000,
+  "accepted": true,
+  "attemptsUsed": 1,
+  "parts": 1173,
+  "targetMiss": {
+    "target": 1000,
+    "parts": 1173,
+    "difference": 173,
+    "percent": 17.3
+  },
+  "seconds": 418,
+  "tokens": {
+    "input": 606724,
+    "cached": 381184,
+    "output": 57559,
+    "reasoning": 32363
+  },
+  "searches": 4,
+  "checks": 3,
+  "knowledge": {
+    "named": [
+      "11477",
+      "15068",
+      "2456",
+      "3001",
+      "3002",
+      "3003",
+      "3004",
+      "3005",
+      "3010",
+      "3020",
+      "3298",
+      "3622",
+      "3660b",
+      "3747b"
+    ],
+    "notInList": [],
+    "finds": [],
+    "moved": [],
+    "colourErrors": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "seconds": 418,
+      "usage": {
+        "input": 606724,
+        "cached": 381184,
+        "output": 57559,
+        "reasoning": 32363,
+        "costUsd": 0
+      },
+      "searches": [
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24201",
+            "13547",
+            "6091",
+            "70681",
+            "80177",
+            "80178"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "curved slope",
+            "colour": "dark blue",
+            "available_in_colour": true,
+            "limit": 12
+          },
+          "results": [
+            "11477",
+            "15068",
+            "61678",
+            "50950",
+            "93273",
+            "88930",
+            "24309",
+            "24201",
+            "13547",
+            "6091",
+            "30602",
+            "42022"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope inverted",
+            "colour": "medium azure",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "3665a",
+            "3660b",
+            "24201",
+            "3747b",
+            "13547",
+            "3665b",
+            "70681",
+            "2310"
+          ],
+          "round": 1
+        },
+        {
+          "args": {
+            "query": "slope",
+            "colour": "yellow",
+            "available_in_colour": true,
+            "limit": 8
+          },
+          "results": [
+            "54200",
+            "3039",
+            "3040b",
+            "85984",
+            "4286",
+            "11477",
+            "3298",
+            "60481a"
+          ],
+          "round": 1
+        }
+      ],
+      "checks": [
+        {
+          "round": 1,
+          "parts": 2240,
+          "errors": 6,
+          "ok": false
+        },
+        {
+          "round": 2,
+          "parts": 1648,
+          "errors": 0,
+          "ok": true
+        },
+        {
+          "round": 3,
+          "parts": 1258,
+          "errors": 0,
+          "ok": true
+        }
+      ],
+      "toolEvents": [],
+      "providerRetries": [],
+      "outcome": "accepted",
+      "knowledge": {
+        "named": [
+          "11477",
+          "15068",
+          "2456",
+          "3001",
+          "3002",
+          "3003",
+          "3004",
+          "3005",
+          "3010",
+          "3020",
+          "3298",
+          "3622",
+          "3660b",
+          "3747b"
+        ],
+        "notInList": [],
+        "finds": [],
+        "moved": [],
+        "colourErrors": []
+      },
+      "parts": 1173
+    }
+  ]
+}
