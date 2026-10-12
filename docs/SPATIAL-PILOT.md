@@ -52,6 +52,9 @@ npx tsx scripts/spatial-benchmark.ts --manifest fixtures/spatial-benchmark/studi
 # Explicit live generation, only within a separately authorised allowance:
 npx tsx scripts/spatial-benchmark-live.ts --manifest fixtures/spatial-benchmark/studies/sol-high-pilot/creative.json --out .local/new-pilot-runs --authorised-cases 72
 
+# Combine ended phases, retaining prior failures and excluding duplicate IDs:
+npx tsx scripts/spatial-benchmark-pool.ts --phase .local/first-phase --phase .local/remaining-phase --out .local/new-pilot-runs
+
 # Post-freeze evaluator, with no route back to generation:
 npx tsx scripts/spatial-benchmark-evaluate.ts --runs .local/new-pilot-runs --protocol fixtures/spatial-benchmark/studies/sol-high-pilot/visual-protocol.json --out .local/new-pilot-views --mode render
 npx tsx scripts/spatial-benchmark-evaluate.ts --runs .local/new-pilot-runs --protocol fixtures/spatial-benchmark/studies/sol-high-pilot/visual-protocol.json --out .local/new-pilot-views --mode review

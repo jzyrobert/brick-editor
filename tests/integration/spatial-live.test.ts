@@ -15,6 +15,7 @@ vi.mock("../../scripts/spatial-benchmark/codex-channel", () => ({
   codexChannel: mock.start,
 }));
 import { main } from "../../scripts/spatial-benchmark-live";
+import { main as pool } from "../../scripts/spatial-benchmark-pool";
 async function launch(
   configure: () => void,
   followup?: (out: string, manifest: string, dir: string) => Promise<unknown>,
@@ -111,15 +112,33 @@ it("continues only unexecuted cases in a fresh phase and retains the prior failu
         "--remaining-from",
         out,
       ]);
-      return JSON.parse(await readFile(join(next, "results.json"), "utf8"));
+      const combined = join(dir, "pooled");
+      await pool(["--phase", out, "--phase", next, "--out", combined]);
+      await expect(
+        pool(["--phase", out, "--phase", out, "--out", join(dir, "duplicate")]),
+      ).rejects.toThrow("Repeated");
+      return {
+        next: JSON.parse(await readFile(join(next, "results.json"), "utf8")),
+        pooled: JSON.parse(
+          await readFile(join(combined, "results.json"), "utf8"),
+        ),
+      };
     },
   );
-  const next = r.followup as typeof r.results;
+  const { next, pooled } = r.followup as {
+    next: typeof r.results;
+    pooled: typeof r.results;
+  };
   expect(next.completed).toBe(1);
   expect(next.results[0].status).toBe("submitted");
   expect(next.results[0].caseId).not.toBe(r.results.results[0].caseId);
   expect(r.results.results[0].status).toBe("infrastructure-failure");
   expect(mock.start).toHaveBeenCalledTimes(2);
+  expect(pooled.completed).toBe(2);
+  expect(pooled.results.map((r: { status: string }) => r.status)).toEqual([
+    "infrastructure-failure",
+    "submitted",
+  ]);
 }, 30000);
 it("records an authorised subset as a stopped evaluation boundary", async () => {
   const r = await launch(() =>
