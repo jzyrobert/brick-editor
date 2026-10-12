@@ -1,5 +1,9 @@
 # Implementation status
 
+## Complete spatial pilot preview — 12 October 2026
+
+Added a standalone static preview builder and focused browser check. The preview contains all 82 completed builds, 328 frozen-view images and all 30 failed cases, with filters, four-view inspection and source downloads. Calibration captures were added only after generation ended. All six viewport checks pass; an independent visual review confirmed the corrected inspector image proportions. The owner authorised a temporary Cloudflare preview; production, gallery and defaults remain unchanged. See [usage and interpretation](SPATIAL-PILOT.md#complete-static-preview--12-october-2026).
+
 ## Completed Sol 6.1 high spatial pilot — 12 October 2026
 
 All 112 scheduled generation cases ended: 40/40 calibration passes and 42 submitted creative builds out of 72 cases, with 19 infrastructure failures and 11 model output-budget failures retained for analysis. The original frozen v2 misclassification remains archived. All 42 submitted builds rendered in four fixed views and received blinded recognition-before-brief assessments; no render/review failures occurred. The [results](SPATIAL-PILOT.md#creative-results) report combined minus control **+0.10/24**, task-bootstrap 95% interval **[-0.50, +0.60]**, using five tasks with all arms represented. This does not establish improvement. Destroyer missingness, unequal surviving repetitions, low retrieval (9/54 treatment sessions), provider interruptions and one automated reviewer limit interpretation.

@@ -1,5 +1,13 @@
 # Verification — 27 September 2026
 
+## Complete spatial preview — 12 October 2026
+
+`npx tsc -b`, repository `npm run format:check` and `git diff --check` pass for this increment.
+
+Live Cloudflare verification at 22:31 UTC checked 496 assets (all 328 images, 164 model/source downloads and four core UI/data files): every response was HTTP 200 and byte-identical to the local output. A live 390×844 browser check opened the four-view inspector and switched to all 40 calibration builds with no JavaScript errors. The isolated deployment contains only the generated preview, not the production application.
+
+The static builder verified original compiled artifacts and all 328 image hashes. `node scripts/spatial-preview/check.mjs .local/spatial-drop-preview-v2 .local/spatial-preview-review-v2` passes: 112 scheduled cases, 82 completed builds, 328 images at 1280×960, condition/subject/camera filters, all 30 failed cases, empty condition state, inspector navigation/Escape and calibration separation. It checks horizontal overflow at 1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411, and detects JavaScript errors or external requests. Independent screenshot review identified the inspector height issue; `height: auto` fixed it and the second review cleared that issue. Screenshots and machine-readable verification remain under `.local/spatial-preview-review-v2`. Forty post-generation calibration captures add 160 images using the pinned four-view protocol; no generation or visual assessment was repeated.
+
 ## Completed spatial pilot evidence — 12 October 2026
 
 All 112 scheduled generation cases are retained. [Calibration](../fixtures/spatial-benchmark/studies/sol-high-pilot/calibration-results.json): 40/40 pass under both recorded evaluators. [Creative evidence](../fixtures/spatial-benchmark/studies/sol-high-pilot/creative-evidence.json): 72 cases, 42 submitted, 19 infrastructure failures and 11 output-token-budget failures for analysis; original statuses/files remain unchanged. All 42 MPDs rendered in the predefined four views (168 PNGs) with no render failure; 42 independent reviewer sessions completed 84 requests with no review failure. Thirty cases remain unevaluated visually. Review used the frozen protocol, anonymous IDs, unlabelled recognition before the brief and no source/condition/title input. Generation was closed before rendering; no evaluation information returned to a generating session.

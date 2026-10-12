@@ -106,3 +106,21 @@ npx tsx scripts/spatial-benchmark-report.ts --runs .local/new-pilot-runs --evalu
 Private raw archives are under `.local/spatial-pilot-sol-high-calibration-v2`, the creative phase directories in the execution ledger, `.local/spatial-pilot-remaining-supervision-v2/final-checkpoint` and `.local/spatial-pilot-sol-high-creative-visual-v1`. They retain every actual input/output, failure, source, compiled artifact, reference payload, usage record and quota reading. Raw native context and credentials are not published. The public evidence ledgers record every calibration/creative outcome; no gallery entries or new defaults were introduced. The index distinguishes reproducible filled benchmark prompts from additional native transport context, whose exact requests remain private.
 
 Implemented: observation policies, modular typed facts, calibration, manifests, subscription transport, quota gate, post-freeze renderer/reviewer and numeric reporting. Tested: focused unit/integration suites, type checking, formatting, real isolated-client transport with mocked responses (including evaluator images), and a four-view headless renderer smoke check; the verification record gives final commands/counts. Experimentally evaluated: all 40 calibration sessions and all 72 scheduled creative cases, with 42 assessed builds and every failure retained. Deferred: the independent 36-case feedback study, stronger calibration/aliases/automatic fact presentation, held-out subjects, another model family, human review, physical validation and later language/guidance increments. Nothing is promoted to a new default.
+
+## Complete static preview — 12 October 2026
+
+[Temporary Cloudflare preview](https://brick-spatial-pilot-20261012.glittery-yew.workers.dev/). Published with Wrangler 4.142.0 using the Cloudflare Drop agent guide’s unauthenticated temporary deployment flow. The ownership claim link remains private and expires after 60 minutes.
+
+The owner-requested Cloudflare temporary preview includes all 82 completed builds (42 creative and 40 calibration), each in four fixed views, and all 30 failed creative cases. Calibration images are post-generation illustrations, not additional visual assessments. Filters expose subjects, conditions, cameras and failures; the inspector provides source/MPD downloads, scores where assessed and construction limitations. Neither renders nor reviewer feedback return to generation. No new generation was run for this preview.
+
+Rebuild from the private frozen image archive and completed calibration run:
+
+```sh
+npx tsx scripts/spatial-preview/render-calibration.ts .local/spatial-pilot-sol-high-calibration-v2 .local/spatial-calibration-preview-batch-v1
+python3 scripts/spatial-benchmark-preview.py --creative-views .local/spatial-pilot-sol-high-creative-visual-v1 --calibration-runs .local/spatial-pilot-sol-high-calibration-v2 --calibration-views .local/spatial-calibration-preview-batch-v1 --out .local/spatial-drop-preview-v2
+node scripts/spatial-preview/check.mjs .local/spatial-drop-preview-v2 .local/spatial-preview-review-v2
+```
+
+Use new output directories when repeating capture/build. The builder verifies frozen artifact and image hashes and emits an asset hash manifest. Only the explicit static output directory is uploaded; native context, raw streams, credentials and evaluator witnesses remain private. This research preview does not publish a gallery entry or change defaults.
+
+The practical improvement demonstrated here is research infrastructure: isolated generation, measurable reference retrieval, retained failures and reproducible inspection. Better generated designs, faster generation and lower cost have not been established. The combined/control visual contrast remains +0.10/24 with an interval crossing zero; 9/54 treatment sessions retrieved detailed facts, and calibration has a control ceiling. Automatic fact presentation and a stronger calibration set are sensible separate follow-ups, not measured improvements.
