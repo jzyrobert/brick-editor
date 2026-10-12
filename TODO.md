@@ -30,6 +30,13 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 - [ ] Send actionable construction warnings to generating models; distinguish coherent freestanding modules from loose shell pieces, and support reviewed angled/sideways assemblies. Zero-error study builds still have substantial warnings.
 - [x] Filter gallery builds by prompt generation and starting conditions, with fresh E featured by default and text-only history available. [Gallery generations](docs/GALLERY.md#prompt-generations) retains original, A/B/C and E/F revisions/fresh cohorts.
 
+## Spatial benchmark research
+
+- [ ] Run the separately declared 36-case mechanical-feedback comparison only with further study authorisation; hold metadata/language/style fixed ([completed initial pilot](docs/SPATIAL-PILOT.md)).
+- [ ] Improve non-ceiling calibration, evaluate temporary aliases and compare on-demand retrieval with automatic fact presentation as separate conditions. Only 9/54 creative treatment sessions retrieved facts; this pilot does not establish a quality improvement.
+- [ ] Add privately witnessed held-out creative tasks, another model family and independent human assessments. Resolve provider interruption/capacity missingness before generalising the 42/72 submitted creative builds.
+- [ ] Expand structured occurrence/interface diagnostics and coverage independently; pilot proper axis-aligned poses/offsets and explicit connector alignment assistance before functional/sideways tasks. Keep design metadata/guidance, inventory formats and physical stability/assembly audits separate.
+
 ## Rendering and performance
 
 - [ ] Warm first-use Realistic/Photo raster shaders asynchronously with a defined visible fallback; the [11 October audit](docs/RENDER-PERFORMANCE-AUDIT.md) still records substantial synchronous program-link waits despite reduced steady-frame work.

@@ -1,6 +1,12 @@
 # Implementation status
 
-## Sol 6.1 high spatial pilot — 11 October 2026
+## Completed Sol 6.1 high spatial pilot — 12 October 2026
+
+All 112 scheduled generation cases ended: 40/40 calibration passes and 42 submitted creative builds out of 72 cases, with 19 infrastructure failures and 11 model output-budget failures retained for analysis. The original frozen v2 misclassification remains archived. All 42 submitted builds rendered in four fixed views and received blinded recognition-before-brief assessments; no render/review failures occurred. The [results](SPATIAL-PILOT.md#creative-results) report combined minus control **+0.10/24**, task-bootstrap 95% interval **[-0.50, +0.60]**, using five tasks with all arms represented. This does not establish improvement. Destroyer missingness, unequal surviving repetitions, low retrieval (9/54 treatment sessions), provider interruptions and one automated reviewer limit interpretation.
+
+All 42 submitted builds retain construction warnings (243 records); compiler acceptance is not physical certification. [Every case, source/compiled artifact and assessment](../fixtures/spatial-benchmark/studies/sol-high-pilot/creative-evidence.json), exact filled inputs and execution phases are archived. Native context and 168 rendered PNGs remain private locally. Quota checks continued before/after requests/cases: the final generation/review reading was 39% weekly remaining, with no credits purchased or reset used. Defaults, legacy payloads, gallery, build language and automation capabilities are unchanged. No pushing or publication occurred. The separate feedback study and later roadmap remain deferred.
+
+## Sol 6.1 high spatial pilot checkpoint — 11 October 2026
 
 The owner authorised Sol 6.1/high with quota checks after each run. The opt-in [pilot](SPATIAL-PILOT.md) adds an isolated Codex subscription broker, run/request quota gates and a separate frozen-image evaluator. Forty calibration sessions passed in all four arms (10/10 each), with inspection in 0, 1, 3 and 6 sessions respectively. This ceiling result establishes no accuracy improvement. The 72-case creative comparison is in progress; no visual results are claimed. The independent 36-case feedback comparison remains planned. E, diorama, language, archive and gallery are unchanged; no publishing occurred.
 
