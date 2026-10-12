@@ -2,6 +2,7 @@ import { expect, it, vi } from "vitest";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { ModelBudgetFailure } from "../../scripts/spatial-benchmark/model-failure";
 const mock = vi.hoisted(() => ({ quota: vi.fn(), start: vi.fn() }));
 vi.mock("../../scripts/spatial-benchmark/codex-quota", async (original) => ({
   ...(await original<
@@ -14,7 +15,10 @@ vi.mock("../../scripts/spatial-benchmark/codex-channel", () => ({
   codexChannel: mock.start,
 }));
 import { main } from "../../scripts/spatial-benchmark-live";
-async function launch(configure: () => void) {
+async function launch(
+  configure: () => void,
+  followup?: (out: string, manifest: string, dir: string) => Promise<unknown>,
+) {
   const dir = await mkdtemp(join(tmpdir(), "brick-live-test-"));
   try {
     const manifest = JSON.parse(
@@ -43,6 +47,7 @@ async function launch(configure: () => void) {
     return {
       results: JSON.parse(await readFile(join(out, "results.json"), "utf8")),
       status: JSON.parse(await readFile(join(out, "run-status.json"), "utf8")),
+      followup: await followup?.(out, file, dir),
     };
   } finally {
     await rm(dir, { recursive: true, force: true });
@@ -66,6 +71,55 @@ it("blocks missing quota before starting a model and records every scheduled cas
   expect(r.status.planned).toBe(2);
   expect(r.status.stopReason).toMatch(/Quota unavailable/);
   expect(mock.start).not.toHaveBeenCalled();
+}, 30000);
+it("classifies a declared model output budget failure without an infrastructure retry", async () => {
+  const r = await launch(() =>
+    mock.start.mockResolvedValue({
+      channel: async () => {
+        throw new ModelBudgetFailure("max_output_tokens");
+      },
+      close: async () => {},
+    }),
+  );
+  expect(r.results.results[0].status).toBe("model-failure");
+  expect(r.results.results[0].failure).toBe("max_output_tokens");
+  expect(mock.start).toHaveBeenCalledTimes(1);
+}, 30000);
+it("continues only unexecuted cases in a fresh phase and retains the prior failure", async () => {
+  const r = await launch(
+    () => mock.start.mockRejectedValue(new Error("client unavailable")),
+    async (out, file, dir) => {
+      mock.start.mockResolvedValue({
+        channel: async () =>
+          JSON.stringify({
+            tool: "brick.build",
+            input: {
+              code: 'section("Fixture",[place({part:"3039",at:[0,0,0],colour:4}),place({part:"3024",at:[0,3,1],colour:4})]);',
+              seed: 1,
+            },
+          }),
+        close: async () => {},
+      });
+      const next = join(dir, "next");
+      await main([
+        "--manifest",
+        file,
+        "--out",
+        next,
+        "--authorised-cases",
+        "1",
+        "--remaining-from",
+        out,
+      ]);
+      return JSON.parse(await readFile(join(next, "results.json"), "utf8"));
+    },
+  );
+  const next = r.followup as typeof r.results;
+  expect(next.completed).toBe(1);
+  expect(next.results[0].status).toBe("submitted");
+  expect(next.results[0].caseId).not.toBe(r.results.results[0].caseId);
+  expect(r.results.results[0].status).toBe("infrastructure-failure");
+  expect(mock.start).toHaveBeenCalledTimes(2);
 }, 30000);
 it("records an authorised subset as a stopped evaluation boundary", async () => {
   const r = await launch(() =>

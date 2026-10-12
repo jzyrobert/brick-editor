@@ -74,6 +74,19 @@ export async function main(argv: string[]) {
       .map((s) => JSON.parse(s));
     const inspections = audit.filter((r) => r.kind === "part_info");
     const native = join(runs, run.caseId + "--transport", "native");
+    const wire = (await readFile(join(native, "transport.jsonl"), "utf8"))
+      .split("\n")
+      .filter(Boolean)
+      .map((s) => JSON.parse(s));
+    const terminals = wire.filter(
+      (r) =>
+        r.kind === "model-stream-event" &&
+        ["response.completed", "response.incomplete"].includes(r.payload.type),
+    );
+    const outputBudgetFailure = terminals.some(
+      (r) =>
+        r.payload.response?.incomplete_details?.reason === "max_output_tokens",
+    );
     const usage: Record<string, number> = {};
     let usageRecords = 0;
     for (const file of await readdir(native))
@@ -90,6 +103,22 @@ export async function main(argv: string[]) {
           }
         }
       }
+    const streamUsage = terminals.flatMap((r) =>
+      r.payload.response?.usage ? [r.payload.response.usage] : [],
+    );
+    if (streamUsage.length) {
+      for (const key of Object.keys(usage)) delete usage[key];
+      usageRecords = streamUsage.length;
+      for (const u of streamUsage)
+        for (const [key, value] of Object.entries({
+          input_tokens: u.input_tokens,
+          output_tokens: u.output_tokens,
+          cached_input_tokens: u.input_tokens_details?.cached_tokens,
+          cache_write_input_tokens: u.input_tokens_details?.cache_write_tokens,
+          reasoning_output_tokens: u.output_tokens_details?.reasoning_tokens,
+        }))
+          if (typeof value === "number") usage[key] = (usage[key] ?? 0) + value;
+    }
     const anonymous = mapping.find(
       (r: { caseId: string }) => r.caseId === run.caseId,
     );
@@ -107,7 +136,9 @@ export async function main(argv: string[]) {
       caseId: run.caseId,
       task: task.id,
       condition,
-      status: run.status,
+      status: outputBudgetFailure ? "model-failure" : run.status,
+      originalFrozenStatus: run.status,
+      failureCategory: outputBudgetFailure ? "output-token-budget" : null,
       files: run.files,
       compilerAccepted: report?.ok ?? false,
       stats: report?.stats ?? null,
@@ -122,6 +153,12 @@ export async function main(argv: string[]) {
       selectedFactCoverage: run.referenceCoverage ?? null,
       providerUsage: usageRecords ? usage : null,
       usageRecords,
+      usageSource: streamUsage.length
+        ? "Responses terminal events"
+        : "native completed turns",
+      providerRequestAttempts: wire.filter(
+        (r) => r.kind === "effective-model-request",
+      ).length,
       elapsedMs:
         run.quotaBefore && run.quotaAfter
           ? Date.parse(run.quotaAfter.checkedAt) -

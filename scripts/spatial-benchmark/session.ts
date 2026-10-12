@@ -32,6 +32,7 @@ import {
   type ScheduledCase,
 } from "./manifest";
 import { isolatedCompile, verifyFile, type Compilation } from "./sandbox";
+import { ModelBudgetFailure } from "./model-failure";
 
 export type TextMessage = { role: "user" | "assistant"; content: string };
 // A channel sees only an immutable text request. It receives no local tools,
@@ -335,7 +336,10 @@ export class GenerationSession {
           if (typeof text !== "string")
             throw new Error("Text-only channel returned non-text data");
         } catch (e) {
-          status = "infrastructure-failure";
+          status =
+            e instanceof ModelBudgetFailure
+              ? "model-failure"
+              : "infrastructure-failure";
           throw e;
         } finally {
           clearTimeout(deadline);

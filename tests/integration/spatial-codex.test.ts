@@ -108,7 +108,19 @@ it.each([false, true])(
                   },
                 },
               ]
-            : events;
+            : requests === 3
+              ? [
+                  {
+                    type: "response.incomplete",
+                    response: {
+                      ...response,
+                      status: "incomplete",
+                      output: [],
+                      incomplete_details: { reason: "max_output_tokens" },
+                    },
+                  },
+                ]
+              : events;
         return new Response(
           selectedEvents
             .map((e) => "data: " + JSON.stringify(e) + "\n\n")
@@ -168,6 +180,18 @@ it.each([false, true])(
       );
       expect(after).toContain("denied-native-output");
       expect(after).not.toContain("MOCK-NOT-A-CREDENTIAL");
+      await expect(
+        adapter.channel({
+          messages: [{ role: "user", content: "THIRD APPROVED TEXT" }],
+          model: {
+            id: "gpt-6.1-sol",
+            effort: "high",
+            sampling: { temperature: null, topP: null, seed: null },
+          },
+          maxOutputTokens: 16000,
+          signal: AbortSignal.timeout(20000),
+        }),
+      ).rejects.toThrow("Declared output-token budget exhausted");
     } catch (e) {
       const stderr = await readFile(
         join(dir, "native", "turn-1.stderr.txt"),

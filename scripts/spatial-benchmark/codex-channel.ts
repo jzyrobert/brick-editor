@@ -16,6 +16,7 @@ import { ROOT } from "./sandbox";
 import type { TextChannel } from "./session";
 import type { Quota } from "./codex-quota";
 import { quotaAllowsNext } from "./codex-quota";
+import { ModelBudgetFailure } from "./model-failure";
 
 export const CODEX_DISABLED = [
   "shell_tool",
@@ -42,7 +43,7 @@ export const CODEX_DISABLED = [
   "in_app_local_automation",
   "unbounded_connection_retries",
 ];
-export const CODEX_TRANSPORT_VERSION = "codex-guarded-broker/3";
+export const CODEX_TRANSPORT_VERSION = "codex-guarded-broker/4";
 export function modelPayload(
   raw: Record<string, unknown>,
   maxOutputTokens: number,
@@ -142,6 +143,7 @@ export async function codexChannel(options: {
   let activeRequests = 0;
   let upstreamAbort: AbortController | undefined;
   let transportFailure: string | undefined;
+  let outputBudgetExhausted = false;
   const getCredentials =
     options.credentials ??
     (async () => {
@@ -249,6 +251,11 @@ export async function codexChannel(options: {
           buffer = buffer.slice(newline + 1);
           if (line.startsWith("data: ") && line.slice(6) !== "[DONE]") {
             const event = JSON.parse(line.slice(6));
+            if (
+              event.type === "response.incomplete" &&
+              event.response?.incomplete_details?.reason === "max_output_tokens"
+            )
+              outputBudgetExhausted = true;
             const items = [
               ...(event.item ? [event.item] : []),
               ...(event.response?.output ?? []),
@@ -318,6 +325,7 @@ export async function codexChannel(options: {
     limit = request.maxOutputTokens;
     activeRequests = 0;
     transportFailure = undefined;
+    outputBudgetExhausted = false;
     await rm(join(privateDir, "client-home", "reply.txt"), { force: true });
     upstreamAbort = new AbortController();
     request.signal.throwIfAborted();
@@ -433,6 +441,10 @@ export async function codexChannel(options: {
     upstreamAbort?.abort();
     await writeFile(logFile, output);
     await writeFile(errors, stderr);
+    if (outputBudgetExhausted)
+      throw new ModelBudgetFailure(
+        "Declared output-token budget exhausted before a final answer",
+      );
     if (transportFailure)
       throw new Error(`Broker rejected turn: ${transportFailure}`);
     for (const line of output.split("\n")) {
