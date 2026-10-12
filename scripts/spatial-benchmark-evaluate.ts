@@ -92,6 +92,10 @@ export async function main(argv: string[]) {
         status: run.status,
         images: [] as { file: string; sha256: string; view: string }[],
         renderFailure: null as string | null,
+        cameras: [] as {
+          view: BuildView;
+          camera: ReturnType<typeof viewCamera>;
+        }[],
       };
       try {
         if (run.files["build.mpd"]) {
@@ -108,6 +112,7 @@ export async function main(argv: string[]) {
               protocol.width / protocol.height,
             ),
           }));
+          row.cameras = cameras;
           const shots = await withHeadlessPage(project, (page) =>
             page.evaluate(
               async ({ cameras, width, height, look, backdrop }) => {
@@ -256,7 +261,11 @@ export async function main(argv: string[]) {
       const recognitionData = JSON.parse(recognition);
       if (
         !Array.isArray(recognitionData.guesses) ||
-        typeof recognitionData.confidence !== "number"
+        !recognitionData.guesses.every((v: unknown) => typeof v === "string") ||
+        typeof recognitionData.confidence !== "number" ||
+        !Number.isFinite(recognitionData.confidence) ||
+        recognitionData.confidence < 0 ||
+        recognitionData.confidence > 1
       )
         throw new Error("Invalid recognition result");
       const second = `The exact requested brief is: ${json(row.brief)}. Retain your original unlabelled recognition judgement. Score these axes independently from 0 to 4: ${json(AXES)}. Anchors: 0 absent/severely wrong; 1 weak with substantial defects; 2 partly successful with clear defects; 3 clear/coherent with minor defects; 4 strong/coherent across views. Exposed studs, symmetry, angular forms and smooth surfaces are valid. Do not reward piece count or presume mechanically sound connections. Return ONLY JSON {"scores":{${AXES.map((a) => json(a) + ":0").join(",")}},"observations":["concrete image evidence"],"limitations":["..."]}.`;
@@ -273,6 +282,8 @@ export async function main(argv: string[]) {
       await writeFile(join(review, "assessment.txt"), assessment);
       const data = JSON.parse(assessment);
       if (
+        !data.scores ||
+        Object.keys(data.scores).length !== AXES.length ||
         AXES.some(
           (a) =>
             !Number.isInteger(data.scores?.[a]) ||
