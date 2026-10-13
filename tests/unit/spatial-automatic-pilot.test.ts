@@ -107,3 +107,27 @@ it("excludes invalid compiled artifacts only under the declared review policy", 
   expect(reviewEligible("model-failure")).toBe(true);
   expect(() => reviewEligible("submitted", "unknown")).toThrow();
 });
+
+it("screens both requested models with the identical Sol inputs and two fact arms", () => {
+  const base = validateManifest(
+    load("studies/automatic-facts-pilot/manifest.json"),
+  );
+  const controls = schedule(base);
+  for (const name of ["luna", "astra"]) {
+    const m = validateManifest(
+      load(`studies/model-screening-pilot/${name}.json`),
+    );
+    expect(m.model).toMatchObject({
+      id: `gpt-6-${name}`,
+      effort: name === "luna" ? "high" : "medium",
+    });
+    expect(m.tasks).toEqual(base.tasks);
+    expect(m.budgets).toEqual(base.budgets);
+    expect(m.conditions.map((c) => c.id)).toEqual(["control", "combined"]);
+    expect(schedule(m)).toHaveLength(16);
+    for (const c of schedule(m)) {
+      const original = controls.find((x) => x.id === c.id)!;
+      expect(effectivePrompt(m, c)).toBe(effectivePrompt(base, original));
+    }
+  }
+});

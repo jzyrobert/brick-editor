@@ -12,6 +12,7 @@ vi.mock("../../scripts/spatial-benchmark/codex-quota", async (original) => ({
 }));
 vi.mock("../../scripts/spatial-benchmark/codex-channel", () => ({
   CODEX_TRANSPORT_VERSION: "mock-transport/no-model-calls",
+  codexTransportVersion: () => "mock-transport/no-model-calls",
   codexChannel: mock.start,
 }));
 import { main } from "../../scripts/spatial-benchmark-live";

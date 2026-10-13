@@ -1,6 +1,9 @@
 import { expect, it } from "vitest";
 import { hash } from "../../scripts/spatial-benchmark/part-reference";
-import { modelPayload } from "../../scripts/spatial-benchmark/codex-channel";
+import {
+  modelPayload,
+  codexTransportVersion,
+} from "../../scripts/spatial-benchmark/codex-channel";
 import {
   quotaAllowsNext,
   type Quota,
@@ -81,4 +84,31 @@ it("only an evaluator with preverified image hashes can submit image inputs", ()
   expect(() =>
     modelPayload({ ...raw, input: [] }, 16000, new Set([hash(bytes)])),
   ).toThrow("omitted");
+});
+
+it("binds optional screening models to their declared effort without changing the default", () => {
+  for (const declared of [
+    { id: "gpt-6-luna", effort: "high" },
+    { id: "gpt-6-astra", effort: "medium" },
+  ]) {
+    const raw = {
+      model: declared.id,
+      reasoning: { effort: declared.effort },
+      input: [],
+    };
+    expect(() => modelPayload(raw, 100)).toThrow("model/effort");
+    expect(modelPayload(raw, 100, undefined, declared)).toMatchObject({
+      model: declared.id,
+    });
+    expect(() =>
+      modelPayload({ ...raw, model: "gpt-6.1-sol" }, 100, undefined, declared),
+    ).toThrow("model/effort");
+    expect(codexTransportVersion(declared)).toBe(
+      "codex-guarded-broker/5-model-screening",
+    );
+  }
+  expect(codexTransportVersion()).toBe("codex-guarded-broker/4");
+  expect(() =>
+    codexTransportVersion({ id: "gpt-6-astra", effort: "high" }),
+  ).toThrow("model/effort");
 });

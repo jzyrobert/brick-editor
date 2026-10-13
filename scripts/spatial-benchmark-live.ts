@@ -14,7 +14,7 @@ import { validateManifest } from "./spatial-benchmark/manifest";
 import { GenerationSession } from "./spatial-benchmark/session";
 import {
   codexChannel,
-  CODEX_TRANSPORT_VERSION,
+  codexTransportVersion,
 } from "./spatial-benchmark/codex-channel";
 import {
   readCodexQuota,
@@ -53,8 +53,7 @@ export async function main(argv: string[]) {
   const m = validateManifest(
     JSON.parse(await readFile(resolve(flags.get("--manifest")!), "utf8")),
   );
-  if (m.model.id !== "gpt-6.1-sol" || m.model.effort !== "high")
-    throw new Error("Only authorised Sol 6.1 high runs are enabled");
+  const transportVersion = codexTransportVersion(m.model);
   const out = resolve(flags.get("--out")!);
   const { cases: originalCases, worker, record } = await preflight(m, out);
   let cases = originalCases;
@@ -136,7 +135,7 @@ export async function main(argv: string[]) {
     join(out, "live-protocol.json"),
     JSON.stringify(
       {
-        version: CODEX_TRANSPORT_VERSION,
+        version: transportVersion,
         authorisedCases: authorised,
         model: m.model,
         quotaReservePercent: 5,
@@ -155,7 +154,7 @@ export async function main(argv: string[]) {
     JSON.stringify(
       {
         ...record,
-        transport: CODEX_TRANSPORT_VERSION,
+        transport: transportVersion,
         network:
           "native client has isolated network; only mounted Unix broker permits subscription text Responses endpoint",
         modelCalls: null,
@@ -182,7 +181,7 @@ export async function main(argv: string[]) {
   await writeFile(
     join(out, "results.json"),
     json({
-      version: CODEX_TRANSPORT_VERSION,
+      version: transportVersion,
       planned: cases.length,
       authorised,
       completed: 0,
@@ -219,6 +218,7 @@ export async function main(argv: string[]) {
       async (request) => {
         runtime ??= await codexChannel({
           dir: nativeDir,
+          model: m.model,
           generationDir: join(dir, "generation"),
           quota: readCodexQuota,
           notify: async (q) => {
@@ -258,7 +258,7 @@ export async function main(argv: string[]) {
       join(out, "results.json"),
       JSON.stringify(
         {
-          version: CODEX_TRANSPORT_VERSION,
+          version: transportVersion,
           planned: cases.length,
           authorised,
           completed: results.length,

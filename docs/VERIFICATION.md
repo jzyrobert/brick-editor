@@ -1,5 +1,9 @@
 # Verification — 27 September 2026
 
+## Model screening preflight (13 October 2026)
+
+Both 16-case zero-model dry runs passed. Mocked native-client integration covers Sol text/image paths and Luna/high, Astra/medium text paths; no paid calls in tests. Exact-prompt parity with the matching Sol arms and two-arm missingness/cluster summaries are tested. `npx vitest run tests/unit/spatial-codex.test.ts tests/unit/spatial-analysis.test.ts tests/unit/spatial-automatic-pilot.test.ts tests/integration/spatial-codex.test.ts tests/integration/spatial-live.test.ts`: 23 checks in five suites pass (`.local/tests-v3.log`). `npx tsc -b`, `npm run format:check` and `git diff --check` pass. Earlier mock/type failures were corrected before generation; logs retained. Infrastructure fixtures do not count as model runs.
+
 ## Automatic facts pilot execution checks — 13 October 2026
 
 The submitted-only review correction passed six checks across spatial-analysis and spatial-automatic-pilot suites, followed by type checking and repository formatting. This implements the already declared exclusion of invalid submissions from visual scoring; the frozen earlier protocol remains archived. The 32-case final ledger retains all five infrastructure and three model failures. CLI replay of `arched-toll-gate--shape--2/script.json` compiled 16 parts and produced byte-identical MPD SHA-256 `e226cd2ef7399bf6ca5659b338ea774c9d0036de19bfba1738fc8190c64d3648`. Original candidate sources are unchanged. All 24 eligible builds were reviewed without review failures. Verified all 104 archived image hashes and independently recomputed the four combined-control task effects (0, 6, 2, 2; mean 2.5). Frozen rendering/review protocol, camera coordinates and exact assessments are archived.

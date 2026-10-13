@@ -5,9 +5,14 @@ import { join } from "node:path";
 import { codexChannel } from "../../scripts/spatial-benchmark/codex-channel";
 import { hash } from "../../scripts/spatial-benchmark/part-reference";
 import type { Quota } from "../../scripts/spatial-benchmark/codex-quota";
-it.each([false, true])(
+it.each([
+  [false, "gpt-6.1-sol", "high"],
+  [true, "gpt-6.1-sol", "high"],
+  [false, "gpt-6-luna", "high"],
+  [false, "gpt-6-astra", "medium"],
+] as const)(
   "the isolated Codex client sends only approved inputs (evaluator images: %s)",
-  async (withImages) => {
+  async (withImages, modelId, effort) => {
     const dir = await mkdtemp(join(tmpdir(), "brick-codex-"));
     await mkdir(join(dir, "generation"));
     const image = Buffer.from(
@@ -36,7 +41,7 @@ it.each([false, true])(
       object: "response",
       created_at: 1,
       status: "completed",
-      model: "gpt-6.1-sol",
+      model: modelId,
       output: [message],
       usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
     };
@@ -78,6 +83,7 @@ it.each([false, true])(
     const actualRequests: unknown[] = [];
     const adapter = await codexChannel({
       dir,
+      model: { id: modelId, effort },
       evaluationImages: withImages
         ? [{ file: imageFile, sha256: hash(image) }]
         : undefined,
@@ -138,8 +144,8 @@ it.each([false, true])(
           },
         ],
         model: {
-          id: "gpt-6.1-sol",
-          effort: "high",
+          id: modelId,
+          effort,
           sampling: { temperature: null, topP: null, seed: null },
         },
         maxOutputTokens: 16000,
@@ -148,8 +154,8 @@ it.each([false, true])(
       expect(reply.trim()).toBe(text);
       expect(requests).toBe(1);
       expect(actualRequests[0]).toMatchObject({
-        model: "gpt-6.1-sol",
-        reasoning: { effort: "high" },
+        model: modelId,
+        reasoning: { effort },
         tools: [],
         tool_choice: "none",
       });
@@ -166,8 +172,8 @@ it.each([false, true])(
         adapter.channel({
           messages: [{ role: "user", content: "SECOND APPROVED TEXT" }],
           model: {
-            id: "gpt-6.1-sol",
-            effort: "high",
+            id: modelId,
+            effort,
             sampling: { temperature: null, topP: null, seed: null },
           },
           maxOutputTokens: 16000,
@@ -184,8 +190,8 @@ it.each([false, true])(
         adapter.channel({
           messages: [{ role: "user", content: "THIRD APPROVED TEXT" }],
           model: {
-            id: "gpt-6.1-sol",
-            effort: "high",
+            id: modelId,
+            effort,
             sampling: { temperature: null, topP: null, seed: null },
           },
           maxOutputTokens: 16000,

@@ -44,14 +44,35 @@ export const CODEX_DISABLED = [
   "unbounded_connection_retries",
 ];
 export const CODEX_TRANSPORT_VERSION = "codex-guarded-broker/4";
+export type CodexModel = { id: string; effort: string };
+const DEFAULT_MODEL: CodexModel = { id: "gpt-6.1-sol", effort: "high" };
+export function validateCodexModel(model: CodexModel) {
+  if (
+    ![
+      ["gpt-6.1-sol", "high"],
+      ["gpt-6-luna", "high"],
+      ["gpt-6-astra", "medium"],
+    ].some(([id, effort]) => model.id === id && model.effort === effort)
+  )
+    throw new Error("Unsupported authorised benchmark model/effort");
+  return model;
+}
+export function codexTransportVersion(model: CodexModel = DEFAULT_MODEL) {
+  validateCodexModel(model);
+  return model.id === DEFAULT_MODEL.id
+    ? CODEX_TRANSPORT_VERSION
+    : "codex-guarded-broker/5-model-screening";
+}
 export function modelPayload(
   raw: Record<string, unknown>,
   maxOutputTokens: number,
   approvedImages?: ReadonlySet<string>,
+  declaredModel: CodexModel = DEFAULT_MODEL,
 ) {
+  validateCodexModel(declaredModel);
   if (
-    raw.model !== "gpt-6.1-sol" ||
-    (raw.reasoning as { effort?: string })?.effort !== "high"
+    raw.model !== declaredModel.id ||
+    (raw.reasoning as { effort?: string })?.effort !== declaredModel.effort
   )
     throw new Error("Native client model/effort differs from declared run");
   const receivedImages = new Set<string>();
@@ -108,6 +129,7 @@ export function modelPayload(
 export async function codexChannel(options: {
   dir: string;
   generationDir?: string;
+  model?: CodexModel;
   evaluationImages?: { file: string; sha256: string }[];
   quota: () => Promise<Quota>;
   notify: (q: Quota) => Promise<void>;
@@ -115,6 +137,9 @@ export async function codexChannel(options: {
   credentials?: () => Promise<{ accessToken: string; accountId: string }>;
 }) {
   const { dir } = options;
+  const selectedModel = {
+    ...validateCodexModel(options.model ?? DEFAULT_MODEL),
+  };
   const approvedImages = options.evaluationImages
     ? new Set(options.evaluationImages.map((i) => i.sha256))
     : undefined;
@@ -208,6 +233,7 @@ export async function codexChannel(options: {
         JSON.parse(bytes.toString()),
         limit,
         approvedImages,
+        selectedModel,
       );
       await log("effective-model-request", {
         payload,
@@ -303,7 +329,7 @@ export async function codexChannel(options: {
   await writeFile(
     join(privateDir, "adapter.json"),
     json({
-      version: CODEX_TRANSPORT_VERSION,
+      version: codexTransportVersion(selectedModel),
       purpose: approvedImages ? "frozen-image-evaluation" : "blind-generation",
       approvedImages: options.evaluationImages?.map((i) => i.sha256) ?? [],
       binarySha256: hash(await readFile(binary)),
@@ -318,10 +344,11 @@ export async function codexChannel(options: {
     }),
   );
   const channel: TextChannel = async (request) => {
-    if (request.model.id !== "gpt-6.1-sol" || request.model.effort !== "high")
-      throw new Error(
-        "Only the authorised Sol 6.1 high configuration is enabled",
-      );
+    if (
+      request.model.id !== selectedModel.id ||
+      request.model.effort !== selectedModel.effort
+    )
+      throw new Error("Request model/effort differs from declared run");
     limit = request.maxOutputTokens;
     activeRequests = 0;
     transportFailure = undefined;
@@ -338,9 +365,9 @@ export async function codexChannel(options: {
       "--ignore-rules",
       "--skip-git-repo-check",
       "-m",
-      "gpt-6.1-sol",
+      selectedModel.id,
       "-c",
-      'model_reasoning_effort="high"',
+      `model_reasoning_effort="${selectedModel.effort}"`,
       "-c",
       'model_provider="benchmark"',
       "-c",

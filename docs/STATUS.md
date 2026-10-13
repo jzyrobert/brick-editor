@@ -1,5 +1,9 @@
 # Implementation status
 
+## Model screening pilot prepared (13 October 2026)
+
+Opt-in subscription transport accepts declared GPT-6 Luna/high and GPT-6 Astra/medium pairs; Sol6.1/high default payload is preserved. Each additional model has 16 frozen automatic-facts cases (control/combined). Model/effort is checked at both session and outgoing broker boundaries. Fresh sessions, quota gates and no retries remain. Two-arm task-weighted analysis is separate from the four-arm factorial. Generation and evaluation results pending; no quality claim or default change.
+
 ## Automatic facts pilot generation complete — 13 October 2026
 
 All 32 scheduled Sol6.1/high generation cases ended: 24 submitted, three model failures and five infrastructure failures. No failures were retried. All 26 compiled artifacts use 16 explicit placements and no packed massing. All treatments received their declared facts automatically; no case searched, inspected, checked or repaired. The final generation quota reading was 92% weekly remaining. Post-freeze rendering produced 104 images (including two invalid compiled artifacts); all 24 accepted builds were assessed. Combined facts scored +2.50/24 versus control on the task-weighted comparison, a tentative development signal with four tasks and one automated reviewer, not a general improvement claim. See [results and limitations](SPATIAL-PILOT.md#automatic-facts-pilot--13-october-2026). Sources, exact initial prompts, hashes and failures are retained under `fixtures/spatial-benchmark/studies/automatic-facts-pilot/results/`.

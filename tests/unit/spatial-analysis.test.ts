@@ -34,3 +34,22 @@ it("discloses incomplete task groups and does not invent intervals for one clust
     visualContrasts([{ task: "a", condition: "control", total: NaN }]),
   ).toThrow("Non-finite");
 });
+
+import { screeningContrast } from "../../scripts/spatial-benchmark/analysis";
+it("computes two-arm task-weighted effects without inventing missing arms", () => {
+  const rows = [
+    { task: "a", condition: "control", total: 10 },
+    { task: "a", condition: "control", total: 12 },
+    { task: "a", condition: "combined", total: 15 },
+    { task: "b", condition: "control", total: 10 },
+    { task: "b", condition: "combined", total: 8 },
+    { task: "c", condition: "control", total: 12 },
+  ];
+  const result = screeningContrast(rows);
+  expect(result.mean).toBe(1);
+  expect(result.percentile95).toEqual([-2, 4]);
+  expect(result.omittedTasks).toEqual(["c"]);
+  expect(screeningContrast(rows)).toEqual(result);
+  expect(screeningContrast([]).mean).toBeNull();
+  expect(screeningContrast(rows.slice(0, 3)).percentile95).toBeNull();
+});

@@ -88,3 +88,65 @@ export function visualContrasts(
       "Descriptive task-cluster resampling on fixed development tasks; not evidence of general improvement or independent reviewer agreement.",
   };
 }
+
+// Two-arm screening: missing factorial arms must not discard valid task pairs.
+export function screeningContrast(
+  rows: Score[],
+  seed = 20261011,
+  resamples = 10000,
+) {
+  if (
+    !Number.isInteger(resamples) ||
+    resamples < 1 ||
+    rows.some((r) => !Number.isFinite(r.total))
+  )
+    throw new Error("Invalid screening data");
+  const tasks = [...new Set(rows.map((r) => r.task))].sort();
+  const pairs = tasks.flatMap((task) => {
+    const a = rows.filter((r) => r.task === task && r.condition === "control");
+    const b = rows.filter((r) => r.task === task && r.condition === "combined");
+    return a.length && b.length
+      ? [
+          {
+            task,
+            controlCount: a.length,
+            combinedCount: b.length,
+            difference:
+              b.reduce((s, r) => s + r.total, 0) / b.length -
+              a.reduce((s, r) => s + r.total, 0) / a.length,
+          },
+        ]
+      : [];
+  });
+  let state = seed >>> 0;
+  const random = () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+  const samples = pairs.length
+    ? Array.from({ length: resamples }, () => {
+        let sum = 0;
+        for (let i = 0; i < pairs.length; i++)
+          sum += pairs[Math.floor(random() * pairs.length)].difference;
+        return sum / pairs.length;
+      }).sort((a, b) => a - b)
+    : [];
+  return {
+    version: "two-arm-task-cluster/1",
+    seed,
+    resamples,
+    contrast: "combined-control",
+    pairedTasks: pairs,
+    omittedTasks: tasks.filter((t) => !pairs.some((p) => p.task === t)),
+    mean: pairs.length
+      ? pairs.reduce((s, p) => s + p.difference, 0) / pairs.length
+      : null,
+    percentile95:
+      pairs.length < 2
+        ? null
+        : [
+            samples[Math.floor(resamples * 0.025)],
+            samples[Math.min(resamples - 1, Math.floor(resamples * 0.975))],
+          ],
+  };
+}

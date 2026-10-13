@@ -3,7 +3,11 @@
 import { readFile, writeFile, readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { visualContrasts, type Score } from "./spatial-benchmark/analysis";
+import {
+  visualContrasts,
+  screeningContrast,
+  type Score,
+} from "./spatial-benchmark/analysis";
 import { verifyFile } from "./spatial-benchmark/sandbox";
 import { hash } from "./spatial-benchmark/part-reference";
 export async function main(argv: string[]) {
@@ -201,7 +205,12 @@ export async function main(argv: string[]) {
         retained: rows.length,
         resultFileSha256: hash(resultBytes),
         conditions,
-        visualContrasts: visualContrasts(visual),
+        visualContrasts:
+          manifest.conditions.length === 2 &&
+          manifest.conditions.some((c: { id: string }) => c.id === "control") &&
+          manifest.conditions.some((c: { id: string }) => c.id === "combined")
+            ? screeningContrast(visual)
+            : visualContrasts(visual),
         rows,
         limitations: [
           `One model family; fixed development briefs; ${manifest.repetitions} scheduled repetitions per condition.`,
