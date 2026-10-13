@@ -1,0 +1,168 @@
+{
+  "buildScript": 1,
+  "title": "Canal Landing \u2014 Arch, Quay & Skiff",
+  "description": "A low skiff noses toward a raised footbridge, with open water separating it from the tiled quay.",
+  "palette": {
+    "stone": "light bluish grey",
+    "boat": "dark red",
+    "shore": "tan",
+    "water": "trans light blue"
+  },
+  "sections": [
+    {
+      "name": "Footbridge",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3659",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3659",
+          "at": [
+            0,
+            0,
+            1
+          ],
+          "colour": "stone"
+        }
+      ]
+    },
+    {
+      "name": "Quay",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            6,
+            0,
+            0
+          ],
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            6,
+            0,
+            2
+          ],
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3068b",
+          "at": [
+            6,
+            3,
+            0
+          ],
+          "colour": "shore"
+        },
+        {
+          "op": "place",
+          "part": "3068b",
+          "at": [
+            8,
+            3,
+            0
+          ],
+          "colour": "shore"
+        },
+        {
+          "op": "place",
+          "part": "3068b",
+          "at": [
+            6,
+            3,
+            2
+          ],
+          "colour": "shore"
+        },
+        {
+          "op": "place",
+          "part": "3068b",
+          "at": [
+            8,
+            3,
+            2
+          ],
+          "colour": "shore"
+        }
+      ]
+    },
+    {
+      "name": "Approaching skiff",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            1,
+            0,
+            -4
+          ],
+          "colour": "boat"
+        },
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            1,
+            0,
+            -2
+          ],
+          "colour": "boat"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            1,
+            3,
+            -3
+          ],
+          "colour": "tan"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            2,
+            3,
+            -3
+          ],
+          "colour": "tan"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            1,
+            3,
+            -1
+          ],
+          "colour": "tan"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            2,
+            3,
+            -1
+          ],
+          "colour": "tan"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "buildScript": 1,
+  "title": "Spiral Summit Lookout",
+  "description": "Exactly 16 pieces: four interlocked ascending steps curl around a compact footprint, leading to an open twin-arch observation shelter. An overhanging red canopy crowns the perch, with a gold summit marker connected directly to its ridge.",
+  "parts": {
+    "brick": "3001.dat",
+    "slope": "3039.dat",
+    "arch": "3659.dat",
+    "plate": "3024.dat",
+    "tile": "3068b.dat"
+  },
+  "sections": [
+    {
+      "name": "Ascending spiral",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@brick",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "light bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            0,
+            3,
+            0
+          ],
+          "colour": "dark tan",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@brick",
+          "at": [
+            2,
+            3,
+            0
+          ],
+          "colour": "light bluish grey",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            2,
+            6,
+            0
+          ],
+          "colour": "dark tan",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@brick",
+          "at": [
+            0,
+            6,
+            2
+          ],
+          "colour": "light bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            2,
+            9,
+            2
+          ],
+          "colour": "dark tan",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@brick",
+          "at": [
+            0,
+            9,
+            0
+          ],
+          "colour": "light bluish grey",
+          "turn": 90
+        }
+      ]
+    },
+    {
+      "name": "Open observation perch",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@arch",
+          "at": [
+            0,
+            12,
+            0
+          ],
+          "colour": "tan",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@arch",
+          "at": [
+            1,
+            12,
+            0
+          ],
+          "colour": "tan",
+          "turn": 90
+        }
+      ]
+    },
+    {
+      "name": "Overhanging sloping canopy",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            -1,
+            15,
+            0
+          ],
+          "colour": "dark red",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            1,
+            15,
+            0
+          ],
+          "colour": "dark red",
+          "turn": 270
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            -1,
+            15,
+            2
+          ],
+          "colour": "dark red",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            1,
+            15,
+            2
+          ],
+          "colour": "dark red",
+          "turn": 270
+        }
+      ]
+    },
+    {
+      "name": "Connected summit marker",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            0,
+            18,
+            3
+          ],
+          "colour": "pearl gold",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            0,
+            19,
+            3
+          ],
+          "colour": "pearl gold",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            0,
+            20,
+            2
+          ],
+          "colour": "pearl gold",
+          "turn": 0
+        }
+      ]
+    }
+  ]
+}

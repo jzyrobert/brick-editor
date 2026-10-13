@@ -1,0 +1,34 @@
+0 FILE little-border-tollhouse.mpd
+0 Little Border Tollhouse
+0 Name: little-border-tollhouse.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 little-border-tollhouse-01-gate-and-signal.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 little-border-tollhouse-02-guard-hut.ldr
+
+0 FILE little-border-tollhouse-01-gate-and-signal.ldr
+0 Gate and signal
+0 Name: little-border-tollhouse-01-gate-and-signal.ldr
+0 // Build script layer: Gate and signal
+1 71 0 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 71 10 -32 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 15 10 -40 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 71 10 -48 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 71 60 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 71 70 -32 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 15 70 -40 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 71 70 -48 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 71 40 -72 30 1 0 0 0 1 0 0 0 1 3659.dat
+1 72 40 -80 40 1 0 0 0 1 0 0 0 1 3068b.dat
+1 0 70 -80 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 36 70 -88 30 1 0 0 0 1 0 0 0 1 3024.dat
+
+0 FILE little-border-tollhouse-02-guard-hut.ldr
+0 Guard hut
+0 Name: little-border-tollhouse-02-guard-hut.ldr
+0 // Build script layer: Guard hut
+1 19 160 -24 40 1 0 0 0 1 0 0 0 1 3001.dat
+1 19 160 -48 30 1 0 0 0 1 0 0 0 1 3659.dat
+1 320 140 -72 50 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 180 -72 50 1 0 0 0 1 0 0 0 1 3039.dat

@@ -1,0 +1,183 @@
+{
+  "buildScript": 1,
+  "title": "Two Birds at the Seed Tray",
+  "description": "A pair of differently colored birds lean toward a shared raised feeder, leaving a clear gap between their beaks.",
+  "parts": {
+    "body": "3001.dat",
+    "slope": "3039.dat",
+    "arch": "3659.dat",
+    "plate": "3024.dat",
+    "tile": "3068b.dat"
+  },
+  "sections": [
+    {
+      "name": "Birds and feeder",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            -10,
+            0,
+            -1
+          ],
+          "colour": "bright light orange"
+        },
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            6,
+            0,
+            -1
+          ],
+          "colour": "dark blue"
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            -10,
+            3,
+            -1
+          ],
+          "turn": 90,
+          "colour": "bright light orange"
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            -8,
+            3,
+            -1
+          ],
+          "turn": 270,
+          "colour": "bright light orange"
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            8,
+            3,
+            -1
+          ],
+          "turn": 270,
+          "colour": "dark blue"
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            6,
+            3,
+            -1
+          ],
+          "turn": 90,
+          "colour": "dark blue"
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            -6,
+            3,
+            -1
+          ],
+          "colour": "orange"
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            5,
+            3,
+            -1
+          ],
+          "colour": "orange"
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            -8,
+            6,
+            -1
+          ],
+          "colour": "black"
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            -8,
+            6,
+            0
+          ],
+          "colour": "yellow"
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            7,
+            6,
+            -1
+          ],
+          "colour": "black"
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            7,
+            6,
+            0
+          ],
+          "colour": "white"
+        },
+        {
+          "op": "place",
+          "part": "@arch",
+          "at": [
+            -2,
+            0,
+            -1
+          ],
+          "colour": "reddish brown"
+        },
+        {
+          "op": "place",
+          "part": "@arch",
+          "at": [
+            -2,
+            0,
+            0
+          ],
+          "colour": "reddish brown"
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            -2,
+            3,
+            -1
+          ],
+          "colour": "tan"
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            0,
+            3,
+            -1
+          ],
+          "colour": "tan"
+        }
+      ]
+    }
+  ]
+}

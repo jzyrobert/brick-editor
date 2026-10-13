@@ -1,0 +1,40 @@
+0 FILE a-table-for-two.mpd
+0 A Table for Two
+0 Name: a-table-for-two.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-table-for-two-01-blue-bird-reaching.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-table-for-two-02-red-bird-with-raised-tail.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-table-for-two-03-shared-seed-table.ldr
+
+0 FILE a-table-for-two-01-blue-bird-reaching.ldr
+0 Blue bird reaching
+0 Name: a-table-for-two-01-blue-bird-reaching.ldr
+0 // Build script layer: Blue bird reaching
+1 25 30 -8 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 25 50 -8 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 322 40 -32 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 272 30 -56 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 0 50 -40 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 14 80 -40 20 1 0 0 0 1 0 0 0 1 3068b.dat
+1 322 50 -64 20 0 0 -1 0 1 0 1 0 0 3039.dat
+
+0 FILE a-table-for-two-02-red-bird-with-raised-tail.ldr
+0 Red bird with raised tail
+0 Name: a-table-for-two-02-red-bird-with-raised-tail.ldr
+0 // Build script layer: Red bird with raised tail
+1 25 250 -8 10 -1 0 0 0 1 0 0 0 -1 3024.dat
+1 25 230 -8 30 -1 0 0 0 1 0 0 0 -1 3024.dat
+1 4 240 -32 20 -1 0 0 0 1 0 0 0 -1 3001.dat
+1 320 270 -56 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 0 230 -40 10 -1 0 0 0 1 0 0 0 -1 3024.dat
+1 14 200 -40 20 -1 0 0 0 1 0 0 0 -1 3068b.dat
+1 4 220 -64 30 1 0 0 0 1 0 0 0 1 3039.dat
+
+0 FILE a-table-for-two-03-shared-seed-table.ldr
+0 Shared seed table
+0 Name: a-table-for-two-03-shared-seed-table.ldr
+0 // Build script layer: Shared seed table
+1 70 140 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 19 140 -32 40 1 0 0 0 1 0 0 0 1 3068b.dat
