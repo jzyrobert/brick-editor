@@ -1,5 +1,12 @@
 // Numeric summaries only. No generation channel or design repair facilities.
 export type Score = { task: string; condition: string; total: number };
+// Opt-in eligibility; legacy protocols still assess every rendered artifact.
+export function reviewEligible(status: string, policy?: string) {
+  if (policy === undefined) return true;
+  if (policy !== "submitted-only")
+    throw new Error("Unknown review eligibility");
+  return status === "submitted";
+}
 export function visualContrasts(
   rows: Score[],
   seed = 20261011,

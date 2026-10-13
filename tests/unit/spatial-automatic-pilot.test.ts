@@ -94,3 +94,16 @@ it("compiles each 16-part feasibility sketch inside the declared inventory", () 
     expect(compiled.ldraw).toContain(".dat");
   }
 });
+
+it("excludes invalid compiled artifacts only under the declared review policy", async () => {
+  const { reviewEligible } = await import(
+    "../../scripts/spatial-benchmark/analysis"
+  );
+  expect(reviewEligible("submitted", "submitted-only")).toBe(true);
+  expect(reviewEligible("model-failure", "submitted-only")).toBe(false);
+  expect(reviewEligible("infrastructure-failure", "submitted-only")).toBe(
+    false,
+  );
+  expect(reviewEligible("model-failure")).toBe(true);
+  expect(() => reviewEligible("submitted", "unknown")).toThrow();
+});

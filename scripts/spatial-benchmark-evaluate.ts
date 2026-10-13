@@ -9,6 +9,7 @@ import { viewCamera, type BuildView } from "../src/build-script/views";
 import { hash, json } from "./spatial-benchmark/part-reference";
 import { verifyFile, ROOT } from "./spatial-benchmark/sandbox";
 import { codexChannel } from "./spatial-benchmark/codex-channel";
+import { reviewEligible } from "./spatial-benchmark/analysis";
 import {
   readCodexQuota,
   quotaAllowsNext,
@@ -47,6 +48,7 @@ export async function main(argv: string[]) {
       await readFile(resolve(flags.get("--protocol")!), "utf8"),
     ),
     mode = flags.get("--mode");
+  reviewEligible("submitted", protocol.scoreEligibility);
   const manifest = JSON.parse(
       await readFile(join(runs, "manifest.json"), "utf8"),
     ),
@@ -177,6 +179,7 @@ export async function main(argv: string[]) {
   // Archive the actual review implementation before inspecting any candidate.
   const sources = [
     "scripts/spatial-benchmark-evaluate.ts",
+    "scripts/spatial-benchmark/analysis.ts",
     "scripts/spatial-benchmark/codex-channel.ts",
     "scripts/spatial-benchmark/codex-quota.ts",
     "scripts/spatial-benchmark/codex-bridge.mjs",
@@ -205,6 +208,14 @@ export async function main(argv: string[]) {
   const scores = [];
   let largestDrop = 0;
   for (const row of mapping) {
+    if (!reviewEligible(row.status, protocol.scoreEligibility)) {
+      scores.push({ id: row.id, status: "unevaluated-invalid-submission" });
+      await writeFile(
+        join(out, "blind-scores.json"),
+        JSON.stringify(scores, null, 2) + "\n",
+      );
+      continue;
+    }
     const quota = await readCodexQuota();
     if (!quotaAllowsNext(quota, largestDrop)) {
       console.log(

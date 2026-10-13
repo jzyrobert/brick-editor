@@ -204,7 +204,7 @@ export async function main(argv: string[]) {
         visualContrasts: visualContrasts(visual),
         rows,
         limitations: [
-          "One model family; fixed development briefs; three creative repetitions per condition.",
+          `One model family; fixed development briefs; ${manifest.repetitions} scheduled repetitions per condition.`,
           "One automated reviewer; no independent human agreement measured.",
           "Compiler acceptance and detected contacts do not establish physical buildability.",
           "Availability and returned facts are recorded; successful use is not inferred from retrieval.",
