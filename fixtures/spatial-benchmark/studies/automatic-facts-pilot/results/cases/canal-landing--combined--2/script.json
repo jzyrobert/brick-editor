@@ -1,0 +1,203 @@
+{
+  "buildScript": 1,
+  "title": "The Little Canal Landing",
+  "description": "Exactly 16 parts. A low navy launch approaches a tan arched footbridge. Sloped approaches connect the bridge to its stone banks; a staggered quay has two black mooring bollards. The boat remains separate, with a full stud of open water beside the quay and clearance beneath the arch. No water base.",
+  "palette": {
+    "stone": "dark bluish grey",
+    "quay": "light bluish grey",
+    "bridge": "tan",
+    "ramp": "dark tan",
+    "hull": "dark blue",
+    "bow": "dark red",
+    "seat": "reddish brown",
+    "bollard": "black"
+  },
+  "sections": [
+    {
+      "name": "Connected bridge and short quay",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            -3,
+            0,
+            0
+          ],
+          "colour": "stone",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3039.dat",
+          "at": [
+            -1,
+            3,
+            0
+          ],
+          "colour": "ramp",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            3,
+            0,
+            0
+          ],
+          "colour": "stone",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3039.dat",
+          "at": [
+            3,
+            3,
+            0
+          ],
+          "colour": "ramp",
+          "turn": 270
+        },
+        {
+          "op": "place",
+          "part": "3659.dat",
+          "at": [
+            0,
+            6,
+            0
+          ],
+          "colour": "bridge",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3068b.dat",
+          "at": [
+            0,
+            9,
+            0
+          ],
+          "colour": "bridge",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3068b.dat",
+          "at": [
+            2,
+            9,
+            0
+          ],
+          "colour": "bridge",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            4,
+            0,
+            -2
+          ],
+          "colour": "quay",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3068b.dat",
+          "at": [
+            4,
+            3,
+            -1
+          ],
+          "colour": "quay",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            6,
+            3,
+            -2
+          ],
+          "colour": "bollard",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            6,
+            4,
+            -2
+          ],
+          "colour": "bollard",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            7,
+            3,
+            -1
+          ],
+          "colour": "bollard",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            7,
+            4,
+            -1
+          ],
+          "colour": "bollard",
+          "turn": 0
+        }
+      ]
+    },
+    {
+      "name": "Separate approaching launch",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            1,
+            0,
+            -5
+          ],
+          "colour": "hull",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3039.dat",
+          "at": [
+            1,
+            3,
+            -3
+          ],
+          "colour": "bow",
+          "turn": 180
+        },
+        {
+          "op": "place",
+          "part": "3068b.dat",
+          "at": [
+            1,
+            3,
+            -5
+          ],
+          "colour": "seat",
+          "turn": 0
+        }
+      ]
+    }
+  ]
+}

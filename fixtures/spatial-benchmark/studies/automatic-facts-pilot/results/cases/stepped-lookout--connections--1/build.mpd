@@ -1,0 +1,46 @@
+0 FILE ridgewalk-lookout.mpd
+0 Ridgewalk Lookout
+0 Name: ridgewalk-lookout.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 ridgewalk-lookout-01-ascending-route.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 ridgewalk-lookout-02-observation-perch.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 ridgewalk-lookout-03-sloping-canopy.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 ridgewalk-lookout-04-supported-summit-marker.ldr
+
+0 FILE ridgewalk-lookout-01-ascending-route.ldr
+0 Ascending route
+0 Name: ridgewalk-lookout-01-ascending-route.ldr
+0 // Build script layer: Ascending route
+1 72 20 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 19 20 -32 20 1 0 0 0 1 0 0 0 1 3068b.dat
+1 72 20 -48 80 0 0 1 0 1 0 -1 0 0 3001.dat
+1 19 20 -56 60 1 0 0 0 1 0 0 0 1 3068b.dat
+1 72 20 -72 120 0 0 1 0 1 0 -1 0 0 3001.dat
+1 19 20 -80 100 1 0 0 0 1 0 0 0 1 3068b.dat
+
+0 FILE ridgewalk-lookout-02-observation-perch.ldr
+0 Observation perch
+0 Name: ridgewalk-lookout-02-observation-perch.ldr
+0 // Build script layer: Observation perch
+1 72 40 -96 140 1 0 0 0 1 0 0 0 1 3001.dat
+1 19 40 -120 130 1 0 0 0 1 0 0 0 1 3659.dat
+1 19 40 -120 150 1 0 0 0 1 0 0 0 1 3659.dat
+
+0 FILE ridgewalk-lookout-03-sloping-canopy.ldr
+0 Sloping canopy
+0 Name: ridgewalk-lookout-03-sloping-canopy.ldr
+0 // Build script layer: Sloping canopy
+1 320 20 -144 150 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 60 -144 150 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 20 -168 170 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 60 -168 170 1 0 0 0 1 0 0 0 1 3039.dat
+
+0 FILE ridgewalk-lookout-04-supported-summit-marker.ldr
+0 Supported summit marker
+0 Name: ridgewalk-lookout-04-supported-summit-marker.ldr
+0 // Build script layer: Supported summit marker
+1 297 70 -176 170 1 0 0 0 1 0 0 0 1 3024.dat
+1 297 70 -184 170 1 0 0 0 1 0 0 0 1 3024.dat
+1 297 70 -192 170 1 0 0 0 1 0 0 0 1 3024.dat

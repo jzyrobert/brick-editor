@@ -1,0 +1,40 @@
+0 FILE ridgeline-lookout.mpd
+0 Ridgeline Lookout
+0 Name: ridgeline-lookout.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 ridgeline-lookout-01-interlocked-ascending-route.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 ridgeline-lookout-02-open-observation-shelter.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 ridgeline-lookout-03-connected-summit-marker.ldr
+
+0 FILE ridgeline-lookout-01-interlocked-ascending-route.ldr
+0 Interlocked ascending route
+0 Name: ridgeline-lookout-01-interlocked-ascending-route.ldr
+0 // Build script layer: Interlocked ascending route
+1 72 40 -24 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 72 120 -24 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 71 80 -48 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 71 120 -72 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 28 20 -32 20 1 0 0 0 1 0 0 0 1 3068b.dat
+1 28 60 -56 20 1 0 0 0 1 0 0 0 1 3068b.dat
+
+0 FILE ridgeline-lookout-02-open-observation-shelter.ldr
+0 Open observation shelter
+0 Name: ridgeline-lookout-02-open-observation-shelter.ldr
+0 // Build script layer: Open observation shelter
+1 15 120 -96 10 1 0 0 0 1 0 0 0 1 3659.dat
+1 15 120 -96 30 1 0 0 0 1 0 0 0 1 3659.dat
+1 320 100 -120 30 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 140 -120 30 1 0 0 0 1 0 0 0 1 3039.dat
+
+0 FILE ridgeline-lookout-03-connected-summit-marker.ldr
+0 Connected summit marker
+0 Name: ridgeline-lookout-03-connected-summit-marker.ldr
+0 // Build script layer: Connected summit marker
+1 15 130 -128 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 130 -136 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 15 130 -144 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 130 -152 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 15 130 -160 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 297 140 -168 20 1 0 0 0 1 0 0 0 1 3068b.dat

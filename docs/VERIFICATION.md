@@ -1,5 +1,9 @@
 # Verification — 27 September 2026
 
+## Automatic facts pilot execution checks — 13 October 2026
+
+The submitted-only review correction passed six checks across spatial-analysis and spatial-automatic-pilot suites, followed by type checking and repository formatting. This implements the already declared exclusion of invalid submissions from visual scoring; the frozen earlier protocol remains archived. The 32-case final ledger retains all five infrastructure and three model failures. CLI replay of `arched-toll-gate--shape--2/script.json` compiled 16 parts and produced byte-identical MPD SHA-256 `e226cd2ef7399bf6ca5659b338ea774c9d0036de19bfba1738fc8190c64d3648`. Original candidate sources are unchanged. Review outcomes remain pending.
+
 ## Automatic facts pilot preflight — 13 October 2026
 
 Ran seven focused suites: spatial-automatic-pilot, spatial-benchmark, spatial-part-reference and spatial-codex unit tests; spatial-benchmark, spatial-codex and spatial-live integration tests. All 43 checks pass. New checks validate 32 deterministic cases, field isolation, byte-identical automatic/on-demand control prompts, four inventory-conforming 16-part feasibility sketches and two independent four-part relationship fixtures with failing perturbations. The 32-case dry run completes with zero model calls; its submitted statuses describe transport probes, not task solutions. Private logs: `.local/automatic-pilot-tests-v2.log` and `.local/automatic-facts-dry-v1`. The initial manifest was rejected for combining legacy feedback with inventory; before any model call it was corrected to common no-feedback conditions with zero checks/repairs.

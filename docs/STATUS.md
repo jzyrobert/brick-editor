@@ -1,5 +1,9 @@
 # Implementation status
 
+## Automatic facts pilot generation complete — 13 October 2026
+
+All 32 scheduled Sol6.1/high generation cases ended: 24 submitted, three model failures and five infrastructure failures. No failures were retried. All 26 compiled artifacts use 16 explicit placements and no packed massing. All treatments received their declared facts automatically; no case searched, inspected, checked or repaired. The final generation quota reading was 92% weekly remaining. Post-freeze rendering produced 104 images (including two invalid compiled artifacts); visual review is in progress, so no quality improvement is established. Sources, exact initial prompts, hashes and failures are retained under `fixtures/spatial-benchmark/studies/automatic-facts-pilot/results/`.
+
 ## Automatic facts pilot preparation — 13 October 2026
 
 A new owner-authorised 32-session development pilot compares automatically supplied shape, connector and combined facts against unchanged control inputs for four 16-part inventory briefs. All arms use no candidate feedback. The manifest, pre-generation protocol and evaluator-only witnesses are separate from the completed gallery pilot. Forty-three focused unit/integration checks and a zero-model-call 32-case dry run pass. Experimental outcomes are pending; defaults, gallery and language remain unchanged. See [protocol](../fixtures/spatial-benchmark/studies/automatic-facts-pilot/README.md).

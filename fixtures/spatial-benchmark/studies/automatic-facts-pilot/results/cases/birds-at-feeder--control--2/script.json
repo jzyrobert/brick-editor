@@ -1,0 +1,190 @@
+{
+  "buildScript": 1,
+  "title": "A Table for Two",
+  "description": "Two bright little birds meet over a raised seed tray: one stretches forward, while the other turns its head across its body. Exactly 16 parts.",
+  "parts": {
+    "body": "3001.dat",
+    "curve": "3039.dat",
+    "eye": "3024.dat",
+    "stand": "3659.dat",
+    "tray": "3068b.dat"
+  },
+  "sections": [
+    {
+      "name": "The two diners",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "red",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            2,
+            3,
+            0
+          ],
+          "colour": "yellow"
+        },
+        {
+          "op": "place",
+          "part": "@curve",
+          "at": [
+            2,
+            6,
+            0
+          ],
+          "colour": "red",
+          "turn": 270
+        },
+        {
+          "op": "place",
+          "part": "@curve",
+          "at": [
+            0,
+            3,
+            0
+          ],
+          "colour": "red",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@eye",
+          "at": [
+            2,
+            9,
+            0
+          ],
+          "colour": "black"
+        },
+        {
+          "op": "place",
+          "part": "@eye",
+          "at": [
+            2,
+            9,
+            1
+          ],
+          "colour": "black"
+        },
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            12,
+            0,
+            0
+          ],
+          "colour": "blue",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            10,
+            3,
+            0
+          ],
+          "colour": "yellow"
+        },
+        {
+          "op": "place",
+          "part": "@curve",
+          "at": [
+            12,
+            6,
+            0
+          ],
+          "colour": "blue",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@curve",
+          "at": [
+            12,
+            3,
+            2
+          ],
+          "colour": "blue",
+          "turn": 180
+        },
+        {
+          "op": "place",
+          "part": "@eye",
+          "at": [
+            13,
+            9,
+            0
+          ],
+          "colour": "black"
+        },
+        {
+          "op": "place",
+          "part": "@eye",
+          "at": [
+            13,
+            9,
+            1
+          ],
+          "colour": "black"
+        }
+      ]
+    },
+    {
+      "name": "Shared seed tray",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@stand",
+          "at": [
+            6,
+            0,
+            0
+          ],
+          "colour": "reddish brown"
+        },
+        {
+          "op": "place",
+          "part": "@stand",
+          "at": [
+            6,
+            0,
+            1
+          ],
+          "colour": "reddish brown"
+        },
+        {
+          "op": "place",
+          "part": "@tray",
+          "at": [
+            6,
+            3,
+            0
+          ],
+          "colour": "tan"
+        },
+        {
+          "op": "place",
+          "part": "@tray",
+          "at": [
+            8,
+            3,
+            0
+          ],
+          "colour": "dark tan"
+        }
+      ]
+    }
+  ]
+}

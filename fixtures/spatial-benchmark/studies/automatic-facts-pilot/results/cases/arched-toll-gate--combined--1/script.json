@@ -1,0 +1,205 @@
+{
+  "buildScript": 1,
+  "title": "Red Signal Toll Entrance",
+  "description": "A double-depth stone arch frames a clear two-stud passage. A raised red stop marker crowns its right pier; beside it stands a glazed guard kiosk with a sloping red roof and amber beacon. Exactly 16 inventory parts.",
+  "parts": {
+    "brick": "3001.dat",
+    "slope": "3039.dat",
+    "arch": "3659.dat",
+    "plate": "3024.dat",
+    "tile": "3068b.dat"
+  },
+  "sections": [
+    {
+      "name": "Gate \u2014 eight parts",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@brick",
+          "at": [
+            -1,
+            0,
+            0
+          ],
+          "colour": "dark bluish grey",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@brick",
+          "at": [
+            3,
+            0,
+            0
+          ],
+          "colour": "dark bluish grey",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@arch",
+          "at": [
+            0,
+            3,
+            1
+          ],
+          "colour": "light bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@arch",
+          "at": [
+            0,
+            3,
+            2
+          ],
+          "colour": "light bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            1,
+            6,
+            1
+          ],
+          "colour": "light bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            3,
+            6,
+            1
+          ],
+          "colour": "red",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            3,
+            7,
+            1
+          ],
+          "colour": "red",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            3,
+            8,
+            1
+          ],
+          "colour": "red",
+          "turn": 0
+        }
+      ]
+    },
+    {
+      "name": "Guard hut \u2014 six parts",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@brick",
+          "at": [
+            6,
+            0,
+            1
+          ],
+          "colour": "tan",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@brick",
+          "at": [
+            6,
+            3,
+            1
+          ],
+          "colour": "trans light blue",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            6,
+            6,
+            1
+          ],
+          "colour": "dark red",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            8,
+            6,
+            1
+          ],
+          "colour": "dark red",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            9,
+            9,
+            2
+          ],
+          "colour": "trans yellow",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@plate",
+          "at": [
+            9,
+            10,
+            2
+          ],
+          "colour": "trans yellow",
+          "turn": 0
+        }
+      ]
+    },
+    {
+      "name": "Entrance paving \u2014 two parts",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            1,
+            0,
+            -3
+          ],
+          "colour": "dark bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "@tile",
+          "at": [
+            1,
+            0,
+            -1
+          ],
+          "colour": "dark bluish grey",
+          "turn": 0
+        }
+      ]
+    }
+  ]
+}

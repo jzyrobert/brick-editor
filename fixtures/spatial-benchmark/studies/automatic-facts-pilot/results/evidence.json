@@ -1,0 +1,2384 @@
+{
+  "version": "automatic-facts-evidence/1",
+  "scheduled": 32,
+  "retained": 32,
+  "unattempted": [],
+  "baseCommit": "70f94935e3cf9061e5bf6ae7ce8bb55261682b3b",
+  "sourceHashes": {
+    "prompts/build-agent.md": "39bf8fdf93449a6717f7ed25febf550657f8069892a5339d204791e02936369d",
+    "prompts/brick-build.md": "ad423321197b3434d3b0d3f1e3560a508ff2c6b6b7f2d87126f79b1c1eabec37",
+    "prompts/build-agent-diorama.md": "63eadf606a208d165e8095f43789df617b70137bb2293a889daf4888e1d2ad6b",
+    "prompts/brick-build-diorama.md": "2d728a55ca06d642fb146ce1fdd5baf025270b511da9e445172fbc033c9652af",
+    "scripts/one-shot-build.ts": "b94814566f7f02ae838254f348ba8577e06d544c84770521da86f5d489b4c26c",
+    "scripts/agent-part-facts.ts": "9fa0baeb6aae13a29adf5e8480f8453773f70055dc2892562f252e6c4362160f",
+    "scripts/brick-build.ts": "f6087d2054b7f0cd6a54dcbf10a3f859447761a1b7a5ef8a353f310746149f67",
+    "scripts/full-library-node.ts": "2a13817bd82f2b249147112245dd7494a7306e767649056d1026fd98afd5ee4c",
+    "src/build-script/part-list.ts": "49ada9cd778d08e5c462ca6b07c4878d833c1db199d70d8cc2f37d00f851408a",
+    "src/build-script/part-search.ts": "9253726d740d1e711616044c441c4d15a3fa81b0bb4ccc81576cb55b512eb656",
+    "src/build-script/spec.ts": "580a40a4cc6acf029a121fed26f46892a0b16c7499ee8f80ac152169d2199115",
+    "src/build-script/compile.ts": "c757095005f6f75feb4090f0bc6e99fea2de134735071ebd01a3ffcf23c00797",
+    "src/build-script/pack.ts": "3f6e1247b3b5c4e560012f9b5a74e707ff6de69a5054307e0862a976612b619e",
+    "src/catalog/data.json": "7d76f89934f932c4f23f15e4a2024a1ff134dace5e4005442e1bd4bab5325d77",
+    "src/catalog/bounds.json": "94ce2a806750a41b186b81876804d7afb3870881ef8dc9a8eac301fa73c6a877",
+    "src/catalog/connectors.json": "082b0aa40901a849d5c35071bd47fce0802183f9db973b0b7620f1a0a9c9ae69",
+    "src/catalog/full-library-lock.json": "18db3ee192d79bd322754ecd265f5c36912eff6a330961e474fb88d43024af89",
+    "src/catalog/full-connectors-lock.json": "2d49834746a0c6545f3ce67f1da30f4d3dceda4afa06137eb9e9d89dd5bcea85",
+    "src/catalog/color-availability.json": "c9fbb143aa186f13ec108ea9540c8122c1ab5ed85e39857664428df65df2b3b0",
+    "package.json": "6df89bf369fde0de74abe3fa564e90db549d155d14296018c3afbb738c78156e",
+    "package-lock.json": "2499ea7817c2f7b2202c43f6365ec688ba8e225ad5f6b78288d9a82dcfe3f7d7",
+    "scripts/spatial-benchmark.ts": "06d61ab0373e57f266e0c642bdcb83d67a3ec3090b88ae1ed4da8ca693ae00f8",
+    "scripts/spatial-benchmark/manifest.ts": "3cc963c4fc26ed2752dc0fa1554dea656fb19fc0aa6db7c0fc1a67c4f7e8f940",
+    "scripts/spatial-benchmark/part-reference.ts": "83627eb7151630aea45aeb65d67ebea6bafe8d4e9a1f01641e862963a261b125",
+    "scripts/spatial-benchmark/session.ts": "ab6e281450e8b0de218a4e312705f43dc50c85c728641d2ebed9e1c3c15fef9e",
+    "scripts/spatial-benchmark/sandbox.ts": "91ef1e018241b862c83d17a27c43865840dfd5856ef1d1b2d0b0fa8d78a7f11a",
+    "scripts/spatial-benchmark/compile-worker.ts": "cbee95c0240d1934f60bd75ade6a8a6d8d26196caf0a8b60779be93eb7c3024b",
+    "scripts/spatial-benchmark/calibration-evaluator.ts": "347c6fd2142a27e1097ec1e9323ca931019ef4fe1925ccc68840909b97421110",
+    "fixtures/spatial-benchmark/evaluator/witnesses.json": "7bfe6e110d6f5ff6c9a73fe41488c90403a7d0a667b560ced9534ee68454d025"
+  },
+  "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+  "manifestSha256": "d052146988f20869de82a1f535034be3ee061b646121af8003b81b0ff83c5808",
+  "resultsSha256": "f4b8a572b9eac6e8ddf2c3c2d7bf015e216d7bb88635317c816599516f1bfe4c",
+  "lastQuota": {
+    "checkedAt": "2026-10-13T09:08:18.659Z",
+    "ordinaryUsageAllowed": true,
+    "windows": [
+      {
+        "usedPercent": 8,
+        "windowDurationMins": 10080,
+        "resetsAt": 1792481675
+      }
+    ],
+    "weeklyRemaining": 92,
+    "reached": false
+  },
+  "rows": [
+    {
+      "caseId": "canal-landing--control--1",
+      "status": "infrastructure-failure",
+      "failure": "Isolated Codex turn failed (1); inspect host stderr",
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "freeze.json": "6ca2ac8e73959c72a6796daac16a3066c672be365cccc0f3f2b81d3a7f5de0be",
+        "audit.jsonl": "58a0198786fc25d870e21d2f29775f1d2a9c17ea3812107ae11c07431fab27bb"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73202,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "referenceCoverage": [],
+      "executionPhase": 1
+    },
+    {
+      "caseId": "arched-toll-gate--shape--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "c44e3fb10b9d0cb4211a6dcf97adac7d647a7f85d963d187f5189fdf37c45cc4",
+        "compilation.json": "1d59bebe07d585cc683a39fa086189801054cfa1301898a6d965bcee8f6d6387",
+        "build.mpd": "e226cd2ef7399bf6ca5659b338ea774c9d0036de19bfba1738fc8190c64d3648",
+        "freeze.json": "216d5c1740a80a54e99f6b74d99eb217b5da66a0c45181bbcf612108e78565ff",
+        "audit.jsonl": "119a840cfeda020eb55fd6eb8c8207586a2a6c034471ae52d085f0c1d4dd09e9"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82707,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 412
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 2,
+      "extractedScriptSha256": "f4fb38c78c724d4e22881bab5533da074580718c0f59edf299b6372e462618fe"
+    },
+    {
+      "caseId": "canal-landing--connections--1",
+      "status": "infrastructure-failure",
+      "failure": "Isolated Codex turn failed (1); inspect host stderr",
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "freeze.json": "e4a6ac8a71e8c67c87b715e2a29b2de0949506eee4d0663c6d611c3c48540df9",
+        "audit.jsonl": "51eeae2692fd0a0a4f41d0f4724a6b7bb45e33211014fad029bfe3e48b7b10c4"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83314,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "referenceCoverage": [],
+      "executionPhase": 2
+    },
+    {
+      "caseId": "canal-landing--combined--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "72441d729a8f3205e614a3f8a2c9b71cb7aa7a1c5fcb263a770af8f2b30741e4",
+        "compilation.json": "498be26af0f049edadbc34c8c3fd8e2fdd6dee56e4dbba9cb28605eefb59b5c3",
+        "build.mpd": "d383e88037247f6d24c63928b941a0f9187bfcf57c3b7190be0882451be52d4a",
+        "freeze.json": "2aac2a2fd0aaa01e68f73c8a5678ebef4bf179d3419d29be8c7ba94de20cff6f",
+        "audit.jsonl": "989c37412277567f7a34664ecf32dced678260859869a947e3cf354ccb180ba1"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91335,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 427
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 3,
+      "extractedScriptSha256": "2f59f4e9ab03723f5eed8696ad309acc8631926d96d307d255973afdaae5865e"
+    },
+    {
+      "caseId": "stepped-lookout--connections--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "1144252dd1205421e7cdcc183bc1cf3a57ac3df96f0dfa92818fdec4052f6df5",
+        "compilation.json": "706179ad5ed7c7dbceb70219c80ec2f1a0b597e790bb062248870686fbb38017",
+        "build.mpd": "c726a4dff41f273524a82aa9b8f8d513d183bc9cb56982817a488766eab9f521",
+        "freeze.json": "84a0b6ac0d6f7e17c763c922d1419e2d7eac31081bfacd4e8d8f48dc1b24697b",
+        "audit.jsonl": "39231c1ceb14e202729fc1e1f18a61bb0837e00055eb3b34380e460616b8dad5"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83299,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 412
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 3,
+      "extractedScriptSha256": "70bd0d05f7b20981b80e2e84468b48008a65b4897690ab19209c44ad4f6490dd"
+    },
+    {
+      "caseId": "arched-toll-gate--connections--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "1eae610e3eb4bf4b8d261aba1bfa4af8be5703758ccc7a3c43c6eff92c37cb3c",
+        "compilation.json": "eda57726b99cc3b82ccb2d693c85401333557fc5f973bdb473fab7cb723a0627",
+        "build.mpd": "2a5e0188eea7d531d3ae46d000ccaa77cca277fd86f0711f0c8a55e8b3f08629",
+        "freeze.json": "254745f81aafdd55e118287dcf9509e90a73f38e02a85eece1b01a9172435223",
+        "audit.jsonl": "7b0aa70f6ffc7cdcb3809a2e887870768d74f0bbc21b4d1415ac3de1de7aa7af"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83271,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 424
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 3,
+      "extractedScriptSha256": "2f896a844a70735774a947bc11060306356e00be3e27cf578975ffd78e1fd2bb"
+    },
+    {
+      "caseId": "stepped-lookout--combined--1",
+      "status": "infrastructure-failure",
+      "failure": "Isolated Codex turn failed (1); inspect host stderr",
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "freeze.json": "356d77a877f34f1b124c0cdb43c097d66c8c1472cd342d8a3c1ade494f5659c4",
+        "audit.jsonl": "d4cbac9716d6fa7d1b419dfdf912f0a46e75701cd87fd7059e5862949ef2eb6a"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91320,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "referenceCoverage": [],
+      "executionPhase": 3
+    },
+    {
+      "caseId": "canal-landing--control--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "a822956769dbac27dc044bc2621bae44e6ef5dc129ceca04694d91c844ff0c0f",
+        "compilation.json": "23b34bc9c4053750f40e727be94d5c095b9fae0cccf717ceb447a0bfbc6b8e58",
+        "build.mpd": "6c673d48d6d2b4b8a34134f6608e3a958b2a5c7fcafbfe39c4d1824df16b2516",
+        "freeze.json": "9acc7235bc3a728c0498c2a17bc6cc8931e74b7f46365a089114cca32128add1",
+        "audit.jsonl": "3a16f05b1f6183c571f809705adaa95ad5779282ce9191d6e51c047fbf0d8cfe"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73202,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 448
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "extractedScriptSha256": "1505192c4c3afdb7f30a8951807de71016d2b22a982b8c0c90f6791d9cd1632d"
+    },
+    {
+      "caseId": "birds-at-feeder--combined--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "ae6cf98e4f6d369fc06ca512df83468c72d799be93e6cdaba19663884a37743e",
+        "compilation.json": "8504dbc9e694be8d4e3107d3947ccf828df5910060e093dc3d2979a9b15d0bad",
+        "build.mpd": "e32fecdae61d718213204dfc5c7935211ef3fdec67d0872744b025c3191d7b3b",
+        "freeze.json": "9a6625c8146f9a07369ebce311dae68af01b3a275a25f2b6ee25e5eaedbf07e6",
+        "audit.jsonl": "25955429bd1b0bf3b1e25603c6f712fe60ec4faa21d69886deecbe8bbdf1ed79"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91352,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 434
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "extractedScriptSha256": "6d3a7f631cde84d40c31cafcd1d73641a86ed5c4b6fcaaab24522f9cbd45ef6a"
+    },
+    {
+      "caseId": "arched-toll-gate--combined--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "09e730dfe21b2220b78ea5e2d77d9b1c6a870bdb99f2664b3930883ca13f5bef",
+        "compilation.json": "90b9b3af6a8ae7b1b0492bdd7aae618e82ac99ad288647f41190b4d24a391f82",
+        "build.mpd": "7d5da331891bb01b0f3a34652ef123d64cf457b5fb0fad66b954e381f44d0167",
+        "freeze.json": "876df56542770fb3a7418940d268d99cbcdaffdcb51dc9e288f8fd2e91ca612c",
+        "audit.jsonl": "00151ad45b6032e7daa6dca5a721909c97089a780405445bf98a131d410cad12"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91292,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 441
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "extractedScriptSha256": "cad1cc4dc1e1c706de990f9399e8bf82be12920f2a87c4307ec0b7e00377c185"
+    },
+    {
+      "caseId": "stepped-lookout--control--1",
+      "status": "model-failure",
+      "failure": "sections[0].ops[0].part: unknown part alias @step",
+      "files": {
+        "submission.txt": "659c54fe596dc7c46d3b12cb1e80935ec348a3355e91b0978221a25b0f72f8a5",
+        "compilation.json": "f0d3a50d3b51f2af78ceb8cc3ac50f661326d3d018573d51c45cd76b60bd0680",
+        "freeze.json": "c6b49984bbb42f8ca9d526633d3899b9eb7f009e0dcf8b4e9f9905103a4d952b",
+        "audit.jsonl": "cee2f4d156bb77aa7936b3300d586c7429be28a0f140b8a44f2ac5c72d41e5ad"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73187,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 382
+      },
+      "referenceCoverage": [],
+      "executionPhase": 4
+    },
+    {
+      "caseId": "canal-landing--combined--2",
+      "status": "model-failure",
+      "failure": "Submission failed benchmark validation",
+      "files": {
+        "submission.txt": "6fc8bf9ce71800b02280ade16bdff36cf57301cda0782af1f5770ed073d429d9",
+        "compilation.json": "ba6d017f1ab4ce9263713ed452240b476e07ef15bda04fbdbaee68173e8bf191",
+        "build.mpd": "c6b999906319b22a8e50fa018d6c8fc754a7e058154516b5c17bbfa9329bb7a2",
+        "freeze.json": "e90e3768d02768f01bfd3b20228fec2f3002039b28171431d610570adc938f5c",
+        "audit.jsonl": "ad3bf17b2b4f1fc307ac06734da689999a5bc84c9c3573ac9379fb9cd704d8e8"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91335,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 431
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "extractedScriptSha256": "21009259e7f12f6391b8003e530e1c2fef3a04f15df3cb094ab260142b6a2ed6"
+    },
+    {
+      "caseId": "stepped-lookout--control--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "a5242924c0189c8d522996fcbcc66ac8eb34857dc25428e288ce502306d67ec9",
+        "compilation.json": "2a821cd28f4d497d78945cfd4a6c5968b06e1158df8a9a121afb0523913d8237",
+        "build.mpd": "86c2cb1f34416db1039d0d9082e468bafe9d9c9b4e10d6b7d81904d0aaa9f506",
+        "freeze.json": "c2f4054d81ce2b1f582712b431e191633ff8e6ba3dfd6e73339b438b0134460c",
+        "audit.jsonl": "3355dd72ce77a20ebfce9a834d9735e5fc61708ea8634855caf9e2ce7aae16ef"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73187,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 451
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "extractedScriptSha256": "e98dae03e3de4d1fd7870f72973e10f2578cb552e897436642fc846fea51ff12"
+    },
+    {
+      "caseId": "stepped-lookout--shape--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "af58a248de16739495019bc7008b7f793b95480d0d7b44921d602b37ca26f96e",
+        "compilation.json": "7a678ea98a83eff41e2db0fdfc3c914bf919384c8c6c87492457ca548ff3d604",
+        "build.mpd": "69cd7012743e0f1ded0770ec942109b57e9de8fb656fe4e5521448178bde358b",
+        "freeze.json": "f420b03d30a9bd396b8bcad3a76c66fb4061ef95be89a03dccc5749e0e689311",
+        "audit.jsonl": "4f6b203eb4d271a0e039d23533c1f493486feee6028e44798aa8bf6061998e62"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82735,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 498
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "extractedScriptSha256": "0d7cba7ced946bee5465ce0042aeb8969720e015d1c86af7fced0c3391693fa2"
+    },
+    {
+      "caseId": "birds-at-feeder--combined--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "515a1fb5606fa60bbd9286de8baa9e60ca3515c25d121f21b75aedfb127e9492",
+        "compilation.json": "fc795660108559f415ab3b8c0568cd1a6145caf74485a6e0260e3b0de6d10a55",
+        "build.mpd": "20673a5d910185c54d76809469a80dde3295a40ad88c11cad32175f711cf571a",
+        "freeze.json": "37646d648dcfd984d74753249df17e03df754f2ce9c41152fa5a23196e86d967",
+        "audit.jsonl": "86aabc2ff46507657b657cd3f20b4db4c3e0f15d47ab3e4877db0e0537bda488"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91352,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 440
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "extractedScriptSha256": "2425a48f963abd1dd86a92a316674458d7cb4ff4bf70c7170491487b5b498936"
+    },
+    {
+      "caseId": "arched-toll-gate--connections--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "b8bcdb9e4207a653ac3e84082a82ddfa7aaac5791ceb57a32fffabc2c20aa22b",
+        "compilation.json": "5aec5f68ded9c871c15cc188ecf7094da16ea0e7d437bae77a68965071b8c7eb",
+        "build.mpd": "77069c62d0e8599f6d5ee0f4304bfca6aa1094add4f7ff259c42cdfdd38980d1",
+        "freeze.json": "d90bb6fe4cfafadf5eb6a2cc485cd9939685092264cfa8eec37366a525c34e0b",
+        "audit.jsonl": "fcfc9913f30cdb5746dd9172f1c73a01b81d579457d1d8966057e8ac5ecc4ec2"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83271,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 411
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "extractedScriptSha256": "3440076945f953cdbf845b053f07674a244440f462c74858c84e9e575c6a7db3"
+    },
+    {
+      "caseId": "arched-toll-gate--shape--1",
+      "status": "infrastructure-failure",
+      "failure": "Isolated Codex turn failed (1); inspect host stderr",
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "freeze.json": "c565b9dfd5695a20a976f5fdb67cd41d74a1ada8ed710cbdba57e08e5b48937a",
+        "audit.jsonl": "a1899647c9a3381e6fa0c77a847df3e09ff649f3bf3132cf98848da36ea39f42"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82707,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "referenceCoverage": [],
+      "executionPhase": 4
+    },
+    {
+      "caseId": "birds-at-feeder--shape--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "9ffa86dcbc5f820c9f70b19ae44a207117ae0fa7ca7ce54b98f3c0ebf182fc0b",
+        "compilation.json": "805eace345cf27d71fea0e6aaadbd7ec5743268b930922a39c1926cee9625a9b",
+        "build.mpd": "e8467432761164d724b5c8f925e4802c816f27cf6d82b63dcdd285b52183fd45",
+        "freeze.json": "fb5762384cfe6b9c67a830aba473123cbe953e2ebd69ef2be10ad5ffb7e48ddb",
+        "audit.jsonl": "0e86f18a3a5ff8eea5066438542d2ad6e783fd34d6c578aea862e76d01a20988"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82767,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 433
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "5b77afaf166696228302d3acf9d050555fd05e8eeee25ef11f10dd783818e733"
+    },
+    {
+      "caseId": "canal-landing--shape--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "06a0d147c1609f06906eafd4b0ef92590968710a830f42a088d574db09c3c795",
+        "compilation.json": "dee06c2b327e58c20e832f018144691d6ea8983d3139ab0903d3a7f10076e5de",
+        "build.mpd": "969a507640e5ce5d9d4d2dd25a547746c2759f57759bf2c8d858cbf6c4a961be",
+        "freeze.json": "8d9e7fc171e24d88a0d110451afac85c2c5c7d17ea0602ee2e4d9dc83da45db4",
+        "audit.jsonl": "78bb8ba63acbb81d962ee40bf819697cb7a4c97424f95bd9f26ff82ad2ec8feb"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82750,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 421
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "ed0c19062643e6d79f5054916f5a1faa9d34bcc9630d69e97f839b0079943ade"
+    },
+    {
+      "caseId": "arched-toll-gate--control--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "f521ca2172ad181a0ec59a8055f3b21fdd34d8a1c2c474d4cf2abae3ce8be1cd",
+        "compilation.json": "3d95fdf570eff5cc4a03f2bc64b77b7f2c9bebf8c015e8fd129ade3b75dc2997",
+        "build.mpd": "b36b5fae4dd26fe410bab5ca4c4af60de8daa1e28acebbaa0a204f6dc577988d",
+        "freeze.json": "170f5849320095763e80f2fc332dc6d7fb3fde3683b3af036fca5325bff61a39",
+        "audit.jsonl": "6771e1897cdc61b8eb7df23e4f700392952e76fbbc861157d1c4a5f209d57847"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73159,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 446
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "efb6b8597e165d30304a76853d1f0afd778ff08844eef53b7d9e345b1bc611c1"
+    },
+    {
+      "caseId": "stepped-lookout--combined--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "a6bb6ea70e83b8881a236807bcdafea874942565f4dda185fcc975891ec0347e",
+        "compilation.json": "2f40b8be0a07dd715f87d9c6631e5ab832acb9ab6c0607a4da83cbc0d6d7f82d",
+        "build.mpd": "cde68a8803008f80c45b62e4d2b50874217e2f170941f2a19f6661513cb81209",
+        "freeze.json": "f2cc91dfd022ec953f10b5b60cdee098ad95181a84b4ad7a94cbcf681b49b952",
+        "audit.jsonl": "4b33561c077f651b160e333fded64496f9f85b0ef9162db2ef1ccdf151d61950"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91320,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 430
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "dd197d6cb39001229b239ec2b1fa066f7b856f4bf50499c5cdb5565d73299c22"
+    },
+    {
+      "caseId": "birds-at-feeder--connections--1",
+      "status": "model-failure",
+      "failure": "Submission failed benchmark validation",
+      "files": {
+        "submission.txt": "344e365f4c3c233cd9d26ead7c63d06952028eae3996ac7b4d4108f05d8818ae",
+        "compilation.json": "d1e1a976a61f501e9589f22dd04c11d8b2aa98b28c44d84c15e15fecc1e58850",
+        "build.mpd": "ec7c20c6dad66eeaaac097ae4cdc48dbaa38e13e1c43d3632891c6709507fb01",
+        "freeze.json": "1e357ad52409e8c6c1957d37a2b60df727f77fd3109114fb7aefb6f79942f7a5",
+        "audit.jsonl": "5b5bcd6cf3e0d694a2040e3d5d6ce89bb31c79622f0a597324675e257a2d03ee"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83331,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 421
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "b94e527a994c8feedbcf57af16ea5234af3a315f1c3e796e53e94c647105dcd8"
+    },
+    {
+      "caseId": "arched-toll-gate--combined--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "aa888c2bdf585e6e6434261b2ba40a3448245cfc8c0c90866c02c110f142b976",
+        "compilation.json": "6a74b79b7e56c355815ccb41ddc3451cd9f22023d19b56fd406ba543d77a1978",
+        "build.mpd": "f08277c35dcd5ae05c0edc8d55f0c1ae4e81111977a767c988fd169845b4f1f6",
+        "freeze.json": "1eae944aa55a7721e6fa487f67254f6cb47be06adc3deae6b68d6d0264c62b1e",
+        "audit.jsonl": "35173b84a16447593a0d3ea65ecd2e0c7a97fe945d0c7ee6afd7c6ccffa54ac7"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91292,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 412
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "635bef11dff296258ef92cb75f61a971ad936c0f43c3d10639729e8d9a07df6e"
+    },
+    {
+      "caseId": "birds-at-feeder--connections--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "f2b2ab41eb3222cd3fd4d3a950ad57beb0ec4aea906828a14a9285afc5a214db",
+        "compilation.json": "0cd2e2f033e54f5602cec122d355ec496378d9b025a6cda3e4e23a8a9613bff9",
+        "build.mpd": "da18b42fcea77607b722f0ce094a252830d2426f2cf0b496e4078806fef8c6c9",
+        "freeze.json": "1d7622dc023f5ad852cbb5b2e00de05c1a2ff9b99a7b68bbd5709acd21d55b84",
+        "audit.jsonl": "ccc70375415d1ad5f94947304a9e9aab3bdceabdac2076e571ded3b1fbffc435"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83331,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 457
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "f881d48650b0614340b09cb82f937b334ea4b4d1deb3046022b3bf95d6c4f8e7"
+    },
+    {
+      "caseId": "birds-at-feeder--shape--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "150c9f3f2bb473da7568ac3ae3219b5042f0c453b9e77ea9b88c42319cd6a29e",
+        "compilation.json": "db2c4c538062146022b2b8efee59a4489fc9b20bba6ee5e15010d41550b9dfac",
+        "build.mpd": "fef8101ed2b3b21ffbd489dba250f0846e6c105cc4442776230f9f0aa613258c",
+        "freeze.json": "eec88d5bb18915377852b2c439d837a379be7d2805eabce7e032a04dbbea15f0",
+        "audit.jsonl": "0c8ceadc3f483188b591d730ba2f692603abdc5a60889e447ede1dce0e8bd3fd"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82767,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 424
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "f280a716dd3b1f41eb7b1f8455a2c26c229aa0c5b33ed0bf97ffcad1e275f39d"
+    },
+    {
+      "caseId": "stepped-lookout--connections--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "fe4314a42e96b6a23c38f5408086e6bfb9d8b577d1a4d9d95f9ebeda6baa8df4",
+        "compilation.json": "312af940a659727be899bb4068d81c589213313119fcf284dd42e268245f4375",
+        "build.mpd": "daf02e880b417ba9d97c19a149c9c060b16de6153683950de2e0d3b2943f27b5",
+        "freeze.json": "800c7f3791c8dc32d56e15d8014c4b7dbfffd57808f6fc68e98cfd3eb354c765",
+        "audit.jsonl": "49f20425c274e4d3da95764af043402ee0fab3f9cbd1bef5adc656c6eaae6b16"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83299,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 443
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "0c7011486b6ba964896a0446a499c786ead36bf875dbecd8ea968b27093ba140"
+    },
+    {
+      "caseId": "canal-landing--shape--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "c42ceac95a280825f9110ecc30ebdb8ae18eb8d78f0c6682a3e2b02b6af25bea",
+        "compilation.json": "c1c68a4cc8f442002d66006f9d53e45cc6ef350540e03e6fc226649baf3b03de",
+        "build.mpd": "aa4c0eef99608e53b3692f77491190b030685d96f5feb85d10892c526ce1e9fb",
+        "freeze.json": "88222ba256c6c52fbaee401225276f8898f0db14f7b8c9f1ac1c4615e48f412a",
+        "audit.jsonl": "fbe9e54b461f15c2f34d3ec16fe6046a132c5c5be1b848d10389f82094dc8e80"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82750,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 422
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "0752e342df314e4b04e21e65643c19d22c4fccdf20d50bc208af2ea15302b24d"
+    },
+    {
+      "caseId": "birds-at-feeder--control--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "015a1886929b9224c422d2b0afed4547ef757bb4d72c91ab2c231b19c6d27704",
+        "compilation.json": "89997138bcb119062a7e20c5fd2d7a24781df127b1e67506a0966e1c53d12e06",
+        "build.mpd": "af80da042b0df40f45a8ae358ac852b93ad426f91633856f689eed3c43dc4c59",
+        "freeze.json": "7e950083fad0e9a41188fe9a066aaf1c048d21de10d96f96e4c28cb44bc81ddc",
+        "audit.jsonl": "4cf3c57d934c94007581199b2937f58b82ec77dcdb83572a94118a43746bc913"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73219,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 417
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "d8ba9dfc2208f1885ce4724ef7cb0e4023f90d4884da779d31fe7dfb74e341b6"
+    },
+    {
+      "caseId": "canal-landing--connections--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "24258f615e3109e70150351efbf31284722180052fc5f6bac6e20daf57a0b3f5",
+        "compilation.json": "6bd4f629469a00eeed9875b200cfac1d93c5efcaf15c3ce3e95d84e149f7cd50",
+        "build.mpd": "27f5129183353267964470378ee727628f5cb6e729e41308cb0cd2408b6f8ddd",
+        "freeze.json": "c8a2c5b11b0fe124317361ab7181726ecdac51076fd00979c640a814fd4392cb",
+        "audit.jsonl": "64236eb972512c8ef6d27f9b18a36d6e82aca0219f0c35add8cec304d62bc783"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83314,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 413
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "extractedScriptSha256": "7adc620b2cbc5dd241b425daf91d0512115251b1a9c870ac5dfc1e9ced6a3299"
+    },
+    {
+      "caseId": "birds-at-feeder--control--1",
+      "status": "infrastructure-failure",
+      "failure": "Broker rejected turn: terminated",
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "freeze.json": "3c649c69bf83cc2059a6e2327c377c26023244a2f0d7c104d2ff81cc26c6a0a5",
+        "audit.jsonl": "13d19a72884babab319facd45c95a2e6ea862ac6b1a7c141b5da4a5f40adf663"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73219,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "referenceCoverage": [],
+      "executionPhase": 5
+    },
+    {
+      "caseId": "stepped-lookout--shape--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "0725b3524470a70d83941ed94d3f291b95d0c38d1304fa95454c5bb7ab154c18",
+        "compilation.json": "afd790ac0b8ece31934d0a91107df49da0e001322043b0d40c62ffd8c512e1a4",
+        "build.mpd": "2ea1f105acef4021a188fa3cf87386407afb752578343774456e479abceb96c4",
+        "freeze.json": "bdcc8a9e3ba73642605b376c892d8e14d5de6d09be1cfce8aa10a662fe47c249",
+        "audit.jsonl": "d71f3e444f7cc06347a675402e34a09e3a0b6cec8842b03b052536a63794933b"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82735,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 424
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 6,
+      "extractedScriptSha256": "c9b3f91b13c26b01e77700240b6227885a53a0ab4e46980aaf9628a3cbc222d2"
+    },
+    {
+      "caseId": "arched-toll-gate--control--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "73c2117003384716f92596ea57dd60bc8e5153d8fe5baefa70919028f03c6803",
+        "compilation.json": "b03ccbe4f27483128939ef87e5cb3f0de1181c1ca939f395399294909d122778",
+        "build.mpd": "aff1ce4f6c5cc2002419b6d45cc195620521439fbf6134bb15672b36dcbbe5b8",
+        "freeze.json": "2ab8e010f9840c179cf82ad7d4935a1948a15731fc21e5b28b0032838df83828",
+        "audit.jsonl": "af7c826add51dcb077489ff7396c5772cc93e5acf24acc774d292684f3f1bd44"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73159,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 417
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 6,
+      "extractedScriptSha256": "6503cdd0028ce37194810c74eb119a7e640d9036764a991a6ae02ea37f713f30"
+    }
+  ],
+  "extractedScripts": "Derived JSON snapshots from frozen compilation.script, without altering original submissions or compilations.",
+  "environment": {
+    "node": "v22.14.0",
+    "platform": "linux",
+    "architecture": "arm64"
+  }
+}

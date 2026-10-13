@@ -1,0 +1,193 @@
+{
+  "buildScript": 1,
+  "title": "A Peck and a Pause",
+  "description": "Exactly 16 parts: a low blue bird reaches into the shared feeder while a taller red bird leans forward to take its turn. Three separate ground-supported assemblies.",
+  "parts": {
+    "body": "3001.dat",
+    "slope": "3039.dat",
+    "stand": "3659.dat",
+    "dot": "3024.dat",
+    "tray": "3068b.dat"
+  },
+  "sections": [
+    {
+      "name": "Blue bird \u2014 reaching",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "blue"
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            0,
+            3,
+            0
+          ],
+          "colour": "dark blue",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@dot",
+          "at": [
+            3,
+            3,
+            1
+          ],
+          "colour": "blue"
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            3,
+            4,
+            0
+          ],
+          "colour": "blue",
+          "turn": 270
+        },
+        {
+          "op": "place",
+          "part": "@dot",
+          "at": [
+            4,
+            3,
+            0
+          ],
+          "colour": "yellow"
+        },
+        {
+          "op": "place",
+          "part": "@dot",
+          "at": [
+            3,
+            7,
+            0
+          ],
+          "colour": "black"
+        }
+      ]
+    },
+    {
+      "name": "Shared feeding tray",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@stand",
+          "at": [
+            6,
+            0,
+            0
+          ],
+          "colour": "dark green"
+        },
+        {
+          "op": "place",
+          "part": "@tray",
+          "at": [
+            6,
+            3,
+            0
+          ],
+          "colour": "tan"
+        },
+        {
+          "op": "place",
+          "part": "@tray",
+          "at": [
+            8,
+            3,
+            0
+          ],
+          "colour": "tan"
+        }
+      ]
+    },
+    {
+      "name": "Red bird \u2014 leaning upright",
+      "ops": [
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            12,
+            0,
+            0
+          ],
+          "colour": "red"
+        },
+        {
+          "op": "place",
+          "part": "@body",
+          "at": [
+            11,
+            3,
+            0
+          ],
+          "colour": "red"
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            14,
+            6,
+            0
+          ],
+          "colour": "dark red",
+          "turn": 270
+        },
+        {
+          "op": "place",
+          "part": "@dot",
+          "at": [
+            11,
+            6,
+            1
+          ],
+          "colour": "red"
+        },
+        {
+          "op": "place",
+          "part": "@slope",
+          "at": [
+            10,
+            7,
+            0
+          ],
+          "colour": "red",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "@dot",
+          "at": [
+            10,
+            6,
+            0
+          ],
+          "colour": "yellow"
+        },
+        {
+          "op": "place",
+          "part": "@dot",
+          "at": [
+            11,
+            10,
+            0
+          ],
+          "colour": "black"
+        }
+      ]
+    }
+  ]
+}
