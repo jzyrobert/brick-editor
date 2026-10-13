@@ -1,5 +1,9 @@
 # Verification — 27 September 2026
 
+## Automatic facts pilot preflight — 13 October 2026
+
+Ran seven focused suites: spatial-automatic-pilot, spatial-benchmark, spatial-part-reference and spatial-codex unit tests; spatial-benchmark, spatial-codex and spatial-live integration tests. All 43 checks pass. New checks validate 32 deterministic cases, field isolation, byte-identical automatic/on-demand control prompts, four inventory-conforming 16-part feasibility sketches and two independent four-part relationship fixtures with failing perturbations. The 32-case dry run completes with zero model calls; its submitted statuses describe transport probes, not task solutions. Private logs: `.local/automatic-pilot-tests-v2.log` and `.local/automatic-facts-dry-v1`. The initial manifest was rejected for combining legacy feedback with inventory; before any model call it was corrected to common no-feedback conditions with zero checks/repairs.
+
 ## Complete spatial preview — 12 October 2026
 
 `npx tsc -b`, repository `npm run format:check` and `git diff --check` pass for this increment.

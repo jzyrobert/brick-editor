@@ -1,5 +1,9 @@
 # Implementation status
 
+## Automatic facts pilot preparation — 13 October 2026
+
+A new owner-authorised 32-session development pilot compares automatically supplied shape, connector and combined facts against unchanged control inputs for four 16-part inventory briefs. All arms use no candidate feedback. The manifest, pre-generation protocol and evaluator-only witnesses are separate from the completed gallery pilot. Forty-three focused unit/integration checks and a zero-model-call 32-case dry run pass. Experimental outcomes are pending; defaults, gallery and language remain unchanged. See [protocol](../fixtures/spatial-benchmark/studies/automatic-facts-pilot/README.md).
+
 ## Complete spatial pilot preview — 12 October 2026
 
 Added a standalone static preview builder and focused browser check. The preview contains all 82 completed builds, 328 frozen-view images and all 30 failed cases, with filters, four-view inspection and source downloads. Calibration captures were added only after generation ended. All six viewport checks pass; an independent visual review confirmed the corrected inspector image proportions. The owner authorised a temporary Cloudflare preview; production, gallery and defaults remain unchanged. See [usage and interpretation](SPATIAL-PILOT.md#complete-static-preview--12-october-2026).
