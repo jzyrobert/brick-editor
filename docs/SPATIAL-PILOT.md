@@ -198,3 +198,16 @@ npx tsx scripts/spatial-benchmark.ts --manifest fixtures/spatial-benchmark/studi
 For a separately authorised live reproduction, use `spatial-benchmark-live.ts` with the same manifest, a fresh output and `--authorised-cases 1`; alternate models following the archived order. Pool ended phases with `spatial-benchmark-pool.ts`, and supply the pool via `--remaining-from` for the next unattempted case. Never reuse failed cases. The archived supervisor records the exact historical orchestration and environment paths; its Sol-review wait path must be mapped to the local completed Sol study. Manifests, exact inputs and source hashes permit compilation replay; the build seed does not make model sampling deterministic. The final assessments remain separate from generation inputs.
 
 Implemented: declared model/effort binding and opt-in screening transport; two-arm task-cluster summary; post-run exact-count audit. Tested: 23 focused unit/integration checks in five suites, an additional exact-count regression check, both 16-case zero-model dry runs, type checking and formatting. Verified: 184 new generation file hashes, all 32 actual requested model/effort pairs and quota pairs, 116 image hashes, and independently recomputed Luna/Astra task effects. Experimental outcomes are the data above. Deferred: exact-count enforcement before evaluation, stronger calibration, independent human review, held-out tasks, mechanical-feedback and assembly-language studies. Nothing was pushed, published, promoted to a default or added to the gallery.
+
+## Three-model static preview — 13 October 2026
+
+[Open the automatic-facts preview](https://brick-facts-pilot-20261013.atom-gardenia.workers.dev/). This separately authorised Cloudflare Drop deployment contains all 64 scheduled Sol/Luna/Astra cases, 55 compiled artifacts and 220 frozen-view images. Model, condition, task and camera filters include failures by default. Strict compliance labels preserve the Luna 14-part correction; its original assessment is retained and explicitly excluded from compliant summaries. Sources, compiled models, reports and the count audit are downloadable. The earlier claimed preview, production gallery and defaults are unchanged.
+
+Rebuild into a fresh directory and check locally (no model calls):
+
+```sh
+python3 scripts/spatial-screening-preview.py --out .local/screening-preview
+node scripts/spatial-screening-preview/check.mjs .local/screening-preview .local/screening-preview-check
+```
+
+The exporter verifies frozen source/image hashes and emits a public asset manifest. Deployment credentials and the private, time-limited claim link are excluded. Experimental findings remain those reported above; publishing adds no new evaluation evidence.

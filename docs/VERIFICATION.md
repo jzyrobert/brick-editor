@@ -1,5 +1,11 @@
 # Verification — 27 September 2026
 
+## Three-model preview verification — 13 October 2026
+
+The exporter validates frozen source/image hashes and accounts for all 64 cases, 46 strictly compliant submissions, 55 compiled artifacts and 220 images. The focused static browser check passes at 1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411: filters, four camera views, dialogs, count-correction labels, no horizontal overflow or JavaScript errors. Phone gallery/dialog screenshots were inspected. Live phone filtering also passes. All 431 public asset SHA-256 hashes match the local manifest after following static HTML redirects. The first live smoke harness used an incorrect filter-panel selector; correcting the harness resolved it. An initial image 404 resolved on a subsequent request.
+
+Commands: `python3 scripts/spatial-screening-preview.py --out .local/screening-drop-preview-v1`, `node scripts/spatial-screening-preview/check.mjs .local/screening-drop-preview-v1 .local/screening-preview-review-v1`, Prettier and `git diff --check`. Dedicated Wrangler 4.142.0 dry run and authorised temporary deployment use an isolated static-assets directory with no bindings. No editor/export code changed and no model calls were made.
+
 ## Completed model screening verification — 13 October 2026
 
 Final rerun: 23 checks in five suites pass (`.local/screening-final-tests.log`); type checking passes (`.local/screening-final-types.log`). A separate exact-count regression check passes (`.local/exact-count-test.log`), covering valid, under/over target and unknown measured counts. The post-evaluation audit found the runner's advisory target had allowed one 14-part Luna control despite an exact-16 brief; original outcomes remain frozen and strict compliance is reported separately. This is a discovered validity gap, not a retroactive runner fix.

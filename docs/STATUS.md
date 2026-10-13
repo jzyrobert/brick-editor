@@ -1,5 +1,9 @@
 # Implementation status
 
+## Three-model preview — 13 October 2026
+
+Published an owner-authorised, separate Cloudflare Drop preview of all 64 new Sol/Luna/Astra cases, including failures and the exact-count correction. It contains 220 images, four-view inspection, filters and source/report downloads. Six local viewport checks and live phone filtering pass. No new generation, default change or production/gallery deployment. See [preview and reproduction](SPATIAL-PILOT.md#three-model-static-preview--13-october-2026).
+
 ## Luna/Astra screening completed — 13 October 2026
 
 All 32 additional cases ended without infrastructure failures: Luna nine runner submissions/seven failures, Astra fourteen/two. Strict count auditing reclassifies one 14-part Luna submission as task-noncompliant (eight compliant total). Combined facts show a tentative Astra visual benefit (+1.375/24 across four tasks); Luna's +3 covers only two surviving task pairs and accompanies worse compliance. All 116 new images, 23 assessments, sources, exact inputs and failures are archived. Final weekly quota: 78% remaining. No default change. See [comparison and audit correction](SPATIAL-PILOT.md#luna-and-astra-screening--13-october-2026).
