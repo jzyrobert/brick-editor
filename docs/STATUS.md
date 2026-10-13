@@ -1,8 +1,12 @@
 # Implementation status
 
+## Luna/Astra screening completed — 13 October 2026
+
+All 32 additional cases ended without infrastructure failures: Luna nine runner submissions/seven failures, Astra fourteen/two. Strict count auditing reclassifies one 14-part Luna submission as task-noncompliant (eight compliant total). Combined facts show a tentative Astra visual benefit (+1.375/24 across four tasks); Luna's +3 covers only two surviving task pairs and accompanies worse compliance. All 116 new images, 23 assessments, sources, exact inputs and failures are archived. Final weekly quota: 78% remaining. No default change. See [comparison and audit correction](SPATIAL-PILOT.md#luna-and-astra-screening--13-october-2026).
+
 ## Model screening pilot prepared (13 October 2026)
 
-Opt-in subscription transport accepts declared GPT-6 Luna/high and GPT-6 Astra/medium pairs; Sol6.1/high default payload is preserved. Each additional model has 16 frozen automatic-facts cases (control/combined). Model/effort is checked at both session and outgoing broker boundaries. Fresh sessions, quota gates and no retries remain. Two-arm task-weighted analysis is separate from the four-arm factorial. Generation and evaluation results pending; no quality claim or default change.
+Opt-in subscription transport accepts declared GPT-6 Luna/high and GPT-6 Astra/medium pairs; Sol6.1/high default payload is preserved. Each additional model has 16 frozen automatic-facts cases (control/combined). Model/effort is checked at both session and outgoing broker boundaries. Fresh sessions, quota gates and no retries remain. Two-arm task-weighted analysis is separate from the four-arm factorial. Generation/evaluation are now complete; the results above supersede this preparation status. No default change.
 
 ## Automatic facts pilot generation complete — 13 October 2026
 

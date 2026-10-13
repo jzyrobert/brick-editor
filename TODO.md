@@ -32,8 +32,10 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Spatial benchmark research
 
+- [ ] Add an opt-in exact-count size policy and enforce it before visual eligibility. The post-run audit found a 14-part Luna control marked submitted despite an exact-16 brief; preserve legacy advisory target behavior and all frozen outcomes ([audit](fixtures/spatial-benchmark/studies/model-screening-pilot/results/exact-count-audit.json)).
+
 - [ ] Run the separately declared 36-case mechanical-feedback comparison only with further study authorisation; hold metadata/language/style fixed ([completed initial pilot](docs/SPATIAL-PILOT.md)).
-- [ ] Improve non-ceiling calibration, evaluate temporary aliases and compare on-demand retrieval with automatic facts within identical tasks/feedback. The separate automatic-facts development pilot has a tentative positive shape signal; confirm with more tasks and independent reviewers. Luna/high and Astra/medium screening is in progress.
+- [ ] Improve non-ceiling calibration, evaluate temporary aliases and compare on-demand retrieval with automatic facts within identical tasks/feedback. The separate automatic-facts development pilot has a tentative positive shape signal; confirm with more tasks and independent reviewers. Luna/high and Astra/medium screening is complete: tentative Astra visual gain, Luna compliance regression; confirm on new tasks with independent review.
 - [ ] Add privately witnessed held-out creative tasks, another model family and independent human assessments. Resolve provider interruption/capacity missingness before generalising the 42/72 submitted creative builds.
 - [ ] Expand structured occurrence/interface diagnostics and coverage independently; pilot proper axis-aligned poses/offsets and explicit connector alignment assistance before functional/sideways tasks. Keep design metadata/guidance, inventory formats and physical stability/assembly audits separate.
 

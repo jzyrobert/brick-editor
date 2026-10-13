@@ -153,3 +153,48 @@ No run searched, inspected, checked or repaired. Facts were automatically presen
 ### Verification and scope
 
 Implemented: opt-in automatic facts, frozen manifests, independent geometric fixtures, submitted-only review eligibility and complete evidence retention. Tested: 43 initial focused checks, six review-eligibility checks, type checking, formatting, 149 generation archive hashes, 104 image hashes and byte-identical CLI compilation replay. Experimentally evaluated: these 32 Sol6.1/high development cases and 24 blinded visual assessments. Deferred: stronger calibration discrimination, aliases, independent human review, held-out subjects, mechanical-feedback comparison, assembly language and style/design-metadata treatments. Luna/high and Astra/medium screening is separately authorised and in progress; its outcomes are not included here.
+
+## Luna and Astra screening — 13 October 2026
+
+**Completed:** 16 GPT-6 Luna/high and 16 GPT-6 Astra/medium generation cases, alternating models in a frozen random order. Each model used the same four briefs × control/combined facts × two repetitions. This is automatic physical-fact presentation, not new style wording. All initial task prompts and compiler bundle hashes match the corresponding Sol cases. E, reply example, inventory maxima, build seed, language and no-feedback policy are unchanged. The [frozen protocol](../fixtures/spatial-benchmark/studies/model-screening-pilot/README.md) and [execution order](../fixtures/spatial-benchmark/studies/model-screening-pilot/results/order.jsonl) precede the outcomes.
+
+### Comparison
+
+| Model/effort |     Scheduled cases | Strictly compliant control → combined | Task-weighted combined − control /24 | Paired tasks |
+| ------------ | ------------------: | ------------------------------------- | -----------------------------------: | -----------: |
+| Sol 6.1/high | 32 (four fact arms) | 5/8 → 6/8                             |                                +2.50 |          4/4 |
+| Luna/high    |                  16 | 5/8 → 3/8                             |                +3.00, survivors only |          2/4 |
+| Astra/medium |                  16 | 7/8 → 7/8                             |                               +1.375 |          4/4 |
+
+**Astra shows a tentative useful visual signal**, with unchanged submission compliance. Its task effects are toll gate +1, birds 0, canal +2 and lookout +2.5; descriptive task-cluster interval [0.50, 2.25]. Its accepted-build visual means are 16.86 control and 18.43 combined. This is not evidence that Astra reacts more strongly than Sol: its observed improvement is smaller, and the experiment cannot isolate model size from different reasoning settings and timing.
+
+**Luna does not demonstrate a useful overall gain.** The runner submitted 6/8 controls and 3/8 combined builds, but the independent exact-count audit below reduces compliant controls to 5/8. Both combined cases failed for the canal and lookout, so the visual contrast covers only gate (+1) and birds (+5). Its interval [1, 5] merely resamples those two surviving pairs and cannot address the missing tasks or higher failure rate. The original accepted-build means are 15.50 versus 18.33; excluding the count-violating control changes its compliant control mean to 15.80. Do not rank Luna's +3 above the other models' four-task effects.
+
+Across models, the supplied facts warrant further controlled development testing, not default promotion. Sol's shape-only result remains promising (+1.625/24), while its connector-only result was −0.125. The combined-only Luna/Astra screening cannot isolate shape from connectors. Four fixed development briefs, two repetitions, one automated reviewer, longer treatment payloads and outcome-dependent missingness limit every conclusion. No independent human agreement, held-out generalisation or physical stability was established.
+
+### Exact-count audit correction
+
+The frozen briefs explicitly require 16 parts, but the runner's `targetParts` does **not** enforce exact counts at final acceptance. It checks compiler errors and inventory maxima. The final independent audit found one originally submitted Luna control (`canal-landing--control--1`) with **14 parts**. Earlier progress reports calling every accepted build 16 parts were therefore incorrect.
+
+The [post-evaluation audit](../fixtures/spatial-benchmark/studies/model-screening-pilot/results/exact-count-audit.json) preserves original statuses and scores and reports strict task compliance separately. Luna has eight compliant submissions, seven originally recorded model failures and one additional task-count violation. The 14-part build received an automated score before this audit; that score is retained but excluded from the compliant-only mean. It does not change the paired Luna effect because the canal already had no surviving combined case. All submitted Sol and Astra builds have 16 parts. The count rule is taken from the original task brief, not selected after observing scores. The audit is explicitly post-evaluation, not a preregistered metric. Future exact-count studies need an explicit versioned size policy and evaluator eligibility check before review; legacy target semantics are preserved here.
+
+### Evidence, process and cost
+
+- [Luna full report](../fixtures/spatial-benchmark/studies/model-screening-pilot/results/luna/report.json), [Astra full report](../fixtures/spatial-benchmark/studies/model-screening-pilot/results/astra/report.json). Both retain all 16 cases, exact filled inputs, original source/artifact hashes, request model/effort hashes, budgets and before/after quota records.
+- No infrastructure failures or retries in these 32 cases. Luna's seven original model failures comprise five builds with overlap errors, one invalid response and one incorrect build seed. Astra's two failures are an undefined alias and an unavailable colour. The additional Luna exact-count violation is separate.
+- There were zero searches, inspections, checks or repairs. Facts were present automatically in treatments. Every compiled script uses placement operations, with no bulk packing. Model-authored loops can still reduce bookkeeping; emitted `place` operations do not imply every source line was individually written.
+- Luna: 523,868 input tokens, 96,841 output tokens including 89,228 reasoning tokens, 122,880 cached input tokens; 21.30 minutes summed case runtime. Astra: 533,916 input, 27,284 output including 21,206 reasoning, 40,192 cached input; 23.42 minutes. Each made 16 provider requests and received 1,316,132 initial reference bytes. These are native token records, not dollar charges or a price comparison.
+- Rendering used the same frozen four views and Sol6.1/high reviewer, blind to generating model/condition, recognition before brief. There were 56 Luna images and 60 Astra images; all 23 originally eligible submissions were assessed without review failures. All three studies together retain 64 generation cases, 220 images, 47 original automated assessments and 46 strictly compliant submissions. Failed geometry is archived, not repaired or visually scored; the one count violation is the disclosed exception discovered after review.
+- Quota was 88% remaining before the additional generation, 82% afterward and **78% at final handoff**. Checks occurred before/after every request and case. Quota includes other account activity; no credits, resets or API-key spending were used.
+
+### Reproduction and verification
+
+Preflight/dry-run example (no model calls):
+
+```sh
+npx tsx scripts/spatial-benchmark.ts --manifest fixtures/spatial-benchmark/studies/model-screening-pilot/luna.json --out .local/luna-reproduction --mode dry-run
+```
+
+For a separately authorised live reproduction, use `spatial-benchmark-live.ts` with the same manifest, a fresh output and `--authorised-cases 1`; alternate models following the archived order. Pool ended phases with `spatial-benchmark-pool.ts`, and supply the pool via `--remaining-from` for the next unattempted case. Never reuse failed cases. The archived supervisor records the exact historical orchestration and environment paths; its Sol-review wait path must be mapped to the local completed Sol study. Manifests, exact inputs and source hashes permit compilation replay; the build seed does not make model sampling deterministic. The final assessments remain separate from generation inputs.
+
+Implemented: declared model/effort binding and opt-in screening transport; two-arm task-cluster summary; post-run exact-count audit. Tested: 23 focused unit/integration checks in five suites, an additional exact-count regression check, both 16-case zero-model dry runs, type checking and formatting. Verified: 184 new generation file hashes, all 32 actual requested model/effort pairs and quota pairs, 116 image hashes, and independently recomputed Luna/Astra task effects. Experimental outcomes are the data above. Deferred: exact-count enforcement before evaluation, stronger calibration, independent human review, held-out tasks, mechanical-feedback and assembly-language studies. Nothing was pushed, published, promoted to a default or added to the gallery.

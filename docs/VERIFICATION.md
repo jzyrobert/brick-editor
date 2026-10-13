@@ -1,5 +1,11 @@
 # Verification — 27 September 2026
 
+## Completed model screening verification — 13 October 2026
+
+Final rerun: 23 checks in five suites pass (`.local/screening-final-tests.log`); type checking passes (`.local/screening-final-types.log`). A separate exact-count regression check passes (`.local/exact-count-test.log`), covering valid, under/over target and unknown measured counts. The post-evaluation audit found the runner's advisory target had allowed one 14-part Luna control despite an exact-16 brief; original outcomes remain frozen and strict compliance is reported separately. This is a discovered validity gap, not a retroactive runner fix.
+
+Verified 184 newly archived generation file hashes, all 32 outgoing model/effort configurations and before/after case quota records, and all 116 new image hashes. Independent arithmetic confirms Luna task differences [1, 5] (two missing pairs) and Astra [1, 0, 2, 2.5]. All 23 originally submitted cases have automated assessments; one is excluded from compliant-only summaries after the count audit. Fixed-view render/export execution completed; no editor behavior or browser UI changed. Frozen screening implementation hashes are unchanged. Final exact-count-audit type checking and repository formatting pass (`.local/screening-audit-types.log`, `.local/screening-handoff-format-check.log`); all 333 generation archive file hashes across the three studies verify. Exact commands, manifests and evidence are in [SPATIAL-PILOT](SPATIAL-PILOT.md#luna-and-astra-screening--13-october-2026).
+
 ## Model screening preflight (13 October 2026)
 
 Both 16-case zero-model dry runs passed. Mocked native-client integration covers Sol text/image paths and Luna/high, Astra/medium text paths; no paid calls in tests. Exact-prompt parity with the matching Sol arms and two-arm missingness/cluster summaries are tested. `npx vitest run tests/unit/spatial-codex.test.ts tests/unit/spatial-analysis.test.ts tests/unit/spatial-automatic-pilot.test.ts tests/integration/spatial-codex.test.ts tests/integration/spatial-live.test.ts`: 23 checks in five suites pass (`.local/tests-v3.log`). `npx tsc -b`, `npm run format:check` and `git diff --check` pass. Earlier mock/type failures were corrected before generation; logs retained. Infrastructure fixtures do not count as model runs.
