@@ -124,3 +124,32 @@ node scripts/spatial-preview/check.mjs .local/spatial-drop-preview-v2 .local/spa
 Use new output directories when repeating capture/build. The builder verifies frozen artifact and image hashes and emits an asset hash manifest. Only the explicit static output directory is uploaded; native context, raw streams, credentials and evaluator witnesses remain private. This research preview does not publish a gallery entry or change defaults.
 
 The practical improvement demonstrated here is research infrastructure: isolated generation, measurable reference retrieval, retained failures and reproducible inspection. Better generated designs, faster generation and lower cost have not been established. The combined/control visual contrast remains +0.10/24 with an interval crossing zero; 9/54 treatment sessions retrieved detailed facts, and calibration has a control ceiling. Automatic fact presentation and a stronger calibration set are sensible separate follow-ups, not measured improvements.
+
+## Automatic facts pilot — 13 October 2026
+
+This separate 32-case development study used four new 16-part inventory briefs, two repetitions and automatic full-palette facts. All arms used E and the same reply, language, compiler and **blind-no-feedback** policy. It is not a direct continuation of the earlier large-model gallery comparison: task scale, inventory and feedback differ. The frozen [protocol](../fixtures/spatial-benchmark/studies/automatic-facts-pilot/README.md), [manifest](../fixtures/spatial-benchmark/studies/automatic-facts-pilot/manifest.json) and [full report](../fixtures/spatial-benchmark/studies/automatic-facts-pilot/results/report.json) retain the design and every outcome.
+
+### Outcomes
+
+| Condition   | Scheduled | Accepted/scored | Model failures | Infrastructure failures | Mean visual score /24 among accepted |
+| ----------- | --------: | --------------: | -------------: | ----------------------: | -----------------------------------: |
+| Control     |         8 |               5 |              1 |                       2 |                                17.00 |
+| Shape       |         8 |               7 |              0 |                       1 |                                17.86 |
+| Connections |         8 |               6 |              1 |                       1 |                                17.00 |
+| Combined    |         8 |               6 |              1 |                       1 |                                19.17 |
+
+The preregistered equally weighted task contrast is **combined − control = +2.50/24**, with a descriptive task-cluster bootstrap interval **[+0.50, +5.00]** (seed 20261011, 10,000 resamples). Task effects are toll gate 0, birds +6, canal +2 and lookout +2. All four tasks have at least one scored candidate in every arm. Shape − control is +1.625 [1.25, 2.00]; connections − control is −0.125 [−1.375, 0.75]. The unweighted accepted-build means in the table differ from the task-weighted estimand because successful counts differ.
+
+This is an encouraging development signal for automatic shape information, especially on the birds task. It does not establish a general quality improvement: four tasks, two scheduled repetitions, uneven failures, one automated reviewer and no independent human agreement. The bootstrap only resamples these four tasks; it does not resolve missing outcomes or reviewer bias. Added payload length is part of the intervention. Supplying combined facts also includes shape information, so its positive result is not independent evidence that connectors help. No defaults are promoted.
+
+### Process and construction
+
+All 32 cases ended without replacement. Five infrastructure failures were four capacity errors and one disconnected stream. Three model failures were an undefined part alias, an overlapping slope/tile pair and an unavailable colour. Invalid artifacts were retained; no failure was given a visual score or silently dropped. All 24 accepted builds were reviewed, with no review failures. Rendering after freeze produced 104 images across 26 compiled artifacts, including the two invalid compiled artifacts for failure inspection. See the [presentation ledger](../fixtures/spatial-benchmark/studies/automatic-facts-pilot/results/evaluation/private-mapping.json) and [blinded scores](../fixtures/spatial-benchmark/studies/automatic-facts-pilot/results/evaluation/blind-scores.json).
+
+Every compiled artifact uses 16 explicit part placements and zero packed massing. This demonstrates the chosen small inventory format elicited individual placement; it does not show that facts caused a shift away from bulk operations because the controls also used individual placements. All 384 accepted occurrences have connector data coverage, but this is not certification of support, stability or assembly order. Eighteen accepted builds have disconnected-group warnings; the briefs intentionally allow separate objects. Conservative collision/connection limitations remain.
+
+No run searched, inspected, checked or repaired. Facts were automatically present in the initial prompt for every treatment; retrieval was therefore not a barrier, but exposure is not proof of successful use. Initial prompts were about 73.2 KB control, 82.7 KB shape, 83.3 KB connections and 91.3 KB combined. Known generation usage: 909,979 input tokens, 80,272 output tokens (69,538 reasoning), 97,024 cached input tokens, 32 provider requests and 60.6 minutes summed case runtime. Missing infrastructure usage is not estimated. Weekly remaining quota was 100% before generation, 92% after generation and 88% after review; account activity outside this study is included.
+
+### Verification and scope
+
+Implemented: opt-in automatic facts, frozen manifests, independent geometric fixtures, submitted-only review eligibility and complete evidence retention. Tested: 43 initial focused checks, six review-eligibility checks, type checking, formatting, 149 generation archive hashes, 104 image hashes and byte-identical CLI compilation replay. Experimentally evaluated: these 32 Sol6.1/high development cases and 24 blinded visual assessments. Deferred: stronger calibration discrimination, aliases, independent human review, held-out subjects, mechanical-feedback comparison, assembly language and style/design-metadata treatments. Luna/high and Astra/medium screening is separately authorised and in progress; its outcomes are not included here.

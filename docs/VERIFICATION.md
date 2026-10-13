@@ -2,7 +2,7 @@
 
 ## Automatic facts pilot execution checks — 13 October 2026
 
-The submitted-only review correction passed six checks across spatial-analysis and spatial-automatic-pilot suites, followed by type checking and repository formatting. This implements the already declared exclusion of invalid submissions from visual scoring; the frozen earlier protocol remains archived. The 32-case final ledger retains all five infrastructure and three model failures. CLI replay of `arched-toll-gate--shape--2/script.json` compiled 16 parts and produced byte-identical MPD SHA-256 `e226cd2ef7399bf6ca5659b338ea774c9d0036de19bfba1738fc8190c64d3648`. Original candidate sources are unchanged. Review outcomes remain pending.
+The submitted-only review correction passed six checks across spatial-analysis and spatial-automatic-pilot suites, followed by type checking and repository formatting. This implements the already declared exclusion of invalid submissions from visual scoring; the frozen earlier protocol remains archived. The 32-case final ledger retains all five infrastructure and three model failures. CLI replay of `arched-toll-gate--shape--2/script.json` compiled 16 parts and produced byte-identical MPD SHA-256 `e226cd2ef7399bf6ca5659b338ea774c9d0036de19bfba1738fc8190c64d3648`. Original candidate sources are unchanged. All 24 eligible builds were reviewed without review failures. Verified all 104 archived image hashes and independently recomputed the four combined-control task effects (0, 6, 2, 2; mean 2.5). Frozen rendering/review protocol, camera coordinates and exact assessments are archived.
 
 ## Automatic facts pilot preflight — 13 October 2026
 

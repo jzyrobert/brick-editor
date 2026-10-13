@@ -1,0 +1,4979 @@
+{
+  "version": "spatial-pilot-report/1",
+  "model": {
+    "id": "gpt-6.1-sol",
+    "effort": "high",
+    "sampling": {
+      "temperature": null,
+      "topP": null,
+      "seed": null
+    }
+  },
+  "planned": 32,
+  "retained": 32,
+  "resultFileSha256": "f4b8a572b9eac6e8ddf2c3c2d7bf015e216d7bb88635317c816599516f1bfe4c",
+  "conditions": [
+    {
+      "id": "control",
+      "scheduled": 8,
+      "retained": 8,
+      "submitted": 5,
+      "infrastructureFailures": 2,
+      "modelFailures": 1,
+      "inspectionRuns": 0,
+      "infoCalls": 0,
+      "visualAssessed": 5,
+      "visualMean24": 17
+    },
+    {
+      "id": "shape",
+      "scheduled": 8,
+      "retained": 8,
+      "submitted": 7,
+      "infrastructureFailures": 1,
+      "modelFailures": 0,
+      "inspectionRuns": 0,
+      "infoCalls": 0,
+      "visualAssessed": 7,
+      "visualMean24": 17.857142857142858
+    },
+    {
+      "id": "connections",
+      "scheduled": 8,
+      "retained": 8,
+      "submitted": 6,
+      "infrastructureFailures": 1,
+      "modelFailures": 1,
+      "inspectionRuns": 0,
+      "infoCalls": 0,
+      "visualAssessed": 6,
+      "visualMean24": 17
+    },
+    {
+      "id": "combined",
+      "scheduled": 8,
+      "retained": 8,
+      "submitted": 6,
+      "infrastructureFailures": 1,
+      "modelFailures": 1,
+      "inspectionRuns": 0,
+      "infoCalls": 0,
+      "visualAssessed": 6,
+      "visualMean24": 19.166666666666668
+    }
+  ],
+  "visualContrasts": {
+    "version": "task-cluster-summary/1",
+    "seed": 20261011,
+    "resamples": 10000,
+    "pairedTasks": [
+      "arched-toll-gate",
+      "birds-at-feeder",
+      "canal-landing",
+      "stepped-lookout"
+    ],
+    "omittedTasks": [],
+    "taskContrasts": [
+      {
+        "task": "arched-toll-gate",
+        "contrasts": {
+          "combined-control": 0,
+          "shape-control": 1,
+          "connections-control": 0.5,
+          "shape-main-effect": 0.25,
+          "connections-main-effect": -0.25,
+          "interaction": -1.5
+        }
+      },
+      {
+        "task": "birds-at-feeder",
+        "contrasts": {
+          "combined-control": 6,
+          "shape-control": 2,
+          "connections-control": 0,
+          "shape-main-effect": 4,
+          "connections-main-effect": 2,
+          "interaction": 4
+        }
+      },
+      {
+        "task": "canal-landing",
+        "contrasts": {
+          "combined-control": 2,
+          "shape-control": 1.5,
+          "connections-control": -2,
+          "shape-main-effect": 2.75,
+          "connections-main-effect": -0.75,
+          "interaction": 2.5
+        }
+      },
+      {
+        "task": "stepped-lookout",
+        "contrasts": {
+          "combined-control": 2,
+          "shape-control": 2,
+          "connections-control": 1,
+          "shape-main-effect": 1.5,
+          "connections-main-effect": 0.5,
+          "interaction": -1
+        }
+      }
+    ],
+    "contrasts": [
+      {
+        "contrast": "combined-control",
+        "mean": 2.5,
+        "percentile95": [
+          0.5,
+          5
+        ]
+      },
+      {
+        "contrast": "shape-control",
+        "mean": 1.625,
+        "percentile95": [
+          1.25,
+          2
+        ]
+      },
+      {
+        "contrast": "connections-control",
+        "mean": -0.125,
+        "percentile95": [
+          -1.375,
+          0.75
+        ]
+      },
+      {
+        "contrast": "shape-main-effect",
+        "mean": 2.125,
+        "percentile95": [
+          0.875,
+          3.375
+        ]
+      },
+      {
+        "contrast": "connections-main-effect",
+        "mean": 0.375,
+        "percentile95": [
+          -0.5,
+          1.4375
+        ]
+      },
+      {
+        "contrast": "interaction",
+        "mean": 1,
+        "percentile95": [
+          -1.25,
+          3.25
+        ]
+      }
+    ],
+    "interpretation": "Descriptive task-cluster resampling on fixed development tasks; not evidence of general improvement or independent reviewer agreement."
+  },
+  "rows": [
+    {
+      "caseId": "canal-landing--control--1",
+      "task": "canal-landing",
+      "condition": "control",
+      "status": "infrastructure-failure",
+      "originalFrozenStatus": "infrastructure-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "compilerAccepted": false,
+      "stats": null,
+      "construction": null,
+      "problems": null,
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73202,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [],
+      "providerUsage": null,
+      "usageRecords": 0,
+      "usageSource": "native completed turns",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 3684,
+      "visualStatus": "unevaluated-invalid-submission",
+      "visualTotal": null,
+      "visualAssessment": {
+        "id": "candidate-002",
+        "status": "unevaluated-invalid-submission"
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--shape--2",
+      "task": "arched-toll-gate",
+      "condition": "shape",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "c44e3fb10b9d0cb4211a6dcf97adac7d647a7f85d963d187f5189fdf37c45cc4",
+        "compilation.json": "1d59bebe07d585cc683a39fa086189801054cfa1301898a6d965bcee8f6d6387",
+        "build.mpd": "e226cd2ef7399bf6ca5659b338ea774c9d0036de19bfba1738fc8190c64d3648"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1547,
+        "ldrawBytes": 1525,
+        "partsPerScriptKB": 10.6,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "4 part(s) in 1 group(s) are not connected to the main structure (largest group: 12 parts); e.g. 3001 at [9, 0, 3]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[2] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82707,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 412
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 33102,
+        "output_tokens": 1342,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1034
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 80155,
+      "visualStatus": "assessed",
+      "visualTotal": 20,
+      "visualAssessment": {
+        "id": "candidate-007",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "An arched gateway beside a small red-roofed building",
+            "A railway tunnel entrance with an adjacent building",
+            "A miniature bridge and house"
+          ],
+          "confidence": 0.56,
+          "visible_features": [
+            "White arch spanning two long dark-gray bases",
+            "Light-gray tiles covering parts of the bases",
+            "Small white block topped with a bright-red brick above the arch",
+            "Separate tan rectangular structure with two stacked wall courses",
+            "Dark-red sloping roof with four exposed studs"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 4,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled judgement remains an arched gateway beside a small red-roofed building; toll collection was not independently apparent.",
+            "The white arch has a clearly visible opening in all four views.",
+            "A bright-red marker sits prominently above the arch.",
+            "The separate tan hut has a distinct dark-red sloping roof, but no visible door or window to reinforce its guard-hut identity.",
+            "The hut is relatively bulky beside the gate, though their heights remain coherent.",
+            "Two elongated gray supports establish ground contacts and frame the passage; the separate hut stands alongside them.",
+            "The arch, marker, roof slope and separation between structures remain consistent across views."
+          ],
+          "limitations": [
+            "The declared inventory and exact 16-part total cannot be verified from these images.",
+            "Mechanical connections and physical buildability were not assessed."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "canal-landing--connections--1",
+      "task": "canal-landing",
+      "condition": "connections",
+      "status": "infrastructure-failure",
+      "originalFrozenStatus": "infrastructure-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "compilerAccepted": false,
+      "stats": null,
+      "construction": null,
+      "problems": null,
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83314,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [],
+      "providerUsage": null,
+      "usageRecords": 0,
+      "usageSource": "native completed turns",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 4412,
+      "visualStatus": "unevaluated-invalid-submission",
+      "visualTotal": null,
+      "visualAssessment": {
+        "id": "candidate-016",
+        "status": "unevaluated-invalid-submission"
+      }
+    },
+    {
+      "caseId": "canal-landing--combined--1",
+      "task": "canal-landing",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "72441d729a8f3205e614a3f8a2c9b71cb7aa7a1c5fcb263a770af8f2b30741e4",
+        "compilation.json": "498be26af0f049edadbc34c8c3fd8e2fdd6dee56e4dbba9cb28605eefb59b5c3",
+        "build.mpd": "d383e88037247f6d24c63928b941a0f9187bfcf57c3b7190be0882451be52d4a"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1671,
+        "ldrawBytes": 1641,
+        "partsPerScriptKB": 9.8,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "3 part(s) in 1 group(s) are not connected to the main structure (largest group: 13 parts); e.g. 3039 at [2, 0, -4]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[2] (code line 2)",
+            "sections[1].ops[1] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91335,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 427
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36793,
+        "output_tokens": 2497,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 114529,
+      "visualStatus": "assessed",
+      "visualTotal": 19,
+      "visualAssessment": {
+        "id": "candidate-028",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A stone arch bridge over a canal, with a blue-and-white boat passing beneath it",
+            "An arched tunnel with a blue-and-white vehicle approaching"
+          ],
+          "confidence": 0.68,
+          "visible_features": [
+            "Tan arch spanning a central opening",
+            "Flat gray slabs capping the arch",
+            "Gray studded blocks flanking the passage",
+            "Blue wedge-shaped object with a flat white top aligned with the opening",
+            "Gray side platform beside a small dark block"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The original unlabelled judgement identified a canal bridge with a blue-and-white boat, while retaining a tunnel-and-vehicle alternative.",
+            "A low blue wedge with a white deck approaches the tan arch between gray banks.",
+            "A short flat gray quay projects beside the bridge, with visible empty space separating it from the boat.",
+            "The opposite view shows clearance above the boat within the arch, though the fit appears tight.",
+            "The broad arch, substantial banks and simple boat silhouette form a coherent miniature scene.",
+            "All four views preserve the same arrangement of bridge, quay, boat and shore."
+          ],
+          "limitations": [
+            "The declared inventory was not supplied, so exact part count and palette compliance cannot be verified.",
+            "Perspective and occlusion limit assessment of the precise clearances.",
+            "Mechanical connections and physical buildability were not assessed."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "stepped-lookout--connections--2",
+      "task": "stepped-lookout",
+      "condition": "connections",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "1144252dd1205421e7cdcc183bc1cf3a57ac3df96f0dfa92818fdec4052f6df5",
+        "compilation.json": "706179ad5ed7c7dbceb70219c80ec2f1a0b597e790bb062248870686fbb38017",
+        "build.mpd": "c726a4dff41f273524a82aa9b8f8d513d183bc9cb56982817a488766eab9f521"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1654,
+        "ldrawBytes": 1839,
+        "partsPerScriptKB": 9.9,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (36 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83299,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 412
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 34318,
+        "output_tokens": 2981,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2537
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 107319,
+      "visualStatus": "assessed",
+      "visualTotal": 17,
+      "visualAssessment": {
+        "id": "candidate-027",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A small house atop a zigzag staircase",
+            "A house on a stepped tower"
+          ],
+          "confidence": 0.73,
+          "visible_features": [
+            "Dark red sloped roof with exposed studs",
+            "Small red-and-yellow chimney",
+            "White walls with an arched opening",
+            "Tan blocks forming an alternating stepped base",
+            "Gray tiles on projecting platforms"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 2,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled recognition remains a small house atop a zigzag staircase or stepped tower; an observation lookout is less explicit.",
+            "Alternating tan tiers and gray platforms make the height progression clear, although the ascending route becomes ambiguous near the upper shelter.",
+            "The broad canopy and substantial tan supports visually outweigh the small observation opening.",
+            "The dark red sloping canopy creates a distinctive silhouette across views.",
+            "A white arch preserves visible space beneath the canopy, but the tall tan sill restricts that opening.",
+            "The red-and-yellow upper marker visibly rests on the canopy.",
+            "All four views show consistent tier offsets, canopy geometry, opening and marker placement."
+          ],
+          "limitations": [
+            "The declared inventory maxima are unavailable, so palette compliance cannot be assessed.",
+            "The images do not establish an exact count of 16 parts or reveal all concealed boundaries.",
+            "Physical buildability and connection strength were not assessed."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--connections--1",
+      "task": "arched-toll-gate",
+      "condition": "connections",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "1eae610e3eb4bf4b8d261aba1bfa4af8be5703758ccc7a3c43c6eff92c37cb3c",
+        "compilation.json": "eda57726b99cc3b82ccb2d693c85401333557fc5f973bdb473fab7cb723a0627",
+        "build.mpd": "2a5e0188eea7d531d3ae46d000ccaa77cca277fd86f0711f0c8a55e8b3f08629"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 10,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1533,
+        "ldrawBytes": 1447,
+        "partsPerScriptKB": 10.7,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "8 part(s) in 1 group(s) are not connected to the main structure (largest group: 8 parts); e.g. 3001 at [8, 0, 2]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[5] (code line 2)",
+            "sections[1].ops[6] (code line 2)",
+            "sections[1].ops[7] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[2] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83271,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 424
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 34317,
+        "output_tokens": 1942,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 115476,
+      "visualStatus": "assessed",
+      "visualTotal": 20,
+      "visualAssessment": {
+        "id": "candidate-011",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A small house beside an arched bridge",
+            "A roadside checkpoint or toll booth"
+          ],
+          "confidence": 0.73,
+          "visible_features": [
+            "House-like structure with a dark red pitched roof and gray chimney",
+            "Transparent light-blue walls on a tan rectangular base",
+            "Separate gray structure with an archway and two broad supports",
+            "Flat yellow piece above the arch",
+            "Small red, dark, and yellow stack beside the yellow piece"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 4,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled recognition remains a small house beside an arched bridge, with a roadside checkpoint or toll booth as a secondary guess.",
+            "The gray gate has a clearly visible curved opening between broad supports in all four views.",
+            "The separate hut has transparent blue walls, a tan ground-contact block, a sloping red roof and a gray chimney.",
+            "The hut's roof projects substantially beyond its walls; the gate's supports are bulky relative to its opening.",
+            "A red, dark and yellow stack provides a visible gate marker, although its signal function is ambiguous.",
+            "The two structures form a coherent pair, but the gap and absence of a defined approach make the entrance arrangement less explicit.",
+            "Distinct arch and roof silhouettes, colors and relative placement remain consistent across views."
+          ],
+          "limitations": [
+            "The images cannot establish the exact 16-part count or compliance with inventory maxima; the declared inventory is not supplied.",
+            "Ground contacts are visually suggested by the lower blocks; mechanical connections are not assessed."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "stepped-lookout--combined--1",
+      "task": "stepped-lookout",
+      "condition": "combined",
+      "status": "infrastructure-failure",
+      "originalFrozenStatus": "infrastructure-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "compilerAccepted": false,
+      "stats": null,
+      "construction": null,
+      "problems": null,
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91320,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [],
+      "providerUsage": null,
+      "usageRecords": 0,
+      "usageSource": "native completed turns",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 4116,
+      "visualStatus": "unevaluated-invalid-submission",
+      "visualTotal": null,
+      "visualAssessment": {
+        "id": "candidate-030",
+        "status": "unevaluated-invalid-submission"
+      }
+    },
+    {
+      "caseId": "canal-landing--control--2",
+      "task": "canal-landing",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "a822956769dbac27dc044bc2621bae44e6ef5dc129ceca04694d91c844ff0c0f",
+        "compilation.json": "23b34bc9c4053750f40e727be94d5c095b9fae0cccf717ceb447a0bfbc6b8e58",
+        "build.mpd": "6c673d48d6d2b4b8a34134f6608e3a958b2a5c7fcafbfe39c4d1824df16b2516"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 6,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1712,
+        "ldrawBytes": 1643,
+        "partsPerScriptKB": 9.6,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "3 part(s) in 1 group(s) are not connected to the main structure (largest group: 13 parts); e.g. 3039 at [2, 0, -6]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[2] (code line 2)",
+            "sections[1].ops[1] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73202,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 448
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30079,
+        "output_tokens": 2964,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 120764,
+      "visualStatus": "assessed",
+      "visualTotal": 17,
+      "visualAssessment": {
+        "id": "candidate-017",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "An arched stone bridge over a canal, with a small boat nearby",
+            "A stone gateway or tunnel entrance with a small vehicle approaching"
+          ],
+          "confidence": 0.64,
+          "visible_features": [
+            "Tan arch spanning a narrow gap between gray studded platforms",
+            "Two flat tan cap pieces on top of the arch",
+            "Dark gray blocks beneath the arch supports",
+            "A separate blue sloped object with a flat brown top aligned with the opening",
+            "A flat tan rectangular piece on one platform"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 2,
+            "composition": 3,
+            "contours": 2,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The original unlabelled first guess identified an arched canal bridge with a nearby boat; a gateway with a vehicle remained an alternative.",
+            "The tan arch clearly spans an open channel between gray shore platforms.",
+            "The blue boat with a brown top is separate from the quay, with visible empty space between them.",
+            "The boat appears relatively bulky, and its wedge silhouette gives limited boat-specific cues.",
+            "The short quay and bridge form a coherent landing arrangement, although overhead boat clearance is difficult to judge from the projections.",
+            "All four views show consistent forms, colors, and relative placement."
+          ],
+          "limitations": [
+            "The declared inventory is unavailable, so palette compliance and the exact 16-part requirement cannot be verified.",
+            "The images do not conclusively establish clearance as the boat passes beneath the arch.",
+            "Physical buildability and connection strength were not assessed."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--combined--2",
+      "task": "birds-at-feeder",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "ae6cf98e4f6d369fc06ca512df83468c72d799be93e6cdaba19663884a37743e",
+        "compilation.json": "8504dbc9e694be8d4e3107d3947ccf828df5910060e093dc3d2979a9b15d0bad",
+        "build.mpd": "e32fecdae61d718213204dfc5c7935211ef3fdec67d0872744b025c3191d7b3b"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 13,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 18,
+        "scriptBytes": 1452,
+        "ldrawBytes": 1426,
+        "partsPerScriptKB": 11.3,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "10 part(s) in 2 group(s) are not connected to the main structure (largest group: 6 parts); e.g. 3659 at [15, -1, 0], 3001 at [9, 0, 1]",
+          "ops": [
+            "sections[0].ops[1].ops[0] (code line 2)",
+            "sections[0].ops[1].ops[3] (code line 2)",
+            "sections[0].ops[1].ops[5] (code line 2)",
+            "sections[0].ops[1].ops[1] (code line 2)",
+            "sections[0].ops[1].ops[4] (code line 2)",
+            "sections[0].ops[1].ops[2] (code line 2)",
+            "sections[1].ops[0] (code line 4)",
+            "sections[1].ops[3] (code line 4)",
+            "sections[1].ops[2] (code line 4)",
+            "sections[1].ops[1] (code line 4)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91352,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 434
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36795,
+        "output_tokens": 4930,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 4534
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 262090,
+      "visualStatus": "assessed",
+      "visualTotal": 20,
+      "visualAssessment": {
+        "id": "candidate-020",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "Two birds facing a shared feeding tray or food dish",
+            "A red bird and a blue bird beside a sandwich"
+          ],
+          "confidence": 0.76,
+          "visible_features": [
+            "Two birdlike figures with red and blue bodies",
+            "Large yellow wedge-shaped beaks pointing inward",
+            "Dark blocks with round studs above the beaks",
+            "Raised tails and arch-shaped gaps beneath the bodies",
+            "A central brown rectangular object topped with a cream tile and yellow and brown studs"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 3,
+            "composition": 4,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The original unlabelled judgement identified two birds facing a shared feeding tray, with a sandwich as an alternative reading of the central object.",
+            "Yellow wedge beaks, dark eye-like studs, coloured bodies and raised tails make both birds recognisable.",
+            "Large beaks and elongated bodies create coherent stylised proportions, although the arch-shaped undersides make the legs less distinct.",
+            "The birds face inward across clear gaps, with the brown feeder visibly separate between them.",
+            "The red bird holds its head higher than the blue bird, establishing different poses; its elevated beak makes reaching toward the feeder less explicit.",
+            "All four views preserve the same forms, colours, separation and facing relationships."
+          ],
+          "limitations": [
+            "The declared inventory and palette were not supplied, so exact part-count and inventory compliance cannot be verified.",
+            "Mechanical connections and physical buildability were not assessed."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--combined--1",
+      "task": "arched-toll-gate",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "09e730dfe21b2220b78ea5e2d77d9b1c6a870bdb99f2664b3930883ca13f5bef",
+        "compilation.json": "90b9b3af6a8ae7b1b0492bdd7aae618e82ac99ad288647f41190b4d24a391f82",
+        "build.mpd": "7d5da331891bb01b0f3a34652ef123d64cf457b5fb0fad66b954e381f44d0167"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 10,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1755,
+        "ldrawBytes": 1795,
+        "partsPerScriptKB": 9.3,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 4,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 4 separately connected groups; 2 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "8 part(s) in 3 group(s) are not connected to the main structure (largest group: 8 parts); e.g. 3001 at [8, 0, 2], 3068b at [2, 0, -2], 3068b at [2, 0, 0]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[5] (code line 2)",
+            "sections[1].ops[2] (code line 2)",
+            "sections[2].ops[0] (code line 2)",
+            "sections[2].ops[1] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91292,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 441
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36787,
+        "output_tokens": 1970,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 81863,
+      "visualStatus": "assessed",
+      "visualTotal": 18,
+      "visualAssessment": {
+        "id": "candidate-021",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A car wash beside a small service building",
+            "A toll gate beside a booth",
+            "A gas station with a convenience store"
+          ],
+          "confidence": 0.46,
+          "visible_features": [
+            "Gray arch spanning a narrow gray roadway or ramp",
+            "Two dark gray bases supporting the arch",
+            "Red elevated canopy or sign above one side of the arch",
+            "Separate tan-based building with transparent light blue walls",
+            "Dark red sloped roof with a translucent yellow stack at one end"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled recognition favored a car wash beside a service building; a toll gate beside a booth was the second guess.",
+            "The gray arch has a clearly visible opening and a narrow roadway passing beneath it.",
+            "The separate hut has transparent blue walls, a tan lower section and a dark red sloping roof.",
+            "The elevated red marker is conspicuous, but its signal function is visually ambiguous.",
+            "The side-by-side arrangement reads as an entrance, although the broad gate supports and substantial hut compete with the passage.",
+            "All four views consistently show the same forms, separation and relative placement."
+          ],
+          "limitations": [
+            "Exactly 16 parts and compliance with inventory maxima cannot be verified from these images and the supplied brief.",
+            "The white background provides limited evidence of a shared ground level."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "stepped-lookout--control--1",
+      "task": "stepped-lookout",
+      "condition": "control",
+      "status": "model-failure",
+      "originalFrozenStatus": "model-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "659c54fe596dc7c46d3b12cb1e80935ec348a3355e91b0978221a25b0f72f8a5",
+        "compilation.json": "f0d3a50d3b51f2af78ceb8cc3ac50f661326d3d018573d51c45cd76b60bd0680"
+      },
+      "compilerAccepted": false,
+      "stats": null,
+      "construction": null,
+      "problems": null,
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73187,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 382
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [],
+      "providerUsage": {
+        "input_tokens": 30074,
+        "output_tokens": 4035,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 3624
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 159441,
+      "visualStatus": "unevaluated-invalid-submission",
+      "visualTotal": null,
+      "visualAssessment": {
+        "id": "candidate-026",
+        "status": "unevaluated-invalid-submission"
+      }
+    },
+    {
+      "caseId": "canal-landing--combined--2",
+      "task": "canal-landing",
+      "condition": "combined",
+      "status": "model-failure",
+      "originalFrozenStatus": "model-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "6fc8bf9ce71800b02280ade16bdff36cf57301cda0782af1f5770ed073d429d9",
+        "compilation.json": "ba6d017f1ab4ce9263713ed452240b476e07ef15bda04fbdbaee68173e8bf191",
+        "build.mpd": "c6b999906319b22a8e50fa018d6c8fc754a7e058154516b5c17bbfa9329bb7a2"
+      },
+      "compilerAccepted": false,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 10,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1830,
+        "ldrawBytes": 1602,
+        "partsPerScriptKB": 9,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 1,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "part-clash",
+          "message": "3068b.dat is placed where 3039.dat already is",
+          "ops": [
+            "sections[0].ops[3] (code line 2)",
+            "sections[0].ops[8] (code line 2)"
+          ]
+        },
+        {
+          "severity": "error",
+          "code": "overlap",
+          "message": "3039 Slope 45° 2 × 2 placed at [3, 3, 0] and 3068b Tile 2 × 2 placed at [4, 3, -1] overlap where their bodies meet: x 4–5, y 3–4, z 0–1",
+          "ops": [
+            "sections[0].ops[3] (code line 2)",
+            "sections[0].ops[8] (code line 2)"
+          ]
+        },
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "3 part(s) in 1 group(s) are not connected to the main structure (largest group: 13 parts); e.g. 3001 at [2, 0, -3]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[2] (code line 2)",
+            "sections[1].ops[1] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91335,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 431
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36793,
+        "output_tokens": 3573,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 3106
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 138690,
+      "visualStatus": "unevaluated-invalid-submission",
+      "visualTotal": null,
+      "visualAssessment": {
+        "id": "candidate-032",
+        "status": "unevaluated-invalid-submission"
+      }
+    },
+    {
+      "caseId": "stepped-lookout--control--2",
+      "task": "stepped-lookout",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "a5242924c0189c8d522996fcbcc66ac8eb34857dc25428e288ce502306d67ec9",
+        "compilation.json": "2a821cd28f4d497d78945cfd4a6c5968b06e1158df8a9a121afb0523913d8237",
+        "build.mpd": "86c2cb1f34416db1039d0d9082e468bafe9d9c9b4e10d6b7d81904d0aaa9f506"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 8,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1646,
+        "ldrawBytes": 1773,
+        "partsPerScriptKB": 10,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (38 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73187,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 451
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30074,
+        "output_tokens": 2702,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2356
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 88729,
+      "visualStatus": "assessed",
+      "visualTotal": 16,
+      "visualAssessment": {
+        "id": "candidate-009",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "Lighthouse with a small keeper’s building",
+            "Small house with a striped chimney"
+          ],
+          "confidence": 0.73,
+          "visible_features": [
+            "Long gray base with tan steps",
+            "White building with an arched opening and gray lower wall",
+            "Red sloping roof with exposed studs",
+            "Tall red-and-white striped tower rising above the roof",
+            "Flat gold-colored cap overhanging the tower"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 1,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 2,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled recognition remains a lighthouse or small house with a striped chimney; the lookout function is weakly communicated.",
+            "Two tan steps establish a clear ascent toward the elevated shelter, although access into the observation space is visually ambiguous.",
+            "The tall striped marker dominates the compact shelter and stepped base.",
+            "The red sloping canopy has a distinct outline, but the white arch and substantial gray lower wall leave only a small visible opening beneath it.",
+            "The upper marker visibly meets the roof and supports an overhanging gold cap.",
+            "All four views consistently show the same steps, arch, asymmetric canopy and striped marker."
+          ],
+          "limitations": [
+            "The declared inventory maxima were not supplied, so palette compliance and the exact 16-part requirement cannot be verified.",
+            "Occlusion limits assessment of the sheltered perch and continuity of its access route.",
+            "Physical connection strength and buildability are not assessed."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "stepped-lookout--shape--1",
+      "task": "stepped-lookout",
+      "condition": "shape",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "af58a248de16739495019bc7008b7f793b95480d0d7b44921d602b37ca26f96e",
+        "compilation.json": "7a678ea98a83eff41e2db0fdfc3c914bf919384c8c6c87492457ca548ff3d604",
+        "build.mpd": "69cd7012743e0f1ded0770ec942109b57e9de8fb656fe4e5521448178bde358b"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 6,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1429,
+        "ldrawBytes": 1695,
+        "partsPerScriptKB": 11.5,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (37 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82735,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 498
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 33103,
+        "output_tokens": 2960,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 112277,
+      "visualStatus": "assessed",
+      "visualTotal": 18,
+      "visualAssessment": {
+        "id": "candidate-010",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A small house with a chimney at the top of a staircase",
+            "A tower reached by steps"
+          ],
+          "confidence": 0.8,
+          "visible_features": [
+            "Three ascending gray steps with pale tan treads",
+            "White walls with two vertically stacked arched openings",
+            "Dark blue sloped roof",
+            "Tall yellow chimney-like column with a wide white cap"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled recognition remains a small house with a chimney atop a staircase, with a tower reached by steps as the alternative.",
+            "Three tan-topped gray steps make the ascending route and height progression clear.",
+            "The upper gray platform provides a small perch beneath a dark blue sloping canopy.",
+            "Stacked white arches preserve visible openings beneath the canopy, although the substantial wall sections make the shelter read as a house.",
+            "The tall yellow marker has a visible support extending from the canopy to its broad white cap.",
+            "The staircase, arched shelter, canopy and marker remain visually consistent across all four views."
+          ],
+          "limitations": [
+            "The declared inventory maxima were not supplied, so palette compliance and the exact 16-part requirement cannot be verified.",
+            "The images establish visual contact, not mechanically sound connections."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--combined--1",
+      "task": "birds-at-feeder",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "515a1fb5606fa60bbd9286de8baa9e60ca3515c25d121f21b75aedfb127e9492",
+        "compilation.json": "fc795660108559f415ab3b8c0568cd1a6145caf74485a6e0260e3b0de6d10a55",
+        "build.mpd": "20673a5d910185c54d76809469a80dde3295a40ad88c11cad32175f711cf571a"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 11,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1360,
+        "ldrawBytes": 1589,
+        "partsPerScriptKB": 12,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "10 part(s) in 2 group(s) are not connected to the main structure (largest group: 6 parts); e.g. 3659 at [9, -1, 0], 3001 at [2, 0, 1]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[5] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[2] (code line 2)",
+            "sections[2].ops[0] (code line 5)",
+            "sections[2].ops[3] (code line 5)",
+            "sections[2].ops[2] (code line 5)",
+            "sections[2].ops[1] (code line 5)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91352,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 440
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36795,
+        "output_tokens": 4569,
+        "cached_input_tokens": 2432,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 4142
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 192861,
+      "visualStatus": "assessed",
+      "visualTotal": 20,
+      "visualAssessment": {
+        "id": "candidate-025",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "Two ducks facing each other across a small feeding trough or table."
+          ],
+          "confidence": 0.82,
+          "visible_features": [
+            "Two birdlike figures with broad, flat orange beaks pointing toward the center.",
+            "One figure has a blue body; the other has a red body with brown upper pieces.",
+            "Both have dark studs near their beaks and yellow arched bases resembling feet.",
+            "A low brown rectangular object with a tan top sits between them."
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 3,
+            "composition": 4,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The original unlabelled reading was two ducks facing a shared feeder or small table.",
+            "Broad orange beaks and dark studs near their bases establish birdlike faces, although the heads merge into the bodies.",
+            "The taller brown-and-red bird contrasts with the longer, lower blue bird, giving them distinct poses.",
+            "A separate brown feeder occupies the central gap, with both beaks pointing toward it.",
+            "The beaks sit above the feeder, making the feeding gesture less explicit.",
+            "Yellow arched lower pieces suggest paired feet; the silhouettes and spatial relationships remain coherent across all four views."
+          ],
+          "limitations": [
+            "The feeder remains visually ambiguous between a feeding trough and a small table.",
+            "Exactly 16 parts and compliance with inventory maxima cannot be verified from the images and absent inventory."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--connections--2",
+      "task": "arched-toll-gate",
+      "condition": "connections",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "b8bcdb9e4207a653ac3e84082a82ddfa7aaac5791ceb57a32fffabc2c20aa22b",
+        "compilation.json": "5aec5f68ded9c871c15cc188ecf7094da16ea0e7d437bae77a68965071b8c7eb",
+        "build.mpd": "77069c62d0e8599f6d5ee0f4304bfca6aa1094add4f7ff259c42cdfdd38980d1"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 8,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1587,
+        "ldrawBytes": 1564,
+        "partsPerScriptKB": 10.3,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "7 part(s) in 1 group(s) are not connected to the main structure (largest group: 9 parts); e.g. 3001 at [8, 0, 1]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[6] (code line 2)",
+            "sections[1].ops[5] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[2] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83271,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 411
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 34317,
+        "output_tokens": 1913,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 82596,
+      "visualStatus": "assessed",
+      "visualTotal": 19,
+      "visualAssessment": {
+        "id": "candidate-001",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A small house or shelter beside an arched gateway",
+            "A toll booth beside a passageway"
+          ],
+          "confidence": 0.56,
+          "visible_features": [
+            "Tan arch spanning two separate gray bases",
+            "Flat red cap above the arch",
+            "Separate tan structure with a dark blue sloping roof",
+            "Transparent light-blue wall or window across one side",
+            "Exposed studs on the bases and rooftops"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 4,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled recognition was a small house or shelter beside an arched gateway, with a toll booth as an alternative.",
+            "The tan gate has a clearly visible opening beneath its arch and a prominent red top marker.",
+            "The separate hut has dark-blue roof slopes, tan walls and a transparent light-blue window face.",
+            "The hut is relatively bulky beside the gate, but both structures remain visually distinct.",
+            "Two gray footing blocks support the gate; the hut has a broad, flat lower edge.",
+            "The structures sit alongside each other, though no roadway or barrier clearly establishes the toll entrance.",
+            "All four views show consistent geometry, colors and placement, with clear arch and roof silhouettes."
+          ],
+          "limitations": [
+            "The declared inventory maxima are unavailable, and the images do not establish an exact 16-part count.",
+            "Mechanical connection quality and physical buildability were not assessed."
+          ]
+        },
+        "weeklyRemaining": 90
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--shape--1",
+      "task": "arched-toll-gate",
+      "condition": "shape",
+      "status": "infrastructure-failure",
+      "originalFrozenStatus": "infrastructure-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "compilerAccepted": false,
+      "stats": null,
+      "construction": null,
+      "problems": null,
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82707,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [],
+      "providerUsage": null,
+      "usageRecords": 0,
+      "usageSource": "native completed turns",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 4144,
+      "visualStatus": "unevaluated-invalid-submission",
+      "visualTotal": null,
+      "visualAssessment": {
+        "id": "candidate-023",
+        "status": "unevaluated-invalid-submission"
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--shape--1",
+      "task": "birds-at-feeder",
+      "condition": "shape",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "9ffa86dcbc5f820c9f70b19ae44a207117ae0fa7ca7ce54b98f3c0ebf182fc0b",
+        "compilation.json": "805eace345cf27d71fea0e6aaadbd7ec5743268b930922a39c1926cee9625a9b",
+        "build.mpd": "e8467432761164d724b5c8f925e4802c816f27cf6d82b63dcdd285b52183fd45"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 12,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1484,
+        "ldrawBytes": 2085,
+        "partsPerScriptKB": 11,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "9 part(s) in 2 group(s) are not connected to the main structure (largest group: 7 parts); e.g. 3659 at [12, -1, 0], 3001 at [7, 0, 1]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[5] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[2] (code line 2)",
+            "sections[2].ops[0] (code line 5)",
+            "sections[2].ops[2] (code line 5)",
+            "sections[2].ops[1] (code line 5)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82767,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 433
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 33110,
+        "output_tokens": 3546,
+        "cached_input_tokens": 2432,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 3106
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 156606,
+      "visualStatus": "assessed",
+      "visualTotal": 18,
+      "visualAssessment": {
+        "id": "candidate-031",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "Two people seated opposite each other at a small table with an open book",
+            "Two bird-like characters facing each other across a table"
+          ],
+          "confidence": 0.55,
+          "visible_features": [
+            "Two facing figures, one yellow and one light blue",
+            "Large sloped heads with orange protrusions beneath them",
+            "Dark sloped blocks behind both figures",
+            "Orange arch-shaped bases",
+            "Central brown rectangular table with a cream-colored book-like tile and a small yellow piece"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 4,
+            "contours": 3,
+            "fidelity": 2,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "My original unlabelled judgement favoured two seated people at a table; bird-like characters were a secondary interpretation.",
+            "Both figures have large sloped heads, orange beak-like projections, contrasting bodies and dark rear slopes.",
+            "Different head heights and forward projections give the figures distinct poses.",
+            "Both face the same central object, with visible gaps separating it from their bodies across all four views.",
+            "The brown central object with a cream rectangular top reads more readily as a table with a book than as a feeder.",
+            "The silhouettes remain distinct across views, though broad rectangular bodies and orange arch-shaped bases contribute to the seated-person interpretation."
+          ],
+          "limitations": [
+            "The images do not establish exact part count or compliance with the declared inventory and palette.",
+            "Mechanical connections and physical buildability were not assessed."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "canal-landing--shape--2",
+      "task": "canal-landing",
+      "condition": "shape",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "06a0d147c1609f06906eafd4b0ef92590968710a830f42a088d574db09c3c795",
+        "compilation.json": "dee06c2b327e58c20e832f018144691d6ea8983d3139ab0903d3a7f10076e5de",
+        "build.mpd": "969a507640e5ce5d9d4d2dd25a547746c2759f57759bf2c8d858cbf6c4a961be"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 4,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1799,
+        "ldrawBytes": 2391,
+        "partsPerScriptKB": 9.1,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 1 part is not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "4 part(s) in 2 group(s) are not connected to the main structure (largest group: 12 parts); e.g. 3039 at [3, 0, -6], 3024 at [2, 0, -1]",
+          "ops": [
+            "sections[2].ops[0] (code line 2)",
+            "sections[2].ops[2] (code line 2)",
+            "sections[2].ops[1] (code line 2)",
+            "sections[3].ops[0] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82750,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 421
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 33108,
+        "output_tokens": 2542,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 139363,
+      "visualStatus": "assessed",
+      "visualTotal": 18,
+      "visualAssessment": {
+        "id": "candidate-015",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A stone arch bridge over water, with a small blue-and-tan boat nearby",
+            "An arched gateway with a separate ramp"
+          ],
+          "confidence": 0.58,
+          "visible_features": [
+            "Tan arch spanning two parallel gray studded foundations",
+            "Two flat tan tiles capping the arch",
+            "Small transparent light-blue piece beneath the opening",
+            "Tan platform projecting beside the arch",
+            "Separate dark-blue sloped assembly topped with an orange-tan tile"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 2,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled recognition was a stone arch bridge over water with a nearby blue-and-tan boat; the quay was less clearly identified.",
+            "The tan arch and gray banks establish a clear crossing, while a projecting tan platform suggests the landing.",
+            "The separate boat has visible empty space between it and the shore.",
+            "The boat's broad, relatively tall wedge makes its low-boat proportions less convincing.",
+            "The arch opening has a clear curved contour; the boat has a less distinctive silhouette.",
+            "The transparent light-blue element and open channel suggest water without a filled base.",
+            "The four views show coherent object placement, although the frontal view obscures some separation and clearance."
+          ],
+          "limitations": [
+            "Declared inventory maxima were not supplied, so palette compliance and the exact 16-part requirement cannot be verified.",
+            "The views do not conclusively establish clearance for the boat throughout passage under the arch."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--control--2",
+      "task": "arched-toll-gate",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "f521ca2172ad181a0ec59a8055f3b21fdd34d8a1c2c474d4cf2abae3ce8be1cd",
+        "compilation.json": "3d95fdf570eff5cc4a03f2bc64b77b7f2c9bebf8c015e8fd129ade3b75dc2997",
+        "build.mpd": "b36b5fae4dd26fe410bab5ca4c4af60de8daa1e28acebbaa0a204f6dc577988d"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1678,
+        "ldrawBytes": 1672,
+        "partsPerScriptKB": 9.8,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "4 part(s) in 1 group(s) are not connected to the main structure (largest group: 12 parts); e.g. 3001 at [10, 0, 2]",
+          "ops": [
+            "sections[2].ops[0] (code line 2)",
+            "sections[2].ops[1] (code line 2)",
+            "sections[2].ops[3] (code line 2)",
+            "sections[2].ops[2] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73159,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 446
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30073,
+        "output_tokens": 1839,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1506
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 104066,
+      "visualStatus": "assessed",
+      "visualTotal": 18,
+      "visualAssessment": {
+        "id": "candidate-003",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A bridge beside a small blue-roofed house",
+            "An industrial building with a red smokestack beside a smaller building"
+          ],
+          "confidence": 0.46,
+          "visible_features": [
+            "Gray structure with two parallel arched openings",
+            "Raised gray platforms on both sides",
+            "Tall red rectangular column topped by a stud",
+            "Separate tan rectangular building with a dark blue sloping roof",
+            "Exposed round studs"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "My unlabelled reading remains a bridge beside a blue-roofed house; the toll-gate function was not explicit.",
+            "The gray structure has a clearly visible opening beneath its arches in all four views.",
+            "The separate tan hut has a distinct dark blue sloping roof, though its solid walls provide few guard-hut cues.",
+            "The tall red column provides a conspicuous gate marker but also resembles a smokestack.",
+            "The adjacent structures form a coherent entrance arrangement, with broad lower faces suggesting ground contact.",
+            "The arches, raised side platforms, red marker and hut remain visually consistent across views."
+          ],
+          "limitations": [
+            "The declared inventory and exact 16-part count cannot be verified from these images.",
+            "No physical buildability or connection strength is inferred.",
+            "The white background limits assessment of ground contact and approach alignment."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "stepped-lookout--combined--2",
+      "task": "stepped-lookout",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "a6bb6ea70e83b8881a236807bcdafea874942565f4dda185fcc975891ec0347e",
+        "compilation.json": "2f40b8be0a07dd715f87d9c6631e5ab832acb9ab6c0607a4da83cbc0d6d7f82d",
+        "build.mpd": "cde68a8803008f80c45b62e4d2b50874217e2f170941f2a19f6661513cb81209"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 6,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1469,
+        "ldrawBytes": 1463,
+        "partsPerScriptKB": 11.2,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (39 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91320,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 430
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36788,
+        "output_tokens": 2460,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 111004,
+      "visualStatus": "assessed",
+      "visualTotal": 18,
+      "visualAssessment": {
+        "id": "candidate-019",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A staircase leading to a roofed arched gateway",
+            "A small castle entrance at the top of steps"
+          ],
+          "confidence": 0.74,
+          "visible_features": [
+            "Four ascending gray steps with tan treads",
+            "White wall with a central arched opening",
+            "Dark blue sloped roof",
+            "Red studded block at one roof corner",
+            "Gray studs flanking the entrance"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The original unlabelled reading remains a staircase leading to a roofed arched gateway or small castle entrance; an observation lookout is less explicit.",
+            "Four ascending gray levels with tan walking surfaces make the height progression clear.",
+            "The upper landing sits beneath a broad dark blue sloping canopy, with open space visible through the white arch.",
+            "The canopy dominates the relatively narrow sheltered perch.",
+            "A red upper marker visibly sits on the canopy corner.",
+            "The stair sequence, arch, canopy and marker placement remain coherent across all four views."
+          ],
+          "limitations": [
+            "The images do not establish the exact 16-part count or compliance with inventory maxima; the declared inventory was not supplied.",
+            "Visible contact does not establish mechanically sound connections.",
+            "No explicit viewing feature distinguishes the sheltered landing from a gateway."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--connections--1",
+      "task": "birds-at-feeder",
+      "condition": "connections",
+      "status": "model-failure",
+      "originalFrozenStatus": "model-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "344e365f4c3c233cd9d26ead7c63d06952028eae3996ac7b4d4108f05d8818ae",
+        "compilation.json": "d1e1a976a61f501e9589f22dd04c11d8b2aa98b28c44d84c15e15fecc1e58850",
+        "build.mpd": "ec7c20c6dad66eeaaac097ae4cdc48dbaa38e13e1c43d3632891c6709507fb01"
+      },
+      "compilerAccepted": false,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 12,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1479,
+        "ldrawBytes": 1722,
+        "partsPerScriptKB": 11.1,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "error",
+          "code": "colour-unavailable",
+          "message": "Arch 1 × 4 (3659) is not made in dark green (1×); it comes in white, black, red, blue, yellow, green, tan, dark tan and more",
+          "ops": [
+            "sections[1].ops[0] (code line 18)"
+          ]
+        },
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "9 part(s) in 2 group(s) are not connected to the main structure (largest group: 7 parts); e.g. 3001 at [2, 0, 1], 3659 at [8, -1, 0]",
+          "ops": [
+            "sections[0].ops[0] (code line 7)",
+            "sections[0].ops[2] (code line 10)",
+            "sections[0].ops[3] (code line 11)",
+            "sections[0].ops[5] (code line 13)",
+            "sections[0].ops[4] (code line 12)",
+            "sections[0].ops[1] (code line 9)",
+            "sections[1].ops[0] (code line 18)",
+            "sections[1].ops[2] (code line 19)",
+            "sections[1].ops[1] (code line 19)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83331,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 421
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 34325,
+        "output_tokens": 3537,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 3058
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 147150,
+      "visualStatus": "unevaluated-invalid-submission",
+      "visualTotal": null,
+      "visualAssessment": {
+        "id": "candidate-013",
+        "status": "unevaluated-invalid-submission"
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--combined--2",
+      "task": "arched-toll-gate",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "aa888c2bdf585e6e6434261b2ba40a3448245cfc8c0c90866c02c110f142b976",
+        "compilation.json": "6a74b79b7e56c355815ccb41ddc3451cd9f22023d19b56fd406ba543d77a1978",
+        "build.mpd": "f08277c35dcd5ae05c0edc8d55f0c1ae4e81111977a767c988fd169845b4f1f6"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 9,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1475,
+        "ldrawBytes": 1508,
+        "partsPerScriptKB": 11.1,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "5 part(s) in 1 group(s) are not connected to the main structure (largest group: 11 parts); e.g. 3001 at [9, 0, 2]",
+          "ops": [
+            "sections[1].ops[0] (code line 11)",
+            "sections[1].ops[2] (code line 13)",
+            "sections[1].ops[4] (code line 14)",
+            "sections[1].ops[3] (code line 14)",
+            "sections[1].ops[1] (code line 12)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91292,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 412
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36787,
+        "output_tokens": 2966,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 86309,
+      "visualStatus": "assessed",
+      "visualTotal": 20,
+      "visualAssessment": {
+        "id": "candidate-004",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A small house beside a stone archway or gateway",
+            "A gate and adjacent guardhouse",
+            "A house beside an arched bridge"
+          ],
+          "confidence": 0.64,
+          "visible_features": [
+            "Freestanding gray arch with a rounded opening and two broad gray bases",
+            "Red bricks forming the lower portion of one arch support",
+            "Flat gray slabs across the top of the arch",
+            "Separate small building with a red sloping roof, white front, tan base, and blue rear wall",
+            "Small arched opening in the building’s front"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 4,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The unlabelled reading remains a small house beside a stone gateway, with gate and guardhouse as a plausible interpretation.",
+            "The gate has a large, visibly clear arched passage; the separate hut has a smaller arched opening and a distinct red sloping roof.",
+            "The gate rises slightly above the hut, giving the entrance a coherent relative scale.",
+            "Two broad gray footings ground the gate supports, while the hut rests on a tan rectangular foundation.",
+            "The red stack on one gate support provides a conspicuous marker, although its signalling function is ambiguous.",
+            "The separated structures suggest an entrance, but no shared ground or lane clearly organizes passage through it.",
+            "The arch, roof slopes, colors, and relative placement remain consistent across all four views."
+          ],
+          "limitations": [
+            "The images alone do not establish a specifically toll-related function.",
+            "Declared inventory maxima are unavailable, and exact part-count compliance cannot be reliably verified from these views.",
+            "Mechanical connections and physical buildability were not assessed."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--connections--2",
+      "task": "birds-at-feeder",
+      "condition": "connections",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "f2b2ab41eb3222cd3fd4d3a950ad57beb0ec4aea906828a14a9285afc5a214db",
+        "compilation.json": "0cd2e2f033e54f5602cec122d355ec496378d9b025a6cda3e4e23a8a9613bff9",
+        "build.mpd": "da18b42fcea77607b722f0ce094a252830d2426f2cf0b496e4078806fef8c6c9"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 9,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1398,
+        "ldrawBytes": 1331,
+        "partsPerScriptKB": 11.7,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "10 part(s) in 2 group(s) are not connected to the main structure (largest group: 6 parts); e.g. 3001 at [13, 0, 1], 3659 at [8, -1, 0]",
+          "ops": [
+            "sections[0].ops[6] (code line 2)",
+            "sections[0].ops[8] (code line 2)",
+            "sections[0].ops[7] (code line 2)",
+            "sections[0].ops[11] (code line 2)",
+            "sections[0].ops[10] (code line 2)",
+            "sections[0].ops[9] (code line 2)",
+            "sections[1].ops[0] (code line 4)",
+            "sections[1].ops[2] (code line 4)",
+            "sections[1].ops[3] (code line 4)",
+            "sections[1].ops[1] (code line 4)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83331,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 457
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 34325,
+        "output_tokens": 3464,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 3106
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 152633,
+      "visualStatus": "assessed",
+      "visualTotal": 14,
+      "visualAssessment": {
+        "id": "candidate-005",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "Two people seated opposite each other at a table",
+            "Two people playing a board game"
+          ],
+          "confidence": 0.55,
+          "visible_features": [
+            "Opposing red and blue assemblies with sloped outer ends and lower blocks",
+            "Two yellow head-like shapes facing inward",
+            "Dark gray blocks beside the yellow shapes",
+            "A central tan tabletop above a brown arched support",
+            "Roughly mirrored arrangement around the center"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 1,
+            "proportions": 2,
+            "composition": 3,
+            "contours": 2,
+            "fidelity": 2,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "My original unlabelled reading was two people seated opposite one another at a table; birds were not independently recognised.",
+            "The yellow inward-pointing wedges suggest beaks, but their size dominates the small gray head regions and long rectangular red and blue bodies.",
+            "Both figures face the central feeder with a visible gap between them.",
+            "The feeder has a distinct tan top and brown arched support, clearly separated from both bodies.",
+            "Sloped outer ends suggest tails, though the blocky lower supports make the figures resemble seated bodies.",
+            "The lower red and blue forms differ, but the head and beak poses are very similar.",
+            "All four views consistently show the same shapes, colours and spatial relationships."
+          ],
+          "limitations": [
+            "The exact part count and compliance with inventory maxima cannot be verified from the images alone."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--shape--2",
+      "task": "birds-at-feeder",
+      "condition": "shape",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "150c9f3f2bb473da7568ac3ae3219b5042f0c453b9e77ea9b88c42319cd6a29e",
+        "compilation.json": "db2c4c538062146022b2b8efee59a4489fc9b20bba6ee5e15010d41550b9dfac",
+        "build.mpd": "fef8101ed2b3b21ffbd489dba250f0846e6c105cc4442776230f9f0aa613258c"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 12,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1382,
+        "ldrawBytes": 1892,
+        "partsPerScriptKB": 11.9,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "9 part(s) in 2 group(s) are not connected to the main structure (largest group: 7 parts); e.g. 3659 at [2, -1, 0], 3001 at [7, 0, 1]",
+          "ops": [
+            "sections[0].ops[0] (code line 2)",
+            "sections[0].ops[1] (code line 2)",
+            "sections[0].ops[4] (code line 2)",
+            "sections[0].ops[3] (code line 2)",
+            "sections[0].ops[5] (code line 2)",
+            "sections[0].ops[2] (code line 2)",
+            "sections[2].ops[0] (code line 5)",
+            "sections[2].ops[2] (code line 5)",
+            "sections[2].ops[1] (code line 5)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82767,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 424
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 33110,
+        "output_tokens": 4539,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 4142
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 243315,
+      "visualStatus": "assessed",
+      "visualTotal": 14,
+      "visualAssessment": {
+        "id": "candidate-008",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "Two armchairs, one red and one blue, beside a small coffee table",
+            "Two people seated facing each other across a table"
+          ],
+          "confidence": 0.58,
+          "visible_features": [
+            "Red and blue structures with sloped upper sections and dark gray top blocks",
+            "Brown bases with arch-shaped openings",
+            "Orange studded blocks on the sides nearest the table",
+            "White horizontal band on the blue structure",
+            "Small central brown support topped by two cream-colored tiles"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 1,
+            "proportions": 2,
+            "composition": 3,
+            "contours": 2,
+            "fidelity": 2,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "My unlabelled reading was two armchairs beside a coffee table, with seated people as an alternative; birds were not recognised.",
+            "Small dark gray top blocks and orange inward-facing projections suggest heads and beaks, but their separation and the broad rectangular bodies weaken that relationship.",
+            "The blue figure is taller and more upright; the red figure has a lower, broader profile.",
+            "Both orange projections point toward the distinct cream-topped central object, with visible gaps on either side.",
+            "Brown arched bases and the blue figure's long white band contribute to the furniture-like appearance.",
+            "The colours, silhouettes and arrangement remain coherent across all four views."
+          ],
+          "limitations": [
+            "The declared inventory is unavailable, so palette compliance and the exact 16-part requirement cannot be verified.",
+            "The feeder's function is ambiguous from its visible form alone."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "stepped-lookout--connections--1",
+      "task": "stepped-lookout",
+      "condition": "connections",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "fe4314a42e96b6a23c38f5408086e6bfb9d8b577d1a4d9d95f9ebeda6baa8df4",
+        "compilation.json": "312af940a659727be899bb4068d81c589213313119fcf284dd42e268245f4375",
+        "build.mpd": "daf02e880b417ba9d97c19a149c9c060b16de6153683950de2e0d3b2943f27b5"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 5,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 4,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1515,
+        "ldrawBytes": 1910,
+        "partsPerScriptKB": 10.8,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (43 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83299,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 443
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 34318,
+        "output_tokens": 2212,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1854
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 94378,
+      "visualStatus": "assessed",
+      "visualTotal": 17,
+      "visualAssessment": {
+        "id": "candidate-006",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A small house with a red roof, chimney, and steps leading to an arched entrance",
+            "A cottage at the top of a staircase"
+          ],
+          "confidence": 0.87,
+          "visible_features": [
+            "Red sloped roof with exposed studs along the top",
+            "Tan chimney rising from one end of the roof",
+            "Tan walls with an arched opening",
+            "Dark gray foundation",
+            "Three ascending gray steps with pale tan tops"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 2,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "My original unlabelled reading remains a small house or cottage with a red roof, chimney, and entrance steps.",
+            "Three pale-topped gray steps clearly establish an ascending route toward the elevated shelter.",
+            "The broad red canopy dominates the compact tan shelter; its slope is clearest in the oblique views.",
+            "The low arched opening preserves some space beneath the canopy, but surrounding walls obscure an observation perch.",
+            "The tan upper marker appears directly above the roof, with a continuous visible support beneath it.",
+            "The roof, arch, marker, and offset staircase occupy consistent positions across all four views."
+          ],
+          "limitations": [
+            "The images do not establish an exact count of 16 parts or compliance with the undeclared inventory maxima.",
+            "Physical connection strength and buildability are not assessed.",
+            "The enclosed shelter and chimney-like marker weaken recognition as a lookout."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "canal-landing--shape--1",
+      "task": "canal-landing",
+      "condition": "shape",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "c42ceac95a280825f9110ecc30ebdb8ae18eb8d78f0c6682a3e2b02b6af25bea",
+        "compilation.json": "c1c68a4cc8f442002d66006f9d53e45cc6ef350540e03e6fc226649baf3b03de",
+        "build.mpd": "aa4c0eef99608e53b3692f77491190b030685d96f5feb85d10892c526ce1e9fb"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 6,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1571,
+        "ldrawBytes": 1552,
+        "partsPerScriptKB": 10.4,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "3 part(s) in 1 group(s) are not connected to the main structure (largest group: 13 parts); e.g. 3039 at [2, 0, -4]",
+          "ops": [
+            "sections[1].ops[0] (code line 12)",
+            "sections[1].ops[2] (code line 14)",
+            "sections[1].ops[1] (code line 13)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82750,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 422
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 33108,
+        "output_tokens": 2954,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2537
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 163275,
+      "visualStatus": "assessed",
+      "visualTotal": 19,
+      "visualAssessment": {
+        "id": "candidate-029",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A stone arch bridge with a small red boat passing underneath",
+            "An arched tunnel or gateway with a red vehicle approaching"
+          ],
+          "confidence": 0.62,
+          "visible_features": [
+            "Two parallel gray block walls supporting a tan arch",
+            "Flat gray tiles capping the arch",
+            "Dark blocks with round studs beside the opening",
+            "A low red wedge-shaped object with a pale yellow top aligned with the passage"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The original unlabelled reading favored an arched stone bridge with a red boat, while retaining a vehicle-and-gateway alternative.",
+            "The tan arch and gray cap clearly span a passage between substantial gray shore structures.",
+            "The low red wedge with a pale yellow deck suggests a boat, though its silhouette also resembles a vehicle.",
+            "Visible gaps separate the boat from the shore, and the opening provides clearance above its deck.",
+            "The bulky parallel shore walls dominate the landing; a distinct short quay is less clearly differentiated.",
+            "White empty space suggests the canal, but no contrasting water colour reinforces that reading.",
+            "All four views show consistent geometry, colours, and object placement."
+          ],
+          "limitations": [
+            "The declared inventory maxima were not supplied, so palette compliance and the exact 16-part requirement cannot be verified.",
+            "The images do not establish mechanical connections or physical buildability."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--control--2",
+      "task": "birds-at-feeder",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "015a1886929b9224c422d2b0afed4547ef757bb4d72c91ab2c231b19c6d27704",
+        "compilation.json": "89997138bcb119062a7e20c5fd2d7a24781df127b1e67506a0966e1c53d12e06",
+        "build.mpd": "af80da042b0df40f45a8ae358ac852b93ad426f91633856f689eed3c43dc4c59"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 9,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1426,
+        "ldrawBytes": 1367,
+        "partsPerScriptKB": 11.5,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "10 part(s) in 2 group(s) are not connected to the main structure (largest group: 6 parts); e.g. 3001 at [13, 0, 2], 3659 at [8, -1, 0]",
+          "ops": [
+            "sections[0].ops[6] (code line 9)",
+            "sections[0].ops[9] (code line 12)",
+            "sections[0].ops[7] (code line 10)",
+            "sections[0].ops[8] (code line 11)",
+            "sections[0].ops[11] (code line 13)",
+            "sections[0].ops[10] (code line 13)",
+            "sections[1].ops[0] (code line 18)",
+            "sections[1].ops[3] (code line 19)",
+            "sections[1].ops[1] (code line 18)",
+            "sections[1].ops[2] (code line 19)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73219,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 417
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30081,
+        "output_tokens": 3797,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 3375
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 150576,
+      "visualStatus": "assessed",
+      "visualTotal": 14,
+      "visualAssessment": {
+        "id": "candidate-024",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A bridge with two towers and a central arch",
+            "A castle-style bridge"
+          ],
+          "confidence": 0.87,
+          "visible_features": [
+            "Red and blue structures at opposite ends",
+            "Yellow horizontal sections connecting toward the center",
+            "Tan and gray flat central span",
+            "Brown support with a semicircular arch opening",
+            "Sloped tower tops capped with dark gray studded bricks"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 1,
+            "proportions": 2,
+            "composition": 3,
+            "contours": 2,
+            "fidelity": 2,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "My original unlabelled reading remains a bridge with two towers and a central arch.",
+            "The red and blue forms face inward, with yellow projections reaching toward the same central object.",
+            "The brown arched support and tan-gray top distinguish the central feeder by colour and shape.",
+            "The long yellow projections and tall upper blocks obscure clear head/body/beak relationships.",
+            "Broad lower bodies and inward slopes suggest birds after disclosure, but the two poses differ only subtly.",
+            "The colours, silhouettes and spatial relationships remain consistent across all four views."
+          ],
+          "limitations": [
+            "The declared inventory maxima were not supplied, so palette compliance cannot be verified.",
+            "The images do not establish an exact count of 16 parts."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "canal-landing--connections--2",
+      "task": "canal-landing",
+      "condition": "connections",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "24258f615e3109e70150351efbf31284722180052fc5f6bac6e20daf57a0b3f5",
+        "compilation.json": "6bd4f629469a00eeed9875b200cfac1d93c5efcaf15c3ce3e95d84e149f7cd50",
+        "build.mpd": "27f5129183353267964470378ee727628f5cb6e729e41308cb0cd2408b6f8ddd"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 8,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1600,
+        "ldrawBytes": 1648,
+        "partsPerScriptKB": 10.2,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "5 part(s) in 1 group(s) are not connected to the main structure (largest group: 11 parts); e.g. 3001 at [2, 0, -3]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[2] (code line 2)",
+            "sections[1].ops[1] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 83314,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 413
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 34323,
+        "output_tokens": 2626,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2250
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 84331,
+      "visualStatus": "assessed",
+      "visualTotal": 15,
+      "visualAssessment": {
+        "id": "candidate-018",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "An arched bridge or tunnel with a red roadway ramp",
+            "A castle gateway with a drawbridge",
+            "A miniature obstacle course"
+          ],
+          "confidence": 0.48,
+          "visible_features": [
+            "Tan arch supported by two blocky bases",
+            "Red sloped section aligned with the arch opening",
+            "Flat tan tiles above portions of the red section",
+            "Gray tile capping the arch",
+            "Adjacent gray platform with exposed studs"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 2,
+            "composition": 3,
+            "contours": 2,
+            "fidelity": 2,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The tan arch reads clearly as a bridge or gateway; my original unlabelled judgement interpreted the red element as a roadway ramp rather than a boat.",
+            "The red element has a sloping end and broad tan upper surfaces, giving it a ramp-like silhouette.",
+            "The gray platform sits beside the red element and plausibly represents a short quay.",
+            "The arrangement coherently places the red element through the arch beside the gray platform.",
+            "White space separates portions of the red element and gray platform, but the water channel is not consistently legible.",
+            "The tan surface beneath the arch leaves limited visible overhead clearance.",
+            "All four views show consistent shapes, colours and relative placement."
+          ],
+          "limitations": [
+            "The declared inventory maxima and palette were not supplied, so inventory compliance cannot be assessed.",
+            "The images do not establish an exact part count.",
+            "Physical buildability and connection strength were not assessed."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--control--1",
+      "task": "birds-at-feeder",
+      "condition": "control",
+      "status": "infrastructure-failure",
+      "originalFrozenStatus": "infrastructure-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "compilerAccepted": false,
+      "stats": null,
+      "construction": null,
+      "problems": null,
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73219,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [],
+      "providerUsage": null,
+      "usageRecords": 0,
+      "usageSource": "native completed turns",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 96250,
+      "visualStatus": "unevaluated-invalid-submission",
+      "visualTotal": null,
+      "visualAssessment": {
+        "id": "candidate-014",
+        "status": "unevaluated-invalid-submission"
+      }
+    },
+    {
+      "caseId": "stepped-lookout--shape--2",
+      "task": "stepped-lookout",
+      "condition": "shape",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "0725b3524470a70d83941ed94d3f291b95d0c38d1304fa95454c5bb7ab154c18",
+        "compilation.json": "afd790ac0b8ece31934d0a91107df49da0e001322043b0d40c62ffd8c512e1a4",
+        "build.mpd": "2ea1f105acef4021a188fa3cf87386407afb752578343774456e479abceb96c4"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1466,
+        "ldrawBytes": 1830,
+        "partsPerScriptKB": 11.2,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (36 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 82735,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 424
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 33103,
+        "output_tokens": 2951,
+        "cached_input_tokens": 7680,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2571
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 131532,
+      "visualStatus": "assessed",
+      "visualTotal": 18,
+      "visualAssessment": {
+        "id": "candidate-012",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A small house entrance reached by stairs, with an arched doorway, red roof, and yellow chimney",
+            "A roofed gateway or shrine at the top of steps"
+          ],
+          "confidence": 0.68,
+          "visible_features": [
+            "Three ascending tan-topped steps on a gray base",
+            "Tan wall with a central arched opening",
+            "Dark red sloping roof above the arch",
+            "Yellow chimney-like stack at one end of the roof",
+            "Exposed studs on the roof and gray platform"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 2,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 3,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "The unlabelled reading remains a small house entrance or roofed gateway reached by stairs; a lookout is less immediately recognizable.",
+            "Successive tan-topped levels clearly establish an ascending route to the sheltered upper platform.",
+            "The broad roof and substantial arch surround visually dominate the small observation perch.",
+            "The central arch preserves visible open space beneath the canopy in all four views.",
+            "The red canopy has a distinct sloping face, and the yellow upper marker visibly meets its roof support.",
+            "The stair placement, arch, canopy slope and marker position remain consistent across opposing views."
+          ],
+          "limitations": [
+            "The declared inventory maxima are unavailable, and the images do not establish an exact 16-part count.",
+            "Visible contact does not establish mechanically sound connections or physical buildability."
+          ]
+        },
+        "weeklyRemaining": 89
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--control--1",
+      "task": "arched-toll-gate",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "73c2117003384716f92596ea57dd60bc8e5153d8fe5baefa70919028f03c6803",
+        "compilation.json": "b03ccbe4f27483128939ef87e5cb3f0de1181c1ca939f395399294909d122778",
+        "build.mpd": "aff1ce4f6c5cc2002419b6d45cc195620521439fbf6134bb15672b36dcbbe5b8"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1603,
+        "ldrawBytes": 1522,
+        "partsPerScriptKB": 10.2,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "6 part(s) in 1 group(s) are not connected to the main structure (largest group: 10 parts); e.g. 3001 at [10, 0, 2]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[5] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[2] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73159,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 417
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30073,
+        "output_tokens": 2461,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 103805,
+      "visualStatus": "assessed",
+      "visualTotal": 20,
+      "visualAssessment": {
+        "id": "candidate-022",
+        "status": "assessed",
+        "recognition": {
+          "guesses": [
+            "A small house beside a bridge or arched gateway",
+            "A checkpoint with a guardhouse and red signal light"
+          ],
+          "confidence": 0.58,
+          "visible_features": [
+            "Yellow rectangular building with a dark blue sloping roof",
+            "Gray structure with a central archway and two projecting supports",
+            "Flat gray tiles on top of the arched structure",
+            "Stacked transparent red pieces on a dark base above the arch"
+          ]
+        },
+        "assessment": {
+          "scores": {
+            "recognition": 3,
+            "proportions": 3,
+            "composition": 3,
+            "contours": 4,
+            "fidelity": 3,
+            "multi-view consistency": 4
+          },
+          "observations": [
+            "Original unlabelled recognition was a house beside an arched gateway, with a checkpoint and guardhouse as an alternative.",
+            "The gray gate has a clearly visible opening beneath its arch in multiple views.",
+            "The separate yellow hut has a distinct dark blue sloping roof, but appears bulky relative to the gate.",
+            "A prominent transparent red marker sits above the gate.",
+            "Both structures have flat lower edges suggesting intentional ground contacts; their separation makes the entrance arrangement somewhat loose.",
+            "The arch, roof slopes, marker placement and distinct structures remain coherent across all four views."
+          ],
+          "limitations": [
+            "The images do not establish compliance with the exact 16-part count or declared inventory maxima.",
+            "Physical connections and mechanical soundness were not assessed.",
+            "Toll-specific identity was not clear in the original unlabelled recognition."
+          ]
+        },
+        "weeklyRemaining": 88
+      }
+    }
+  ],
+  "limitations": [
+    "One model family; fixed development briefs; 2 scheduled repetitions per condition.",
+    "One automated reviewer; no independent human agreement measured.",
+    "Compiler acceptance and detected contacts do not establish physical buildability.",
+    "Availability and returned facts are recorded; successful use is not inferred from retrieval.",
+    "Token fields retain native meanings; unavailable usage is null. Account quota includes other activity.",
+    "Views are not independent builds; failures and missing evaluations are retained."
+  ]
+}

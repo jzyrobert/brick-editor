@@ -33,7 +33,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 ## Spatial benchmark research
 
 - [ ] Run the separately declared 36-case mechanical-feedback comparison only with further study authorisation; hold metadata/language/style fixed ([completed initial pilot](docs/SPATIAL-PILOT.md)).
-- [ ] Improve non-ceiling calibration, evaluate temporary aliases and compare on-demand retrieval with automatic fact presentation as separate conditions. Only 9/54 creative treatment sessions retrieved facts; this pilot does not establish a quality improvement.
+- [ ] Improve non-ceiling calibration, evaluate temporary aliases and compare on-demand retrieval with automatic facts within identical tasks/feedback. The separate automatic-facts development pilot has a tentative positive shape signal; confirm with more tasks and independent reviewers. Luna/high and Astra/medium screening is in progress.
 - [ ] Add privately witnessed held-out creative tasks, another model family and independent human assessments. Resolve provider interruption/capacity missingness before generalising the 42/72 submitted creative builds.
 - [ ] Expand structured occurrence/interface diagnostics and coverage independently; pilot proper axis-aligned poses/offsets and explicit connector alignment assistance before functional/sideways tasks. Keep design metadata/guidance, inventory formats and physical stability/assembly audits separate.
 
