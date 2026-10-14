@@ -288,3 +288,57 @@ it("evaluator tampering with frozen source is detected after an evaluator except
     }),
   ).rejects.toThrow("Frozen artifact changed");
 });
+
+it("enforces explicit exact counts only after closing no-feedback generation", async () => {
+  const r = await replay([valid], (m) => {
+    m.factsVersion = "spatial-part-facts/2";
+    m.tasks[0].sizePolicy = "exact";
+    m.tasks[0].targetParts = 3;
+  });
+  expect(r.calls).toBe(1);
+  expect(r.frozen.status).toBe("model-failure");
+  expect(r.frozen.files["build.mpd"]).toBeDefined();
+  expect(r.frozen.used.repairs).toBe(0);
+  const advisory = await replay([valid], (m) => {
+    m.tasks[0].targetParts = 3;
+  });
+  expect(advisory.frozen.status).toBe("submitted");
+});
+it("returns bounded exact-count records in mechanical mode and preserves run-wide repair budget", async () => {
+  const r = await replay([valid, valid], (m) => {
+    m.factsVersion = "spatial-part-facts/2";
+    m.tasks[0].sizePolicy = "exact";
+    m.tasks[0].targetParts = 3;
+    m.conditions[0].policy = "blind-mechanical";
+    m.budgets.repairs = 1;
+  });
+  expect(r.calls).toBe(2);
+  expect(r.frozen.status).toBe("model-failure");
+  expect(r.frozen.used.repairs).toBe(1);
+  expect(r.transcripts[1].at(-1)?.content).toContain(
+    '"property":"exact-count"',
+  );
+});
+it("serves corrected palette search and detailed v2 references with exact payload logging", async () => {
+  const r = await replay(
+    [
+      JSON.stringify({ parts_search: { query: "slope", size: "2x2" } }),
+      JSON.stringify({ part_info: { part_ids: ["3039"], fields: ["shape"] } }),
+      valid,
+    ],
+    (m) => {
+      m.factsVersion = "spatial-part-facts/2";
+      m.conditions[0].facts = ["shape"];
+    },
+  );
+  expect(r.frozen.status).toBe("submitted");
+  expect(r.transcripts[1].at(-1)?.content).toContain(
+    '"dimensionMeaning":"compiler-placement-reservation"',
+  );
+  expect(r.transcripts[2].at(-1)?.content).toContain(
+    '"version":"spatial-part-facts/2"',
+  );
+  expect(await readFile(join(r.dir, "audit.jsonl"), "utf8")).toContain(
+    "parts_search",
+  );
+});

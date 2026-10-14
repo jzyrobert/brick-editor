@@ -351,10 +351,17 @@ function thumbnailOf(e: Indexed) {
   );
 }
 
+/** Host-only options for versioned generation references. Applied before ranking limits. */
+export type SearchDomain = {
+  allowedIds?: ReadonlySet<string>;
+  sizeOf?: (id: string) => { w: number; d: number; h: number } | null;
+};
+
 /** Ranked search (see the module comment). */
 export function searchParts(
   request: PartSearchRequest = {},
   partial = false,
+  domain: SearchDomain = {},
 ): PartSearchResult[] {
   const limit = Math.max(1, Math.min(request.limit ?? 20, 200));
   const query = tokens(request.query ?? "");
@@ -374,7 +381,11 @@ export function searchParts(
   const category = request.category?.toLowerCase();
   const size = request.size;
   const results: (PartSearchResult & { order: number })[] = [];
-  for (const e of pool) {
+  for (const indexed of pool) {
+    if (domain.allowedIds && !domain.allowedIds.has(indexed.id)) continue;
+    const e = domain.sizeOf
+      ? { ...indexed, size: domain.sizeOf(indexed.id) }
+      : indexed;
     const role = roles.ids.indexOf(e.id);
     let score = query.length ? relevance(e, query, partial) : 1;
     if (role >= 0 && roles.exact) score = Math.max(score, 1) + 200 - role * 5;
@@ -465,7 +476,10 @@ export function searchParts(
   );
   // Nothing matches every word: rank parts matching some of them.
   if (!results.length && !partial && query.length > 1)
-    return searchParts(request, true).map((r) => ({ ...r, partial: true }));
+    return searchParts(request, true, domain).map((r) => ({
+      ...r,
+      partial: true,
+    }));
   // Penalised near-misses (printed torsos, other systems) never pad a list
   // that has real matches.
   const kept = results.some((r) => r.score > 0)

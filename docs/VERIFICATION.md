@@ -1,5 +1,13 @@
 # Verification — 27 September 2026
 
+## Generation reference accuracy — 14 October 2026
+
+**70 tests pass in six suites**: spatial-reference-v2, spatial-part-reference, spatial-benchmark, spatial-automatic-pilot and build-script unit suites, plus spatial-benchmark integration. New checks cover all 224 curated placement dimensions, a palette member below the global search limit, partial matches, an independently clipped through-arch slab with obstructing perturbations, all three automatic window panes, wheels/origin-anchor emission, exact-count rejection without feedback, bounded mechanical repair and v2 payload logging. A fresh Node process verifies identical full-library facts before/after host registration. Legacy E/diorama prompt, search and richer-facts hashes still pass. Log: `.local/reference-v2-tests-final3.log` (22.08 seconds).
+
+The deterministic catalogue audit reports 10 legacy disagreements and zero v2 disagreements; all archived audit source hashes were checked. A valid slope/plate CLI replay is submitted with exactly two instances, with zero model calls (`.local/reference-v2-replay-final.log`). The generic dry-run probe fails this palette as expected: it uses two 3001 bricks outside the task palette. This was retained rather than called a task pass.
+
+Type checking and repository formatting pass; final logs are `.local/reference-v2-types-complete.log` and `.local/reference-v2-format-complete.log`. No renderer/editor behavior changed: the compiler's existing pane constants were moved to a shared module and compilation/emission regressions cover the refactor. No browser rendering or new model experiment was run. See [scope, commands and remaining limits](GENERATION-DATA-AUDIT.md).
+
 ## Three-model preview verification — 13 October 2026
 
 The exporter validates frozen source/image hashes and accounts for all 64 cases, 46 strictly compliant submissions, 55 compiled artifacts and 220 images. The focused static browser check passes at 1440×1000, 1080×1800, 360×600, 411×685, 390×844 and 686×411: filters, four camera views, dialogs, count-correction labels, no horizontal overflow or JavaScript errors. Phone gallery/dialog screenshots were inspected. Live phone filtering also passes. All 431 public asset SHA-256 hashes match the local manifest after following static HTML redirects. The first live smoke harness used an incorrect filter-panel selector; correcting the harness resolved it. An initial image 404 resolved on a subsequent request.

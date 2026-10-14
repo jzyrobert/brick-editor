@@ -1,5 +1,9 @@
 # Implementation status
 
+## Corrected generation reference — 14 October 2026
+
+Added opt-in `spatial-part-facts/2` for future generation: compiler-consistent dimensions, palette filtering before search limits, partial-match disclosure, corrected arch clearance and explicit automatic pane/wheel expansion metadata. A deterministic audit finds 10 legacy nominal-dimension disagreements across 224 curated parts, zero in v2. Optional exact-count task validity closes the Luna acceptance gap while preserving advisory legacy behavior. Frozen prompts/payloads and prior outcomes are preserved. No new model experiment or publication. See [audit and usage](GENERATION-DATA-AUDIT.md).
+
 ## Three-model preview — 13 October 2026
 
 Published an owner-authorised, separate Cloudflare Drop preview of all 64 new Sol/Luna/Astra cases, including failures and the exact-count correction. It contains 220 images, four-view inspection, filters and source/report downloads. Six local viewport checks and live phone filtering pass. No new generation, default change or production/gallery deployment. See [preview and reproduction](SPATIAL-PILOT.md#three-model-static-preview--13-october-2026).

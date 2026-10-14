@@ -1,3 +1,15 @@
+import {
+  registerFullLibraryFromDisk,
+  registerFullCatalogFromDisk,
+} from "../full-library-node";
+import { catalog } from "../../src/catalog/catalog";
+import {
+  REFERENCE_V2,
+  REFERENCE_GUIDE,
+  V2_GUIDES,
+  referenceV2,
+  discoveryEntry,
+} from "./reference-v2";
 import { oneShotPrompt } from "../one-shot-build";
 import {
   FACT_VERSION,
@@ -30,6 +42,7 @@ export type Task = {
   split: "calibration" | "development" | "held-out";
   brief: string;
   targetParts: number;
+  sizePolicy?: "advisory" | "exact";
   palette: string[];
   inventory: Record<string, number> | null;
   aliases: Record<string, string> | null;
@@ -47,7 +60,7 @@ export type Manifest = {
   id: string;
   language: "build-script-v1/brick.build-v1";
   assistance: "macro-assisted-v1";
-  factsVersion: typeof FACT_VERSION;
+  factsVersion: typeof FACT_VERSION | typeof REFERENCE_V2;
   model: {
     id: string;
     effort: string;
@@ -71,11 +84,12 @@ function object(
   v: unknown,
   keys: string[],
   where: string,
+  optional: string[] = [],
 ): asserts v is Record<string, unknown> {
   if (!v || typeof v !== "object" || Array.isArray(v))
     throw new Error(`${where}: expected object`);
   for (const k of Object.keys(v))
-    if (!keys.includes(k))
+    if (!keys.includes(k) && !optional.includes(k))
       throw new Error(`${where}: forbidden/unknown field ${k}`);
   for (const k of keys)
     if (!Object.hasOwn(v, k)) throw new Error(`${where}: missing ${k}`);
@@ -115,7 +129,7 @@ export function validateManifest(input: unknown): Manifest {
     input.version !== MANIFEST_VERSION ||
     input.language !== "build-script-v1/brick.build-v1" ||
     input.assistance !== "macro-assisted-v1" ||
-    input.factsVersion !== FACT_VERSION
+    ![FACT_VERSION, REFERENCE_V2].includes(String(input.factsVersion))
   )
     throw new Error("Unsupported contract version");
   if (
@@ -203,7 +217,13 @@ export function validateManifest(input: unknown): Manifest {
         "aliases",
       ],
       "task",
+      ["sizePolicy"],
     );
+    if (
+      t.sizePolicy !== undefined &&
+      !["advisory", "exact"].includes(String(t.sizePolicy))
+    )
+      throw new Error("Invalid size policy");
     if (
       !safeId(t.id) ||
       !["calibration", "development", "held-out"].includes(String(t.split)) ||
@@ -275,10 +295,10 @@ export function validateManifest(input: unknown): Manifest {
   }
   if (
     input.conditions.some((c) => c.policy === "legacy-control") &&
-    input.tasks.some((t) => t.inventory !== null)
+    input.tasks.some((t) => t.inventory !== null || t.sizePolicy === "exact")
   )
     throw new Error(
-      "legacy-control does not include inventory feedback; use a separate mechanical condition",
+      "legacy-control does not include inventory or exact-count feedback; use a separate mechanical condition",
     );
   for (const list of [input.tasks, input.conditions])
     if (
@@ -316,19 +336,59 @@ export function schedule(m: Manifest): ScheduledCase[] {
   return out;
 }
 export function effectivePrompt(m: Manifest, c: ScheduledCase) {
+  const corrected = m.factsVersion === REFERENCE_V2;
+  if (
+    corrected &&
+    (!registerFullLibraryFromDisk() || !registerFullCatalogFromDisk())
+  )
+    throw new Error("Reference v2 requires the pinned full library");
+  const reference = corrected ? referenceV2 : partReference;
   let prompt = oneShotPrompt(c.task.brief, c.task.targetParts, {
     promptFile: c.condition.prompt,
     replyPromptFile: c.condition.reply,
-    partsList: !c.task.aliases,
+    partsList: !c.task.aliases && !corrected,
     search: true,
     check: c.condition.policy !== "blind-no-feedback",
   });
+  if (corrected) {
+    // Technical corrections only; frozen E/reply files and v1 inputs are untouched.
+    prompt = prompt
+      .replaceAll('"seed": 1', `"seed": ${m.buildSeed}`)
+      .replace(
+        "Turns** are clockwise seen from above:",
+        "Turns** follow this explicit axis mapping:",
+      )
+      .replace(
+        "**Parts you place are exact**: `place` 1;",
+        "**Emitted instances**: `place` 1 except automatic panes/wheel assemblies described in reference v2;",
+      );
+    prompt += `\nThe build-program seed is ${m.buildSeed}; omit input.seed or use exactly this value.\n`;
+    prompt += "\n" + REFERENCE_GUIDE + "\n";
+    const palette = c.task.palette.length
+      ? c.task.palette
+      : Object.keys(catalog);
+    prompt +=
+      "\nPlacement reference at turn 0:\n" +
+      aliasPayload(
+        palette.map((ref) => discoveryEntry(ref, !!c.task.aliases)),
+        c.task,
+      ) +
+      "\n";
+  }
+  if (c.task.sizePolicy === "exact") {
+    prompt = prompt.replace(
+      "A build of any size compiles. Land within about ±15% of the target (1,700–2,300 for 2,000); within that range, the idea and how good it looks decide everything, so do not trade design for an exact count. Estimate the count as you design.",
+      "The compiler accepts different counts, but this task's exact count is a separate validity requirement.",
+    );
+  }
+  if (c.task.sizePolicy === "exact")
+    prompt += `\nTask validity requires exactly ${c.task.targetParts} compiler-emitted instances; this is enforced separately from compiler acceptance.\n`;
   if (c.task.aliases)
     prompt += `\nPalette uses temporary IDs: ${Object.keys(c.task.aliases).join(", ")}. Use these IDs in place operations.\n`;
   if (c.task.palette.length)
     prompt += `\nTask palette: ${json(c.task.aliases ? Object.keys(c.task.aliases) : c.task.palette)}. Inventory maxima: ${json(c.task.inventory ? Object.fromEntries(Object.entries(c.task.inventory).map(([ref, n]) => [c.task.aliases ? Object.keys(c.task.aliases).find((a) => c.task.aliases![a] === ref)! : ref, n])) : null)}.\n`;
   for (const field of c.condition.facts)
-    prompt += "\n" + FIELD_GUIDES[field] + "\n";
+    prompt += "\n" + (corrected ? V2_GUIDES : FIELD_GUIDES)[field] + "\n";
   if (c.condition.facts.length)
     prompt += `\nInspect selected parts with {"part_info":{"part_ids":["${c.task.aliases ? "p1" : "3039"}"],"fields":${json(c.condition.facts)},"offset":0,"limit":16}}. Returned facts are JSON, in request order. Only declared fields are available.\n`;
   if (c.condition.exposure === "automatic" && c.condition.facts.length) {
@@ -337,7 +397,7 @@ export function effectivePrompt(m: Manifest, c: ScheduledCase) {
     for (const ref of c.task.palette) {
       // All connectors returned, by explicit pages rather than silently truncating.
       for (let offset = 0; ; ) {
-        const facts = partReference(ref, c.condition.facts, offset, 64);
+        const facts = reference(ref, c.condition.facts, offset, 64);
         prompt += "\n" + aliasPayload(facts, c.task) + "\n";
         const next = facts.connectors?.nextOffset;
         if (next === null || next === undefined) break;

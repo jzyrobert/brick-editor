@@ -129,3 +129,7 @@ Tested: focused unit and CLI integration evidence is recorded in [VERIFICATION](
 Experimentally evaluated: none. Replay is not generation research. No quality improvement is claimed.
 
 Deferred: live provider adapter/native-runtime audit and paid budget, private held-out suite/reviewer sessions, executed visual renderer protocol, broader uncertainty-preserving occurrence/interface diagnostics, physical shortcut counting, assembly-language poses/offsets/attachment assistance, model-authored advanced component provenance, alternative design metadata/guidance, functional motion tasks and physical builder audits. These require separate increments and comparisons.
+
+## Corrected reference for future generation — 14 October 2026
+
+Use `factsVersion: "spatial-part-facts/2"` for corrected discovery/inspection and task `sizePolicy: "exact"` when count is a validity requirement. The [generation data audit](GENERATION-DATA-AUDIT.md) records differences, deterministic evidence and limits. v1 remains the historical control, including its arch-clearance and nominal-search limitations; no archived result was rewritten. E and the legacy richer-facts path are unchanged. The automation API exposes no new operation from this host-only increment.

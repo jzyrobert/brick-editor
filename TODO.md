@@ -32,7 +32,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Spatial benchmark research
 
-- [ ] Add an opt-in exact-count size policy and enforce it before visual eligibility. The post-run audit found a 14-part Luna control marked submitted despite an exact-16 brief; preserve legacy advisory target behavior and all frozen outcomes ([audit](fixtures/spatial-benchmark/studies/model-screening-pilot/results/exact-count-audit.json)).
+- [x] Add an opt-in exact-count size policy and enforce it before visual eligibility. See [corrected reference audit](docs/GENERATION-DATA-AUDIT.md). The post-run audit found a 14-part Luna control marked submitted despite an exact-16 brief; preserve legacy advisory target behavior and all frozen outcomes ([audit](fixtures/spatial-benchmark/studies/model-screening-pilot/results/exact-count-audit.json)).
 
 - [ ] Run the separately declared 36-case mechanical-feedback comparison only with further study authorisation; hold metadata/language/style fixed ([completed initial pilot](docs/SPATIAL-PILOT.md)).
 - [ ] Improve non-ceiling calibration, evaluate temporary aliases and compare on-demand retrieval with automatic facts within identical tasks/feedback. The separate automatic-facts development pilot has a tentative positive shape signal; confirm with more tasks and independent reviewers. Luna/high and Astra/medium screening is complete: tentative Astra visual gain, Luna compliance regression; confirm on new tasks with independent review.
@@ -194,3 +194,5 @@ From [GALLERY-PLAN](docs/GALLERY-PLAN.md); the backend of phase 1 (publish scrip
 ## UI and docs
 
 - [ ] Migrate legacy panel-content styles (slate tones, 11 px help text) to the [DESIGN.md](DESIGN.md) scale.
+
+- [ ] Extend physical shape and independent geometry coverage beyond the five starter parts; nominal agreement for all 224 curated parts is not physical certification ([generation audit](docs/GENERATION-DATA-AUDIT.md)).

@@ -1,0 +1,64 @@
+{
+  "version": "spatial-benchmark/1",
+  "id": "reference-v2-smoke",
+  "language": "build-script-v1/brick.build-v1",
+  "assistance": "macro-assisted-v1",
+  "factsVersion": "spatial-part-facts/2",
+  "model": {
+    "id": "replay-fixture",
+    "effort": "high",
+    "sampling": {
+      "temperature": null,
+      "topP": null,
+      "seed": null
+    }
+  },
+  "buildSeed": 1,
+  "orderSeed": 7341,
+  "repetitions": 1,
+  "order": "interleaved",
+  "budgets": {
+    "turns": 16,
+    "searchCalls": 50,
+    "infoCalls": 8,
+    "referenceBytes": 200000,
+    "checks": 0,
+    "repairs": 0,
+    "compileMs": 30000,
+    "totalMs": 120000,
+    "compilerBytes": 8000000,
+    "sourceBytes": 200000,
+    "maxOutputTokens": 16000
+  },
+  "infrastructureRetries": 0,
+  "evaluator": {
+    "version": "spatial-assessment/1",
+    "views": ["iso", "front", "iso-back", "back"],
+    "protocol": "docs/SPATIAL-BENCHMARK.md"
+  },
+  "tasks": [
+    {
+      "id": "slope-row",
+      "split": "calibration",
+      "brief": "Place a 3039 slope at [0,0,0], turn 0. Place a 3024 plate on a verified top stud at x=0, level 3. Choose the correct whole-stud z row. Use red parts.",
+      "targetParts": 2,
+      "palette": ["3039.dat", "3024.dat"],
+      "inventory": {
+        "3039.dat": 1,
+        "3024.dat": 1
+      },
+      "aliases": null,
+      "sizePolicy": "exact"
+    }
+  ],
+  "conditions": [
+    {
+      "id": "combined",
+      "prompt": "build-agent.md",
+      "reply": "brick-build.md",
+      "policy": "blind-no-feedback",
+      "facts": ["shape", "connectors", "capabilities"],
+      "exposure": "automatic"
+    }
+  ]
+}

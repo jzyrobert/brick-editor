@@ -1,3 +1,4 @@
+import { REFERENCE_V2, referenceV2, correctedSearch } from "./reference-v2";
 import { readFileSync } from "node:fs";
 import {
   mkdir,
@@ -192,8 +193,27 @@ export class GenerationSession {
           Number(q.limit) > 50)
       )
         throw new Error("Invalid search limit");
+      if (
+        q.available_in_colour !== undefined &&
+        typeof q.available_in_colour !== "boolean"
+      )
+        throw new Error("Invalid colour availability flag");
       let response: string;
-      if (!this.c.task.palette.length && !this.c.task.aliases)
+      if (this.m.factsVersion === REFERENCE_V2)
+        response = aliasPayload(
+          correctedSearch(
+            {
+              ...q,
+              ...(typeof q.query === "string" && this.c.task.aliases?.[q.query]
+                ? { query: this.c.task.aliases[q.query] }
+                : {}),
+            },
+            this.c.task.palette,
+            !!this.c.task.aliases,
+          ),
+          this.c.task,
+        );
+      else if (!this.c.task.palette.length && !this.c.task.aliases)
         response = searchForAgent(q).text; // exact legacy payload
       else {
         const allowed = new Set(this.c.task.palette);
@@ -249,7 +269,9 @@ export class GenerationSession {
         const ref = resolvePart(p, this.c.task);
         if (this.c.task.palette.length && !this.c.task.palette.includes(ref))
           throw new Error("Part outside declared palette");
-        return partReference(
+        return (
+          this.m.factsVersion === REFERENCE_V2 ? referenceV2 : partReference
+        )(
           ref,
           requested as FactField[],
           Number(request.offset ?? 0),
@@ -410,7 +432,7 @@ export class GenerationSession {
             await this.audit("private-final-check", result);
             const invalid =
               !result.report?.ok ||
-              inventoryProblems(result, this.c.task).length > 0;
+              taskProblems(result, this.c.task).length > 0;
             if (!invalid) {
               status = "submitted";
               break;
@@ -513,7 +535,9 @@ export class GenerationSession {
     if (result) {
       await save("compilation.json", json(result) + "\n");
       if (result.ldraw) await save("build.mpd", result.ldraw);
-      if (!result.report?.ok || inventoryProblems(result, this.c.task).length) {
+      const validity = taskProblems(result, this.c.task);
+      await this.audit("final-task-validity", validity);
+      if (!result.report?.ok || validity.length) {
         status = "model-failure";
         failure ??= result.failure ?? "Submission failed benchmark validation";
       }
@@ -523,11 +547,9 @@ export class GenerationSession {
       .filter((p, i, a) => a.indexOf(p) === i)
       .sort()
       .map((ref) => {
-        const info = partReference(ref, [
-          "shape",
-          "connectors",
-          "capabilities",
-        ]);
+        const info = (
+          this.m.factsVersion === REFERENCE_V2 ? referenceV2 : partReference
+        )(ref, ["shape", "connectors", "capabilities"]);
         const available: FactField[] = [
           ...(info.shape?.physicalBounds.value ? ["shape" as const] : []),
           ...(info.connectors?.evidence === "known"
@@ -585,6 +607,22 @@ export function inventoryProblems(
   }
   return out;
 }
+/** Explicit task validity; absent sizePolicy preserves legacy advisory counts. */
+export function taskProblems(result: Compilation, task: ScheduledCase["task"]) {
+  const records: object[] = inventoryProblems(result, task);
+  if (
+    task.sizePolicy === "exact" &&
+    result.report &&
+    result.report.stats.parts !== task.targetParts
+  )
+    records.push({
+      property: "exact-count",
+      status: "invalid",
+      count: result.report.stats.parts,
+      required: task.targetParts,
+    });
+  return records;
+}
 export function mechanicalFeedback(
   result: Compilation,
   task: ScheduledCase["task"],
@@ -604,7 +642,7 @@ export function mechanicalFeedback(
     evidence:
       "existing compiler/derived surface occupancy; no physical certification",
   }));
-  const all = [...problems, ...inventoryProblems(result, task)];
+  const all = [...problems, ...taskProblems(result, task)];
   return json({
     version: "mechanical-feedback/1",
     compilerAccepted: result.report?.ok ?? false,
