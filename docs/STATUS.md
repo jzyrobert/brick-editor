@@ -1,5 +1,9 @@
 # Implementation status
 
+## Fresh v2 gallery cohort — 14 October 2026
+
+Completed 18 owner-authorised fresh generations (six briefs × Luna/high, Sol 6.1/high and Astra/medium). Published all 17 compiler-accepted outputs with 51 fixed-view renders to the main gallery, retaining all 83 prior entries and the Fresh E default. Astra’s Star Destroyer hit the compiler heap limit; a frozen-source diagnostic exposed 14 overlap errors, so it remains archived and unpublished. Final quota: 60% remaining. This is a fresh gallery cohort, not evidence of improved visual quality. [Protocol, sources and publication receipt](../fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
+
 ## Corrected generation reference — 14 October 2026
 
 Added opt-in `spatial-part-facts/2` for future generation: compiler-consistent dimensions, palette filtering before search limits, partial-match disclosure, corrected arch clearance and explicit automatic pane/wheel expansion metadata. A deterministic audit finds 10 legacy nominal-dimension disagreements across 224 curated parts, zero in v2. Optional exact-count task validity closes the Luna acceptance gap while preserving advisory legacy behavior. Frozen prompts/payloads and prior outcomes are preserved. No new model experiment or publication. See [audit and usage](GENERATION-DATA-AUDIT.md).

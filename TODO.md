@@ -32,6 +32,8 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Spatial benchmark research
 
+- [ ] Measure isolated compiler heap requirements and declare memory/resource exhaustion semantics explicitly before the next gallery-scale benchmark. The v2 gallery Astra Star Destroyer exhausted 384 MiB; identical-source post-run compilation at 1024 MiB exposed 14 overlap errors. Preserve this failed outcome; do not silently raise budgets or repair evaluated candidates. [Evidence](fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
+
 - [x] Add an opt-in exact-count size policy and enforce it before visual eligibility. See [corrected reference audit](docs/GENERATION-DATA-AUDIT.md). The post-run audit found a 14-part Luna control marked submitted despite an exact-16 brief; preserve legacy advisory target behavior and all frozen outcomes ([audit](fixtures/spatial-benchmark/studies/model-screening-pilot/results/exact-count-audit.json)).
 
 - [ ] Run the separately declared 36-case mechanical-feedback comparison only with further study authorisation; hold metadata/language/style fixed ([completed initial pilot](docs/SPATIAL-PILOT.md)).

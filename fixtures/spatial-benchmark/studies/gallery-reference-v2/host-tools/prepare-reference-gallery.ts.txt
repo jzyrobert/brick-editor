@@ -1,0 +1,62 @@
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import {prepare,renderAll,publishSql,sqlInsert,type Candidate} from '../scripts/gallery-publish';
+import {galleryAgentId,galleryAgentName,galleryIndexFromRows,decodeGalleryIndex,GALLERY_ORIGIN,type GalleryRow} from '../src/catalog/gallery-index';
+import {verifyLiveIndex} from '../scripts/publish-gallery-bundle';
+const root=resolve('.local/gallery-reference-v2-runs'),out=resolve('.local/gallery-reference-v2-bundle');
+const read=async(p:string)=>JSON.parse(await readFile(p,'utf8'));
+const hash=(b:Uint8Array|string)=>createHash('sha256').update(b).digest('hex');
+const state=await read(join(root,'status.json'));assert.equal(state.state,'complete');assert.equal(state.completed,18);
+await mkdir(out);await mkdir(join(out,'inputs'));
+const before:GalleryRow[]=await read('.local/gallery-reference-v2-before-rows-complete.json');
+const oldIndex=decodeGalleryIndex(await read('.local/gallery-reference-v2-live-before.json'));
+verifyLiveIndex(galleryIndexFromRows(before,GALLERY_ORIGIN,new Date()),oldIndex);
+const cohort={id:'e-reference-v2-20261014',name:'E · corrected part references',description:'Fresh text-only builds from Luna/high, Sol 6.1/high and Astra/medium using E with corrected v2 part references, on-demand inspection and bounded mechanical feedback. No previous builds, images or visual feedback. Advisory original part targets. One scheduled run per model/brief; failures are retained separately. Not a controlled quality-improvement claim.',order:95};
+const built:any[]=[],ledger:any[]=[];const files:any[]=[];
+const save=async(key:string,bytes:Uint8Array|string,type:string)=>{await mkdir(join(out,key,'..'),{recursive:true});await writeFile(join(out,key),bytes);const b=typeof bytes==='string'?Buffer.from(bytes):bytes;files.push({key,sha256:hash(b),bytes:b.length,contentType:type});};
+for(const model of ['luna','sol','astra']){
+ const checkpoint=state.checkpoints[model];const m=await read(join(checkpoint,'manifest.json'));const results=await read(join(checkpoint,'results.json'));
+ for(const r of results.results){
+  const task=m.tasks.find((t:any)=>r.caseId.startsWith(t.id+'--'));const run=join(checkpoint,r.caseId);
+  for(const [file,sha] of Object.entries(r.files))assert.equal(hash(await readFile(join(run,file))),sha);
+  ledger.push({model:m.model,caseId:r.caseId,status:r.status,used:r.used,files:r.files,failure:r.failure??null});
+  if(r.status!=='submitted')continue;
+  const c=await read(join(run,'compilation.json'));assert(c.report.ok && c.script);
+  const input=join(out,'inputs',model+'-'+task.id);await mkdir(input);
+  await writeFile(join(input,'build.json'),JSON.stringify(c.script,null,2)+'\n');
+  await writeFile(join(input,'submission.txt'),await readFile(join(run,'submission.txt')));
+  const preflight=await read(join(checkpoint,'preflight.json'));const effective=preflight.inputs.find((i:any)=>i.caseId===r.caseId);
+  await writeFile(join(input,'prompt.txt'),effective.prompt);
+  const prompt=oldIndex.prompts.find(p=>p.brief===task.brief && p.targetParts===task.targetParts);assert(prompt);
+  const candidate:Candidate={label:`${model} ${task.id} reference v2`,scriptPath:join(input,'build.json'),brief:task.brief,targetParts:task.targetParts,promptId:prompt.id,runner:'codex',model:m.model.id,effort:m.model.effort,agentId:galleryAgentId('codex',m.model.id,m.model.effort),agentName:before.find(row=>row.agent_id===galleryAgentId("codex",m.model.id,m.model.effort))?.display_name??galleryAgentName(m.model.id,m.model.effort),source:`gallery-reference-v2/20261014/${model}/${task.id}`,generation:cohort.id,result:{model:m.model.id,runner:'codex',effort:m.model.effort,accepted:true,targetParts:task.targetParts,parts:c.report.stats.parts}};
+  (candidate.result as any).benchmark={caseId:r.caseId,observationPolicy:"blind-mechanical",factsVersion:"spatial-part-facts/2",sizePolicy:"advisory",used:r.used,referenceCoverage:r.referenceCoverage,frozenFiles:r.files};
+  const p=await prepare(candidate);assert.equal(p.mpd.sha,r.files['build.mpd'],'Recompilation must preserve frozen geometry');
+  built.push({...p,cacheKey:model+"-"+r.caseId});
+ }
+}
+cohort.description+=` Published ${built.length} of 18 scheduled outputs. Unpublished cases: ${ledger.filter(r=>r.status!=="submitted").map(r=>r.model.id+" "+r.caseId.split("--")[0]+" ("+r.status+")").join(", ")||"none"}.`;
+assert(built.length>0);assert.equal(new Set(built.map(b=>b.id)).size,built.length);
+for(const b of built)assert(!before.some(r=>r.build_id===b.id));
+const images=new Map<string,Record<string,Uint8Array>>();
+for(const b of built){
+ const dir=resolve('.local/gallery-reference-v2-render-cache',b.cacheKey);
+ const cached=await read(join(dir,'complete.json'));assert.equal(cached.mpdSha256,b.mpd.sha);
+ const shots:Record<string,Uint8Array>={};
+ for(const view of ['iso','front','iso-back']){const bytes=await readFile(join(dir,view+'.webp'));assert.equal(hash(bytes),cached.images[view]);assert.equal(bytes.subarray(8,12).toString(),'WEBP');shots[view]=bytes;}
+ images.set(b.id,shots);
+}
+const now=Math.floor(Date.now()/1000);const rows:GalleryRow[]=[];
+for(const b of built){
+ await save(`b/${b.mpd.sha}.mpd.gz`,b.mpd.gz,'application/gzip');await save(`s/${b.script.sha}.json`,b.script.bytes,'application/json');await save(`p/${b.report.sha}.json`,b.report.bytes,'application/json');
+ b.renders={};for(const [view,bytes] of Object.entries(images.get(b.id)!)){const h=hash(bytes as Uint8Array);b.renders[view]=h;await save(`r/${h}.webp`,bytes as Uint8Array,'image/webp');}
+ const c=b.candidate,prompt=oldIndex.prompts.find(p=>p.id===c.promptId)!;
+ rows.push({build_id:b.id,prompt_id:c.promptId,prompt_name:prompt.name??null,brief:c.brief,target_parts:c.targetParts??null,arena:1,agent_id:c.agentId,display_name:c.agentName,model:c.model,effort:c.effort??null,title:b.title??null,mpd_sha:b.mpd.sha,mpd_bytes:b.mpd.bytes,script_sha:b.script.sha,report_sha:b.report.sha,renders:JSON.stringify(b.renders),parts:b.parts,attempts:c.result?.attemptsUsed??null,seconds:null,cost_usd:null,output_tokens:null,source:c.source??null,library_release:b.library.release,library_hash:b.library.hash,warnings:b.warnings,created_at:now,generation_id:cohort.id,generation_name:cohort.name,generation_description:cohort.description,generation_order:cohort.order,generation_default:0});
+}
+const index=galleryIndexFromRows([...before,...rows],GALLERY_ORIGIN,new Date(now*1000));decodeGalleryIndex(index);
+for(const old of oldIndex.builds)assert.deepEqual(index.builds.find(b=>b.id===old.id),old);
+const sql=sqlInsert('generations',{id:cohort.id,name:cohort.name,description:cohort.description,sort_order:cohort.order,is_default:0})+'\n'+publishSql(built,now);
+await writeFile(join(out,'publish.sql'),sql);await writeFile(join(out,'index.json'),JSON.stringify(index,null,2)+'\n');await writeFile(join(out,'new-rows.json'),JSON.stringify(rows,null,2)+'\n');await writeFile(join(out,'outcomes.json'),JSON.stringify(ledger,null,2)+'\n');
+await writeFile(join(out,'manifest.json'),JSON.stringify({version:'additive-gallery-reference-v2/1',generation:cohort,planned:18,publishable:built.length,before:oldIndex.builds.map(b=>b.id),after:index.builds.map(b=>b.id),newIds:rows.map(r=>r.build_id),files,indexSha256:hash(await readFile(join(out,'index.json'))),sqlSha256:hash(sql),defaultGeneration:oldIndex.generations?.find(g=>g.default)?.id},null,2)+'\n');
+console.log(JSON.stringify({publishable:built.length,files:files.length,images:images.size*3,total:index.builds.length}));

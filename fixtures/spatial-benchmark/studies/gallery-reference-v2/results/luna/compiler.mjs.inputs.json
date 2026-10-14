@@ -1,0 +1,1171 @@
+{
+  "src/build-script/spec.ts": {
+    "bytes": 34002,
+    "imports": [],
+    "format": "esm"
+  },
+  "scripts/brick-build.ts": {
+    "bytes": 8789,
+    "imports": [
+      {
+        "path": "node:vm",
+        "kind": "import-statement",
+        "external": true
+      },
+      {
+        "path": "src/build-script/spec.ts",
+        "kind": "import-statement",
+        "original": "../src/build-script/spec"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/build-script/part-companions.ts": {
+    "bytes": 310,
+    "imports": [],
+    "format": "esm"
+  },
+  "src/catalog/bounds.json": {
+    "bytes": 293928,
+    "imports": []
+  },
+  "src/catalog/data.json": {
+    "bytes": 184515,
+    "imports": []
+  },
+  "src/catalog/full-library-lock.json": {
+    "bytes": 131,
+    "imports": []
+  },
+  "src/catalog/full-pack.ts": {
+    "bytes": 3654,
+    "imports": [],
+    "format": "esm"
+  },
+  "src/core/types.ts": {
+    "bytes": 7177,
+    "imports": [],
+    "format": "esm"
+  },
+  "src/catalog/full-library.ts": {
+    "bytes": 5766,
+    "imports": [
+      {
+        "path": "src/catalog/bounds.json",
+        "kind": "import-statement",
+        "original": "./bounds.json"
+      },
+      {
+        "path": "src/catalog/full-library-lock.json",
+        "kind": "import-statement",
+        "original": "./full-library-lock.json"
+      },
+      {
+        "path": "src/catalog/full-pack.ts",
+        "kind": "import-statement",
+        "original": "./full-pack"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/full-connectors-lock.json": {
+    "bytes": 148,
+    "imports": []
+  },
+  "src/catalog/full-connector-pack.ts": {
+    "bytes": 4620,
+    "imports": [],
+    "format": "esm"
+  },
+  "src/catalog/full-connectors.ts": {
+    "bytes": 3291,
+    "imports": [
+      {
+        "path": "src/catalog/full-connectors-lock.json",
+        "kind": "import-statement",
+        "original": "./full-connectors-lock.json"
+      },
+      {
+        "path": "src/catalog/full-library.ts",
+        "kind": "import-statement",
+        "original": "./full-library"
+      },
+      {
+        "path": "src/catalog/full-connector-pack.ts",
+        "kind": "import-statement",
+        "original": "./full-connector-pack"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/full-library-retired.json": {
+    "bytes": 3,
+    "imports": []
+  },
+  "src/catalog/color-availability-lock.json": {
+    "bytes": 179,
+    "imports": []
+  },
+  "src/catalog/colors.json": {
+    "bytes": 19573,
+    "imports": []
+  },
+  "src/catalog/color-availability.json": {
+    "bytes": 735362,
+    "imports": []
+  },
+  "src/catalog/color-availability.ts": {
+    "bytes": 6246,
+    "imports": [
+      {
+        "path": "src/catalog/color-availability-lock.json",
+        "kind": "import-statement",
+        "original": "./color-availability-lock.json"
+      },
+      {
+        "path": "src/catalog/colors.json",
+        "kind": "import-statement",
+        "original": "./colors.json"
+      },
+      {
+        "path": "src/catalog/color-availability.json",
+        "kind": "dynamic-import",
+        "original": "./color-availability.json"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/catalog.ts": {
+    "bytes": 9683,
+    "imports": [
+      {
+        "path": "src/catalog/bounds.json",
+        "kind": "import-statement",
+        "original": "./bounds.json"
+      },
+      {
+        "path": "src/catalog/data.json",
+        "kind": "import-statement",
+        "original": "./data.json"
+      },
+      {
+        "path": "src/catalog/full-library.ts",
+        "kind": "import-statement",
+        "original": "./full-library"
+      },
+      {
+        "path": "src/catalog/full-connectors.ts",
+        "kind": "import-statement",
+        "original": "./full-connectors"
+      },
+      {
+        "path": "src/catalog/full-library-retired.json",
+        "kind": "import-statement",
+        "original": "./full-library-retired.json"
+      },
+      {
+        "path": "src/catalog/color-availability.ts",
+        "kind": "import-statement",
+        "original": "./color-availability"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/search.ts": {
+    "bytes": 7379,
+    "imports": [],
+    "format": "esm"
+  },
+  "src/catalog/extended.ts": {
+    "bytes": 2070,
+    "imports": [
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "./catalog"
+      },
+      {
+        "path": "src/catalog/full-library.ts",
+        "kind": "import-statement",
+        "original": "./full-library"
+      },
+      {
+        "path": "src/catalog/search.ts",
+        "kind": "import-statement",
+        "original": "./search"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/connector-pack.ts": {
+    "bytes": 3856,
+    "imports": [],
+    "format": "esm"
+  },
+  "src/catalog/connectors.json": {
+    "bytes": 176398,
+    "imports": []
+  },
+  "src/catalog/connectors.ts": {
+    "bytes": 4700,
+    "imports": [
+      {
+        "path": "src/catalog/connectors.json",
+        "kind": "import-statement",
+        "original": "./connectors.json"
+      },
+      {
+        "path": "src/catalog/data.json",
+        "kind": "import-statement",
+        "original": "./data.json"
+      },
+      {
+        "path": "src/catalog/full-connectors.ts",
+        "kind": "import-statement",
+        "original": "./full-connectors"
+      },
+      {
+        "path": "src/catalog/connector-pack.ts",
+        "kind": "import-statement",
+        "original": "./connector-pack"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/instructions/programme.ts": {
+    "bytes": 11882,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/architecture.ts": {
+    "bytes": 8277,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "./types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/scene.ts": {
+    "bytes": 5575,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "./types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/instructions/edit.ts": {
+    "bytes": 6849,
+    "imports": [
+      {
+        "path": "src/instructions/programme.ts",
+        "kind": "import-statement",
+        "original": "./programme"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      },
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "../core/document"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/math.ts": {
+    "bytes": 4638,
+    "imports": [],
+    "format": "esm"
+  },
+  "src/core/occurrence-id.ts": {
+    "bytes": 1374,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "./types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/expansion.ts": {
+    "bytes": 5166,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "./types"
+      },
+      {
+        "path": "src/core/occurrence-id.ts",
+        "kind": "import-statement",
+        "original": "./occurrence-id"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/ldraw/path.ts": {
+    "bytes": 850,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/resource-profile.ts": {
+    "bytes": 3867,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "./types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/expansion-policy.ts": {
+    "bytes": 3513,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "./types"
+      },
+      {
+        "path": "src/core/expansion.ts",
+        "kind": "import-statement",
+        "original": "./expansion"
+      },
+      {
+        "path": "src/core/resource-profile.ts",
+        "kind": "import-statement",
+        "original": "./resource-profile"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/document.ts": {
+    "bytes": 13926,
+    "imports": [
+      {
+        "path": "src/instructions/programme.ts",
+        "kind": "import-statement",
+        "original": "../instructions/programme"
+      },
+      {
+        "path": "src/core/architecture.ts",
+        "kind": "import-statement",
+        "original": "./architecture"
+      },
+      {
+        "path": "src/core/scene.ts",
+        "kind": "import-statement",
+        "original": "./scene"
+      },
+      {
+        "path": "src/instructions/edit.ts",
+        "kind": "import-statement",
+        "original": "../instructions/edit"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "./types"
+      },
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "./math"
+      },
+      {
+        "path": "src/core/expansion.ts",
+        "kind": "import-statement",
+        "original": "./expansion"
+      },
+      {
+        "path": "src/core/occurrence-id.ts",
+        "kind": "import-statement",
+        "original": "./occurrence-id"
+      },
+      {
+        "path": "src/ldraw/path.ts",
+        "kind": "import-statement",
+        "original": "../ldraw/path"
+      },
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "../catalog/catalog"
+      },
+      {
+        "path": "src/core/expansion-policy.ts",
+        "kind": "import-statement",
+        "original": "./expansion-policy"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/connectivity.ts": {
+    "bytes": 5593,
+    "imports": [
+      {
+        "path": "src/catalog/connectors.ts",
+        "kind": "import-statement",
+        "original": "../catalog/connectors"
+      },
+      {
+        "path": "src/catalog/connector-pack.ts",
+        "kind": "import-statement",
+        "original": "../catalog/connector-pack"
+      },
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "./document"
+      },
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "./math"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/core/spatial.ts": {
+    "bytes": 6778,
+    "imports": [
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "./math"
+      },
+      {
+        "path": "src/ldraw/path.ts",
+        "kind": "import-statement",
+        "original": "../ldraw/path"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "./types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/edit/workplane.ts": {
+    "bytes": 5345,
+    "imports": [
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "../core/math"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/edit/snap.ts": {
+    "bytes": 21873,
+    "imports": [
+      {
+        "path": "src/catalog/connectors.ts",
+        "kind": "import-statement",
+        "original": "../catalog/connectors"
+      },
+      {
+        "path": "src/core/connectivity.ts",
+        "kind": "import-statement",
+        "original": "../core/connectivity"
+      },
+      {
+        "path": "src/catalog/connector-pack.ts",
+        "kind": "import-statement",
+        "original": "../catalog/connector-pack"
+      },
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "../core/document"
+      },
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "../core/math"
+      },
+      {
+        "path": "src/core/spatial.ts",
+        "kind": "import-statement",
+        "original": "../core/spatial"
+      },
+      {
+        "path": "src/catalog/bounds.json",
+        "kind": "import-statement",
+        "original": "../catalog/bounds.json"
+      },
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "../catalog/catalog"
+      },
+      {
+        "path": "src/edit/workplane.ts",
+        "kind": "import-statement",
+        "original": "./workplane"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/builds/kit.ts": {
+    "bytes": 18933,
+    "imports": [
+      {
+        "path": "src/catalog/bounds.json",
+        "kind": "import-statement",
+        "original": "../bounds.json"
+      },
+      {
+        "path": "src/catalog/connectors.json",
+        "kind": "import-statement",
+        "original": "../connectors.json"
+      },
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "../catalog"
+      },
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "../../core/math"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/train-parts.ts": {
+    "bytes": 3062,
+    "imports": [],
+    "format": "esm"
+  },
+  "src/core/health.ts": {
+    "bytes": 21134,
+    "imports": [
+      {
+        "path": "src/catalog/bounds.json",
+        "kind": "import-statement",
+        "original": "../catalog/bounds.json"
+      },
+      {
+        "path": "src/catalog/train-parts.ts",
+        "kind": "import-statement",
+        "original": "../catalog/train-parts"
+      },
+      {
+        "path": "src/core/connectivity.ts",
+        "kind": "import-statement",
+        "original": "./connectivity"
+      },
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "./document"
+      },
+      {
+        "path": "src/core/spatial.ts",
+        "kind": "import-statement",
+        "original": "./spatial"
+      },
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "./math"
+      },
+      {
+        "path": "src/catalog/connectors.ts",
+        "kind": "import-statement",
+        "original": "../catalog/connectors"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/play/track.ts": {
+    "bytes": 24158,
+    "imports": [
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "../core/math"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/play/trains.ts": {
+    "bytes": 37951,
+    "imports": [
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "../core/math"
+      },
+      {
+        "path": "src/catalog/bounds.json",
+        "kind": "import-statement",
+        "original": "../catalog/bounds.json"
+      },
+      {
+        "path": "src/core/spatial.ts",
+        "kind": "import-statement",
+        "original": "../core/spatial"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      },
+      {
+        "path": "src/play/track.ts",
+        "kind": "import-statement",
+        "original": "./track"
+      },
+      {
+        "path": "src/catalog/train-parts.ts",
+        "kind": "import-statement",
+        "original": "../catalog/train-parts"
+      },
+      {
+        "path": "src/catalog/train-parts.ts",
+        "kind": "import-statement",
+        "original": "../catalog/train-parts"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/builds/check.ts": {
+    "bytes": 8118,
+    "imports": [
+      {
+        "path": "src/catalog/bounds.json",
+        "kind": "import-statement",
+        "original": "../bounds.json"
+      },
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "../../core/document"
+      },
+      {
+        "path": "src/core/connectivity.ts",
+        "kind": "import-statement",
+        "original": "../../core/connectivity"
+      },
+      {
+        "path": "src/core/health.ts",
+        "kind": "import-statement",
+        "original": "../../core/health"
+      },
+      {
+        "path": "src/core/spatial.ts",
+        "kind": "import-statement",
+        "original": "../../core/spatial"
+      },
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "../../core/math"
+      },
+      {
+        "path": "src/edit/snap.ts",
+        "kind": "import-statement",
+        "original": "../../edit/snap"
+      },
+      {
+        "path": "src/catalog/connectors.ts",
+        "kind": "import-statement",
+        "original": "../connectors"
+      },
+      {
+        "path": "src/catalog/builds/kit.ts",
+        "kind": "import-statement",
+        "original": "./kit"
+      },
+      {
+        "path": "src/catalog/train-parts.ts",
+        "kind": "import-statement",
+        "original": "../train-parts"
+      },
+      {
+        "path": "src/play/trains.ts",
+        "kind": "import-statement",
+        "original": "../../play/trains"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/ldraw/imported-steps.ts": {
+    "bytes": 2253,
+    "imports": [
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "../core/document"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/ldraw/io.ts": {
+    "bytes": 12998,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      },
+      {
+        "path": "src/core/math.ts",
+        "kind": "import-statement",
+        "original": "../core/math"
+      },
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "../core/document"
+      },
+      {
+        "path": "src/ldraw/path.ts",
+        "kind": "import-statement",
+        "original": "./path"
+      },
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "../catalog/catalog"
+      },
+      {
+        "path": "src/ldraw/imported-steps.ts",
+        "kind": "import-statement",
+        "original": "./imported-steps"
+      },
+      {
+        "path": "src/core/resource-profile.ts",
+        "kind": "import-statement",
+        "original": "../core/resource-profile"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/build-script/palette.ts": {
+    "bytes": 3614,
+    "imports": [
+      {
+        "path": "src/catalog/color-availability.ts",
+        "kind": "import-statement",
+        "original": "../catalog/color-availability"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/build-script/pack.ts": {
+    "bytes": 20192,
+    "imports": [
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "../catalog/catalog"
+      },
+      {
+        "path": "src/catalog/color-availability.ts",
+        "kind": "import-statement",
+        "original": "../catalog/color-availability"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/part-thumbnails-lock.json": {
+    "bytes": 149,
+    "imports": []
+  },
+  "src/catalog/part-thumbnails.ts": {
+    "bytes": 2775,
+    "imports": [
+      {
+        "path": "src/catalog/part-thumbnails-lock.json",
+        "kind": "import-statement",
+        "original": "./part-thumbnails-lock.json"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/build-script/part-search.ts": {
+    "bytes": 17268,
+    "imports": [
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "../catalog/catalog"
+      },
+      {
+        "path": "src/catalog/full-library.ts",
+        "kind": "import-statement",
+        "original": "../catalog/full-library"
+      },
+      {
+        "path": "src/catalog/extended.ts",
+        "kind": "import-statement",
+        "original": "../catalog/extended"
+      },
+      {
+        "path": "src/catalog/search.ts",
+        "kind": "import-statement",
+        "original": "../catalog/search"
+      },
+      {
+        "path": "src/catalog/color-availability.ts",
+        "kind": "import-statement",
+        "original": "../catalog/color-availability"
+      },
+      {
+        "path": "src/catalog/connectors.ts",
+        "kind": "import-statement",
+        "original": "../catalog/connectors"
+      },
+      {
+        "path": "src/catalog/part-thumbnails.ts",
+        "kind": "import-statement",
+        "original": "../catalog/part-thumbnails"
+      },
+      {
+        "path": "src/build-script/palette.ts",
+        "kind": "import-statement",
+        "original": "./palette"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/build-script/layers.ts": {
+    "bytes": 3185,
+    "imports": [
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "../core/document"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/build-script/budget.ts": {
+    "bytes": 1622,
+    "imports": [
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/build-script/part-list.ts": {
+    "bytes": 6647,
+    "imports": [
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "../catalog/catalog"
+      },
+      {
+        "path": "src/catalog/builds/kit.ts",
+        "kind": "import-statement",
+        "original": "../catalog/builds/kit"
+      },
+      {
+        "path": "src/edit/snap.ts",
+        "kind": "import-statement",
+        "original": "../edit/snap"
+      },
+      {
+        "path": "src/catalog/extended.ts",
+        "kind": "import-statement",
+        "original": "../catalog/extended"
+      },
+      {
+        "path": "src/catalog/color-availability.ts",
+        "kind": "import-statement",
+        "original": "../catalog/color-availability"
+      },
+      {
+        "path": "src/build-script/palette.ts",
+        "kind": "import-statement",
+        "original": "./palette"
+      },
+      {
+        "path": "src/build-script/part-search.ts",
+        "kind": "import-statement",
+        "original": "./part-search"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/build-script/compile.ts": {
+    "bytes": 96239,
+    "imports": [
+      {
+        "path": "src/build-script/part-companions.ts",
+        "kind": "import-statement",
+        "original": "./part-companions"
+      },
+      {
+        "path": "src/catalog/catalog.ts",
+        "kind": "import-statement",
+        "original": "../catalog/catalog"
+      },
+      {
+        "path": "src/catalog/extended.ts",
+        "kind": "import-statement",
+        "original": "../catalog/extended"
+      },
+      {
+        "path": "src/catalog/color-availability.ts",
+        "kind": "import-statement",
+        "original": "../catalog/color-availability"
+      },
+      {
+        "path": "src/catalog/full-connectors.ts",
+        "kind": "import-statement",
+        "original": "../catalog/full-connectors"
+      },
+      {
+        "path": "src/catalog/connector-pack.ts",
+        "kind": "import-statement",
+        "original": "../catalog/connector-pack"
+      },
+      {
+        "path": "src/edit/snap.ts",
+        "kind": "import-statement",
+        "original": "../edit/snap"
+      },
+      {
+        "path": "src/catalog/builds/kit.ts",
+        "kind": "import-statement",
+        "original": "../catalog/builds/kit"
+      },
+      {
+        "path": "src/catalog/builds/check.ts",
+        "kind": "import-statement",
+        "original": "../catalog/builds/check"
+      },
+      {
+        "path": "src/ldraw/io.ts",
+        "kind": "import-statement",
+        "original": "../ldraw/io"
+      },
+      {
+        "path": "src/core/document.ts",
+        "kind": "import-statement",
+        "original": "../core/document"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../core/types"
+      },
+      {
+        "path": "src/core/resource-profile.ts",
+        "kind": "import-statement",
+        "original": "../core/resource-profile"
+      },
+      {
+        "path": "src/core/spatial.ts",
+        "kind": "import-statement",
+        "original": "../core/spatial"
+      },
+      {
+        "path": "src/build-script/spec.ts",
+        "kind": "import-statement",
+        "original": "./spec"
+      },
+      {
+        "path": "src/build-script/palette.ts",
+        "kind": "import-statement",
+        "original": "./palette"
+      },
+      {
+        "path": "src/build-script/pack.ts",
+        "kind": "import-statement",
+        "original": "./pack"
+      },
+      {
+        "path": "src/build-script/part-search.ts",
+        "kind": "import-statement",
+        "original": "./part-search"
+      },
+      {
+        "path": "src/build-script/layers.ts",
+        "kind": "import-statement",
+        "original": "./layers"
+      },
+      {
+        "path": "src/play/track.ts",
+        "kind": "import-statement",
+        "original": "../play/track"
+      },
+      {
+        "path": "src/build-script/budget.ts",
+        "kind": "import-statement",
+        "original": "./budget"
+      },
+      {
+        "path": "src/build-script/part-list.ts",
+        "kind": "import-statement",
+        "original": "./part-list"
+      },
+      {
+        "path": "src/build-script/budget.ts",
+        "kind": "import-statement",
+        "original": "./budget"
+      }
+    ],
+    "format": "esm"
+  },
+  "src/catalog/connector-extract.ts": {
+    "bytes": 47434,
+    "imports": [
+      {
+        "path": "src/ldraw/path.ts",
+        "kind": "import-statement",
+        "original": "../ldraw/path"
+      }
+    ],
+    "format": "esm"
+  },
+  "scripts/full-library-node.ts": {
+    "bytes": 6480,
+    "imports": [
+      {
+        "path": "node:fs",
+        "kind": "import-statement",
+        "external": true
+      },
+      {
+        "path": "node:zlib",
+        "kind": "import-statement",
+        "external": true
+      },
+      {
+        "path": "node:crypto",
+        "kind": "import-statement",
+        "external": true
+      },
+      {
+        "path": "node:url",
+        "kind": "import-statement",
+        "external": true
+      },
+      {
+        "path": "src/catalog/full-library.ts",
+        "kind": "import-statement",
+        "original": "../src/catalog/full-library"
+      },
+      {
+        "path": "src/catalog/full-pack.ts",
+        "kind": "import-statement",
+        "original": "../src/catalog/full-pack"
+      },
+      {
+        "path": "src/core/types.ts",
+        "kind": "import-statement",
+        "original": "../src/core/types"
+      },
+      {
+        "path": "src/catalog/connector-extract.ts",
+        "kind": "import-statement",
+        "original": "../src/catalog/connector-extract"
+      },
+      {
+        "path": "src/catalog/connector-pack.ts",
+        "kind": "import-statement",
+        "original": "../src/catalog/connector-pack"
+      },
+      {
+        "path": "src/catalog/full-connectors.ts",
+        "kind": "import-statement",
+        "original": "../src/catalog/full-connectors"
+      },
+      {
+        "path": "src/catalog/full-connector-pack.ts",
+        "kind": "import-statement",
+        "original": "../src/catalog/full-connector-pack"
+      }
+    ],
+    "format": "esm"
+  },
+  "scripts/spatial-benchmark/compile-worker.ts": {
+    "bytes": 1868,
+    "imports": [
+      {
+        "path": "node:fs",
+        "kind": "import-statement",
+        "external": true
+      },
+      {
+        "path": "scripts/brick-build.ts",
+        "kind": "import-statement",
+        "original": "../brick-build"
+      },
+      {
+        "path": "src/build-script/compile.ts",
+        "kind": "import-statement",
+        "original": "../../src/build-script/compile"
+      },
+      {
+        "path": "src/catalog/color-availability.ts",
+        "kind": "import-statement",
+        "original": "../../src/catalog/color-availability"
+      },
+      {
+        "path": "src/catalog/color-availability.json",
+        "kind": "import-statement",
+        "original": "../../src/catalog/color-availability.json"
+      },
+      {
+        "path": "scripts/full-library-node.ts",
+        "kind": "import-statement",
+        "original": "../full-library-node"
+      }
+    ],
+    "format": "esm"
+  }
+}

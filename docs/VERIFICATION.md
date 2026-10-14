@@ -1,5 +1,11 @@
 # Verification — 27 September 2026
 
+## Fresh v2 gallery publication — 14 October 2026
+
+28 focused tests pass across gallery-publish, gallery-index, gallery-bundle and spatial-reference-v2. Type checking (`npx tsc -b`), repository formatting and `git diff --check` pass. All 17 gallery recompilations match their frozen MPD hashes. All 102 uploaded assets match public byte lengths and SHA-256 hashes; the 100-row live database and published index exactly match the reviewed bundle, preserving 83 old entries and the Fresh E default. The live gallery shows 17 new cards with loaded images and no horizontal page overflow at six desktop/phone sizes. No renderer/editor behavior changed.
+
+All 18 generation outcomes are retained (17 submitted, one infrastructure failure). The failed Astra Star Destroyer was compiled after generation with a 1024 MiB heap instead of 384 MiB; the identical frozen source produced 14 overlap errors and was not published. This diagnostic was not fed back to generation and did not change the original outcome. The separate rendering process needed a sparse checkout/config-loader workaround for the VM watcher limit. See [full evidence and commands](../fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
+
 ## Generation reference accuracy — 14 October 2026
 
 **70 tests pass in six suites**: spatial-reference-v2, spatial-part-reference, spatial-benchmark, spatial-automatic-pilot and build-script unit suites, plus spatial-benchmark integration. New checks cover all 224 curated placement dimensions, a palette member below the global search limit, partial matches, an independently clipped through-arch slab with obstructing perturbations, all three automatic window panes, wheels/origin-anchor emission, exact-count rejection without feedback, bounded mechanical repair and v2 payload logging. A fresh Node process verifies identical full-library facts before/after host registration. Legacy E/diorama prompt, search and richer-facts hashes still pass. Log: `.local/reference-v2-tests-final3.log` (22.08 seconds).
